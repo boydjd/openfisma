@@ -1,0 +1,8 @@
+Source Code Preparation
+
+# Clear the tmp directory of sessions, cache, and socket files
+rake tmp:clear
+
+# Truncates all *.log files in log/ to zero bytes
+rake log:clear
+

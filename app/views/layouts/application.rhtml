@@ -1,0 +1,46 @@
+<!-- created a regular XHTML document
+and include proper DOCTYPE declaration -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xml:lang="en" 
+	  lang="en">
+
+<head>
+ <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+ <!-- Display title as page title or OpenFISMA if no page title exists --> 
+ <title><%= @page_title || 'OpenFISMA' %></title>
+ <!-- Include css stylesheets -->
+ <%= stylesheet_link_tag 'style' %>
+</head>
+
+<body>
+
+  <!-- Navigation Menu -->  
+<!--  <div id="navigation">
+   <ul>
+    <li><a href="#">Dashboard</a></li>
+    <li><a href="#">Administration</a></li>
+      <ul>
+        <li><a href="#">Users</a></li>
+      </ul>
+   </ul>
+  </div> -->	
+	
+	
+  <div id="content">
+  	<!-- Display page title as heading if page title exists --> 
+	<%= "<h1>#{@page_title}</h1>" if @page_title %>
+	<!-- Display notice messages, loops through flash messages and assigns div tags -->
+	<% flash.each do |key, msg| %>
+      <%= content_tag :div, msg, :id => key %>
+    <% end %>
+   	<!-- Content Start --> 
+    <%= yield %>
+	<!-- Content End --> 
+  </div>
+</body>
+
+</html>

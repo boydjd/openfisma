@@ -1,0 +1,147 @@
+body {
+	background: #cccaca url(/images/bg_loginscreen.gif) 
+	repeat-x 0px 0px; 
+	margin: 0px;
+}
+
+#darkloginboxtop {
+	background: #898989 url(/images/bg_dark_loginbox_top_blue.gif) 
+	repeat-y 0px 0px; 
+	width:622px; 
+	padding: 129px 0px 0px 0px; 
+	margin: 0px auto 0px auto;
+}
+
+
+#loginimage {
+	background: url(/images/bg_login_img_blue.jpg) 
+	no-repeat 0px 0px; 
+	width: 622px; 
+	height: 212px; 
+	padding: 0px; 
+	margin: 0px 0px 0px 0px; 
+	text-align:left
+}
+
+#darkloginboxbottom {
+	background: url(/images/bg_dark_loginbox_bottom_blue.gif) 
+	no-repeat 0px 0px; 
+	width: 622px; 
+	height: 212px; 
+	padding: 0px; 
+	margin: 0px 0px 0px 0px; 
+	text-align:left
+}
+
+/*
+
+#loginboxwrapper {
+	width:329px; 
+	height: 205px; 
+	padding: 0px; 
+	margin: 0px 0px 0px 80px; 
+}
+
+#loginboxtop {
+	background: #000 url(/images/loginbox_top.gif) 
+	no-repeat 0px 0px; 
+	border: 0px solid red; 
+	font-size: 6px;
+	}
+
+#loginboxmiddle {
+	background: #000 url(/images/loginbox_middle.gif) 
+	repeat-y; 
+	text-align: center; 
+	color: #fff; 
+	padding: 0px 0px 0px 0px;
+	}
+
+#loginboxbottom {
+	background: #000 url(/images/loginbox_bottom.gif) 
+	no-repeat left bottom; 
+	font-size: 16px;
+	}
+
+#loginboxclear {
+	clear: both; 
+	font-size: 10px;
+	}
+*/
+
+/* Styles for Navigation Menu */
+
+
+
+/* Styles for forms */
+
+.form fieldset {
+  background: #efe;
+}
+
+.form legend {
+  color: #dfd ;
+  background: #141 ;
+  font-family: sans-serif;
+  padding: 0.2em 1em;
+}
+
+.form label {
+  width: 5em;
+  float: left;
+  text-align: right;
+  margin-right: 0.5em;
+  display: block;
+}
+
+.form .submit {
+  margin-left: 5.5em;
+}
+
+/* Rails validation error style sheets */
+
+.fieldWithErrors {
+  padding: 2px;
+  background-color: red;
+  display: table;
+}
+
+#errorExplanation {
+  width: 400px;
+  border: 2px solid red;
+  padding: 7px;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 5px 5px 15px;
+  font-size: 12px;
+  margin: -7px;
+  background-color: #c00;
+  color: #fff;
+}
+
+#errorExplanation p {
+  color: #333;
+  margin-bottom: 0;
+  padding: 5px;
+}
+
+#errorExplanation ul li {
+  font-size: 12px;
+  list-style: square;
+}
+
+/* Flash notices */
+
+#notice {
+  border: 4px solid green;
+  background-color: green;
+  font-weight: bold;
+  margin-bottom: 12px
+}
+
