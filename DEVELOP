@@ -1,0 +1,30 @@
+
+/* 1. Automated testing */
+
+- Dependancy -
+1. Selenium 
+   This is a tool for automated testing web applications. It is included in /test/.
+        
+2. Sendmail
+   If you want the report to inform anyone by email, this program should exist. 
+   Otherwise, all information will be logged into /test/log. Please make sure this 
+   directory is writable by apache.
+
+- Setting up test bed -
+The automated testing require special conditions:
+1. OpenFISMA web directory(/public/) need to be installed to the root of the URL, 
+   say http://testbed.openfisma.org/.  No trailing path appears.
+
+2. /test/ under root directory have to be accessible from apache by setting up an
+   alias on the same domain, or virtual host. http://testbed.openfisma.org/test/
+   Under /conf/apache/, there is a sample config file (openfisma_test.conf) for apache.
+
+3. access from the URL http://testbed.openfisma.org/test/index.html to manually run 
+   the test suite.
+
+4. Adding a cron job also helps, however an Xwindows is needed to run a web browser.
+
+
+- Scripting test cases -
+1. Coming soon
+

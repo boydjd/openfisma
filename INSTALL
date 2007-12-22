@@ -1,0 +1,58 @@
+============================================================================
+    OpenFISMA INSTALLATION INSTRUCTIONS
+============================================================================
+/*  Step One: Setup Apache    */
+-------------------------------
+NOTE: The installation of Apache 2 or higher is outside the scope of this
+installation, however an example Apache configuration files is included
+in the conf directory.
+
+/*  Step Two: Setup PHP 5     */
+-------------------------------
+NOTE: The installation of PHP 5 or higher is outside the scope of this
+installation tutorial. Please follow your vendor documentation.
+
+/* Step Three: Setup MySQL    */
+-------------------------------
+NOTE: The installation of MySQL or higher is outside the scope of this
+installation tutorial. Please follow your vendor documentation.
+
+/* Step Four: Setup Smarty    */
+-------------------------------
+Smarty is a template engine for PHP. More specifically, it facilitates a
+managable way to separate application logic and content from its presentation.
+
+The source inherently come along with a Smarty distribute under /vendor/smarty.
+You can always enjoy the relax free from installation of Smarty. However there is
+chance if you want to use your own Smarty distribute, please follow instructions below:
+  a: Download Smarty(version 2.6.18)
+     $ wget http://smarty.php.net/do_download.php?download_file=Smarty-2.6.18.tar.gz
+  b: Unzip the downloaded file to a directory you own
+     $ tar -zxvf smarty-2.6.18.tar.gz
+  c: Make a directory to hold Smarty
+     $ mkdir /usr/local/lib/php/Smarty
+  d: Copy the library files to your new directory
+     $ cp -r Smarty/libs/* /usr/local/lib/php/Smarty
+  e: Add /usr/local/lib/php/Smarty to 'include_path' variable in php.ini  
+  f: Delete /vendor/smarty directory under the root of the source code.
+
+/* Step Five: Setup OpenFISMA */
+-------------------------------
+  a: fetch the latest version OVMS
+     $ wget https://endeavor.devguard.com/svn/openfisma/tags/ovms-1.x.tar.gz
+  b: put the latest version to the web dir(/var/www/html)
+     $ tar -zxvf ovms-1.x.tar.gz
+     $ cp -r ovms-1.x/* /var/www/html
+  c: Configure the smarty director in the config file
+     $ vi /var/www/html/public/config.inc.php
+  d: Run the web installation script
+     > Browse to http://<host_address>/install/index.php
+     > Follow the wizard through the installation steps
+
+/* Step Six: Security method */
+  a: REMOVE the /public/install directory for safty sake after successfully installed the OpenFISMA! Otherwise anyone can reinstall it.
+  b: MAKE SURE /public/mainfile.php is only readable by Apache daemon.
+  > chmod 440 /public/mainfile.php
+ 
+/*  Step Six: Enjoy!          */
+-------------------------------

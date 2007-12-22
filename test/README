@@ -1,0 +1,30 @@
+This directory is used for run Selenium test cases.
+
+./
+	core/			-- Selenium runtime library
+	cases/			-- Test cases sort by suites
+	log/            -- Log the result if cannot send a email
+		ovms/
+		...
+	TestSuite.html		-- Index of all test cases
+	postResults.php		-- Do email or log test result
+	test_dao.php.php	-- Database query interface
+	index.html		    -- Provide a directly link to run default test suite
+	README         		-- This file
+
+Q: How to install these test?
+A: See ../apache/openfisma_test.conf and added it to your apache configration.
+   Then you can access it by your brwoser.
+
+Q: How to add a new test case?
+A:	1. Write the new test case through Selenium IDE, see http://wiki.openqa.org/display/SIDE/Recording+a+Test
+	2. Upload it to fit sub directory in cases/ovms/ with a fit name.
+	3. Update TestSuite.html, add a new line like <tr><td><a href="./cases/ovms/new_test.html">new test</a></td></tr> before </tbody> tag.
+	4. Run test with url http://somehost/test/index.html
+
+Q: How to get the test result?
+A: There are two ways. First, if you have a sendmail configuration in you PHP.ini, it will auto send a email to you (modify the address in postResults.php).
+   Second, if you don't have a sendmail configuration with your PHP.ini, it will just log the test result under directory 'log' as a html file, so please make sure this directory is writable. 
+	
+Enjoy it!
+:)

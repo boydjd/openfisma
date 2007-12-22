@@ -1,0 +1,248 @@
+$(document).ready(function(){
+    
+    var aLog = new Array();         // log string
+    var aLogKey = new Object();     // array in JS has no string keys, use this to instead of it
+    var aQuery = new Object();      // build query
+    var evArray = new Object();		// evidances
+    var estDateChanged = false;		// not initial this value. request in email 2007-12-19.
+    aQuery.comment_type = 'NONE';	// set default value of comment type
+    
+    var dw = $(this).width();
+    var dh = $(this).height();
+    // a cover div could give a full grey backgrougd over full page
+    var cover_div = ({
+        show : function(){
+                $('<div id="full"></div>')
+                .width(dw).height(dh)
+                .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
+                .appendTo("body").fadeTo(1, 0.4);
+            },
+        hide : function(){
+                $('#full').hide().remove();
+            }
+    });
+    
+    $(":image[src$='button_respond.png']").click(
+    function(){
+//        return true;
+        var data = $(this).parents("form").serializeArray();
+        var url = $(this).parents("form").attr('action');
+        $(this).blur();        
+        cover_div.show(); // show the grey cover div
+        $('<div class="flora" title="Respond comments">Loading ....</div>')
+        .load(url, data, function(){
+            $(this).dialog({position:'center', width: 740, height: 280, resizable: true,
+                buttons: {
+                    'Continue': function() {  // on button "continue" clicked
+            		    aQuery.comment_topic = $('input[name="comment_topic"]').val();
+            		    aQuery.comment_body = $('textarea[name="comment_body"]').val();
+            		    aQuery.comment_log = "This is a response.";
+            		    aQuery.comment_parent = $('input[name="comment_parent"]').val();
+            		    aQuery.poam_id = $('input[name="poam_id"]').val();
+
+            		    $.post('remediation_save.php', aQuery, function(r,t,x){
+                            eval(r); // to redirect bowser by JS
+                        });
+                    },
+            		'Cancel': function() {    // on button "cancel" clicked
+            		    cover_div.hide();
+            			$(this).dialogClose();
+            			$('.ui-dialog').remove();
+            		}
+                }
+            });
+            $('textarea[name="comment_body"]').focus();
+        });
+        return false;
+    });
+    
+    
+    $(":image[src$='button_submit_evidence.png']").click(
+    function(){
+//        return true;
+        var data = $(this).parents("form").serializeArray();
+        var url = $(this).parents("form").attr('action');
+        $(this).blur();        
+        cover_div.show(); // show the grey cover div
+        $('<div class="flora" title="Upload Evidence">Loading ....</div>')
+        .load(url, data, function(){
+            $(this).dialog({position:'center', width: 540, height: 200, resizable: true,
+                buttons: {
+                    'Continue': function() {  // on button "continue" clicked
+            		    $('#upload_ev').submit();
+                    },
+            		'Cancel': function() {    // on button "cancel" clicked
+            		    cover_div.hide();
+            			$(this).dialogClose();
+            			$('.ui-dialog').remove();
+            		}
+                }
+            });
+//            $('textarea[name="comment_body"]').focus();
+        });
+        return false;
+    });
+    
+    $(":image[src$='button_submit.png']").click(
+    function(){
+        //return true;
+        if (aLog.length < 1){
+            alert('You have no changes to submit.');
+            return false;
+        }
+        
+        // comments not needed
+        if (!aQuery.poam_action_status && !estDateChanged && !evArray.length){
+        	aQuery.poam_id = $('input[name="remediation_id"]').val();
+		    $.post('remediation_save.php', aQuery, function(r,t,x){
+                eval(r); // to redirect bowser by JS
+            });
+        	return false;
+        }
+
+        var data = $(this).parents("form").serializeArray();
+        var url = $(this).parents("form").attr('action');
+
+        $(this).blur();        
+        cover_div.show(); // show the grey cover div
+        
+        $('<div class="flora" title="Comment your changes">Loading ....</div>')
+        .load(url, data, function(){
+            $(this).dialog({position:'center', width: 740, height: 410, resizable: true,
+                buttons: {
+            		'Continue': function() {  // on button "continue" clicked
+            		    if($('input[name="comment_topic"]').val().length < 1){
+            		        alert('Comment topic seems too short.');
+            		        $('input[name="comment_topic"]').focus();
+            		        return;
+            		    }
+            		    if($('textarea[name="comment_body"]').val().length < 1){
+            		        alert('Comment body seems too short.');
+            		        $('textarea[name="comment_body"]').focus();
+            		        return;
+            		    }
+            		    // maybe we can more simple ...
+            		    aQuery.comment_topic = $('input[name="comment_topic"]').val();
+            		    aQuery.comment_body = $('textarea[name="comment_body"]').val();
+            		    aQuery.comment_log = $('textarea[name="comment_log"]').val();
+            		    aQuery.comment_parent = $('input[name="comment_parent"]').val();
+            		    aQuery.poam_id = $('input[name="poam_id"]').val();
+            		    
+            		    if(aQuery.poam_action_status) aQuery.comment_type='SSO';
+            		    if(aQuery.poam_action_date_est) aQuery.comment_type='EST';
+            		    
+            		    for (var ev in evArray){
+            		        evArray[ev].remediation_id = aQuery.poam_id;
+//            		        alert(ev.toString);
+            		        $.post('evidence_save.php', evArray[ev], function(r,t,x){
+//            		            eval(r);
+            		        });
+            		    }
+//return false;
+            		    $.post('remediation_save.php', aQuery, function(r,t,x){
+                            eval(r); // to redirect bowser by JS
+                        });
+            		},
+            		'Cancel': function() {    // on button "cancel" clicked
+            		    cover_div.hide();
+            			$(this).dialogClose();
+            			$('.ui-dialog').remove();
+            		}
+    	       }});
+            $('textarea[name="comment_log"]').val(aLog.join("\n")); // fill log field
+        });
+        return false;
+    });
+
+    
+    $(":image[src$='button_modify.png']").click(function(){
+        var box = $(this).next('span');
+        var old_value = box.html();
+        
+        var data = $(this).parents("form").serializeArray();
+        var url = $(this).parents("form").attr('action');
+        var action = $(this).prevAll('b').text();
+        
+        box.html('Loading ....').load(url, data, function(){
+            
+            var input_JQ_obj = $(this).children(':first'); // jQuery object
+            var input_obj = input_JQ_obj.get(0); // DOM object
+            var new_value = null;
+            var hasDatePicker = (input_JQ_obj.attr('className') == 'date_picker') ? true : false;
+            
+            if (hasDatePicker){
+                input_JQ_obj.datepicker({ 
+                  onSelect: function(dateText) { 
+                        $.datepicker.disableFor(input_JQ_obj);
+                        input_JQ_obj.attr("disabled","").focus();
+                  }
+                  ,speed:''
+                  ,dateFormat:'YMD-'
+                });
+            }
+            
+            input_JQ_obj.css("border","1px dotted red").focus().blur(function(){
+                // if the input has a date picker, do sth specially.
+                if($('#datepicker_div:visible').size() > 0){
+                    return;
+                }
+                
+                // new_value is the new display value
+                if (input_obj.nodeName == 'SELECT'){
+                    new_value = input_obj.options[input_obj.selectedIndex].label;
+                }
+                else{
+                    new_value = input_JQ_obj.val();
+                }
+                
+                if($.trim(new_value) != $.trim(old_value)){
+                    box.html(new_value).css('color','red').prev('input').show(); // hight light if modified
+                    // bulid query and log string
+                    if (input_obj.className == 'ev'){
+                        eval('evArray.ev_'+input_obj.id+" = {'action':input_obj.name, 'new_value':input_JQ_obj.val(), 'ev_id':input_obj.id};");
+                        // need special log
+                    }
+                    else{
+                        eval('aQuery.'+input_obj.name+'=input_JQ_obj.val();');
+                    }
+                    eval('var isset = aLogKey.'+input_obj.name+';'); 
+                    if (isset > 0){ // if modify more than once, we should replace it.
+                        aLog[isset-1] += " => "+new_value;      // not perfect ..
+                    }
+                    else{
+                        aLog.push(action+' '+old_value+" => "+new_value);
+                        eval('aLogKey.'+input_obj.name+'=aLog.length;');
+                        if ((input_obj.name == 'poam_action_date_est') && ($.trim(old_value) != '') && ($.trim(old_value) != '0000-00-00')) estDateChanged = true;
+                    }
+                }
+                else{
+                    box.html(old_value).prev('input').show(); // not modified, old view
+                }
+            });
+        });
+        $(this).hide();
+        return false;
+    });
+    
+    $(':image').click(function(){
+        if ($(this).val() == 'New Comment'){
+            alert('Under construction. :)');      
+            return false;
+        }
+    });
+    
+    $(":image[src$='button_back.png']").click(function(){
+        if (aLog.length > 0)
+        return confirm("You have some changes in current page, do you really want to dismiss these work? \n Press 'Yes' to leave or 'No' to stay.");
+    });
+    
+    $("img.expend_btn").css({'cursor':'pointer'}).click(function(){
+        src = $(this).attr('src');
+        $(this).attr('src', (src=='images/contract.gif')?'images/expand.gif':'images/contract.gif')
+        .parents('table.tbline').nextAll('table.tipframe:first').toggle();
+    });
+    
+    $("img.expend_btn + b:contains('Finding')").prev().click();
+    $("img.expend_btn + b:contains('Vulnerability')").prev().click();
+    $("img.expend_btn + b:contains('Log')").prev().click();
+});

@@ -1,0 +1,75 @@
+# Firewall configuration written by system-config-securitylevel
+# Manual customization of this file is not recommended.
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:RH-Firewall-1-INPUT - [0:0]
+# 
+# ROUTE ALL TRAFFIC THROUGH OUR RULE SET
+# 
+-A INPUT -j RH-Firewall-1-INPUT
+-A FORWARD -j RH-Firewall-1-INPUT
+#
+# BANNED CONNECTIONS
+#
+-A RH-Firewall-1-INPUT -s 20.19.108.50 -j LOG --log-prefix "[ BANNED ] : " --log-level 4
+-A RH-Firewall-1-INPUT -s 20.19.108.50 -j REJECT --reject-with icmp-host-prohibited
+
+#
+# GLOBAL PREFS
+#
+-A RH-Firewall-1-INPUT -i lo -j LOG --log-level 4 --log-prefix "[ LOCAL ] : "
+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+# 
+# PINGS
+#
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j LOG --log-level 4 --log-prefix "[ PING ] : "
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+# 
+# IPSEC Protocol
+# 
+#-A RH-Firewall-1-INPUT -p 50 -j ACCEPT
+#-A RH-Firewall-1-INPUT -p 51 -j ACCEPT
+# 
+# 5353 - Multicast
+# 631  - Internet Printing Protocol
+# 
+#-A RH-Firewall-1-INPUT -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT
+#-A RH-Firewall-1-INPUT -p udp -m udp --dport 631 -j ACCEPT
+# 
+# ESTABLISHED / RELATED CONFIGURATION
+#
+#-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j LOG 
+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+# 
+# SSH CONFIGURATION
+#
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j LOG --log-level 4 --log-prefix "[ SSH ] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+# 
+# HTTP CONFIGURATION
+# 
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j LOG --log-level 4 --log-prefix "[ HTTPS ] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80  -j LOG --log-level 4 --log-prefix "[ HTTP ] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80  -j ACCEPT
+# 
+# NETBACKUP CONFIGURATION
+# 
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 4800:5000 -j LOG --log-level 4 --log-prefix "[ BACKUP] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 4800:5000 -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13782     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13782     -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13783     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13783     -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13722     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13722     -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13724     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13724     -j ACCEPT
+# 
+# DROP ANYTHING THAT HAS NOT YET MATCHED 
+# 
+-A RH-Firewall-1-INPUT -j LOG --log-prefix "[ DROPPED ] : "
+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+COMMIT

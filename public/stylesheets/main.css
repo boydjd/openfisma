@@ -1,0 +1,129 @@
+body {
+	margin: 0px;
+	padding: 0px;
+	background-color: #ffffff;
+}
+
+body,p,blockquote,h1,h2,h3,h4,h5,h6 {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	font-weight: normal;
+	font-size: 11px;
+}
+
+li,input,select,textarea {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	font-weight: normal;
+	font-size: 10px;
+}
+
+th {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	color: #44637A;
+	height: 23px;
+	font-weight: bold;
+	font-size: 10px;
+	background-image: url(images/td_bg.gif) !important;
+	border-left: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+b {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	font-weight: bold;
+	color: #44637A;
+	font-size: 10px;
+}
+
+td {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	color: #000000;
+	height: 23px;
+	font-weight: normal;
+	font-size: 10px;
+}
+
+.thc {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	color: #44637A;
+	height: 23px;
+	font-weight: bold;
+	font-size: 10px;
+	background-color: #E3E3E3;
+	border-left: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+.tdc {
+	border-left: 1px solid #BEBEBE;
+	border-top: 1px solid #BEBEBE;
+}
+
+.tdbottomline {
+	border-bottom: 1px solid #BEBEBE;
+}
+
+.tbline {
+	border-bottom: 1px solid #44637A;
+}
+
+li {
+	padding-bottom: 6px;
+}
+
+.normal {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	font-size: 10px;
+}
+
+.normalBold {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	font-size: 10px;
+	font-weight: bold;
+}
+
+.footer {
+	border-top-width: 4px;
+	border-top-style: solid;
+	border-top-color: #ffffff;
+}
+
+.footerLine {
+	border-top-width: 1px;
+	border-top-color: #999999;
+	border-top-style: solid;	
+}
+
+.tbframe {
+	font-family: Tahoma,verdana,arial, helvetica;
+	font-size: 10px;
+	font-weight: normal;
+	color: #000000;
+	border: 1px solid #BEBEBE;
+}
+
+.tipframe {
+	font-family: Tahoma,verdana,arial, helvetica;
+	font-size: 10px;
+	font-weight: normal;
+	color: #000000;
+	border: 1px solid #44637A;
+}
+
+.highlight {
+	background-color: #44637A; 
+	color:#ffffff; 
+	font-family: "Courier New", Courier, mono; 
+	font-size: 10px;
+}
+
+#copyright p {
+	font-size: 10px;
+	margin: 20px 10px 25px 5px;
+	color: #666666;
+}
+
+
+sup { font-size: 8px; }
+
+strong { color: #360; }
+
