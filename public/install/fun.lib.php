@@ -137,23 +137,24 @@ function import_data($db,$dataFile){
     $tmp = "";
     foreach($dataFile as $elem){
         try{
-            $handle = fopen($elem,'r+');
-            $dumpline = '';
-            while(!feof($handle)&& substr($dumpline,-1)!= "\n"){
-                $dumpline = fgets($handle,'4096');
-                $dumpline = ereg_replace("\r\n$","\n",$dumpline);
-                $dumpline = ereg_replace("\r$","\n",$dumpline);
-                $dumpline = trim($dumpline);
-                $execute = format_data($dumpline);
-                if($execute['opt']=='incomplete'){
-                    $tmp .= $execute['sql'];
-                }else{
-                    $db->query($tmp.$execute['sql']);
-                    $tmp = '';
+            if($handle = fopen($elem,'r')) {
+                $dumpline = '';
+                while(!feof($handle)&& substr($dumpline,-1)!= "\n"){
+                    $dumpline = fgets($handle,'4096');
+                    $dumpline = ereg_replace("\r\n$","\n",$dumpline);
+                    $dumpline = ereg_replace("\r$","\n",$dumpline);
+                    $dumpline = trim($dumpline);
+                    $execute = format_data($dumpline);
+                    if($execute['opt']=='incomplete'){
+                        $tmp .= $execute['sql'];
+                    }else{
+                        $db->query($tmp.$execute['sql']);
+                        $tmp = '';
+                    }
                 }
             }
         }catch(Exception $e){
-            var_dump($e);
+            echo $e->getMessage();
             return false;
         }
      }

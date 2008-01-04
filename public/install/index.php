@@ -352,23 +352,25 @@ case "checkDB":
                 }
             $content .= _OKIMG . $stage;
          }
-        $dataFile = array('db/init_data.sql');
-        import_data($db,$dataFile);
+        $dataFile = array(OVMS_INSTALL_PATH.'/db/init_data.sql');
+        if(!import_data($db,$dataFile)){
+            throw new Exception('Initializing databaase failed');
+        }
         $content .= "</div>";
-        }catch(Exception $e) {
-            $content .= _NGIMG .$stage;
-            $content .= "<font color='red'> ERROR: </font>".$e->getMessage();
-            $b_back=array('dbform',_INST_CI_L1);
-            break 1;
-        }
-        $sm = & new setting_manager('const');
-        $mm = &new mainfile_manager( OVMS_WEB_PATH.'/mainfile.php');
-        $need_clean = $sm->getConfigVal('name_c');
-        if(!empty( $need_clean ) ) { 
-            if(!$sm->clearRootAccount($mm)) {
-                $content .= _INST_OK_CLEAR_ROOT . $mm->report() .'<br/>';
-            } 
-        }
+    }catch(Exception $e) {
+        $content .= _NGIMG .$stage;
+        $content .= "<font color='red'> ERROR: </font>".$e->getMessage();
+        $b_back=array('dbform',_INST_CI_L1);
+        break 1;
+    }
+    $sm = & new setting_manager('const');
+    $mm = &new mainfile_manager( OVMS_WEB_PATH.'/mainfile.php');
+    $need_clean = $sm->getConfigVal('name_c');
+    if(!empty( $need_clean ) ) { 
+        if(!$sm->clearRootAccount($mm)) {
+            $content .= _INST_OK_CLEAR_ROOT . $mm->report() .'<br/>';
+        } 
+    }
     $b_next=array('complete',_INST_OK_L2);
     break;
 
