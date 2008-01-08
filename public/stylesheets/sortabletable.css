@@ -47,10 +47,10 @@
 }
 
 .sort-arrow.descending {
-	background-image:		url("./images/downsimple.png");
+	background-image:		url("../images/downsimple.png");
 
 }
 
 .sort-arrow.ascending {
-	background-image:		url("./images/upsimple.png");
+	background-image:		url("../images/upsimple.png");
 }
