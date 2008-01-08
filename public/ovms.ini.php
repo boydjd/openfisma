@@ -3,7 +3,16 @@
 ** This is used as a single point of configuration data for scripts
 ** - both PHP (dblink, finding_upload) and Perl (inject_utils).
 */
-ini_set('display_errors', 'On');
+
+// This determines whether errors should be printed to the screen as part of 
+// the output or if they should be hidden from the user.
+// On - Display Errors on the web page
+// Off - Suppress Errors but still log them 
+ini_set('display_errors', 'Off');
+
+// The error_reporting() function sets the error_reporting directive at runtime. 
+// PHP has many levels of errors, using this function sets that level for the 
+// duration (runtime) of your script. 
 error_reporting(E_ALL);
 
 define("_S", DIRECTORY_SEPARATOR);
@@ -28,24 +37,24 @@ elseif (_S == '\\') { // window$
 
     // Database Username
     // Your database user account on the host
-    define('OVMS_DB_USER', 'root');
+    define('OVMS_DB_USER', 'openfisma');
 
     // Database Password
     // Password for your database user account
-    define('OVMS_DB_PASS', '123456');
+    define('OVMS_DB_PASS', 'openfisma');
 
     // Database Name
     // The name of database on the host. The installer will attempt to create the database if not exist
-    define('OVMS_DB_NAME', 'ovms_x');
+    define('OVMS_DB_NAME', 'ovms_test');
 
     //this pass_c was used to connect database by new user
-    define('OVMS_DB_PASS_C', '');
+    define('OVMS_DB_PASS_C', 'openfisma');
 
     //this name_c was used to connect database by new user
-    define('OVMS_DB_NAME_C', '');
+    define('OVMS_DB_NAME_C', 'openfisma');
 
     if(!defined('OVMS_ROOT_PATH')){
-        define('OVMS_ROOT_PATH', '/home/alix/dev/ovms_old');
+        define('OVMS_ROOT_PATH', '/opt/openfisma/trunk');
     }
 
 define("OVMS_WEB_ROOT", OVMS_ROOT_PATH._S."public");
