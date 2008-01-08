@@ -78,7 +78,7 @@ define("_INST_CI_L2","Verify database connection");
 define("_INST_WC_L1","Save Settings");
 define("_INST_WC_L2","Saving configuration data..");
 define("_INST_WC_L3","Constant %s written to %s.");
-define("_INST_WC_L4","Configuration data has been saved successfully to mainfile.php.");
+define("_INST_WC_L4","Configuration data has been saved successfully to ovms.ini.php.");
 define("_INST_WC_L5","Check Database");
 define("_INST_WC_L6","File %s overwritten by %s.");
 define("_INST_WC_L7","Could not write to file %s.");

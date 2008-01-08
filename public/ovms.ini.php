@@ -15,7 +15,38 @@ elseif (_S == '\\') { // window$
     define("_INC_S", ";");
 }
 
-require_once("mainfile.php");
+    // Database
+    // Choose the database to be used
+    define('OVMS_DB_TYPE', 'mysql');
+
+    // Database Hostname
+    // Hostname of the database server. If you are unsure, 'localhost' works in most cases.
+    define('OVMS_DB_HOST', 'localhost');
+
+   //this port is used while connect
+    define('OVMS_DB_PORT', '3306');
+
+    // Database Username
+    // Your database user account on the host
+    define('OVMS_DB_USER', 'root');
+
+    // Database Password
+    // Password for your database user account
+    define('OVMS_DB_PASS', '123456');
+
+    // Database Name
+    // The name of database on the host. The installer will attempt to create the database if not exist
+    define('OVMS_DB_NAME', 'ovms_x');
+
+    //this pass_c was used to connect database by new user
+    define('OVMS_DB_PASS_C', '');
+
+    //this name_c was used to connect database by new user
+    define('OVMS_DB_NAME_C', '');
+
+    if(!defined('OVMS_ROOT_PATH')){
+        define('OVMS_ROOT_PATH', '/home/alix/dev/ovms_old');
+    }
 
 define("OVMS_WEB_ROOT", OVMS_ROOT_PATH._S."public");
 define("OVMS_WEB_TEMP", OVMS_WEB_ROOT._S."temp");

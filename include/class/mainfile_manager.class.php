@@ -8,7 +8,7 @@ class mainfile_manager {
     var $report = '';
     var $error = false;
 
-    function mainfile_manager($path='./mainfile.php'){
+    function mainfile_manager($path='./ovms.ini.php'){
         $this->path = $path;
     }
 
