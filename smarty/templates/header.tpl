@@ -29,16 +29,11 @@
 <body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" onLoad="" bgcolor="#ffffff">
 <table width="{$table_width}" border="0" height="60" cellpadding="0" cellspacing="0" background="images/title_vline.jpg">
 <tr>
-	<td width="400"><img src="images/fl_logo.gif" border="0"></td>
-	<td width="10"><img src="images/sep_line.gif" border="0"></td>
-	{if $customer_logo neq ""}
-	<td width="350" align="center">
+        <td width="70%" align="left">
 	<a href="customer_url"><img src="{$customer_logo}" border="0"></a>
-	<td width="10"><img src="images/sep_line.gif" border="0"></td>
-	{/if}
 	</td>
 
-	<td width="230" align="right">
+        <td width="30%" align="right">
 	<table border="0">
 	<tr>
 		{if $pass_change eq 1}
