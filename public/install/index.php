@@ -13,12 +13,16 @@ define('OVMS_LIB_PATH',OVMS_ROOT_PATH.'/lib');
 define('OVMS_INCL_PATH',OVMS_ROOT_PATH.'/include');
 define('OVMS_SMARTY_PATH',OVMS_ROOT_PATH.'/smarty');
 define("OVMS_VENDER_PATH", OVMS_ROOT_PATH."/vendor");
+define("OVMS_PEAR", OVMS_VENDER_PATH."/Pear");
 
 define('OVMS_DATABASE','schema.sql');
 define('_OKIMG',"<img src='img/yes.gif' width='6' height='12' border='0' alt='OK' /> ");
 define('_NGIMG',"<img src='img/no.gif' width='6' height='12' border='0' alt='NO' /> ");
 define('REQUEST_SMARTY_VERSION','2.6.14');
 define('REQUEST_PHP_VERSION','5');
+
+$ins = (DIRECTORY_SEPARATOR == '/')?':':';';
+ini_set('include_path',ini_get('include_path').$ins.OVMS_PEAR);
 
 include_once(OVMS_INCL_PATH.'/classload.php');
 require_once(OVMS_INSTALL_PATH.'/fun.lib.php');
@@ -141,13 +145,13 @@ switch ($op){
             $signal = false;
         }
         try {
-            if(!include_once(OVMS_VENDER_PATH.'/OLE.php')){
+            if(!include_once('OLE.php')){
                 include_once('/usr/local/lib/php/OLE.php');
             }
             $myole = new OLE();
             $content .= "<p>"._OKIMG._INST_SET_L11."</p>";
             try {
-                if(!include(OVMS_VENDER_PATH.'/Spreadsheet/Excel/Writer.php')){
+                if(!include('Spreadsheet/Excel/Writer.php')){
                     include_once('/usr/local/lib/php/Spreadsheet/Excel/Writer.php');
                 }
                 $myspread = new Spreadsheet_Excel_Writer();

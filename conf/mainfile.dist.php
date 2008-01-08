@@ -28,24 +28,24 @@ elseif (_S == '\\') { // window$
 
     // Database Username
     // Your database user account on the host
-    define('OVMS_DB_USER', 'endeavor');
+    define('OVMS_DB_USER', 'root');
 
     // Database Password
     // Password for your database user account
-    define('OVMS_DB_PASS', '0p3nfism@');
+    define('OVMS_DB_PASS', '123456');
 
     // Database Name
     // The name of database on the host. The installer will attempt to create the database if not exist
-    define('OVMS_DB_NAME', 'testdatabase');
+    define('OVMS_DB_NAME', 'ovms_x');
 
     //this pass_c was used to connect database by new user
-    define('OVMS_DB_PASS_C', '0p3nfism@');
+    define('OVMS_DB_PASS_C', '');
 
     //this name_c was used to connect database by new user
-    define('OVMS_DB_NAME_C', 'testuser');
+    define('OVMS_DB_NAME_C', '');
 
     if(!defined('OVMS_ROOT_PATH')){
-        define('OVMS_ROOT_PATH', '/opt/openfisma/release-1.2');
+        define('OVMS_ROOT_PATH', '/home/alix/dev/ovms_old');
     }
 
 define("OVMS_WEB_ROOT", OVMS_ROOT_PATH._S."public");
@@ -54,6 +54,7 @@ define("VENDER_TOOL_PATH", OVMS_ROOT_PATH._S."vendor");
 define("PDF_FONT_FOLDER", VENDER_TOOL_PATH._S."pdf"._S."fonts");
 define("OVMS_INJECT_PATH", OVMS_ROOT_PATH._S."inject");
 define("OVMS_INCLUDE_PATH", OVMS_ROOT_PATH._S."include");
+define("OVMS_PEAR_PATH", VENDER_TOOL_PATH._S."Pear");
 define("OVMS_TEMP", ini_get('upload_tmp_dir'));
 
 $OVMS_ROOT = OVMS_ROOT_PATH;
@@ -66,7 +67,7 @@ $CUSTOMER_URL  = "https://ovms.ed.gov/index.php";
 $CUSTOMER_LOGO = "images/customer_logo.png";
 $LOGIN_WARNING = "This is a United States Government Computer system operated and maintained by the U.S. Department of Education, Federal Student Aid which encourages its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474) Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.";
 
-ini_set('include_path',ini_get('include_path')._INC_S.OVMS_INCLUDE_PATH);
+ini_set('include_path',ini_get('include_path')._INC_S.OVMS_INCLUDE_PATH._INC_S.OVMS_PEAR_PATH);
 
 //All this below was added from .../conf/ovms.ini
 
