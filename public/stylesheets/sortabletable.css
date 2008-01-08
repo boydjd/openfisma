@@ -20,7 +20,7 @@
 	height: 23px;
 	font-weight: bold;
 	font-size: 10px;
-	background-image: url(images/td_bg.gif) !important;
+	background-image: url(../images/td_bg.gif) !important;
 	border-left: 1px solid #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
 }
