@@ -1,19 +1,18 @@
 <?php
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
 define("DS", DIRECTORY_SEPARATOR);
 
 define('OVMS_INSTALL', 1);
 
 define('OVMS_INSTALL_PATH',dirname(__FILE__));
-define('OVMS_ROOT_PATH',realpath(OVMS_INSTALL_PATH.'/../..'));
-define('OVMS_WEB_PATH',OVMS_ROOT_PATH.'/public');
-define('OVMS_CONF_PATH',OVMS_ROOT_PATH.'/conf');
-define('OVMS_LIB_PATH',OVMS_ROOT_PATH.'/lib');
-define('OVMS_INCL_PATH',OVMS_ROOT_PATH.'/include');
-define('OVMS_SMARTY_PATH',OVMS_ROOT_PATH.'/smarty');
-define("OVMS_VENDOR_PATH", OVMS_ROOT_PATH."/vendor");
-define("LOCAL_PEAR_PATH", OVMS_VENDOR_PATH."/Pear");
+define('OVMS_ROOT_PATH',realpath(dirname(dirname(OVMS_INSTALL_PATH))));
+define('OVMS_WEB_PATH',OVMS_ROOT_PATH.DS.'public');
+define('OVMS_CONF_PATH',OVMS_ROOT_PATH.DS.'conf');
+define('OVMS_LIB_PATH',OVMS_ROOT_PATH.DS.'lib');
+define('OVMS_INCL_PATH',OVMS_ROOT_PATH.DS.'include');
+define('OVMS_SMARTY_PATH',OVMS_ROOT_PATH.DS.'smarty');
+define("OVMS_VENDOR_PATH", OVMS_ROOT_PATH.DS."vendor");
+define("OVMS_LOCAL_PEAR", OVMS_VENDOR_PATH.DS."Pear");
 
 define('OVMS_DATABASE','schema.sql');
 define('_OKIMG',"<img src='img/yes.gif' width='6' height='12' border='0' alt='OK' /> ");
@@ -21,8 +20,7 @@ define('_NGIMG',"<img src='img/no.gif' width='6' height='12' border='0' alt='NO'
 define('REQUEST_SMARTY_VERSION','2.6.14');
 define('REQUEST_PHP_VERSION','5');
 
-$ins = (DIRECTORY_SEPARATOR == '/')?':':';';
-ini_set('include_path',ini_get('include_path').$ins.OVMS_PEAR);
+ini_set('include_path',ini_get('include_path').PATH_SEPARATOR.OVMS_LOCAL_PEAR);
 
 include_once(OVMS_INCL_PATH.'/classload.php');
 require_once(OVMS_INSTALL_PATH.'/fun.lib.php');
@@ -213,12 +211,12 @@ switch ($op){
     case "dbform":
         $title = _INST_CI_L1;
         $b_next = array('dbconfirm',_INST_CD_L1);
-        $config = file_get_contents(OVMS_WEB_PATH . '/ovms.ini.php');
+        $config = file_get_contents(OVMS_WEB_PATH . DS.'ovms.ini.php');
         $isTheFirstTime = preg_match('/OVMS_INSTALL/', $config);
         unset($config);
         $sm = new setting_manager('false');
         if(!$isTheFirstTime){
-            include(OVMS_WEB_PATH . '/ovms.ini.php');
+            include(OVMS_WEB_PATH . DS . 'ovms.ini.php');
             $sm->readConstant();
         }
         if(isset($_POST['is_second_inst'])&& $_POST['is_second_inst']==true ){
@@ -289,19 +287,18 @@ switch ($op){
                 $b_next = array('initial', _INST_WC_L5);
             }
         }else{
-            var_dump($sm->settingNames);
             $content .=_INST_WC_L8;
             $b_reload = true;
         }
         break;
 
     case "initial":
-        include_once(OVMS_WEB_PATH.'/ovms.ini.php');
+        require_once(OVMS_WEB_PATH.'/ovms.ini.php');
         $content = "<table align=\"center\">\n";
         $content .= "<tr><td align='center'>";
         $content .= "<table align=\"center\">\n";
         $confirm_idx = array('host','uname','name_c','dbname');
-        $sm = &new setting_manager('const','');
+        $sm = &new setting_manager('const');
         foreach($confirm_idx as $tuple) {
             $content .= "<tr><td>".$sm->getConfigName($tuple)
             .":&nbsp;&nbsp;</td><td><b>"
@@ -319,8 +316,8 @@ switch ($op){
 
     case "checkDB":
         $title = _INST_ID_L1;
-        include_once(OVMS_WEB_PATH. '/ovms.ini.php');
-        include_once(OVMS_INCL_PATH. '/sws.adodb.php');
+        include_once(OVMS_WEB_PATH. DS. 'ovms.ini.php');
+        include_once(OVMS_INCL_PATH. DS. 'sws.adodb.php');
         $content = "<div style=\"text-align:left;padding-left:130px;\">";
         $dbname ='';
         $name_c ='';
@@ -343,7 +340,7 @@ switch ($op){
                     IDENTIFIED BY '$passwd_c' WITH GRANT OPTION");
             $content .= _OKIMG . $stage;
             $stage = _INST_ID_L5 . "<br />"  ;
-            $schema_file = OVMS_INSTALL_PATH . "/db/".OVMS_DATABASE;
+            $schema_file = OVMS_INSTALL_PATH . DS. "db". DS. OVMS_DATABASE;
             if(file_exists($schema_file)){
                 $sqlArray = explode(';', file_get_contents($schema_file) );
                 foreach ($sqlArray as $sql) {
@@ -354,7 +351,7 @@ switch ($op){
                 }
                 $content .= _OKIMG . $stage;
             }
-            $dataFile = array(OVMS_INSTALL_PATH.'/db/init_data.sql');
+            $dataFile = array(OVMS_INSTALL_PATH.DS.'db'.DS.'init_data.sql');
             if(!import_data($db,$dataFile)){
                 throw new Exception('Initializing databaase failed');
             }
@@ -366,7 +363,7 @@ switch ($op){
             break 1;
         }
         $sm = & new setting_manager('const');
-        $mm = &new mainfile_manager( OVMS_WEB_PATH.'/ovms.ini.php');
+        $mm = &new mainfile_manager( OVMS_WEB_PATH.DS.'ovms.ini.php');
         $need_clean = $sm->getConfigVal('name_c');
         if(!empty( $need_clean ) ) {
             if(!$sm->clearRootAccount($mm)) {

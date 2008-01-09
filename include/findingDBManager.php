@@ -168,7 +168,7 @@ class FindingDBManager {
 
 
     function getSummaryList() {
-        $data = null;
+        $data = array();
         $sql = "SELECT s.system_name AS sname, f.finding_status AS status, COUNT(f.finding_id) AS num 
                 FROM " . TN_FINDINGS . " AS f, " . TN_SYSTEM_ASSETS . " AS a, " . TN_SYSTEMS . " AS s 
                 WHERE f.asset_id=a.asset_id 

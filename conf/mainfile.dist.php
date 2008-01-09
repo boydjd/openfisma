@@ -3,12 +3,11 @@
 ** This is used as a single point of configuration data for scripts
 ** - both PHP (dblink, finding_upload) and Perl (inject_utils).
 */
-ini_set('display_errors', 'On');
-error_reporting(E_ALL);
 
 define("DS", DIRECTORY_SEPARATOR);
 define("PS", PATH_SEPARATOR);
-
+    
+    define('DEPLOY_MODE', 'DBG'); //DBG, RLS
     // Database
     // Choose the database to be used
     define('OVMS_DB_TYPE', 'mysql');
@@ -49,7 +48,6 @@ define("PDF_FONT_FOLDER", OVMS_VENDOR_PATH. DS ."pdf". DS ."fonts");
 define("OVMS_INJECT_PATH", OVMS_ROOT_PATH. DS ."inject");
 define("OVMS_INCLUDE_PATH", OVMS_ROOT_PATH. DS ."include");
 define('OVMS_LOCAL_PEAR', OVMS_VENDOR_PATH .  DS  . 'Pear');
-define("OVMS_PEAR_PATH", VENDER_TOOL_PATH._S."Pear");
 define("OVMS_TEMP", ini_get('upload_tmp_dir'));
 
 $OVMS_ROOT = OVMS_ROOT_PATH;

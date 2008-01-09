@@ -1,1 +1,7 @@
-<?PHP header("Location: login.php"); ?>
+<?PHP 
+
+
+include_once('ovms.ini.php');
+require('login.php');
+
+?>

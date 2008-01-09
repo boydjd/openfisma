@@ -42,10 +42,11 @@ $report_filter_data = array();
 
 switch ($f)
 {
-	case 'p':   @include (OVMS_VENDER_PATH.'/pdf/class.ezpdf.php');
-        @require_once("report_lang.php");
-	@require_once("notice_lang.php"); // footer_warning()
-	@require_once("report_utils.php"); // pdfAddWarningFooter()
+	case 'p':   
+        include (OVMS_VENDOR_PATH.'/pdf/class.ezpdf.php');
+    require_once("report_lang.php");
+	require_once("notice_lang.php"); // footer_warning()
+	require_once("report_utils.php"); // pdfAddWarningFooter()
 	$headinfo="Report run time: ".date("Y-m-d H:i:s");
 	header('Pragma:');
 	$RPT_ORIENTATION = 'orient';

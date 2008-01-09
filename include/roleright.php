@@ -58,7 +58,7 @@ function RoleFunctionDefineForm($tb_id,$pgno,$of,$asc,$rid, $edit_right) {
 </form>
 </table>
 
-<?	if($edit_right) { ?>
+<?php 	if($edit_right) { ?>
 <script language="javascript" src="javascripts/func.js"></script>
 <form name="rtable" method="post" action="<?=$pageurl?>">
 <input type="hidden" name="tid" value="<?=$tb_id?>">
@@ -76,7 +76,7 @@ function RoleFunctionDefineForm($tb_id,$pgno,$of,$asc,$rid, $edit_right) {
 </tr>
 </table>
 </form>
-<?	} else {
+<?php 	} else {
 	echo $msg;
 	}
 }

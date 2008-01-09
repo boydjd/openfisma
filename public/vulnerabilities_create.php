@@ -51,7 +51,6 @@ $smarty->assign('del_right', $del_right);
 
 //	echo "view_right : ". $view_right . " edit_right : ". $edit_right. " add_right : ". $add_right . " del_right : ". $del_right ;
 
-
 /**************Main Area*****************/
 if( $add_right )
 {
@@ -73,19 +72,9 @@ if( $add_right )
 				$_SESSION['selected_product'][$s] = $s ;
 			}
 		}
-	}
-	else if (isset($_POST['remove_product']))
-	{
-		//echo "<br>del product: " . $_POST[''remove_product''] ."<br> " ;
-		$temp_pid = $_POST['remove_product'] ;
-		//print_r($_POST) ;
-		$_SESSION['selected_product'][$temp_pid] = NULL ;
-
-	}
- 	else if (isset($_POST['submit_val']) && ($_POST['submit_val'] == 'Create New Vulnerability'))
+	} else if (isset($_POST['submit_val']) && ($_POST['submit_val'] == 'Create New Vulnerability'))
 	{
 		//echo "<br>p_lists <br>" ;
-		//print_r($_SESSION['temp_prod_lists']); //	$_SESSION['temp_prod_lists'] = $prod_lists ;
 		if ($_SESSION['temp_prod_lists'] == NULL )
 		{
 			//$smarty->assign('create_success', '<p align=center><font color=red>Create New Vulnerability failed! You have to select at least one effected product!</font></p>'  );
@@ -96,7 +85,13 @@ if( $add_right )
 			Create_New_Vulnerability($_SESSION['temp_prod_lists']);
 			unset($_SESSION['temp_prod_lists']);
 		}
-	}
+	}  else if (isset($_POST['remove_product'])) {
+		//echo "<br>del product: " . $_POST[''remove_product''] ."<br> " ;
+		$temp_pid = $_POST['remove_product'] ;
+		//print_r($_POST) ;
+		$_SESSION['selected_product'][$temp_pid] = NULL ;
+    }
+
 
 	//global $prod_lists ;
 
