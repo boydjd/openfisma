@@ -6,12 +6,11 @@
 
 {if $view_right == 1 or $del_right == 1 or $edit_right == 1}
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>Dashboard</b></td>
-	<td align="right" valign="bottom">{$now}</td>
-</tr>
+<!-- Heading Block -->
+<table class="tbline">
+<tr><td id="tbheading">Dashboard</td><td id="tbtime">{$now}</td></tr>
 </table>
+<!-- End Heading Block -->
 
 <br>
 

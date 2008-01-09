@@ -151,19 +151,20 @@ function order_page(para)
 
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 
-
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-	<tr>
-		<td valign="bottom"><b>Remediation:</b>  Summary</td>
-		<td align="right" valign="bottom">{$now}</td>
-	</tr>
+<!-- Heading Block -->
+<table class="tbline">
+<tr>
+<td id="tbheading">Remediation Summary</td>
+<td id="tbtime">{$now}</td>
+</tr>
 </table>
+<!-- End Heading Block -->
 
 <br>
 
 <!-- SUMMARY TABLE -->
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table align="center" class="tbframe">
 
 	<tr align="center">
 		<th>Action Owner</th>
@@ -220,8 +221,8 @@ function order_page(para)
 <!-- FILTERS                                                                -->
 <!-- ---------------------------------------------------------------------- -->
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-	<tr><td valign="bottom"><b>Remediation:</b> Filters</td></tr>
+<table class="tbline">
+<tr><td id="tbheading">Remediation Filters</td></tr>
 </table>
 
 <br>
@@ -233,7 +234,7 @@ function order_page(para)
 
 
 {* FILTERS TABLE *}
-<table border="0" cellpadding="3" cellspacing="1" width="100%" class="tipframe">
+<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
 
 	<tr> {* NON-DATE FILTERS ROW *}
 
@@ -356,8 +357,9 @@ function order_page(para)
 		      </table>
 
 		</td>
+</tr><tr>
 
-		<td align="right"><input type='image' name='submit' value='Search' src='images/button_search.png' onClick="firstpage();"></td>
+		<td align="left"><input type='image' name='submit' value='Search' src='images/button_search.png' onClick="firstpage();"></td>
 	</tr>
 
 
@@ -370,38 +372,30 @@ function order_page(para)
 <!-- SUMMARY LIST                                                           -->
 <!-- ---------------------------------------------------------------------- -->
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-	<tr><td valign="bottom"><b>Remediation:</b> List</td></tr>
+<table class="tbline">
+<tr><td valign="bottom"><b>Remediation:</b> List</td></tr>
 </table>
 
 
-<!-- list -->
-<table width="98%" border="0" cellpadding="0" cellspacing="0">
+<!-- Pagination -->
+<table width="94%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
-	<td width="71%" align="left" valign="bottom">
-		Total pages: {$total_pages}  
-	
-	
-	</td>
-    <td width="14%" align="right" valign="bottom">	
-	<input type="text" name="row_no" size="3" maxlength="3" value="{$row_no}">
-	Results
-	
-</td>
-    <td width="8%" align="right" valign="bottom"><span {if $remediation_page ne 1}style="cursor: hand" onclick="pageskip(false);"{/if}>
-	<img src="images/button_prev.png" border="0"></span></td>
-    <td width="3%" align="right" valign="bottom">	<input type="text" name="remediation_page" size="3" maxlength="3" value="{$remediation_page}">
-</td>
-    <td width="4%" align="right" valign="bottom">
-	<span {if $remediation_page ne $total_pages } style="cursor: hand" onclick="pageskip(true);"{/if}><img src="images/button_next.png" border="0"></span>
-	</td>
+ <td width="15pt" align="left" valign="bottom">
+   <span {if $remediation_page ne 1}style="cursor: hand" onclick="pageskip(false);"{/if}><img src="images/button_prev.png" border="0"></span></td>
+ <td width="15pt" align="center" valign="bottom">
+   <input type="text" name="remediation_page" size="3" maxlength="3" value="{$remediation_page}"></td>
+ <td width="15pt" align="left" valign="bottom">
+    <span {if $remediation_page ne $total_pages } style="cursor: hand" onclick="pageskip(true);"{/if}><img src="images/button_next.png" border="0"></span></td>
+ <td align="center" valign="bottom">Total pages: <b>{$total_pages}</b></td>
+ <td width="200pt" align="right" valign="bottom">Number of Results to Display <input type="text" name="row_no" size="3" maxlength="3" value="{$row_no}"></td>
 </tr>
 </table>
+<!-- End Pagination -->
 
 </form>
 
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 
 	<tr align="center">
 
@@ -416,10 +410,9 @@ function order_page(para)
 			<input type='hidden' name='filter_enddate'          value='{$filter_enddate}'>
 			<input type='hidden' name='filter_startcreatedate'  value='{$filter_startcreatedate}'>
 			<input type='hidden' name='filter_endcreatedate'    value='{$filter_endcreatedate}'>
-
 			<input type='hidden' name='sort_by'        value='remediation_id'> 
 			<input type='hidden' name='sort_order' > 
-ID 
+		ID 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(11)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(12)">			
 		</th>
@@ -456,7 +449,7 @@ ID
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(72)">			
 		</th>
 
-		<th>Est. Completion Date 
+		<th>Completion Date 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(81)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(82)">			
 		</th>
@@ -499,7 +492,6 @@ ID
 
 			<input type='hidden' name='sort_order'             value='{$sort_order}'>
 			<input type='hidden' name='sort_by'                value='{$sort_by}'>
-			
 
 			<input type='hidden' name='remediation_id' value='{$list[row].poam_id}'>
 			<td align="center" valign='middle' class='tdc'><input type='image'  src='images/view.gif'></td>

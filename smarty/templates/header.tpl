@@ -23,11 +23,10 @@
 {/literal}
 </head>
 
-{* Set header page width *}
-{assign var="table_width" value="1000"}
+<!-- Header Section -->
 
 <body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" onLoad="" bgcolor="#ffffff">
-<table width="{$table_width}" border="0" height="60" cellpadding="0" cellspacing="0" background="images/title_vline.jpg">
+<table width="100%" border="0" height="60" cellpadding="0" cellspacing="0" >
 <tr>
         <td width="70%" align="left">
 	<a href="customer_url"><img src="{$customer_logo}" border="0"></a>
@@ -52,7 +51,9 @@
 </tr>
 </table>
 
-<table width="1000" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" id="wrappertable">
+<!-- Navigation Menu -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" id="wrappertable">
 <tr>
 	<td valign="top" bgcolor="#ffffff">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#44637A">
@@ -268,13 +269,11 @@
 </tr>
 </table>
 
-<table width="{$table_width}" height="30" border="0" background="images/body_vline.jpg">
-<tr>
-	<td>&nbsp;</td>
-</tr>
-</table>
+<!-- End Navigation Menu -->
 
-<table width="{$table_width}" border="0" cellpadding="0" cellspacing="0">
+<table width="100%" height="10" border="0" ></table>
+
+<!-- <table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td width="2%">&nbsp;</td>
-	<td width="96%">
+	<td width="96%"> -->

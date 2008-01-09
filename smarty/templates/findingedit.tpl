@@ -1,79 +1,17 @@
 
-{include file="header.tpl" title="OVMS" name="Create new finding"}
+{include file="header.tpl" title="OVMS" name="Create New Finding"}
 
 {literal}
 <script language="javascript" src="javascripts/ajax.js"></script>
 <script language="javascript" src="javascripts/func.js"></script>
 <script language="javascript" src="javascripts/form.js"></script>
-<script language="javascript">
-<!--
-function qok() {
-	var sdate = document.finding.discovereddate.value;
-	var data = document.finding.finding_data.value;
-	var aid = document.finding.asset_list.selectedIndex;
-
-	if(!IsDate(sdate)) {
-		alert("Please input a valid date!");
-		document.finding.discovereddate.select();
-		return false;
-	}
-
-	if(IsStrNull(data)) {
-		alert("Please input Finding Description!");
-		document.finding.finding_data.focus();
-		return false;
-	}
-	
-	if(!checkVulnerItem('finding', 'vuln_-')) {
-		alert("Please select Vulnerabilities!");
-		return false;
-	}
-
-	if(aid < 1) {
-		alert("Please select Asset!");
-		return false;
-	}
-
-	if(confirm("You are about to create this finding. Are you sure you want to proceed?") == false) {
-		return false;
-	}
-	
-	selectall('finding','vuln_-', true);
-}
-
-// Disable Enter key to prevent search box activity from trying to create a finding
-function stopRKey(evt) {
-	var evt  = (evt) ? evt : ((event) ? event : null);
-	var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
-	if ((evt.keyCode == 13) && (node.type=="text")) { return false; }
-}
-document.onkeypress = stopRKey;
-
-// Track current vulnerability rowset offset if there are so many
-// results that we need to page through them.
-function page_vulns(is_next) {
-  var num_rows = document.finding.NUM_VULN_ROWS.value; 
-  var offset;
-  if(is_next == true) {
-    offset = Number(document.finding.vuln_offset.value) + Number(num_rows);
-    }
-  else {
-    offset = Number(document.finding.vuln_offset.value) - Number(num_rows);
-    }
-  document.finding.vuln_offset.value = offset;
-  return loadVulnerList('ajaxsearch.php');
-}
-
--->
-</script>
 {/literal}
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><b>Findings:</b> Create</td>
-	<td align="right" valign="bottom">{$now}</td>
-</tr>
+<!-- Heading Block -->
+<table class="tbline">              
+<tr><td id="tbheading">Finding Creation</td><td id="tbtime">{$now}</td></tr>        
 </table>
+<!-- End Heading Block -->
 
 <br>
 

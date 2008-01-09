@@ -1,5 +1,6 @@
 
 {include file="header.tpl" title="OVMS" name="Finding Summary"}
+
 {literal}
 <script language="javascript" src="javascripts/func.js"></script>
 <script language="javascript">
@@ -46,24 +47,23 @@ function findingdetail(fid, func) {
 </script>
 {/literal}
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> -->
-<b>Findings:</b> Summary</td>
-	<td align="right" valign="bottom">{$now}</td>
-</tr>
+<!-- Heading Block -->
+<table class="tbline">              
+<tr><td id="tbheading">Finding Summary</td><td id="tbtime">{$now}</td></tr>        
 </table>
+<!-- End Heading Block -->
 
+
+<!-- Summary of Findings -->
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 <br>
-<table width="800" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 <tr align="center">
 	<th>System</td>
 	<th>Open(Today)</td>
 	<th>30(Days)</td>
 	<th>60(Days)</td>
 	<th>More Days</td>
-
 	<th>Remediation</td>
 	<th>Closed</td>
 	<th>Total</td>
@@ -76,7 +76,6 @@ function findingdetail(fid, func) {
 	<td class="tdc">&nbsp;{$summary_data[row].thirty}&nbsp;</td>
 	<td class="tdc">&nbsp;{$summary_data[row].sixty}&nbsp;</td>
 	<td class="tdc">&nbsp;{$summary_data[row].ninety}&nbsp;</td>
-
 	<td class="tdc">&nbsp;{$summary_data[row].reme}&nbsp;</td>
 	<td class="tdc">&nbsp;{$summary_data[row].closed}&nbsp;</td>
 	<td class="tdc">&nbsp;{$summary_data[row].total}&nbsp;</td>
@@ -84,15 +83,11 @@ function findingdetail(fid, func) {
 {/section}
 </table>
 
-<br>
+<!-- Heading Block -->
+<table class="tbline"><tr><td id="tbheading">Finding Search</td></tr></table>
+<!-- End Heading Block -->
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>Findings:</b> Filters</td>
-</tr>
-</table>
-
-
+<!-- Findings Filter Search Form -->
 <br>
 <form name="finding" method="post" action="finding.php">
 <input type="hidden" name="sbt" value="{$submit}">
@@ -100,116 +95,123 @@ function findingdetail(fid, func) {
 <input type="hidden" name="fid" value="0">
 <input type="hidden" name="fn" value="{$fn}">
 <input type="hidden" name="asc" value="{$asc}">
-<table border="0" cellpadding="3" cellspacing="1" class="tipframe">
-<tr>
-	<td>
-	<table border="0" cellpadding="3" cellspacing="1">
-	<tr>
-		<td align="right">Status:</td>
-		<td><select name="status">
-			<option value="">--Any--</option>
-			<option value="OPEN"{if $status eq "OPEN"} selected{/if}>Open</option>
-			<option value="REMEDIATION"{if $status eq "REMEDIATION"} selected{/if}>Remediation</option>
-<!--			<option value="consolidated"{if $status eq "consolidated"} selected{/if}>Consolidated</option>-->
-			<option value="CLOSED"{if $status eq "CLOSED"} selected{/if}>Closed</option>
-<!--			<option value="DELETED"{if $status eq "DELETED"} selected{/if}>Deleted</option>-->
-			</select></td>
-		<td align="right">Source:</td>
-		<td><select name="source">
-			<option value="">--Any--</option>
-			{foreach from=$source_list key=sid item=sname}
-			{if $sid eq $source }
-			<option value="{$sid}" selected>{$sname}</option>
-			{else}
-			<option value="{$sid}">{$sname}</option>
-			{/if}
-			{/foreach}
-			</select></td>
-		<td align="right">System:</td>
-		<td><select name="system">
-			<option value="">--Any--</option>
-			{foreach from=$system_list key=sid item=sname}
-			{if $sid eq $system }
-			<option value="{$sid}" selected>{$sname}</option>
-			{else}
-			<option value="{$sid}">{$sname}</option>
-			{/if}
-			{/foreach}
-			</select></td>
-		<td align="right">Vulnerability:</td>
-		<td><input type="text" name="vulner" value="{$vulner}" maxlength="20"></td>
-	</tr>
-	<tr>
-		<td align="right">Product:</td>
-		<td><input type="text" name="product" value="{$product}" maxlength="20"></td>
-		<td align="right">Network:</td>
-		<td><select name="network">
-			<option value="">--Any--</option>
-			{foreach from=$network_list key=sid item=sname}
-			{if $sid eq $network }
-			<option value="{$sid}" selected>{$sname}</option>
-			{else}
-			<option value="{$sid}">{$sname}</option>
-			{/if}
-			{/foreach}
-			</select></td>
-		<td align="right">IP Address:</td>
-		<td><input type="text" name="ip" value="{$ip}" maxlength="20" maxlength="20"></td>
-		<td align="right">Port:</td>
-		<td><input type="text" name="port" value="{$port}" size="6" maxlength="6"></td>
-	</tr>
-	</table>
-	</td>
-</tr>
-<tr>
-	<td>
-	<table border="0" cellpadding="3" cellspacing="1">
-	<tr>
-		<td>Date Discovered</td>
-		<td>&nbsp;</td>
-		<td>From:</td>
-		<td><input type="text" name="startdate" size="12" maxlength="10" value="{$startdate}"></td>
-		<td><span onclick="javascript:show_calendar('finding.startdate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
-		<td>&nbsp;</td>
-		<td>To:</td>
-		<td><input type="text" name="enddate" size="12" maxlength="10" value="{$enddate}"></td>
-		<td><span onclick="javascript:show_calendar('finding.enddate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
-		<td>&nbsp;</td>
-		<td><input type="image" name="search" src="images/button_search.png" border="0" onclick="dosearch();"></td>
-		<!--<td><input type="submit" name="submit" value="Search"></td>-->
-	</tr>
-	</table>
-	</td>
-</tr>
-</table>
 
+<table width="95%" align="center" border="0" cellpadding="3" cellspacing="1" class="tipframe">
 
-<br>
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>Findings:</b> List</td>
-	<td align="right" valign="bottom">
-	<table border="0" cellpadding="0" cellspacing="0">
-	<tr>
-		<td>Total pages: {$totalpage} &nbsp;&nbsp;</td>
-		<td><span {if $pageno ne 1}style="cursor: pointer" onclick="pageskip(false);"{/if}><img src="images/button_prev.png" border="0"></span></td>
-		<td>&nbsp;Page:</td>
-		<td><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;</td>
-		<td><span {if $nextpage eq 1 && $pageno lt $totalpage}style="cursor: pointer" onclick="pageskip(true);"{/if}><img src="images/button_next.png" border="0"></span></td>
-	</tr>
-	</table>
-	</td>
+<tr id="row1">
+
+<td id="cell 1" align="right">System:</td>
+<td><select name="system">
+<option value="">--Any--</option>
+{foreach from=$system_list key=sid item=sname}
+{if $sid eq $system }
+<option value="{$sid}" selected>{$sname}</option>
+{else}
+<option value="{$sid}">{$sname}</option>
+{/if}
+{/foreach}
+</select></td>
+
+<td id="cell 2" align="right">Source:</td>
+<td>
+<select name="source">
+<option value="">--Any--</option>
+{foreach from=$source_list key=sid item=sname}
+{if $sid eq $source }
+<option value="{$sid}" selected>{$sname}</option>
+{else}
+<option value="{$sid}">{$sname}</option>
+{/if}
+{/foreach}
+</select>
+</td>
+       
+</tr>
+<tr id="row2">
+
+<td id="cell 1" align="right">Network:</td>
+<td><select name="network">
+<option value="">--Any--</option>
+{foreach from=$network_list key=sid item=sname}
+{if $sid eq $network }
+<option value="{$sid}" selected>{$sname}</option>
+{else}
+<option value="{$sid}">{$sname}</option>
+{/if}
+{/foreach}
+</select></td>
+
+<td id="cell 2" align="right">Status:</td>
+<td>
+<select name="status">
+<option value="">--Any--</option>
+<option value="OPEN"{if $status eq "OPEN"} selected{/if}>Open</option>
+<option value="REMEDIATION"{if $status eq "REMEDIATION"} selected{/if}>Remediation</option>
+<option value="CLOSED"{if $status eq "CLOSED"} selected{/if}>Closed</option>
+</select>
+</td>
+
+</tr>
+<tr id="row3">
+
+<td id="cell 1" align="right">IP Address:</td>
+<td><input type="text" name="ip" value="{$ip}" maxlength="20" maxlength="20"></td>
+
+<td id="cell 2" align="right">Port:</td>
+<td><input type="text" name="port" value="{$port}" size="6" maxlength="6"></td>
+
+</tr>
+<tr id="row4">
+
+<td id="cell 1" align="right">Vulnerability:</td>
+<td><input type="text" name="vulner" value="{$vulner}" maxlength="20"></td>
+
+<td id="cell 2" align="right">Product:</td>
+<td><input type="text" name="product" value="{$product}" maxlength="20"></td>
+
+</tr>
+<tr id="row5">
+
+<td>Date Discovered From: </td>
+<td><input type="text" name="startdate" size="12" maxlength="10" value="{$startdate}"><span onclick="javascript:show_calendar('finding.startdate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
+<td>To: </td>
+<td><input type="text" name="enddate" size="12" maxlength="10" value="{$enddate}"><span onclick="javascript:show_calendar('finding.enddate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
+
+</tr>
+<td id="row6">
+
+<td><input type="image" name="search" src="images/button_search.png" border="0" onclick="dosearch();"></td>
+
 </tr>
 </table>
 
 <br>
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<!-- Heading Block -->
+<table class="tbline"><tr><td id="tbheading">Finding List Summary</td></tr></table>
+<!-- End Heading Block -->
+
+<br>
+
+<!-- Pagination -->
+<table border="0" cellpadding="5" cellspacing="0">
 <tr>
-	<td>
+  <td>Total pages: {$totalpage} &nbsp;&nbsp;</td>
+  <td><span {if $pageno ne 1}style="cursor: pointer" onclick="pageskip(false);"{/if}><img src="images/button_prev.png" border="0"></span></td>
+  <td>&nbsp;Page:</td>
+  <td><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;</td>
+  <td><span {if $nextpage eq 1 && $pageno lt $totalpage}style="cursor: pointer" onclick="pageskip(true);"{/if}><img src="images/button_next.png" border="0"></span></td>
+</tr>
+</table>
+<!-- End Pagination -->
+
+<br>
+
+<!-- Table Buttons -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
+<tr>
+	<td align="left">
 	{if $del_right eq 1}
-	<!--<input type="button" name="all" value="Select All" onclick="selectall(5, true);">&nbsp;
-	<input type="button" name="none" value="Select None" onclick="selectall(5, false);">-->
 	<span style="cursor: pointer"><img src="images/button_select_all.png" border="0" onclick="selectall('finding', 'fid_', true);"></span>&nbsp;
 	<span style="cursor: pointer"><img src="images/button_select_none.png" border="0" onclick="selectall('finding', 'fid_', false);"></span>
 	{/if}
@@ -217,17 +219,15 @@ function findingdetail(fid, func) {
 	
 	<td align="right">
 	{if $del_right eq 1}
-	<!--<input type="submit" name="submit" value="Consolidate">&nbsp;
-	<input type="submit" name="submit" value="Delete">-->
-	<!--<input type="image" name="consolodate" src="images/button_consolidate.png" border="0">&nbsp;-->
 	<span style="cursor: pointer"><img src="images/button_delete.png" border="0" onclick="document.finding.sbt.value='delete'; return deleteconfirm('finding','fid_','finding');"></span>
 	{/if}
 	</td>
 </tr>
 </table>
+<!-- End Table Buttons -->
 
-
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<!-- Finding Search Results --> 
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 <tr align="center">
 	<th>&nbsp;</td>
 	<th nowrap>ID <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('id', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('id', 1)"></th>
@@ -252,7 +252,6 @@ function findingdetail(fid, func) {
 	<th nowrap>View</td>
 	{/if}
 </tr>
-
 {foreach key=fname item=fobj from=$filter_data}
 <tr>
 	<td align="center" class="tdc">
@@ -287,32 +286,12 @@ function findingdetail(fid, func) {
 </tr>
 {/foreach}
 </table>
+<!-- End Finding Search Results -->
 
-<table width="100%" border="0" cellpadding="3" cellspacing="1">
-<tr>
-	<td>
-	{if $del_right eq 1}
-	<!--delete right-->
-	<span style="cursor: pointer"><img src="images/button_select_all.png" border="0" onclick="selectall('finding', 'fid_', true);"></span>&nbsp;
-	<span style="cursor: pointer"><img src="images/button_select_none.png" border="0" onclick="selectall('finding', 'fid_', false);"></span>
-	{/if}
-	</td>
-	<td align="right">
-	{if $del_right eq 1}
-	<!--delete right-->
-	<!--<input type="submit" name="submit" value="Consolidate">&nbsp;
-	<input type="submit" name="submit" value="Delete">-->
-	<!--<input type="image" name="consolidate" src="images/button_consolidate.png" border="0">&nbsp;-->
-	<span style="cursor: pointer"><img src="images/button_delete.png" border="0" onclick="document.finding.sbt.value='delete'; return deleteconfirm('finding','fid_','finding');"></span>
-	<!--<input type="image" name="delete" src="images/button_delete.png" border="0" onclick="document.finding.submit.value='Delete'; document.finding.submit();">-->
-	{/if}
-	</td>
-</tr>
-</table>
 </form>
 
 {else}
-<p>No right do your request.</p>
+<p>You do not have sufficient rights to complete the request.</p>
 {/if}
 <p>&nbsp;</p>
 

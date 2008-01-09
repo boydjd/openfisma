@@ -1,24 +1,15 @@
-
 {include file="header.tpl" title="Firstlight" name="Finding Detail"}
 
-{literal}
-<script language="javascript">
-<!--
-function go(step) {
-	document.finding.act.value = step;
-	document.finding.submit();
-}
--->
-</script>
-{/literal}
+<!-- Heading Block -->
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!--
+<table width="80%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbline">
 <tr>
 	<td valign="bottom"><b>Finding:</b> Detail</td>
 	<td align="right" valign="bottom">{$now}</td>
 </tr>
 </table>
-
+-->
 <br>
 
 {if $act eq 'view' or $act eq 'edit'}

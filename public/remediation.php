@@ -71,7 +71,7 @@ if($view_right || $del_right || $edit_right)
 
 	//added by chang  row_no
 	if (!isset($_POST['row_no'])) 
-		$row_no = 20 ;
+		$row_no = 100 ;
 	else 
 		$row_no = $_POST['row_no'] ;
 	$smarty->assign('row_no', $row_no ); 

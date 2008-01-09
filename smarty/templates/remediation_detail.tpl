@@ -29,18 +29,19 @@ function go(step) {
 <!-- ----------------------------------------------------------------------- -->
 
 
-<!-- FINDING DETAIL LINE -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><img src="images/contract.gif" class="expend_btn" /><b>Finding:</b> Detail</td>
-	<td align="right" valign="bottom">{$now}</td>
-</tr>
+<!-- Heading Block -->
+<table class="tbline">        
+<tr>     
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Finding Detail</td>
+<td id="tbtime">{$now}</td>
+</tr>    
 </table>
+<!-- End Heading Block -->
 
 <br>
 
 <!-- FINDING DETAIL TABLE -->
-<table border="0" cellpadding="3" cellspacing="1" width="100%%" class="tipframe">
+<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
 
 	<!-- finding and asset row -->
 	<tr>
@@ -48,16 +49,15 @@ function go(step) {
 	    <!-- finding information -->
 	    <td width="50%" valign="top">
 
-			<!-- FINDING TABLE -->
-		    <table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
-
-    			<th align="left" colspan="2">Finding Information - #{$finding.finding_id}</th>
-		    	<tr><td><b>Finding Source:</b> ({$finding.source_nickname}) {$finding.source_name}</td></tr>
-		    	<tr><td><b>Finding Status:</b> {$finding.finding_status}</td></tr>
-		    	<tr><td><b>Finding Date:</b> {$finding.finding_date_created}</td></tr>
-			    <tr><td><b>Scan Date:</b> {$finding.finding_date_discovered}</td></tr>
-
-	    	</table> <!-- FINDING TABLE -->
+		<!-- FINDING TABLE -->
+		<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+    		<th align="left" colspan="2">Finding Information - #{$finding.finding_id}</th>
+		<tr><td><b>Finding Source:</b> ({$finding.source_nickname}) {$finding.source_name}</td></tr>
+		<tr><td><b>Finding Status:</b> {$finding.finding_status}</td></tr>
+		<tr><td><b>Finding Date:</b> {$finding.finding_date_created}</td></tr>
+	        <tr><td><b>Scan Date:</b> {$finding.finding_date_discovered}</td></tr>
+	    	</table> 
+		<!-- FINDING TABLE -->
 
 	    </td>
 
@@ -65,33 +65,18 @@ function go(step) {
     	<td width="50%" valign="top">
 
 		<!-- ASSET TABLE -->
-	    <table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+	    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
 
 	    	<th align="left" colspan="2">Asset Information</th>
-		    <tr><td><b>Asset Owner:</b> ({$finding.system_nickname}) {$finding.system_name}</td></tr>
-
-
-		    <tr>
-
-				<td><b>Asset Name:</b> 
-
-					{* RESTRICT VIEW BASED ON ROLE *}
+		<tr><td><b>Asset Owner:</b> ({$finding.system_nickname}) {$finding.system_name}</td></tr>
+		<tr><td><b>Asset Name:</b> {* RESTRICT VIEW BASED ON ROLE *}
 					{if $view_asset_name eq '1'}
-
-						{if $finding.asset_name eq "NULL"}<i>(none given)</i>{else}{$finding.asset_name}{/if}
-
-					{else}
-
-						<i>(restricted)</i>
-
-					{/if}
-				</td>
-
-			</tr>
+					{if $finding.asset_name eq "NULL"}<i>(none given)</i>
+					{else}{$finding.asset_name}{/if}
+					{else}<i>(restricted)</i>{/if}</td></tr>
 
 
-			<tr>
-				<td><b>Known Address(es):</b>
+		<tr><td><b>Known Address(es):</b>
 
 				{* RESTRICT VIEW BASED ON ROLE *}
 				{if $view_asset_addresses eq '1'}
@@ -153,15 +138,20 @@ function go(step) {
 <!-- ------------------------------------------------------------------------ -->
 
 <!-- VULNERABILITY DETAIL LINE -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-	<tr><td valign="bottom"><img src="images/contract.gif" class="expend_btn" /><b>Vulnerability:</b> Detail</td></tr>
+
+<!-- Heading Block -->
+<table class="tbline">
+<tr>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Vulnerability Detail</td>
+</tr>
 </table>
+<!-- End Heading Block -->
 
 <br>
 
 
 <!-- VULNERABILITY DETAIL TABLE -->
-<table border="0" cellpadding="3" cellspacing="1" width="100%%" class="tipframe">
+<table border="0" cellpadding="3" cellspacing="1" width="95%" align="center" class="tipframe">
 
 	<th align='left'>Vulnerability Information</th>
 
@@ -221,15 +211,20 @@ function go(step) {
 <!-- ------------------------------------------------------------------------ -->
 
 <!-- REMEDIATION DETAIL LINE -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-	<tr><td valign="bottom"><img src="images/contract.gif" class="expend_btn" /><b>Remediation:</b> Detail</td></tr>
+
+<!-- Heading Block -->
+<table class="tbline">
+<tr>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Remediation Detail</td>
+</tr>
 </table>
+<!-- End Heading Block -->
 
 <br>
 
 
 <!-- REMEDIATION TABLE -->
-<table border="0" cellpadding="3" cellspacing="1" width="100%%" class="tipframe">
+<table border="0" cellpadding="3" cellspacing="1" width="95%" align="center" class="tipframe">
 
    	<th align="left" colspan='2'>Remediation Information - #{$remediation_id}</th>
 
@@ -1141,10 +1136,15 @@ function go(step) {
 {if $view_evidence eq '1'}
 {if $remediation_status neq 'OPEN'}
 
-	<!-- EVIDENCE LINE -->
-	<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-		<tr><td valign="bottom"><img src="images/contract.gif" class="expend_btn" /><b>Evidence:</b> Detail</td></tr>
-	</table>
+<!-- EVIDENCE LINE -->
+
+<!-- Heading Block -->
+<table class="tbline">
+<tr>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Evidence Detail</td>
+</tr>
+</table>
+<!-- End Heading Block -->
 
 	<br>
 
@@ -1413,9 +1413,14 @@ function go(step) {
 {if $view_comments eq '1'}
 
 	<!-- COMMENT LINE -->
-	<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-		<tr><td valign="bottom"><img src="images/contract.gif" class="expend_btn" /><b>Log:</b> Detail</td></tr>
-	</table>
+
+<!-- Heading Block -->
+<table class="tbline">
+<tr>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Finding Audit Log</td>
+</tr>
+</table>
+<!-- End Heading Block -->
 
 	<br>
 

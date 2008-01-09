@@ -1,10 +1,4 @@
-<!-- ---------------------------------------------------------------------- -->
-<!-- FILE    : finding_upload.tpl                                           -->
-<!-- AUTHOR  : Brian Gant                                                   -->
-<!-- DATE    : 02/06/06                                                     -->
 <!-- PURPOSE : provides template for the finding_upload page                -->
-<!-- ---------------------------------------------------------------------- -->
-
 
 <!-- ---------------------------------------------------------------------- -->
 <!-- HEADER TEMPLATE INCLUDE                                                -->
@@ -63,17 +57,16 @@ function validate_input() {
 <!-- MAIN PAGE DISPLAY                                                      -->
 <!-- ---------------------------------------------------------------------- -->
 
-<!-- show the underlined header -->
-
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-	<tr>
-		<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>Upload Scan Results</b></td>
-		<td align="right" valign="bottom">{$now}</td>
-	</tr>
+<!-- Heading Block -->
+<table class="tbline">              
+<tr>
+ <td id="tbheading">Upload Scan Results</td>
+ <td id="tbtime">{$now}</td>
+</tr>        
 </table>
+<!-- End Heading Block -->
 
 <br>
-
 
 <!-- build our form -->
 
