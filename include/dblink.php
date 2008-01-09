@@ -8,7 +8,7 @@ $dbuser = (isset($DB_USER)) ? $DB_USER :  "ovms";
 $dbpass = (isset($DB_PASS)) ? $DB_PASS :  "ovms";
 $dbname = (isset($DB)) ? $DB :  "ovms";
 
-require_once(OVMS_INCLUDE_PATH . _S . "tablenames_def.php");
+require_once(OVMS_INCLUDE_PATH . DS . "tablenames_def.php");
 
 $db = new sql_db($dbhost, $dbuser, $dbpass, $dbname, false);
 if(!$db->db_connect_id)

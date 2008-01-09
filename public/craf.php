@@ -68,7 +68,7 @@ if(isset($rpdata['poam_id'])) {//which report,defalt is report 1.
 $rafObj = new Raf($db);
 $rafObj->setPoam_id($poam_id);
 
-include ( VENDER_TOOL_PATH . '/pdf/class.ezpdf.php');
+include ( OVMS_VENDER_PATH . '/pdf/class.ezpdf.php');
 class RAFpdf extends Cezpdf {
   /*
   ** Callback function to highlight one cell of text in a table

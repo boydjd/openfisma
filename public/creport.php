@@ -152,7 +152,7 @@ switch ($f) {
 
 	case "p"://pdf format
 	
-		include ( VENDER_TOOL_PATH . '/pdf/class.ezpdf.php');
+		include ( OVMS_VENDOR_PATH . '/pdf/class.ezpdf.php');
 
 		switch ($t) {
 
@@ -459,7 +459,7 @@ switch ($f) {
 
 	case "e"://excel format
 
-		require_once ('/usr/share/pear/Spreadsheet/Excel/Writer.php'); // need fix 
+		require_once ('Spreadsheet/Excel/Writer.php'); // need fix 
 
 		$workbook  = new Spreadsheet_Excel_Writer();
 		$workbook->setVersion(8); // fixes 255 char truncation issue

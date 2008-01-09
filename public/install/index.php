@@ -1,7 +1,7 @@
 <?php
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
-//error_reporting(E_ALL);
-//ini_set('display_error',1);
+
+define("DS", DIRECTORY_SEPARATOR);
 
 define('OVMS_INSTALL', 1);
 
@@ -12,8 +12,8 @@ define('OVMS_CONF_PATH',OVMS_ROOT_PATH.'/conf');
 define('OVMS_LIB_PATH',OVMS_ROOT_PATH.'/lib');
 define('OVMS_INCL_PATH',OVMS_ROOT_PATH.'/include');
 define('OVMS_SMARTY_PATH',OVMS_ROOT_PATH.'/smarty');
-define("OVMS_VENDER_PATH", OVMS_ROOT_PATH."/vendor");
-define("OVMS_PEAR", OVMS_VENDER_PATH."/Pear");
+define("OVMS_VENDOR_PATH", OVMS_ROOT_PATH."/vendor");
+define("LOCAL_PEAR_PATH", OVMS_VENDOR_PATH."/Pear");
 
 define('OVMS_DATABASE','schema.sql');
 define('_OKIMG',"<img src='img/yes.gif' width='6' height='12' border='0' alt='OK' /> ");
@@ -132,7 +132,8 @@ switch ($op){
             }
             $mysmarty = new Smarty();
             $signalofsmarty = true;
-            if(version_compare($mysmarty->_version,REQUEST_SMARTY_VERSION,"<")){
+            $version = $mysmarty->_version;
+            if(version_compare($version,REQUEST_SMARTY_VERSION,"<")){
                 $signalofsmarty = false;
                 throw new Exception($mysmarty->_version);
             }
@@ -144,27 +145,23 @@ switch ($op){
             $content .= _INST_SET_L8.$e->getMessage();
             $signal = false;
         }
+        ini_set('include_path', LOCAL_PEAR_PATH.PATH_SEPARATOR.ini_get('include_path'));
         try {
-            if(!include_once('OLE.php')){
-                include_once('/usr/local/lib/php/OLE.php');
-            }
+            @include_once('Spreadsheet/Excel/Writer.php');
+            $myspread = new Spreadsheet_Excel_Writer();
+            $content .= "<p>"._OKIMG._INST_SET_L12."</p>";
+        }catch(Exception $e){
+            $signal = false;
+            $content .= "<p>"._NGIMG._INST_SET_L13.$e->getMessage()."</p>";
+        }
+        try {
+            @include_once('OLE.php');
             $myole = new OLE();
             $content .= "<p>"._OKIMG._INST_SET_L11."</p>";
-            try {
-                if(!include('Spreadsheet/Excel/Writer.php')){
-                    include_once('/usr/local/lib/php/Spreadsheet/Excel/Writer.php');
-                }
-                $myspread = new Spreadsheet_Excel_Writer();
-                $content .= "<p>"._OKIMG._INST_SET_L12."</p>";
-            }catch(Exception $e){
-                $signal = false;
-                $content .= "<p>"._NGIMG._INST_SET_L13.$e->getMessage()."</p>";
-            }
         }catch(Exception $e){
             $signal = false;
             $content .= "<p>"._NGIMG._INST_SET_L14.$e->getMessage()."</p>";
         }
-
         $content .= "</div>";
         if($signal){
             $b_next = array('modcheck', _INST_DW_L9);

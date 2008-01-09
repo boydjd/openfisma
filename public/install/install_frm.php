@@ -8,28 +8,25 @@
 </head>
 <body style="margin: 0; padding: 0;">
 <form action='index.php' method='post'>
-<table align="center" width="778"  cellpadding="0" cellspacing="0" background="img/bg_table.gif" background-color="red" >
-  <tr>
-    <td width="18" ><img src="img/hbar_left.gif" width="100%" height="23" alt="" /></td>
-    <td  background="img/hbar_middle.gif">&nbsp;</td>
-    <td width="5"  background="img/hbar_middle.gif">&nbsp;</td>
-    <td width="6" ><img src="img/hbar_right.gif" width="100%" height="23" alt="" /></td>
+<table  align="center" width="778"  cellpadding="0" cellspacing="0" background="img/bg_table.gif" >
+  <tr height=23>
+    <td width="180"><img src="img/hbar_left.gif" width="100%" height="23" alt="" /></td>
+    <td width="448" background="img/hbar_middle.gif">&nbsp;</td>
+    <td width="150"><img src="img/hbar_right.gif" width="100%" height="23" alt="" /></td>
   </tr>
-  <tr>
-    <td height="90" bgcolor="#FFFFFF" >&nbsp;</td>
-    <td width="747" bgcolor="#FFFFFF"><img src="img/OpenFISMA_203x73.jpg" alt="OpenFISMA Logo" width="203" height="73" /></td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
-    <td  bgcolor="#FFFFFF" >&nbsp;</td>
+  <tr height=80>
+    <td width="180" bgcolor="#FFFFFF" align=right><a href="index.php"><img src="img/OpenFISMA.gif" alt="OpenFISMA Logo" /></a></td>
+    <td width="448" bgcolor="#FFFFFF" >&nbsp;</td>
+    <td width="150" bgcolor="#FFFFFF" >&nbsp;</td>
   </tr>
-  <tr>
-    <td ><img src="img/hbar_left.gif" width="100%" height="23" alt="" /></td>
-    <td  background="img/hbar_middle.gif">&nbsp;</td>
-    <td  background="img/hbar_middle.gif">&nbsp;</td>
-    <td ><img src="img/hbar_right.gif" width="100%" height="23" alt="" /></td>
+  <tr height=23>
+    <td width="180"><img src="img/hbar_left.gif" width="100%" height="23" alt="" /></td>
+    <td width="448" background="img/hbar_middle.gif">&nbsp;</td>
+    <td width="150"><img src="img/hbar_right.gif" width="100%" height="23" alt="" /></td>
   </tr>
 </table>
 
-<table width="778" align="center" cellspacing="0" cellpadding="0" background="img/bg_table.gif">
+<table  width="778" align="center" cellspacing="0" cellpadding="0" background="img/bg_table.gif">
   <tr>
     <td width='5%'>&nbsp;</td>
     <td colspan="3"><?php if(!empty($title)) echo '<h4 style="margin-top: 10px; margin-bottom: 5px; padding: 10px;">'.$title.'</h4>';
