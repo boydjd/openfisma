@@ -7,12 +7,14 @@ define('OVMS_INSTALL', 1);
 define('OVMS_INSTALL_PATH',dirname(__FILE__));
 define('OVMS_ROOT_PATH',realpath(dirname(dirname(OVMS_INSTALL_PATH))));
 define('OVMS_WEB_PATH',OVMS_ROOT_PATH.DS.'public');
+define("OVMS_VENDOR_PATH", OVMS_ROOT_PATH. DS ."vendor");
+define("PDF_FONT_FOLDER", OVMS_VENDOR_PATH. DS ."pdf". DS ."fonts");
+define("OVMS_INJECT_PATH", OVMS_ROOT_PATH. DS ."inject");
+define("OVMS_INCLUDE_PATH", OVMS_ROOT_PATH. DS ."include");
+define('OVMS_LOCAL_PEAR', OVMS_VENDOR_PATH .  DS  . 'Pear');
+
 define('OVMS_CONF_PATH',OVMS_ROOT_PATH.DS.'conf');
-define('OVMS_LIB_PATH',OVMS_ROOT_PATH.DS.'lib');
-define('OVMS_INCL_PATH',OVMS_ROOT_PATH.DS.'include');
 define('OVMS_SMARTY_PATH',OVMS_ROOT_PATH.DS.'smarty');
-define("OVMS_VENDOR_PATH", OVMS_ROOT_PATH.DS."vendor");
-define("OVMS_LOCAL_PEAR", OVMS_VENDOR_PATH.DS."Pear");
 
 define('OVMS_DATABASE','schema.sql');
 define('_OKIMG',"<img src='img/yes.gif' width='6' height='12' border='0' alt='OK' /> ");
@@ -22,7 +24,7 @@ define('REQUEST_PHP_VERSION','5');
 
 ini_set('include_path',ini_get('include_path').PATH_SEPARATOR.OVMS_LOCAL_PEAR);
 
-include_once(OVMS_INCL_PATH.'/classload.php');
+include_once(OVMS_INCLUDE_PATH.'/classload.php');
 require_once(OVMS_INSTALL_PATH.'/fun.lib.php');
 
 $title='';
@@ -143,7 +145,7 @@ switch ($op){
             $content .= _INST_SET_L8.$e->getMessage();
             $signal = false;
         }
-        ini_set('include_path', LOCAL_PEAR_PATH.PATH_SEPARATOR.ini_get('include_path'));
+        ini_set('include_path', OVMS_LOCAL_PEAR.PATH_SEPARATOR.ini_get('include_path'));
         try {
             @include_once('Spreadsheet/Excel/Writer.php');
             $myspread = new Spreadsheet_Excel_Writer();
@@ -216,7 +218,7 @@ switch ($op){
         unset($config);
         $sm = new setting_manager('false');
         if(!$isTheFirstTime){
-            include(OVMS_WEB_PATH . DS . 'ovms.ini.php');
+            @include(OVMS_WEB_PATH . DS . 'ovms.ini.php');
             $sm->readConstant();
         }
         if(isset($_POST['is_second_inst'])&& $_POST['is_second_inst']==true ){
@@ -232,7 +234,7 @@ switch ($op){
 
     case "dbconfirm":
         if($install_times == 'second'){
-            require_once(OVMS_INCL_PATH . '/sws.adodb.php');
+            require_once(OVMS_INCLUDE_PATH . '/sws.adodb.php');
             $title = _INST_CI_L2;
         }else{
             $title = _INST_CI_L1;
@@ -317,7 +319,7 @@ switch ($op){
     case "checkDB":
         $title = _INST_ID_L1;
         include_once(OVMS_WEB_PATH. DS. 'ovms.ini.php');
-        include_once(OVMS_INCL_PATH. DS. 'sws.adodb.php');
+        include_once(OVMS_INCLUDE_PATH. DS. 'sws.adodb.php');
         $content = "<div style=\"text-align:left;padding-left:130px;\">";
         $dbname ='';
         $name_c ='';
