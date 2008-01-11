@@ -136,29 +136,33 @@ function format_data($dataString){
 function import_data($db,$dataFile){
     $tmp = "";
     foreach($dataFile as $elem){
-        try{
-            if($handle = fopen($elem,'r')) {
-                $dumpline = '';
-                while(!feof($handle)&& substr($dumpline,-1)!= "\n"){
-                    $dumpline = fgets($handle,'4096');
-                    $dumpline = ereg_replace("\r\n$","\n",$dumpline);
-                    $dumpline = ereg_replace("\r$","\n",$dumpline);
-                    $dumpline = trim($dumpline);
-                    $execute = format_data($dumpline);
-                    if($execute['opt']=='incomplete'){
-                        $tmp .= $execute['sql'];
-                    }else{
-                        $db->query($tmp.$execute['sql']);
-                        $tmp = '';
-                    }
+        $ret = true;
+        if($handle = fopen($elem,'r')) {
+            $dumpline = '';
+            while(!feof($handle)&& substr($dumpline,-1)!= "\n"){
+                $dumpline = fgets($handle,'4096');
+                $dumpline = ereg_replace("\r\n$","\n",$dumpline);
+                $dumpline = ereg_replace("\r$","\n",$dumpline);
+                $dumpline = trim($dumpline);
+                $execute = format_data($dumpline);
+                if($execute['opt']=='incomplete'){
+                    $tmp .= $execute['sql'];
+                }else{
+                    $ret = $db->query($tmp.$execute['sql']);
+                    $tmp = '';
+                }
+                if( !$ret ) {
+                    break;
                 }
             }
-        }catch(Exception $e){
-            echo $e->getMessage();
-            return false;
+        }else{
+            $ret = false;
+        }
+        if(!$ret){
+            return $ret;
         }
      }
-    return  true; 
+     return  true; 
 }
 
 ?>
