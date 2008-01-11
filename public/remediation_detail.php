@@ -441,12 +441,14 @@ $query = "SELECT ".
 $results      = $db->sql_query($query);
 $comments     = $db->sql_fetchrowset($results);
 $comments_est = $comments_sso = array();
-foreach ($comments as &$comment) {
-	$comment['comment_topic'] = stripslashes($comment['comment_topic']);
-	$comment['comment_body']  = nl2br($comment['comment_body']);
-	$comment['comment_log']  = nl2br($comment['comment_log']);
-	if ($comment['comment_type'] == 'EST') $comments_est[] = $comment;
-	if ($comment['comment_type'] == 'SSO') $comments_sso[] = $comment;
+if (count($comments) > 0){
+    foreach ($comments as &$comment) {
+    	$comment['comment_topic'] = stripslashes($comment['comment_topic']);
+    	$comment['comment_body']  = nl2br($comment['comment_body']);
+    	$comment['comment_log']  = nl2br($comment['comment_log']);
+    	if ($comment['comment_type'] == 'EST') $comments_est[] = $comment;
+    	if ($comment['comment_type'] == 'SSO') $comments_sso[] = $comment;
+    }
 }
 $smarty->assign('comments_est', $comments_est);
 $smarty->assign('comments_sso', $comments_sso);
@@ -496,10 +498,11 @@ $smarty->assign('root_comment', $root_comment['comment_id']);
 // ALL FIELDS OK?
 //
 $r = $remediation;
-$r_fields = array($r['poam_threat_source'], $r['poam_threat_justification'], 
+$r_fields_null = array($r['poam_threat_source'], $r['poam_threat_justification'], 
 				  $r['poam_cmeasure'], $r['poam_cmeasure_justification'], $r['poam_action_suggested'], 
 				  $r['poam_action_planned'], $r['poam_action_resources']);
-$is_completed = in_array(null, $r_fields)?'no':'yes';
+$r_fields_none = array($r['poam_cmeasure_effectiveness'], $r['poam_threat_level']);
+$is_completed = (in_array(null, $r_fields_null) || in_array('NONE', $r_fields_none))?'no':'yes';
 $smarty->assign('is_completed', $is_completed);
 
 /*******************************************************************************

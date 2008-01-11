@@ -295,23 +295,21 @@
 
 
 		{* COUNTERMEASURE EFFECTIVENESS, THREAT LEVEL *}
-		{if $target eq 'cmeasure_effectiveness' ||
-			$target eq 'threat_level'                    }
-
-			         <select name='poam_cmeasure_effectiveness'>
-						{if $current_value neq 'LOW'}
-							<option value='LOW' {if $new_value eq 'LOW'}selected{/if} label="LOW">LOW</option>
-						{/if}
-
-						{if $current_value neq 'MODERATE' }
-							<option value='MODERATE'  {if $new_value eq 'MODERTE' }selected{/if} label="MODERATE">MODERATE</option>
-						{/if}
-
-						{if $current_value neq 'HIGH' }
-							<option value='HIGH'  {if $new_value eq 'HIGH' }selected{/if} label="HIGH">HIGH</option>
-						{/if}
-					</select>
-
+		{if $target eq 'cmeasure_effectiveness' }
+	         <select name='poam_cmeasure_effectiveness'>
+					<option value='NONE' label="NONE">NONE</option>
+					<option value='LOW' label="LOW">LOW</option>
+					<option value='MODERATE' label="MODERATE">MODERATE</option>
+					<option value='HIGH' label="HIGH">HIGH</option>
+			</select>
+		{/if}
+		{if $target eq 'threat_level' }
+	         <select name='poam_threat_level'>
+					<option value='NONE' label="NONE">NONE</option>
+					<option value='LOW' label="LOW">LOW</option>
+					<option value='MODERATE' label="MODERATE">MODERATE</option>
+					<option value='HIGH' label="HIGH">HIGH</option>
+			</select>
 		{/if}
 
 

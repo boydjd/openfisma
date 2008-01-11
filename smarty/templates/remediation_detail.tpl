@@ -384,7 +384,7 @@ function go(step) {
     			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
     			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 					<b>Previous Audits: </b>
-
+<!--
 					{* RESTRICT BASED ON STATUS AND ROLE *}
 					{if $modify_previous_audits eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
@@ -396,7 +396,7 @@ function go(step) {
 					{/if}
 					{* /if *}
 					{/if}
-
+-->
 					<span>{$remediation.poam_previous_audits}</span>
 				</form>
 				</td>
@@ -447,7 +447,7 @@ function go(step) {
 
 					
 					<b>Number:</b>
-					{if $modify_previous_audits eq '1'}
+					{if $modify_blscr eq '1'}
 					{if $remediation_status eq 'OPEN'}
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
@@ -1054,6 +1054,11 @@ function go(step) {
 
 			<th align='left'>Approval</th>
 			<tr>
+    			<td colspan="2">
+                    <i>(All fileds above must be set and saved to make SSO approval field editable.)</i>
+    			</td>
+			</tr>
+			<tr>
 
 				<td colspan='2'>
 			<form action='remediation_modify.php' method='POST'>
@@ -1093,7 +1098,6 @@ function go(step) {
 
 					<span>{$remediation.poam_action_status}</span>
 			</form>
-
 				</td>
 
 			</tr>

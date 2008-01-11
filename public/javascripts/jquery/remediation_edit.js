@@ -92,7 +92,13 @@ $(document).ready(function(){
         }
         
         // comments not needed
-        if (!aQuery.poam_action_status && !estDateChanged && !evArray.length){
+        /**
+            Comments only needed when :
+                1. SSO denied.
+                2. EST date changed.
+            If evidence provided, a popup window will also appered.
+        **/
+        if (('DENIED'!=aQuery.poam_action_status) && !estDateChanged && !evArray.length){
         	aQuery.poam_id = $('input[name="remediation_id"]').val();
 		    $.post('remediation_save.php', aQuery, function(r,t,x){
                 eval(r); // to redirect bowser by JS
@@ -169,6 +175,7 @@ $(document).ready(function(){
             var input_obj = input_JQ_obj.get(0); // DOM object
             var new_value = null;
             var hasDatePicker = (input_JQ_obj.attr('className') == 'date_picker') ? true : false;
+            var reg_ymd = /\d{4}-\d{2}-\d{2}/;
             
             if (hasDatePicker){
                 input_JQ_obj.datepicker({ 
@@ -183,7 +190,7 @@ $(document).ready(function(){
             
             input_JQ_obj.css("border","1px dotted red").focus().blur(function(){
                 // if the input has a date picker, do sth specially.
-                if($('#datepicker_div:visible').size() > 0){
+                if ($('#datepicker_div:visible').size() > 0){
                     return;
                 }
                 
@@ -195,7 +202,13 @@ $(document).ready(function(){
                     new_value = input_JQ_obj.val();
                 }
                 
-                if($.trim(new_value) != $.trim(old_value)){
+                // if user provide a wrong format date, we will force it back.
+                if (hasDatePicker && !reg_ymd.exec(new_value)) {
+                    alert('You must choose or provide a date with style yyyy-mm-dd here.');
+                    new_value = old_value;
+                }
+                
+                if ($.trim(new_value) != $.trim(old_value)){
                     box.html(new_value).css('color','red').prev('input').show(); // hight light if modified
                     // bulid query and log string
                     if (input_obj.className == 'ev'){
