@@ -258,7 +258,7 @@
                     
 	              <select name='poam_blscr'>
 
-						<option value='NULL'{if $new_value eq 'NULL'}selected{/if} label="None">None</option>
+						<option value=''{if $new_value eq 'NULL'}selected{/if} label="None">None</option>
 
 						{section name=row loop=$all_values}
 

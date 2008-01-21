@@ -83,14 +83,21 @@ $(document).ready(function(){
         return false;
     });
     
-    $(":image[src$='button_submit.png']").click(
+    $(":image[@value='Save or Submit']").click(
     function(){
         //return true;
         if (aLog.length < 1){
             alert('You have no changes to submit.');
             return false;
         }
-        
+        for (prop in aQuery)
+        {
+            if ((prop!='comment_type') && (aQuery[prop]=='' || aQuery[prop]=='NONE')){
+                var field = prop.substr(5).replace('_',' ');
+                alert('You cannot change '+field+' to blank.');
+                return false;
+            }
+        }
         // comments not needed
         /**
             Comments only needed when :
@@ -197,6 +204,10 @@ $(document).ready(function(){
                 // new_value is the new display value
                 if (input_obj.nodeName == 'SELECT'){
                     new_value = input_obj.options[input_obj.selectedIndex].label;
+                    // if sso approve or deny action, change save image to submit image
+                    if (input_obj.name == 'poam_action_status'){
+                        $(":image[@value='Save or Submit']").attr('src','images/button_submit.png');
+                    }
                 }
                 else{
                     new_value = input_JQ_obj.val();

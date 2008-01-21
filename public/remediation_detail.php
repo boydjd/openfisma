@@ -500,7 +500,7 @@ $smarty->assign('root_comment', $root_comment['comment_id']);
 $r = $remediation;
 $r_fields_null = array($r['poam_threat_source'], $r['poam_threat_justification'], 
 				  $r['poam_cmeasure'], $r['poam_cmeasure_justification'], $r['poam_action_suggested'], 
-				  $r['poam_action_planned'], $r['poam_action_resources']);
+				  $r['poam_action_planned'], $r['poam_action_resources'], $r['poam_blscr']);
 $r_fields_none = array($r['poam_cmeasure_effectiveness'], $r['poam_threat_level']);
 $is_completed = (in_array(null, $r_fields_null) || in_array('NONE', $r_fields_none))?'no':'yes';
 $smarty->assign('is_completed', $is_completed);

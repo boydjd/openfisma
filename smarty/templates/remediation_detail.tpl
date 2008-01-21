@@ -419,7 +419,7 @@ function go(step) {
        		<th align="left" >Baseline Security Requirements</th>
 
 			{if $blscr.blscr_number eq ""}<tr><td><i>(none given)</i></td></tr>
-			{else}
+			{/if}
 
 			{* UPDATE BUTTON *}
 		        <tr>
@@ -448,10 +448,10 @@ function go(step) {
 					
 					<b>Number:</b>
 					{if $modify_blscr eq '1'}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
-					{/if}
+					{* /if *}
 					{/if}
 					<span> {$blscr.blscr_number}</span>
 			     </form>
@@ -485,7 +485,7 @@ function go(step) {
 					</td>
 				</tr>
 
-			{/if}
+			{* /if *}
 
 
 			{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
@@ -546,12 +546,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_threat_level eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -592,12 +592,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_threat_source eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -637,12 +637,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_threat_justification eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -700,12 +700,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_cmeasure_effectiveness eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -746,12 +746,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_cmeasure eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -791,12 +791,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_cmeasure_justification eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -853,12 +853,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_mitigation_recommendation eq '1'}
 					{* if $remediation_type   eq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -950,12 +950,12 @@ function go(step) {
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 					{if $modify_mitigation_resources eq '1'}
 					{* if $remediation_type  neq 'NONE' *}
-					{if $remediation_status eq 'OPEN'}
+					{* if $remediation_status eq 'OPEN' *}
 
 						<input type='hidden' name='form_action' value='Update'>
 						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-					{/if}
+					{* /if *}
 					{* /if *}
 					{/if}
 
@@ -1132,6 +1132,43 @@ function go(step) {
 </table> <!-- REMEDIATION TABLE -->
 
 <br>
+
+<table>
+<tr><td>
+{* RETURN TO THE SUMAMRY LIST *}
+<form action='remediation_modify.php' method='POST'>
+						<input type='hidden' name='action'         value='add'>
+						<input type='hidden' name='validated'      value='no'>
+						<input type='hidden' name='approved'       value='no'>
+    <input type='hidden' name='target'         value='save_poam'>
+    <input type='hidden' name='remediation_id' value='{$remediation_id}'>
+    <input type='hidden' name='form_action' value=''>
+    <input type='image' src='images/button_save.png' value='Save or Submit'>
+</form>
+{* END COMMENT RESTRICTIONS *}
+</td>
+<td>
+{* RETURN TO THE SUMAMRY LIST *}
+<form action='remediation.php' method='POST'>
+
+			<input type='hidden' name='filter_source'          value='{$filter_source}'>
+			<input type='hidden' name='filter_system'          value='{$filter_system}'>
+			<input type='hidden' name='filter_status'          value='{$filter_status}'>
+			<input type='hidden' name='filter_type'            value='{$filter_type}'>
+
+			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
+			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
+			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
+			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
+
+			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
+			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
+
+<input type='hidden' name='form_action' value='Return to Summary List'>
+<input type='image' src='images/button_back.png' name='form_action' value='Return to Summary List'>
+</form>
+</td></tr>
+</table>
 
 <!-- ------------------------------------------------------------------------ -->
 
@@ -1491,42 +1528,7 @@ function go(step) {
 
 {/if}
 
-<table>
-<tr><td>
-{* RETURN TO THE SUMAMRY LIST *}
-<form action='remediation_modify.php' method='POST'>
-						<input type='hidden' name='action'         value='add'>
-						<input type='hidden' name='validated'      value='no'>
-						<input type='hidden' name='approved'       value='no'>
-    <input type='hidden' name='target'         value='save_poam'>
-    <input type='hidden' name='remediation_id' value='{$remediation_id}'>
-    <input type='hidden' name='form_action' value=''>
-    <input type='image' src='images/button_submit.png' value='Save Changes'>
-</form>
-{* END COMMENT RESTRICTIONS *}
-</td>
-<td>
-{* RETURN TO THE SUMAMRY LIST *}
-<form action='remediation.php' method='POST'>
 
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
-<input type='hidden' name='form_action' value='Return to Summary List'>
-<input type='image' src='images/button_back.png' name='form_action' value='Return to Summary List'>
-</form>
-</td></tr>
-</table>
 <!-- ----------------------------------------------------------------------- -->
 <!-- FOOTER INCLUDE                                                          -->
 <!-- ----------------------------------------------------------------------- -->
