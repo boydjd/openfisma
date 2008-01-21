@@ -438,7 +438,8 @@ CREATE TABLE `VULNERABILITIES` (
   `vuln_range_local` tinyint(1) NOT NULL default '0',
   `vuln_range_remote` tinyint(1) NOT NULL default '0',
   `vuln_range_user` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`vuln_seq`,`vuln_type`)
+  PRIMARY KEY  (`vuln_seq`,`vuln_type`),
+  FULLTEXT KEY `vuln_desc_primary` (`vuln_desc_primary`,`vuln_desc_secondary`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
