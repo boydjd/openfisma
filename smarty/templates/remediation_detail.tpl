@@ -32,7 +32,7 @@ function go(step) {
 <!-- Heading Block -->
 <table class="tbline">        
 <tr>     
-<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Finding Detail</td>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" /><b>Finding Detail</b></td>
 <td id="tbtime">{$now}</td>
 </tr>    
 </table>
@@ -142,7 +142,7 @@ function go(step) {
 <!-- Heading Block -->
 <table class="tbline">
 <tr>
-<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Vulnerability Detail</td>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" /><b>Vulnerability Detail</b></td>
 </tr>
 </table>
 <!-- End Heading Block -->
@@ -215,7 +215,7 @@ function go(step) {
 <!-- Heading Block -->
 <table class="tbline">
 <tr>
-<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Remediation Detail</td>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" /><b>Remediation Detail</b></td>
 </tr>
 </table>
 <!-- End Heading Block -->
@@ -356,7 +356,7 @@ function go(step) {
 	
 		{* RIGHT HAND TABLE *}
 		<td width='50%' valign='top'>
-		<table border="0" cellpadding="3" cellspacing="1" width="100%%" class="tipframe">
+		<table border="0" cellpadding="3" cellspacing="1" width="100%" class="tipframe">
 
 			<tr><td><b>Created By: </b> {$remediation.created_by} ({$remediation.poam_date_created})</td></tr>
 			<tr><td><b>Modified By: </b> {$remediation.modified_by} ({$remediation.poam_date_modified})</td></tr>
@@ -1050,7 +1050,7 @@ function go(step) {
  	<tr>
 
 		<td colspan='2'>
-		<table border="0" cellpadding="3" cellspacing="1" width="100%%" class="tipframe">
+		<table border="0" cellpadding="3" cellspacing="1" width="100%" class="tipframe">
 
 			<th align='left'>Approval</th>
 			<tr>
@@ -1182,7 +1182,7 @@ function go(step) {
 <!-- Heading Block -->
 <table class="tbline">
 <tr>
-<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Evidence Detail</td>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" /><b>Evidence Detail</b></td>
 </tr>
 </table>
 <!-- End Heading Block -->
@@ -1190,7 +1190,7 @@ function go(step) {
 	<br>
 
 	<!-- EVIDENCE TABLE -->
-	<table border="0" cellpadding="3" cellspacing="1" width="100%%" class="tipframe">
+	<table border="0" cellpadding="3" cellspacing="1" width="95%" align="center" class="tipframe">
 
 		<th align='left'>Evidence Submissions <i>({$num_evidence} total)</i></th>
 	
@@ -1210,9 +1210,9 @@ function go(step) {
 				<td colspan='2' width='100%'>
 				<table border='0' cellpadding='3' cellspacing='1' class='tipframe' width='100%'>
 
-					<th align='left'>Submitted: {$all_evidence[row].ev_date_submitted} by {$all_evidence[row].submitted_by}</th>
+					<tr><th align='left' colspan="2">Submitted: {$all_evidence[row].ev_date_submitted} by {$all_evidence[row].submitted_by}</th></tr>
 
-					<tr><td><b>Evidence:</b> <!--a href='{$all_evidence[row].ev_submission}'>{$all_evidence[row].ev_submission}</a> <br-->
+					<tr colspan="2"><td><b>Evidence:</b> <!--a href='{$all_evidence[row].ev_submission}'>{$all_evidence[row].ev_submission}</a> <br-->
 						<a href="javascript:void(0)" onClick="window.open('{$all_evidence[row].ev_submission}', 'evidence_window', config='resizable=yes,menubar=no,scrollbars=yes')">{$all_evidence[row].ev_submission}</a>
 					</td></tr>
 
@@ -1458,7 +1458,7 @@ function go(step) {
 <!-- Heading Block -->
 <table class="tbline">
 <tr>
-<td id="tbheading"><img src="images/contract.gif" class="expend_btn" />Finding Audit Log</td>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" /><b>Finding Audit Log</b></td>
 </tr>
 </table>
 <!-- End Heading Block -->
@@ -1466,7 +1466,7 @@ function go(step) {
 	<br>
 
 	<!-- COMMENT TABLE -->
-	<table border="0" cellpadding="3" cellspacing="1" width="100%%" class="tipframe">
+	<table border="0" cellpadding="3" cellspacing="1" width="100%" class="tipframe">
 
 	   	<th align="left">Logs <i>({$num_logs} total)</i></th>
 

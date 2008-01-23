@@ -105,7 +105,7 @@ $(document).ready(function(){
                 2. EST date changed.
             If evidence provided, a popup window will also appered.
         **/
-        if (('DENIED'!=aQuery.poam_action_status) && !estDateChanged && !evArray.length){
+        if (('DENIED'!=aQuery.poam_action_status) && !estDateChanged && (typeof(evArray)!='object')){
         	aQuery.poam_id = $('input[name="remediation_id"]').val();
 		    $.post('remediation_save.php', aQuery, function(r,t,x){
                 eval(r); // to redirect bowser by JS
@@ -266,7 +266,7 @@ $(document).ready(function(){
         .parents('table.tbline').nextAll('table.tipframe:first').toggle();
     });
     
-    $("img.expend_btn + b:contains('Finding')").prev().click();
-    $("img.expend_btn + b:contains('Vulnerability')").prev().click();
-    $("img.expend_btn + b:contains('Log')").prev().click();
+//    $("img.expend_btn + b:contains('Finding Detail')").prev().click();
+//    $("img.expend_btn + b:contains('Vulnerability Detail')").prev().click();
+    $("img.expend_btn + b:contains('Finding Audit Log')").prev().click();
 });
