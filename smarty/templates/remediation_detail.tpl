@@ -244,18 +244,6 @@ function go(step) {
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
 
-    			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-    			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-    			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-    			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-    
-    			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-    			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-    			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-    			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-    
-    			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-    			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 					<b>Responsible System:</b> 
 
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
@@ -285,19 +273,7 @@ function go(step) {
     				<input type='hidden' name='action'         value='update'>
     				<input type='hidden' name='validated'      value='no'>
     				<input type='hidden' name='approved'       value='no'>
-    
-    			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-    			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-    			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-    			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-    
-    			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-    			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-    			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-    			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-    
-    			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-    			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
+
 					<b>Type:</b> 
 
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
@@ -371,18 +347,6 @@ function go(step) {
     				<input type='hidden' name='validated'      value='no'>
     				<input type='hidden' name='approved'       value='no'>
     
-    			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-    			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-    			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-    			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-    
-    			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-    			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-    			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-    			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-    
-    			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-    			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 					<b>Previous Audits: </b>
 <!--
 					{* RESTRICT BASED ON STATUS AND ROLE *}
@@ -431,20 +395,6 @@ function go(step) {
 				<input type='hidden' name='action'         value='update'>
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
-
-				<input type='hidden' name='filter_source'          value='{$filter_source}'>
-				<input type='hidden' name='filter_system'          value='{$filter_system}'>
-				<input type='hidden' name='filter_status'          value='{$filter_status}'>
-				<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-				<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-				<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-				<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-				<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-				<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-				<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 					
 					<b>Number:</b>
 					{if $modify_blscr eq '1'}
@@ -528,19 +478,6 @@ function go(step) {
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
 
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 					<b>Level:</b> 
 
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
@@ -572,20 +509,6 @@ function go(step) {
 				<input type='hidden' name='action'         value='update'>
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
-				
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 
 					<b>Source:</b> 
 
@@ -618,19 +541,6 @@ function go(step) {
 				<input type='hidden' name='action'         value='update'>
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 
 					<b>Justification:</b> 
 
@@ -682,19 +592,6 @@ function go(step) {
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
 
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 					<b>Effectiveness:</b> 
 
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
@@ -726,19 +623,6 @@ function go(step) {
 				<input type='hidden' name='action'         value='update'>
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 
 					<b>Countermeasure:</b> 
 
@@ -772,19 +656,6 @@ function go(step) {
 				<input type='hidden' name='action'         value='update'>
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 
 					<b>Justification:</b> 
 
@@ -835,19 +706,6 @@ function go(step) {
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
 
-				<input type='hidden' name='filter_source'          value='{$filter_source}'>
-				<input type='hidden' name='filter_system'          value='{$filter_system}'>
-				<input type='hidden' name='filter_status'          value='{$filter_status}'>
-				<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-				<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-				<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-				<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-				<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-				<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-				<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 					<b>Recommendation:</b> 
 
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
@@ -880,19 +738,6 @@ function go(step) {
 				<input type='hidden' name='action'         value='update'>
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 
 					<b>Course of Action:</b> 
 
@@ -932,19 +777,6 @@ function go(step) {
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
 
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 					<b>Resources:</b> 
 
 					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
@@ -977,19 +809,6 @@ function go(step) {
 				<input type='hidden' name='action'         value='update'>
 				<input type='hidden' name='validated'      value='no'>
 				<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 
 					<b>Estimated Completion Date:</b> 
 
@@ -1068,19 +887,6 @@ function go(step) {
 			<input type='hidden' name='action'         value='update'>
 			<input type='hidden' name='validated'      value='no'>
 			<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 
 					<b>SSO Approval:</b>
 
@@ -1235,20 +1041,6 @@ function go(step) {
 								<input type='hidden' name='action'         value='sso_evaluate'>
 								<input type='hidden' name='validated'      value='no'>
 								<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 		
 								<b>SSO Evaluation:</b> 
 									<input type='hidden' name='form_action' value='Evaluate'>
@@ -1295,19 +1087,6 @@ function go(step) {
 								<input type='hidden' name='validated'      value='no'>
 								<input type='hidden' name='approved'       value='no'>
 
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 								<b>FSA Evaluation:</b> 
 									<input type='hidden' name='form_action' value='Evaluate'>
 									<input type='image' src='images/button_modify.png' name='form_action' value='Evaluate'> 
@@ -1353,20 +1132,6 @@ function go(step) {
 								<input type='hidden' name='action'         value='ivv_evaluate'>
 								<input type='hidden' name='validated'      value='no'>
 								<input type='hidden' name='approved'       value='no'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
 
 								<b>IVV Evaluation:</b> 
 									<input type='hidden' name='form_action' value='Evaluate'>
@@ -1419,18 +1184,6 @@ function go(step) {
 						<input type='hidden' name='approved'       value='no'>
 						<input type='hidden' name='uploaded'       value='no'>
 
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 						<input type='hidden' name='form_action' value='Submit Evidence'>
 						<input type='image' src='images/button_submit_evidence.png' name='form_action'    value='Submit Evidence'>
 				</form>
@@ -1491,28 +1244,6 @@ function go(step) {
 					</table>
 					</td>
 					</tr>
-<!--
-					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-					{if $remediation_status eq 'OPEN' || $remediation_status eq 'EN' || $remediation_status eq 'EO' || $remediation_status eq 'EP'}
-
-						<tr> 
-                            <td align='left'>
-							<form action='remediation_modify.php' method='POST'>
-									<input type='hidden' name='remediation_id' value='{$remediation_id}'>
-									<input type='hidden' name='root_comment'   value='{$comments[row].comment_id}'>
-									<input type='hidden' name='target' 		   value='comment'>
-									<input type='hidden' name='action'         value='respond'>
-									<input type='hidden' name='validated'      value='no'>
-									<input type='hidden' name='approved'       value='no'>
-
-									<input type='hidden' name='form_action' value='Respond'>
-									<input type='image' src='images/button_respond.png' name='form_action' value='Respond'>
-							</form>
-                            </td>
-						</tr>
-
-					{/if}
--->
 				</table>
 				</td>
 

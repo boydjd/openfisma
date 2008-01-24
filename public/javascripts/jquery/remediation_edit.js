@@ -6,6 +6,7 @@ $(document).ready(function(){
     var evArray = new Object();		// evidances
     var estDateChanged = false;		// not initial this value. request in email 2007-12-19.
     aQuery.comment_type = 'NONE';	// set default value of comment type
+    evArray.length = 0;
     
     var dw = $(this).width();
     var dh = $(this).height();
@@ -105,7 +106,7 @@ $(document).ready(function(){
                 2. EST date changed.
             If evidence provided, a popup window will also appered.
         **/
-        if (('DENIED'!=aQuery.poam_action_status) && !estDateChanged && (typeof(evArray)!='object')){
+        if (('DENIED'!=aQuery.poam_action_status) && !estDateChanged && !evArray.length){
         	aQuery.poam_id = $('input[name="remediation_id"]').val();
 		    $.post('remediation_save.php', aQuery, function(r,t,x){
                 eval(r); // to redirect bowser by JS
@@ -224,6 +225,7 @@ $(document).ready(function(){
                     // bulid query and log string
                     if (input_obj.className == 'ev'){
                         eval('evArray.ev_'+input_obj.id+" = {'action':input_obj.name, 'new_value':input_JQ_obj.val(), 'ev_id':input_obj.id};");
+                        evArray.length ++;
                         // need special log
                     }
                     else{
