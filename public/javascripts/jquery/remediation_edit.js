@@ -145,17 +145,27 @@ $(document).ready(function(){
             		    if(aQuery.poam_action_status) aQuery.comment_type='SSO';
             		    if(aQuery.poam_action_date_est) aQuery.comment_type='EST';
             		    
-            		    for (var ev in evArray){
-            		        evArray[ev].remediation_id = aQuery.poam_id;
-//            		        alert(ev.toString);
-            		        $.post('evidence_save.php', evArray[ev], function(r,t,x){
-//            		            eval(r);
-            		        });
+            		    if (evArray.length > 0){
+            		        var return_js = '';
+                		    for (var ev in evArray){
+                		        if(ev!='length'){
+                    		        evArray[ev].remediation_id = aQuery.poam_id;
+                    		        evArray[ev].comment_topic = aQuery.comment_topic;
+                    		        evArray[ev].comment_body = aQuery.comment_body;
+                    		        evArray[ev].comment_log = aQuery.comment_log;
+                    		        evArray[ev].comment_parent = aQuery.comment_parent;
+                    		        evArray[ev].comment_type = aQuery.comment_type;
+                    		        $.post('evidence_save.php', evArray[ev], function(r,t,x){
+                    		            eval(r);
+                    		        });
+                		        }
+                		    }
             		    }
-//return false;
-            		    $.post('remediation_save.php', aQuery, function(r,t,x){
-                            eval(r); // to redirect bowser by JS
-                        });
+            		    else{
+                		    $.post('remediation_save.php', aQuery, function(r,t,x){
+                                eval(r); // to redirect browser by JS
+                            });
+            		    }
             		},
             		'Cancel': function() {    // on button "cancel" clicked
             		    cover_div.hide();
@@ -260,6 +270,10 @@ $(document).ready(function(){
     $(":image[src$='button_back.png']").click(function(){
         if (aLog.length > 0)
         return confirm("You have some changes in current page, do you really want to dismiss these work? \n Press 'Yes' to leave or 'No' to stay.");
+    });
+    
+    $(":image[@value='Submit Evidence Change']").click(function(){
+        $(":image[@value='Save or Submit']").click();
     });
     
     $("img.expend_btn").css({'cursor':'pointer'}).click(function(){

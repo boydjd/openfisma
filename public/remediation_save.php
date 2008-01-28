@@ -88,7 +88,7 @@ if ($i?$db->sql_query($sql_update):1) {
         openfisma_log($db, $userid, $row['finding_id'], $field, $row[$field], $value, $unix_timestamp);
 	}
 	if(isset($_POST['comment_topic'])){
-        add_poam_comment($db,$userid,$poam_id, isset($_POST['comment_parent'])?intval($_POST['comment_parent']):0,
+        add_poam_comment($db,$userid,$poam_id, 0, isset($_POST['comment_parent'])?intval($_POST['comment_parent']):0,
                         $_POST['comment_topic'], $_POST['comment_body'], $_POST['comment_log'], $now, $_POST['comment_type']);
     }
     die($reload_page);

@@ -178,6 +178,15 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     
 //    die($reload_page);
 
+	if(isset($_POST['comment_topic'])){
+	    $unix_timestamp = time();
+        $now = gmdate('Y-m-d H:i:s', $unix_timestamp);
+        $type = 'EV_'.strtoupper(substr($_POST['action'],0,3));
+//        var_dump($_POST);die();
+        add_poam_comment($db,$user->getUserId(),$poam_id, $_POST['ev_id'], 0,
+                        $_POST['comment_topic'], $_POST['comment_body'], $_POST['comment_log'], $now, $type);
+    }
+    die($reload_page);
 }
 
 function getEvType($ev){

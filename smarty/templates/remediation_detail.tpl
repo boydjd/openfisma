@@ -1025,14 +1025,9 @@ function go(step) {
 
 					{* SSO EVALUATION *}
 					<tr>
-                        <td>
 						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_evidence_sso_approval eq '1'}
-						{if $remediation_status eq 'EP'}
-
-							{* ONLY ALLOW APPROVAL IF NONE EXISTS *}
-							{if $all_evidence[row].ev_sso_evaluation eq 'NONE'}
-
+						{if $modify_evidence_sso_approval eq '1' && $remediation_status eq 'EP' && $all_evidence[row].ev_sso_evaluation eq 'NONE'}
+                            <td>
 								<form action='remediation_modify.php' method='POST'>
 								<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 								<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
@@ -1049,35 +1044,25 @@ function go(step) {
 
 								</form>
                             </td>
-							{else}
-
-								<td><b>SSO Evaluation:</b> {$all_evidence[row].ev_sso_evaluation}</td>
-
-							{/if}
-
 						{else}
-
 							<td><b>SSO Evaluation:</b> {$all_evidence[row].ev_sso_evaluation}</td>
-
+							{if $all_evidence[row].comments.EV_SSO neq ''}
+                            <td width="85%">
+        			    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+        						<tr><th align='left'>{$all_evidence[row].comments.EV_SSO.comment_topic}</th></tr>
+        						<tr><td >{$all_evidence[row].comments.EV_SSO.comment_body}</td></tr>
+        						<tr><td align='right'><i>{$all_evidence[row].comments.EV_SSO.comment_date} by {$all_evidence[row].comments.EV_SSO.user_name}</i></td></tr>
+        					</table>
+                            </td>
+                            {/if}
 						{/if}
-						{else}
-
-							<td><b>SSO Evaluation:</b> {$all_evidence[row].ev_sso_evaluation}</td>
-
-						{/if}
-
 					</tr>
 
 					{* FSA EVALUATION *}
 					<tr>
-                        <td>
 						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_evidence_fsa_approval eq '1'}
-						{if $remediation_status eq 'EP'}
-
-							{* FSA ONLY NEEDS TO APPROVE IF THE SSO APPROVES AND NO EXISTING EVALUATION OR EXCLUSION*}
-							{if $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'NONE'}
-
+						{if $modify_evidence_fsa_approval eq '1' && $remediation_status eq 'EP' && $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'NONE'}
+                            <td>
 								<form action='remediation_modify.php' method='POST'>
 								<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 								<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
@@ -1094,36 +1079,26 @@ function go(step) {
 
 								</form>
                             </td>
-							{else}
-
-								<td><b>FSA Evaluation:</b> {$all_evidence[row].ev_fsa_evaluation} </td>
-
-							{/if}
-
 						{else}
-
 							<td><b>FSA Evaluation:</b> {$all_evidence[row].ev_fsa_evaluation}</td>
-
+							{if $all_evidence[row].comments.EV_FSA neq ''}
+                            <td width="85%">
+        			    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+        						<tr><th align='left'>{$all_evidence[row].comments.EV_FSA.comment_topic}</th></tr>
+        						<tr><td >{$all_evidence[row].comments.EV_FSA.comment_body}</td></tr>
+        						<tr><td align='right'><i>{$all_evidence[row].comments.EV_FSA.comment_date} by {$all_evidence[row].comments.EV_FSA.user_name}</i></td></tr>
+        					</table>
+                            </td>
+                            {/if}
 						{/if}
-						{else}
-
-							<td><b>FSA Evaluation:</b> {$all_evidence[row].ev_fsa_evaluation}</td>
-
-						{/if}
-
 					</tr>
 
 
 					{* IVV EVALUATION *}
 					<tr>
-                    <td>
 						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_evidence_ivv_approval eq '1'}
-						{if $remediation_status eq 'ES'}
-
-							{* IVV ONLY NEEDS TO APPROVE IF THE SSO AND FSA APPROVE AND NO EXISTING EVALUATION OR EXCLUSION*}
-							{if $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'APPROVED'}
-
+						{if $modify_evidence_ivv_approval eq '1' && $remediation_status eq 'ES' && $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'APPROVED'}
+                            <td>
 								<form action='remediation_modify.php' method='POST'>
 								<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 								<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
@@ -1140,23 +1115,19 @@ function go(step) {
 
 								</form>
                             </td>
-							{else}
-
-								<td><b>IVV Evaluation:</b> {$all_evidence[row].ev_ivv_evaluation} </td>
-
-							{/if}
-
 						{else}
-
 							<td><b>IVV Evaluation:</b> {$all_evidence[row].ev_ivv_evaluation}</td>
-
+							{if $all_evidence[row].comments.EV_IVV neq ''}
+                            <td width="85%">
+        			    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+        						<tr><th align='left'>{$all_evidence[row].comments.EV_IVV.comment_topic}</th><tr>
+        						<tr><td >{$all_evidence[row].comments.EV_IVV.comment_body}</td></tr>
+        						<tr><td align='right'><i>{$all_evidence[row].comments.EV_IVV.comment_date} by {$all_evidence[row].comments.EV_IVV.user_name}</i></td></tr>
+        					</table>
+                            </td>
+                            {/if}
 						{/if}
-						{else}
-
-							<td><b>IVV Evaluation:</b> {$all_evidence[row].ev_ivv_evaluation}</td>
-
-						{/if}
-
+                    </tr>
 				</table>
 				</td>
 
@@ -1192,7 +1163,11 @@ function go(step) {
 
 		{/if}
 		{/if}
-
+        <tr>
+            <td>
+                <input type='image' src='images/button_submit.png' value='Submit Evidence Change'>
+            </td>
+        </tr>
 	</table>
 
 	<br>

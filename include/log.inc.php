@@ -37,11 +37,12 @@ function openfisma_log($db, $userid, $finding_id, $field, $old_val, $new_val, $t
     return $db->sql_query($SQL);
 }
 
-function add_poam_comment($db, $userid, $poam_id, $parent_id, $topic, $body, $log, $time, $type){
+function add_poam_comment($db, $user_id, $poam_id, $ev_id, $parent_id, $topic, $body, $log, $time, $type){
     $sql = "INSERT INTO `POAM_COMMENTS` 
                 (
                     `poam_id`,
                     `user_id`,
+                    `ev_id`,
                     `comment_parent`,
                     `comment_date`,
                     `comment_topic`,
@@ -52,7 +53,8 @@ function add_poam_comment($db, $userid, $poam_id, $parent_id, $topic, $body, $lo
             VALUES
                 (
                     $poam_id,
-                    $userid,
+                    $user_id,
+                    $ev_id,
                     $parent_id,
                     '$time',
                     '$topic',
@@ -60,6 +62,7 @@ function add_poam_comment($db, $userid, $poam_id, $parent_id, $topic, $body, $lo
                     '$log',
                     '$type'
                 )";
+//    die($sql);
     return $db->sql_query($sql);
 }
 

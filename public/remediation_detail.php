@@ -352,31 +352,6 @@ $smarty->assign('cmeasure_effectiveness', $remediation['poam_cmeasure_effectiven
 
 
 //
-// EVIDENCE QUERY
-//
-$query = "SELECT ".
-         "  u.user_name AS submitted_by, ".
-         "  pe.* ".
-         "FROM " . TN_POAM_EVIDENCE.
-         " AS pe, " . TN_USERS.
-         " AS u ".
-         "WHERE ( ".
-         "  pe.poam_id = '".$remediation_id."' AND ".
-         "  u.user_id  = pe.ev_submitted_by ".
-         ") ".
-         "ORDER BY ".
-         "  pe.ev_date_submitted ".
-         "ASC";
-
-// execute our built query
-$results      = $db->sql_query($query);
-$all_evidence = $db->sql_fetchrowset($results);
-$num_evidence = $db->sql_numrows($results);
-$smarty->assign('all_evidence', $all_evidence);
-$smarty->assign('num_evidence', $num_evidence);
-
-
-//
 // PRODUCT QUERY
 //
 $query = "SELECT ".
@@ -431,7 +406,8 @@ $query = "SELECT ".
          "WHERE ( ".
          "  pc.poam_id = ".$remediation_id." AND ".
          "  pc.user_id = u.user_id AND ".
-         "  pc.comment_type IN ('EST','SSO') ".
+         "  1 ".
+//         "  pc.comment_type IN ('EST','SSO') ".
          ") ".
          "ORDER BY ".
 //         "  pc.comment_parent, ".
@@ -440,20 +416,56 @@ $query = "SELECT ".
 
 $results      = $db->sql_query($query);
 $comments     = $db->sql_fetchrowset($results);
-$comments_est = $comments_sso = array();
+$comments_est = $comments_sso = $comments_ev = array();
 if (count($comments) > 0){
     foreach ($comments as &$comment) {
     	$comment['comment_topic'] = stripslashes($comment['comment_topic']);
     	$comment['comment_body']  = nl2br($comment['comment_body']);
     	$comment['comment_log']  = nl2br($comment['comment_log']);
-    	if ($comment['comment_type'] == 'EST') $comments_est[] = $comment;
-    	if ($comment['comment_type'] == 'SSO') $comments_sso[] = $comment;
+    	if ($comment['comment_type'] == 'EST'){
+    	    $comments_est[] = $comment;
+    	}elseif ($comment['comment_type'] == 'SSO'){
+    	    $comments_sso[] = $comment;
+    	}
+    	elseif (isset($comment['ev_id']) && ($comment['ev_id'] > 0)) {
+    		$comments_ev[$comment['ev_id']][$comment['comment_type']] = $comment;
+    	}
     }
 }
+$smarty->assign('comments_ev', $comments_ev);
 $smarty->assign('comments_est', $comments_est);
 $smarty->assign('comments_sso', $comments_sso);
 $smarty->assign('num_comments_est', count($comments_est));
 $smarty->assign('num_comments_sso', count($comments_sso));
+
+
+//
+// EVIDENCE QUERY
+//
+$query = "SELECT ".
+         "  u.user_name AS submitted_by, ".
+         "  pe.* ".
+         "FROM " . TN_POAM_EVIDENCE.
+         " AS pe, " . TN_USERS.
+         " AS u ".
+         "WHERE ( ".
+         "  pe.poam_id = '".$remediation_id."' AND ".
+         "  u.user_id  = pe.ev_submitted_by ".
+         ") ".
+         "ORDER BY ".
+         "  pe.ev_date_submitted ".
+         "ASC";
+
+// execute our built query
+$results      = $db->sql_query($query);
+$all_evidence = $db->sql_fetchrowset($results);
+foreach ($all_evidence as &$evidence) {
+	$evidence['comments'] = $comments_ev[$evidence['ev_id']];
+}
+$num_evidence = $db->sql_numrows($results);
+$smarty->assign('all_evidence', $all_evidence);
+$smarty->assign('num_evidence', $num_evidence);
+
 
 //
 // Audit log
