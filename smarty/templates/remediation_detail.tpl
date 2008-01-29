@@ -121,7 +121,7 @@ function go(step) {
 		<!-- INSTANCE DATA TABLE -->
 	    <table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
 
-        	<th align="left">Instance Specific Information</th>
+        	<th align="left">Finding Description</th>
 	        <tr><td>{if $finding.finding_data eq ""}<i>(none given)</i>{else}{$finding.finding_data}{/if}</td></tr>
 
     	</table> <!-- INSTANCE DATA TABLE -->
@@ -142,7 +142,7 @@ function go(step) {
 <!-- Heading Block -->
 <table class="tbline">
 <tr>
-<td id="tbheading"><img src="images/contract.gif" class="expend_btn" /><b>Vulnerability Detail</b></td>
+<td id="tbheading"><img src="images/contract.gif" class="expend_btn" /><b>Additional Finding Information</b></td>
 </tr>
 </table>
 <!-- End Heading Block -->
@@ -153,7 +153,7 @@ function go(step) {
 <!-- VULNERABILITY DETAIL TABLE -->
 <table border="0" cellpadding="3" cellspacing="1" width="95%" align="center" class="tipframe">
 
-	<th align='left'>Vulnerability Information</th>
+	<th align='left'>Vulnerability Detail</th>
 
 	<!-- VULNERABILITY ROW(S) -->
 	{section name=row loop=$vulnerabilities step='-1'}

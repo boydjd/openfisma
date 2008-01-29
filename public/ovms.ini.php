@@ -18,15 +18,15 @@
 
     // Database Username
     // Your database user account on the host
-    define('OVMS_DB_USER', 'fisma_db_u');
+    define('OVMS_DB_USER', 'endeavor');
 
     // Database Password
     // Password for your database user account
-    define('OVMS_DB_PASS', '123456');
+    define('OVMS_DB_PASS', '3nd3@v0r');
 
     // Database Name
     // The name of database on the host. The installer will attempt to create the database if not exist
-    define('OVMS_DB_NAME', 'openfisma');
+    define('OVMS_DB_NAME', 'ovms_test');
 
     //this pass_c was used to connect database by new user
     define('OVMS_DB_PASS_C', '');
@@ -36,7 +36,7 @@
 
     if(!defined('OVMS_ROOT_PATH')){
         define("DS", DIRECTORY_SEPARATOR);
-        define('OVMS_ROOT_PATH', '/opt/openfisma/release-1.2');
+        define('OVMS_ROOT_PATH', '/opt/openfisma/trunk');
         define("OVMS_WEB_PATH", OVMS_ROOT_PATH. DS ."public");
         define("OVMS_WEB_TEMP", OVMS_WEB_PATH. DS ."temp");
         define("OVMS_VENDOR_PATH", OVMS_ROOT_PATH. DS ."vendor");

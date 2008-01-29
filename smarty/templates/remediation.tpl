@@ -164,7 +164,7 @@ function order_page(para)
 
 <!-- SUMMARY TABLE -->
 
-<table align="center" class="tbframe">
+<table align="center" cellpadding="5" class="tbframe">
 
 	<tr align="center">
 		<th>Action Owner</th>
@@ -184,33 +184,33 @@ function order_page(para)
 	<!-- SUMMARY LOOP -->
 	{foreach item=system from=$summary}
 	<tr>
-		<td width='45%' align='left'   class='tdc'>&nbsp;({$system.action_owner_nickname}) {$system.action_owner_name}</td>
-		<td align='center' class='tdc'>&nbsp;{if $system.NEW eq ""}-{else}{$system.NEW}{/if}</td>
-		<td align='center' class='tdc'>&nbsp;{if $system.OPEN eq ""}-{else}{$system.OPEN}{/if}</td>
-		<td align='center' class='tdc'>&nbsp;{if $system.EN eq ""}-{else}{$system.EN}{/if}</td>
-		<td align='center' class='tdc'>&nbsp;{if $system.EO eq ""}-{else}{$system.EO}{/if}</td>
-		<!--td align='center' class='tdc'>&nbsp;{if $system.EP eq ""}-{else}{$system.EP}{/if}</td-->
-		<td align='center' class='tdc'>&nbsp;{if $system.EP_SSO eq ""}-{else}{$system.EP_SSO}{/if}</td>
-		<td align='center' class='tdc'>&nbsp;{if $system.EP_SNP eq ""}-{else}{$system.EP_SNP}{/if}</td>
-		<td align='center' class='tdc'>&nbsp;{if $system.ES eq ""}-{else}{$system.ES}{/if}</td>
-		<td align='center' class='tdc'>&nbsp;{if $system.CLOSED eq ""}-{else}{$system.CLOSED}{/if}</td>		
-		<td align='center' class='tdc'>&nbsp;<b>{if $system.TOTAL eq ""}0{else}{$system.TOTAL}{/if}</b></td>
+		<td width='45%' align='left'   class='tdc'>({$system.action_owner_nickname}) {$system.action_owner_name}</td>
+		<td align='center' class='tdc'>{if $system.NEW eq ""}-{else}{$system.NEW}{/if}</td>
+		<td align='center' class='tdc'>{if $system.OPEN eq ""}-{else}{$system.OPEN}{/if}</td>
+		<td align='center' class='tdc'>{if $system.EN eq ""}-{else}{$system.EN}{/if}</td>
+		<td align='center' class='tdc'>{if $system.EO eq ""}-{else}{$system.EO}{/if}</td>
+		<!--td align='center' class='tdc'>{if $system.EP eq ""}-{else}{$system.EP}{/if}</td-->
+		<td align='center' class='tdc'>{if $system.EP_SSO eq ""}-{else}{$system.EP_SSO}{/if}</td>
+		<td align='center' class='tdc'>{if $system.EP_SNP eq ""}-{else}{$system.EP_SNP}{/if}</td>
+		<td align='center' class='tdc'>{if $system.ES eq ""}-{else}{$system.ES}{/if}</td>
+		<td align='center' class='tdc'>{if $system.CLOSED eq ""}-{else}{$system.CLOSED}{/if}</td>		
+		<td align='center' class='tdc'><b>{if $system.TOTAL eq ""}0{else}{$system.TOTAL}{/if}</b></td>
 	</tr>
 	{/foreach}
 
 	<!-- SUMMARY TOTALS -->
 	<tr>
-		<td width='45%' align='center' class='tdc'>&nbsp;<b>TOTALS</b></td>
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.NEW   eq ""}0{else}{$totals.NEW}{/if}</b></td>
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.OPEN  eq ""}0{else}{$totals.OPEN}{/if}</b></td>
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.EN    eq ""}0{else}{$totals.EN}{/if}</b></td>
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.EO    eq ""}0{else}{$totals.EO}{/if}</b></td>
-		<!--td align='center' class='tdc'>&nbsp;<b>{if $totals.EP    eq ""}0{else}{$totals.EP}{/if}</b></td-->
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.EP_SSO eq ""}0{else}{$totals.EP_SSO}{/if}</b></td>
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.EP_SNP eq ""}0{else}{$totals.EP_SNP}{/if}</b></td>
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.ES    eq ""}0{else}{$totals.ES}{/if}</b></td>
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.CLOSED    eq ""}0{else}{$totals.CLOSED}{/if}</b></td>		
-		<td align='center' class='tdc'>&nbsp;<b>{if $totals.TOTAL eq ""}0{else}{$totals.TOTAL}{/if}</b></td>
+		<td width='45%' align='center' class='tdc'><b>TOTALS</b></td>
+		<td align='center' class='tdc'><b>{if $totals.NEW   eq ""}0{else}{$totals.NEW}{/if}</b></td>
+		<td align='center' class='tdc'><b>{if $totals.OPEN  eq ""}0{else}{$totals.OPEN}{/if}</b></td>
+		<td align='center' class='tdc'><b>{if $totals.EN    eq ""}0{else}{$totals.EN}{/if}</b></td>
+		<td align='center' class='tdc'><b>{if $totals.EO    eq ""}0{else}{$totals.EO}{/if}</b></td>
+		<!--td align='center' class='tdc'><b>{if $totals.EP    eq ""}0{else}{$totals.EP}{/if}</b></td-->
+		<td align='center' class='tdc'><b>{if $totals.EP_SSO eq ""}0{else}{$totals.EP_SSO}{/if}</b></td>
+		<td align='center' class='tdc'><b>{if $totals.EP_SNP eq ""}0{else}{$totals.EP_SNP}{/if}</b></td>
+		<td align='center' class='tdc'><b>{if $totals.ES    eq ""}0{else}{$totals.ES}{/if}</b></td>
+		<td align='center' class='tdc'><b>{if $totals.CLOSED    eq ""}0{else}{$totals.CLOSED}{/if}</b></td>		
+		<td align='center' class='tdc'><b>{if $totals.TOTAL eq ""}0{else}{$totals.TOTAL}{/if}</b></td>
 	</tr>
 
 </table>
@@ -234,11 +234,11 @@ function order_page(para)
 
 
 {* FILTERS TABLE *}
-<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
+<table align="center" border="1" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
 
 	<tr> {* NON-DATE FILTERS ROW *}
 
-		<td colspan='2'><b>Source: </b><br>
+		<td colspan='2'><b>Finding Source: </b><br>
 
 			<select name='filter_source'>
 				<option value='any'>--- Any Source ---</option>
@@ -255,7 +255,7 @@ function order_page(para)
 
 	<tr>
 
-		<td ><b> Type:</b><br>
+		<td ><b> Mitigation Strategy:</b><br>
 		
 			<select name='filter_type'>
 				<option {if $filter_type eq 'any' }selected{/if} value='any'>--- Any Type ---</option>
@@ -267,7 +267,7 @@ function order_page(para)
 
 		</td>
 
-		<td width="318" valign="top"><b> Status:</b><br>
+		<td width="318" valign="top"><b> Finding Status:</b><br>
 			<select name='filter_status'>
 				<option {if $filter_status eq 'any'       }selected{/if} value='any'       >--- Any Status ---</option>
 				<option {if $filter_status eq 'NEW'       }selected{/if} value='NEW'       >(NEW) Awaiting Mitigation Type and Approval</option>
@@ -378,7 +378,7 @@ function order_page(para)
 
 
 <!-- Pagination -->
-<table width="94%" align="center" border="0" cellpadding="0" cellspacing="0">
+<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
  <td width="15pt" align="left" valign="bottom">
    <span {if $remediation_page ne 1}style="cursor: hand" onclick="pageskip(false);"{/if}><img src="images/button_prev.png" border="0"></span></td>
@@ -395,7 +395,7 @@ function order_page(para)
 </form>
 
 
-<table align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tbframe">
 
 	<tr align="center">
 
@@ -424,32 +424,27 @@ function order_page(para)
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(22)">			
 		</th>
 
-		<th>Asset
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(31)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(32)">			
-		</th>
-
-		<th>Action 
+		<th>System 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(41)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(42)">			
 		</th>
 
-		<th>Status 
+		<th>Type 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(51)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(52)">			
 		</th>
 
-		<th>Type 
+		<th>Status 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(61)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(62)">
 		</th>
 
-		<th>Date Created 
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(71)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(72)">			
+		<th>Finding
+			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(71)">
+			<input type='image'  src='images/down_arrow.gif' onClick="order_page(72)">
 		</th>
 
-		<th>Completion Date 
+		<th>ECD 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(81)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(82)">			
 		</th>
@@ -464,14 +459,13 @@ function order_page(para)
 	{section name=row loop=$list}
 	<tr>
 
-		<td align='center' class='tdc'>&nbsp;{$list[row].nice_poam_id}</td> 						<!-- ID -->
-		<td align='center' class='tdc'>&nbsp;{$list[row].source_nickname}</td> 						<!-- SOURCE -->
-		<td align='center' class='tdc'>&nbsp;{$list[row].asset_owner_nickname} {*$list[row].asset_owner_name*}</td> 	<!-- ASSET OWNER -->
-		<td align='center' class='tdc'>&nbsp;{$list[row].action_owner_nickname} {*$list[row].action_owner_name*}</td> 	<!-- ACTION OWNER -->
-		<td align='center' class='tdc'>&nbsp;{$list[row].poam_status}</td> 						<!-- STATUS -->
-		<td align='center' class='tdc'>&nbsp;{$list[row].poam_type}</td> 						<!-- TYPE -->
-		<td align='center' class='tdc'>&nbsp;{$list[row].poam_date_created}</td> 					<!-- DATE CREATED -->
-		<td align='center' class='tdc'>&nbsp;{$list[row].poam_action_date_est}</td> 					<!-- ESTIMATED COMPLETION DATE -->
+		<td align='center' class='tdc'>{$list[row].nice_poam_id}</td>
+		<td align='center' class='tdc'>{$list[row].source_nickname}</td>
+		<td align='center' class='tdc'>{$list[row].action_owner_nickname}</td>
+		<td align='center' class='tdc'>{$list[row].poam_type}</td>
+		<td align='center' class='tdc'>{$list[row].poam_status}</td>
+		<td align='left'   class='tdc'>{$list[row].finding_data}</td>
+		<td align='center' class='tdc'>{$list[row].poam_action_date_est}</td> 
 
 		<!-- view button -->
 		<form action='remediation_detail.php' method='POST'>

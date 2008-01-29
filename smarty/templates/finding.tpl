@@ -209,8 +209,8 @@ function findingdetail(fid, func) {
 
 <br>
 
-<!-- Table Buttons -->
-<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
+<!-- Allow Multiple Deletion if the user has the appropriate rights -->
+<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td align="left">
 	{if $del_right eq 1}
@@ -226,23 +226,22 @@ function findingdetail(fid, func) {
 	</td>
 </tr>
 </table>
-<!-- End Table Buttons -->
+<!-- End Multiple Deletion -->
 
 <!-- Finding Search Results --> 
-<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table width="95%" align="center" border="0" cellpadding="5" cellspacing="0" class="tbframe">
 <tr align="center">
-	<th>&nbsp;</td>
+	<th></td>
 	<th nowrap>ID <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('id', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('id', 1)"></th>
 	<th nowrap>Status <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('status', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('status', 1)"></td>
 	<th nowrap>Source <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('source', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('source', 1)"></td>
 	<th nowrap>System <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('system', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('system', 1)"></td>
 	<th nowrap>Network <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('network', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('network', 1)"></td>
-
-	<th nowrap>IP Address <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('ip', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('ip', 1)"></td>
+	<th nowrap>IP <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('ip', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('ip', 1)"></td>
 	<th nowrap>Port <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('port', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('port', 1)"></td>
 	<th nowrap>Product <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('product', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('network', 1)"></td>
 	<th nowrap>Vulnerabilities <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('vulner', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('vulner', 1)"></td>
-	<th nowrap>Date Discovered <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('date', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('date', 1)"></td>
+	<th nowrap>Discovered <input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('date', 0)"> <input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('date', 1)"></td>
 
 	{if $edit_right eq 1}
 	<!--edit right-->
@@ -295,6 +294,5 @@ function findingdetail(fid, func) {
 {else}
 <p>You do not have sufficient rights to complete the request.</p>
 {/if}
-<p>&nbsp;</p>
 
 {include file="footer.tpl"}
