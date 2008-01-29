@@ -171,7 +171,7 @@ function do_order(param)
 
 <table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
 	<tr>
-    	<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>Assets:</b> Summary</td>
+    	<td valign="bottom"><b>Assets:</b> Summary</td>
 	    <td align="right" valign="bottom">{$now}</td>
 	</tr>
 </table>
@@ -179,7 +179,7 @@ function do_order(param)
 
 {* DISPLAY THE SUMMARY TABLE *}
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1} <br>
-	<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+	<table align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 
 		<tr><th colspan="3" align=left>&nbsp;Assets Summary</th></tr>	
     	{assign var="summary_data_svalue_total" value="0"}

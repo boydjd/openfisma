@@ -57,7 +57,7 @@ function findingdetail(fid, func) {
 <!-- Summary of Findings -->
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 <br>
-<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tbframe">
 <tr align="center">
 	<th>System</td>
 	<th>Open(Today)</td>
@@ -70,7 +70,7 @@ function findingdetail(fid, func) {
 </tr>
 
 {section name=row loop=$summary_data}
-<tr align="right">
+<tr align="center">
 	<td class="tdc" align="left">&nbsp;{$summary_data[row].system}</td>
 	<td class="tdc">&nbsp;{$summary_data[row].open}&nbsp;</td>
 	<td class="tdc">&nbsp;{$summary_data[row].thirty}&nbsp;</td>
@@ -96,7 +96,7 @@ function findingdetail(fid, func) {
 <input type="hidden" name="fn" value="{$fn}">
 <input type="hidden" name="asc" value="{$asc}">
 
-<table width="95%" align="center" border="0" cellpadding="3" cellspacing="1" class="tipframe">
+<table align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
 
 <tr id="row1">
 
@@ -172,10 +172,12 @@ function findingdetail(fid, func) {
 </tr>
 <tr id="row5">
 
-<td>Date Discovered From: </td>
-<td><input type="text" name="startdate" size="12" maxlength="10" value="{$startdate}"><span onclick="javascript:show_calendar('finding.startdate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
-<td>To: </td>
-<td><input type="text" name="enddate" size="12" maxlength="10" value="{$enddate}"><span onclick="javascript:show_calendar('finding.enddate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
+<td align="right">Date Discovered From: </td>
+<td><input type="text" name="startdate" size="12" maxlength="10" value="{$startdate}">
+<span onclick="javascript:show_calendar('finding.startdate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
+<td align="right">To: </td>
+<td><input type="text" name="enddate" size="12" maxlength="10" value="{$enddate}">
+<span onclick="javascript:show_calendar('finding.enddate');"><img src="images/picker.gif" valign="middle" width=24 height=22 border=0></span></td>
 
 </tr>
 <td id="row6">

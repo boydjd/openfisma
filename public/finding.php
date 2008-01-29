@@ -106,7 +106,7 @@ if($view_right || $del_right || $edit_right) {
 		$smarty->assign('filter_data', $filter_data);
 
 		// open this sumary page
-		$startdate	= strftime("%m/%d/%Y", (mktime(0, 0, 0, date("m")  , date("d") - 7, date("Y"))));
+		$startdate	= strftime("%m/%d/%Y", (mktime(0, 0, 0, date("m")  , date("d") - 365, date("Y"))));
 		$enddate	= strftime("%m/%d/%Y", (mktime(0, 0, 0, date("m")  , date("d"), date("Y"))));
 		$smarty->assign('startdate', $startdate);
 		$smarty->assign('enddate', $enddate);

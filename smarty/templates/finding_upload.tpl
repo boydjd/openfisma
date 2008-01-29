@@ -71,7 +71,7 @@ function validate_input() {
 <!-- build our form -->
 
 <form name="finding_upload" action="finding_upload.php" enctype="multipart/form-data" method="POST">
-<table border="0" cellpadding="3" cellspacing="0" class="tbframe">
+<table align="center" border="0" cellpadding="3" cellspacing="0" class="tbframe">
 
 	<!-- display the plugins row -->
 	<tr>
