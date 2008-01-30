@@ -90,10 +90,6 @@
 			<td width="100" onMouseOver="ShowMenu(this, 'vulnerabilities'); swapColor(this, 'on');" onMouseOut="HideMenu('vulnerabilities'); swapColor(this, 'off');"><span id="mvu" class="t">Vulnerabilities</span></td>
 			<td><img src="images/menu_line.gif" border="0"></td>
 			{/if}
-
-			<td width="100" onMouseOver="swapColor(this, 'on');" onMouseOut="swapColor(this, 'off');"><a href='training.php' id="mtr" class="t">Training</a></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-
 		</tr>
 		</table>
 		</td>
