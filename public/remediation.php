@@ -507,8 +507,9 @@ if($view_right || $del_right || $edit_right)
 
 	// initialize summary variables
 	$summary = Array();
-	$totals  = array('NEW'=>'', 'OPEN'=>'', 'EN'=>'', 'ED'=>'', 'EO'=>'', 'EP'=>'', 'ES'=>'', 'EP_SNP'=>'',
+	$array_template  = array('NEW'=>'', 'OPEN'=>'', 'EN'=>'', 'ED'=>'', 'EO'=>'', 'EP'=>'', 'ES'=>'', 'EP_SNP'=>'',
 	                                 'EP_SSO'=>'', 'CLOSED'=>'', 'TOTAL'=>'');
+	$totals = $array_template;
 	
 	// go through the retrieved list
 	for ($row=0; $row < count($list); $row++) {
@@ -516,8 +517,10 @@ if($view_right || $del_right || $edit_right)
 	  // capture the system_id and name
 	  $this_system = $list[$row]['action_owner_id'];
 	
-	  $summary[$this_system] = $totals;
-	  
+	  if(!isset($summary[$this_system])){
+	      // init the summary item with an array template
+	       $summary[$this_system] = $array_template;
+	  }
 	  // capture the system name and nickname
 	  $summary[$this_system]['action_owner_nickname'] = $list[$row]['action_owner_nickname'];
 	  $summary[$this_system]['action_owner_name']     = $list[$row]['action_owner_name'];
