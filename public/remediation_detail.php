@@ -459,10 +459,12 @@ $query = "SELECT ".
 // execute our built query
 $results      = $db->sql_query($query);
 $all_evidence = $db->sql_fetchrowset($results);
-foreach ($all_evidence as &$evidence) {
-	$evidence['comments'] = $comments_ev[$evidence['ev_id']];
-}
 $num_evidence = $db->sql_numrows($results);
+if($num_evidence){
+    foreach ($all_evidence as &$evidence) {
+    	$evidence['comments'] = $comments_ev[$evidence['ev_id']];
+    }
+}
 $smarty->assign('all_evidence', $all_evidence);
 $smarty->assign('num_evidence', $num_evidence);
 
