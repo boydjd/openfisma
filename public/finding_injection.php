@@ -139,7 +139,8 @@ function csvQueryBuild($row, &$db){
     if (!is_array($row) || (count($row)<7)) return false;
     if (strlen($row[3])>63 || (!is_numeric($row[4]) && !empty($row[4]))) return false;
     if (in_array('', array($row[0],$row[1],$row[2],$row[5],$row[6]))) return false;
-    if (!preg_match('/^\d{2,4}-\d{1,2}-\d{1,2}$/',$row[2])) return false;
+    $row[2] = date('Y-m-d',strtotime($row[2]));
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/',$row[2])) return false;
     $row[0] = getSnsIdByName('SYSTEM', $row[0], $db);
     $row[1] = getSnsIdByName('NETWORK', $row[1], $db);
     $row[5] = getSnsIdByName('SOURCE', $row[5], $db);
