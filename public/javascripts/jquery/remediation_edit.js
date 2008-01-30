@@ -102,11 +102,11 @@ $(document).ready(function(){
         // comments not needed
         /**
             Comments only needed when :
-                1. SSO denied.
+                *1. SSO denied. -- deleted on 20080130  | ('DENIED'!=aQuery.poam_action_status) && 
                 2. EST date changed.
             If evidence provided, a popup window will also appered.
         **/
-        if (('DENIED'!=aQuery.poam_action_status) && !estDateChanged && !evArray.length){
+        if (!estDateChanged && !evArray.length){
         	aQuery.poam_id = $('input[name="remediation_id"]').val();
 		    $.post('remediation_save.php', aQuery, function(r,t,x){
                 eval(r); // to redirect bowser by JS
