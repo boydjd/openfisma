@@ -114,7 +114,7 @@ $pdf =& new RAFpdf();
 
 require_once("ovms.ini.php"); // $PDF_FONT_FOLDER
 //$FONT_FOLDER = '/usr/local/apache2/htdocs/RR/cvs/fonts';
-$pdf->selectFont("$PDF_FONT_FOLDER/Helvetica.afm");//needs modify to the real font file path
+$pdf->selectFont(PDF_FONT_FOLDER."/Helvetica.afm");//needs modify to the real font file path
 
 /*
 ** test - add footer

@@ -158,7 +158,7 @@ function open_PDF_doc($report_stats, $report_name) {
         $pdf =& new Cezpdf($paper, $orientation);
 
 //        $FONT_FOLDER = '/usr/local/apache2/htdocs/RR/cvs/fonts';
-        $pdf->selectFont("$PDF_FONT_FOLDER/Helvetica.afm");//needs modify to the real font file path
+        $pdf->selectFont(PDF_FONT_FOLDER."/Helvetica.afm");//needs modify to the real font file path
         //$pdf->selectFont("/home/httpd2/pdf/fonts/Helvetica.afm");//needs modify to the real font file path
 
         /*
