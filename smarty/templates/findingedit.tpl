@@ -83,14 +83,14 @@
 		<table border="0" align="center" cellpadding="1" cellspacing="1">
 		<tr>
 			<td>Description:<br>
-			<textarea name="finding_data" cols="60" rows="4"></textarea></td>
+			<textarea name="finding_data" cols="60" rows="2" style="border:1px solid #333; height:41px;"></textarea></td>
 		</tr>
 		</table>
 		</fieldset>
 		</td>
 	</tr>
 
-	<tr>
+	<tr style="display:none">
 		<td colspan="2">
 		
 		<fieldset style="border:1px solid #44637A; padding:5">
@@ -174,7 +174,7 @@
 				<td><input type="text" name="asset_needle" value="" maxlength="20" size="20"> &nbsp;</td>-->
 				
 				<td>System:</td>
-				<td><select name="system">
+				<td><select name="system" onchange="return loadAssetList('ajaxsearch.php');">
 					<option value="">--Any--</option>
 					{foreach from=$system_list key=sid item=sname}
 					{if $sid eq $system }

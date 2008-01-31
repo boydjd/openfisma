@@ -256,6 +256,9 @@ $query = "SELECT ".
 
 // execute our built query
 $results = $db->sql_query($query);
+if(!$db->sql_numrows($results)) {
+    header('Location: remediation.php?unlucky='.$remediation_id);
+}
 $finding = $db->sql_fetchrow($results);
 $smarty->assign('finding', $finding);
 

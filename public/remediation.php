@@ -40,7 +40,7 @@ displayLoginInfor($smarty, $user);
 
 verify_login($user, $smarty);
 
-
+if(isset($_GET['unlucky'])) $smarty->assign('poam_id_not_exists', $_GET['unlucky']);
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
 

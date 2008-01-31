@@ -19,8 +19,17 @@
 
 
 {literal}
-
+<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.js"></script>
 <script language="javascript">
+
+$(document).ready(function(){
+    $(':radio[@name="radio_id"]').change(function(){
+        if(this.checked){
+            $(this).prevAll(':text').attr('name',$(this).val()+'_id');
+        }
+    });
+});
+
 function pageskip(flag) 
 {
 	var v_page = parseInt(document.filters.remediation_page.value);
@@ -161,6 +170,26 @@ function order_page(para)
 <!-- End Heading Block -->
 
 <br>
+
+<table class="tbline">
+<tr>
+<td align="right">
+{if $poam_id_not_exists eq ''}
+    Enter the <b>remediation id</b> here directly : 
+{else}
+    Sorry, <b>#{$poam_id_not_exists}</b> is not available, try again :
+{/if}
+</td>
+<td align="left">
+    <form action='remediation_detail.php' method='POST'>
+    <input type="text" name="remediation_id" size="10">
+    <input type="radio" value="remediation" name="radio_id" checked>Remediation ID
+    <input type="radio" value="finding" name="radio_id" >Finding ID
+    <input type="submit" value="I'm Feeling Lucky">
+    </form>
+</td>
+</tr>
+</table>
 
 <!-- SUMMARY TABLE -->
 
