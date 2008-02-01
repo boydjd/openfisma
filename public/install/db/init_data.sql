@@ -192,8 +192,6 @@ INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the u
 (16,'Enabel Report Menu on Nav Bar','header','report_menu','Allows the user to see the Reports Menu in the Navigation Bar. This function does not restrict access to the Reports Menu if disabled. It only effects whether the user has the ability to see the Reports Menu from the Navigation Bar.','1'),
 (17,'Enable Administration Menu on Nav Bar','header','admin_menu','Allows the user to see the Administration Menu in the Navigation Bar. This function does not restrict access to the Administration Menu if disabled. It only effects whether the user has the ability to see the Administration Menu from the Navigation Bar.','1'),
 (18,'Enable Vulnerabilities Menu on Nav Bar','header','vulner_menu','Allows the user to see the Vulnerabilities Menu in the Navigation Bar. This function does not restrict access to the Vulnerabilities if disabled. It only effects whether the user has the ability to see the Vulnerabilities Menu from the Navigation Bar.','1'),
-(19,'alert_view','dashboard','alert_view','','1'),
-(20,'manage_view','dashboard','manage_view','','1'),
 (21,'Enable Findings Summary on Nav Bar','finding','summary','Allows the user to access the Findings Summary page from the Finding menu in the navigation bar. This does not remove a users ability to directly link to the page but only removes the Findings Summary item from the navigation menu. ','1'),
 (22,'finding_list','finding','list','Doesn\\\'t appear to be functioning.','1'),
 (23,'consolidate_edit','finding','consol_edit','','1'),

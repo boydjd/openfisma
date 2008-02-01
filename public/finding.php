@@ -1,25 +1,30 @@
 <?PHP
 header("Cache-Control: no-cache, must-revalidate");
 
+// include files
 require_once("config.php");
 require_once("smarty.inc.php");
-
 require_once("dblink.php");
 require_once("finding.class.php");
 require_once("findingDBManager.php");
 require_once("pubfunc.php");
-/**************User Rigth*****************/
 require_once("user.class.php");
 require_once("page_utils.php");
 
+// set the screen name used for security functions
 $screen_name = "finding";
+
+// set the page name
 $smarty->assign('pageName', 'Finding Summary');
 
+// creates a session
 session_start();
 
-$user = new User($db);
-verify_login($user, $smarty);
 
+$user = new User($db);
+
+// uses the verify login function in page_utils.php to verify username and password
+verify_login($user, $smarty);
 
 // get user right for this screen
 $view_right	= $user->checkRightByFunction($screen_name, "view");

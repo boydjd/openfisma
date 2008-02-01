@@ -24,14 +24,16 @@ function get_page_datetime() {
   return strftime("%b %d %Y %I:%M:%S %p");
   }
 
-/*
-** Sets the title of each page
-*/
+// Sets the title of each page
 $smarty->assign('pageTitle', 'OpenFISMA');
 
-/*
-** Sets the timezone of all dates
-*/
+// Sets the timezone of all dates
 $smarty->assign('now', get_page_datetime());
+
+// set the users first name
+$smarty->assign("firstname", $user->user_name_first);
+
+// set the users last name
+$smarty->assign("lastname", $user->user_name_last);
 
 ?>

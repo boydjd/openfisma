@@ -1,6 +1,7 @@
 <?PHP
 header("Cache-Control: no-cache, must-revalidate"); 
 
+// include files
 require_once("config.php");
 require_once("dblink.php");
 require_once("smarty.inc.php");
@@ -9,44 +10,35 @@ require_once("findingDBManager.php");
 require_once("user.class.php");
 require_once("page_utils.php");
 
+// set the screen name used for security functions
 $screen_name = "dashboard";
+
+// set the page name
 $smarty->assign('pageName', 'Dashboard');
 
+// creates a session
 session_start();
 
+//
 $user = new User($db);
 
-
+//
 $loginstatus = $user->login();
 
+// get user role
 $Role_ID = $user->getRoleId() ;
 
-/*
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
-
-displayLoginInfor($smarty, $user);
-*/
+// uses the verify login function in page_utils.php to verify username and password
 verify_login($user, $smarty);
 
-
 // get user right for this screen
-// $user->checkRightByFunction($screen_name, "function_name");
-
 $view_right	= $user->checkRightByFunction($screen_name, "view");
-$edit_right = $user->checkRightByFunction($screen_name, "edit");
-$add_right  = $user->checkRightByFunction($screen_name, "add");
-$del_right  = $user->checkRightByFunction($screen_name, "delete");
 
 // let's template know how to display the page
+$smarty->assign('view_right', $view_right);
 
-/**************User Rigth*****************/
-//echo "view_right : ". $view_right . " edit_right : ". $edit_right. " add_right : ". $add_right . " del_right : ". $del_right ;
-/**************Main Area*****************/
-if($view_right || $del_right || $edit_right) 
+// check the user rights for viewing dashboard
+if($view_right) 
 {
 
   // conditionally require dashboard items
@@ -77,21 +69,8 @@ if($view_right || $del_right || $edit_right)
   $smarty->assign('need_ev_ot', '<li>There are <b>' . $summary['total_en'] .   '</b> items awaiting evidence (on time).');
   $smarty->assign('need_ev_od', '<li>There are <b>' . $summary['total_eo'] .   '</b> items awaiting evidence (overdue).');
 
-  // -------------------------------------------------------------------
-
-  $smarty->assign('now', get_page_datetime());
-	
-  $smarty->assign('view_right', $view_right);
-  $smarty->assign('edit_right', $edit_right);
-  $smarty->assign('add_right', $add_right);
-  $smarty->assign('del_right', $del_right);
-	
-  $smarty->assign("firstname", $user->user_name_first);
-  $smarty->assign("lastname", $user->user_name_last);
-  $smarty->assign("customer_url", $customer_url);
-  $smarty->assign("customer_logo", $customer_logo);	
-
 }	
-	
+
+// display the following template	
 $smarty->display('dashboard.tpl');
 ?>

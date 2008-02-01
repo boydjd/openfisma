@@ -6,7 +6,7 @@
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/func.js"></script>
 {/literal}
 
-{if $view_right == 1 or $del_right == 1 or $edit_right == 1}
+{if $view_right == 1}
 
 <!-- Heading Block -->
 <table class="tbline">
