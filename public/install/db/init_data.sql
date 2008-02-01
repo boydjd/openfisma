@@ -183,7 +183,6 @@ INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the u
 (6,'remediation_delete','remediation','delete','','1'),
 (7,'remediation_create','remediation','create','','1'),
 (8,'remediation_modify','remediation','modify','','1'),
-(12,'Enable Dashboard Menu on Nav Bar','header','dashboard_menu','Allows the user to see the Dashboard Menu in the Navigation Bar. This function does not restrict access to the Dashboard if disabled. It only effects whether the user has the ability to see the Dashboard Menu from the Navigation Bar.','1'),
 (13,'Enable Finding Menu on Nav Bar','header','finding_menu','Allows the user to view the Findings Menu on the Navigation Bar.','1'),
 (14,'Enable Asset Menu on Nav Bar','header','asset_menu','Allows the user to see the Asset Menu in the Navigation Bar. This function does not restrict access to the Asset Menu if disabled. It only effects whether the user has the ability to see the Asset Menu from the Navigation Bar.','1'),
 (15,'Enable Remediation Menu on Nav Bar','header','remediation_menu','Allows the user to see the Remediation Menu in the Navigation Bar. This function does not restrict access to the Remediation Menu if disabled. It only effects whether the user has the ability to see the Remediation Menu from the Navigation Bar.','1'),

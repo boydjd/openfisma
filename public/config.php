@@ -14,7 +14,7 @@ function displayLoginInfor($smarty, $user) {
 	if(isset($smarty)) {
 		if(isset($user)) {
 			// get right for current user
-			$dashboard_menu = $user->checkRightByFunction($screen_name, "dashboard_menu");
+			$dashboard_menu = $user->checkRightByFunction("dashboard", "view");
 			$asset_menu = $user->checkRightByFunction($screen_name, "asset_menu");
 			$remediation_menu = $user->checkRightByFunction($screen_name, "remediation_menu");
 			$report_menu = $user->checkRightByFunction($screen_name, "report_menu");
