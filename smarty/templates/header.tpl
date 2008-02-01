@@ -35,13 +35,9 @@
         <td width="30%" align="right">
 	<table border="0">
 	<tr>
-		{if $pass_change eq 1}
 		<td nowrap><a href="pwdchange.php" class="link"><img src="images/button_change_password.png" border="0"></a></td>
-		{/if}
 		<td>&nbsp;</td>
-		{if $logout eq 1}
 		<td><a href="login.php?logout=1"><img src="images/button_logout.png" border="0"></a></td>
-		{/if}
 	</tr>
 	<tr>
 		<td align="right" colspan="3" nowrap><u><b>{$firstname} {$lastname}</b></u> Logged in</td>
