@@ -175,10 +175,10 @@ UNLOCK TABLES;
 
 /* default user functions setup in openfimsa */
 LOCK TABLES `FUNCTIONS` WRITE;
-INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the user to see the View Column on the Findings Summary page. This allows the user to view specific information about the finding. Very similar to finding_edit except the user cannot modify the status while viewing the detailed information.','1'),
-(2,'Edit Findings','finding','edit','Allows the user the ability to view the edit functions on the Findings Summary page. The edit ability allows the user to modify the status of a finding from OPEN to DELETED.','1'),
-(3,'Enable New Finding on Nav Bar','finding','add','Allows the user access to the New Finding menu item under Findings on the navigation bar. This does not remove the ability to directly link to the page but removes the link from the navigation bar.','1'),
-(4,'Delete Findings','finding','delete','Allows the user the ability to delete findings from the Findings Summary page. Findings may be deleted in goups or individually. ','1'),
+INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the user to view findings.','1'),
+(2,'Edit Findings','finding','edit','Allows the user to edit findings.','1'),
+(3,'Create Findings','finding','add','Allows the user to create new findings.','1'),
+(4,'Delete Findings','finding','delete','Allows the user the ability to delete findings.','1'),
 (5,'remediation_view','remediation','view','','1'),
 (6,'remediation_delete','remediation','delete','','1'),
 (7,'remediation_create','remediation','create','','1'),
@@ -190,10 +190,8 @@ INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the u
 (16,'Enabel Report Menu on Nav Bar','header','report_menu','Allows the user to see the Reports Menu in the Navigation Bar. This function does not restrict access to the Reports Menu if disabled. It only effects whether the user has the ability to see the Reports Menu from the Navigation Bar.','1'),
 (17,'Enable Administration Menu on Nav Bar','header','admin_menu','Allows the user to see the Administration Menu in the Navigation Bar. This function does not restrict access to the Administration Menu if disabled. It only effects whether the user has the ability to see the Administration Menu from the Navigation Bar.','1'),
 (18,'Enable Vulnerabilities Menu on Nav Bar','header','vulner_menu','Allows the user to see the Vulnerabilities Menu in the Navigation Bar. This function does not restrict access to the Vulnerabilities if disabled. It only effects whether the user has the ability to see the Vulnerabilities Menu from the Navigation Bar.','1'),
-(21,'Enable Findings Summary on Nav Bar','finding','summary','Allows the user to access the Findings Summary page from the Finding menu in the navigation bar. This does not remove a users ability to directly link to the page but only removes the Findings Summary item from the navigation menu. ','1'),
-(22,'finding_list','finding','list','Doesn\\\'t appear to be functioning.','1'),
 (23,'consolidate_edit','finding','consol_edit','','1'),
-(24,'Upload Findings','finding','upload','Allows the user to upload findings. Function also removes Upload Scan Results from Navigation bar if deactivated.','1'),
+(24,'Upload Findings','finding','upload','Allows the user to upload findings.','1'),
 (25,'summary_view','asset','summary','display the asset summary setion','1'),
 (26,'asset_filter','asset','list','','1'),
 (27,'Enable Create Asset Menu on Nav Bar','asset','new','Allows user the ability to see the Create an Asset Menu item on the Navigation bar. This does not remove direct access to the page but only removes the link from the menu, user may still access the create an asset page.','1'),

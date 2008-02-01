@@ -15,15 +15,13 @@ function displayLoginInfor($smarty, $user) {
 		if(isset($user)) {
 			// get right for current user
 			$dashboard_menu = $user->checkRightByFunction($screen_name, "dashboard_menu");
-			$finding_menu = $user->checkRightByFunction($screen_name, "finding_menu");
 			$asset_menu = $user->checkRightByFunction($screen_name, "asset_menu");
 			$remediation_menu = $user->checkRightByFunction($screen_name, "remediation_menu");
 			$report_menu = $user->checkRightByFunction($screen_name, "report_menu");
 			$admin_menu = $user->checkRightByFunction($screen_name, "admin_menu");
 			$vulner_menu = $user->checkRightByFunction($screen_name, "vulner_menu");
 
-			// submenu
-			$finding_summary = $user->checkRightByFunction("finding", "summary");
+			$finding_menu = $user->checkRightByFunction("finding", "view");
 			$finding_add = $user->checkRightByFunction("finding", "add");
 			$finding_upload = $user->checkRightByFunction("finding", "upload");
 

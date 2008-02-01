@@ -40,7 +40,7 @@
 		<td><a href="login.php?logout=1"><img src="images/button_logout.png" border="0"></a></td>
 	</tr>
 	<tr>
-		<td align="right" colspan="3" nowrap><u><b>{$firstname} {$lastname}</b></u> Logged in</td>
+		<td align="right" colspan="3" nowrap><u><b>{$firstname} {$lastname}</b></u> is currently logged in.</td>
 	</tr>
 	</table>
 	</td>
@@ -102,11 +102,11 @@
 	{if $finding_menu eq 1}
 	<div class=menu id="finding" onMouseOver="HoldMenu();" onMouseOut="HideMenu('finding');">
 	<table cellpadding="0" cellspacing="0" border="0">
-	{if $finding_summary eq 1}
+
 	<tr>
 		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding.php" class="n navicon" id="fs"> Findings Summary</a></td>
 	</tr>
-	{/if}
+
 	{if $finding_add eq 1}
 	<tr>
 		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="findingdetail.php" class="n navicon" id="cnf"> New Finding</a></td>
