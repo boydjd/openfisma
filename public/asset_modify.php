@@ -164,7 +164,7 @@ if($edit_right && $asset_id>0)
 	//$smarty->assign('formaction','asset_modify.php?asset_id='.$asset_id);
 	$smarty->assign('formaction','asset_modify.php');
 }
-	$smarty->assign('pageTitle', 'OVMS');
+	$smarty->assign('pageTitle', 'OpenFISMA');
 	$smarty->assign('pageName', 'Update an Asset');
 	$smarty->assign('now', get_page_datetime());
 

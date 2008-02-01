@@ -1,5 +1,7 @@
 {if $firstlogin ne true}
-{include file="header.tpl" title="OVMS" name="Change password"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 {else}
 <html>
 <head>

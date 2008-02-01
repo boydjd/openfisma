@@ -4,9 +4,7 @@ require_once("ovms.ini.php"); # $CUSTOMER_URL, $CUSTOMER_LOGO, $LOGIN_WARNING
 
 $customer_url  = $CUSTOMER_URL;
 $customer_logo = $CUSTOMER_LOGO;
-
 $login_warning = $LOGIN_WARNING;
-
 
 
 function displayLoginInfor($smarty, $user) {

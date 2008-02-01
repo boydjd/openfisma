@@ -1,10 +1,8 @@
 <?PHP
 header("Cache-Control: no-cache, must-revalidate");
 
-//error_reporting(E_ALL ^ E_NOTICE);
 require_once("config.php");
 require_once("smarty.inc.php");
-
 require_once("dblink.php");
 require_once("pubfunc.php");
 require_once("tbfunc.php");
@@ -21,7 +19,6 @@ require_once("page_utils.php");
 session_start();
 $user = new User($db);
 verify_login($user, $smarty);
-
 
 // table count, table option must be unique with database schema, or will be occur error
 $table_count = count($table_arr);

@@ -20,6 +20,7 @@ require_once("pubfunc.php");
 require_once("page_utils.php");
 
 $screen_name = "remediation";
+$smarty->assign('pageName', 'Remediation Summary');
 
 // grab today's date
 $today = gmdate("Ymd", time());
@@ -224,24 +225,6 @@ if($view_right || $del_right || $edit_right)
 	$results = $db->sql_query($query);
 	$action_owners = $db->sql_fetchrowset($results);
 	$smarty->assign('action_owners', $action_owners);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
 	//
 	// REMEDIATION LIST INFORMATION QUERY
@@ -644,7 +627,5 @@ if($view_right || $del_right || $edit_right)
 /*******************************************************************************
 * PAGE DISPLAY
 *******************************************************************************/
-
-$smarty->assign('now', get_page_datetime());
 $smarty->display('remediation.tpl');
 ?>

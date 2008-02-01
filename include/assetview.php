@@ -7,13 +7,14 @@ $query_string = @$_REQUEST;
 require_once("config.php");
 require_once("../include/smarty.inc.php");
 require_once("dblink.php");
-
+require_once("page_utils.php");
 require_once("asset.class.php");
 require_once("assetDBManager.php");
 
 /* BEGIN **** User Right ***************/
 require_once("user.class.php");
 $screen_name = "asset";
+$smarty->assign('pageName', 'View an Asset');
 
 session_start();
 $user = new User($db);
@@ -127,9 +128,7 @@ if($view_right && $aid>0) {
 	$smarty->assign('aid',$aid);
 
 }
-	$smarty->assign('pageTitle', 'OVMS');
-	$smarty->assign('pageName', 'View an Asset');
-	$smarty->assign('now', gmdate ("M d Y H:i:s", time()));
+
 	$smarty->display('assetsview.tpl');
 
 ?>

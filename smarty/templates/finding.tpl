@@ -1,4 +1,7 @@
-{include file="header.tpl" title="OVMS" name="Finding Summary"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
+
 {literal}
 <script language="javascript" src="javascripts/func.js"></script>
 <script language="javascript">

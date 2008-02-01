@@ -1,5 +1,8 @@
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
+
 <div align="left">
-{include file="header.tpl" title="OVMS" name="Finding Summary"}
 
 {literal}
 <script language="javascript">

@@ -13,6 +13,7 @@ require_once("user.class.php");
 require_once("page_utils.php");
 
 $screen_name = "finding";
+$smarty->assign('pageName', 'Finding Summary');
 
 session_start();
 

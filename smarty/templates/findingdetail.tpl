@@ -1,4 +1,6 @@
-{include file="header.tpl" title="Firstlight" name="Finding Detail"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 <!-- Heading Block -->
 

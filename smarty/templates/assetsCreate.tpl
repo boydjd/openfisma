@@ -1,4 +1,9 @@
- {include file="header.tpl" title="$pageTitle" name="$pageName"} {literal}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
+
+{literal}
+
 <link type="text/css" rel="StyleSheet" href="stylesheets/sortabletable.css" />
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/sortabletable.js"></script>
 <script language="javascript">

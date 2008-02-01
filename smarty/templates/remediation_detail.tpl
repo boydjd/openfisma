@@ -5,11 +5,9 @@
 <!-- PURPOSE : establishes template for remediation_detail  page             -->
 <!-- ----------------------------------------------------------------------- -->
 
-<!-- ----------------------------------------------------------------------- -->
-<!-- HEADER INCLUDE                                                          -->
-<!-- ----------------------------------------------------------------------- -->
-
-{include file="header.tpl" title="OVMS" name="Remediation Detail"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 {literal}
 <script language="javascript">

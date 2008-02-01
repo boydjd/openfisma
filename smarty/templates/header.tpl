@@ -121,7 +121,7 @@
 		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding_upload.php" class="n navicon" id="usr"> Upload Scan Results</a></td>
 	</tr>
 	<tr>
-		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding_injection.php" class="n navicon" id="usr"> Finding Data Injection</a></td>
+		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding_injection.php" class="n navicon" id="usr"> Spreadsheet Upload</a></td>
 	</tr>
 	{/if}
 	</table>

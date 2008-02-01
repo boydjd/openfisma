@@ -1,5 +1,6 @@
-
-{include file="header.tpl" title="OVMS" name="Create New Finding"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 {literal}
 <script language="javascript" src="javascripts/ajax.js"></script>

@@ -1,5 +1,6 @@
-
-{include file="header.tpl" title="OVMS" name="Vulnerability : Detail"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 <table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
 <tr>

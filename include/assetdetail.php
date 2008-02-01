@@ -14,6 +14,7 @@ require_once("user.class.php");
 require_once("page_utils.php");
 
 $screen_name = "asset";
+$smarty->assign('pageName', 'Update an Asset');
 
 session_start();
 $user = new User($db);
@@ -132,9 +133,6 @@ if($edit_right && $aid>0) {
 	$smarty->assign('aid',$aid);
 	$smarty->assign('formaction','assetdetail.php?aid='.$aid);
 }	
-	$smarty->assign('pageTitle', 'OVMS');
-	$smarty->assign('pageName', 'Update an Asset');
-	$smarty->assign('now', get_page_datetime());
 	$smarty->display('assetsCreate.tpl');
 
 ?>

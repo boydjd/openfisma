@@ -20,6 +20,7 @@ require_once("user.class.php");
 require_once("page_utils.php");
 
 $screen_name = "remediation_detail";
+$smarty->assign('pageName', 'Remediation Summary');
 
 session_start();
 
@@ -526,8 +527,5 @@ $smarty->assign('is_completed', $is_completed);
 /*******************************************************************************
 * PAGE DISPLAY
 *******************************************************************************/
-
-
-$smarty->assign('now', gmdate ("M d Y H:i:s", time()));
 $smarty->display('remediation_detail.tpl');
 ?>

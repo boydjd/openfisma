@@ -62,9 +62,9 @@ if($view_right && $asset_id>0) {
 }
 
 
-$smarty->assign('pageTitle', 'OVMS');
+$smarty->assign('pageTitle', 'OpenFISMA');
 $smarty->assign('pageName', 'View an Asset');
-$smarty->assign('now', gmdate ("M d Y H:i:s", time()));
+$smarty->assign('now', get_page_datetime());
 
 
 // display our template

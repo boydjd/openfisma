@@ -1,10 +1,8 @@
 <!-- PURPOSE : provides template for the finding_injection page                -->
 
-<!-- ---------------------------------------------------------------------- -->
-<!-- HEADER TEMPLATE INCLUDE                                                -->
-<!-- ---------------------------------------------------------------------- -->
-
-{include file="header.tpl" title="OVMS" name="Finding Upload"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 <!-- ---------------------------------------------------------------------- -->
 <!-- MAIN PAGE DISPLAY                                                      -->

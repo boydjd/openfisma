@@ -1,5 +1,6 @@
-
-{include file="header.tpl" title="OVMS" name="Edit Vulnerability"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 {literal}
 

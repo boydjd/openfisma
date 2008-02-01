@@ -7,9 +7,10 @@ require_once("smarty.inc.php");
 require_once("finding.class.php");
 require_once("findingDBManager.php");
 require_once("user.class.php");
-require_once("page_utils.php"); // verify_login(), get_page_datetime() 
+require_once("page_utils.php");
 
 $screen_name = "dashboard";
+$smarty->assign('pageName', 'Dashboard');
 
 session_start();
 

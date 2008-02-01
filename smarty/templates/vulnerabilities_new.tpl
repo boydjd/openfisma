@@ -1,4 +1,6 @@
-{include file="header.tpl" title="OVMS" name="Vulnerability : New Vulnerability"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 {literal}
 <script language="javascript">
 function selectall(num, flag) {

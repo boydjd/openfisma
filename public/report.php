@@ -1,8 +1,6 @@
 <?PHP
 header("Cache-Control: no-cache, must-revalidate");
 
-$SCREEN_NAME = 'report';
-
 session_start();
 session_register('rpdata');//register a session var for save report data.
 require_once("config.php");
@@ -13,6 +11,9 @@ require_once("report.class.php");
 require_once("RiskAssessment.class.php");
 require_once("user.class.php");
 require_once("page_utils.php");
+
+$screen_name = 'report';
+$smarty->assign('pageName', 'Reports');
 
 /*
 ** Check for user permission right away
@@ -117,7 +118,6 @@ if(!$generate_right) {
 ** Generate report or display generation request page
 */
 
-$smarty->assign('now', get_page_datetime());
 $smarty->assign('sub', $sub);
 $smarty->assign('t', $t);
 $smarty->assign('nowy', date ("Y", time()));//now year,for select options..

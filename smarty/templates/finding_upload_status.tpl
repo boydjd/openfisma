@@ -1,4 +1,6 @@
-{include file="header.tpl" title="OVMS" name="Finding Upload Status"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 {if isset($err_msg)}
   <p><b>Error:</b> {$err_msg}</p><br/>
   {/if}

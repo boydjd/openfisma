@@ -104,7 +104,7 @@ if($edit_right) {
 	$smarty->assign('action','create');
 	$smarty->assign('formaction','asset.create.php');
 }	
-	$smarty->assign('pageTitle', 'OVMS');
+	$smarty->assign('pageTitle', 'OpenFISMA');
 	$smarty->assign('pageName', 'Create an Asset');
 	$smarty->assign('now', get_page_datetime());
 	$smarty->display('assetsCreate.tpl');

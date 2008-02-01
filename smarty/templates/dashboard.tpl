@@ -1,5 +1,7 @@
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
-{include file="header.tpl" title="OVMS" name="Dashboard"}
 {literal}
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/func.js"></script>
 {/literal}

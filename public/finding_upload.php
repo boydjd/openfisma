@@ -7,7 +7,7 @@ require_once("ovms.ini.php");
 require_once("dblink.php");
 require_once("finding.class.php");
 require_once("findingDBManager.php");
-
+require_once("page_utils.php");
 require_once("upload_utils.php");
 
 /**************User Rights*****************/
@@ -15,6 +15,7 @@ require_once("user.class.php");
 
 
 $screen_name = "finding"; // sync with the finding page upload permissions
+$smarty->assign('pageName', 'Finding Upload');
 
 session_start();
 

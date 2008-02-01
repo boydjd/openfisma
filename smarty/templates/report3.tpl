@@ -1,4 +1,7 @@
-{include file="header.tpl" title="OVMS" name="Report"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
+
 {literal}
 <script language="javascript">
 function dosub() {

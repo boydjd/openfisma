@@ -1,10 +1,6 @@
-<!-- PURPOSE : provides template for the finding_upload page                -->
-
-<!-- ---------------------------------------------------------------------- -->
-<!-- HEADER TEMPLATE INCLUDE                                                -->
-<!-- ---------------------------------------------------------------------- -->
-
-{include file="header.tpl" title="OVMS" name="Finding Upload"}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 {literal}
 <script language="javascript">

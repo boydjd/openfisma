@@ -1,22 +1,8 @@
-<!-- ---------------------------------------------------------------------- -->
-<!-- FILE    : remediation.tpl                                              -->
-<!-- AUTHOR  : Brian Gant                                                   -->
-<!-- DATE    : 02/06/06                                                     -->
 <!-- PURPOSE : provides the summary listing of items in remediation         -->
-<!-- ---------------------------------------------------------------------- -->
 
-<!-- ---------------------------------------------------------------------- -->
-<!-- HEADER TEMPLATE                                                        -->
-<!-- ---------------------------------------------------------------------- -->
-
-
-
-<!-- ---------------------------------------------------------------------- -->
-<!-- SUMMARY                                                                -->
-<!-- ---------------------------------------------------------------------- -->
-
-<!-- SUMMARY HEADER -->
-
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
 
 {literal}
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.js"></script>
@@ -155,8 +141,6 @@ function order_page(para)
 }
 </script>
 {/literal}
-
-{include file="header.tpl" title="OVMS" name="Remediation Detail"}
 
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 

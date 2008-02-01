@@ -8,10 +8,11 @@ require_once("smarty.inc.php");
 require_once("dblink.php");
 //require_once("asset.class.php");
 require_once("assetDBManager.php");
-
+require_once("page_utils.php");
 /* BEGIN **** User Right ***************/
 require_once("user.class.php");
 $screen_name = "asset";
+$smarty->assign('pageName', 'Assets');
 
 session_start();
 $user = new User($db);
@@ -110,7 +111,6 @@ if($view_right || $del_right || $edit_right) {
 	$smarty->assign('network_list', $network_list);
 }
 
-	$smarty->assign('now', gmdate ("M d Y H:i:s", time()));
 	$smarty->display('assets.tpl');
 
 

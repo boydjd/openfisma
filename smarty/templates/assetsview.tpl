@@ -1,4 +1,7 @@
- {include file="header.tpl" title="$pageTitle" name="$pageName"} {literal} {/literal}
+<!-- HEADER TEMPLATE INCLUDE -->
+{include file="header.tpl" title="$pageTitle" name="$pageName"} 
+<!-- END HEADER TEMPLATE INCLUDE --> 
+{literal} {/literal}
 <table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
   <tr>
     <td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>{$pageName}</b></td>

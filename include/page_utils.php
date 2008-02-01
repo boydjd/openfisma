@@ -15,12 +15,23 @@ function verify_login($user, $smarty) {
   displayLoginInfor($smarty, $user);
   }
 
+/*
+** date_default_timezone_set() sets the default timezone used by all date/time functions.
+*/  
+  
 function get_page_datetime() {
-    date_default_timezone_set('UTC') ;
+  date_default_timezone_set('America/New_York');
   return strftime("%b %d %Y %I:%M:%S %p");
   }
 
+/*
+** Sets the title of each page
+*/
+$smarty->assign('pageTitle', 'OpenFISMA');
 
-
+/*
+** Sets the timezone of all dates
+*/
+$smarty->assign('now', get_page_datetime());
 
 ?>
