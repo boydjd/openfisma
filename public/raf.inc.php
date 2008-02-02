@@ -121,7 +121,7 @@ $poam_field_row['threat_likelihood'] = $threat_likelihood;
 /*
 ** Format text fields
 */
-massage_POAM_fields(&$poam_field_row);
+massage_POAM_fields($poam_field_row);
 
 /*
 ** Add POAM row to report data set
@@ -227,7 +227,7 @@ $_SESSION['rpdata']   = $smarty->get_template_vars();
 //$smarty->display('raf.tpl');
 
 
-function massage_POAM_fields($poam_row) {
+function massage_POAM_fields(&$poam_row) {
   $BLANK_DATA = 'n/a';
 
   /*
