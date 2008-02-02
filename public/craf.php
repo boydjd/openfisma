@@ -258,7 +258,7 @@ function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
     array("<b>Low</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
     );
     
-    highlight_cell_text(&$impactdata, $rpdata['impact_idx']);
+    highlight_cell_text($impactdata, $rpdata['impact_idx']);
     
     $pdf->ezTable($impactdata,NULL,
     "<b>Impact Table</b>",
@@ -308,7 +308,7 @@ function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
     array("<b>Low</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
     );
     
-    highlight_cell_text(&$threatdata, $rpdata['threat_idx']);
+    highlight_cell_text($threatdata, $rpdata['threat_idx']);
     
     $pdf->ezTable($threatdata,NULL,
     "<b>Threat Likelihood Table</b>",
@@ -339,7 +339,7 @@ function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
     array("<b>Low</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
     );
     
-    highlight_cell_text(&$riskdata, $rpdata['risk_idx']);
+    highlight_cell_text($riskdata, $rpdata['risk_idx']);
     
     $pdf->ezTable($riskdata,NULL,
     "<b>Risk Level Table</b>",
@@ -384,7 +384,7 @@ function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
 **
 ** Data cells have been presumed de-emphasized via the <c:deemphasize> tags
 */
-function highlight_cell_text($table_array_4x4, $highlight_cell) {
+function highlight_cell_text(&$table_array_4x4, $highlight_cell) {
   // Skip the column headers, but ignore the row headers for this calculation
   $highlight_row = ($highlight_cell / 3) + 1;
   // Skip the row header to determine correct column
