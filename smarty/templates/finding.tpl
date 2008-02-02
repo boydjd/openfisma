@@ -4,6 +4,7 @@
 
 {literal}
 <script language="javascript" src="javascripts/func.js"></script>
+
 <script language="javascript">
 
 function pageskip(flag) {
@@ -189,7 +190,9 @@ function findingdetail(fid, func) {
             <img src="images/picker.gif" valign="middle" width=24 height=22 border=0></span></td>
 	</tr>
 	<tr id="row6">
-		<td id="cell 1"><input type="image" name="search" src="images/button_search.png" border="0" onclick="dosearch();">											
+		<td id="cell 1">
+        <input name="button" type="button" id="button" value="Search" onClick="dosearch();" style="cursor:hand;">
+        <input type="image" name="search" src="images/button_search.png" border="0" onclick="dosearch();">											
         </td>
 	</tr>
 </table>
@@ -210,13 +213,11 @@ function findingdetail(fid, func) {
     	<td>
 			<table align="left" border="0" cellpadding="5" cellspacing="0">
 				<tr>
-					<td id="cell 1">Total pages: <b>{$totalpage}</b></td>
-					<td id="cell 2"><span {if $pageno ne 1}style="cursor: pointer" onclick="pageskip(false);"{/if}>
-  							<img src="images/button_prev.png" border="0"></span></td>
-					<td id="cell 3"><span {if $nextpage eq 1 && $pageno lt $totalpage}style="cursor: pointer" onclick="pageskip(true);"{/if}>
-  							<img src="images/button_next.png" border="0"></span></td>
-					<td id="cell 4">Current Page:</td>
-					<td id="cell 5"><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes"></td>
+					<td id="cell 1">Page <b>{$pageno}</b> of <b>{$totalpage}</b></td>
+					<td id="cell 2">
+            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip(false);" style="cursor:hand;">
+		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip(true);" style="cursor:hand;">
+					</td>
 				</tr>
 			</table>
 		</td>
@@ -233,16 +234,10 @@ function findingdetail(fid, func) {
 				<tr>
 					<td align="left">
 						{if $del_right eq 1}
-						<span style="cursor: pointer">
-                        	<img src="images/button_select_all.png" border="0" onclick="selectall('finding', 'fid_', true);"></span>&nbsp;
-						<span style="cursor: pointer">
-                        	<img src="images/button_select_none.png" border="0" onclick="selectall('finding', 'fid_', false);"></span>
-						{/if}
-					</td>
-					<td align="right">
-						{if $del_right eq 1}
-						<span style="cursor: pointer">
-                        	<img src="images/button_delete.png" border="0" onclick="document.finding.sbt.value='delete'; return deleteconfirm('finding','fid_','finding');"></span>
+                        <input name="button" type="button" id="button" value="Select All" onclick="selectall('finding', 'fid_', true);" style="cursor:hand;">
+                        <input name="button" type="button" id="button" value="Select None" onclick="selectall('finding', 'fid_', false);" style="cursor:hand;">
+                        <input 	name="button" type="button" id="button" value="Delete" 
+                        		onClick="document.finding.sbt.value='delete'; return deleteconfirm('finding','fid_','finding');" style="cursor:hand;">
 						{/if}
 					</td>
 				</tr>

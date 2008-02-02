@@ -30,67 +30,57 @@
 <table align="center" width="810" border="0" cellpadding="3" cellspacing="1">
 <tr>
 	<td colspan="2">
-	<table border="0" width="100%" cellpadding="3" cellspacing="1">
+	
+    <table border="0" width="100%" cellpadding="3" cellspacing="1">
 	<tr>
 		<td>
-		<fieldset style="border:1px solid #44637A; padding:5">
+		
+        <fieldset style="border:1px solid #44637A; padding:5">
 		<legend><b>General Information</b></legend>
-		<table border="0" width="400" cellpadding="1" cellspacing="1">
-		<tr>
-			<td>
-			<table border="0" cellpadding="1" cellspacing="1">
+		<table border="0" width="100%" cellpadding="1" cellspacing="1">
 			<tr>
-				<td align="right"><b>Discovered Date:</b></td>
 				<td>
-				<table border="0" cellpadding="0" cellspacing="0">
-				<tr>
-					<td><input type="text" name="discovereddate" size="12" maxlength="10" value="{$discovered_date}">&nbsp;</td>
-					<td><span onclick="javascript:show_calendar('finding.discovereddate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
-				</tr>
-				</table>
+
+				<table border="0" cellpadding="1" cellspacing="1">
+						<tr>
+							<td align="right"><b>Discovered Date:</b></td>
+								<td>
+
+								<table border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td><input type="text" name="discovereddate" size="12" maxlength="10" value="{$discovered_date}">&nbsp;</td>
+										<td><span onclick="javascript:show_calendar('finding.discovereddate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
+									</tr>
+								</table>
+							
+                            </td>
+						</tr>
+						<tr>
+							<td align="right"><b>Finding Source:</b></td>
+							<td><select name="source">
+								{foreach from=$source_list key=sid item=sname}
+								<option value="{$sid}">{$sname}</option>
+								{/foreach}
+								</select>
+ 							</td>
+						</tr>
+					</table>
+
 				</td>
 			</tr>
-{*
-** Finding must begin life as OPEN - can't let user set this.
-			<tr>
-				<td align="right"><b>Status:</b></td>
-				<td><select name="status">
-					<option value="OPEN" selected>Open</option>
-					<option value="REMEDIATION">Remediation</option>
-					<option value="CLOSED">Closed</option>
-					<option value="DELETED">Deleted</option>
-					</select></td>
-			</tr>
-*}
-			<tr>
-				<td align="right"><b>Finding Source:</b></td>
-				<td><select name="source">
-					{foreach from=$source_list key=sid item=sname}
-					<option value="{$sid}">{$sname}</option>
-					{/foreach}
-					</select></td>
-			</tr>
-			</table>
-			</td>
-		</tr>
-		</table>
-
-		</fieldset>
-		</td>
-
-		<td>
-		<fieldset style="border:1px solid #44637A; padding:2">
-		<legend><b>Instance Specific Information</b></legend>
-		<table border="0" align="center" cellpadding="1" cellspacing="1">
-		<tr>
-			<td>Description:<br>
-			<textarea name="finding_data" cols="60" rows="2" style="border:1px solid #333; height:41px;"></textarea></td>
-		</tr>
+            <tr>
+            	<td colspan="3" valign="middle"><hr size="1" color="#cccccc"></td>
+            </tr>
+            <tr>
+            	<td>Enter Description of Finding:<br>
+					<textarea name="finding_data" cols="60" rows="5" style="border:1px solid #333; width:100%; height:70px;"></textarea>
+                </td>
+            </tr>
 		</table>
 		</fieldset>
-		</td>
-	</tr>
-
+		
+        </td>
+ 	</tr>
 	<tr style="display:none">
 		<td colspan="2">
 		
@@ -213,17 +203,18 @@
 			<td colspan="2" valign="top"><hr size="1" color="#cccccc"></td>
 		</tr>
 		<tr>
-			<td width="200" align="center"><select name="asset_list" size="10" style="width: 190px;" onchange="loadAsset('ajaxsearch.php');">
+			<td width="200" align="center">
+            	<select name="asset_list" size="10" style="width: 190px;" onchange="loadAsset('ajaxsearch.php');">
 				<option value="">--None--</option>
 				{foreach from=$asset_list key=sid item=sname}
 				<option value="{$sid}">{$sname}</option>
 				{/foreach}
 				</select></td>
-			<td valign="top">
-			<fieldset style="height:115;border:1px solid #44637A; padding:5">
-			<legend><b>Asset Information</b></legend>
-			<div id="assetarea"></div>
-			</fieldset>
+			<td width="600" align="center" valign="top">
+				<fieldset style="height:115; border:1px solid #44637A; padding:5">
+				<legend><b>Asset Information</b></legend>
+				<div id="assetarea"></div>
+				</fieldset>
 			</td>
 		</tr>
 		</table>

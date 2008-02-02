@@ -1,4 +1,3 @@
-
 function selectall(thisform, headname, checkflag) {
 	var formObj = document.forms[thisform];
 
@@ -6,7 +5,6 @@ function selectall(thisform, headname, checkflag) {
 		if(formObj.elements[i].type == 'checkbox') {
 			ename = formObj.elements[i].name;		
 			if(ename.substring(0, headname.length) == headname) {
-				//alert(ename);
 				formObj.elements[i].checked = checkflag;
 			}
 		}

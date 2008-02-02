@@ -13,20 +13,24 @@ function displayLoginInfor($smarty, $user) {
 	$screen_name = "header";
 	if(isset($smarty)) {
 		if(isset($user)) {
-			// get right for current user
+
 			$dashboard_menu = $user->checkRightByFunction("dashboard", "view");
-			$asset_menu = $user->checkRightByFunction($screen_name, "asset_menu");
-			$remediation_menu = $user->checkRightByFunction($screen_name, "remediation_menu");
-			$report_menu = $user->checkRightByFunction($screen_name, "report_menu");
-			$admin_menu = $user->checkRightByFunction($screen_name, "admin_menu");
-			$vulner_menu = $user->checkRightByFunction($screen_name, "vulner_menu");
 
 			$finding_menu = $user->checkRightByFunction("finding", "view");
 			$finding_add = $user->checkRightByFunction("finding", "add");
 			$finding_upload = $user->checkRightByFunction("finding", "upload");
 
-			$asset_summary = $user->checkRightByFunction("asset", "summary");
-			$asset_new = $user->checkRightByFunction("asset", "new");
+			$asset_menu = $user->checkRightByFunction("asset", "view");
+			$asset_summary = $user->checkRightByFunction("asset", "view");
+			$asset_new = $user->checkRightByFunction("asset", "add");
+						
+			$remediation_menu = $user->checkRightByFunction($screen_name, "remediation_menu");
+
+			$report_menu = $user->checkRightByFunction($screen_name, "report_menu");
+
+			$admin_menu = $user->checkRightByFunction($screen_name, "admin_menu");
+
+			$vulner_menu = $user->checkRightByFunction($screen_name, "vulner_menu");
 
 			$report_poam_generate = $user->checkRightByFunction("report", "poam_generate");
 			$report_fisma_generate = $user->checkRightByFunction("report", "fisma_generate");
@@ -56,7 +60,6 @@ function displayLoginInfor($smarty, $user) {
 			$smarty->assign('admin_menu', $admin_menu);
 			$smarty->assign('vulner_menu', $vulner_menu);
 
-			// submenu
 			$smarty->assign('finding_summary', $finding_summary);
 			$smarty->assign('finding_add', $finding_add);
 			$smarty->assign('finding_upload', $finding_upload);

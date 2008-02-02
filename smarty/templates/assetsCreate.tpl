@@ -20,8 +20,6 @@ function changeAddrType(obj){
 function getProductMsg(obj){
 	var id = obj.value;
 	
-	//alert(document.getElementById('prod_vendor_19').innerHTML);
-	//eval("var temp = document.getElementById(\'prod_vendor_" + id + "\').innerHTML;");
 	eval("document.getElementById('vendor').innerHTML=document.getElementById('prod_vendor_"+id+"').innerHTML");
 	eval("document.getElementById('product').innerHTML=document.getElementById('prod_name_"+id+"').innerHTML");
 	eval("document.getElementById('version').innerHTML=document.getElementById('prod_version_"+id+"').innerHTML");
@@ -29,9 +27,6 @@ function getProductMsg(obj){
 }
 function initProductMsg(id){
 	
-	
-	//alert(document.getElementById('prod_vendor_19').innerHTML);
-	//eval("var temp = document.getElementById(\'prod_vendor_" + id + "\').innerHTML;");
 	eval("document.getElementById('vendor').innerHTML=document.getElementById('prod_vendor_"+id+"').innerHTML");
 	eval("document.getElementById('product').innerHTML=document.getElementById('prod_name_"+id+"').innerHTML");
 	eval("document.getElementById('version').innerHTML=document.getElementById('prod_version_"+id+"').innerHTML");
@@ -67,7 +62,6 @@ function checkip(ip,flag)
 	addr = ip.split(".");
 	scount = addr.length;
 	
-	  
 	if(scount!=segnum) 
 	{ 
 	    return false; 
@@ -185,17 +179,7 @@ function do_create()
 	else return false;
 	
 }
-function do_update()
-{
-	if (checkValidator())  
-	{
-		document.assetcreate.edit.value='update';	
-		document.assetcreate.search.value='';
-		document.assetcreate.submit();
-	}	
-	else return false;
-	
-}
+
 function do_search()
 {
 	document.assetcreate.edit.value='';	
@@ -225,283 +209,208 @@ function pageskip(flag) {
 var selected_prod_in_searchdata = false;
 </script>
 {/literal}
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-  <tr>
-    <td valign="bottom"><!--<img src="images/greenball.gif" border="0">--><b>{$pageName}</b></td>
-    <td align="right" valign="bottom">{$now}</td>
-  </tr>
+
+<!-- Heading Block -->
+<table class="tbline">
+<tr><td id="tbheading">Asset Creation</td><td id="tbtime">{$now}</td></tr>
 </table>
-{if $edit_right eq 1} <br>
-<form name="assetcreate" method="post" action="{$formaction}">
-  <input type="hidden" name="listall" value="{$listall}">
-  <input type="hidden" name="aid" value="{$aid}">
-  <input type="hidden" name="edit" value="">
-  <input type="hidden" name="add" value="">
-  <input type="hidden" name="search" value="">
-  <table width=100% border=0>
-    <tr>
-      <td align=left valign="middle"><!--input type="button" value="Create New Product" onclick="javascript:location.href='tbadm.php?tid=4&r_do=form'"-->
-        {if $action eq "create"}
-        <!--input type="button" name="Add" value="Create Asset" onClick="javascript:do_create()"-->
-        <img type="input" name="Add" value="Create Asset" onClick="javascript:do_create();" src="images/button_create.png" style="cursor:hand;" > {/if} {if $action eq "edit"}
-        <!--input type="button" name="Edit" value="Update Asset" onClick="javascript:do_update()"-->
-        <img type="input" name="Edit" value="Update Asset" onClick="javascript:do_update();" src="images/button_update.png" style="cursor:hand;" > {/if} <br><br></td>
-      <td></td>
-    </tr>
-    <tr width=100%>
-      <td width=500 valign=top><FIELDSET style="WIDTH: 480px">
-        <LEGEND>
-        <LABEL> General Infomation </LABEL>
-        </LEGEND>
-        <br>
-        <table width="100%" border="0" cellpadding="5" cellspacing="0">
-          <tr>
-            <td valign="center" align="left"><b>Asset Name </b></td>
-            <td valign="center" align="left"><input name="assetname" type="text" id="assetname" value="{$assetname}" size="23" maxlength="23"></td>
-          </tr>
-          <tr>
-            <td valign="center" align="left"><b>System:</b></td>
-            <td valign="center" align="left"><select name="system">
-                <option value="">--Select--</option>
+<!-- End Heading Block -->
+
+<!-- check user has rights to add an asset -->
+{if $add_right == 1}
+
+<br>
+
+<table width="810" border="0" align="center">
+	<tr>
+		<td>
+			<form name="assetcreate" method="post" action="{$formaction}">
+				<input type="hidden" name="listall" value="{$listall}">
+				<input type="hidden" name="aid" value="{$aid}">
+				<input type="hidden" name="edit" value="">
+				<input type="hidden" name="add" value="">
+				<input type="hidden" name="search" value="">
+			<table border="0" width="810">
+				<tr>
+					<td align=left>
+						<img type="input" name="Add" value="Create Asset" onClick="javascript:do_create();" 
+							src="images/button_create.png" style="cursor:hand;" > 
+					</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td valign=top>
+						<FIELDSET><LEGEND><LABEL> General Infomation </LABEL></LEGEND>
+						<table border="0" cellpadding="5">
+						<tr>
+							<td valign="center" align="left"><b>Asset Name </b></td>
+							<td valign="center" align="left">
+                            	<input name="assetname" type="text" id="assetname" value="{$assetname}" size="23" maxlength="23">
+                        	</td>
+						</tr>
+						<tr>
+							<td valign="center" align="left"><b>System:</b></td>
+							<td valign="center" align="left"><select name="system">
+								<option value="">--Select--</option>
+								{foreach from=$system_list key=sid item=sname}
+								{if $sid eq $system }
+								<option value="{$sid}" selected>{$sname}</option>
+								{else}
+								<option value="{$sid}">{$sname}</option>
+								{/if}
+								{/foreach}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td valign="center" align="left"><b>Network:</b></td>
+							<td valign="center" align="left"><select name="network" id="network">
+								<option value="">--Select--</option>
+									{foreach from=$network_list key=sid item=sname}
+									{if $sid eq $network }
+    							<option value="{$sid}" selected>{$sname}</option>
+									{else}
+								<option value="{$sid}">{$sname}</option>
+									{/if}
+									{/foreach}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td valign="center" align="left"><b>IP Address:</b></td>
+							<td valign="center" align="left"><input type="text" name="ip" value="{$ip}" maxlength="23" size="23">
+							<input type="radio" name="addrtype" value="1" onClick="javascript:changeAddrType(this);" {$chked1}> IPV4
+							<input type="radio" name="addrtype" value="2" onClick="javascript:changeAddrType(this);" {$chked2}> IPV6 </td>
+						</tr>
+						<tr>
+							<td valign="center" align="left"><b>Port:</b></td>
+							<td valign="center" align="left"><input type="text" name="port" value="{$port}" maxlength="5" size="5"></td>
+						</tr>
+					</table>
+						</FIELDSET>
+					</td>
+					<td valign="top">
+						<FIELDSET><LEGEND><LABEL> Product Search </LABEL></LEGEND>
+					<table border="0" cellpadding="5">
+						<tr>
+							<td><b>Product Search: </b> 
+								<input type="text" name="product_search" value="{$product_search}" size="20">
+								<img type="input" src="images/button_search.png" onclick="javascript: do_search();" style="cursor:hand;"> &nbsp;&nbsp;&nbsp; 
+								<img onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" src="images/button_create.png" style="cursor:hand;" >
+							</td>
+						</tr>
+					</table>
+					</FIELDSET>
+						<FIELDSET><LEGEND><LABEL> Current Product </LABEL></LEGEND>
+					<table border="0" cellpading="5">
+						<tr>
+							<td width=80><b>Vendor:</b></td>
+							<td id=vendor align=left></td>
+						</tr>
+						<tr>
+							<td><b>Product:</b></td>
+							<td id=product align=left></td>
+						</tr>
+						<tr>
+							<td><b>Version:</b></td>
+							<td id=version align=left></td>
+						</tr>
+					</table>
+					</FIELDSET>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<table width="800" align="center">
+<tr>
+<td>
+<table>
+	<tr>
+    	<td>
+			<FIELDSET><LEGEND><LABEL> Product List</LABEL></LEGEND>        	
+            <table border="0" width="800" cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="center" align="left">
+                        <table border="0" width="100%" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+                                	<table width="100%" border="0">
+										<tr>
+											<td><b>Result of Search:</b></td>
+											<td align=right>
+                                            	<table border="0">
+			                    					<tr>
+            			            					<td>{
+                                                        	if $pageno neq "1"}
+                                                            <span style="cursor: hand" onclick="pageskip(false);"><img src="images/button_prev.png" border="0"></span>
+                                                            {/if}
+                                                        </td>
+                    			    					<td>&nbsp;Page:</td>
+                        								<td>
+                                							<input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;
+                                						</td>
+                        								<td>
+                                                        	{if $pageno neq $maxpageno}<span style="cursor: hand" onclick="pageskip(true);">
+                                							<img src="images/button_next.png" border="0"></span>{/if}
+                                						</td>
+														<td>&nbsp; Total:  <b>{$maxpageno}</b> pages</td>
+                      								</tr>
+                    							</table>
+                                    
+											</td>
+										</tr>
+              						</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+                    
+   									<table border="0"  width=100%" class="sort-table" id="searchdata">
+
+										<thead>
+                  						<tr>	
+                    						<td>Select</td>
+                    						<td>Vendor</td>
+                    						<td>Product</td>
+                    						<td>Version</td>
+                  						</tr>
+                						</thead>
                 
+                							{section name=row loop=$prod_search_data}
                 
-                
-          
-          
-          
-          
-          
-              
-        {foreach from=$system_list key=sid item=sname}
-			{if $sid eq $system }
-			
-          
-          
-          
-          
-          
-          
-                
-                
-                <option value="{$sid}" selected>{$sname}</option>
-                
-                
-                
-          
-          
-          
-          
-          
-          
-        	{else}
-			
-          
-          
-          
-          
-          
-          
-                
-                
-                <option value="{$sid}">{$sname}</option>
-                
-                
-                
-          
-          
-          
-          
-          
-          
-            {/if}
-		{/foreach}
-		
-        
-        
-        
-        
-        
-        
-              
-              
-              </select></td>
-          </tr>
-          <tr>
-            <td valign="center" align="left"><b>Network:</b></td>
-            <td valign="center" align="left"><select name="network" id="network">
-                <option value="">--Select--</option>
-                
-                
-                
-          
-          
-          
-          
-          
-              
-        {foreach from=$network_list key=sid item=sname}
-			{if $sid eq $network }
-			
-          
-          
-          
-          
-          
-          
-                
-                
-                <option value="{$sid}" selected>{$sname}</option>
-                
-                
-                
-          
-          
-          
-          
-          
-          
-        	{else}
-			
-          
-          
-          
-          
-          
-          
-                
-                
-                <option value="{$sid}">{$sname}</option>
-                
-                
-                
-          
-          
-          
-          
-          
-          
-            {/if}
-		{/foreach}
-		
-        
-        
-        
-        
-        
-        
-              
-              
-              </select></td>
-          </tr>
-          <tr>
-            <td valign="center" align="left"><b>IP Address:</b></td>
-            <td valign="center" align="left"><input type="text" name="ip" value="{$ip}" maxlength="23" size="23">
-              <input type="radio" name="addrtype" value="1" onClick="javascript:changeAddrType(this);" {$chked1}>
-              IPV4
-              <input type="radio" name="addrtype" value="2" onClick="javascript:changeAddrType(this);" {$chked2}>
-              IPV6 </td>
-          </tr>
-          <tr>
-            <td valign="center" align="left"><b>Port:</b></td>
-            <td valign="center" align="left"><input type="text" name="port" value="{$port}" maxlength="5" size="5"></td>
-          </tr>
-        </table>
-        <br>
-        </FIELDSET></td>
-      <td align=right valign=top><FIELDSET>
-        <LEGEND>
-        <LABEL> Product Search</LABEL>
-        </LEGEND>
-        <br>
-        <table width="100%" border="0" cellpadding="5" cellspacing="0">
-          <tr>
-            <td><b>Product Search: </b>
-              <input type="text" name="product_search" value="{$product_search}" size="20">
-              <!--input type="button" name="Search" value="Search" onclick="javascript: do_search();"-->
-              <img type="input" src="images/button_search.png" onclick="javascript: do_search();" style="cursor:hand;"> &nbsp;&nbsp;&nbsp; <img onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" src="images/button_create.png" style="cursor:hand;" ></td>
-          </tr>
-        </table>
-        <br>
-        </FIELDSET>
-        <FIELDSET>
-        <LEGEND>
-        <LABEL> Current Product </LABEL>
-        </LEGEND>
-        <br>
-        <table width="100%"  border="0">
-          <tr>
-            <td width=80><b>Vendor:</b></td>
-            <td id=vendor align=left></td>
-          </tr>
-          <tr>
-            <td><b>Product:</b></td>
-            <td id=product align=left></td>
-          </tr>
-          <tr>
-            <td><b>Version:</b></td>
-            <td id=version align=left></td>
-          </tr>
-        </table>
-        <br>
-        </FIELDSET></td>
-    </tr>
-  </table>
-  <br>
-  <FIELDSET>
-  <LEGEND>
-  <LABEL> Product List</LABEL>
-  </LEGEND>
-  <table width="100%" border="0" cellpadding="5" cellspacing="0">
-    <tr width="100%">
-      <td valign="center" align="left"><table width="100%" border="0" cellpadding="5" cellspacing="0">
-          <tr>
-            <td><table width="100%">
-                <tr width="100%">
-                  <td><b>Result of Search:</b></td>
-                  <td align=right><table>
-                      <tr>
-                        <td>{if $pageno neq "1"}<span style="cursor: hand" onclick="pageskip(false);"><img src="images/button_prev.png" border="0"></span>{/if}</td>
-                        <td>&nbsp;Page:</td>
-                        <td><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">
-&nbsp;</td>
-                        <td>{if $pageno neq $maxpageno}<span style="cursor: hand" onclick="pageskip(true);"><img src="images/button_next.png" border="0"></span>{/if}</td>
-						<td>&nbsp; Total:  <b>{$maxpageno}</b> pages</td>
-                      </tr>
-                    </table></td>
-                </tr>
-              </table></td>
-          </tr>
-          <tr>
-            <!--class="tbframe"-->
-            <td><table width="100%"  border="0"  class="sort-table" id="searchdata">
-                <thead>
-                  <tr>
-                    <td></td>
-                    <td>Vendor</td>
-                    <td>Product</td>
-                    <td>Version</td>
-                  </tr>
-                </thead>
-                {section name=row loop=$prod_search_data}
-                <tr>
-                  <td class="tdc">&nbsp; {if $prod_id eq $prod_search_data[row].sid}
-                    <input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" Checked >
-                    <script>selected_prod_in_searchdata = true; </script>
-                    {else}
-                    <input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" >
-                    {/if} </td>
-                  <td class="tdc" id="prod_vendor_{$prod_search_data[row].sid}">{$prod_search_data[row].svendor|default:"&nbsp;"}</td>
-                  <td class="tdc" id="prod_name_{$prod_search_data[row].sid}">{$prod_search_data[row].sname|default:"&nbsp;"}</td>
-                  <td class="tdc" id="prod_version_{$prod_search_data[row].sid}">{$prod_search_data[row].sversion|default:"&nbsp;"}</td>
-                </tr>
-                {/section}
-              </table></td>
-          </tr>
-        </table></td>
-    </tr>
-  </table>
-  </FIELDSET>
+                						<tr>
+                  							<td class="tdc">&nbsp; {if $prod_id eq $prod_search_data[row].sid}
+                    						<input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" Checked >
+                    						<script>selected_prod_in_searchdata = true; </script>
+                    						{else}
+                    						<input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" >
+                    						{/if} </td>
+                  							<td class="tdc" id="prod_vendor_{$prod_search_data[row].sid}">{$prod_search_data[row].svendor|default:"&nbsp;"}</td>
+                  							<td class="tdc" id="prod_name_{$prod_search_data[row].sid}">{$prod_search_data[row].sname|default:"&nbsp;"}</td>
+                  							<td class="tdc" id="prod_version_{$prod_search_data[row].sid}">{$prod_search_data[row].sversion|default:"&nbsp;"}</td>
+                						</tr>
+                						{/section}
+              						</table>		
+
+								</td>
+							</tr>
+						</table>
+
+ 					</td>
+ 				</tr>
+            </FIELDSET>
+			</table>
+		</td>
+	</tr>
+</table>
+</td>
+</td>
+</table>
+
 </form>
+
 <script type="text/javascript">
 
 var st2 = new SortableTable(document.getElementById("searchdata"),
@@ -510,8 +419,9 @@ var st2 = new SortableTable(document.getElementById("searchdata"),
 </script>
 <script>if (selected_prod_in_searchdata) initProductMsg({$prod_id});</script>
 <br>
+
 {else}
-<p>No right do your request.</p>
+<p align="center">Sorry, you do not have sufficient rights to view this page.</p>
 {/if}
-<p>&nbsp;</p>
+
 {include file="footer.tpl"} 

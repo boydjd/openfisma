@@ -161,7 +161,6 @@ function do_order(param)
 	}
 	
 	do_search();
-
 }
 
 </script>
@@ -169,67 +168,9 @@ function do_order(param)
 
 </div>
 
-
-{* SUMMARY SECTION ---------------------------------------------------------- *}
-
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-	<tr>
-    	<td valign="bottom"><b>Assets:</b> Summary</td>
-	    <td align="right" valign="bottom">{$now}</td>
-	</tr>
-</table>
-
-
-{* DISPLAY THE SUMMARY TABLE *}
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1} <br>
-	<table align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-
-		<tr><th colspan="3" align=left>&nbsp;Assets Summary</th></tr>	
-    	{assign var="summary_data_svalue_total" value="0"}
-
-	    {* LOOP THROUGH THE SUMMARY DATA *}
-		{section name=summary loop=$summary_data}
-
-			{if $smarty.section.summary.rownum % 3 == "1" && $smarty.section.summary.rownum >= 1}
-			<tr>
-			{/if}
-	
-			{if $summary_data[summary].sname != "Total"}
-			    <td class="tdc">&nbsp;{$summary_data[summary].sname}[{$summary_data[summary].svalue}]</td>
-
-				{if $smarty.section.summary.rownum % 3 == "0" && $smarty.section.summary.rownum >= 1}
-					</tr>
-				{/if}
-
-				{else}
-
-					{if $smarty.section.summary.rownum % 3 == "2"}
-						<td class="tdc">&nbsp;</td><td class="tdc">&nbsp;</td></tr>
-					{/if}
-
-					{if $smarty.section.summary.rownum % 3 == "0"}
-						<td class="tdc">&nbsp;</td></tr>
-					{/if}
-		
-					{assign var="summary_data_svalue_total" value=$summary_data[summary].svalue}
-
-				{/if}
-	
-		{/section} 
-
-    	<tr><td colspan="3" align='left' class='tdc'>&nbsp;<b>Total Asset:</b> [{$summary_data_svalue_total}]</th></tr>	
-
-	</table>
 
 <br>
-
-
-{* FILTERS SECTION ---------------------------------------------------------- *}
-
-<!--input name="button" type="button" id="button" value="Create an Asset" onclick="javascript:location.href='asset.create.php'"-->
-<!--img type="input" name="Add" value="Create Asset" onClick="javascript:location.href='asset.create.php'" src="images/button_create.png" style="cursor:hand;" --> <br>
-
-
 <table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
 	<tr>
 		<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>Assets:</b> Filters</td>
@@ -332,15 +273,15 @@ function do_order(param)
     	<td> 
 
 			{if $del_right eq 1}
-        		<span style="cursor: hand;"><img name="all" value="Select All" onclick="selectall(true);" src="images/button_select_all.png"></span>&nbsp;
-        		<img name="none" value="Select None" onclick="selectall(false);" src="images/button_select_none.png" style="cursor:hand;"> 
-			{/if}
-
-			{if $del_right eq 1} &nbsp;
-		        <!--input type="submit" name="submit" value="Delete"-->
-		        <input type="image" value="Delete" src="images/button_delete.png" style="cursor:hand;"  onClick="javascript:do_delete();"> 
+            	<input name="button" type="button" id="button" value="Select All" 	onClick="selectall(true);" 			style="cursor:hand;">
+                <input name="button" type="button" id="button" value="Select None" 	onClick="selectall(false);" 		style="cursor:hand;">
+                <input name="button" type="button" id="button" value="Delete" 		onClick="javascript:do_delete();" 	style="cursor:hand;">
 			{/if} 
-
+            
+			{if $add_right eq 1} 
+                <input name="button" type="button" id="button" value="Create an Asset" onclick="javascript:location.href='asset.create.php'">
+			{/if} 
+            
 		</td>
 
 		<td align="right"> 
@@ -460,17 +401,11 @@ function do_order(param)
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
    	<tr>
    		<td> 
-		{if $del_right eq 1}
-        	<!--input type="button" name="all" value="Select All" onclick="selectall(true);"-->
-		    <img name="all" value="Select All" onclick="selectall(true);" src="images/button_select_all.png" style="cursor:hand;">&nbsp;
-        	<!--input type="button" name="none" value="Select None" onclick="selectall(false);"-->
-		    <img name="all" value="Select None" onclick="selectall(false);" src="images/button_select_none.png" style="cursor:hand;"> 
-		{/if}
-
-		{if $del_right eq 1} &nbsp;
-        	<!--input type="submit" name="submit" value="Delete"-->
-		    <input type="image" value="Delete" src="images/button_delete.png" style="cursor:hand;" onClick="javascript:do_delete();"> 
-		{/if} 
+			{if $del_right eq 1}
+            	<input name="button" type="button" id="button" value="Select All" 	onClick="selectall(true);" 			style="cursor:hand;">
+                <input name="button" type="button" id="button" value="Select None" 	onClick="selectall(false);" 		style="cursor:hand;">
+                <input name="button" type="button" id="button" value="Delete" 		onClick="javascript:do_delete();" 	style="cursor:hand;">
+			{/if} 
 		</td>
 		
 		<td align="right"></td>

@@ -1,65 +1,36 @@
 <?PHP
-error_reporting(0);
 ob_start();
 $query_string = @$_REQUEST;
+
 require_once("config.php");
 require_once("smarty.inc.php");
 require_once("dblink.php");
-
 require_once("asset.class.php");
 require_once("assetDBManager.php");
-
-/* BEGIN **** User Right ***************/
 require_once("user.class.php");
 require_once("page_utils.php");
 
 $screen_name = "asset";
 
 session_start();
+
 $user = new User($db);
 
-/*
-$loginstatus = $user->login();
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
-
-
-displayLoginInfor($smarty, $user);
-*/
 verify_login($user, $smarty);
-
-/*
-$smarty->assign("username", $user->getUsername());
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
-*/
-
-// get user right for this screen
-// $user->checkRightByFunction($screen_name, "function_name");
 
 $view_right	= $user->checkRightByFunction($screen_name, "view");
 $edit_right = $user->checkRightByFunction($screen_name, "edit");
 $add_right  = $user->checkRightByFunction($screen_name, "add");
 $del_right  = $user->checkRightByFunction($screen_name, "delete");
-//$view_right=0;
-//$edit_right=0;
-//$add_right=0;
-//$del_right=0;
-// let's template know how to display the page
+
 $smarty->assign('view_right', $view_right);
 $smarty->assign('edit_right', $edit_right);
 $smarty->assign('add_right', $add_right);
 $smarty->assign('del_right', $del_right);
-/* END **** User Right ***************/
-
 
 if($edit_right) {
 	//$query_string = $_REQUEST;
 	extract($query_string);
-	
 	
 	$dbObj = new AssetDBManager($db);
 	
@@ -104,9 +75,7 @@ if($edit_right) {
 	$smarty->assign('action','create');
 	$smarty->assign('formaction','asset.create.php');
 }	
-	$smarty->assign('pageTitle', 'OpenFISMA');
 	$smarty->assign('pageName', 'Create an Asset');
-	$smarty->assign('now', get_page_datetime());
 	$smarty->display('assetsCreate.tpl');
 
 ?>
