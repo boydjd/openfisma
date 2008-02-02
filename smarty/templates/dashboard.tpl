@@ -51,7 +51,7 @@
 </table>
 
 {else}
-<p>Insufficient privileges to view dashboard.</p>
+<p align="center">Sorry, You currently have insuficient privileges to view the dashboard.</p>
 {/if}
 
 <br>
