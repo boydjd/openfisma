@@ -143,9 +143,7 @@ function order_page(para)
 {/literal}
 
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
-
-<!-- Heading Block -->
-<table class="tbline">
+<!-- Heading Block --> <table class="tbline">
 <tr>
 <td id="tbheading">Remediation Summary</td>
 <td id="tbtime">{$now}</td>
@@ -157,20 +155,21 @@ function order_page(para)
 
 <table class="tbline">
 <tr>
-<td align="right">
+<td align="right" width="40%">
 {if $poam_id_not_exists eq ''}
-    Enter the <b>remediation id</b> here directly : 
 {else}
-    Sorry, <b>#{$poam_id_not_exists}</b> is not available, try again :
+    <span style="color:red;">Sorry, <b>#{$poam_id_not_exists}</b> is not available, try again :</span>
 {/if}
 </td>
 <td align="left">
+<div style = "*padding-top:2px;">
     <form action='remediation_detail.php' method='POST'>
     <input type="text" name="remediation_id" size="10">
     <input type="radio" value="remediation" name="radio_id" checked>Remediation ID
     <input type="radio" value="finding" name="radio_id" >Finding ID
     <input type="submit" value="I'm Feeling Lucky">
     </form>
+</div>
 </td>
 </tr>
 </table>
