@@ -11,6 +11,7 @@ require_once("report.class.php");
 require_once("RiskAssessment.class.php");
 require_once("user.class.php");
 require_once("page_utils.php");
+require_once("assetDBManager.php");
 
 $screen_name = 'report';
 $smarty->assign('pageName', 'Reports');
@@ -42,6 +43,7 @@ $smarty->assign('report_lang', $report_lang);
 $REPORT_TYPE_FISMA   = 1; // FISMA report
 $REPORT_TYPE_POAM    = 2; // POAM list
 $REPORT_TYPE_GENERAL = 3; // General reports
+$REPORT_TYPE_RAF     = 4; // General reports
 
 $REPORT_GEN_BLSCR  = 1;   // NIST Baseline Security Controls Report
 $REPORT_GEN_FIPS   = 2;   // FIPS 199 Category Breakdown
@@ -88,6 +90,7 @@ $sub = isset($_POST['sub'])?$_POST['sub']:'';
 $function_for = array(
  "$REPORT_TYPE_FISMA"                     => 'fisma_generate',
  "$REPORT_TYPE_POAM"                      => 'poam_generate',
+ "$REPORT_TYPE_RAF"                       => 'raf_generate',
  "$REPORT_TYPE_GENERAL"                   => 'general_generate',
  "$REPORT_TYPE_GENERAL$REPORT_GEN_BLSCR"  => 'general_generate',
  "$REPORT_TYPE_GENERAL$REPORT_GEN_FIPS"   => 'general_generate',
@@ -370,7 +373,27 @@ else if ($t==$REPORT_TYPE_GENERAL){
 	//echo $type;
 	$smarty->display('report3.tpl');
 }
-
+else if ($t==$REPORT_TYPE_RAF){
+    $dbObj = new AssetDBManager($db);
+	$system_list  = $dbObj->getSystemList();
+	$smarty->assign('system_list', $system_list);
+	$system_id = $_POST['system_id'];
+	if(!empty($system_id) && is_numeric($system_id) && $system_id>0){
+	    $sql = "SELECT poam_id FROM `POAMS` P
+	               LEFT JOIN `FINDINGS` F ON F.finding_id = P.finding_id
+	               LEFT JOIN `SYSTEM_ASSETS` SA ON SA.asset_id = F.asset_id
+	               WHERE P.poam_threat_level != 'NONE' 
+	                   AND P.poam_cmeasure_effectiveness != 'NONE' 
+	                   AND SA.system_id=".$system_id;
+	    $db->sql_query($sql);
+	    $poam_ids = $db->sql_fetchrowset();
+	    $num_poam_ids = $db->sql_numrows();
+        $smarty->assign('poam_ids', $poam_ids);
+        $smarty->assign('num_poam_ids', $num_poam_ids);
+        $smarty->assign('system_id', $system_id);
+	}
+    $smarty->display('report4.tpl');
+}
 ///////////////
 
 

@@ -183,6 +183,11 @@
 		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="javascript:submit_b(3)" class="n navicon" id="rp3"> General Reports </a></td>
 	</tr>
 	{/if}
+	{if $report_general_generate eq 1}
+	<tr>
+		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="javascript:submit_b(4)" class="n navicon" id="rp4"> Generate System RAFs </a></td>
+	</tr>
+	{/if}
 	</table>
 	</FORM>
 	</div>
