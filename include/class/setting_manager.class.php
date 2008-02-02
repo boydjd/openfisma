@@ -220,14 +220,19 @@ class setting_manager {
                     </tr>";
 
          foreach(self::$commentNames as $key => $comment) {
-             $ret .= "
-                    <tr>
+	     $ret .= "
+                     <tr>
                         <td class='bg3'><b>$comment</b></td> 
-                        <td class='bg1' style=\"word-break:break-all;\">".$this->dsn[$key]."</td>
-                    </tr>";
+			<td class='bg1' style=\"word-break:break-all;\">
+		      ";
+
+	     if(preg_match('/pass{1}/i',$key)){  
+                 $ret .= "******";
+	     }else{	
+		 $ret .= $this->dsn[$key];
+	     }
          }
-         $ret .= " </table></td></tr>
-            </table>";
+         $ret .= "</td></tr></table></td></tr></table>";
 
             foreach(self::$constantNames as $key => $name) {
                 $ret .= "<input type='hidden' name='$key$this->dbSurfix' value='".$this->dsn[$key]."' />";
