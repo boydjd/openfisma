@@ -191,9 +191,9 @@ function findingdetail(fid, func) {
 	</tr>
 	<tr id="row6">
 		<td id="cell 1">
-        <input name="button" type="button" id="button" value="Search" onClick="dosearch();" style="cursor:hand;">
-        <input type="image" name="search" src="images/button_search.png" border="0" onclick="dosearch();">											
-        </td>
+		<input name="button" type="reset" id="button" value="Reset" style="cursor:hand;">
+        <input name="button" type="submit" id="button" value="Search" onClick="dosearch();" style="cursor:hand;">
+		</td>
 	</tr>
 </table>
 
