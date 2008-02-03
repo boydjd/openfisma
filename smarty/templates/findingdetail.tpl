@@ -92,7 +92,7 @@
 				<tr>
 					<td valign="top">
 		       	        <!-- General Information Table -->
-						<table border="0" width="400" class="tipframe">
+						<table border="0" width="400" cellpadding="5" class="tipframe">
 						<tr>
 							<th align="left">General Information</th>
 						</tr>
@@ -133,7 +133,7 @@
         			</td>
             	    <td valign="top">
 		   				<!-- Asset Information Table -->
-						<table border="0" width="400" class="tipframe">
+						<table border="0" width="400" cellpadding="5" class="tipframe">
 						<tr>
 							<th align="left" >Asset: {$finding->asset_obj->asset_name}	</th>
 						</tr>
@@ -197,7 +197,7 @@
 	<tr id="row 3">
 		<td>
         	<!-- Finding Description -->
-			<table border="0" width="100%" cellpadding="3" cellspacing="1" class="tipframe">
+			<table border="0" width="100%" cellpadding="5" cellspacing="1" class="tipframe">
 				<tr>
 					<th align="left" colspan="3">Finding Information:</td>
 				</tr>
@@ -221,7 +221,7 @@
 	<tr id="row 4">
 		<td>
         	<!-- Vulnerability Information -->
- 			<table border="0" width="100%" cellpadding="3" cellspacing="1" class="tipframe">
+ 			<table border="0" width="100%" cellpadding="5" cellspacing="1" class="tipframe">
                                 <tr>
                                     <th align="left" colspan="3">Vulnerability:</td>
                                 </tr>

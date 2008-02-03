@@ -1,3 +1,4 @@
+/* Body Stylesheet */
 body {
 	margin: 0px;
 	padding: 0px;
@@ -16,17 +17,7 @@ li,input,select,textarea {
 	font-size: 10px;
 }
 
-th {
-	font-family: 'Verdana', 'Arial', 'Helvetica';
-	color: #44637A;
-	height: 23px;
-	font-weight: bold;
-	font-size: 10px;
-	background-image: url(../images/td_bg.gif) !important;
-	border-left: 1px solid #FFFFFF;
-	border-bottom: 1px solid #FFFFFF;
-}
-
+/* Bolde Style Sheet for all bold attributes */
 b {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
 	font-weight: bold;
@@ -34,6 +25,18 @@ b {
 	font-size: 10px;
 }
 
+/* Table Header Style Sheet for all Tables */
+th {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	color: #44637A;		/* Dark Blue */
+	height: 23px;
+	font-weight: bold;
+	font-size: 10px;
+	background-image: url(../images/td_bg.gif);
+	/* padding-left:inherit */	
+}
+
+/* Table Cell Style Sheet for all td cells */
 td {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
 	color: #000000;
@@ -62,6 +65,7 @@ td {
 	border-bottom: 1px solid #BEBEBE;
 }
 
+/* Stylesheet for separator headings */
 .tbline {
 	border-bottom: 1px solid #44637A;
 	width: 98%;
@@ -70,16 +74,17 @@ td {
 	margin-right: 1%;	
 }
 
+/* Stylesheet for time stamp */
+#tbtime {
+	color: black;
+	text-align: right;
+	vertical-align: bottom;
+}
+
 #tbheading {
 	color: #44637A;
 	font-weight: bold;
 	text-align: left;
-	vertical-align: bottom;
-}
-
-#tbtime {
-	color: black;
-	text-align: right;
 	vertical-align: bottom;
 }
 
@@ -125,8 +130,7 @@ li {
 	font-weight: normal;
 	color: #000000;
 	border: 1px solid #44637A;
-        border-collapse: collapse;
-
+    border-collapse: collapse;
 }
 
 .highlight {
@@ -136,14 +140,11 @@ li {
 	font-size: 10px;
 }
 
-#copyright p {
-	font-size: 10px;
-	margin: 20px 10px 25px 5px;
-	color: #666666;
+sup { 
+	font-size: 8px; 
 }
 
-
-sup { font-size: 8px; }
-
-strong { color: #360; }
+strong { 
+	color: #360; 
+}
 
