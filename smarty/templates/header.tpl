@@ -26,25 +26,27 @@
 <!-- Header Section -->
 
 <body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" onLoad="" bgcolor="#ffffff">
-<table width="100%" border="0" height="60" cellpadding="0" cellspacing="0" >
-<tr>
-        <td width="70%" align="left">
-	<a href="customer_url"><img src="{$customer_logo}" border="0"></a>
-	</td>
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" >
+	<tr>
+    	<td align="left">
+			<img src="{$customer_logo}" border="0"></a>
+		</td>
+        <td align="right">
+			
+			<table border="0">
+				<tr>
+					<td align="right">
+						<input name="button" type="button" id="button" value="Change Password" onclick="javascript:location.href='pwdchange.php'" style="cursor:hand;">
+						<input name="button" type="button" id="button" value="Logout" onclick="javascript:location.href='login.php?logout=1'" style="cursor:hand;">
+                    </td>
+				</tr>
+				<tr>
+					<td align="right"><b>{$firstname} {$lastname}</b> is currently logged in.</td>
+				</tr>
+			</table>
 
-        <td width="30%" align="right">
-	<table border="0">
-	<tr>
-		<td nowrap><a href="pwdchange.php" class="link"><img src="images/button_change_password.png" border="0"></a></td>
-		<td>&nbsp;</td>
-		<td><a href="login.php?logout=1"><img src="images/button_logout.png" border="0"></a></td>
+		</td>
 	</tr>
-	<tr>
-		<td align="right" colspan="3" nowrap><u><b>{$firstname} {$lastname}</b></u> is currently logged in.</td>
-	</tr>
-	</table>
-	</td>
-</tr>
 </table>
 
 <!-- Navigation Menu -->
