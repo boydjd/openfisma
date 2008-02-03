@@ -168,10 +168,6 @@ UNLOCK TABLES;
 
 
 
-LOCK TABLES `USERS` WRITE;
-INSERT INTO `USERS` VALUES (17,'root','7b24afc8bc80e548d66c4e7ff72171c5',NULL,NULL,NULL,'Root Application Administrator','Admin',NULL,'User','2006-11-28 08:49:16','0000-00-00 00:00:00','','2007-10-10 00:36:21','0000-00-00 00:00:00',1,'555-555-5555','','admin@ovms.org',10),(18,'james.ford','5cd01935e74566587332413be3d5c88d',NULL,NULL,NULL,'Alternate Admin','Ford',NULL,'James','2006-11-28 08:11:36','2007-08-23 12:13:08',':5cd01935e74566587332413be3d5c88d:c8d1ae6d71881f3356940b75e6a08300:e00458de6c663f4e6ac912655b5740cc','2007-10-10 00:30:17','0000-00-00 00:00:00',1,'202.377.3631','','james.ford@ed.gov',10);
-UNLOCK TABLES;
-
 
 /* default user functions setup in openfimsa */
 LOCK TABLES `FUNCTIONS` WRITE;
@@ -274,10 +270,15 @@ INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the u
 UNLOCK TABLES;
 
 
+
+
 /* default finding sources */
 LOCK TABLES `FINDING_SOURCES` WRITE;
 INSERT INTO `FINDING_SOURCES` VALUES (1,'FISMA Audit','FISMA',''),(2,'Certification & Accreditation','C&A',''),(3,'Financial Audit','FA',''),(4,'A-123A Audit','A-123A',''),(5,'FY07 A-123A Audit','FY07 A-123A','FY07 A-123A Audit'),(8,'Risk Assessment','RA',''),(10,'Continuous Monitoring','CM',NULL),(11,'FY07 IDS Risk Assessment','FY07 IDS RA','FY07 IDS Risk Assessment');
 UNLOCK TABLES;
+
+
+
 
 /* default user roles setup in openfimsa */
 LOCK TABLES `ROLES` WRITE;
@@ -290,4 +291,19 @@ INSERT INTO `ROLES` VALUES (3,'System Security Officers','SSO','The Systems Secu
 (10,'Application Administrator','ADMIN','User group for OVMS Application Administrators. Application Administrators have the ability to access all security controls and functions.'),
 (11,'Auditors','AUDITOR','This group is for auditors to create and update findings'),
 (12,'Security and Privacy Team Lead','S&P LEAD','The Security and Privacy Team have the ability to provide analysis and reporting on security weaknesses. They facilitate the process by providing guidance and expertise to other parties. These security personnel have the ability to inject findings, convert findings to the POAM, submit comments on recommendations and modify remediation items.');
+UNLOCK TABLES;
+
+
+
+
+/* default plugins */
+LOCK TABLES `PLUGINS` WRITE;
+INSERT INTO `PLUGINS` VALUES (1,'Baseline Security Requirements','BLSCR',NULL,'Baseline Security Requirements'),(2,'NVD Product List','NVD Products',NULL,'Product list provided by NIST at http://nvd.nist.gov/'),(3,'NVD Vulnerability Definitions','NVD List','CVE','Vulnerability list published by NIST at http://nvd.nist.gov/'),(4,'Nessus Security Scanner','Nessus','NES','Nessus Security Scanner plugin'),(5,'AppDetective Security Scanner','AppDetective','APP','AppDetective application security assessment tool plugin'),(6,'ShadowScan Security Scanner','ShadowScan','SHA','ShadowScan vulnerability scanner'),(7,'Manual Finding Spreadsheet (tab-delimited)','ManualList','MAN','Tab-delimited extract from manual finding Excel spreadsheet'),(8,'Inventory List Spreadsheet (tab-delimited)','Inventory','INV','Tab-delimited extract from manual inventory Excel spreadsheet');
+UNLOCK TABLES;
+
+
+
+/* default users */
+LOCK TABLES `USERS` WRITE;
+INSERT INTO `USERS` VALUES (17,'root','7b24afc8bc80e548d66c4e7ff72171c5',NULL,NULL,NULL,'Root Application Administrator','Admin',NULL,'User','2006-11-28 08:49:16','0000-00-00 00:00:00','','2007-10-10 00:36:21','0000-00-00 00:00:00',1,'555-555-5555','','admin@ovms.org',10),(18,'james.ford','5cd01935e74566587332413be3d5c88d',NULL,NULL,NULL,'Alternate Admin','Ford',NULL,'James','2006-11-28 08:11:36','2007-08-23 12:13:08',':5cd01935e74566587332413be3d5c88d:c8d1ae6d71881f3356940b75e6a08300:e00458de6c663f4e6ac912655b5740cc','2007-10-10 00:30:17','0000-00-00 00:00:00',1,'202.377.3631','','james.ford@ed.gov',10);
 UNLOCK TABLES;

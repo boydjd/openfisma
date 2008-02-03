@@ -65,9 +65,10 @@ INSERT INTO `FINDING_VULNS` (`finding_id`, `vuln_seq`, `vuln_type`) VALUES
 (32, 20041910, 'CVE');
 
 INSERT INTO `NETWORKS` (`network_id`, `network_name`, `network_nickname`, `network_desc`) VALUES 
-(1, 'CSC Data Center', 'CSC-CT', 'CSC Data Center - Meridian, CT'),
-(2, 'TSYS Data Center', 'TSYS-GA', 'TSYS Data Center - GA'),
-(3, 'ACS Data Center', 'ACS-MD', 'ACS Data Center - Rockville, MD');
+(1, 'N/A', 'Not Applicable', 'Use when Location is not required'),
+(2, 'Eastern Data Center', 'EDC', 'Data Center located in New York.'),
+(3, 'Central Data Center', 'CDC', 'Data Center located in Nevada'),
+(4, 'Pacific Data Center', 'PDC', 'Data Center located in California');
 
 INSERT INTO `POAMS` (`poam_id`, `finding_id`, `legacy_poam_id`, `poam_is_repeat`, `poam_previous_audits`, `poam_type`, `poam_status`, `poam_blscr`, `poam_created_by`, `poam_modified_by`, `poam_closed_by`, `poam_date_created`, `poam_date_modified`, `poam_date_closed`, `poam_action_owner`, `poam_action_suggested`, `poam_action_planned`, `poam_action_status`, `poam_action_approved_by`, `poam_cmeasure`, `poam_cmeasure_effectiveness`, `poam_cmeasure_justification`, `poam_action_resources`, `poam_action_date_est`, `poam_action_date_actual`, `poam_threat_source`, `poam_threat_level`, `poam_threat_justification`) VALUES 
 (16, 24, NULL, NULL, NULL, 'NONE', 'OPEN', NULL, 17, 17, NULL, '2008-01-17 16:56:29', '2008-01-17 08:56:49', NULL, 2, NULL, 'NULL', 'NONE', NULL, NULL, 'NONE', 'NULL', 'NULL', '0000-00-00', NULL, NULL, 'NONE', NULL),
