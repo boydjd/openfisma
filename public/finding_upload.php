@@ -29,21 +29,12 @@ if($loginstatus != 1) {
 
 displayLoginInfor($smarty, $user);
 
-// retrieve the user's persmissions
 
+// get user right for this screen
 $upload_right = $user->checkRightByFunction($screen_name, "upload");
 
-if (!$upload_right) {
-
-	/*
-	** Bail out here if the user has insufficient privileges
-	*/
-	$smarty->assign('err_msg', 'Insufficient privilege to access this function.');
-	$smarty->display('finding_upload_status.tpl');
-	return;
-
-}
-
+// assign user right to smarty template
+$smarty->assign('upload_right', $upload_right);
 
 //TEST!
 //foreach(array_keys($_POST) as $key) {

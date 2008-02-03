@@ -52,6 +52,8 @@ function findingdetail(fid, func) {
 
 <br>
 
+{if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
+
 <!-- Heading Block -->
 <table class="tbline">              
 	<tr>
@@ -61,7 +63,6 @@ function findingdetail(fid, func) {
 <!-- End Heading Block -->
 
 <!-- Summary Table of Findings -->
-{if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 <br>
 <table width="98%" align="center">
 	<tr>
@@ -229,30 +230,32 @@ function findingdetail(fid, func) {
 <br>
 <!-- Finding Summary Table -->
 <table width="98%" align="center">
+	{if $del_right eq 1}
 	<tr>
     	<td>
 			<!-- Allow Multiple Deletion if the user has the appropriate rights -->
 			<table width="100%" align="left" border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td align="left">
-						{if $del_right eq 1}
                         <input name="button" type="button" id="button" value="Select All" onclick="selectall('finding', 'fid_', true);" style="cursor:hand;">
                         <input name="button" type="button" id="button" value="Select None" onclick="selectall('finding', 'fid_', false);" style="cursor:hand;">
                         <input 	name="button" type="button" id="button" value="Delete" 
                         		onClick="document.finding.sbt.value='delete'; return deleteconfirm('finding','fid_','finding');" style="cursor:hand;">
-						{/if}
 					</td>
 				</tr>
 			</table>
 			<!-- End Multiple Deletion -->
 		</td>
 	</tr>
+	{/if}
     <tr>
     	<td>
 			<!-- Finding Search Results --> 
 			<table width="100%" align="left" border="1" cellpadding="5" cellspacing="0" class="tbframe">
 				<tr align="center">
+					{if $del_right eq 1}
 					<th></td>
+					{/if}
 					<th nowrap>ID 				<input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('id', 0)"> 
     											<input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('id', 1)"></th>
 					<th nowrap>Status 			<input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('status', 0)"> 
@@ -284,11 +287,11 @@ function findingdetail(fid, func) {
 				</tr>
 				{foreach key=fname item=fobj from=$filter_data}
 				<tr>
+					{if $del_right eq 1}
 					<td align="center" class="tdc">
-						{if $del_right eq 1}
 						<input type="checkbox" name="fid_{$fobj->finding_id}" value="fid.{$fobj->finding_id} ">
-						{/if}
 					</td>
+					{/if}
 					<td align="center" class="tdc">{$fobj->finding_id}</td>
 					<td class="tdc">{$fobj->finding_status}&nbsp;</td>
 					<td class="tdc">{$fobj->source_name}&nbsp;</td>
@@ -318,7 +321,7 @@ function findingdetail(fid, func) {
 </form>
 
 {else}
-<p>You do not have sufficient rights to complete the request.</p>
+<p class="errormessage">{$noright}</p>
 {/if}
 
 {include file="footer.tpl"}

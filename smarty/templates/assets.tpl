@@ -380,11 +380,7 @@ function do_order(param)
 {literal} {/literal}
 
 {else}
-<p>No right do your request.</p>
-
+<p class="errormessage">{$noright}</p>
 {/if}
-
-<p>&nbsp;</p>
-
 
 {include file="footer.tpl"} 

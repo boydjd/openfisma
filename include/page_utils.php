@@ -36,4 +36,7 @@ $smarty->assign("firstname", $user->user_name_first);
 // set the users last name
 $smarty->assign("lastname", $user->user_name_last);
 
+// set the error message for insufficient privileges
+$smarty->assign('noright', "Sorry, you currently do not have sufficient privileges to complete your request.");
+
 ?>

@@ -248,6 +248,8 @@ var selected_prod_in_searchdata = false;
 
 <br>
 
+{if $edit_right eq 1}
+
 <!-- Heading Block -->
 <table class="tbline">              
 	<tr>
@@ -258,8 +260,6 @@ var selected_prod_in_searchdata = false;
 <!-- End Heading Block -->
 
 <br>
-
-{if $edit_right eq 1}
 
 	<form name="assetcreate"  method="post" action="{$formaction}">
 	<input type="hidden" name="listall" value="{$listall}">
@@ -553,9 +553,7 @@ var selected_prod_in_searchdata = false;
 	<script>if (selected_prod_in_searchdata) initProductMsg({$prod_id});</script>
 
 {else}
-
-	<p>No right do your request.</p>
-
+<p class="errormessage">{$noright}</p>
 {/if}
 
 {include file="footer.tpl"}

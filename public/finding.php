@@ -20,7 +20,6 @@ $smarty->assign('pageName', 'Finding Summary');
 // creates a session
 session_start();
 
-
 $user = new User($db);
 
 // uses the verify login function in page_utils.php to verify username and password
@@ -135,8 +134,6 @@ if($view_right || $del_right || $edit_right) {
 	$smarty->assign('fn', $fn);
 	$smarty->assign('asc', $asc);
 }
-
-$smarty->assign('now', get_page_datetime());
 
 $smarty->display('finding.tpl');
 ?>

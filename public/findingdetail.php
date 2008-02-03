@@ -66,7 +66,6 @@ if(!empty($_POST) && $_POST['act']=='search'){
 if(isset($_POST['do']))
 	$do = strtolower(trim($_POST['do']));
 
-$smarty->assign('now', get_page_datetime());
 $smarty->assign('act', $act); // operate action
 $smarty->assign('fid', $fid);		// finding id
 
@@ -133,7 +132,6 @@ else if($add_right) {
 	$smarty->display('findingedit.tpl');
 }
 else {
-	$smarty->assign('noright', "No right do your request"); // warning message
 	$smarty->display('findingdetail.tpl');
 }
 

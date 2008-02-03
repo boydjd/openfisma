@@ -36,8 +36,8 @@
 			<table border="0">
 				<tr>
 					<td align="right">
-						<input name="button" type="button" id="button" value="Change Password" onclick="javascript:location.href='pwdchange.php'" style="cursor:hand;">
-						<input name="button" type="button" id="button" value="Logout" onclick="javascript:location.href='login.php?logout=1'" style="cursor:hand;">
+						<input name="button" type="button" id="button" value="Change Password" onClick="javascript:location.href='pwdchange.php'" style="cursor:hand;">
+						<input name="button" type="button" id="button" value="Logout" onClick="javascript:location.href='login.php?logout=1'" style="cursor:hand;">
                     </td>
 				</tr>
 				<tr>
@@ -52,47 +52,65 @@
 <!-- Navigation Menu -->
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" id="wrappertable">
-<tr>
-	<td valign="top" bgcolor="#ffffff">
-	<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#44637A">
+	<tr>
+		<td valign="top" bgcolor="#ffffff">
+
+<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#44637A">
 	<tr>
 		<td>
-		<table border="0">
-		<tr align="center" height="21">
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{if $dashboard_menu eq 1}
-			<td width="100" onMouseOver="ShowMenu(this, 'dashboard'); swapColor(this, 'on');" onMouseOut="HideMenu('dashboard'); swapColor(this, 'off');"><a href="dashboard.php" id="mds" class="t">Dashboard</a></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{/if}
-			{if $finding_menu eq 1}
-			<td width="100" onMouseOver="ShowMenu(this, 'finding'); swapColor(this, 'on');" onMouseOut="HideMenu('finding'); swapColor(this, 'off');"><span id="mfd" class="t">Findings</span></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{/if}
-			{if $asset_menu eq 1}
-			<td width="100" onMouseOver="ShowMenu(this, 'asset'); swapColor(this, 'on');" onMouseOut="HideMenu('asset'); swapColor(this, 'off');"><a href="asset.php" id="mas" class="t">Assets</a></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{/if}
-			{if $remediation_menu eq 1}
-			<td width="100" onMouseOver="ShowMenu(this, 'remediation'); swapColor(this, 'on');" onMouseOut="HideMenu('remediation'); swapColor(this, 'off');"><a href="remediation.php" id="mrm" class="t">Remediation</a></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{/if}
-			{if $report_menu eq 1}
-			<td width="100" onMouseOver="ShowMenu(this, 'report'); swapColor(this, 'on');" onMouseOut="HideMenu('report'); swapColor(this, 'off');"><a href="report.php" id="mrp" class="t">Reports</a></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{/if}
-			{if $admin_menu eq 1}
-			<td width="100" onMouseOver="ShowMenu(this, 'administration'); swapColor(this, 'on');" onMouseOut="HideMenu('administration'); swapColor(this, 'off');"><span id="mad" class="t">Administration</span></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{/if}
-			{if $vulner_menu eq 1}
-			<td width="100" onMouseOver="ShowMenu(this, 'vulnerabilities'); swapColor(this, 'on');" onMouseOut="HideMenu('vulnerabilities'); swapColor(this, 'off');"><span id="mvu" class="t">Vulnerabilities</span></td>
-			<td><img src="images/menu_line.gif" border="0"></td>
-			{/if}
-		</tr>
-		</table>
-		</td>
+			<table border="0">
+				<tr align="center" height="21">
+
+                    <td><img src="images/menu_line.gif" border="0"></td>
+			
+                    {if $dashboard_menu eq 1}
+                    <td width="100" onMouseOver="ShowMenu(this, 'dashboard'); swapColor(this, 'on');" onMouseOut="HideMenu('dashboard'); swapColor(this, 'off');">
+                    <a href="dashboard.php" id="mds" class="t">Dashboard</a></td>
+                    <td><img src="images/menu_line.gif" border="0"></td>
+                    {/if}
+        
+                    {if $finding_menu eq 1}
+                    <td width="100" onMouseOver="ShowMenu(this, 'finding'); swapColor(this, 'on');" onMouseOut="HideMenu('finding'); swapColor(this, 'off');">
+                    <span id="mfd" class="t">Findings</span></td>
+                    <td><img src="images/menu_line.gif" border="0"></td>
+                    {/if}
+        
+                    {if $asset_menu eq 1}
+                    <td width="100" onMouseOver="ShowMenu(this, 'asset'); swapColor(this, 'on');" onMouseOut="HideMenu('asset'); swapColor(this, 'off');">
+                    <a href="asset.php" id="mas" class="t">Assets</a></td>
+                    <td><img src="images/menu_line.gif" border="0"></td>
+                    {/if}
+        
+                    {if $remediation_menu eq 1}
+                    <td width="100" onMouseOver="ShowMenu(this, 'remediation'); swapColor(this, 'on');" onMouseOut="HideMenu('remediation'); swapColor(this, 'off');">
+                    <a href="remediation.php" id="mrm" class="t">Remediation</a></td>
+                    <td><img src="images/menu_line.gif" border="0"></td>
+                    {/if}
+
+					{if $report_menu eq 1}
+					<td width="100" onMouseOver="ShowMenu(this, 'report'); swapColor(this, 'on');" onMouseOut="HideMenu('report'); swapColor(this, 'off');">
+            		<a href="report.php" id="mrp" class="t">Reports</a></td>
+					<td><img src="images/menu_line.gif" border="0"></td>
+					{/if}
+
+					{if $admin_menu eq 1}
+					<td width="100" onMouseOver="ShowMenu(this, 'administration'); swapColor(this, 'on');" onMouseOut="HideMenu('administration'); swapColor(this, 'off');">
+            		<span id="mad" class="t">Administration</span></td>
+					<td><img src="images/menu_line.gif" border="0"></td>
+					{/if}
+            
+					{if $vulner_menu eq 1}
+					<td width="100" onMouseOver="ShowMenu(this, 'vulnerabilities'); swapColor(this, 'on');" onMouseOut="HideMenu('vulnerabilities'); swapColor(this, 'off');">
+            		<span id="mvu" class="t">Vulnerabilities</span></td>
+					<td><img src="images/menu_line.gif" border="0"></td>
+					{/if}
+		
+        		</tr>
+			</table>
+		
+        </td>
 	</tr>
-	</table>
+</table>
 
 	{if $dashboard_menu eq 1}
 	<div class=menu id="dashboard" onMouseOver="HoldMenu();" onMouseOut="HideMenu('dashboard');">
@@ -104,24 +122,24 @@
 	{if $finding_menu eq 1}
 	<div class=menu id="finding" onMouseOver="HoldMenu();" onMouseOut="HideMenu('finding');">
 	<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding.php" class="n navicon" id="fs"> Findings Summary</a></td>
+		</tr>
 
-	<tr>
-		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding.php" class="n navicon" id="fs"> Findings Summary</a></td>
-	</tr>
-
-	{if $finding_add eq 1}
-	<tr>
-		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="findingdetail.php" class="n navicon" id="cnf"> New Finding</a></td>
-	</tr>
-	{/if}
-	{if $finding_upload eq 1}
-	<tr>
-		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding_upload.php" class="n navicon" id="usr"> Upload Scan Results</a></td>
-	</tr>
-	<tr>
-		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding_injection.php" class="n navicon" id="usr"> Spreadsheet Upload</a></td>
-	</tr>
-	{/if}
+		{if $finding_add eq 1}
+		<tr>
+			<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="findingdetail.php" class="n navicon" id="cnf"> New Finding</a></td>
+		</tr>
+	
+    	{/if}
+		{if $finding_upload eq 1}
+		<tr>
+			<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding_upload.php" class="n navicon" id="usr"> Upload Scan Results</a></td>
+		</tr>
+		<tr>
+			<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="finding_injection.php" class="n navicon" id="usr"> Spreadsheet Upload</a></td>
+		</tr>
+		{/if}
 	</table>
 	</div>
 	{/if}
@@ -129,16 +147,17 @@
 	{if $asset_menu eq 1}
 	<div class=menu id="asset" onMouseOver="HoldMenu();" onMouseOut="HideMenu('asset');">
 	<table cellpadding="0" cellspacing="0" border="0">
-	{if $asset_summary eq 1}
-	<tr>
-		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="asset.php" class="n navicon" id="ad"> Asset Dashboard</a></td>
-	</tr>
-	{/if}
-	{if $asset_new eq 1}
-	<tr>
-		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="asset.create.php" class="n navicon" id="ca"> Create an Asset</a></td>
-	</tr>
-	{/if}
+		{if $asset_summary eq 1}
+		<tr>
+			<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="asset.php" class="n navicon" id="ad"> Asset Dashboard</a></td>
+		</tr>
+		{/if}
+	
+    	{if $asset_new eq 1}
+		<tr>
+			<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="asset.create.php" class="n navicon" id="ca"> Create an Asset</a></td>
+		</tr>
+		{/if}
 	</table>
 	</div>
 	{/if}

@@ -10,6 +10,8 @@
 
 <br>
 
+{if $upload_right eq 1}
+
 <!-- Heading Block -->
 <table class="tbline">              
 <tr>
@@ -71,6 +73,8 @@
 
 </table>
 
-<br>
+{else}
+<p class="errormessage">{$noright}</p>
+{/if}
 
 {include file="footer.tpl"}

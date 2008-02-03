@@ -212,14 +212,14 @@ var selected_prod_in_searchdata = false;
 
 <br>
 
+<!-- check user has rights to add an asset -->
+{if $add_right eq 1}
+
 <!-- Heading Block -->
 <table class="tbline">
 <tr><td id="tbheading">Asset Creation</td><td id="tbtime">{$now}</td></tr>
 </table>
 <!-- End Heading Block -->
-
-<!-- check user has rights to add an asset -->
-{if $add_right == 1}
 
 <br>
 
@@ -430,7 +430,7 @@ var st2 = new SortableTable(document.getElementById("searchdata"),
 <br>
 
 {else}
-<p align="center">Sorry, you do not have sufficient rights to view this page.</p>
+<p class="errormessage">{$noright}</p>
 {/if}
 
 {include file="footer.tpl"} 

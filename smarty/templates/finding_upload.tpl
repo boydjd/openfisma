@@ -55,6 +55,8 @@ function validate_input() {
 
 <br>
 
+{if $upload_right eq 1}
+
 <!-- Heading Block -->
 <table class="tbline">              
 <tr>
@@ -143,6 +145,10 @@ function validate_input() {
 </table>
 </form>
 <br>
+
+{else}
+<p class="errormessage">{$noright}</p>
+{/if}
 
 <!-- ---------------------------------------------------------------------- -->
 <!-- FOOTER TEMPLATE                                                        -->

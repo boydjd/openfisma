@@ -45,6 +45,13 @@ td {
 	font-size: 10px;
 }
 
+/* Error Message Stylesheet */
+.errormessage {
+	font-weight: bold;
+	color:#FF0000;
+	text-align:center;
+}
+
 .thc {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
 	color: #44637A;
