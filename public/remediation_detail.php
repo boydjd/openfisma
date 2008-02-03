@@ -63,18 +63,18 @@ $smarty->assign('modify_cmeasure_justification',		$user->checkRightByFunction("r
 $smarty->assign('modify_threat_level',					$user->checkRightByFunction("remediation", 'modify_threat_level'));
 $smarty->assign('modify_threat_source',					$user->checkRightByFunction("remediation", 'modify_threat_source'));
 $smarty->assign('modify_threat_justification',			$user->checkRightByFunction("remediation", 'modify_threat_justification'));
-$smarty->assign('modify_mitigation_recommendation',		$user->checkRightByFunction($screen_name, 'remediation_modify_mitigation_recommendation'));
-$smarty->assign('modify_mitigation_course_of_action',	$user->checkRightByFunction($screen_name, 'remediation_modify_mitigation_course_of_action'));
-$smarty->assign('modify_mitigation_resources',			$user->checkRightByFunction($screen_name, 'remediation_modify_mitigation_resources'));
-$smarty->assign('modify_mitigation_completion_date',	$user->checkRightByFunction($screen_name, 'remediation_modify_mitigation_completion_date'));
-$smarty->assign('modify_mitigation_sso_approval',		$user->checkRightByFunction($screen_name, 'remediation_modify_mitigation_sso_approval'));
-$smarty->assign('view_evidence',						$user->checkRightByFunction($screen_name, 'remediation_view_evidence'));
-$smarty->assign('modify_evidence_upload',				$user->checkRightByFunction($screen_name, 'remediation_modify_evidence_upload'));
-$smarty->assign('modify_evidence_sso_approval',			$user->checkRightByFunction($screen_name, 'remediation_modify_evidence_sso_approval'));
-$smarty->assign('modify_evidence_fsa_approval',			$user->checkRightByFunction($screen_name, 'remediation_modify_evidence_fsa_approval'));
-$smarty->assign('modify_evidence_ivv_approval',			$user->checkRightByFunction($screen_name, 'remediation_modify_evidence_ivv_approval'));
-$smarty->assign('view_comments',						$user->checkRightByFunction($screen_name, 'remediation_view_comments'));
-$smarty->assign('modify_comments',						$user->checkRightByFunction($screen_name, 'remediation_modify_comments'));
+$smarty->assign('modify_mitigation_recommendation',		$user->checkRightByFunction("remediation", 'modify_mitigation_recommendation'));
+$smarty->assign('modify_mitigation_course_of_action',	$user->checkRightByFunction("remediation", 'modify_mitigation_course_of_action'));
+$smarty->assign('modify_mitigation_resources',			$user->checkRightByFunction("remediation", 'modify_mitigation_resources'));
+$smarty->assign('modify_mitigation_completion_date',	$user->checkRightByFunction("remediation", 'modify_mitigation_completion_date'));
+$smarty->assign('modify_mitigation_sso_approval',		$user->checkRightByFunction("remediation", 'modify_mitigation_sso_approval'));
+$smarty->assign('view_evidence',						$user->checkRightByFunction("remediation", 'view_evidence'));
+$smarty->assign('modify_evidence_upload',				$user->checkRightByFunction("remediation", 'modify_evidence_upload'));
+$smarty->assign('modify_evidence_sso_approval',			$user->checkRightByFunction("remediation", 'modify_evidence_sso_approval'));
+$smarty->assign('modify_evidence_fsa_approval',			$user->checkRightByFunction("remediation", 'modify_evidence_fsa_approval'));
+$smarty->assign('modify_evidence_ivv_approval',			$user->checkRightByFunction("remediation", 'modify_evidence_ivv_approval'));
+$smarty->assign('view_comments',						$user->checkRightByFunction("remediation", 'view_comments'));
+$smarty->assign('modify_comments',						$user->checkRightByFunction("remediation", 'modify_comments'));
 
 /*******************************************************************************
 * FORM ACTIONS
