@@ -177,7 +177,7 @@ $pdf->addObject($all,'all');
 
 
 function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
-    
+    global $raf_lang;
     $pdf =& new RAFpdf();
     $pdf->selectFont(PDF_FONT_FOLDER."/Helvetica.afm");//needs modify to the real font file path
     pdfAddWarningFooter($pdf, $REPORT_FOOTER_WARNING, 8, 50, 50, 580);
