@@ -53,6 +53,8 @@ function validate_input() {
 <!-- MAIN PAGE DISPLAY                                                      -->
 <!-- ---------------------------------------------------------------------- -->
 
+<br>
+
 <!-- Heading Block -->
 <table class="tbline">              
 <tr>
@@ -67,80 +69,80 @@ function validate_input() {
 <!-- build our form -->
 
 <form name="finding_upload" action="finding_upload.php" enctype="multipart/form-data" method="POST">
-<table align="center" border="0" cellpadding="3" cellspacing="0" class="tbframe">
-
-	<!-- display the plugins row -->
+<table width="98%" align="center">
 	<tr>
-		<td align="center">Plugin:</td>
-		<td align="left">
-			<select name="plugin">
-				<option value="0">--- Select Plugin ---</option>
-				{section name=row loop=$plugins}
-				<option value="{$plugins[row].plugin_nickname}">({$plugins[row].plugin_nickname}) {$plugins[row].plugin_name}</option>
-				{/section}
-			</select>
+    	<td>
+			<!-- End Finding Upload Scan Results Table -->
+			<table align="left" border="0" cellpadding="5" class="tipframe">
+				<th align="left" colspan="2">Finding Upload</th>
+				<!-- display the plugins row -->
+				<tr>
+					<td align="right"><b>Plugin:<b></td>
+					<td align="left">
+						<select name="plugin">
+						<option value="0">--- Select Plugin ---</option>
+						{section name=row loop=$plugins}
+						<option value="{$plugins[row].plugin_nickname}">
+                        ({$plugins[row].plugin_nickname}){$plugins[row].plugin_name}
+                        </option>
+						{/section}
+						</select>
+					</td>
+				</tr>
+				<!-- display the finding sources row -->
+				<tr>
+					<td align="right"><b>Finding Source:<b></td>
+					<td align="left">
+						<select name="source">
+						<option value="0">--- Select Finding Source ---</option>
+						{section name=row loop=$finding_sources}
+						<option value="{$finding_sources[row].source_id}">
+            		    ({$finding_sources[row].source_nickname}) {$finding_sources[row].source_name}
+            		    </option>
+						{/section}
+						</select>
+					</td>
+				</tr>
+				<!-- display the systems row -->
+				<tr>
+					<td align="right"><b>System:<b></td>
+					<td align="left">
+						<select name="system">
+							<option value="0">--- Select System ---</option>
+							{section name=row loop=$systems}
+							<option value="{$systems[row].system_id}">({$systems[row].system_nickname}) {$systems[row].system_name}</option>
+							{/section}
+						</select>
+					</td>
+				</tr>
+				<!-- display the networks row -->
+				<tr>
+					<td align="right"><b>Network:<b></td>
+					<td align="left">
+						<select name="network">
+							<option value="0">--- Select Network ---</option>
+							{section name=row loop=$networks}
+							<option value="{$networks[row].network_id}">({$networks[row].network_nickname}) {$networks[row].network_name}</option>
+							{/section}
+						</select>
+					</td>
+				</tr>
+				<!-- display the scan results upload row -->
+				<tr>
+					<td align="right"><b>Results File:<b></td>
+					<td><input type="file" name="upload_file"></td>
+				</tr>
+				<tr align="right">
+	    			<input type="hidden" name="submitted"/>
+    				<td colspan="2"><input type="button" name="submit_button" value="Submit" onClick="javascript:validate_input();"></td> 
+				<tr>
+			</table>
+			<!-- End Finding Upload Scan Results Table -->
 		</td>
 	</tr>
-
-	<!-- display the finding sources row -->
-	<tr>
-		<td align="center">Finding Source:</td>
-		<td align="left">
-			<select name="source">
-				<option value="0">--- Select Finding Source ---</option>
-				{section name=row loop=$finding_sources}
-				<option value="{$finding_sources[row].source_id}">({$finding_sources[row].source_nickname}) {$finding_sources[row].source_name}</option>
-				{/section}
-			</select>
-		</td>
-	</tr>
-
-	<!-- display the systems row -->
-	<tr>
-		<td align="center">System:</td>
-		<td align="left">
-			<select name="system">
-				<option value="0">--- Select System ---</option>
-				{section name=row loop=$systems}
-				<option value="{$systems[row].system_id}">({$systems[row].system_nickname}) {$systems[row].system_name}</option>
-				{/section}
-			</select>
-		</td>
-	</tr>
-
-	<!-- display the networks row -->
-	<tr>
-		<td align="center">Network:</td>
-		<td align="left">
-			<select name="network">
-				<option value="0">--- Select Network ---</option>
-				{section name=row loop=$networks}
-				<option value="{$networks[row].network_id}">({$networks[row].network_nickname}) {$networks[row].network_name}</option>
-				{/section}
-			</select>
-		</td>
-	</tr>
-
-	<!-- display the scan results upload row -->
-	<tr>
-		<td align="center">Results File:</td>
-		<td><input type="file" name="upload_file"></td>
-	</tr>
-
-	<tr align="right">
-{*
-** input type="submit" does not fail if validation returns false - can't use it
-<td colspan="2"><input type="submit" value="Submit" name="submitted" onClick="javascript:validate_input();"></td>
-*}
-    {* need a hidden 'submitted' field for the target php to check *}
-    <input type="hidden" name="submitted"/>
-      
-		<td colspan="2"><input type="button" name="submit_button" value="Submit" onClick="javascript:validate_input();"></td> 
-	<tr>
 </table>
 </form>
 <br>
-
 
 <!-- ---------------------------------------------------------------------- -->
 <!-- FOOTER TEMPLATE                                                        -->

@@ -8,6 +8,8 @@
 
 {if $view_right == 1}
 
+<br>
+
 <!-- Heading Block -->
 <table class="tbline">
 <tr><td id="tbheading">Dashboard</td><td id="tbtime">{$now}</td></tr>

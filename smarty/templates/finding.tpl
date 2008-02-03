@@ -50,6 +50,8 @@ function findingdetail(fid, func) {
 </script>
 {/literal}
 
+<br>
+
 <!-- Heading Block -->
 <table class="tbline">              
 	<tr>

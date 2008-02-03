@@ -8,6 +8,8 @@
 <script language="javascript" src="javascripts/form.js"></script>
 {/literal}
 
+<br>
+
 <!-- Heading Block -->
 <table class="tbline">              
 <tr><td id="tbheading">Finding Creation</td><td id="tbtime">{$now}</td></tr>        

@@ -2,21 +2,9 @@
 {include file="header.tpl" title="$pageTitle" name="$pageName"} 
 <!-- END HEADER TEMPLATE INCLUDE --> 
 
-<!-- Heading Block -->
-
-<!--
-<table width="80%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><b>Finding:</b> Detail</td>
-	<td align="right" valign="bottom">{$now}</td>
-</tr>
-</table>
--->
 <br>
 
 {if $act eq 'view' or $act eq 'edit'}
-
-
 {if $msg ne ""}
 <p><b><u>{$msg}</u></b></p>
 {/if}

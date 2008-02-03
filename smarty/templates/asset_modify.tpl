@@ -246,14 +246,16 @@ var selected_prod_in_searchdata = false;
 </script>
 {/literal}
 
+<br>
 
-
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table class="tbline">              
 	<tr>
-		<td valign="bottom"><b>Asset:</b> Detail</td>
-    	<td align="right" valign="bottom">{$now}</td>
-  	</tr>
+		<td id="tbheading">Asset Detail</td>
+		<td id="tbtime">{$now}</td>
+	</tr>        
 </table>
+<!-- End Heading Block -->
 
 <br>
 

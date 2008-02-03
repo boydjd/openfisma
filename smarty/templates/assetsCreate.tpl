@@ -210,6 +210,8 @@ var selected_prod_in_searchdata = false;
 </script>
 {/literal}
 
+<br>
+
 <!-- Heading Block -->
 <table class="tbline">
 <tr><td id="tbheading">Asset Creation</td><td id="tbtime">{$now}</td></tr>
@@ -223,26 +225,26 @@ var selected_prod_in_searchdata = false;
 
 <table width="810" border="0" align="center">
 	<tr>
+		<form name="assetcreate" method="post" action="{$formaction}">
+		<input type="hidden" name="listall" value="{$listall}">
+		<input type="hidden" name="aid" value="{$aid}">
+		<input type="hidden" name="edit" value="">
+		<input type="hidden" name="add" value="">
+		<input type="hidden" name="search" value="">
+
 		<td>
-			<form name="assetcreate" method="post" action="{$formaction}">
-				<input type="hidden" name="listall" value="{$listall}">
-				<input type="hidden" name="aid" value="{$aid}">
-				<input type="hidden" name="edit" value="">
-				<input type="hidden" name="add" value="">
-				<input type="hidden" name="search" value="">
+            <input type="button" name="button" value="Create Asset" onClick="javascript:do_create();" style="cursor:hand;"> 
+        </td>
+   	</tr>
+	<tr>
+    	<td>
 			<table border="0" width="810">
 				<tr>
-					<td align=left>
-						<img type="input" name="Add" value="Create Asset" onClick="javascript:do_create();" 
-							src="images/button_create.png" style="cursor:hand;" > 
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td valign=top>
-						<FIELDSET><LEGEND><LABEL> General Infomation </LABEL></LEGEND>
-						<table border="0" cellpadding="5">
-						<tr>
+					<td rowspan="2">
+						<!-- General Information Table -->
+                        <table border="0" width="100%" cellpadding="5" class="tipframe">
+						<th align="left" colspan="2"> General Information</th>
+                        <tr>
 							<td valign="center" align="left"><b>Asset Name </b></td>
 							<td valign="center" align="left">
                             	<input name="assetname" type="text" id="assetname" value="{$assetname}" size="23" maxlength="23">
@@ -287,126 +289,133 @@ var selected_prod_in_searchdata = false;
 							<td valign="center" align="left"><input type="text" name="port" value="{$port}" maxlength="5" size="5"></td>
 						</tr>
 					</table>
-						</FIELDSET>
+						<!-- General Information Table -->
 					</td>
 					<td valign="top">
-						<FIELDSET><LEGEND><LABEL> Product Search </LABEL></LEGEND>
-					<table border="0" cellpadding="5">
-						<tr>
-							<td><b>Product Search: </b> 
-								<input type="text" name="product_search" value="{$product_search}" size="20">
-								<img type="input" src="images/button_search.png" onclick="javascript: do_search();" style="cursor:hand;"> &nbsp;&nbsp;&nbsp; 
-								<img onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" src="images/button_create.png" style="cursor:hand;" >
-							</td>
-						</tr>
-					</table>
-					</FIELDSET>
-						<FIELDSET><LEGEND><LABEL> Current Product </LABEL></LEGEND>
-					<table border="0" cellpading="5">
-						<tr>
-							<td width=80><b>Vendor:</b></td>
+						<!-- Product Search Block -->
+						<table border="0" width="100%" cellpadding="5" class="tipframe">
+							<th align="left" colspan="2"> Product Search</th>
+                            <tr>
+								<td><b>Product Name: </b> 
+									<input type="text" name="product_search" value="{$product_search}" size="20">
+                                    <input type="button" name="button" value="Search" onclick="javascript: do_search();" style="cursor:hand;">
+                                    <input type="button" name="button" value="Create Product" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" style="cursor:hand;">
+								</td>
+							</tr>
+						</table>
+                        <!-- End Product Search Block -->
+					</td>
+  				</tr>
+                <tr>
+
+					<td valign="bottom">
+					<!-- Current Product Block -->
+					<table border="0" width="100%" cellpadding="5" class="tipframe">
+						<th align="left" colspan="2"> Current Selected Product</th>
+                        <tr>
+							<td align="right" width="80"><b>Vendor:</b></td>
 							<td id=vendor align=left></td>
 						</tr>
 						<tr>
-							<td><b>Product:</b></td>
+							<td align="right"><b>Product:</b></td>
 							<td id=product align=left></td>
 						</tr>
 						<tr>
-							<td><b>Version:</b></td>
+							<td align="right"><b>Version:</b></td>
 							<td id=version align=left></td>
 						</tr>
 					</table>
-					</FIELDSET>
+					<!-- End Current Product Block -->
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-</table>
-<table width="800" align="center">
-<tr>
-<td>
-<table>
 	<tr>
     	<td>
-			<FIELDSET><LEGEND><LABEL> Product List</LABEL></LEGEND>        	
-            <table border="0" width="800" cellpadding="0" cellspacing="0">
-				<tr>
-					<td valign="center" align="left">
-                        <table border="0" width="100%" cellpadding="0" cellspacing="0">
+        	<table align="center" cellpadding="5" class="tipframe">
+				<th align="left">Product List</th>
+                <tr>
+                	<td>
+                    	<table border="0" width="800" cellpadding="0" cellspacing="0">
 							<tr>
-								<td>
-                                	<table width="100%" border="0">
+								<td valign="center" align="left">
+                        
+                        			<table border="0" width="100%" cellpadding="0" cellspacing="0">
 										<tr>
-											<td><b>Result of Search:</b></td>
-											<td align=right>
-                                            	<table border="0">
-			                    					<tr>
-            			            					<td>{
-                                                        	if $pageno neq "1"}
-                                                            <span style="cursor: hand" onclick="pageskip(false);"><img src="images/button_prev.png" border="0"></span>
-                                                            {/if}
-                                                        </td>
-                    			    					<td>&nbsp;Page:</td>
-                        								<td>
-                                							<input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;
-                                						</td>
-                        								<td>
-                                                        	{if $pageno neq $maxpageno}<span style="cursor: hand" onclick="pageskip(true);">
-                                							<img src="images/button_next.png" border="0"></span>{/if}
-                                						</td>
-														<td>&nbsp; Total:  <b>{$maxpageno}</b> pages</td>
-                      								</tr>
-                    							</table>
-                                    
+											<td>
+                                				<!-- Table for Pagination -->
+                                    			<table width="100%" border="0">
+													<tr>
+														<td><b>Result of Search:</b></td>
+														<td align=right>
+                                            				<!-- Begin Pagination -->
+                                                			<table border="0">
+			                    								<tr>
+            			            								<td>{if $pageno neq "1"}
+                                                            			<input type="button" name="button" value="Previous" onclick="pageskip(false);" style="cursor: hand;"> 
+                                                            			{/if}
+                                                        			</td>
+                    			    								<td>&nbsp;Page:</td>
+                        											<td>
+                                										<input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;
+                                									</td>
+                        											<td>
+                                                        				{if $pageno neq $maxpageno}
+                                                                        <input type="button" name="button" value="Next" onclick="pageskip(true);" style="cursor: hand;">
+                                                                        {/if}
+                                									</td>
+																	<td>&nbsp; Total:  <b>{$maxpageno}</b> pages</td>
+                      											</tr>
+                    										</table>
+                                                            <!-- End Pagination -->
+                                    					</td>
+													</tr>
+              									</table>
+                                                <!-- End Table for Pagination -->
 											</td>
 										</tr>
-              						</table>
-								</td>
-							</tr>
-							<tr>
-								<td>
-                    
-   									<table border="0"  width=100%" class="sort-table" id="searchdata">
-
-										<thead>
-                  						<tr>	
-                    						<td>Select</td>
-                    						<td>Vendor</td>
-                    						<td>Product</td>
-                    						<td>Version</td>
-                  						</tr>
-                						</thead>
+										<tr>
+											<td>
+                    							<!-- Product Results Summary -->
+   												<table border="0"  width=100%" class="sort-table" id="searchdata">
+													<thead>
+                  										<tr>	
+                    										<td>Select</td>
+                    										<td>Vendor</td>
+                    										<td>Product</td>
+                    										<td>Version</td>
+                  										</tr>
+                									</thead>
                 
-                							{section name=row loop=$prod_search_data}
-                
-                						<tr>
-                  							<td class="tdc">&nbsp; {if $prod_id eq $prod_search_data[row].sid}
-                    						<input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" Checked >
-                    						<script>selected_prod_in_searchdata = true; </script>
-                    						{else}
-                    						<input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" >
-                    						{/if} </td>
-                  							<td class="tdc" id="prod_vendor_{$prod_search_data[row].sid}">{$prod_search_data[row].svendor|default:"&nbsp;"}</td>
-                  							<td class="tdc" id="prod_name_{$prod_search_data[row].sid}">{$prod_search_data[row].sname|default:"&nbsp;"}</td>
-                  							<td class="tdc" id="prod_version_{$prod_search_data[row].sid}">{$prod_search_data[row].sversion|default:"&nbsp;"}</td>
-                						</tr>
-                						{/section}
-              						</table>		
+                										{section name=row loop=$prod_search_data}
+ 													<tr>
+                  										<td class="tdc">&nbsp; {if $prod_id eq $prod_search_data[row].sid}
+                    										<input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" Checked >
+                    										<script>selected_prod_in_searchdata = true; </script>
+                    										{else}
+                    										<input type="radio" name="prod_id" value="{$prod_search_data[row].sid}" onclick="javascript:getProductMsg(this);" >
+                    										{/if} 
+                                                      	</td>
+                  										<td class="tdc" id="prod_vendor_{$prod_search_data[row].sid}">{$prod_search_data[row].svendor|default:"&nbsp;"}</td>
+                  										<td class="tdc" id="prod_name_{$prod_search_data[row].sid}">{$prod_search_data[row].sname|default:"&nbsp;"}</td>
+                  										<td class="tdc" id="prod_version_{$prod_search_data[row].sid}">{$prod_search_data[row].sversion|default:"&nbsp;"}</td>
+                									</tr>
+                										{/section}
+              									</table>		
+												<!-- Product Results Summary -->
+											</td>
+										</tr>
+									</table>
 
-								</td>
-							</tr>
+ 								</td>
+ 							</tr>
 						</table>
-
- 					</td>
- 				</tr>
-            </FIELDSET>
+					</td>
+				</tr>
 			</table>
 		</td>
-	</tr>
-</table>
-</td>
-</td>
+	</td>
 </table>
 
 </form>
