@@ -24,7 +24,7 @@ function displayLoginInfor($smarty, $user) {
 			$asset_summary = $user->checkRightByFunction("asset", "view");
 			$asset_new = $user->checkRightByFunction("asset", "add");
 						
-			$remediation_menu = $user->checkRightByFunction($screen_name, "remediation_menu");
+			$remediation_menu = $user->checkRightByFunction("remediation", "view");
 
 			$report_menu = $user->checkRightByFunction($screen_name, "report_menu");
 

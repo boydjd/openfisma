@@ -44,25 +44,15 @@ verify_login($user, $smarty);
 if(isset($_GET['unlucky'])) $smarty->assign('poam_id_not_exists', $_GET['unlucky']);
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
-
 $view_right	= $user->checkRightByFunction($screen_name, "view");
-$edit_right = $user->checkRightByFunction($screen_name, "edit");
-$add_right  = $user->checkRightByFunction($screen_name, "add");
-$del_right  = $user->checkRightByFunction($screen_name, "delete");
-
 
 // let's template know how to display the page
 $smarty->assign('view_right', $view_right);
-$smarty->assign('edit_right', $edit_right);
-$smarty->assign('add_right', $add_right);
-$smarty->assign('del_right', $del_right);
-/**************User Rigth*****************/
-
 
 $total_pages = 0 ;
 
 /**************Main Area*****************/
-if($view_right || $del_right || $edit_right) 
+if($view_right) 
 {
 
 

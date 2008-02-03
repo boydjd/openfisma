@@ -142,42 +142,43 @@ function order_page(para)
 </script>
 {/literal}
 
-{if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
-<!-- Heading Block --> <table class="tbline">
-<tr>
-<td id="tbheading">Remediation Summary</td>
-<td id="tbtime">{$now}</td>
-</tr>
+{if $view_right eq 1}
+<!-- Heading Block -->
+<table class="tbline">
+	<tr>
+		<td id="tbheading">Remediation Summary</td>
+		<td id="tbtime">{$now}</td>
+	</tr>
 </table>
 <!-- End Heading Block -->
 
 <br>
 
+<!-- Search by ID Table -->
 <table class="tbline">
-<tr>
-<td align="right" width="40%">
-{if $poam_id_not_exists eq ''}
-{else}
-    <span style="color:red;">Sorry, <b>#{$poam_id_not_exists}</b> is not available, try again :</span>
-{/if}
-</td>
-<td align="left">
-<div style = "*padding-top:2px;">
-    <form action='remediation_detail.php' method='POST'>
-    <input type="text" name="remediation_id" size="10">
-    <input type="radio" value="remediation" name="radio_id" checked>Remediation ID
-    <input type="radio" value="finding" name="radio_id" >Finding ID
-    <input type="submit" value="I'm Feeling Lucky">
-    </form>
-</div>
-</td>
-</tr>
+	<tr>
+		<td align="right" width="40%">
+			{if $poam_id_not_exists eq ''}
+			{else}
+    		<span style="color:red;">Sorry, <b>#{$poam_id_not_exists}</b> is not available, try again :</span>
+			{/if}
+		</td>
+		<td align="left">
+			<div style = "*padding-top:2px;">
+    		<form action='remediation_detail.php' method='POST'>
+    		<input type="text" name="remediation_id" size="10">
+    		<input type="radio" value="remediation" name="radio_id" checked>Remediation ID
+    		<input type="radio" value="finding" name="radio_id" >Finding ID
+    		<input type="submit" value="I'm Feeling Lucky">
+    		</form>
+			</div>
+		</td>
+	</tr>
 </table>
+<!-- End Search by ID Table -->
 
 <!-- SUMMARY TABLE -->
-
 <table align="center" cellpadding="5" class="tbframe">
-
 	<tr align="center">
 		<th>Action Owner</th>
 		<th>New</th>
@@ -189,7 +190,6 @@ function order_page(para)
 		<th>EP (S&P)</th>
 		<th>ES</th>
 		<th>CLOSED</th>
-		
 		<th>Total</th>
 	</tr>
 
@@ -234,7 +234,9 @@ function order_page(para)
 <!-- ---------------------------------------------------------------------- -->
 
 <table class="tbline">
-<tr><td id="tbheading">Remediation Filters</td></tr>
+	<tr>
+		<td id="tbheading">Remediation Filters</td>
+  	</tr>
 </table>
 
 <br>
@@ -244,31 +246,22 @@ function order_page(para)
 <input type='hidden' name='sort_order' value='{$sort_order}'>
 <input type='hidden' name='sort_by'    value='{$sort_by}'>
 
-
-{* FILTERS TABLE *}
+<!-- Begin Filter Table -->
 <table align="center" border="1" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
-
 	<tr> {* NON-DATE FILTERS ROW *}
-
 		<td colspan='2'><b>Finding Source: </b><br>
-
 			<select name='filter_source'>
 				<option value='any'>--- Any Source ---</option>
 				{section name=row loop=$finding_sources}
-					<option {if $filter_source eq $finding_sources[row].source_id}selected{/if} value='{$finding_sources[row].source_id}'>
-						({$finding_sources[row].source_nickname}) {$finding_sources[row].source_name}
-					</option>
+				<option {if $filter_source eq $finding_sources[row].source_id}selected{/if} value='{$finding_sources[row].source_id}'>
+				({$finding_sources[row].source_nickname}) {$finding_sources[row].source_name}
+				</option>
 				{/section}
 			</select>
-
 		</td>
-
 	</tr>
-
 	<tr>
-
 		<td ><b> Mitigation Strategy:</b><br>
-		
 			<select name='filter_type'>
 				<option {if $filter_type eq 'any' }selected{/if} value='any'>--- Any Type ---</option>
 				<option {if $filter_type eq 'NONE'}selected{/if} value='NONE'>(NONE) Unclassified</option>
@@ -276,9 +269,7 @@ function order_page(para)
 				<option {if $filter_type eq 'AR'  }selected{/if} value='AR'>(AR) Accepted Risk</option>
 				<option {if $filter_type eq 'FP'  }selected{/if} value='FP'>(FP) False Positive</option>
 			</select> 
-
 		</td>
-
 		<td width="318" valign="top"><b> Finding Status:</b><br>
 			<select name='filter_status'>
 				<option {if $filter_status eq 'any'       }selected{/if} value='any'       >--- Any Status ---</option>
@@ -300,62 +291,41 @@ function order_page(para)
 				<option {if $filter_status eq 'NOUP-90'}selected{/if} value='NOUP-90'   >(NOUP-90) 90+ Days Since Last Update</option>
 			</select>
 		</td>
-
-
 	</tr>
-
-
-
 	<tr>
-
 		<td ><b>Asset Owners: </b> <br/>
-
 		  	<select name='filter_asset_owners'>
 				<option {if $filter_asset_owners eq 'any'}selected{/if} value='any'>--- Any Asset Owner ---</option>
 				{section name=row loop=$asset_owners}
-					<option {if $filter_asset_owners eq $asset_owners[row].system_id}selected{/if} value='{$asset_owners[row].system_id}'> 
-					({$asset_owners[row].system_nickname}) {$asset_owners[row].system_name} </option>
+				<option {if $filter_asset_owners eq $asset_owners[row].system_id}selected{/if} value='{$asset_owners[row].system_id}'> 
+				({$asset_owners[row].system_nickname}) {$asset_owners[row].system_name} </option>
 				{/section}
-
-			
 			</select>
 		</td>
-
 		<td ><b>Action Owners: </b><br>
-		
 			<select name='filter_action_owners'>
 				<option {if $filter_action_owners eq 'any'}selected{/if} value='any'>--- Any Action Owner ---</option>
 				{section name=row loop=$action_owners}
-					<option {if $filter_action_owners eq $action_owners[row].system_id}selected{/if} value='{$action_owners[row].system_id}'>
-						({$action_owners[row].system_nickname}) {$action_owners[row].system_name}
-					</option>
+				<option {if $filter_action_owners eq $action_owners[row].system_id}selected{/if} value='{$action_owners[row].system_id}'>
+				({$action_owners[row].system_nickname}) {$action_owners[row].system_name}
+				</option>
 				{/section}
-
 			</select>
 		</td>
-
 	</tr>
-
 	<tr>
-
 		<td colspan='2'>
-
 			<table border="0" cellpadding="3" cellspacing="1" width="98%">
-
 				<tr>
-
 					<td colspan="5"><b>Estimated Completion Date:</b></td>
 					<td>&nbsp;</td>
 					<td colspan="5"><b>Date Created: </b></td>
 					<td>&nbsp;</td>
-
 				</tr>
-
 				<tr>
-
 					<td width="84"> From:</td>
 					<td width="133"><input type="text" name="filter_startdate" size="12" maxlength="10" value="{$filter_startdate}">mm/dd/yyyy</td>
-	          			<td width="33"><span onClick="javascript:show_calendar('filters.filter_startdate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
+          			<td width="33"><span onClick="javascript:show_calendar('filters.filter_startdate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
 					<td width="27">To:</td>
 					<td width="115"><input type="text" name="filter_enddate" size="12" maxlength="10" value="{$filter_enddate}"> mm/dd/yyyy</td>
 					<td width="56"><span onClick="javascript:show_calendar('filters.filter_enddate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
@@ -366,26 +336,21 @@ function order_page(para)
 					<td width="115"><input type="text" name="filter_endcreatedate" size="12" maxlength="10" value="{$filter_endcreatedate}">mm/dd/yyyy</td>
 					<td width="109"><span onClick="javascript:show_calendar('filters.filter_endcreatedate');"><img src="images/picker.gif" width=24 height=22 border=0></span></td>
 				</tr>
-		      </table>
-
+			</table>
 		</td>
-</tr><tr>
-
+	</tr>
+    <tr>
 		<td align="left"><input type='image' name='submit' value='Search' src='images/button_search.png' onClick="firstpage();"></td>
 	</tr>
-
-
 </table>
-
+<!-- Begin Filter Table -->
 
 <br>
 
-<!-- ---------------------------------------------------------------------- -->
-<!-- SUMMARY LIST                                                           -->
-<!-- ---------------------------------------------------------------------- -->
-
 <table class="tbline">
-<tr><td valign="bottom"><b>Remediation:</b> List</td></tr>
+	<tr>
+    	<td valign="bottom"><b>Remediation:</b> List</td>
+   	</tr>
 </table>
 
 
@@ -406,11 +371,9 @@ function order_page(para)
 
 </form>
 
-
+<!-- Remediation Summary Table -->
 <table align="center" border="0" cellpadding="5" cellspacing="0" class="tbframe">
-
 	<tr align="center">
-
 		<form  name="order_by_ID" action='remediation.php' method='POST'>
 		<th>
 			<input type='hidden' name='remediation_id'          value='{$list[row].poam_id}'>
@@ -428,8 +391,6 @@ function order_page(para)
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(11)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(12)">			
 		</th>
-
-		
 
 		<th>Source 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(21)"> 
@@ -466,7 +427,6 @@ function order_page(para)
 
 	</tr>
 
-
 	<!-- REMEDIATION ROWS -->	
 	{section name=row loop=$list}
 	<tr>
@@ -502,16 +462,12 @@ function order_page(para)
 			<input type='hidden' name='remediation_id' value='{$list[row].poam_id}'>
 			<td align="center" valign='middle' class='tdc'><input type='image'  src='images/view.gif'></td>
 		</form>
-
-
 	</tr>
 	{/section}
-
 </table>
 
 {else}
-<p>No right do your request.</p>
+<p class="errormessage">{$noright}</p>
 {/if}
-<p>&nbsp;</p>
 
 {include file="footer.tpl"}
