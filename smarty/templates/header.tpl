@@ -243,6 +243,11 @@
 		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="javascript:submit_a(6)" class="n navicon" id="func"> Functions</a></td>
 	</tr>
 	{/if}
+	{if $admin_function_view eq 1}
+	<tr>
+		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="javascript:submit_a(7)" class="n navicon" id="func"> Finding Sources</a></td>
+	</tr>
+	{/if}
 	</table>
 	</FORM>
 	</div>

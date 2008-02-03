@@ -12,6 +12,7 @@ $table_class_index		= array(array(0, 1),
 								array(3, 1),
 								array(4, 1),
 								array(5, 1),
+								array(6, 1),
 								);
 // database.table (table name, include database name)
 $table_arr				= array("USERS",
@@ -20,6 +21,7 @@ $table_arr				= array("USERS",
 								"PRODUCTS",
 								"SYSTEM_GROUPS",
 								"FUNCTIONS",
+								"FINDING_SOURCES",
 								);
 /************************************************************************************/
 // table name for display
@@ -29,6 +31,7 @@ $table_name_arr			= array("Users",
 								"Products",
 								"System Groups",
 								"Functions",
+								"Finding Sources",
 								);
 /************************************************************************************/
 // table "id" field
@@ -38,6 +41,7 @@ $table_id_field_arr		= array("user_id",
 								"prod_id",
 								"sysgroup_id",
 								"function_id",
+								"source_id",
 								);
 /************************************************************************************/
 // table fields except "id"
@@ -49,6 +53,7 @@ $table_field_arr		= array(array("user_name_last","user_name_first","user_phone_o
 								array("prod_name","prod_vendor","prod_version","prod_desc"),
 								array("sysgroup_name","sysgroup_nickname"),
 								array("function_name","function_screen","function_action","function_open","function_desc"),
+								array("source_name","source_nickname","source_desc"),
 								);
 /************************************************************************************/
 // fields name for display
@@ -59,6 +64,7 @@ $table_field_name_arr		= array(array("Last Name","First Name","Office Phone","Mo
 									array("Product Name","Vendor","Version","Description"),
 									array("System group Name","System Group Nickname"),
 									array("Function Name","Function Screen","Function Action","Open/Enabled","Description"),
+									array("Source Name","Nickname","Description"),
 								);
 /************************************************************************************/
 // fields if display or not
@@ -73,6 +79,7 @@ $table_field_display_arr	= array(array(1,1,1,1,1,1,0,0,1,0),
 									array(1,1,1,0),
 									array(1,1),
 									array(1,1,1,1,0),
+									array(1,1,1),
 								);
 /************************************************************************************/
 /* stat for table
@@ -87,6 +94,7 @@ $table_field_stat_arr	= array(array(0,0,0,0,0,1,1,1,0,0),
 								array(0,1,1,0),
 								array(1,0),
 								array(0,1,0,1,0),
+								array(0,0,0),
 								);
 /************************************************************************************/
 /* fields type handle by script
@@ -104,6 +112,7 @@ $table_field_type_arr	= array(array("char","char","char","char","email","int","c
 								array("char","char","char","text"),
 								array("char","char"),
 								array("char","char","char","char","text"),
+								array("char","char","text"),
 								);
 /************************************************************************************/
 /* index type
@@ -118,6 +127,7 @@ $table_field_key_arr	= array(array(1,1,1,0,1,1,0,1,1,1),
 								array(1,0,0,0),
 								array(1,1),
 								array(1,1,1,1,0),
+								array(2,1,0),
 								);
 /************************************************************************************/
 // define the field length
@@ -128,6 +138,7 @@ $table_field_len_arr	= array(array(32,32,13,13,64,10,32,1,32,32),
 								array(64,64,32,65000),
 								array(64,64),
 								array(64,64,64,1,65000),
+								array(64,16,65000),
 								);
 /************************************************************************************/
 /* tables relationship,
@@ -145,6 +156,7 @@ $table_relation_arr		= array(array(array(0),array(0),array(0),array(0),array(0),
 								array(array(0),array(0)),
 								//array(array(0),array(0),array(0),array(2,array("1"=>"Open","0"=>"Closed")),array(0)),
 								array(array(0),array(0),array(0),array(2,array("1"=>"Enable","0"=>"Disable")),array(0)),
+								array(array(0),array(0),array(0)),
 								);
 /************************************************************************************/
 /*
@@ -157,6 +169,7 @@ $table_note_arr			= array(array("","","","","","","","","",""),
 								array("","","",""),
 								array("",""),
 								array("","","","",""),
+								array("","",""),
 								);
 /************************************************************************************/
 /************************************************************************************/
