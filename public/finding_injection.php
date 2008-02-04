@@ -56,12 +56,12 @@ switch ($isCsv){
         break;            
 }
 if (empty($csvFileArray) || $csvFileArray['error']) {
-    $smarty->display('finding_injection.tpl');	
+    $smarty->display('finding_injection.tpl');  
     return ;
 }
 elseif (!empty($error_msg)){
     $smarty->assign('error_msg', $error_msg);
-    $smarty->display('finding_injection.tpl');	
+    $smarty->display('finding_injection.tpl');  
     return ;
 }
 
@@ -84,7 +84,7 @@ while ($data = fgetcsv($handle, 1000, ",", '"')) {
             }
             else {
                 foreach ($sql as $query) {
-                	$db->sql_query($query) or die("Query failed: " .$query."<br>". $db->sql_error());
+                    $db->sql_query($query) or die("Query failed: " .$query."<br>". $db->sql_error());
                 }
                 $succeedArray[] = $data;
             }
@@ -99,7 +99,7 @@ if(count($faildArray)>0){
     $temp_file = 'temp/csv_'.date('YmdHis').'_'.rand(10,99).'.csv';
     $fp = fopen($temp_file, 'w');
     foreach ($faildArray as $fail) {
-    	fputcsv($fp, $fail);
+        fputcsv($fp, $fail);
     }
     fclose($fp);
     $summary_msg .= count($faildArray)." line(s) cannot be parsed. Click <a href='$temp_file'>here</a> to download it, then fix it and try again.<br />";
@@ -112,19 +112,27 @@ if(count($succeedArray)==$row){
 }
 
 $smarty->assign('error_msg', $summary_msg);
-$smarty->display('finding_injection.tpl');	
+$smarty->display('finding_injection.tpl');  
 return ;
 
 
 function checkCsvFile($fileArray){
-    if($fileArray['size']<1) return -4; // empty file
+    if ( !empty($fileArray) ) {
+        if( $fileArray['size']<1 ){
+            return -4; // empty file
+        }
     
-    if($fileArray['size']>1048576) return -2; // big file
-    
-    $bi = preg_match('/\x00|\xFF/', file_get_contents($fileArray['tmp_name']));
-    if($bi) return -1; // binary file
-    
-    return 0;
+        if($fileArray['size']>1048576) {
+            return -2; // big file
+        }
+            
+        $bi = preg_match('/\x00|\xFF/', file_get_contents($fileArray['tmp_name']));
+        if($bi){
+             return -1; // binary file
+        }
+            
+        return 0;
+    }
 }
 
 function csvQueryBuild($row, &$db){
@@ -148,21 +156,21 @@ function csvQueryBuild($row, &$db){
 
 function getSnsIdByName($type, $name_str, &$db){
     if (!in_array($type, array('SYSTEM', 'NETWORK', 'SOURCE')) || ($name_str=='')) {
-    	return false;
+        return false;
     }
     switch ($type) {
-    	case 'SYSTEM':
-    		$sql = "SELECT system_id FROM SYSTEMS WHERE system_nickname = '$name_str'";
-    		break;
-    	case 'NETWORK':
-    		$sql = "SELECT network_id FROM NETWORKS WHERE network_nickname = '$name_str'";
-    		break;
-    	case 'SOURCE':
-    		$sql = "SELECT source_id FROM FINDING_SOURCES WHERE source_nickname = '$name_str'";
-    		break;
+        case 'SYSTEM':
+            $sql = "SELECT system_id FROM SYSTEMS WHERE system_nickname = '$name_str'";
+            break;
+        case 'NETWORK':
+            $sql = "SELECT network_id FROM NETWORKS WHERE network_nickname = '$name_str'";
+            break;
+        case 'SOURCE':
+            $sql = "SELECT source_id FROM FINDING_SOURCES WHERE source_nickname = '$name_str'";
+            break;
     
-    	default:
-    		break;
+        default:
+            break;
     }
     $result = $db->sql_query($sql) or die("Query failed: " .$sql."<br>". $db->sql_error());
     $id = $db->sql_fetchrow($result);

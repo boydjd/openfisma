@@ -14,22 +14,29 @@ $db = new sql_db($dbhost, $dbuser, $dbpass, $dbname, false);
 if(!$db->db_connect_id)
 	exit("Could not connect to the database");
 
-
 if(!get_magic_quotes_gpc()) {
-	if(is_array($_GET)) {
-       foreach($_GET as $key=>$value) {
-           $_GET[$key] = addslashes($value);
-       }
-	}
-	if(is_array($_POST)) {
-       foreach($_POST as $key=>$value) {
-           $_POST[$key] = addslashes($value);
-       }
-	}
-	if(is_array($_REQUEST)) {
-       foreach($_REQUEST as $key=>$value) {
-           $_REQUEST[$key] = addslashes($value);
-       }
-	}
+    if(is_array($_GET)) {
+        array_walk_recursive($_GET,'addslashes_array','GET');
+    }
+    if(is_array($_POST)) {
+        array_walk_recursive($_POST,'addslashes_array','POST');
+    }
+    if(is_array($_REQUEST)) {
+        array_walk_recursive($_REQUEST,'addslashes_array','REQUEST');
+    }
+}
+
+function addslashes_array($value,$key,$array_name) {
+     switch($array_name) {
+         case "GET":
+             $_GET[$key] = addslashes($value);
+             break;
+         case "POST":
+             $_POST[$key] = addslashes($value);
+             break;
+         case "REQUEST":
+             $_REQUEST[$key] = addslashes($value);
+             break;
+      }
 }
 ?>

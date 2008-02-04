@@ -63,7 +63,7 @@ if($view_right || $del_right || $edit_right) {
 	// submit methos
 	if(isset($_POST['sbt'])) {
 		$submit = strtolower($_POST['sbt']);
-		$pageno = intval($_POST['pageno']);
+		$pageno = isset($_POST['pageno'])?intval($_POST['pageno']):1;
 		$asc = intval($_POST['asc']);
 		$fn = $_POST['fn'];
 	}

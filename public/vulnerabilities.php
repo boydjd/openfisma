@@ -5,7 +5,7 @@ header("Cache-Control: no-cache, must-revalidate");
 ** The addslashes() in dblink.php messes with the my_v_type[]
 ** brackets, so capture this right away. For now. Apr. 4 2006
 */
-$my_v_type = $_POST['my_v_type'];
+$my_v_type = isset($_POST['my_v_type']) ? $_POST['my_v_type'] : null;
 
 require_once("config.php");
 require_once("smarty.inc.php");
@@ -178,13 +178,13 @@ if($view_right || $del_right || $edit_right)
 
     $_SESSION['tot_define'] = $v_count;
     $_SESSION['v_keyword'] = $v_keyword;
-    $_SESSION['v_startdate'] = $v_startdate;
-    $_SESSION['v_enddate'] = $v_enddate;
+    $_SESSION['v_startdate'] = isset($v_startdate)?$v_startdate:NULL;
+    $_SESSION['v_enddate'] = isset($v_enddate)?$v_enddate:NULL;
     $_SESSION['search_para'] = $search_para;
 
     $smarty->assign('v_keyword', $v_keyword);
-    $smarty->assign('v_startdate', $v_startdate);
-    $smarty->assign('v_enddate', $v_enddate);
+    $smarty->assign('v_startdate', $_SESSION['v_startdate']);
+    $smarty->assign('v_enddate', $_SESSION['v_enddate']);
     $smarty->assign('tot_define', $v_count);
 
     //Get total vulnerabilities
@@ -232,6 +232,7 @@ if($view_right || $del_right || $edit_right)
     $smarty->assign("lastname", $user->user_name_last);
     $smarty->assign("customer_url", $customer_url);
     $smarty->assign("customer_logo", $customer_logo);
+    $smarty->assign("pageName","Vulnerabilities Summary");
 
     $smarty->display('vulnerabilities.tpl');
 

@@ -5,7 +5,7 @@ header("Cache-Control: no-cache, must-revalidate");
 ** The addslashes() in dblink.php messes with the product_id[]
 ** brackets, so capture this right away. For now. Mar. 31 2006
 */
-$p_id = $_POST['product_id'];
+$p_id = isset($_POST['product_id'])?$_POST['product_id']:NULL;
 
 require_once("config.php");
 require_once("smarty.inc.php");
@@ -207,6 +207,7 @@ $smarty->assign("firstname", $user->user_name_first);
 $smarty->assign("lastname", $user->user_name_last);
 $smarty->assign("customer_url", $customer_url);
 $smarty->assign("customer_logo", $customer_logo);
+$smarty->assign("pageName","New Vulnerablities");
 
 $smarty->display('vulnerabilities_create.tpl');
 

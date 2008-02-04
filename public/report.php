@@ -108,7 +108,7 @@ if(!array_key_exists($full_type, $function_for)){
 
 $function = $function_for[$full_type];
 
-$generate_right = $user->checkRightByFunction($SCREEN_NAME, $function);
+$generate_right = $user->checkRightByFunction($screen_name, $function);
 
 if(!$generate_right) {
   $smarty->assign('err_msg', "Insufficient user privilege to generate this report.");

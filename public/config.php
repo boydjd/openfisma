@@ -6,7 +6,6 @@ $customer_url  = $CUSTOMER_URL;
 $customer_logo = $CUSTOMER_LOGO;
 $login_warning = $LOGIN_WARNING;
 
-
 function displayLoginInfor($smarty, $user) {
 	global $customer_url, $customer_logo;
 
@@ -48,8 +47,8 @@ function displayLoginInfor($smarty, $user) {
 
 
 			// let's template know how to display the menu
-			$smarty->assign('pass_change', $pass_change);
-			$smarty->assign('logout', $logout);
+			//$smarty->assign('pass_change', $pass_change);
+			//$smarty->assign('logout', $logout);
 
 			$smarty->assign('dashboard_menu', $dashboard_menu);
 			$smarty->assign('finding_menu', $finding_menu);
@@ -60,7 +59,7 @@ function displayLoginInfor($smarty, $user) {
 			$smarty->assign('admin_menu', $admin_menu);
 			$smarty->assign('vulner_menu', $vulner_menu);
 
-			$smarty->assign('finding_summary', $finding_summary);
+			//$smarty->assign('finding_summary', $finding_summary);
 			$smarty->assign('finding_add', $finding_add);
 			$smarty->assign('finding_upload', $finding_upload);
 
