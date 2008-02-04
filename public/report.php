@@ -110,12 +110,12 @@ $function = $function_for[$full_type];
 
 $generate_right = $user->checkRightByFunction($screen_name, $function);
 
-if(!$generate_right) {
+/*if(!$generate_right) {
   $smarty->assign('err_msg', "Insufficient user privilege to generate this report.");
   $smarty->display('report_err.tpl');
   return;
   }
-
+*/
 
 /*
 ** Generate report or display generation request page
@@ -394,9 +394,5 @@ else if ($t==$REPORT_TYPE_RAF){
 	}
     $smarty->display('report4.tpl');
 }
-///////////////
-
-
-
 
 ?>
