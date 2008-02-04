@@ -135,6 +135,7 @@ function swapColor(menu, flag){
     var bg = '#44637A';
     var wh = '#FFFFFF';
     var nc = menu.firstChild;
+    while(nc.nodeName!='A' && nc.nodeName!='SPAN') nc=nc.nextSibling;
     if (flag == 'on'){
         menu.style.backgroundColor = fg;
         nc.style.color = bg;

@@ -71,7 +71,7 @@
         
                     {if $finding_menu eq 1}
                     <td width="100" onMouseOver="ShowMenu(this, 'finding'); swapColor(this, 'on');" onMouseOut="HideMenu('finding'); swapColor(this, 'off');">
-                    <span id="mfd" class="t">Findings</span></td>
+                    <a href="finding.php" id="mas" class="t">Findings</a></td>
                     <td><img src="images/menu_line.gif" border="0"></td>
                     {/if}
         
@@ -101,7 +101,7 @@
             
 					{if $vulner_menu eq 1}
 					<td width="100" onMouseOver="ShowMenu(this, 'vulnerabilities'); swapColor(this, 'on');" onMouseOut="HideMenu('vulnerabilities'); swapColor(this, 'off');">
-            		<span id="mvu" class="t">Vulnerabilities</span></td>
+            		<a href="vulnerabilities.php" class="t">Vulnerabilities</a></td>
 					<td><img src="images/menu_line.gif" border="0"></td>
 					{/if}
 		

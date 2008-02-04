@@ -147,3 +147,13 @@ function removeVulner(thisform, headname, destname) {
 	if(num > 0)
 		dest.innerHTML = vulner_title + lmsg;
 }
+
+function pageskip(frm, where) {
+    var pageno  = parseInt($(':input[@name="pageno"]').val());
+    var total   = parseInt($(':input[@name="totalpage"]').val());
+    var next    = (pageno<total)?(pageno+1):(total);
+    var prev    = (pageno<1)?1:(pageno-1);
+    
+    eval("$(':input[@name=\"pageno\"]').val("+where+");");
+    $('form[@name="'+frm+'"]').submit();
+}

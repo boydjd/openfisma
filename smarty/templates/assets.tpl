@@ -5,6 +5,8 @@
 <div align="left">
 
 {literal}
+<script language="javascript" src="javascripts/func.js"></script>
+
 <script language="javascript">
 
 function redirect(asset_id, action) {
@@ -75,23 +77,6 @@ function do_delete()
 
 function do_search()
 {
-	document.asset.action.value='Search';	
-	document.asset.submit();
-}
-
-function pageskip(flag) {
-	var pageno = parseInt(document.asset.pageno.value);
-	if(flag) {
-		pageno = pageno + 1; // next page
-	}
-	else {
-		pageno = pageno - 1; // prev page
-	}
-
-	if(pageno < 1)		
-		pageno = 1; // first page
-	
-	document.asset.pageno.value = pageno;
 	document.asset.action.value='Search';	
 	document.asset.submit();
 }
@@ -182,7 +167,7 @@ function do_order(param)
 
 <form name="asset" method="post" action="asset.php">
 <input type="hidden" name="listall" value="{$listall}">
-{*<input type="hidden" name="action" value="">*}
+<input type="hidden" name="action" value="">
 
 <!-- Asset Search -->  
 <table width="98%" border="0" align="center" class="tipframe">
@@ -270,15 +255,17 @@ function do_order(param)
 			<table>
 				<tr>
             		<td>
+		            	<input type="hidden" name="pageno" value="{$pageno}">
+		            	<input type="hidden" name="totalpage" value="{$maxpageno}">
                     	{if $pageno neq "1"}
-                        <span><input type="image" style="cursor: hand" onclick="pageskip(false);" src="images/button_prev.png" border="0"></span>
+            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('asset','prev');" style="cursor:hand;">
                         {/if}
                		</td>
         	    	<td>&nbsp;Page:</td>
             		<td><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;</td>
 	            	<td>
                     	{if $pageno neq $maxpageno}
-                        <span><input type="image" style="cursor: hand" onclick="javascript: pageskip(true);" src="images/button_next.png" border="0"></span>
+		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('asset','next');" style="cursor:hand;">
                         {/if}
 					</td>
 	            	<td align=right>&nbsp; Total pages: <b>{$maxpageno}</b></td>

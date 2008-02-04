@@ -7,24 +7,6 @@
 
 <script language="javascript">
 
-function pageskip(flag) {
-	var pageno = parseInt(document.finding.pageno.value);
-
-	if(flag) {
-		pageno = pageno + 1; // next page
-	}
-	else {
-		pageno = pageno - 1; // prev page
-	}
-
-	if(pageno < 1)		
-		pageno = 1; // first page
-	
-	document.finding.pageno.value = pageno;
-
-	document.finding.submit();
-}
-
 function dosearch() {
 	document.finding.sbt.value = 'search';
 	document.finding.fn.value = 'date';
@@ -218,8 +200,10 @@ function findingdetail(fid, func) {
 				<tr>
 					<td id="cell 1">Page <b>{$pageno}</b> of <b>{$totalpage}</b></td>
 					<td id="cell 2">
-            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip(false);" style="cursor:hand;">
-		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip(true);" style="cursor:hand;">
+            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('finding','prev');" style="cursor:hand;">
+		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('finding','next');" style="cursor:hand;">
+		            	<input type="hidden" name="pageno" value="{$pageno}">
+		            	<input type="hidden" name="totalpage" value="{$totalpage}">
 					</td>
 				</tr>
 			</table>
