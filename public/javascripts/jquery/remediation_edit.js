@@ -23,6 +23,7 @@ $(document).ready(function(){
             }
     });
     
+    /*
     $(":image[src$='button_respond.png']").click(
     function(){
 //        return true;
@@ -56,9 +57,9 @@ $(document).ready(function(){
         });
         return false;
     });
+    */
     
-    
-    $(":image[src$='button_submit_evidence.png']").click(
+    $(":input[@title='Submit Evidence']").click(
     function(){
 //        return true;
         var data = $(this).parents("form").serializeArray();
@@ -84,7 +85,7 @@ $(document).ready(function(){
         return false;
     });
     
-    $(":image[@value='Save or Submit']").click(
+    $(":input[@title='Save or Submit']").click(
     function(){
         //return true;
         if (aLog.length < 1){
@@ -217,7 +218,7 @@ $(document).ready(function(){
                     new_value = input_obj.options[input_obj.selectedIndex].label;
                     // if sso approve or deny action, change save image to submit image
                     if (input_obj.name == 'poam_action_status'){
-                        $(":image[@value='Save or Submit']").attr('src','images/button_submit.png');
+                        $(":input[@title='Save or Submit']").val('Submit');
                     }
                 }
                 else{
@@ -259,21 +260,21 @@ $(document).ready(function(){
         $(this).hide();
         return false;
     });
-    
+/*    
     $(':image').click(function(){
         if ($(this).val() == 'New Comment'){
             alert('Under construction. :)');      
             return false;
         }
     });
-    
-    $(":image[src$='button_back.png']").click(function(){
+*/    
+    $(":input[@value='Go Back']").click(function(){
         if (aLog.length > 0)
         return confirm("You have some changes in current page, do you really want to dismiss these work? \n Press 'Yes' to leave or 'No' to stay.");
     });
     
-    $(":image[@value='Submit Evidence Change']").click(function(){
-        $(":image[@value='Save or Submit']").click();
+    $(":input[@title='Submit Evidence Change']").click(function(){
+        $(":input[@title='Save or Submit']").click();
     });
     
     $("img.expend_btn").css({'cursor':'pointer'}).click(function(){

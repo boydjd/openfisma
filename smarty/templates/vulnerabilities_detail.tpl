@@ -11,8 +11,8 @@
 <div align="right">
 
 	<form method="post" action="vulnerabilities.php">
-	<!--<INPUT TYPE="submit"  name="go_back"  value="Return to Vulnerability Summary">-->
-	<INPUT TYPE="image" name="go_back" src="./images/button_back.png" VALUE="Return to Vulnerability Summary">
+	<INPUT TYPE="submit"  name="go_back"  value="Return to Vulnerability Summary">
+<!--	<INPUT TYPE="image" name="go_back" src="./images/button_back.png" VALUE="Return to Vulnerability Summary">-->
 	</form>
 
 </div>

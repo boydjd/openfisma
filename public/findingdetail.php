@@ -41,9 +41,9 @@ if(isset($_POST['fid']))
 	$fid = intval($_POST['fid']);
 if(isset($_POST['act']))
 	$act = strtolower(trim($_POST['act']));
-
+//var_dump($_POST);
 /***************finding page search informations******************************************/
-if(!empty($_POST) && $_POST['act']=='search'){
+if(!empty($_POST)){
     $smarty->assign('pageno', $_POST['pageno']);
     $smarty->assign('asc', $_POST['asc']);
     $smarty->assign('fn', $_POST['fn']);

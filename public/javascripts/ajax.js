@@ -25,7 +25,7 @@ function initAjax() {
 function DataSet(xmldoc, tagLabel) {
 	this.xmlObj = xmldoc.getElementsByTagName(tagLabel);
 
-	//3¸ö·½·¨
+	//3ï¿½ï¿½ï¿½
 	this.getCount = getCount;
 	this.getData = getData;
 	this.getAttribute = getAttribute;
@@ -98,7 +98,7 @@ function play()
 		var followObj_y = (typeof(collection[i].y) == 'string' ? eval(collection[i].y) : collection[i].y);
 		
 		if(followObj_bFloat) {
-			// ¸¡¶¯ÒÆ¶¯¹ã¸æ
+			// ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½
 			var c_x = parseInt(followObj.style.left) + collection[i].x_step;;
 			var c_y = parseInt(followObj.style.top) + collection[i].y_step;;
 
@@ -213,10 +213,12 @@ function displayVulnerSearch(xmlDoc) {
 	// If max number of rows were returned then it's highly likely that
   // there are more where they came from.
 	if(document.finding.vuln_offset.value != 0) {
-	  msg = msg + "<span style='cursor: pointer' onclick='return page_vulns(false);'><img src='images/button_prev.gif' border='0'></span>";
+//	  msg = msg + "<span style='cursor: pointer' onclick='return page_vulns(false);'><img src='images/button_prev.gif' border='0'></span>";
+	  msg = msg + "<input type='button' onclick='return page_vulns(false);'>";
 	  }
 	if(count == document.finding.NUM_VULN_ROWS.value) {
-	  msg = msg + "<span style='cursor: pointer' onclick='return page_vulns(true);'><img src='images/button_next.gif' border='0'></span>";
+//	  msg = msg + "<span style='cursor: pointer' onclick='return page_vulns(true);'><img src='images/button_next.gif' border='0'></span>";
+	  msg = msg + "<input type='button' onclick='return page_vulns(true);'>";
 	  }
 	
 	//alert(msg);
@@ -305,7 +307,7 @@ function assetSearchChange() {
 
 
 function fillAssetSelected(xmlDoc) { 
-	var asset = new DataSet(xmlDoc, "asset");  //¹ØÐÄµÄ±êÇ©Ãû³Æ 
+	var asset = new DataSet(xmlDoc, "asset");  //ï¿½ï¿½ï¿½ÄµÄ±ï¿½Ç©ï¿½ï¿½ï¿½ 
 	var count = asset.getCount();
 
 	for(i=document.finding.asset_list.options.length - 1; i>=0; i--) {

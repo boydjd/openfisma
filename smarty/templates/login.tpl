@@ -117,7 +117,7 @@ function checkuser() {
 			<td><input type="password" name="cfmpass" value="" size="16"></td>
 		</tr>
 		<tr>
-			<td colspan="2" align="right"><input type="image" name="log" src="images/button_login.gif" border="0" onClick="return confirmpwd(document.login.userpass, document.login.cfmpass);"></td>
+			<td colspan="2" align="right"><input type="submit" value="Login" onClick="return confirmpwd(document.login.userpass, document.login.cfmpass);"></td>
 		</tr>
 		{else}
 		<tr>
@@ -125,7 +125,7 @@ function checkuser() {
 			<td><input type="password" name="userpass" value="" size="16"></td>
 		</tr>
 		<tr>
-			<td colspan="2" align="right"><input type="image" name="log" src="images/button_login.gif" border="0"></td>
+			<td colspan="2" align="right"><input type="submit" value="Login" name="log"></td>
 		</tr>
 		{/if}
 

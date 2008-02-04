@@ -340,7 +340,7 @@ function order_page(para)
 		</td>
 	</tr>
     <tr>
-		<td align="left"><input type='image' name='submit' value='Search' src='images/button_search.png' onClick="firstpage();"></td>
+		<td align="left"><input type='submit' value='Search' onClick="firstpage();"></td>
 	</tr>
 </table>
 <!-- Begin Filter Table -->
@@ -358,11 +358,13 @@ function order_page(para)
 <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
  <td width="15pt" align="left" valign="bottom">
-   <span {if $remediation_page ne 1}style="cursor: hand" onclick="pageskip(false);"{/if}><img src="images/button_prev.png" border="0"></span></td>
+ {if $remediation_page ne 1}<input type="button" value="Previous" onclick="pageskip(false);">{/if}
+ </td>
  <td width="15pt" align="center" valign="bottom">
    <input type="text" name="remediation_page" size="3" maxlength="3" value="{$remediation_page}"></td>
  <td width="15pt" align="left" valign="bottom">
-    <span {if $remediation_page ne $total_pages } style="cursor: hand" onclick="pageskip(true);"{/if}><img src="images/button_next.png" border="0"></span></td>
+    {if $remediation_page ne $total_pages}<input type="button" value="Next" onclick="pageskip(true);">{/if}
+ </td>
  <td align="center" valign="bottom">Total pages: <b>{$total_pages}</b></td>
  <td width="200pt" align="right" valign="bottom">Number of Results to Display <input type="text" name="row_no" size="3" maxlength="3" value="{$row_no}"></td>
 </tr>

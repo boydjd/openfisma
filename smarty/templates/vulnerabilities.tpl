@@ -178,7 +178,7 @@ function order_page(para)
       </table>
       </td>
 	  <td width="753">
-        <input type="image"   src="images/button_search.png" border="0" onClick="search_page()" >
+        <input type="submit" value="Search" onClick="search_page()" >
 		<input type="hidden"  name="v_search" value="">
 </td>
 	</tr>
@@ -206,13 +206,12 @@ function order_page(para)
 	
 	</td>
     <td width="15%" align="right" valign="bottom">	
-	
-	<span {if $v_page ne 1}style="cursor: hand" onclick="pageskip(false);"{/if}><img src="images/button_prev.png" border="0"></span>
+	{if $v_page ne 1}<input type="button" value="Previous" onclick="pageskip(false);">{/if}
 </td>
     <td width="3%" align="right" valign="bottom">	<input type="text" name="v_page" size="3" maxlength="3" value="{$v_page}">
 </td>
     <td width="4%" align="right" valign="bottom">
-	<span {if $v_page ne $total_pages } style="cursor: hand" onclick="pageskip(true);"{/if}><img src="images/button_next.png" border="0"></span>
+    {if $v_page ne $total_pages }<input type="button" value="Next" onclick="pageskip(true);">{/if}
 	</td>
 </tr>
 </table>

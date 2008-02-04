@@ -7,6 +7,7 @@
 <link type="text/css" rel="StyleSheet" href="stylesheets/sortabletable.css" />
 
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/sortabletable.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/func.js"></script>
 
 <script language="javascript">
 function submit_update() 
@@ -221,7 +222,7 @@ function do_search()
 	document.assetcreate.submit();
 }
 
-function pageskip(flag) {
+/*function pageskip(flag) {
 	var pageno = parseInt(document.assetcreate.pageno.value);
 
 	if(flag) {
@@ -239,7 +240,7 @@ function pageskip(flag) {
 	document.assetcreate.search.value='Search';
 	document.assetcreate.submit();
 }
-
+*/
 //function check
 var selected_prod_in_searchdata = false;
 
@@ -408,7 +409,7 @@ var selected_prod_in_searchdata = false;
 				{if $action eq "edit"}
        				<!--input type="button" name="Edit" value="Update Asset" onClick="javascript:do_update()"-->
 			        <!-- <img type="input" name="Edit" value="Update Asset" onClick="javascript:do_update();" src="images/button_update.png" style="cursor:hand;" > -->
-					  <input type="image"  src="images/button_update.png"  onClick="submit_update()">
+					  <input type="button"  value="update"  onClick="submit_update()">
 					
 				{/if}
 
@@ -436,8 +437,7 @@ var selected_prod_in_searchdata = false;
 	    <tr>
 	        <td align='left'>
 				<b>Search Products for: </b><input type="text" name="product_search" value="{$product_search}" size="40">
-       		  	<!--input type="button" name="Search" value="Search" onclick="javascript: do_search();"-->
-   		  		<img type="input" src="images/button_search.png" onclick="javascript: do_search();" style="cursor:hand;" valign='bottom'> &nbsp;&nbsp;&nbsp; 
+       		  	<input type="button" name="Search" value="Search" onclick="javascript: do_search();">
 			</td>
 
 	    </tr>
@@ -452,7 +452,6 @@ var selected_prod_in_searchdata = false;
 		<tr>
 			<td align='left'  valign='bottom'><b>Product:</b> Search Results</td>
 			<td align='right' valign='bottom'>
-				<!-- <input type='hidden' name="pageno" value="{$pageno}"> -->
 				Page <b>{$pageno}</b> of <b>{$maxpageno}</b>
 			</td>
 		</tr>
@@ -465,14 +464,14 @@ var selected_prod_in_searchdata = false;
 	<table width='100%' border='0' cellpadding='3' cellspacing='1'>
 
 		<tr>
-			<td width="7%" align'left'><img onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" src="images/button_create.png" style="cursor:hand;" ></td>
+			<td width="7%" align'left'><input type="button" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" value="Create" style="cursor:hand;" ></td>
 			<td width="84%" align='right'  valign="top">&nbsp;
-				{if $pageno neq "1"}<span style="cursor: hand" onclick="pageskip(false);"><img src="images/button_prev.png" border="0"></span>{/if}      			
-			</td>
-		    <td width="2%" align='right'  valign="top"><input type="text" name="pageno" value="{$pageno}" size="3"></td>
-		    <td width="7%" align='left'  valign="top">{if $pageno neq $maxpageno}<span style="cursor: hand" onclick="pageskip(true);"><img src="images/button_next.png" border="0"></span>{/if}</td>
+    			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('assetcreate','prev');" style="cursor:hand;">
+            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('assetcreate','next');" style="cursor:hand;">
+            	<input type="hidden" name="pageno" value="{$pageno}">
+            	<input type="hidden" name="totalpage" value="{$maxpageno}">
+		    </td>
 		</tr>
-
 	</table>
 
 	{* SEARCH RESULTS LIST *}
@@ -515,27 +514,19 @@ var selected_prod_in_searchdata = false;
 		<tr>
 			<td align'left'>
 
-				<img onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" src="images/button_create.png" style="cursor:hand;" >
+				<input type="button" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" value="Create" style="cursor:hand;" >
         
 				{if $action eq "create"}
-	    	    	<!--input type="button" name="Add" value="Create Asset" onClick="javascript:do_create()"-->
-    			    <img type="input" name="Add" value="Create Asset" onClick="javascript:do_create();" src="images/button_create.png" style="cursor:hand;" > 
+	    	    	<input type="button" name="Add" value="Create Asset" onClick="javascript:do_create()">
 				{/if} 
 
 				{if $action eq "edit"}
-        			<!--input type="button" name="Edit" value="Update Asset" onClick="javascript:do_update()"-->
-			        <!-- <img type="input" name="Edit" value="Update Asset" onClick="javascript:do_update();" src="images/button_update.png" style="cursor:hand;" > -->
-		            
-					<!-- <input type="image"  src="images/button_update.png"  alt="Update"  title="Update" onClick="do_update()"> -->
-					
-					  <input type="image"  src="images/button_update.png"  onClick="submit_update()">
+        			<input type="button" name="Edit" value="Update Asset" onClick="javascript:do_update()">
 				{/if} 
 
 			</td>
 
 			<td align='right'>&nbsp;
-				{if $pageno neq "1"}<span style="cursor: hand" onclick="pageskip(false);"><img src="images/button_prev.png" border="0"></span>{/if}
-	   	   		{if $pageno neq $maxpageno}<span style="cursor: hand" onclick="pageskip(true);"><img src="images/button_next.png" border="0"></span>{/if}
 			</td>
 		</tr>
 

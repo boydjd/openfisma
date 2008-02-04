@@ -4,7 +4,7 @@ header("Cache-Control: no-cache, must-revalidate");
 require_once("config.php");
 require_once("smarty.inc.php");
 require_once("dblink.php");
-
+require_once("page_utils.php");
 require_once("asset.class.php");
 
 

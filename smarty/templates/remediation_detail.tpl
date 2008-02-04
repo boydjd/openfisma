@@ -249,7 +249,7 @@ function go(step) {
 						<input type='hidden' name='poam_id'     value='{$remediation_id}'>
 					<td colspan='2'>
 						<input type='hidden' name='form_action' value='Generate RAF'>
-						<input type='image' src='images/button_generate_raf.png' name='form_action' value='Generate RAF'>
+						<input type='submit' name='form_action' value='Generate RAF'>
 					</td>
 						</form>
 						{else}
@@ -727,30 +727,26 @@ function go(step) {
     <input type='hidden' name='target'         value='save_poam'>
     <input type='hidden' name='remediation_id' value='{$remediation_id}'>
     <input type='hidden' name='form_action' value=''>
-    <input type='image' src='images/button_save.png' value='Save or Submit'>
+    <input type='submit' title='Save or Submit' value="Save">
 </form>
 {* END COMMENT RESTRICTIONS *}
 </td>
 <td>
 {* RETURN TO THE SUMAMRY LIST *}
-<form action='remediation.php' method='POST'>
-
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
-<input type='hidden' name='form_action' value='Return to Summary List'>
-<input type='image' src='images/button_back.png' name='form_action' value='Return to Summary List'>
-</form>
+			<form action='remediation.php' method='POST'>
+				<input type='hidden' name='filter_source'          value='{$filter_source}'>
+				<input type='hidden' name='filter_system'          value='{$filter_system}'>
+				<input type='hidden' name='filter_status'          value='{$filter_status}'>
+				<input type='hidden' name='filter_type'            value='{$filter_type}'>
+				<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
+				<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
+				<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
+				<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
+				<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
+				<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
+				<input type='hidden' name='form_action' value='Return to Summary List'>
+				<input name="button" type="submit" id="button" value="Go Back" style="cursor: hand;">
+			</form>
 </td></tr>
 </table>
 
@@ -932,9 +928,8 @@ function go(step) {
 						<input type='hidden' name='validated'      value='no'>
 						<input type='hidden' name='approved'       value='no'>
 						<input type='hidden' name='uploaded'       value='no'>
-
-						<input type='hidden' name='form_action' value='Submit Evidence'>
-						<input type='image' src='images/button_submit_evidence.png' name='form_action'    value='Submit Evidence'>
+						<input type='hidden' name='form_action'    value='Submit Evidence'>
+						<input type='button' name="form_action" title='Submit Evidence' value="Upload Evidence">
 				</form>
 					</td>
 			</tr>
@@ -943,7 +938,7 @@ function go(step) {
 		{/if}
         <tr>
             <td>
-                <input type='image' src='images/button_submit.png' value='Submit Evidence Change'>
+                <input type='button' title='Submit Evidence Change' value="Submit">
             </td>
         </tr>
 	</table>

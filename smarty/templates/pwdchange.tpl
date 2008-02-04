@@ -104,9 +104,9 @@ Please create a password that adheres to these complexity requirements:<br>
 	</td>
 </tr>
 <tr>
-	<td align="center" colspan="2"><input name="reset" type="image" value="Reset" src="images/button_reset.png" onclick="$('form[name=chgpwd]').get(0).reset();return false;">
+	<td align="center" colspan="2"><input type="reset" value="Reset" onclick="$('form[name=chgpwd]').get(0).reset();return false;">
 	&nbsp;&nbsp;&nbsp;&nbsp;
-	<input name="submit" type="image" value="Submit" src="images/button_submit.png"></td>
+	<input type="submit" value="Submit"></td>
 </tr>
 </form>
 {/if}

@@ -361,8 +361,8 @@ class AssetDBManager {
 		}
 		if(isset($port) && (intval($port) > 0)) {
 			$assethave = true;
-			$glue = (strlen($aa_filter) > 0) ? "and" : "where";
-			$aa_filter .= "$glue aa.address_port='$port' ";
+//			$glue = (strlen($aa_filter) > 0) ? "and" : "where";
+			$aa_filter .= "and aa.address_port='$port' ";
 		}
 
 
@@ -464,7 +464,7 @@ class AssetDBManager {
 		//echo("<br>$asset_sql<br>");
 		$sql = "select count(aaa.asset_id) as num ".$asset_sql_from_where;
 
-		//echo("<br/>$sql<br/>");
+//		echo("<br/>$sql<br/>");
 
 		$result = $this->dbConn->sql_query($sql);
 		if ($result)

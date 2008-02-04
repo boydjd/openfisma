@@ -141,9 +141,9 @@ function StatForm($tb_id, $qindex)
 	</select></td>
 	<td>
 	<?if($num > 0) { ?>
-	<input type="image" name="submit" src="images/button_go.png" border="0" alt="Submit your request for stat">
+	<input type="submit" value="Go" title="Submit your request for stat">
 	<? } else { ?>
-	<img src="images/button_go.png" border="0">
+	<input type="button" value="Go" title="Submit your request for stat">
 	<?}?>
 	</td>
 </tr>
@@ -194,7 +194,7 @@ function QueryForm($tb_id, $qindex, $qvalue, $pgno, $flag)
 	</select></td>
 	<td><input type="text" name="qv" value="<? if(isset($qvalue)) echo $qvalue; ?>" title="Input your query value" size="10" maxlength="20"></td>
 	<!--<td><input type="submit" name="submit" value="Go" title="submit your request"></td>-->
-	<td><input type="image" src="images/button_search.png" border="0" title="submit your request" onclick="qok(1);"></td>
+	<td><input type="submit" value="Search" title="submit your request" onclick="qok(1);"></td>
 <?
 
 	$pre = $pgno - 1;
@@ -214,7 +214,7 @@ function QueryForm($tb_id, $qindex, $qvalue, $pgno, $flag)
 }
 
 
-// Ò³ÃæÌø×ªÏÔÊ¾
+// Ò³ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Ê¾
 function PageScroll($tb_id,$pgno,$of=0,$asc=0)
 {
 	global $_db_name,$table_arr,$table_id_field_arr,$table_name_arr,$table_field_arr,$table_field_type_arr,$table_field_name_arr,$table_field_key_arr,$table_field_len_arr;
@@ -290,7 +290,7 @@ function PageScroll($tb_id,$pgno,$of=0,$asc=0)
 	$toolbar .= "</td>\n";
 	$toolbar .= "<td>\n";
 	//$toolbar .= "<input type=\"submit\" name=\"submit\" value=\"Go\">\n";
-	$toolbar .= "<input type=\"image\" src=\"images/button_go.png\" border=\"0\">\n";
+	$toolbar .= "<input type=\"submit\" value=\"Go\">\n";
 	$toolbar .= "</td></form>\n";
 	$toolbar .= "<td>|</td>\n";
 	$toolbar .= "</tr>\n";
@@ -1200,7 +1200,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 <input type="hidden" name="r_do" value="list">
 <tr>
 	<td align="left"><font color="blue">*</font> = Required Field</td>
-	<td align="right"><input type="image" name="back" src="images/button_back.png" border="0"></td>
+	<td align="right"><input type="submit" value="Back"></td>
 </tr>
 </form>
 </table>
@@ -1376,12 +1376,12 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 <tr align="center">
 	<!--<td><input type="submit" name="submit" value="Submit"></td>-->
 	<? if($id > 0) { ?>
-	<td><input type="image" src="images/button_update.png" border="0" title="submit your request"></td>
+	<td><input type="submit" value="Update" title="submit your request"></td>
 	<? } else { ?>
-	<td><input type="image" src="images/button_create.png" border="0" title="submit your request"></td>
+	<td><input type="submit" value="Create" title="submit your request"></td>
 	<? } ?>
 	<!--<td><input type="reset" name="reset" value="Reset"></td>-->
-	<td><span style="cursor: pointer"><img src="images/button_reset.png" border="0" onclick="document.tbform.reset();"></span></td>
+	<td><span style="cursor: pointer"><input type="reset" value="Reset" onclick="document.tbform.reset();"></span></td>
 </tr>
 </table>
 </form>
@@ -1460,7 +1460,7 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 <input type="hidden" name="asc" value="<?=$asc?>">
 <input type="hidden" name="r_do" value="list">
 <tr>
-	<td align="right"><input type="image" name="back" src="images/button_back.png" border="0"></td>
+	<td align="right"><input type="submit" value="Back"></td>
 </tr>
 </form>
 </table>

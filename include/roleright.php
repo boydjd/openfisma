@@ -51,9 +51,9 @@ function RoleFunctionDefineForm($tb_id,$pgno,$of,$asc,$rid, $edit_right) {
 <tr>
 	<td><b>Role Name:</b> <?=$rolename?></td>
 	<td>&nbsp;&nbsp;</td>
-	<td><span style="cursor: pointer"><img src="images/button_select_all.png" border="0" onclick="selectall('rtable', 'function_', true);"></span>&nbsp;
-	<span style="cursor: pointer"><img src="images/button_select_none.png" border="0" onclick="selectall('rtable', 'function_', false);"></span></td>
-	<td align="right"><input type="image" name="back" src="images/button_back.png" border="0"></td>
+	<td><span style="cursor: pointer"><input type="button" value="Select All" onclick="selectall('rtable', 'function_', true);">&nbsp;
+	<span style="cursor: pointer"><input type="button" value="Select None" onclick="selectall('rtable', 'function_', false);"></td>
+	<td align="right"><input type="submit" value="Back" name="back"></td>
 </tr>
 </form>
 </table>
@@ -71,8 +71,8 @@ function RoleFunctionDefineForm($tb_id,$pgno,$of,$asc,$rid, $edit_right) {
 <?=$msg?>
 <table border="0" width="300">
 <tr align="center">
-	<td><input type="image" name="update" src="images/button_update.png" border="0"></td>
-	<td><span style="cursor: pointer" onclick="document.rtable.reset();"><img src="images/button_reset.png" border="0"></span></td>
+	<td><input type="submit" value="Update"></td>
+	<td><input type="reset" onclick="document.rtable.reset();" value="Reset"></span></td>
 </tr>
 </table>
 </form>
@@ -291,8 +291,8 @@ function UserSystemRoleDefineTable($uid, $editflag) {
 			}
 
 			$msg .= "<br>";
-			$msg .= "<div align=\"right\"><span style=\"cursor: pointer\"><img src=\"images/button_select_all.png\" border=\"0\" onclick=\"selectall('tbform', 'system_', true);\"></span>&nbsp;";
-			$msg .= "<span style=\"cursor: pointer\"><img src=\"images/button_select_none.png\" border=\"0\" onclick=\"selectall('tbform', 'system_', false);\"></span></div>";
+			$msg .= "<div align=\"right\"><span style=\"cursor: pointer\"><input type=\"button\" value=\"Select All\" onclick=\"selectall('tbform', 'system_', true);\">>&nbsp;";
+			$msg .= "<span style=\"cursor: pointer\"><input type=\"button\" value=\"Select None\" onclick=\"selectall('tbform', 'system_', false);\"></div>";
 
 			$msg .= "<fieldset style=\"border:1px solid #BEBEBE; padding:3\"><legend><b>Systems</b></legend>\r\n";
 			$msg .= "<input type=\"hidden\" name=\"p_checkhead\" value=\"system_\">\r\n";

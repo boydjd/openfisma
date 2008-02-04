@@ -228,12 +228,13 @@ use this to get IE to pass 'submit' on image input button click
 	<tr>
 	  <td colspan="2" align="left">&nbsp;Product Search: 
 		  <input type="text" name="p_keyword" size="35" value="{$p_keyword}"> 
-		  <input type="image" src="./images/button_search.png" name="submit_search" onClick="set_submit_value('Search');" value="Search"> 
+		  <input type="submit" name="submit_search" onClick="set_submit_value('Search');" value="Search"> 
 		  
-		  <input type="image" src="./images/button_add_product.png"  onClick="set_submit_value('Add Products');"  value="Add Products"> 
+		  <input type="submit" onClick="set_submit_value('Add Products');"  value="Add Products"> 
 		  <!--<INPUT TYPE="BUTTON" VALUE="Create New Product" ONCLICK="window.location.href='tbadm.php?tid=4&r_do=form'">-->
 		  <!-- IE is being a pain about the image-driven linking -->
-      <a href="tbadm.php?tid=4&r_do=form"><img src="./images/button_create.png" border=0></a>		  
+<!--      <a href="tbadm.php?tid=4&r_do=form"><img src="./images/button_create.png" border=0></a>		-->
+          <input type="button" onclick="javascript:location.href='tbadm.php?tid=4&r_do=form'" value="Create">
 	  </td>
     </tr>
 	<tr>
@@ -242,13 +243,13 @@ use this to get IE to pass 'submit' on image input button click
 	  
 
 	Total pages: {$p_amount}  
-	<!--<input  src="" type="submit" name="submit_prev" value="Prev Page" {$prev_page_disabled}> -->
-	<input  type="image" src="images/button_prev.png" name="submit_prev" onClick="set_submit_value('Prev Page');" value="Prev Page" {$prev_page_disabled}> 
+	<input  type="submit" name="submit_prev" value="Prev Page" onClick="set_submit_value('Prev Page');" {$prev_page_disabled}>
+<!--	<input  type="image" src="images/button_prev.png" name="submit_prev" onClick="set_submit_value('Prev Page');" value="Prev Page" {$prev_page_disabled}> -->
 	
 	<input type="text" name="p_page" size="3" maxlength="3" value="{$p_page}">
 	
-	<!--<input type="submit" name="submit_next" value="Next Page" {$next_page_disabled}> -->
-	<input type="image" src="images/button_next.png" name="submit_next" onClick="set_submit_value('Next Page');" value="Next Page" {$next_page_disabled}> 
+	<input type="submit" name="submit_next" value="Next Page" onClick="set_submit_value('Next Page');" {$next_page_disabled}>
+<!--	<input type="image" src="images/button_next.png" name="submit_next" onClick="set_submit_value('Next Page');" value="Next Page" {$next_page_disabled}> -->
 
 
 
@@ -308,8 +309,8 @@ use this to get IE to pass 'submit' on image input button click
 
 
   <p  align="center">
-    <!--<input type="submit" name="submit" onClick="validate_submission();" value="Create New Vulnerability">-->
-    <input type="image" src="./images/button_create.png" name="submit_create" onClick="set_submit_value('Create New Vulnerability');validate_submission();" value="Create New Vulnerability">
+    <input type="submit" name="submit" onClick="set_submit_value('Create New Vulnerability');return validate_submission();" value="Create New Vulnerability">
+<!--    <input type="image" src="./images/button_create.png" name="submit_create" onClick="set_submit_value('Create New Vulnerability');validate_submission();" value="Create New Vulnerability">-->
   </p>
 
 

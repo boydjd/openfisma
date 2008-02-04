@@ -94,7 +94,7 @@
 <form action='asset.php' method='POST'>
 <!--	<input type='Submit' value='Return to Summary List'>-->
   <input type='hidden' name='Submit' value='Return to Summary List'/>
-  <input type='image' src='./images/button_back.png' >
+  <input type='submit' value="Back" >
 </form>
 
 {include file="footer.tpl"} 
