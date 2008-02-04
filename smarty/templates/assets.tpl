@@ -158,19 +158,22 @@ function do_order(param)
 <br>
 
 <!-- Heading Block -->
-<table class="tbline">              
-<tr><td id="tbheading">Asset Search</td><td id="tbtime">{$now}</td></tr>        
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Asset Search</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
 </table>
 <!-- End Heading Block -->
-
-<br>
 
 <form name="asset" method="post" action="asset.php">
 <input type="hidden" name="listall" value="{$listall}">
 <input type="hidden" name="action" value="">
 
 <!-- Asset Search -->  
-<table width="98%" border="0" align="center" class="tipframe">
+<table width="95%" border="0" align="center" class="tipframe">
 	<tr>
     	<td>
 		<!-- Asset Search Table -->
@@ -222,14 +225,16 @@ function do_order(param)
 <input type="hidden" name="orderbyfield" value="{$orderbyfield}">
 
 <!-- Heading Block -->
-<table class="tbline">              
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-    	<td id="tbheading">Search Results</td>
-    	<td align=right>Export Results to: 
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Asset Search Results</b></td>
+		<td bgcolor="#DFE5ED" align="right">Export Results to:
 			<a href="asset.report.php?f=p" target="_blank"><img src="images/pdf.gif" border="0"></a>
 			<a href="asset.report.php?f=x" target="_blank"><img src="images/xls.gif" border="0"></a>
 		</td>
-    </tr>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
 </table>
 <!-- End Heading Block -->
 

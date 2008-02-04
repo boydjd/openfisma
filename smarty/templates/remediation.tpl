@@ -143,11 +143,16 @@ function order_page(para)
 {/literal}
 
 {if $view_right eq 1}
+
+<br>
+
 <!-- Heading Block -->
-<table class="tbline">
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td id="tbheading">Remediation Summary</td>
-		<td id="tbtime">{$now}</td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Remediation Summary</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
 <!-- End Heading Block -->
@@ -233,11 +238,16 @@ function order_page(para)
 <!-- FILTERS                                                                -->
 <!-- ---------------------------------------------------------------------- -->
 
-<table class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td id="tbheading">Remediation Filters</td>
-  	</tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Remediation Search</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
 </table>
+<!-- End Heading Block -->
 
 <br>
 
@@ -247,7 +257,7 @@ function order_page(para)
 <input type='hidden' name='sort_by'    value='{$sort_by}'>
 
 <!-- Begin Filter Table -->
-<table align="center" border="1" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
+<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
 	<tr> {* NON-DATE FILTERS ROW *}
 		<td colspan='2'><b>Finding Source: </b><br>
 			<select name='filter_source'>
@@ -347,11 +357,16 @@ function order_page(para)
 
 <br>
 
-<table class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-    	<td valign="bottom"><b>Remediation:</b> List</td>
-   	</tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Remediation Search Results</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
 </table>
+<!-- End Heading Block -->
 
 
 <!-- Pagination -->

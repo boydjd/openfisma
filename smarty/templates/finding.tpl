@@ -37,10 +37,13 @@ function findingdetail(fid, func) {
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 
 <!-- Heading Block -->
-<table class="tbline">              
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-    	<td id="tbheading">Finding Summary</td><td id="tbtime">{$now}</td>
-	</tr>        
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Finding Summary</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
 </table>
 <!-- End Heading Block -->
 
@@ -49,7 +52,7 @@ function findingdetail(fid, func) {
 <table width="98%" align="center">
 	<tr>
     	<td>
-			<table align="left" border="0" cellpadding="5" cellspacing="0" class="tbframe">
+			<table align="center" border="0" cellpadding="5" cellspacing="0" class="tbframe">
 				<tr align="center">
 					<th>System</td>
 					<th>Open(Today)</td>
@@ -77,10 +80,15 @@ function findingdetail(fid, func) {
 	</tr>
 </table>
 
+<br>
+
 <!-- Heading Block -->
-<table class="tbline">
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-    	<td id="tbheading">Finding Search</td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Search Findings</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
 <!-- End Heading Block -->
@@ -189,34 +197,23 @@ function findingdetail(fid, func) {
 <br>
 
 <!-- Heading Block -->
-<table class="tbline"><tr><td id="tbheading">Finding List Summary</td></tr></table>
-<!-- End Heading Block -->
-<br>
-<!-- Pagination -->
-<table width="98%" align="center">
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-    	<td>
-			<table align="left" border="0" cellpadding="5" cellspacing="0">
-				<tr>
-					<td id="cell 1">Page <b>{$pageno}</b> of <b>{$totalpage}</b></td>
-					<td id="cell 2">
-            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('finding','prev');" style="cursor:hand;">
-		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('finding','next');" style="cursor:hand;">
-		            	<input type="hidden" name="pageno" value="{$pageno}">
-		            	<input type="hidden" name="totalpage" value="{$totalpage}">
-					</td>
-				</tr>
-			</table>
-		</td>
-    </tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Finding Search Results</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
 </table>
-<!-- End Pagination -->
+<!-- End Heading Block -->
+
 <br>
+
 <!-- Finding Summary Table -->
 <table width="98%" align="center">
-	{if $del_right eq 1}
 	<tr>
-    	<td>
+    	<td align="left">
+			{if $del_right eq 1}
 			<!-- Allow Multiple Deletion if the user has the appropriate rights -->
 			<table width="100%" align="left" border="0" cellpadding="0" cellspacing="0">
 				<tr>
@@ -230,10 +227,35 @@ function findingdetail(fid, func) {
 			</table>
 			<!-- End Multiple Deletion -->
 		</td>
+		<td align="right">
+		
+			<!-- Pagination -->
+			<table>
+				<tr>
+            		<td>
+		            	<input type="hidden" name="pageno" value="{$pageno}">
+		            	<input type="hidden" name="totalpage" value="{$totalpage}">
+                    	{if $pageno neq "1"}
+            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('finding','prev');" style="cursor:hand;">
+                        {/if}
+               		</td>
+        	    	<td>&nbsp;Page:</td>
+            		<td><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;</td>
+	            	<td>
+                    	{if $pageno neq $totalpage}
+		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('finding','next');" style="cursor:hand;">
+                        {/if}
+					</td>
+	            	<td align=right>&nbsp; Total pages: <b>{$totalpage}</b></td>
+        		</tr>
+			</table>
+			<!-- End Pagination -->		
+		
+		</td>
 	</tr>
 	{/if}
     <tr>
-    	<td>
+    	<td colspan="2">
 			<!-- Finding Search Results --> 
 			<table width="100%" align="left" border="1" cellpadding="5" cellspacing="0" class="tbframe">
 				<tr align="center">
@@ -248,8 +270,10 @@ function findingdetail(fid, func) {
     											<input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('source', 1)"></td>
 					<th nowrap>System 			<input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('system', 0)"> 
     											<input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('system', 1)"></td>
+<!--
 					<th nowrap>Network 			<input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('network', 0)"> 
     											<input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('network', 1)"></td>
+-->
 					<th nowrap>IP 				<input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('ip', 0)"> 
     											<input type="image" src="images/down_arrow.gif" border="0" onClick="order_page('ip', 1)"></td>
 					<th nowrap>Port 			<input type="image" src="images/up_arrow.gif" border="0" onClick="order_page('port', 0)"> 
@@ -280,7 +304,9 @@ function findingdetail(fid, func) {
 					<td class="tdc">{$fobj->finding_status}&nbsp;</td>
 					<td class="tdc">{$fobj->source_name}&nbsp;</td>
 					<td class="tdc"><span title="{foreach item=sname from=$fobj->asset_obj->system_arr}||{$sname}{/foreach}">{$fobj->asset_obj->system_arr[0]}</span>&nbsp;</td>
+<!--
 					<td class="tdc"><span title="{foreach item=sname from=$fobj->asset_obj->network_arr}||{$sname}{/foreach}">{$fobj->asset_obj->network_arr[0]}</span>&nbsp;</td>
+-->
 					<td class="tdc"><span title="{foreach item=sname from=$fobj->asset_obj->ip_arr}||{$sname}{/foreach}">{$fobj->asset_obj->ip_arr[0]}</span>&nbsp;</td>
 					<td class="tdc"><span title="{foreach item=sname from=$fobj->asset_obj->port_arr}||{$sname}{/foreach}">{$fobj->asset_obj->port_arr[0]}</span>&nbsp;</td>
 					<td class="tdc">{$fobj->asset_obj->prod_name}&nbsp;</td>
