@@ -135,7 +135,7 @@ if($tid > 0 && $tid <= $table_count)
 		$toolbars = PageScroll($tid, $pgno, $of, $asc);
 		$tbcnname = $table_name_arr[$tid - 1];
 
-		echo "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbframe\">\n";
+		echo "<table width=\"98%\" align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbframe\">\n";
 		echo "<tr>\n";
 		echo "<th>[<a href=\"$pageurl?tid=$tid\">$tbcnname list</a>] (total: $totalrecords)</td>\n";
 		echo "<th>";

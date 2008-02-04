@@ -11,7 +11,7 @@ function OptionMenu($tb_id)
 
 	$msg = "";
 	$cols = 1;
-	$msg .= "<table border=\"0\" width=\"100%\">\n";
+	$msg .= "<table border=\"0\" width=\"95%\" align=\"center\">\n";
 	foreach($table_class as $classid=>$classname)
 	{
 		$msg .= "<tr>\n";
@@ -641,7 +641,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 	}
 
 	$body = underline("$page_title Search result");
-	$body .= "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbframe\">\n";
+	$body .= "<table width=\"95%\" align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbframe\">\n";
 	$body .= "<tr align=\"center\">\n";
 	//$body .= "<th>NO</td>\n";
 	for($i = 0; $i < count($field_arr); $i++) {
@@ -1083,7 +1083,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 
 	$body = underline("$page_title $tbcnname List");
 
-	$body .= "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbframe\">\n";
+	$body .= "<table width=\"95%\" align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbframe\">\n";
 	$body .= "<tr align=\"center\">\n";
 	//$body .= "<th>NO</td>\n";
 	for($i = 0; $i < count($field_arr); $i++) {
@@ -1191,7 +1191,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 	if($id > 0) {
 		echo underline("$page_title $tbcnname Edit");
 	?>
-<table border="0" width="100%">
+<table border="0" width="95%" align="center">
 <form name="backform" method="post" action="<?=$pageurl?>">
 <input type="hidden" name="tid" value="<?=$tb_id?>">
 <input type="hidden" name="pgno" value="<?=$pgno?>">
@@ -1211,7 +1211,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 ?>
 
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 <form name="tbform" method="post" action="<?=$pageurl?>" onsubmit="return go(document.tbform);">
 <input type="hidden" name="tid" value="<?=$tb_id?>">
 <input type="hidden" name="pgno" value="<?=$pgno?>">
@@ -1452,7 +1452,7 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 
 ?>
 
-<table border="0" width="100%">
+<table border="0" width="95%" align="center">
 <form name="backform" method="post" action="<?=$pageurl?>">
 <input type="hidden" name="tid" value="<?=$tb_id?>">
 <input type="hidden" name="pgno" value="<?=$pgno?>">
@@ -1465,7 +1465,7 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 </form>
 </table>
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 <?
 	for($i = 0; $i < count($field_arr); $i++)
 	{
@@ -1541,7 +1541,7 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 /**********************************************************************/
 /**********************************************************************/
 function underline($msg, $now = "") {
-	$titleline = "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbline\">\n";
+	$titleline = "<table width=\"95%\" align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"tbline\">\n";
 	$titleline .= "<tr>\n";
 	$titleline .= "	<td valign=\"bottom\"><!--<img src=\"images/greenball.gif\" border=\"0\"> -->$msg </td>\n";
 	$titleline .= "	<td align=\"right\" valign=\"bottom\"> $now </td>\n";
