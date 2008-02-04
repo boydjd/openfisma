@@ -17,69 +17,103 @@ function del_product(para)
 
 {/literal}
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-<tr>
-	<td valign="bottom"><!--<img src="images/greenball.gif" border="0"> --><b>Vulnerability: Detail </b></td>
-	<td align="right" valign="bottom">{$now}
+<br>
 
-	</td>
-</tr>
+<!-- Header Block -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+	<tr>
+		<td valign="bottom"><b>Vulnerability Detail</b></td>
+		<td align="right" valign="bottom">{$now}</td>
+	</tr>
 </table>
-<div align="right">
-		<form   name="vuln_back" method="post" action="vulnerabilities.php">
-	<INPUT TYPE="submit"  name="go_back"  value="Return to Vulnerability Summary">
-	</form>
-</div>
+<!-- End Header Block -->
+
+<br>
+
+<!-- Back Button -->
+<table width="95%" align="center">
+	<tr>
+		<td align="left">
+			<form method="post" action="vulnerabilities.php">
+			<INPUT TYPE="submit"  name="go_back"  value="Return to Vulnerability Summary">
+			</form>
+		</td>
+	</tr>
+</table>
+<!-- End Back Button -->
 
 
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 {$update_msg}
+
 <br>
-Vulnerability Detail
 
 <form name="vuln_prod" method="post" action="">
-
 <input  type="hidden" name="vn"  value="{$v_table.vuln_seq}"  >
 
-<table width="98%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
-  <tr>
-    <td width="363" rowspan="2" align="left" valign="top"><table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
-          <tr>
-            <th colspan="2"  align="left">Vulnerability Name: {$v_table.vuln_type}-{$v_table.vuln_seq} </th>
-          </tr>
-        </table>
-  	    <br>
-  	    <table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
-          <tr>
-            <th colspan="2"  align="left">Vulnerability Primary Description: </th>
-          </tr>
-          <tr>
-            <td  align="left">  <textarea name="vuln_desc_primary" cols="55" rows="2">{$v_table.vuln_desc_primary} </textarea></td>
-          </tr>
-        </table>
-  	    <br><table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
-          <tr>
-            <th colspan="2"  align="left">Vulnerability Primary Description: </th>
-          </tr>
-          <tr>
-            <td  align="left"> <textarea name="vuln_desc_secondary" cols="55" rows="2">{$v_table.vuln_desc_secondary} </textarea>
-    </td>
-          </tr>
-        </table>
+<table width="95%" align="center" border="0" cellpadding="3" cellspacing="1">
+	<tr>
+		<td width="363" rowspan="2" align="left" valign="top">
+		
+			<table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
+				<tr>
+					<th colspan="2" align="left">
+						Vulnerability Name: {$v_table.vuln_type}-{$v_table.vuln_seq} 
+					</th>
+				</tr>
+			</table>
+  	    
 		<br>
-        <table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
-          <tr>
-            <th colspan="2"  align="left"> Vulnerability Severity:  <input name="vuln_severity" type="text" value="{$v_table.vuln_severity}"> </th>
-          </tr>
-        </table>
-      </td>
-    <td colspan="2">
-	<table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
-        <tr>
-          <th colspan="2"  align="left">The Vulnerability will cost the loss of </th>
-        </tr>
-        <tr>
-          <td width="50%"  align="left"><input type="checkbox" name="vuln_loss_confidentiality" value="1"  {$v_table.vuln_loss_confidentiality} >Confidentiality   </td>
+  	    
+			<table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
+				<tr>
+					<th colspan="2"  align="left">Vulnerability Primary Description: </th>
+				</tr>
+				<tr>
+					<td  align="left">  
+						<textarea name="vuln_desc_primary" cols="55" rows="2">
+							{$v_table.vuln_desc_primary} 
+						</textarea>
+					</td>
+				</tr>
+			</table>
+  	    
+		<br>
+		
+			<table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
+				<tr>
+					<th colspan="2"  align="left">Vulnerability Primary Description: </th>
+				</tr>
+				<tr>
+					<td  align="left"> 
+						<textarea name="vuln_desc_secondary" cols="55" rows="2">
+							{$v_table.vuln_desc_secondary} 
+						</textarea>
+					</td>
+				</tr>
+			</table>
+		
+		<br>
+        
+			<table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
+				<tr>
+					<th colspan="2" align="left">
+						Vulnerability Severity:  
+						<input name="vuln_severity" type="text" value="{$v_table.vuln_severity}"> 
+					</th>
+				</tr>
+			</table>
+		
+		</td>
+		<td colspan="2">
+	
+			<table width="100%" border="0" cellpadding="3" cellspacing="1" class="tipframe">
+				<tr>
+					<th colspan="2"  align="left">The Vulnerability will cost the loss of </th>
+				</tr>
+				<tr>
+					<td width="50%" align="left">
+						<input type="checkbox" name="vuln_loss_confidentiality" value="1"  {$v_table.vuln_loss_confidentiality} >Confidentiality   </td>
           <td width="50%"  align="left"><input type="checkbox" name="vuln_loss_security_admin"  value="1" {$v_table.vuln_loss_security_admin}>Security Admin </td>
         </tr>
         <tr>
