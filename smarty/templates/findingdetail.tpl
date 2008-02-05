@@ -32,7 +32,7 @@
 					</select>
 				</td>
 				<td>
-                	<input name="button" type="submit" id="button" value="Update Status" style="cursor:hand;">
+                	<input name="button" type="submit" id="button" value="Update Status" style="cursor:pointer;">
                 </td>
 					</form>
 					{else}
@@ -45,7 +45,7 @@
                 	<input type="hidden" name="action" value="new">
         	    	<input type="hidden" name="finding_id" value="{$finding->finding_id}">
 	           	<td>
-                	<input name="button" type="submit" id="button" value="Convert to POAM" style="cursor:hand;">
+                	<input name="button" type="submit" id="button" value="Convert to POAM" style="cursor:pointer;">
                 </td>
                 	</form>
 					{/if}
@@ -65,7 +65,7 @@
 					<input type="hidden" name="ip" value="{$ip}">
 					<input type="hidden" name="port" value="{$port}">
 				<td>
-                	<input name="button" type="submit" id="button" value="Back" style="cursor:hand;">
+                	<input name="button" type="submit" id="button" value="Back" style="cursor:pointer;">
                 </td>
 					</form>
 			</tr>

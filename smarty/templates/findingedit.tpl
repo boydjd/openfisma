@@ -37,8 +37,8 @@
     	<table border="0" align="center" cellpadding="5">
 			<tr>
 				<td>
-                    <input name="button" type="submit" id="button" value="Create Finding" style="cursor:hand;">
-                    <input name="button" type="reset" id="button" value="Reset Form" style="cursor:hand;">
+                    <input name="button" type="submit" id="button" value="Create Finding" style="cursor:pointer;">
+                    <input name="button" type="reset" id="button" value="Reset Form" style="cursor:pointer;">
                 </td>
 			</tr>
             
@@ -117,8 +117,8 @@
                                         	<input type="text" name="asset_needle" value="" maxlength="10" size="10">&nbsp;
                                      	</td>
 										<td>
-                                            <input name="button" type="button" id="button" value="Search Assets" onClick="return loadAssetList('ajaxsearch.php');" style="cursor:hand;">
-                                            <input name="button" type="button" id="button" value="Create Asset" onClick="window.location='asset.create.php'"style="cursor:hand;">
+                                            <input name="button" type="button" id="button" value="Search Assets" onClick="return loadAssetList('ajaxsearch.php');" style="cursor:pointer;">
+                                            <input name="button" type="button" id="button" value="Create Asset" onClick="window.location='asset.create.php'"style="cursor:pointer;">
                                        	</td>
 									</tr>
 								</table>

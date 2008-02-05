@@ -36,8 +36,8 @@
 			<table border="0">
 				<tr>
 					<td align="right">
-						<input name="button" type="button" id="button" value="Change Password" onClick="javascript:location.href='pwdchange.php'" style="cursor:hand;">
-						<input name="button" type="button" id="button" value="Logout" onClick="javascript:location.href='login.php?logout=1'" style="cursor:hand;">
+						<input name="button" type="button" id="button" value="Change Password" onClick="javascript:location.href='pwdchange.php'" style="cursor:pointer;">
+						<input name="button" type="button" id="button" value="Logout" onClick="javascript:location.href='login.php?logout=1'" style="cursor:pointer;">
                     </td>
 				</tr>
 				<tr>

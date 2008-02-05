@@ -184,8 +184,8 @@ function findingdetail(fid, func) {
 	</tr>
 	<tr id="row6">
 		<td id="cell 1">
-		<input name="button" type="reset" id="button" value="Reset" style="cursor:hand;">
-        <input name="button" type="submit" id="button" value="Search" onClick="dosearch();" style="cursor:hand;">
+		<input name="button" type="reset" id="button" value="Reset" style="cursor:pointer;">
+        <input name="button" type="submit" id="button" value="Search" onClick="dosearch();" style="cursor:pointer;">
 		</td>
 	</tr>
 </table>
@@ -218,10 +218,10 @@ function findingdetail(fid, func) {
 			<table width="100%" align="left" border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td align="left">
-                        <input name="button" type="button" id="button" value="Select All" onclick="selectall('finding', 'fid_', true);" style="cursor:hand;">
-                        <input name="button" type="button" id="button" value="Select None" onclick="selectall('finding', 'fid_', false);" style="cursor:hand;">
+                        <input name="button" type="button" id="button" value="Select All" onclick="selectall('finding', 'fid_', true);" style="cursor:pointer;">
+                        <input name="button" type="button" id="button" value="Select None" onclick="selectall('finding', 'fid_', false);" style="cursor:pointer;">
                         <input 	name="button" type="button" id="button" value="Delete" 
-                        		onClick="document.finding.sbt.value='delete'; return deleteconfirm('finding','fid_','finding');" style="cursor:hand;">
+                        		onClick="document.finding.sbt.value='delete'; return deleteconfirm('finding','fid_','finding');" style="cursor:pointer;">
 					</td>
 				</tr>
 			</table>
@@ -236,14 +236,14 @@ function findingdetail(fid, func) {
 		            	<input type="hidden" name="pageno" value="{$pageno}">
 		            	<input type="hidden" name="totalpage" value="{$totalpage}">
                     	{if $pageno neq "1"}
-            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('finding','prev');" style="cursor:hand;">
+            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('finding','prev');" style="cursor:pointer;">
                         {/if}
                		</td>
         	    	<td>&nbsp;Page:</td>
             		<td><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;</td>
 	            	<td>
                     	{if $pageno neq $totalpage}
-		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('finding','next');" style="cursor:hand;">
+		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('finding','next');" style="cursor:pointer;">
                         {/if}
 					</td>
 	            	<td align=right>&nbsp; Total pages: <b>{$totalpage}</b></td>

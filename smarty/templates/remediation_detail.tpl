@@ -170,7 +170,7 @@ function go(step) {
 				<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
 				<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 				<input type='hidden' name='form_action' value='Return to Summary List'>
-				<input name="button" type="submit" id="button" value="Go Back" style="cursor: hand;">
+				<input name="button" type="submit" id="button" value="Go Back" style="cursor: pointer;">
 			</form>
 		</td>
   	</tr>
@@ -745,7 +745,7 @@ function go(step) {
 				<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
 				<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
 				<input type='hidden' name='form_action' value='Return to Summary List'>
-				<input name="button" type="submit" id="button" value="Go Back" style="cursor: hand;">
+				<input name="button" type="submit" id="button" value="Go Back" style="cursor: pointer;">
 			</form>
 </td></tr>
 </table>

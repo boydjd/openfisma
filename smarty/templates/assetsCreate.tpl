@@ -238,7 +238,7 @@ var selected_prod_in_searchdata = false;
 		<input type="hidden" name="search" value="">
 
 		<td>
-            <input type="button" name="button" value="Create Asset" onClick="javascript:do_create();" style="cursor:hand;"> 
+            <input type="button" name="button" value="Create Asset" onClick="javascript:do_create();" style="cursor:pointer;"> 
         </td>
    	</tr>
 	<tr>
@@ -303,8 +303,8 @@ var selected_prod_in_searchdata = false;
                             <tr>
 								<td><b>Product Name: </b> 
 									<input type="text" name="product_search" value="{$product_search}" size="20">
-                                    <input type="button" name="button" value="Search" onclick="javascript: do_search();" style="cursor:hand;">
-                                    <input type="button" name="button" value="Create Product" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" style="cursor:hand;">
+                                    <input type="button" name="button" value="Search" onclick="javascript: do_search();" style="cursor:pointer;">
+                                    <input type="button" name="button" value="Create Product" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" style="cursor:pointer;">
 								</td>
 							</tr>
 						</table>
@@ -358,7 +358,7 @@ var selected_prod_in_searchdata = false;
                                                 			<table border="0">
 			                    								<tr>
             			            								<td>{if $pageno neq "1"}
-                                                            			<input type="button" name="button" value="Previous" onclick="pageskip(false);" style="cursor: hand;"> 
+                                                            			<input type="button" name="button" value="Previous" onclick="pageskip(false);" style="cursor:pointer;"> 
                                                             			{/if}
                                                         			</td>
                     			    								<td>&nbsp;Page:</td>
@@ -367,7 +367,7 @@ var selected_prod_in_searchdata = false;
                                 									</td>
                         											<td>
                                                         				{if $pageno neq $maxpageno}
-                                                                        <input type="button" name="button" value="Next" onclick="pageskip(true);" style="cursor: hand;">
+                                                                        <input type="button" name="button" value="Next" onclick="pageskip(true);" style="cursor: pointer;">
                                                                         {/if}
                                 									</td>
 																	<td>&nbsp; Total:  <b>{$maxpageno}</b> pages</td>
