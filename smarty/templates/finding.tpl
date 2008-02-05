@@ -103,7 +103,7 @@ function findingdetail(fid, func) {
 <input type="hidden" name="fn" value="{$fn}">
 <input type="hidden" name="asc" value="{$asc}">
 
-<table width="98%" align="center">
+<table width="95%" align="center">
 	<tr>
     	<td>
 

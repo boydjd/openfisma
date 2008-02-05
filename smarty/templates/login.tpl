@@ -173,7 +173,7 @@ function checkuser() {
 
 <table border="0" align="center" cellpadding="0" cellspacing="0" width="96%">
 <tr>
-	<td align="right"><font color="#dddddd">Powered by the Operational Vulnerability Management System</font></td>
+	<td align="right"><font color="#dddddd">Powered by OpenFISMA</a></font></td>
 </tr>
 </table>
 

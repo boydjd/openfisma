@@ -216,8 +216,13 @@ var selected_prod_in_searchdata = false;
 {if $add_right eq 1}
 
 <!-- Heading Block -->
-<table class="tbline">
-<tr><td id="tbheading">Asset Creation</td><td id="tbtime">{$now}</td></tr>
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Asset Creation</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
 </table>
 <!-- End Heading Block -->
 

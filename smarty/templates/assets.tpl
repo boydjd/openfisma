@@ -167,6 +167,7 @@ function do_order(param)
 	</tr>
 </table>
 <!-- End Heading Block -->
+<br>
 
 <form name="asset" method="post" action="asset.php">
 <input type="hidden" name="listall" value="{$listall}">
@@ -176,44 +177,45 @@ function do_order(param)
 <table width="95%" border="0" align="center" class="tipframe">
 	<tr>
     	<td>
-		<!-- Asset Search Table -->
-        <table border="0" align="left" cellpadding="3" cellspacing="1">
-        	<tr>
-            	<td align="left"><b>System:<b></td>
-	            <td align="left"><b>Vendor:<b></td>
-    	        <td align="left"><b>Product:<b></td>
-        	    <td align="left"><b>Version:<b></td>
-            	<td align="left"><b>IP Address:<b></td>
-	            <td align="left"><b>Port:<b></td>
-    	        <td align="right">&nbsp;</td>
-        	    <td align="left">&nbsp;</td>
-			</tr>
 
-         	<tr>
-    	        <td align="left">
-                	<select name="system">
-	                <option value="">--Any--</option>
-         			{foreach from=$system_list key=sid item=sname}
-					{if $sid eq $system}      
- 	             	<option value="{$sid}" selected>{$sname}</option>
-					{else}			          
-            	 	<option value="{$sid}">{$sname}</option>
-                	{/if}
-					{/foreach}
-              		</select>
-				</td>
-	            <td align="left"><input name="vendor" type="text" id="vendor" value="{$vendor}"></td>
-    	        <td align="left"><input type="text" name="product" value="{$product}"></td>
-        	    <td align="left"><input name="version" type="text" id="version" value="{$version}"></td>
-            	<td align="left"><input type="text" name="ip" value="{$ip}" maxlength="23"></td>
-	            <td align="left"><input type="text" name="port" value="{$port}" size="10"></td>
-    	        <td align="right">&nbsp;</td>
-        	    <td>
-                	<input name="button" type="submit" id="button" value="Search" onClick="javascript:do_search();" style="cursor:hand;">
-				</td>
-      		</tr>
-        </table>
-		<!-- End Asset Search Table -->
+			<!-- Asset Search Table -->
+			<table border="0" align="left" cellpadding="3" cellspacing="1">
+				<tr>
+					<td align="left"><b>System:<b></td>
+					<td align="left"><b>Vendor:<b></td>
+					<td align="left"><b>Product:<b></td>
+					<td align="left"><b>Version:<b></td>
+					<td align="left"><b>IP Address:<b></td>
+					<td align="left"><b>Port:<b></td>
+					<td align="right">&nbsp;</td>
+					<td align="left">&nbsp;</td>
+				</tr>
+				<tr>
+					<td align="left">
+						<select name="system">
+						<option value="">--Any--</option>
+						{foreach from=$system_list key=sid item=sname}
+						{if $sid eq $system}      
+						<option value="{$sid}" selected>{$sname}</option>
+						{else}			          
+						<option value="{$sid}">{$sname}</option>
+						{/if}
+						{/foreach}
+						</select>
+					</td>
+					<td align="left"><input name="vendor" type="text" id="vendor" value="{$vendor}"></td>
+					<td align="left"><input type="text" name="product" value="{$product}"></td>
+					<td align="left"><input name="version" type="text" id="version" value="{$version}"></td>
+					<td align="left"><input type="text" name="ip" value="{$ip}" maxlength="23"></td>
+					<td align="left"><input type="text" name="port" value="{$port}" size="10"></td>
+					<td align="right">&nbsp;</td>
+					<td>
+						<input name="button" type="submit" id="button" value="Search" onClick="javascript:do_search();" style="cursor:hand;">
+					</td>
+				</tr>
+			</table>
+			<!-- End Asset Search Table -->
+
 		</td>
     </tr>
 </table>
