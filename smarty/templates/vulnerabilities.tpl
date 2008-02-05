@@ -59,12 +59,16 @@ function order_page(para)
 {if $view_right eq 1 or $del_right eq 1 or $edit_right eq 1}
 
 <br>
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Vulnerabilities Summary</td>
-		<td align="right" valign="bottom">{$now}</td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Vulnerability Summary</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
+<!-- End Heading Block -->
 <br>
 
 <!-- Vulnerability Summary Table -->
@@ -150,13 +154,16 @@ function order_page(para)
 
 <br>
 
-<!-- Header Break -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Vulnerability Search</b></td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Vulnerability Search</b></td>
+		<td bgcolor="#DFE5ED" align="right"></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
-<!-- End Header Break -->
+<!-- End Heading Block -->
 
 <br>
 
@@ -228,13 +235,16 @@ function order_page(para)
 
 <br>
 
-<!-- Header Block -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Vulnerability List </b></td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Vulnerability Search Results</b></td>
+		<td bgcolor="#DFE5ED" align="right"></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
-<!-- End Header Block -->
+<!-- End Heading Block -->
 
 <br>
 	

@@ -1,24 +1,24 @@
 <!-- HEADER TEMPLATE INCLUDE -->
 {include file="header.tpl" title="$pageTitle" name="$pageName"} 
 <!-- END HEADER TEMPLATE INCLUDE --> 
-
-<!-- Header Block -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<br>
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Vulnerability Detail</b></td>
-		<td align="right" valign="bottom">{$now}</td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Vulnerability Detail</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
-<!-- End Header Block -->
-
+<!-- End Heading Block -->
 <br>
-
 <!-- Back Button -->
 <table width="95%" align="center">
 	<tr>
 		<td align="left">
 			<form method="post" action="vulnerabilities.php">
-			<INPUT TYPE="submit"  name="go_back"  value="Return to Vulnerability Summary">
+			<INPUT TYPE="submit"  name="go_back"  value=" Go Back">
 			</form>
 		</td>
 	</tr>
@@ -164,12 +164,16 @@
 
 <br>
 
-<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Products Effected</b></td>
-		<td align="right" valign="bottom"></td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Products Effected by Vulnerability</b></td>
+		<td bgcolor="#DFE5ED" align="right"></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
+<!-- End Heading Block -->
 
 <br>
 

@@ -38,15 +38,17 @@ function set_submit_value(val) {
 {/literal}
 
 <b>{$create_success}</b>
-
-<!-- Header Block -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<br>
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Vulnerability Creation</b></td>
-		<td align="right" valign="bottom">{$now}</td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Vulnerability Creation</b></td>
+		<td bgcolor="#DFE5ED" align="right">{$now}</td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
-<!-- End Header Block -->
+<!-- End Heading Block -->
 
 {if $add_right eq 1}
 {$update_msg}
@@ -55,12 +57,12 @@ function set_submit_value(val) {
 <input type="hidden" name="submit_val">
 <input type="hidden" name="vn"  value="{$vuln_seq}">
 
-<table width="98%" align="center">
+<table width="95%" align="center">
 	<tr>
 		<td align="left">
 			<input type="submit" name="submit" 
 				onClick="set_submit_value('Create New Vulnerability');return validate_submission();" 
-				value="Create New Vulnerability">
+				value="Create Vulnerability">
 		</td>
 	</tr>
 </table>
@@ -241,14 +243,16 @@ function set_submit_value(val) {
 
 <br>
 
-<!-- Header Block -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Products Affected by Vulnerability</b></td>
-		<td align="right" valign="bottom">&nbsp;</td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Products Effected by Vulnerability</b></td>
+		<td bgcolor="#DFE5ED" align="right"></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
-<!-- End Header Block -->
+<!-- End Heading Block -->
 
 <br>
 
@@ -281,14 +285,16 @@ function set_submit_value(val) {
 
 <br>
 
-<!-- Header Block -->
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td valign="bottom"><b>Product List</b></td>
-		<td align="right" valign="bottom">&nbsp;</td>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Product List</b></td>
+		<td bgcolor="#DFE5ED" align="right"></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
 </table>
-<!-- End Header Block -->
+<!-- End Heading Block -->
 
 <br>
 
