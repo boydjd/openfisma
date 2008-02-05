@@ -74,7 +74,6 @@
 <tr>
 <td align="left">
 <form action='asset.php' method='POST'>
-<!--	<input type='Submit' value='Return to Summary List'>-->
  <input type='hidden' name='Submit' value='Return to Summary List'/>
  <input type='submit' value="Back" >
 </form>

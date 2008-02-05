@@ -406,9 +406,9 @@ var selected_prod_in_searchdata = false;
 		<tr>
 			<td colspan='2'>
 
-				{if $action eq "edit"}
+				{if $act eq "edit"}
        				<!--input type="button" name="Edit" value="Update Asset" onClick="javascript:do_update()"-->
-			        <!-- <img type="input" name="Edit" value="Update Asset" onClick="javascript:do_update();" src="images/button_update.png" style="cursor:hand;" > -->
+			        <!-- <img type="input" name="Edit" value="Update Asset" onClick="javascript:do_update();" src="images/button_update.png" style="cursor:pointer;" > -->
 					  <input type="button"  value="update"  onClick="submit_update()">
 					
 				{/if}
@@ -484,8 +484,8 @@ var selected_prod_in_searchdata = false;
 			
 			</td>
 			<td width="84%" align='right'  valign="top">&nbsp;
-    			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('assetcreate','prev');" style="cursor:hand;">
-            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('assetcreate','next');" style="cursor:hand;">
+    			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('assetcreate','prev');" style="cursor:pointer;">
+            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('assetcreate','next');" style="cursor:pointer;">
             	<input type="hidden" name="pageno" value="{$pageno}">
             	<input type="hidden" name="totalpage" value="{$maxpageno}">
 		    </td>
@@ -532,13 +532,13 @@ var selected_prod_in_searchdata = false;
 		<tr>
 			<td align'left'>
 
-				<input type="button" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" value="Create" style="cursor:hand;" >
+				<input type="button" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" value="Create" style="cursor:pointer;" >
         
-				{if $action eq "create"}
+				{if $act eq "create"}
 	    	    	<input type="button" name="Add" value="Create Asset" onClick="javascript:do_create()">
 				{/if} 
 
-				{if $action eq "edit"}
+				{if $act eq "edit"}
         			<input type="button" name="Edit" value="Update Asset" onClick="javascript:do_update()">
 				{/if} 
 
@@ -551,6 +551,10 @@ var selected_prod_in_searchdata = false;
 	</table>
 
 	</form>
+<form action='asset.php' method='POST'>
+  <input type='hidden' name='Submit' value='Return to Summary List'/>
+  <input type='submit' value="Back" >
+</form>
 
 	<script type="text/javascript">
 

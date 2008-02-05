@@ -68,7 +68,7 @@ function do_delete()
 	{
 		if (confirm('Are you sure? '))
 		{
-			document.asset.action.value='Delete';	
+			document.asset.act.value='Delete';	
 			document.asset.submit();
 		}	
 	}
@@ -77,7 +77,7 @@ function do_delete()
 
 function do_search()
 {
-	document.asset.action.value='Search';	
+	document.asset.act.value='Search';	
 	document.asset.submit();
 }
 
@@ -171,13 +171,12 @@ function do_order(param)
 
 <form name="asset" method="post" action="asset.php">
 <input type="hidden" name="listall" value="{$listall}">
-<input type="hidden" name="action" value="">
-
+<input type="hidden" name="act" value="">
+<input type='hidden' name='asset_id' value=''>
 <!-- Asset Search -->  
 <table width="95%" border="0" align="center" class="tipframe">
 	<tr>
     	<td>
-
 			<!-- Asset Search Table -->
 			<table border="0" align="left" cellpadding="3" cellspacing="1">
 				<tr>
@@ -215,7 +214,6 @@ function do_order(param)
 				</tr>
 			</table>
 			<!-- End Asset Search Table -->
-
 		</td>
     </tr>
 </table>
@@ -249,9 +247,9 @@ function do_order(param)
 	<tr>
 		<td> 
 			{if $del_right eq 1}
-            <input name="button" type="button" id="button" value="Select All" onClick="selectall(true);" style="cursor:hand;">
-            <input name="button" type="button" id="button" value="Select None" onClick="selectall(false);" style="cursor:hand;">
-            <input name="button" type="button" id="button" value="Delete" onClick="javascript:do_delete();" style="cursor:hand;">
+            <input name="button" type="button" id="button" value="Select All" onClick="selectall(true);" style="cursor:pointer;">
+            <input name="button" type="button" id="button" value="Select None" onClick="selectall(false);" style="cursor:pointer;">
+            <input name="button" type="button" id="button" value="Delete" onClick="javascript:do_delete();" style="cursor:pointer;">
 			{/if} 
 			{if $add_right eq 1} 
 			<input name="button" type="button" id="button" value="Create an Asset" onclick="javascript:location.href='asset.create.php'">
@@ -265,14 +263,14 @@ function do_order(param)
 		            	<input type="hidden" name="pageno" value="{$pageno}">
 		            	<input type="hidden" name="totalpage" value="{$maxpageno}">
                     	{if $pageno neq "1"}
-            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('asset','prev');" style="cursor:hand;">
+            			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('asset','prev');" style="cursor:pointer;">
                         {/if}
                		</td>
         	    	<td>&nbsp;Page:</td>
             		<td><input type="text" name="pageno" value="{$pageno}" size="5" maxlength="5" readonly="yes">&nbsp;</td>
 	            	<td>
                     	{if $pageno neq $maxpageno}
-		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('asset','next');" style="cursor:hand;">
+		            	<input name="button" type="button" id="button" value="Next" onClick="pageskip('asset','next');" style="cursor:pointer;">
                         {/if}
 					</td>
 	            	<td align=right>&nbsp; Total pages: <b>{$maxpageno}</b></td>
@@ -337,12 +335,10 @@ function do_order(param)
       	<td class="tdc">&nbsp;{$fobj.prod_name}</td>
       	<td class="tdc">&nbsp;{$fobj.prod_vendor}</td>
       	{if $edit_right eq 1}
-		<input type='hidden' name='asset_id' value='{$fobj.asset_id}'>
-		<td class='tdc' align='center'><img src='images/edit.png' name='edit' onClick="redirect({$fobj.asset_id}, 'edit')" style='cursor:hand;'></td>
+		<td class='tdc' align='center'><img src='images/edit.png' name='edit' onClick="redirect({$fobj.asset_id}, 'edit')" style='cursor:pointer;'></td>
       	{/if} 
 		{if ($view_right eq 1)}
-		<input type='hidden' name='asset_id' value='{$fobj.asset_id}'>
-		<td class='tdc' align='center'><img src='images/view.gif' name='view' onClick="redirect({$fobj.asset_id}, 'view')" style='cursor:hand;'></td>
+		<td class='tdc' align='center'><img src='images/view.gif' name='view' onClick="redirect({$fobj.asset_id}, 'view')" style='cursor:pointer;'></td>
 		{/if} 
 	</tr>
     {/foreach}
@@ -353,12 +349,12 @@ function do_order(param)
    	<tr>
    		<td> 
 			{if $del_right eq 1}
-            	<input name="button" type="button" id="button" value="Select All" 	onClick="selectall(true);" 			style="cursor:hand;">
-                <input name="button" type="button" id="button" value="Select None" 	onClick="selectall(false);" 		style="cursor:hand;">
-                <input name="button" type="button" id="button" value="Delete" 		onClick="javascript:do_delete();" 	style="cursor:hand;">
+            	<input name="button" type="button" id="button" value="Select All" 	onClick="selectall(true);" 			style="cursor:pointer;">
+                <input name="button" type="button" id="button" value="Select None" 	onClick="selectall(false);" 		style="cursor:pointer;">
+                <input name="button" type="button" id="button" value="Delete" 		onClick="javascript:do_delete();" 	style="cursor:pointer;">
 			{/if} 
             {if $add_right eq 1} 
-				<input name="button" type="button" id="button" value="Create an Asset" onclick="javascript:location.href='asset.create.php'" style="cursor:hand;">
+				<input name="button" type="button" id="button" value="Create an Asset" onclick="javascript:location.href='asset.create.php'" style="cursor:pointer;">
 			{/if}
 		</td>
 	</tr>

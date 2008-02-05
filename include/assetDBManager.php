@@ -455,6 +455,7 @@ class AssetDBManager {
 					where aa.asset_id=a.asset_id
 					and a.asset_id=sa.asset_id
 					and sa.system_id=s.system_id
+					$a_filter
 					$aa_filter
 					$sa_filter) AS aaa
 					ON aaa.prod_id = p.prod_id

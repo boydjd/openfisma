@@ -55,7 +55,7 @@ if($view_right || $del_right || $edit_right) {
 	//$query_string = $_REQUEST;
 	extract($query_string);
 	$dbObj = new AssetDBManager($db);
-	if (isset($action) && $action == "Delete" && $del_right)
+	if (isset($act) && $act == "Delete" && $del_right)
 	{
 
 		$dbObj->deleteAssets($query_string);

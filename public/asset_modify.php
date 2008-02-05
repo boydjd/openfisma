@@ -67,11 +67,11 @@ else { header('Location: asset.php'); }
 
 if($edit_right && $asset_id>0)
 {
-	/*
-	echo "<br> ******** query_string ************ <br>";
-	print_r($query_string);
-	echo "<br> ********  ************ <br>";
-	*/
+
+//	echo "<br> ******** query_string ************ <br>";
+//	print_r($query_string);
+//	echo "<br> ********  ************ <br>";
+	
 	extract($query_string);
 
 	//echo(__LINE__.$search.__LINE__.$add.__LINE__.$edit);
@@ -154,7 +154,7 @@ if($edit_right && $asset_id>0)
 	$smarty->assign('prod_search_data', $prod_search_data);
 	$smarty->assign('system_list', $system_list);
 	$smarty->assign('network_list', $network_list);
-	$smarty->assign('action','edit');
+	$smarty->assign('act','edit');
 	$smarty->assign('asset_id',$asset_id);
 
 	//updated by chang
