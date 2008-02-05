@@ -91,14 +91,24 @@ class RAFpdf extends Cezpdf {
 ** [2] - a list of affected server/asset rows
 */
 
-//foreach(array_keys($rpdata) as $key) {
-//echo "$key $rpdata[$key]<br/>";
-//}
-//die("");
 if (!isset($_REQUEST['poam_id'])) die('needs poam_id');
 $poam_id_array = explode(',',$_REQUEST['poam_id']);
 if (count($poam_id_array)>1) {
-    $files = array();
+    $fname = tempnam(OVMS_WEB_TEMP, "RAF");
+    @unlink($fname);
+    if(class_exists('ZipArchive')) {
+        $fname .= '.zip';
+        $flag = 'zip';
+        $zip = new ZipArchive;
+        $ret = $zip->open($fname, ZIPARCHIVE::CREATE);
+        if(!($ret === TRUE) ) {
+            echo ('Cannot create file '. $fname);
+            exit();
+        }
+    }else{
+        $flag = 'tgz';
+        $files = array();
+    }
 	foreach ($poam_id_array as $poam_id){
 	    if (!empty($poam_id) && is_numeric($poam_id) && ($poam_id > 0)){
     	    $_POST['poam_id'] = $poam_id;
@@ -107,25 +117,34 @@ if (count($poam_id_array)>1) {
             $rafObj = new Raf($db);
             $rafObj->setPoam_id($poam_id);
             $pdf = realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING);
-    	    $fileName = OVMS_WEB_TEMP.'/RAF_'.$poam_id.'.pdf';
-    	    $files[] = 'RAF_'.$poam_id.'.pdf';
-    	    file_put_contents($fileName, $pdf->output());
+    	    $fileName = 'RAF_'.$poam_id.'.pdf';
+            if($flag == 'zip'){
+                $zip->addFromString($fileName, $pdf->output());
+            }else if($flag =='tgz'){
+                $files[] = $fileName;
+                file_put_contents(OVMS_WEB_TEMP.'/'.$fileName, $pdf->output());
+            }
 	    }
 	}
-	$cmd = "cd ".OVMS_WEB_TEMP.";tar zcvf RAFs.tgz ".implode(' ',$files);
-    `$cmd`;
+    if( $flag == 'zip' ) {
+        $zip->close();
+    }else if( $flag == 'tgz' ) {
+	    $cmd = "cd ".OVMS_WEB_TEMP.";tar zcvf RAFs.tgz ".implode(' ',$files);
+        `$cmd`;
+        foreach ($files as $file) {
+        	@unlink(OVMS_WEB_TEMP.'/'.$file);
+        }
+        $fname = OVMS_WEB_TEMP.'/RAFs.tgz';
+    }
     header("Content-type: application/octetstream");
-    header('Content-Length: '.filesize(OVMS_WEB_TEMP."/RAFs.tgz"));
-    header("Content-Disposition: attachment; filename=RAFs.tgz");
+    header('Content-Length: '.filesize($fname));
+    header("Content-Disposition: attachment; filename=RAFs.$flag");
     header("Content-Transfer-Encoding: binary");
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
     header("Pragma: public");
-    echo file_get_contents(OVMS_WEB_TEMP."/RAFs.tgz");
-    @unlink(OVMS_WEB_TEMP."/RAFs.tgz");
-    foreach ($files as $fileName) {
-    	@unlink(OVMS_WEB_TEMP.'/'.$fileName);
-    }
+    echo file_get_contents($fname);
+    @unlink($fname);
     exit();
 }
 else {
