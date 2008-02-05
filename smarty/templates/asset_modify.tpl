@@ -274,9 +274,7 @@ var selected_prod_in_searchdata = false;
 
 
 	{* ASSET DETAIL TABLE *}
-	<table width=100% cellpadding='3' cellspacing='1' border='0' class='tipframe'>
-
-		<th align='left' colspan='2'>Asset, Product and Address Information</th>
+	<table width=80% align="center" cellpadding='3' cellspacing='1' border='0'>
 
 		{* ASSET AND PRODUCT DETAIL ROW *}
 	    <tr width='100%'>
@@ -424,49 +422,67 @@ var selected_prod_in_searchdata = false;
 	<br>
 
 
-	{* PRODUCT SEARCH SECTION ----------------------------------------------- *}
-	<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
-		<tr>
-			<td valign="bottom"><b>Product:</b> Search Filters</td>
-	  	</tr>
-	</table>
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Search Products</b></td>
+		<td bgcolor="#DFE5ED" align="right"></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
+</table>
+<!-- End Heading Block -->
 
 	<br>
 
 	{* PRODUCT SEARCH *}
-	<table width="100%" border="0" cellpadding="3" cellspacing="1" class='tipframe'>
-
+	<table width="95%" align="center" border="0" cellpadding="3" cellspacing="1">
 	    <tr>
-	        <td align='left'>
-				<b>Search Products for: </b><input type="text" name="product_search" value="{$product_search}" size="40">
-       		  	<input type="button" name="Search" value="Search" onclick="javascript: do_search();">
+			<td align='left'>
+				<table cellpadding="10" class="tipframe">
+					<tr>
+						<td>
+							<b>Search Products for: </b><input type="text" name="product_search" value="{$product_search}" size="40">
+							<input type="button" name="Search" value="Search" onclick="javascript: do_search();">
+						</td>
+					</td>
+				</table>
 			</td>
-
 	    </tr>
-
 	</table>
 
 	<br>
 
-	{* PRODUCT SEARCH RESULTS SECTION --------------------------------------- *}
-	<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbline">
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>Product Search Results</b></td>
+		<td bgcolor="#DFE5ED" align="right">Page <b>{$pageno}</b> of <b>{$maxpageno}</b></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
+</table>
+<!-- End Heading Block -->
 
-		<tr>
-			<td align='left'  valign='bottom'><b>Product:</b> Search Results</td>
-			<td align='right' valign='bottom'>
-				Page <b>{$pageno}</b> of <b>{$maxpageno}</b>
-			</td>
-		</tr>
-
-	</table>
-
-	<br>
+<br>
 
 	{* DISPLAY OPTIONS BAR *}
-	<table width='100%' border='0' cellpadding='3' cellspacing='1'>
+	<table width='80%' align="center" border='0' cellpadding='3' cellspacing='1'>
 
 		<tr>
-			<td width="7%" align'left'><input type="button" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" value="Create" style="cursor:hand;" ></td>
+			<td align="left">
+
+				<input type="button" onClick="javascript:location.href='tbadm.php?tid=4&r_do=form';" value="Create" style="cursor:hand;" >
+			
+				{if $action eq "create"}
+	    	    <input type="button" name="Add" value="Create Asset" onClick="javascript:do_create()">
+				{/if} 
+
+				{if $action eq "edit"}
+        		<input type="button" name="Edit" value="Update Asset" onClick="javascript:do_update()">
+				{/if} 
+			
+			</td>
 			<td width="84%" align='right'  valign="top">&nbsp;
     			<input name="button" type="button" id="button" value="Previous" onClick="pageskip('assetcreate','prev');" style="cursor:hand;">
             	<input name="button" type="button" id="button" value="Next" onClick="pageskip('assetcreate','next');" style="cursor:hand;">
@@ -477,7 +493,7 @@ var selected_prod_in_searchdata = false;
 	</table>
 
 	{* SEARCH RESULTS LIST *}
-	<table width='100%' border='0' cellpadding='3' cellspacing='1' class='tipframe'>
+	<table width='80%' align="center" border='0' cellpadding='3' cellspacing='1' class='tipframe'>
 
        	<th></th>
        	<th>Vendor</th>
@@ -511,7 +527,7 @@ var selected_prod_in_searchdata = false;
 
 
 	{* DUPLICATE BAR ABOVE LIST AND INCLUDE THE UPDATE BUTTON*}
-	<table width='100%' border='0' cellpadding='3' cellspacing='1'>
+	<table width='80%' align="center" border='0' cellpadding='3' cellspacing='1'>
 
 		<tr>
 			<td align'left'>
