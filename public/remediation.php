@@ -100,6 +100,8 @@ if($view_right)
 	if (isset($_POST['filter_type']))   { $smarty->assign('filter_type',   $_POST['filter_type']);   } else { $smarty->assign('filter_type',   'any'); }
 
 	// initialize or propagate filter date values - updated by chang
+	if (isset($_POST['remediation_ids']))        { $smarty->assign('remediation_ids',        $_POST['remediation_ids']);        } else { $smarty->assign('remediation_ids',     'any'); }
+	
 	if (isset($_POST['filter_startdate']))       { $smarty->assign('filter_startdate',       $_POST['filter_startdate']);       } else { $smarty->assign('filter_startdate',       ''); }
 	if (isset($_POST['filter_enddate']))         { $smarty->assign('filter_enddate',         $_POST['filter_enddate']);         } else { $smarty->assign('filter_enddate',         ''); }
 	if (isset($_POST['filter_startcreatedate'])) { $smarty->assign('filter_startcreatedate', $_POST['filter_startcreatedate']); } else { $smarty->assign('filter_startcreatedate', ''); }
@@ -224,6 +226,7 @@ if($view_right)
 			   "  p.legacy_poam_id, ".
 			   "  fs.source_nickname, ".
 			   "  fs.source_name, ".
+			   "  f.finding_data, ".
 			   "  s1.system_id       AS asset_owner_id, ".
 			   "  s1.system_nickname AS asset_owner_nickname, ".
 			   "  s1.system_name     AS asset_owner_name, ".
@@ -278,6 +281,11 @@ if($view_right)
 		$query .= "  s2.system_id  = '".$_POST['filter_action_owners']."' AND "; 
 	}
 
+	// Action owners filter - updated by chang	 03162006
+	if (isset($_POST['remediation_ids']) && !empty($_POST['remediation_ids']) && (strtolower($_POST['remediation_ids'])   != 'any')) 
+	{ 
+		$query .= "  p.poam_id  IN ( ".$_POST['remediation_ids']." ) AND "; 
+	}
 
 
 

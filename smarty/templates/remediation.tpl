@@ -160,7 +160,7 @@ function order_page(para)
 <br>
 
 <!-- Search by ID Table -->
-<table class="tbline">
+<!--<table class="tbline">
 	<tr>
 		<td align="right" width="40%">
 			{if $poam_id_not_exists eq ''}
@@ -171,7 +171,8 @@ function order_page(para)
 		<td align="left">
 			<div style = "*padding-top:2px;">
     		<form action='remediation_detail.php' method='POST'>
-    		<input type="text" name="remediation_id" size="10">
+    		Remediation ID : 
+    		<input type="text" name="remediation_id" size="20">
     		<input type="radio" value="remediation" name="radio_id" checked>Remediation ID
     		<input type="radio" value="finding" name="radio_id" >Finding ID
     		<input type="submit" value="I'm Feeling Lucky">
@@ -179,7 +180,7 @@ function order_page(para)
 			</div>
 		</td>
 	</tr>
-</table>
+</table>-->
 <!-- End Search by ID Table -->
 
 <!-- SUMMARY TABLE -->
@@ -259,7 +260,7 @@ function order_page(para)
 <!-- Begin Filter Table -->
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
 	<tr> {* NON-DATE FILTERS ROW *}
-		<td colspan='2'><b>Finding Source: </b><br>
+		<td><b>Finding Source: </b><br>
 			<select name='filter_source'>
 				<option value='any'>--- Any Source ---</option>
 				{section name=row loop=$finding_sources}
@@ -268,6 +269,10 @@ function order_page(para)
 				</option>
 				{/section}
 			</select>
+		</td>
+		<td>
+		<b>ID: </b><i>(You may select multiple IDs by using a comma separated list - x,y,z)</i><br>
+		<input type="text" size="70" name="remediation_ids" value="{$remediation_ids}">
 		</td>
 	</tr>
 	<tr>
@@ -453,7 +458,7 @@ function order_page(para)
 		<td align='center' class='tdc'>{$list[row].action_owner_nickname}</td>
 		<td align='center' class='tdc'>{$list[row].poam_type}</td>
 		<td align='center' class='tdc'>{$list[row].poam_status}</td>
-		<td align='left'   class='tdc'>{$list[row].finding_data}</td>
+		<td align='left'   class='tdc'>{$list[row].finding_data|truncate:80:"---"}</td>
 		<td align='center' class='tdc'>{$list[row].poam_action_date_est}</td> 
 
 		<!-- view button -->
