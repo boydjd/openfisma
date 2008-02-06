@@ -12,12 +12,6 @@
 {/literal}
 </head>
 
-{* Set page width *}
-{assign var="table_width" value="1000"}
-
-{* END EXTRACT FROM header.tpl *}
-
-
 <!--
 -- The rpdata data set consists of three data blocks:
 -- [0] - a single POAM statistics row
@@ -26,7 +20,8 @@
 -->
 
 <br/>
-<table width="{$table_width}" border="0" cellpadding="0" cellspacing="0">
+<!-- Header Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td width="13"><img src="images/left_circle.gif" border="0"></td>
 	<td bgcolor="#DFE5ED"><b>{$raf_lang[0][0]}</b>{$poam_id}</td>
@@ -34,8 +29,10 @@
 	<td width="13"><img src="images/right_circle.gif" border="0"></td>
 </tr>
 </table>
+<!-- End Header Block -->
+
 <br>
-<table width="{$table_width}"  border="0" cellspacing="0" cellpadding="0">
+<table width="95%" align="center" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="25%" ><b>{$raf_lang[1][0]}</b></td>
     <td width="25%">{$WVTNO}</td>
@@ -73,16 +70,21 @@
     </tr>
     {/section}
 </table>
-<table width="{$table_width}" border="0" cellpadding="0" cellspacing="0">
+
+<!-- Header Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td width="13"><img src="images/left_circle.gif" border="0"></td>
 	<td bgcolor="#DFE5ED">&nbsp;</td>
 	<td bgcolor="#DFE5ED">&nbsp; </td>
 	<td width="13"><img src="images/right_circle.gif" border="0"></td>
 </tr>
-</table><br>
+</table>
+<!-- End Header Block -->
+
+<br>
 {*impact table*}
-<table width="{$table_width}"  border="0" cellspacing="0" cellpadding="0">
+<table width="95%" align="center" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="50%">
     
@@ -108,15 +110,19 @@
   </tr>
  
 </table><br>
-<table width="{$table_width}" border="0" cellpadding="0" cellspacing="0">
+
+<!-- Header Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td width="13"><img src="images/left_circle.gif" border="0"></td>
 	<td bgcolor="#DFE5ED">&nbsp;</td>
 	<td bgcolor="#DFE5ED">&nbsp; </td>
 	<td width="13"><img src="images/right_circle.gif" border="0"></td>
 </tr>
-</table><br>
-<table width="{$table_width}"  border="0" cellspacing="0" cellpadding="0">
+</table>
+<!-- End Header Block -->
+<br>
+<table width="95%" align="center" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="50%">
         <table width="100%"  border="0" cellspacing="0" cellpadding="0">
@@ -154,15 +160,19 @@
   </tr>
  
 </table><br>
-<table width="{$table_width}" border="0" cellpadding="0" cellspacing="0">
+
+<!-- Header Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td width="13"><img src="images/left_circle.gif" border="0"></td>
 	<td bgcolor="#DFE5ED">&nbsp;</td>
 	<td bgcolor="#DFE5ED">&nbsp; </td>
 	<td width="13"><img src="images/right_circle.gif" border="0"></td>
 </tr>
-</table><br>
-<table width="{$table_width}"  border="0" cellspacing="0" cellpadding="0">
+</table>
+<!-- End Header Block -->
+<br>
+<table width="95%" align="center" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="50%"  valign="top">    
     <table width="100%"  border="0" cellspacing="0" cellpadding="0">
@@ -180,7 +190,8 @@
   </tr>
  
 </table><br>
-<table width="{$table_width}" border="0" cellpadding="0" cellspacing="0">
+<!-- Header Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td width="13"><img src="images/left_circle.gif" border="0"></td>
 	<td bgcolor="#DFE5ED">&nbsp;</td>
@@ -188,9 +199,11 @@
 	<td width="13"><img src="images/right_circle.gif" border="0"></td>
 </tr>
 </table>
-<table width="{$table_width}"  border="0" cellspacing="0" cellpadding="0">
+<!-- End Header Block -->
+<br>
+<table width="95%" align="center" border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td valign="top">   <table width="{$table_width}"  border="0" cellspacing="0" cellpadding="0">
+    <td valign="top">   <table width="100%"  border="0" cellspacing="0" cellpadding="0">
     <td width="20%" nowrap><b>{$raf_lang[5][0]}</b></td>
     <td width="80%">{$rpdata[0].act_sug}</td></tr><tr>
     <td width="20%" nowrap><b>{$raf_lang[5][1]}</b></td>
@@ -201,7 +214,9 @@
  
 </table>
 <br>
-<table width="{$table_width}"  border="0" cellspacing="0" cellpadding="0">
+
+<!-- Footer with Buttons at bottom -->
+<table width="98%" align="center" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td align="right">
     <!--<input type="button" name="Button" value="Return to POA&amp;M Detail"  onclick="javascript:history.back();">-->
@@ -213,6 +228,7 @@
   <tr>
     <td align="center">{$warn_footer}</td>
   </tr>
-    
 </table>
+<!-- End Footer with Buttons at bottom -->
+
 {include file="footer.tpl"}
