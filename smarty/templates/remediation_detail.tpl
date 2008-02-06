@@ -90,10 +90,41 @@ function go(step) {
 			<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
 				<!--<th align="left" colspan="2">Finding Information - #{$finding.finding_id}</th> -->
 				<th align="left" colspan="2">Finding Information</th>
+				<tr><td><b>Finding ID:</b> {$remediation_id}</td></tr>
+				<tr><td><b>Date Opened:</b> {$finding.finding_date_created}</td></tr>
 				<tr><td><b>Finding Source:</b> ({$finding.source_nickname}) {$finding.source_name}</td></tr>
-				<tr><td><b>Finding Status:</b> {$finding.finding_status}</td></tr>
-				<tr><td><b>Finding Date:</b> {$finding.finding_date_created}</td></tr>
-	        	<tr><td><b>Scan Date:</b> {$finding.finding_date_discovered}</td></tr>
+				<tr><td><b>Finding Status:</b> {$remediation.poam_status}</td></tr>
+				<!--<tr><td><b>Finding Status:</b> {$finding.finding_status}</td></tr>-->
+	        	<!--<tr><td><b>Scan Date:</b> {$finding.finding_date_discovered}</td></tr>-->
+				<tr>
+					<td>
+						<form action='remediation_modify.php' method='POST'>
+						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+						<input type='hidden' name='root_comment'   value='{$root_comment}'>
+						<input type='hidden' name='target' 		   value='remediation_owner'>
+						<input type='hidden' name='action'         value='update'>
+						<input type='hidden' name='validated'      value='no'>
+						<input type='hidden' name='approved'       value='no'>
+
+						<b>Responsible System:</b>
+
+						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
+						{if $modify_action_owner eq '1'}
+						{if $remediation_status eq 'OPEN'}
+
+						<input type='hidden' name='form_action' value='Update'>
+						<input type='image' src='images/button_modify.png' name='form_action' value='Update'> 
+
+						{/if}
+						{/if}
+						<span>({$remediation.system_nickname}) {$remediation.system_name}</span>
+						</form>
+
+					</td>
+				</tr>
+				
+				
+				
 	    	</table> 
 			<!-- FINDING TABLE -->
 
@@ -178,6 +209,37 @@ function go(step) {
 
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2">
+
+		   	<table cellpadding="5" width="100%" class="tipframe">
+				<th align='left' colspan='2'>Recommendation</th>
+				<tr>
+					<td colspan='2'>
+						<form action='remediation_modify.php' method='POST'>
+						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+						<input type='hidden' name='root_comment'   value='{$root_comment}'>
+						<input type='hidden' name='target' 		   value='action_suggested'>
+						<input type='hidden' name='action'         value='update'>
+						<input type='hidden' name='validated'      value='no'>
+						<input type='hidden' name='approved'       value='no'>
+
+						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
+						{if $modify_mitigation_recommendation eq '1'}
+
+						<input type='hidden' name='form_action' value='Update'>
+						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
+
+						{/if}
+
+						<span>{$remediation.poam_action_suggested}</span>
+						</form>
+					</td>
+				</tr>
+			</table>
+
+		</td>
+	</tr>
 </table> 
 <!-- END FINDING TABLE -->
 <br>
@@ -195,44 +257,49 @@ function go(step) {
 <br>
 
 <!-- MITIGATION STRATEGY -->
-        	<table border="1" cellpadding="5" cellspacing="1" class="tipframe" width="95%" align="center">
-				<th align='left' colspan='2'>Mitigation Strategy</th>
+<table border="0" width="95%" align="center">
+   	<tr>
+		<td colspan='2'>
+            
+			<table width="100%" cellpadding="5" class="tipframe">
+				<th align="left">Course of Action</th>
+
 				<tr>
-					<td colspan='2'>
+					<td align="left">
+	
 						<form action='remediation_modify.php' method='POST'>
 						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 						<input type='hidden' name='root_comment'   value='{$root_comment}'>
-						<input type='hidden' name='target' 		   value='action_suggested'>
+						<input type='hidden' name='target' 		   value='remediation_type'>
+						<input type='hidden' name='action'         value='update'>
+						<input type='hidden' name='validated'      value='no'>
+						<input type='hidden' name='approved'       value='no'>
+				
+						<b>Type:</b> 
+
+						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
+						{if $modify_type eq '1'}
+						{if $remediation_status eq 'OPEN'}
+						<input type='hidden' name='form_action' value='Update'>
+						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
+						{/if}
+						{/if}
+						<span>{$remediation.poam_type}</span>
+						</form>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<form action='remediation_modify.php' method='POST'>
+						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+						<input type='hidden' name='root_comment'   value='{$root_comment}'>
+						<input type='hidden' name='target' 		   value='action_planned'>
 						<input type='hidden' name='action'         value='update'>
 						<input type='hidden' name='validated'      value='no'>
 						<input type='hidden' name='approved'       value='no'>
 
-						<b>Recommendation:</b> 
-
-						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_mitigation_recommendation eq '1'}
-
-						<input type='hidden' name='form_action' value='Update'>
-						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
-
-						{/if}
-
-						<span>{$remediation.poam_action_suggested}</span>
-						</form>
-					</td>
-				</tr>
-		    	<tr>
-					<td colspan='2'>
-                        <form action='remediation_modify.php' method='POST'>
-                        <input type='hidden' name='remediation_id' value='{$remediation_id}'>
-                        <input type='hidden' name='root_comment'   value='{$root_comment}'>
-                        <input type='hidden' name='target' 		   value='action_planned'>
-                        <input type='hidden' name='action'         value='update'>
-                        <input type='hidden' name='validated'      value='no'>
-                        <input type='hidden' name='approved'       value='no'>
-
-						<b>Course of Action:</b> 
-
+						<b>Description:</b> 
+						
 						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 						{if $modify_mitigation_course_of_action eq '1'}
 						{if $remediation_status eq 'OPEN'}
@@ -245,10 +312,21 @@ function go(step) {
 
 						<span>{$remediation.poam_action_planned}</span>
 						</form>
+					
 					</td>
 				</tr>
-		    	<tr>
-					<td colspan='2'>
+			</table>
+			
+		</td>
+	</tr>
+	<tr>
+		<td colspan='2'>
+		
+			<table width="100%" cellpadding="5" class="tipframe">
+				<th align="left">Resources Required for Course of Action</th>
+				<tr>
+					<td>
+
 						<form action='remediation_modify.php' method='POST'>
                         <input type='hidden' name='remediation_id' value='{$remediation_id}'>
                         <input type='hidden' name='root_comment'   value='{$root_comment}'>
@@ -256,8 +334,6 @@ function go(step) {
                         <input type='hidden' name='action'         value='update'>
                         <input type='hidden' name='validated'      value='no'>
                         <input type='hidden' name='approved'       value='no'>
-
-						<b>Resources:</b> 
 
 						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 						{if $modify_mitigation_resources eq '1'}
@@ -269,9 +345,15 @@ function go(step) {
 
 						<span>{$remediation.poam_action_resources}</span>
 						</form>
-					</td>
+
+						</td>
 				</tr>
-				<tr>
+			</table>
+		
+		</td>
+	</tr>
+		
+		<tr>
 					<td width='50%'>
                         <form action='remediation_modify.php' method='POST'>
                         <input type='hidden' name='remediation_id' value='{$remediation_id}'>
@@ -303,7 +385,7 @@ function go(step) {
 						{/if}
 					</td>
 				</tr>
-					{if $num_comments_est > 0}
+					{*if $num_comments_est > 0*}
 				<tr>
                 	<th align="left" colspan="2">Comments For Estimated Completion Date Changed <i>({$num_comments_est} total)</i></th>
                	</tr>
@@ -328,7 +410,7 @@ function go(step) {
                 	</td>
 				</tr>
 					{/section}
-					{/if}
+					{*/if*}
 			</table>
 			<!-- END MITIGATION STRATEGY TABLE -->
 
@@ -352,52 +434,7 @@ function go(step) {
 		<td width='50%' valign='top'>
 
 			<table border="0" cellpadding="3" cellspacing="1" width="100%" class="tipframe">
-				<th align="left" colspan='2'>Remediation Information - #{$remediation_id}</th>
-				<tr>
-					<td colspan='2'>
-						<form action='remediation_modify.php' method='POST'>
-						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
-						<input type='hidden' name='root_comment'   value='{$root_comment}'>
-						<input type='hidden' name='target' 		   value='remediation_owner'>
-						<input type='hidden' name='action'         value='update'>
-						<input type='hidden' name='validated'      value='no'>
-						<input type='hidden' name='approved'       value='no'>
-						<b>Responsible System:</b> 
-						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_action_owner eq '1'}
-						{if $remediation_status eq 'OPEN'}
-						<input type='hidden' name='form_action' value='Update'>
-						<input type='image' src='images/button_modify.png' name='form_action' value='Update'> 
-						{/if}
-						{/if}
-						<span>({$remediation.system_nickname}) {$remediation.system_name}</span>
-						</form>
-					</td>
-				</tr>
-		   	    <tr>
-					<td align='left' width='50%'>
-		   				<form action='remediation_modify.php' method='POST'>
-    					<input type='hidden' name='remediation_id' value='{$remediation_id}'>
-    					<input type='hidden' name='root_comment'   value='{$root_comment}'>
-    					<input type='hidden' name='target' 		   value='remediation_type'>
-    					<input type='hidden' name='action'         value='update'>
-    					<input type='hidden' name='validated'      value='no'>
-    					<input type='hidden' name='approved'       value='no'>
-						<b>Type:</b> 
-						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_type eq '1'}
-						{if $remediation_status eq 'OPEN'}
-						<input type='hidden' name='form_action' value='Update'>
-						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
-						{/if}
-						{/if}
-						<span>{$remediation.poam_type}</span>
-    	                </form>
-					</td>
-					<td align='left' width='50%'>
-						<b>Status:</b> {$remediation.poam_status}
-					</td>
-				</tr>
+				<th align="left" colspan='2'>Risk Analysis Form</th>
 				<tr>
 						{* RESTRICT BY ROLE *}
 						{if $generate_raf eq '1'}
@@ -411,7 +448,7 @@ function go(step) {
 					</td>
 						</form>
 						{else}
-					<td colspan='2'><i>(Threat Level and Countermeasure Effectiveness must be set to generate a RAF)</i></td>
+					<td colspan='2'><i>(Threat and Countermeasure information must be completed to generate a RAF)</i></td>
 						{/if}
 						{else}
 					<td colspan='2'>&nbsp;</td>
@@ -726,7 +763,7 @@ function go(step) {
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
 		<td width="13"><img src="images/left_circle.gif" border="0"></td>
-		<td bgcolor="#DFE5ED"><b>Evidence Detail</b></td>
+		<td bgcolor="#DFE5ED"><b>Supporting Evidence</b></td>
 		<td bgcolor="#DFE5ED" align="right"></td>
 		<td width="13"><img src="images/right_circle.gif" border="0"></td>
 	</tr>
