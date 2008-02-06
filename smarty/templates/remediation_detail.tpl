@@ -24,13 +24,13 @@ function go(step) {
 {if $view_right eq 1}
 
 <br>
-<table width="95%" align="center">
+<table width="95%" border="0" align="center">
 <tr>
 <td>
-<table align="left">
+<table border="0" align="left">
 	<tr>
 		<td>
-			{* SAVE MODIFICATIONS TO REMEDIATION *}
+			<!-- SAVE MODIFICATIONS TO REMEDIATION -->
 			<form action='remediation_modify.php' method='POST'>
 				<input type='hidden' name='action'         value='add'>
 				<input type='hidden' name='validated'      value='no'>
@@ -38,11 +38,11 @@ function go(step) {
 				<input type='hidden' name='target'         value='save_poam'>
 				<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 				<input type='hidden' name='form_action' value=''>
-				<input type='submit' title='Save or Submit' value="Save">
+				<input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
 			</form>
 		</td>
-		<td align="left">
-			{* RETURN TO THE SUMAMRY LIST *}
+		<td>
+			<!-- RETURN TO THE SUMAMRY LIST -->
 			<form action='remediation.php' method='POST'>
 				<input type='hidden' name='filter_source'          value='{$filter_source}'>
 				<input type='hidden' name='filter_system'          value='{$filter_system}'>
@@ -385,7 +385,7 @@ function go(step) {
 						{/if}
 					</td>
 				</tr>
-					{*if $num_comments_est > 0*}
+					{if $num_comments_est > 0}
 				<tr>
                 	<th align="left" colspan="2">Comments For Estimated Completion Date Changed <i>({$num_comments_est} total)</i></th>
                	</tr>
@@ -410,7 +410,7 @@ function go(step) {
                 	</td>
 				</tr>
 					{/section}
-					{*/if*}
+					{/if}
 			</table>
 			<!-- END MITIGATION STRATEGY TABLE -->
 
@@ -523,6 +523,14 @@ function go(step) {
 			<!-- THREATS TABLE -->
     		<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
 	        	<th align='left'>Threat Information</th>
+					<tr>
+						<td>
+						<b>The goal of this step is to identify the potential threat-sources and compile a threat statement
+listing potential threat-sources that are applicable to the IT system being evaluated. A threat-source is defined as any
+circumstance or event with the potential to cause harm to an IT system. The common threatsources can be natural, human, or
+environmental.</b>
+						</td>
+					</tr>
 					<tr>
 						<td>
 							<form action='remediation_modify.php' method='POST'>
@@ -751,7 +759,45 @@ function go(step) {
 <br>
 
 <!-- ------------------------------------------------------------------------ -->
-
+<table width="95%" border="0" align="center">
+<tr>
+<td>
+<table border="0" align="left">
+	<tr>
+		<td>
+			<!-- SAVE MODIFICATIONS TO REMEDIATION -->
+			<form action='remediation_modify.php' method='POST'>
+				<input type='hidden' name='action'         value='add'>
+				<input type='hidden' name='validated'      value='no'>
+				<input type='hidden' name='approved'       value='no'>
+				<input type='hidden' name='target'         value='save_poam'>
+				<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+				<input type='hidden' name='form_action' value=''>
+				<input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
+			</form>
+		</td>
+		<td>
+			<!-- RETURN TO THE SUMAMRY LIST -->
+			<form action='remediation.php' method='POST'>
+				<input type='hidden' name='filter_source'          value='{$filter_source}'>
+				<input type='hidden' name='filter_system'          value='{$filter_system}'>
+				<input type='hidden' name='filter_status'          value='{$filter_status}'>
+				<input type='hidden' name='filter_type'            value='{$filter_type}'>
+				<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
+				<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
+				<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
+				<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
+				<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
+				<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
+				<input type='hidden' name='form_action' value='Return to Summary List'>
+				<input name="button" type="submit" id="button" value="Go Back" style="cursor: pointer;">
+			</form>
+		</td>
+	</tr>
+</table>
+</td>
+</tr>
+</table>
 
 {* NO REAL NEED TO SHOW UNTIL EN, EO, EP, ES or CLOSED *}
 {if $view_evidence eq '1'}
