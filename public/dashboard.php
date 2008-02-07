@@ -50,8 +50,8 @@ if($view_right)
   $summary = generate_summary($user, new PoamSummary($db));
   create_xml_1($summary['total_open'], $summary['total_en'], $summary['total_eo'], $summary['total_ep'], $summary['total_es'], $summary['total_closed']);
   create_xml_2($summary['total_open'], $summary['total_en'], $summary['total_eo'], $summary['total_ep'], $summary['total_es'], $summary['total_closed']);
-//  create_xml_3($summary['total_none'], $summary['total_cap'], $summary['total_fp'], $summary['total_ar']);
-  create_xml_3(43, 31, 41, 55);
+  create_xml_3($summary['total_none'], $summary['total_cap'], $summary['total_fp'], $summary['total_ar']);
+  //create_xml_3(43, 31, 41, 55);
 
   // create a new chart and insert charts
   $dbc1 = new Dashboard_Chart;	
@@ -64,10 +64,10 @@ if($view_right)
   // ALERTS
   // 
 
-  $smarty->assign('need_type',  '<li>There are <b>' . $summary['total_none'] . '</b> items awaiting mitigation type (and approval).');
-  $smarty->assign('need_mit',   '<li>There are <b>' . $summary['total_open'] . '</b> items awaiting mitigation approval.');
-  $smarty->assign('need_ev_ot', '<li>There are <b>' . $summary['total_en'] .   '</b> items awaiting evidence (on time).');
-  $smarty->assign('need_ev_od', '<li>There are <b>' . $summary['total_eo'] .   '</b> items awaiting evidence (overdue).');
+  //$smarty->assign('need_type',  '<li>There are <b>' . $summary['total_none'] . '</b> finding(s) awaiting clasification.');
+  $smarty->assign('need_mit',   '<li>There are <b>' . $summary['total_open'] . '</b> finding(s) awaiting a mitigation strategy and approval.');
+  $smarty->assign('need_ev_ot', '<li>There are <b>' . $summary['total_en'] .   '</b> finding(s) awaiting evidence.');
+  $smarty->assign('need_ev_od', '<li>There are <b>' . $summary['total_eo'] .   '</b> overdue finding(s) awaiting evidence.');
 
 }	
 

@@ -27,16 +27,28 @@
     <tr>
       <td  align="left"><b>Alerts </b><br>
         <br>
-	{$need_type}
+
+	<!-- Awaiting Type -->
+	<!--	{$need_type} -->
+
+	<!-- Awaiting Mitigation Strategy -->
 	{$need_mit}
+
+	<!-- Awaiting Evidence -->
 	{$need_ev_ot}
+
+	<!-- Overdue Awaiting Evidence -->
 	{$need_ev_od}
+
 	{$new_poam}
         {$cap_expected} 
         {$cap_overdue} 
-   	{$new_cap}
+
+	{$new_cap}
+
 	{$review_pkg}		  		  
-        <br>
+
+	<br>
       </td>
     </tr>
   </table>  
