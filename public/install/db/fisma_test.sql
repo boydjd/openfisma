@@ -32,15 +32,15 @@ INSERT INTO `ASSETS` (`asset_id`, `prod_id`, `asset_name`, `asset_date_created`,
 
 
 INSERT INTO `FINDINGS` (`finding_id`, `source_id`, `asset_id`, `finding_status`, `finding_date_created`, `finding_date_discovered`, `finding_date_closed`, `finding_data`) VALUES 
-(30, 11, 14, 'OPEN', '2008-01-17 08:01:17', '2008-01-17 00:00:00', NULL, 'finding a2'),
+(30, 10, 14, 'OPEN', '2008-01-17 08:01:17', '2008-01-17 00:00:00', NULL, 'finding a2'),
 (29, 10, 12, 'OPEN', '2008-01-17 08:01:06', '2008-01-17 00:00:00', NULL, 'finding a1'),
 (28, 4, 12, 'OPEN', '2008-01-17 08:01:17', '2008-01-17 00:00:00', NULL, 'finding e'),
 (27, 10, 18, 'OPEN', '2008-01-17 08:01:09', '2008-01-17 00:00:00', NULL, 'finding c'),
 (26, 10, 17, 'OPEN', '2008-01-17 08:01:42', '2008-01-17 00:00:00', NULL, 'finding b'),
 (25, 10, 16, 'OPEN', '2008-01-17 08:01:18', '2008-01-17 00:00:00', NULL, 'finding a'),
 (24, 3, 15, 'REMEDIATION', '2008-01-17 08:01:57', '2008-01-17 00:00:00', NULL, 'finding 9'),
-(23, 5, 14, 'REMEDIATION', '2008-01-17 08:01:36', '2008-01-17 00:00:00', NULL, 'finding 8'),
-(22, 11, 14, 'OPEN', '2008-01-17 08:01:16', '2008-01-17 00:00:00', NULL, 'finding 6'),
+(23, 8, 14, 'REMEDIATION', '2008-01-17 08:01:36', '2008-01-17 00:00:00', NULL, 'finding 8'),
+(22, 10, 14, 'OPEN', '2008-01-17 08:01:16', '2008-01-17 00:00:00', NULL, 'finding 6'),
 (21, 8, 13, 'REMEDIATION', '2008-01-17 08:01:38', '2008-01-17 00:00:00', NULL, 'finding 7'),
 (20, 8, 13, 'OPEN', '2008-01-17 08:01:20', '2008-01-17 00:00:00', NULL, 'finding 5'),
 (19, 1, 12, 'OPEN', '2008-01-17 08:01:37', '2008-01-17 00:00:00', NULL, 'finding 3'),
@@ -48,7 +48,7 @@ INSERT INTO `FINDINGS` (`finding_id`, `source_id`, `asset_id`, `finding_status`,
 (17, 2, 11, 'OPEN', '2008-01-17 08:01:07', '2008-01-17 00:00:00', NULL, 'finding 2:'),
 (16, 4, 10, 'OPEN', '2008-01-17 08:01:32', '2008-01-17 00:00:00', NULL, 'finding 1 : '),
 (31, 10, 18, 'OPEN', '2008-01-17 08:01:40', '2008-01-17 00:00:00', NULL, 'finding a3'),
-(32, 11, 15, 'OPEN', '2008-01-17 08:01:34', '2008-01-17 00:00:00', NULL, 'finding e');
+(32, 10, 15, 'OPEN', '2008-01-17 08:01:34', '2008-01-17 00:00:00', NULL, 'finding e');
 
 INSERT INTO `FINDING_VULNS` (`finding_id`, `vuln_seq`, `vuln_type`) VALUES 
 (16, 20041917, 'CVE'),
@@ -73,7 +73,6 @@ INSERT INTO `FINDING_VULNS` (`finding_id`, `vuln_seq`, `vuln_type`) VALUES
 (31, 20041911, 'CVE'),
 (32, 20041909, 'CVE'),
 (32, 20041910, 'CVE');
-
 
 
 INSERT INTO `POAMS` (`poam_id`, `finding_id`, `legacy_poam_id`, `poam_is_repeat`, `poam_previous_audits`, `poam_type`, `poam_status`, `poam_blscr`, `poam_created_by`, `poam_modified_by`, `poam_closed_by`, `poam_date_created`, `poam_date_modified`, `poam_date_closed`, `poam_action_owner`, `poam_action_suggested`, `poam_action_planned`, `poam_action_status`, `poam_action_approved_by`, `poam_cmeasure`, `poam_cmeasure_effectiveness`, `poam_cmeasure_justification`, `poam_action_resources`, `poam_action_date_est`, `poam_action_date_actual`, `poam_threat_source`, `poam_threat_level`, `poam_threat_justification`) VALUES 
@@ -139,11 +138,11 @@ INSERT INTO `PRODUCTS` (`prod_id`, `prod_nvd_defined`, `prod_meta`, `prod_vendor
 INSERT INTO `SYSTEMS` (`system_id`, `system_name`, `system_nickname`, `system_desc`, `system_type`, `system_primary_office`, `system_confidentiality`, `system_integrity`, `system_availability`, `system_tier`, `system_criticality_justification`, `system_sensitivity_justification`, `system_criticality`) VALUES 
 (1, 'Financial Management System', 'FMS', 'The Financial Management System is responsible for budget execution information and supports the day-to-day requisitions and obligations for agency expenditures, invoices, billing dispute resolution, reconciliation, service level agreements, and distributions of shared expenses.', 'MAJOR APPLICATION', 0, 'LOW', 'MODERATE', 'LOW', 0, '', '', 'NONE'),
 (2, 'Personnel Security System', 'PSS', 'The Personnel Security System is responsible for security clearance management and supports the processes associated with ensuring employees, contractors, and others have been approved to enter Federal buildings, utilize Federal services, and access sensitive information. This includes eligibility determination, badge issuance, clearance tracking, and security verification services.', 'MAJOR APPLICATION', 0, 'MODERATE', 'MODERATE', 'LOW', 0, '', '', 'NONE'),
-(3, 'Staff Recruitment System', 'SRS', 'The Staff Recruitment System supports the active marketing and hiring of personnel to fill opportunities and vacancies within the organization.', 'MAJOR APPLICATION', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE');
-(4, 'Asset Management System', 'AMS', 'The Asset Management System supports the maintenance, administration, and operation of offices buildings, fleets, machinery, and other capital assets considered as possessions of the agency.', 'MAJOR APPLICATION', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE');
-(5, 'Network General Support System', 'NGSS', 'The Network General Support System supports all Major Applications which require network communication. The network general support system is comprised of routers, switches, hubs, ATM, and other network telecom gear used to facilitate the communication across applications, facilities, and buildings.', 'GENERAL SUPPORT SYSTEM', 0, 'HIGH', 'HIGH', 'HIGH', 0, '', '', 'NONE');
-(6, 'Desktop General Support System', 'DGSS', 'The Desktop General Support System provides desktop machines and applications to all system staff, facilities, and buildings throughout the agency.', 'GENERAL SUPPORT SYSTEM', 0, 'LOW', 'MODERATE', 'LOW', 0, '', '', 'NONE');
-(6, 'Oracle General Support System', 'OGSS', 'The Oracle General Support System provides All Major Applications and standardized database environment to store, warehouse, access, and distribute information.', 'GENERAL SUPPORT SYSTEM', 0, 'MODERATE', 'MODERATE', 'MODERATE', 0, '', '', 'NONE');
+(3, 'Staff Recruitment System', 'SRS', 'The Staff Recruitment System supports the active marketing and hiring of personnel to fill opportunities and vacancies within the organization.', 'MAJOR APPLICATION', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE'),
+(4, 'Asset Management System', 'AMS', 'The Asset Management System supports the maintenance, administration, and operation of offices buildings, fleets, machinery, and other capital assets considered as possessions of the agency.', 'MAJOR APPLICATION', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE'),
+(5, 'Network General Support System', 'NGSS', 'The Network General Support System supports all Major Applications which require network communication. The network general support system is comprised of routers, switches, hubs, ATM, and other network telecom gear used to facilitate the communication across applications, facilities, and buildings.', 'GENERAL SUPPORT SYSTEM', 0, 'HIGH', 'HIGH', 'HIGH', 0, '', '', 'NONE'),
+(6, 'Desktop General Support System', 'DGSS', 'The Desktop General Support System provides desktop machines and applications to all system staff, facilities, and buildings throughout the agency.', 'GENERAL SUPPORT SYSTEM', 0, 'LOW', 'MODERATE', 'LOW', 0, '', '', 'NONE'),
+(7, 'Oracle General Support System', 'OGSS', 'The Oracle General Support System provides All Major Applications and standardized database environment to store, warehouse, access, and distribute information.', 'GENERAL SUPPORT SYSTEM', 0, 'MODERATE', 'MODERATE', 'MODERATE', 0, '', '', 'NONE');
 
 INSERT INTO `SYSTEM_ASSETS` (`system_id`, `asset_id`, `system_is_owner`) VALUES 
 (3, 18, 1),
@@ -170,11 +169,13 @@ INSERT INTO `SYSTEM_GROUP_SYSTEMS` (`sysgroup_id`, `system_id`) VALUES
 INSERT INTO `SYSTEM_GROUPS` (`sysgroup_id`, `sysgroup_name`, `sysgroup_nickname`, `sysgroup_is_identity`) VALUES 
 (1, 'Organization ACME', 'ACME', 0);
 
-INSERT INTO `USERS` ( `user_name`, `user_password`, `user_old_password1`, `user_old_password2`, `user_old_password3`, `user_title`, `user_name_last`, `user_name_middle`, `user_name_first`, `user_date_created`, `user_date_password`, `user_history_password`, `user_date_last_login`, `user_date_deleted`, `user_is_active`, `user_phone_office`, `user_phone_mobile`, `user_email`, `role_id`) VALUES 
-('roger', '4d90ecfe9b4d3cfad6b55e21da0f5e96', NULL, NULL, NULL, 'CFO', 'roger', NULL, 'luo', '2007-03-13 13:03:26', '0000-00-00 00:00:00', ':94f17f35e7403208ae1276b3506f370a:419f7d3e3d9d30618069323c1e42563c:2ac9cb7dc02b3c0083eb70898e549b63', '2007-10-16 10:18:32', '0000-00-00 00:00:00', 1, '333333', '333333', 'roger.luo@reyosoft.com', 5),
-('jim', '4d90ecfe9b4d3cfad6b55e21da0f5e96', NULL, NULL, NULL, 'CPU', 'jim', NULL, 'chen', '2007-08-21 07:08:26', '0000-00-00 00:00:00', ':e93d189ab9668b1061a61f69d63cf376:2ac9cb7dc02b3c0083eb70898e549b63', '2007-09-25 08:13:25', '0000-00-00 00:00:00', 1, '333333', '333333', 'jimc@reyosoft.com', 7),
-('rain', '4d90ecfe9b4d3cfad6b55e21da0f5e96', NULL, NULL, NULL, 'CCO', 'rain', NULL, 'yang', '2007-08-28 10:08:30', '0000-00-00 00:00:00', ':e58bee0a46f39c4ec1346898bef62567:2ac9cb7dc02b3c0083eb70898e549b63', '2007-10-05 15:01:28', '0000-00-00 00:00:00', 1, '333333', '333333', 'rain@reyosoft.com', 5),
-('alix', '4d90ecfe9b4d3cfad6b55e21da0f5e96', NULL, NULL, NULL, 'CPO', 'alix', NULL, 'liu', '2007-09-12 16:09:44', '0000-00-00 00:00:00', '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 1, '333333', '333333', 'alixl@reyosoft.com', 6);
+INSERT INTO `users` VALUES 
+(18,'REVIEWER','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Reviewer','Demo',NULL,'Account','2007-03-13 13:03:26','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',5),
+(19,'IV&V','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'IV&V','Demo',NULL,'Account','2007-08-21 07:08:26','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',7),
+(20,'ISSO','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'ISSO','Demo',NULL,'Account','2007-08-28 10:08:30','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',3),
+(21,'SOP','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'System Operator','Demo',NULL,'Account','2007-09-12 16:09:44','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',6),
+(22,'CA','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Certification Agent','Demo',NULL,'Account','2008-02-07 11:02:37','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:30:50','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',11),
+(23,'ISO','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Information System Owner','Demo',NULL,'Account','2008-02-07 11:02:22','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',13);
 
 INSERT INTO `USER_SYSTEM_ROLES` (`user_id`, `system_id`, `role_id`) VALUES 
 (17, 1, 12),
