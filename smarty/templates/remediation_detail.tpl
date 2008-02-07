@@ -800,10 +800,8 @@ environmental.</b>
 </table>
 
 {* NO REAL NEED TO SHOW UNTIL EN, EO, EP, ES or CLOSED *}
-{if $view_evidence eq '1'}
-{if $remediation_status neq 'OPEN'}
-
-<!-- EVIDENCE LINE -->
+{if $view_evidence eq '1'} <!-- Statement 1 -->
+{if $remediation_status neq 'OPEN'} <!-- Statement 2 -->
 
 <!-- Heading Block -->
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
@@ -816,113 +814,135 @@ environmental.</b>
 </table>
 <!-- End Heading Block -->
 
-	<br>
+<br>
 
-	<!-- EVIDENCE TABLE -->
-	<table border="0" cellpadding="3" cellspacing="1" width="95%" align="center" class="tipframe">
+<!-- EVIDENCE TABLE -->
+<table border="0" cellpadding="3" cellspacing="1" width="95%" align="center" class="tipframe">
 
-		<th align='left'>Evidence Submissions <i>({$num_evidence} total)</i></th>
+	<th align='left'>Evidence Submissions <i>({$num_evidence} total)</i></th>
 	
 		{* loop through the evidence *}
-		{if $num_evidence gt 0}
+		{if $num_evidence gt 0} <!-- Statement 3 -->
 
-			{section name=row loop=$all_evidence}
+		{section name=row loop=$all_evidence}
 
-			{* DO NOT SHOW BAD EVIDENCE AT STATUS ES *}
-			{if $remediation_status eq 'ES' && $all_evidence[row].ev_sso_evaluation neq 'APPROVED' || 
-				$remediation_status eq 'ES' && $all_evidence[row].ev_fsa_evaluation neq 'APPROVED'}
-			{else}
+		{* DO NOT SHOW BAD EVIDENCE AT STATUS ES *}
+		{if $remediation_status eq 'ES' && $all_evidence[row].ev_sso_evaluation neq 'APPROVED' || $remediation_status eq 'ES' && $all_evidence[row].ev_fsa_evaluation neq 'APPROVED'}
+		{else}
 
-			<tr>
+	<tr>
 
-				{* EVIDENCE TABLE *}
-				<td colspan='2' width='100%'>
-				<table border='0' cellpadding='3' cellspacing='1' class='tipframe' width='100%'>
+		{* EVIDENCE TABLE *}
+		<td colspan='2' width='100%'>
 
-					<tr><th align='left' colspan="2">Submitted: {$all_evidence[row].ev_date_submitted} by {$all_evidence[row].submitted_by}</th></tr>
+			<table border='0' cellpadding='3' cellspacing='1' class='tipframe' width='100%'>
 
-					<tr colspan="2"><td><b>Evidence:</b> <!--a href='{$all_evidence[row].ev_submission}'>{$all_evidence[row].ev_submission}</a> <br-->
-						<a href="javascript:void(0)" onClick="window.open('{$all_evidence[row].ev_submission}', 'evidence_window', config='resizable=yes,menubar=no,scrollbars=yes')">{$all_evidence[row].ev_submission}</a>
-					</td></tr>
+				<tr><th align='left' colspan="2">Evidence Submitted by {$all_evidence[row].submitted_by} on {$all_evidence[row].ev_date_submitted}</th></tr>
+				<tr colspan="2">
+					<td><b>Evidence:</b><a href="javascript:void(0)" onClick="window.open('{$all_evidence[row].ev_submission}', 'evidence_window', config='resizable=yes,menubar=no,scrollbars=yes')">{$all_evidence[row].ev_submission}</a></td>
+				</tr>
 
+				{* SSO EVALUATION *}
+				<tr>
 
-					{* SSO EVALUATION *}
-					<tr>
-						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_evidence_sso_approval eq '1' && $remediation_status eq 'EP' && $all_evidence[row].ev_sso_evaluation eq 'NONE'}
-                            <td>
-								<form action='remediation_modify.php' method='POST'>
-								<input type='hidden' name='remediation_id' value='{$remediation_id}'>
-								<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
-								<input type='hidden' name='root_comment'   value='{$root_comment}'>
-								<input type='hidden' name='target'         value='evidence'>
-								<input type='hidden' name='action'         value='sso_evaluate'>
-								<input type='hidden' name='validated'      value='no'>
-								<input type='hidden' name='approved'       value='no'>
+				{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
+				{if $modify_evidence_sso_approval eq '1' && $remediation_status eq 'EP' && $all_evidence[row].ev_sso_evaluation eq 'NONE'}
+
+					<td>
+						<form action='remediation_modify.php' method='POST'>
+							<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+							<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
+							<input type='hidden' name='root_comment'   value='{$root_comment}'>
+							<input type='hidden' name='target'         value='evidence'>
+							<input type='hidden' name='action'         value='sso_evaluate'>
+							<input type='hidden' name='validated'      value='no'>
+							<input type='hidden' name='approved'       value='no'>
 		
-								<b>SSO Evaluation:</b> 
-									<input type='hidden' name='form_action' value='Evaluate'>
-									<input type='image' src='images/button_modify.png' name='form_action' value='Evaluate'> 
-									<span>{$all_evidence[row].ev_sso_evaluation} </span>
+						<b>ISSO Evaluation:</b> 
+							<input type='hidden' name='form_action' value='Evaluate'>
+							<input type='image' src='images/button_modify.png' name='form_action' value='Evaluate'> 
+							<span>{$all_evidence[row].ev_sso_evaluation} </span>
 
-								</form>
-                            </td>
-						{else}
-							<td><b>SSO Evaluation:</b> {$all_evidence[row].ev_sso_evaluation}</td>
-							{if $all_evidence[row].comments.EV_SSO neq ''}
-                            <td width="85%">
-        			    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
-        						<tr><th align='left'>{$all_evidence[row].comments.EV_SSO.comment_topic}</th></tr>
-        						<tr><td >{$all_evidence[row].comments.EV_SSO.comment_body}</td></tr>
-        						<tr><td align='right'><i>{$all_evidence[row].comments.EV_SSO.comment_date} by {$all_evidence[row].comments.EV_SSO.user_name}</i></td></tr>
-        					</table>
-                            </td>
-                            {/if}
+							</form>
+                    </td>
+					
+				{else}
+
+					<td><b>ISSO Evaluation:</b> {$all_evidence[row].ev_sso_evaluation}</td>
+
+					{if $all_evidence[row].comments.EV_SSO neq ''}
+
+					<td width="85%">
+
+						<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+        					<tr><th align='left'>{$all_evidence[row].comments.EV_SSO.comment_topic}</th></tr>
+        					<tr><td >{$all_evidence[row].comments.EV_SSO.comment_body}</td></tr>
+        					<tr><td align='right'><i>{$all_evidence[row].comments.EV_SSO.comment_date} by {$all_evidence[row].comments.EV_SSO.user_name}</i></td></tr>
+        				</table>
+                        
+					</td>
+
+					{/if}
+
+				{/if}
+
+				</tr>
+
+				{* FSA EVALUATION *}
+				<tr>
+
+				{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
+				{if $modify_evidence_fsa_approval eq '1' && $remediation_status eq 'EP' && $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'NONE'}
+
+                    <td>
+						<form action='remediation_modify.php' method='POST'>
+							<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+							<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
+							<input type='hidden' name='root_comment'   value='{$root_comment}'>
+							<input type='hidden' name='target'         value='evidence'>
+							<input type='hidden' name='action'         value='fsa_evaluate'>
+							<input type='hidden' name='validated'      value='no'>
+							<input type='hidden' name='approved'       value='no'>
+
+						<b>IV&V Evaluation:</b> 
+					
+							<input type='hidden' name='form_action' value='Evaluate'>
+							<input type='image' src='images/button_modify.png' name='form_action' value='Evaluate'> 
+							<span>{$all_evidence[row].ev_fsa_evaluation}</span>
+
+						</form>
+					</td>
+
+				{else}
+
+					<td><b>IV&V Evaluation:</b> {$all_evidence[row].ev_fsa_evaluation}</td>
+
+						{if $all_evidence[row].comments.EV_FSA neq ''}
+
+					<td width="85%">
+
+						<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+							<tr><th align='left'>{$all_evidence[row].comments.EV_FSA.comment_topic}</th></tr>
+							<tr><td >{$all_evidence[row].comments.EV_FSA.comment_body}</td></tr>
+							<tr><td align='right'><i>{$all_evidence[row].comments.EV_FSA.comment_date} by {$all_evidence[row].comments.EV_FSA.user_name}</i></td></tr>
+						</table>
+                    
+					</td>
+
 						{/if}
-					</tr>
-
-					{* FSA EVALUATION *}
-					<tr>
-						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_evidence_fsa_approval eq '1' && $remediation_status eq 'EP' && $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'NONE'}
-                            <td>
-								<form action='remediation_modify.php' method='POST'>
-								<input type='hidden' name='remediation_id' value='{$remediation_id}'>
-								<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
-								<input type='hidden' name='root_comment'   value='{$root_comment}'>
-								<input type='hidden' name='target'         value='evidence'>
-								<input type='hidden' name='action'         value='fsa_evaluate'>
-								<input type='hidden' name='validated'      value='no'>
-								<input type='hidden' name='approved'       value='no'>
-
-								<b>FSA Evaluation:</b> 
-									<input type='hidden' name='form_action' value='Evaluate'>
-									<input type='image' src='images/button_modify.png' name='form_action' value='Evaluate'> 
-									<span>{$all_evidence[row].ev_fsa_evaluation}</span>
-
-								</form>
-                            </td>
-						{else}
-							<td><b>FSA Evaluation:</b> {$all_evidence[row].ev_fsa_evaluation}</td>
-							{if $all_evidence[row].comments.EV_FSA neq ''}
-                            <td width="85%">
-        			    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
-        						<tr><th align='left'>{$all_evidence[row].comments.EV_FSA.comment_topic}</th></tr>
-        						<tr><td >{$all_evidence[row].comments.EV_FSA.comment_body}</td></tr>
-        						<tr><td align='right'><i>{$all_evidence[row].comments.EV_FSA.comment_date} by {$all_evidence[row].comments.EV_FSA.user_name}</i></td></tr>
-        					</table>
-                            </td>
-                            {/if}
-						{/if}
-					</tr>
+				{/if}
+					
+				</tr>
 
 
-					{* IVV EVALUATION *}
-					<tr>
-						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_evidence_ivv_approval eq '1' && $remediation_status eq 'ES' && $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'APPROVED'}
-                            <td>
-								<form action='remediation_modify.php' method='POST'>
+				{* IVV EVALUATION *}
+				<tr>
+
+					{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
+					{if $modify_evidence_ivv_approval eq '1' && $remediation_status eq 'ES' && $all_evidence[row].ev_sso_evaluation eq 'APPROVED' && $all_evidence[row].ev_fsa_evaluation eq 'APPROVED'}
+
+						<td>
+							<form action='remediation_modify.php' method='POST'>
 								<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 								<input type='hidden' name='ev_id'          value='{$all_evidence[row].ev_id}'>
 								<input type='hidden' name='root_comment'   value='{$root_comment}'>
@@ -931,32 +951,41 @@ environmental.</b>
 								<input type='hidden' name='validated'      value='no'>
 								<input type='hidden' name='approved'       value='no'>
 
-								<b>IVV Evaluation:</b> 
-									<input type='hidden' name='form_action' value='Evaluate'>
-									<input type='image' src='images/button_modify.png' name='form_action' value='Evaluate'> 
-									<span>{$all_evidence[row].ev_ivv_evaluation}</span>
+							<b>Final Evaluation:</b> 
+						
+								<input type='hidden' name='form_action' value='Evaluate'>
+								<input type='image' src='images/button_modify.png' name='form_action' value='Evaluate'> 
+								<span>{$all_evidence[row].ev_ivv_evaluation}</span>
 
-								</form>
-                            </td>
-						{else}
-							<td><b>IVV Evaluation:</b> {$all_evidence[row].ev_ivv_evaluation}</td>
-							{if $all_evidence[row].comments.EV_IVV neq ''}
-                            <td width="85%">
+							</form>
+						</td>
+						
+					{else}
+					
+						<td><b>Final Evaluation:</b> {$all_evidence[row].ev_ivv_evaluation}</td>
+
+						{if $all_evidence[row].comments.EV_IVV neq ''}
+                            
+						<td width="85%">
         			    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
         						<tr><th align='left'>{$all_evidence[row].comments.EV_IVV.comment_topic}</th><tr>
         						<tr><td >{$all_evidence[row].comments.EV_IVV.comment_body}</td></tr>
         						<tr><td align='right'><i>{$all_evidence[row].comments.EV_IVV.comment_date} by {$all_evidence[row].comments.EV_IVV.user_name}</i></td></tr>
-        					</table>
-                            </td>
-                            {/if}
+							</table>
+                        </td>
+                        
 						{/if}
-                    </tr>
-				</table>
-				</td>
 
-			</tr>
+					{/if}
+				
+				</tr>
+			</table>
+			
+		</td>
 
-			{/if}
+	</tr>
+
+		{/if}
 
 			{/section}
 
@@ -968,8 +997,8 @@ environmental.</b>
 		{if $remediation_status eq 'EN' || $remediation_status eq 'EO'}
 
 			<tr align='left'>
-					<td>
-				<form action='remediation_modify.php' method='POST'>
+				<td>
+					<form action='remediation_modify.php' method='POST'>
 						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 						<input type='hidden' name='root_comment'   value='{$root_comment}'>
 						<input type='hidden' name='target'         value='evidence'>
@@ -979,17 +1008,13 @@ environmental.</b>
 						<input type='hidden' name='uploaded'       value='no'>
 						<input type='hidden' name='form_action'    value='Submit Evidence'>
 						<input type='button' name="form_action" title='Submit Evidence' value="Upload Evidence">
-				</form>
-					</td>
+					</form>
+				</td>
 			</tr>
 
 		{/if}
 		{/if}
-        <tr>
-            <td>
-                <input type='button' title='Submit Evidence Change' value="Submit">
-            </td>
-        </tr>
+	
 	</table>
 
 	<br>

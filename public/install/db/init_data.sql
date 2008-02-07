@@ -237,14 +237,14 @@ INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the u
 (101,'Edit Finding Course of Action','remediation','modify_mitigation_course_of_action','Allows the user to edit the course of action','1'),
 (102,'Edit Finding Resources','remediation','modify_mitigation_resources','Allows the user to edit finding resources','1'),
 (103,'Edit Finding Completion Date','remediation','modify_mitigation_completion_date','Allows the user to edit the finding completion date','1'),
-(104,'remediation_modify_mitigation_sso_approval','remediation','modify_mitigation_sso_approval','restricts modification of mitigation SSO approval','1'),
-(105,'remediation_view_evidence','remediation','view_evidence','restricts view of evidence','1'),
-(106,'remediation_modify_evidence_upload','remediation','modify_evidence_upload','restricts upload of evidence','1'),
-(107,'remediation_modify_evidence_sso_approval','remediation','modify_evidence_sso_approval','restricts SSO evidence approval','1'),
-(108,'remediation_modify_evidence_fsa_approval','remediation','modify_evidence_fsa_approval','restricts FSA evidence approval','1'),
-(109,'remediation_modify_evidence_ivv_approval','remediation','modify_evidence_ivv_approval','restricts IVV evidence approval','1'),
-(110,'remediation_view_comments','remediation','view_comments','restricts view of comments','1'),
-(111,'remediation_modify_comments','remediation','modify_comments','restricts creation of comments','1');
+(104,'First Approval/Rejection of Mitigation Strategy','remediation','modify_mitigation_sso_approval','restricts modification of mitigation SSO approval','1'),
+(105,'View Evidence','remediation','view_evidence','restricts view of evidence','1'),
+(106,'Allow Evidence Upload','remediation','modify_evidence_upload','Allows the user to upload evidence','1'),
+(107,'First Approval/Rejection of Evidence','remediation','modify_evidence_sso_approval','Allows the user to provide approval/rejection of evidence submissions.','1'),
+(108,'Second Approval/Rejection of Evidence','remediation','modify_evidence_fsa_approval','Allows the user to provide approval/rejection of evidence submissions.','1'),
+(109,'Third Approval/Rejection of Evidence','remediation','modify_evidence_ivv_approval','Allows the user to provide approval/rejection of evidence submissions.','1'),
+(110,'View Comments','remediation','view_comments','restricts view of comments','1'),
+(111,'Create Comments','remediation','modify_comments','restricts creation of comments','1');
 
 
 /* default finding sources */

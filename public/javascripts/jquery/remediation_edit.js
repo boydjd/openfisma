@@ -3,8 +3,8 @@ $(document).ready(function(){
     var aLog = new Array();         // log string
     var aLogKey = new Object();     // array in JS has no string keys, use this to instead of it
     var aQuery = new Object();      // build query
-    var evArray = new Object();		// evidances
-    var estDateChanged = false;		// not initial this value. request in email 2007-12-19.
+    var evArray = new Object();		// evidence
+    var estDateChanged = false;		// ensure estimated date is not changed without comment. request in email 2007-12-19.
     aQuery.comment_type = 'NONE';	// set default value of comment type
     evArray.length = 0;
     
