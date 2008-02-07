@@ -155,19 +155,9 @@ INSERT INTO `SYSTEM_ASSETS` (`system_id`, `asset_id`, `system_is_owner`) VALUES
 (1, 11, 1),
 (1, 10, 1);
 
-INSERT INTO `SYSTEM_GROUP_SYSTEMS` (`sysgroup_id`, `system_id`) VALUES 
-(5, 2),
-(1, 2),
-(2, 2),
-(3, 3),
-(2, 3),
-(8, 3),
-(4, 1),
-(1, 1),
-(9, 1);
+INSERT INTO `system_group_systems` (`sysgroup_id`, `system_id`) VALUES (1,2),(1,3),(1,1),(1,4),(1,6),(1,5),(1,7);
 
-INSERT INTO `SYSTEM_GROUPS` (`sysgroup_id`, `sysgroup_name`, `sysgroup_nickname`, `sysgroup_is_identity`) VALUES 
-(1, 'Organization ACME', 'ACME', 0);
+INSERT INTO `SYSTEM_GROUPS` (`sysgroup_id`, `sysgroup_name`, `sysgroup_nickname`, `sysgroup_is_identity`) VALUES (1, 'Organization ACME', 'ACME', 0);
 
 INSERT INTO `users` VALUES 
 (18,'REVIEWER','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Reviewer','Demo',NULL,'Account','2007-03-13 13:03:26','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',5),
@@ -177,10 +167,7 @@ INSERT INTO `users` VALUES
 (22,'CA','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Certification Agent','Demo',NULL,'Account','2008-02-07 11:02:37','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:30:50','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',11),
 (23,'ISO','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Information System Owner','Demo',NULL,'Account','2008-02-07 11:02:22','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',13);
 
-INSERT INTO `USER_SYSTEM_ROLES` (`user_id`, `system_id`, `role_id`) VALUES 
-(17, 1, 12),
-(17, 2, 12),
-(17, 3, 12);
+INSERT INTO `USER_SYSTEM_ROLES` (`user_id`, `system_id`, `role_id`) VALUES (17,3,10),(17,2,10),(17,1,10),(18,1,5),(18,2,5),(18,3,5),(18,4,5),(18,5,5),(18,6,5),(18,7,5),(19,1,7),(19,2,7),(19,3,7),(19,4,7),(19,5,7),(19,6,7),(19,7,7),(20,1,3),(20,2,3),(20,3,3),(20,4,3),(20,5,3),(20,6,3),(20,7,3),(21,7,6),(21,6,6),(21,5,6),(21,4,6),(21,3,6),(21,2,6),(21,1,6),(22,1,11),(22,2,11),(22,3,11),(22,4,11),(22,5,11),(22,6,11),(22,7,11),(23,1,13),(23,2,13),(23,3,13),(23,4,13),(23,5,13),(23,6,13),(23,7,13),(17,4,10),(17,5,10),(17,6,10),(17,7,10);
 
 INSERT INTO `VULNERABILITIES` (`vuln_seq`, `vuln_type`, `vuln_desc_primary`, `vuln_desc_secondary`, `vuln_date_discovered`, `vuln_date_modified`, `vuln_date_published`, `vuln_severity`, `vuln_loss_availability`, `vuln_loss_confidentiality`, `vuln_loss_integrity`, `vuln_loss_security_admin`, `vuln_loss_security_user`, `vuln_loss_security_other`, `vuln_type_access`, `vuln_type_input`, `vuln_type_input_bound`, `vuln_type_input_buffer`, `vuln_type_design`, `vuln_type_exception`, `vuln_type_environment`, `vuln_type_config`, `vuln_type_race`, `vuln_type_other`, `vuln_range_local`, `vuln_range_remote`, `vuln_range_user`) VALUES 
 (20041917, 'CVE', 'Format string vulnerability in test_func_func in LCDProc 0.4.1 and earlier allows remote attackers to execute arbitrary code via format string specifiers in the str variable.', '0', '0000-00-00', '2005-10-20', '2004-04-08', 70, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
