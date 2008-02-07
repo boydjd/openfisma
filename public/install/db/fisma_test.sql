@@ -155,11 +155,11 @@ INSERT INTO `SYSTEM_ASSETS` (`system_id`, `asset_id`, `system_is_owner`) VALUES
 (1, 11, 1),
 (1, 10, 1);
 
-INSERT INTO `system_group_systems` (`sysgroup_id`, `system_id`) VALUES (1,2),(1,3),(1,1),(1,4),(1,6),(1,5),(1,7);
+INSERT INTO `SYSTEM_GROUP_SYSTEMS` (`sysgroup_id`, `system_id`) VALUES (1,2),(1,3),(1,1),(1,4),(1,6),(1,5),(1,7);
 
 INSERT INTO `SYSTEM_GROUPS` (`sysgroup_id`, `sysgroup_name`, `sysgroup_nickname`, `sysgroup_is_identity`) VALUES (1, 'Organization ACME', 'ACME', 0);
 
-INSERT INTO `users` VALUES 
+INSERT INTO `USERS` VALUES 
 (18,'REVIEWER','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Reviewer','Demo',NULL,'Account','2007-03-13 13:03:26','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',5),
 (19,'IV&V','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'IV&V','Demo',NULL,'Account','2007-08-21 07:08:26','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',7),
 (20,'ISSO','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'ISSO','Demo',NULL,'Account','2007-08-28 10:08:30','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',3),
