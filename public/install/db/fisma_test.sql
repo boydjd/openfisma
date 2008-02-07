@@ -1,14 +1,11 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-INSERT INTO `ASSETS` (`asset_id`, `prod_id`, `asset_name`, `asset_date_created`, `asset_source`) VALUES 
-(14, 275, 'SNMS-Internet Explorer', '2008-01-17 16:30:27', 'MANUAL'),
-(13, 271, 'SNMS-BSD/OS', '2008-01-17 16:29:51', 'MANUAL'),
-(12, 13, 'SLS-IIS', '2008-01-17 16:29:12', 'MANUAL'),
-(11, 221, 'SLS-FreeBSD', '2008-01-17 16:28:42', 'MANUAL'),
-(10, 295, 'SLS-Debian Linux', '2008-01-17 16:28:05', 'MANUAL'),
-(15, 6, 'SNMS-Netscape Messaging', '2008-01-17 16:31:13', 'MANUAL'),
-(16, 227, 'TWMS-SunOS', '2008-01-17 16:31:58', 'MANUAL'),
-(17, 267, 'TWMS-TCP/IP', '2008-01-17 16:32:35', 'MANUAL'),
-(18, 16, 'TWMS-UX/4800', '2008-01-17 16:33:10', 'MANUAL');
+
+INSERT INTO `NETWORKS` (`network_id`, `network_name`, `network_nickname`, `network_desc`) VALUES 
+(1, 'N/A', 'Not Applicable', 'Use when Location is not required'),
+(2, 'Eastern Data Center', 'EDC', 'Data Center located in New York.'),
+(3, 'Central Data Center', 'CDC', 'Data Center located in Nevada'),
+(4, 'Pacific Data Center', 'PDC', 'Data Center located in California');
+
 
 INSERT INTO `ASSET_ADDRESSES` (`asset_id`, `network_id`, `address_date_created`, `address_ip`, `address_port`) VALUES 
 (18, 3, '2008-01-17 16:33:10', '192.168.0.3', 22),
@@ -20,6 +17,19 @@ INSERT INTO `ASSET_ADDRESSES` (`asset_id`, `network_id`, `address_date_created`,
 (12, 3, '2008-01-17 16:29:12', '192.168.0.3', 22),
 (11, 2, '2008-01-17 16:28:42', '192.168.0.2', 22),
 (10, 1, '2008-01-17 16:28:05', '192.168.0.1', 22);
+
+
+INSERT INTO `ASSETS` (`asset_id`, `prod_id`, `asset_name`, `asset_date_created`, `asset_source`) VALUES 
+(14, 275, 'SNMS-Internet Explorer', '2008-01-17 16:30:27', 'MANUAL'),
+(13, 271, 'SNMS-BSD/OS', '2008-01-17 16:29:51', 'MANUAL'),
+(12, 13, 'SLS-IIS', '2008-01-17 16:29:12', 'MANUAL'),
+(11, 221, 'SLS-FreeBSD', '2008-01-17 16:28:42', 'MANUAL'),
+(10, 295, 'SLS-Debian Linux', '2008-01-17 16:28:05', 'MANUAL'),
+(15, 6, 'SNMS-Netscape Messaging', '2008-01-17 16:31:13', 'MANUAL'),
+(16, 227, 'TWMS-SunOS', '2008-01-17 16:31:58', 'MANUAL'),
+(17, 267, 'TWMS-TCP/IP', '2008-01-17 16:32:35', 'MANUAL'),
+(18, 16, 'TWMS-UX/4800', '2008-01-17 16:33:10', 'MANUAL');
+
 
 INSERT INTO `FINDINGS` (`finding_id`, `source_id`, `asset_id`, `finding_status`, `finding_date_created`, `finding_date_discovered`, `finding_date_closed`, `finding_data`) VALUES 
 (30, 11, 14, 'OPEN', '2008-01-17 08:01:17', '2008-01-17 00:00:00', NULL, 'finding a2'),
@@ -64,11 +74,7 @@ INSERT INTO `FINDING_VULNS` (`finding_id`, `vuln_seq`, `vuln_type`) VALUES
 (32, 20041909, 'CVE'),
 (32, 20041910, 'CVE');
 
-INSERT INTO `NETWORKS` (`network_id`, `network_name`, `network_nickname`, `network_desc`) VALUES 
-(1, 'N/A', 'Not Applicable', 'Use when Location is not required'),
-(2, 'Eastern Data Center', 'EDC', 'Data Center located in New York.'),
-(3, 'Central Data Center', 'CDC', 'Data Center located in Nevada'),
-(4, 'Pacific Data Center', 'PDC', 'Data Center located in California');
+
 
 INSERT INTO `POAMS` (`poam_id`, `finding_id`, `legacy_poam_id`, `poam_is_repeat`, `poam_previous_audits`, `poam_type`, `poam_status`, `poam_blscr`, `poam_created_by`, `poam_modified_by`, `poam_closed_by`, `poam_date_created`, `poam_date_modified`, `poam_date_closed`, `poam_action_owner`, `poam_action_suggested`, `poam_action_planned`, `poam_action_status`, `poam_action_approved_by`, `poam_cmeasure`, `poam_cmeasure_effectiveness`, `poam_cmeasure_justification`, `poam_action_resources`, `poam_action_date_est`, `poam_action_date_actual`, `poam_threat_source`, `poam_threat_level`, `poam_threat_justification`) VALUES 
 (16, 24, NULL, NULL, NULL, 'NONE', 'OPEN', NULL, 17, 17, NULL, '2008-01-17 16:56:29', '2008-01-17 08:56:49', NULL, 2, NULL, 'NULL', 'NONE', NULL, NULL, 'NONE', 'NULL', 'NULL', '0000-00-00', NULL, NULL, 'NONE', NULL),
@@ -130,10 +136,14 @@ INSERT INTO `PRODUCTS` (`prod_id`, `prod_nvd_defined`, `prod_meta`, `prod_vendor
 (285, 1, 'Larry Wall Perl 5.003', 'Larry Wall', 'Perl', '5.003', '0'),
 (295, 1, 'Debian Debian Linux 1.3', 'Debian', 'Debian Linux', '1.3', '0');
 
-INSERT INTO `SYSTEMS` (`system_id`, `system_name`, `system_nickname`, `system_desc`, `system_type`, `system_primary_office`, `system_availability`, `system_integrity`, `system_confidentiality`, `system_tier`, `system_criticality_justification`, `system_sensitivity_justification`, `system_criticality`) VALUES 
-(1, 'student loan system', 'SLS', 'the system record the information of the loan in the college', 'GENERAL SUPPORT SYSTEM', 0, 'HIGH', 'HIGH', 'HIGH', 0, '', '', 'NONE'),
-(2, 'student networks manager system', 'SNMS', 'The system manage the information what student used (password,registion...etc)', 'GENERAL SUPPORT SYSTEM', 0, 'HIGH', 'HIGH', 'HIGH', 0, '', '', 'NONE'),
-(3, 'Fisma system association', 'FSA', 'System which manager the wages of the teacher information', 'GENERAL SUPPORT SYSTEM', 0, 'HIGH', 'HIGH', 'HIGH', 0, '', '', 'NONE');
+INSERT INTO `SYSTEMS` (`system_id`, `system_name`, `system_nickname`, `system_desc`, `system_type`, `system_primary_office`, `system_confidentiality`, `system_integrity`, `system_availability`, `system_tier`, `system_criticality_justification`, `system_sensitivity_justification`, `system_criticality`) VALUES 
+(1, 'Financial Management System', 'FMS', 'The Financial Management System is responsible for budget execution information and supports the day-to-day requisitions and obligations for agency expenditures, invoices, billing dispute resolution, reconciliation, service level agreements, and distributions of shared expenses.', 'MAJOR APPLICATION', 0, 'LOW', 'MODERATE', 'LOW', 0, '', '', 'NONE'),
+(2, 'Personnel Security System', 'PSS', 'The Personnel Security System is responsible for security clearance management and supports the processes associated with ensuring employees, contractors, and others have been approved to enter Federal buildings, utilize Federal services, and access sensitive information. This includes eligibility determination, badge issuance, clearance tracking, and security verification services.', 'MAJOR APPLICATION', 0, 'MODERATE', 'MODERATE', 'LOW', 0, '', '', 'NONE'),
+(3, 'Staff Recruitment System', 'SRS', 'The Staff Recruitment System supports the active marketing and hiring of personnel to fill opportunities and vacancies within the organization.', 'MAJOR APPLICATION', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE');
+(4, 'Asset Management System', 'AMS', 'The Asset Management System supports the maintenance, administration, and operation of offices buildings, fleets, machinery, and other capital assets considered as possessions of the agency.', 'MAJOR APPLICATION', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE');
+(5, 'Network General Support System', 'NGSS', 'The Network General Support System supports all Major Applications which require network communication. The network general support system is comprised of routers, switches, hubs, ATM, and other network telecom gear used to facilitate the communication across applications, facilities, and buildings.', 'GENERAL SUPPORT SYSTEM', 0, 'HIGH', 'HIGH', 'HIGH', 0, '', '', 'NONE');
+(6, 'Desktop General Support System', 'DGSS', 'The Desktop General Support System provides desktop machines and applications to all system staff, facilities, and buildings throughout the agency.', 'GENERAL SUPPORT SYSTEM', 0, 'LOW', 'MODERATE', 'LOW', 0, '', '', 'NONE');
+(6, 'Oracle General Support System', 'OGSS', 'The Oracle General Support System provides All Major Applications and standardized database environment to store, warehouse, access, and distribute information.', 'GENERAL SUPPORT SYSTEM', 0, 'MODERATE', 'MODERATE', 'MODERATE', 0, '', '', 'NONE');
 
 INSERT INTO `SYSTEM_ASSETS` (`system_id`, `asset_id`, `system_is_owner`) VALUES 
 (3, 18, 1),
@@ -158,7 +168,7 @@ INSERT INTO `SYSTEM_GROUP_SYSTEMS` (`sysgroup_id`, `system_id`) VALUES
 (9, 1);
 
 INSERT INTO `SYSTEM_GROUPS` (`sysgroup_id`, `sysgroup_name`, `sysgroup_nickname`, `sysgroup_is_identity`) VALUES 
-(1, 'reyosoft college Systems', 'FSA', 0);
+(1, 'Organization ACME', 'ACME', 0);
 
 INSERT INTO `USERS` ( `user_name`, `user_password`, `user_old_password1`, `user_old_password2`, `user_old_password3`, `user_title`, `user_name_last`, `user_name_middle`, `user_name_first`, `user_date_created`, `user_date_password`, `user_history_password`, `user_date_last_login`, `user_date_deleted`, `user_is_active`, `user_phone_office`, `user_phone_mobile`, `user_email`, `role_id`) VALUES 
 ('roger', '4d90ecfe9b4d3cfad6b55e21da0f5e96', NULL, NULL, NULL, 'CFO', 'roger', NULL, 'luo', '2007-03-13 13:03:26', '0000-00-00 00:00:00', ':94f17f35e7403208ae1276b3506f370a:419f7d3e3d9d30618069323c1e42563c:2ac9cb7dc02b3c0083eb70898e549b63', '2007-10-16 10:18:32', '0000-00-00 00:00:00', 1, '333333', '333333', 'roger.luo@reyosoft.com', 5),
