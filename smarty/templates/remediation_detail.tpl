@@ -87,7 +87,7 @@ function go(step) {
 	    <td width="50%" valign="top">
 
 			<!-- FINDING TABLE -->
-			<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+			<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 				<!--<th align="left" colspan="2">Finding Information - #{$finding.finding_id}</th> -->
 				<th align="left" colspan="2">Finding Information</th>
 				<tr><td><b>Finding ID:</b> {$remediation_id}</td></tr>
@@ -134,7 +134,7 @@ function go(step) {
     	<td width="50%" valign="top">
 
 			<!-- ASSET TABLE -->
-	    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+	    	<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
             	<th align="left" colspan="2">Asset Information</th>
 				<tr>
                    	<td><b>Asset Owner:</b> ({$finding.system_nickname}) {$finding.system_name}</td>
@@ -170,7 +170,7 @@ function go(step) {
    		<td colspan="2" width="90%">
 
 			<!-- INSTANCE DATA TABLE -->
-		    <table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+		    <table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 	        	<th align="left">Finding Description</th>
 		        <tr><td>{if $finding.finding_data eq ""}<i>(none given)</i>{else}{$finding.finding_data}{/if}</td></tr>
 			</table> 
@@ -181,7 +181,7 @@ function go(step) {
 	<tr>
 		<td colspan="2">
 
-			<table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" class="tipframe">
+			<table border="0" cellpadding="5" cellspacing="1" width="100%" align="center" class="tipframe">
 				<th align='left'>Additional Vulnerability Detail</th>
 				<!-- VULNERABILITY ROW(S) -->
 		
@@ -190,7 +190,7 @@ function go(step) {
 					<td colspan="2">
 
 						<!-- VULERABILITIES TABLE -->
-						<table border="0" cellpadding="3" cellspacing="1" width="100%">
+						<table border="0" cellpadding="5" cellspacing="1" width="100%">
 							<tr><td><b>Vulnerability ID:</b> {$vulnerabilities[row].vuln_type}-{$vulnerabilities[row].vuln_seq}</td></tr>
 							<tr><td><b>Primary Description:</b> {$vulnerabilities[row].vuln_desc_primary}</td></tr>
 							<tr>
@@ -397,7 +397,7 @@ function go(step) {
 							<tr>
 								<td>
 			    	
-                    				<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+                    				<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 										<th align='left'>{$comments_est[row].comment_topic}</th>
 										<tr><td colspan='2'>{$comments_est[row].comment_body}</td></tr>
 										<tr><td align='right'><i>{$comments_est[row].comment_date} by {$comments_est[row].user_name}</i></td></tr>
@@ -419,6 +419,100 @@ function go(step) {
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
 		<td width="13"><img src="images/left_circle.gif" border="0"></td>
+		<td bgcolor="#DFE5ED"><b>NIST 800-53 Control Mapping</b></td>
+		<td bgcolor="#DFE5ED" align="right"></td>
+		<td width="13"><img src="images/right_circle.gif" border="0"></td>
+	</tr>
+</table>
+<!-- End Heading Block -->
+<br>
+
+	{if $blscr.blscr_number eq ""}
+
+		<!-- BLSCR TABLE -->
+   		<table border="1" width="95%" align="center" cellpadding="5" cellspacing="1" class="tipframe">
+	       	<th align="left" >Security Control</th>
+			<tr><td><i>(none given)</i></td></tr>
+			<tr>
+				<td>
+					<form action='remediation_modify.php' method='POST'>
+						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+						<input type='hidden' name='root_comment'   value='{$root_comment}'>
+						<input type='hidden' name='target' 		   value='blscr_number'>
+						<input type='hidden' name='action'         value='update'>
+						<input type='hidden' name='validated'      value='no'>
+						<input type='hidden' name='approved'       value='no'>
+					
+					<b>Number:</b>
+					
+						{if $modify_blscr eq '1'}
+							<input type='hidden' name='form_action' value='Update'>
+							<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
+						{/if}
+							<span>{$blscr.blscr_number}</span>
+					</form>
+				</td>
+			</tr>
+		</table>
+
+	{/if}
+		        
+	{if $blscr.blscr_number neq ""}			
+
+   		<table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
+			<tr>
+				<td>
+
+			<table align="left" border="0" cellpadding="5" class="tbframe">
+				<tr>
+					<th class="tdc">Control Number</th>
+					<th class="tdc">Class</th>
+					<th class="tdc">Family</th>
+					<th class="tdc">Subclass</th>
+					<th class="tdc">Low</th>
+					<th class="tdc">Moderate</th>
+					<th class="tdc">High</th>
+				</tr>
+				<tr>
+					<td class="tdc" align="center">
+						<form action='remediation_modify.php' method='POST'>
+							<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+							<input type='hidden' name='root_comment'   value='{$root_comment}'>
+							<input type='hidden' name='target' 		   value='blscr_number'>
+							<input type='hidden' name='action'         value='update'>
+							<input type='hidden' name='validated'      value='no'>
+							<input type='hidden' name='approved'       value='no'>
+							{if $modify_blscr eq '1'}
+								<input type='hidden' name='form_action' value='Update'>
+								<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
+							{/if}
+							<span>{$blscr.blscr_number}</span>
+						</form>
+					</td>
+					<td class="tdc">{$blscr.blscr_class}</td>
+					<td class="tdc">{$blscr.blscr_family}</td>
+					<td class="tdc">{$blscr.blscr_subclass}</td>	
+					<td class="tdc" align="center">{if $blscr.blscr_low eq '1'}Control Required{else}Control Not Required{/if}</td>
+					<td class="tdc" align="center">{if $blscr.blscr_moderate eq '1'}Control Required{else}Control Not Required{/if}</td>
+					<td class="tdc" align="center">{if $blscr.blscr_high eq '1'}Control Required{else}Control Not Required{/if}</td>
+				</tr>
+			</table>
+
+				</td>
+			</tr>	
+			<tr><td><b>Control: </b> {$blscr.blscr_control}</td></tr>
+		    <tr><td><b>Guidance: </b> {$blscr.blscr_guidance}</td></tr>
+		    <tr><td><b>Enhancements: </b>{if $blscr.blscr_enhancements eq '.'}<i>(none given)</i>{else}{$blscr.blscr_enhancements}{/if}</td></tr>
+	    	<tr><td><b>Supplement: </b>{if $blscr.blscr_supplement eq '.'}<i>(none given)</i>{else}{$blscr.blscr_supplement}{/if}</td></tr>
+		</table>
+
+	{/if}
+
+<br>
+<!-- Heading Block -->
+<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td width="13"><img src="images/left_circle.gif" border="0"></td>
 		<td bgcolor="#DFE5ED"><b>Risk Analysis</b></td>
 		<td bgcolor="#DFE5ED" align="right"></td>
 		<td width="13"><img src="images/right_circle.gif" border="0"></td>
@@ -429,7 +523,7 @@ function go(step) {
 <br>
 
 <!-- REMEDIATION TABLE -->
-<table border="0" cellpadding="3" cellspacing="1" width="95%" align="center">
+<table border="0" cellpadding="5" cellspacing="1" width="95%" align="center">
 	<tr> <!-- REMEDIATION INFORMATION ROW -->
 		<td width='50%' valign='top'>
 
@@ -459,69 +553,11 @@ function go(step) {
 		</td>
 		
 	</tr>
-	<tr> 
-	    <td colspan="2">
-
-			<!-- BLSCR TABLE -->
-   			<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
-	       		<th align="left" >Baseline Security Requirements</th>
-					{if $blscr.blscr_number eq ""}
-                <tr>
-                	<td><i>(none given)</i></td>
-                </tr>
-					{/if}
-		        <tr>
-    				<td>
-						<form action='remediation_modify.php' method='POST'>
-						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
-						<input type='hidden' name='root_comment'   value='{$root_comment}'>
-						<input type='hidden' name='target' 		   value='blscr_number'>
-						<input type='hidden' name='action'         value='update'>
-						<input type='hidden' name='validated'      value='no'>
-						<input type='hidden' name='approved'       value='no'>
-					
-						<b>Number:</b>
-							{if $modify_blscr eq '1'}
-							<input type='hidden' name='form_action' value='Update'>
-							<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
-							{/if}
-						<span>{$blscr.blscr_number}</span>
-			     		</form>
-					</td>
-				</tr>
-				<tr><td><b>Class:</b> {$blscr.blscr_class}</td></tr>
-				<tr><td><b>Subclass: </b> {$blscr.blscr_subclass}</td></tr>
-	        	<tr><td><b>Family: </b> {$blscr.blscr_family}</td></tr>
-		        <tr><td><b>Control: </b> {$blscr.blscr_control}</td></tr>
-		        <tr><td><b>Guidance: </b> {$blscr.blscr_guidance}</td></tr>
-	    	    <tr><td><b>Low: </b> {$blscr.blscr_low}</td></tr>
-				<tr><td><b>Moderate: </b> {$blscr.blscr_moderate}</td></tr>
-				<tr><td><b>High: </b> {$blscr.blscr_high}</td></tr>
-		        <tr>
-					<td><b>Enhancements: </b> 	
-						{if $blscr.blscr_enhancements eq '.'}<i>(none given)</i>
-						{else}{$blscr.blscr_enhancements}
-						{/if}
-					</td>
-				</tr>
-	    	    <tr>
-					<td><b>Supplement: </b> 	
-						{if $blscr.blscr_supplement eq '.'}<i>(none given)</i>
-						{else}{$blscr.blscr_supplement}
-						{/if}
-					</td>
-				</tr>
-	    	</table> 
-            <!-- END BLSCR TABLE-->
-
-	    </td>
-
-	</tr>
 	<tr> <!-- THREATS ROW -->
 	    <td colspan="2">
 
 			<!-- THREATS TABLE -->
-    		<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+    		<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 	        	<th align='left'>Threat Information</th>
 					<tr>
 						<td>
@@ -606,7 +642,7 @@ environmental.</b>
 	<tr> <!-- COUNTERMEASURES ROW -->
 	    <td colspan="2">
 			<!-- COUNTERMEASURE TABLE -->
-    		<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+    		<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 	        	<th align="left" colspan="2">Countermeasure Information</th>
 					<tr>
 						<td>
@@ -688,7 +724,7 @@ environmental.</b>
  	<tr>
 
 		<td colspan='2'>
-		<table border="0" cellpadding="3" cellspacing="1" width="100%" class="tipframe">
+		<table border="0" cellpadding="5" cellspacing="1" width="100%" class="tipframe">
 
 			<th align='left'>Approval</th>
 			<tr>
@@ -735,7 +771,7 @@ environmental.</b>
 	    		<table border="0" cellpadding="3" cellspacing="1" width="100%">
 					<tr>
 					<td>
-			    	<table border="0" cellpadding="3" cellspacing="1" class="tipframe" width="100%">
+			    	<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 						<th align='left'>{$comments_sso[row].comment_topic}</th>
 						<tr><td colspan='2'>{$comments_sso[row].comment_body}</td></tr>
 						<tr><td align='right'><i>{$comments_sso[row].comment_date} by {$comments_sso[row].user_name}</i></td></tr>
@@ -817,7 +853,7 @@ environmental.</b>
 <br>
 
 <!-- EVIDENCE TABLE -->
-<table border="0" cellpadding="3" cellspacing="1" width="95%" align="center" class="tipframe">
+<table border="0" cellpadding="5" cellspacing="1" width="95%" align="center" class="tipframe">
 
 	<th align='left'>Evidence Submissions <i>({$num_evidence} total)</i></th>
 	

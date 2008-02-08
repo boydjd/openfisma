@@ -148,20 +148,21 @@
 						{if $uploaded eq 'no'}
 							<tr><td>
 							    <form id="upload_ev" enctype="multipart/form-data" method="POST" action="evidence_save.php">
+								
 								<b>Select File :</b> <input type='file' name='evidence' size='60' value=''>
-								<input type="hidden" name="target" value="evidence">
-								<input type="hidden" name="action" value="add">
-								<input type="hidden" name="validated" value="yes">
-								<input type="hidden" name="form_action" value="Evaluate">
-                        		<input type='hidden' name='remediation_id' value='{$remediation_id}'>
-<!--                        		<input type='hidden' name='validated'      value='{$validated}'>
-                        		<input type='hidden' name='approved'       value='{$approved}'>-->
-								<input type="hidden" name="uploaded" value="">
-<!--								<input type="hidden" name="" value="">-->
+								
+									<input type="hidden" name="target" value="evidence">
+									<input type="hidden" name="action" value="add">
+									<input type="hidden" name="validated" value="yes">
+									<input type="hidden" name="form_action" value="Evaluate">
+									<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+									<input type="hidden" name="uploaded" value="">
 								</form>
+								
 								<ul>
-									<li>please submit <b>all evidence</b> for the finding in a <b>single package</b> (eg, zip file)</li>
-									<li>evidence submissions must be <b>under 10 megabytes</b> in size</li>
+									<li>Please submit <b>all evidence</b> for the finding in a <b>single package</b> (eg, zip file)</li>
+									<li>Evidence submissions must be <b>under 10 megabytes</b> in size</li>
+									<li>Please ensure no <b>Personally Identifiable Information</b> is included (eg, SSN, DOB)</li>
 								</ul>
 							</td>
 							</tr>
@@ -226,11 +227,11 @@
 						{/if}
 
 						{if $current_value neq 'AR' }
-							<option value='AR'  {if $new_value eq 'AR' }selected{/if} label="(AR) Accepted Risk">(AR) Accepted Risk</option>
+							<option value='AR'  {if $new_value eq 'AR' }selected{/if} label="(AR) Accepted Risk">(AR) Accepted the Risk</option>
 						{/if}
 
 						{if $current_value neq 'FP' }
-							<option value='FP'  {if $new_value eq 'FP' }selected{/if} label="(FP) False Positive">(FP) False Positive</option>
+							<option value='FP'  {if $new_value eq 'FP' }selected{/if} label="(FP) False Positive">(FP) Prove False Positive</option>
 						{/if}
 					</select>
 		{/if}

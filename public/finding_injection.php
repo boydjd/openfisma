@@ -93,7 +93,7 @@ while ($data = fgetcsv($handle, 1000, ",", '"')) {
 }
 fclose($handle);
 
-$summary_msg = "You have upload a CSV file which contains $row lines of data.<br />";
+$summary_msg = "You have uploaded a CSV file which contains $row line(s) of data.<br />";
 if(count($faildArray)>0){
 //    unlink('temp/*.csv');
     $temp_file = 'temp/csv_'.date('YmdHis').'_'.rand(10,99).'.csv';
@@ -102,13 +102,13 @@ if(count($faildArray)>0){
         fputcsv($fp, $fail);
     }
     fclose($fp);
-    $summary_msg .= count($faildArray)." line(s) cannot be parsed. Click <a href='$temp_file'>here</a> to download it, then fix it and try again.<br />";
+    $summary_msg .= count($faildArray)." line(s) cannot be parsed successfully. This is likely due to an unexpected datatype or the use of a datafield which is not currently in the database. Please ensure your csv file matches the data rows contained <a href='$temp_file'>here</a> in the spreadsheet template. Please update your CSV file and try again.<br />";
 }
 if(count($succeedArray)>0){
-    $summary_msg .= count($succeedArray)." line(s) prased successful.";
+    $summary_msg .= count($succeedArray)." line(s) parsed and injected successfully. <br />";
 }
 if(count($succeedArray)==$row){
-    $summary_msg .= "Congratulations! All of the lines prased successful.";
+    $summary_msg .= " Congratulations! All of the lines contained in the CSV were parsed and injected successfully.";
 }
 
 $smarty->assign('error_msg', $summary_msg);

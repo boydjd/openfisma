@@ -55,7 +55,7 @@ if($loginstatus != 1) {
 if ($_POST['target'] == 'save_poam'){
 
   // need modify. -- Alix
-    $smarty->assign('table_header_comment', 'Comment you changes and continue submit.');
+    $smarty->assign('table_header_comment', 'Please provide comments on your changes.');
     $smarty->assign('comment_topic', 'UPDATE : ');
     
     $smarty->assign('remediation_id', $_POST['remediation_id']);

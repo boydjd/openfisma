@@ -8,13 +8,13 @@ body {
 body,p,blockquote,h1,h2,h3,h4,h5,h6 {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
 	font-weight: normal;
-	font-size: 11px;
+	font-size: 12px;
 }
 
 li,input,select,textarea {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
 	font-weight: normal;
-	font-size: 10px;
+	font-size: 12px;
 }
 
 /* Bolde Style Sheet for all bold attributes */
@@ -22,7 +22,7 @@ b {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
 	font-weight: bold;
 	color: #44637A;
-	font-size: 10px;
+	font-size: 12px;
 }
 
 /* Table Header Style Sheet for all Tables */
@@ -31,7 +31,7 @@ th {
 	color: #44637A;		/* Dark Blue */
 	height: 23px;
 	font-weight: bold;
-	font-size: 10px;
+	font-size: 12px;
 	background-image: url(../images/td_bg.gif);
 	/* padding-left:inherit */	
 }
@@ -42,7 +42,7 @@ td {
 	color: #000000;
 	height: 23px;
 	font-weight: normal;
-	font-size: 10px;
+	font-size: 12px;
 }
 
 /* Error Message Stylesheet */
@@ -57,7 +57,7 @@ td {
 	color: #44637A;
 	height: 23px;
 	font-weight: bold;
-	font-size: 10px;
+	font-size: 12px;
 	background-color: #E3E3E3;
 	border-left: 1px solid #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
@@ -101,12 +101,12 @@ li {
 
 .normal {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
-	font-size: 10px;
+	font-size: 12px;
 }
 
 .normalBold {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: bold;
 }
 
@@ -124,7 +124,7 @@ li {
 
 .tbframe {
 	font-family: Tahoma,verdana,arial, helvetica;
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: normal;
 	color: #000000;
 	border: 1px solid #BEBEBE;
@@ -133,7 +133,7 @@ li {
 
 .tipframe {
 	font-family: Tahoma,verdana,arial, helvetica;
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: normal;
 	color: #000000;
 	border: 1px solid #44637A;
@@ -144,7 +144,7 @@ li {
 	background-color: #44637A; 
 	color:#ffffff; 
 	font-family: "Courier New", Courier, mono; 
-	font-size: 10px;
+	font-size: 12px;
 }
 
 sup { 

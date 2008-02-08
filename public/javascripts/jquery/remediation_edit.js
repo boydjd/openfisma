@@ -68,7 +68,7 @@ $(document).ready(function(){
         cover_div.show(); // show the grey cover div
         $('<div class="flora" title="Upload Evidence">Loading ....</div>')
         .load(url, data, function(){
-            $(this).dialog({position:'center', width: 540, height: 200, resizable: true,
+            $(this).dialog({position:'center', width: 540, height: 250, resizable: true,
                 buttons: {
                     'Continue': function() {  // on button "continue" clicked
             		    $('#upload_ev').submit();
@@ -123,7 +123,7 @@ $(document).ready(function(){
         
         $('<div class="flora" title="Comment your changes">Loading ....</div>')
         .load(url, data, function(){
-            $(this).dialog({position:'center', width: 740, height: 410, resizable: true,
+            $(this).dialog({position:'center', width: 800, height: 450, resizable: true,
                 buttons: {
             		'Continue': function() {  // on button "continue" clicked
             		    if($('input[name="comment_topic"]').val().length < 1){

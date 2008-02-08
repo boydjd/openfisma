@@ -30,30 +30,34 @@
 		<td>
 
 			<table border="0" cellpadding="10" cellspacing="0" class="tbframe">
-
-			  <tr>
-				<td align="center">{if $error_msg neq ''}Result:{/if}</td>
+				
+				{if $error_msg neq ''}
+				
+				<tr>
+					<td align="center"><b>Results:</b></td>
 					<td align="left">
 					  <font color="Red">{$error_msg}</font>
-				</td>
+					</td>
 				</tr>
+				
+				{/if}
 
 			  <tr>
-				  <td align="center"><strong>Step 1.</strong></td>
+				  <td align="center" NOWRAP><strong>Step 1.</strong></td>
 				<td align="left">
-						Download EXCEL templete file from <a href="OVMS_Injection_Template.xls">here</a>.
+						Download EXCEL templete file from <a href="OpenFISMA_Injection_Template.xls">here</a>.
 				</td>
 				</tr>
 
 			  <tr>
-				<td align="center"><strong>Step 2.</strong></td>
+				<td align="center" NOWRAP><strong>Step 2.</strong></td>
 				<td align="left">
 						Fill the work sheet with your fingding data and save it as CSV fromat.
 				</td>
 				</tr>
 
 			  <tr>
-				<td align="center"><strong>Step 3.</strong></td>
+				<td align="center" NOWRAP><strong>Step 3.</strong></td>
 				<td>Upload the CSV file here.
 		          <form action="finding_injection.php" method="POST" enctype="multipart/form-data">
            				<input type="file" name="csv">
@@ -62,7 +66,7 @@
 				</tr>
 	
 			  <tr>
-				<td align="center"><strong>Step 4.</strong></td>
+				<td align="center" NOWRAP><strong>Step 4.</strong></td>
 				<td>
 		  				View the injection summary or download error log file which contains data with wrong format then go to step 1.
 				</td>

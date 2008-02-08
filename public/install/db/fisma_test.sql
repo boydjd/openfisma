@@ -1,7 +1,7 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 INSERT INTO `NETWORKS` (`network_id`, `network_name`, `network_nickname`, `network_desc`) VALUES 
-(1, 'N/A', 'Not Applicable', 'Use when Location is not required'),
+(1, 'N/A', 'N/A', 'Use when Location is not required'),
 (2, 'Eastern Data Center', 'EDC', 'Data Center located in New York.'),
 (3, 'Central Data Center', 'CDC', 'Data Center located in Nevada'),
 (4, 'Pacific Data Center', 'PDC', 'Data Center located in California');
