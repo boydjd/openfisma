@@ -25,11 +25,11 @@ function displayLoginInfor($smarty, $user) {
 						
 			$remediation_menu = $user->checkRightByFunction("remediation", "view");
 
-			$report_menu = $user->checkRightByFunction($screen_name, "report_menu");
+			$report_menu = $user->checkRightByFunction("report", "view");
 
 			$admin_menu = $user->checkRightByFunction($screen_name, "admin_menu");
 
-			$vulner_menu = $user->checkRightByFunction($screen_name, "vulner_menu");
+			$vulner_menu = $user->checkRightByFunction("vulnerability", "view");
 
 			$report_poam_generate = $user->checkRightByFunction("report", "poam_generate");
 			$report_fisma_generate = $user->checkRightByFunction("report", "fisma_generate");

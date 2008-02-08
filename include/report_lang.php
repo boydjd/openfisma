@@ -18,20 +18,20 @@ array (
 ),
 array (
 "Results",
-"PO",
+//"PO",
 "System",
-"Tier",
-"Remediation#",
-"Finding",
+//"Tier",
+"ID#",
+"Description",
 "Type",
 "Status",
 "Source",
-"Server/Database",
+"Asset",
 "Location",
 "Risk Level",
 "Recommendation",
 "Corrective Action",
-"Estimated Completion Date"
+"ECD"
 ),
 array (
 //because report 3 have many sub report,so we need more deep dimension 

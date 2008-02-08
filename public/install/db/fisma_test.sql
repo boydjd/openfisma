@@ -142,7 +142,8 @@ INSERT INTO `SYSTEMS` (`system_id`, `system_name`, `system_nickname`, `system_de
 (4, 'Asset Management System', 'AMS', 'The Asset Management System supports the maintenance, administration, and operation of offices buildings, fleets, machinery, and other capital assets considered as possessions of the agency.', 'MAJOR APPLICATION', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE'),
 (5, 'Network General Support System', 'NGSS', 'The Network General Support System supports all Major Applications which require network communication. The network general support system is comprised of routers, switches, hubs, ATM, and other network telecom gear used to facilitate the communication across applications, facilities, and buildings.', 'GENERAL SUPPORT SYSTEM', 0, 'HIGH', 'HIGH', 'HIGH', 0, '', '', 'NONE'),
 (6, 'Desktop General Support System', 'DGSS', 'The Desktop General Support System provides desktop machines and applications to all system staff, facilities, and buildings throughout the agency.', 'GENERAL SUPPORT SYSTEM', 0, 'LOW', 'MODERATE', 'LOW', 0, '', '', 'NONE'),
-(7, 'Oracle General Support System', 'OGSS', 'The Oracle General Support System provides All Major Applications and standardized database environment to store, warehouse, access, and distribute information.', 'GENERAL SUPPORT SYSTEM', 0, 'MODERATE', 'MODERATE', 'MODERATE', 0, '', '', 'NONE');
+(7, 'Oracle General Support System', 'OGSS', 'The Oracle General Support System provides All Major Applications and standardized database environment to store, warehouse, access, and distribute information.', 'GENERAL SUPPORT SYSTEM', 0, 'MODERATE', 'MODERATE', 'MODERATE', 0, '', '', 'NONE'),
+(8, 'Federal Acquisition System', 'FSA', '', 'GENERAL SUPPORT SYSTEM', 0, 'LOW', 'LOW', 'LOW', 0, '', '', 'NONE');
 
 INSERT INTO `SYSTEM_ASSETS` (`system_id`, `asset_id`, `system_is_owner`) VALUES 
 (3, 18, 1),
@@ -155,9 +156,27 @@ INSERT INTO `SYSTEM_ASSETS` (`system_id`, `asset_id`, `system_is_owner`) VALUES
 (1, 11, 1),
 (1, 10, 1);
 
-INSERT INTO `SYSTEM_GROUP_SYSTEMS` (`sysgroup_id`, `system_id`) VALUES (1,2),(1,3),(1,1),(1,4),(1,6),(1,5),(1,7);
+INSERT INTO `SYSTEM_GROUP_SYSTEMS` (`sysgroup_id`, `system_id`) VALUES 
+(1,2),
+(1,3),
+(1,1),
+(1,4),
+(1,6),
+(1,5),
+(1,7),
+(4,2),
+(3,4),
+(2,4),
+(2,2),
+(5,8),
+(2,8);
 
-INSERT INTO `SYSTEM_GROUPS` (`sysgroup_id`, `sysgroup_name`, `sysgroup_nickname`, `sysgroup_is_identity`) VALUES (1, 'Organization ACME', 'ACME', 0);
+INSERT INTO `SYSTEM_GROUPS` (`sysgroup_id`, `sysgroup_name`, `sysgroup_nickname`, `sysgroup_is_identity`) VALUES 
+(1, 'Organization ACME', 'ACME', 0),
+(2, 'Federal System Acquisitions', 'FSA', 0),
+(3, 'Asset Management System', 'AMS', 1),
+(4, 'Personnel Security System', 'PSS', 1),
+(5, 'Federal System Acquisitions', 'FSA', 1);
 
 INSERT INTO `USERS` VALUES 
 (18,'REVIEWER','9d1fee901b933a42978f2eacbcddff65',NULL,NULL,NULL,'Reviewer','Demo',NULL,'Account','2007-03-13 13:03:26','2008-02-07 11:27:49',':9d1fee901b933a42978f2eacbcddff65:7b24afc8bc80e548d66c4e7ff72171c5','2008-02-07 11:28:12','0000-00-00 00:00:00',1,'555-555-5555','555-555-5555','john.doe@openfisma.org',5),

@@ -27,7 +27,7 @@
 <form name="filter" method="post" action="">
 <input type="hidden" name="action" value="filter">
 
-<table width="95%" align="center" border="0" cellpadding="3" cellspacing="1" class="tipframe">
+<table width="95%" align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
 	<tr>
 		<td><b>System</b></td>
   		<td><b>Source</b></td>
@@ -124,41 +124,41 @@
 
 <input type="hidden" name="action" value="manage">
 
-<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table width="95%" align="center" border="0" cellpadding=5" cellspacing="0" class="tbframe">
     <tr align="center">
     	<!--<th>{$report_lang[2][1]}-->
-        <th>{$report_lang[2][2]}
+        <th class="tdc">System
         <!-- <th>{$report_lang[2][3]} -->
-        <th>{$report_lang[2][4]}
+        <th class="tdc">ID#
         <!-- <th>{$report_lang[2][5]} -->
-        <th>{$report_lang[2][6]}
-        <th>{$report_lang[2][7]}
-        <th>{$report_lang[2][8]}
-        <th>{$report_lang[2][9]}
-        <th>{$report_lang[2][10]}
-        <th>{$report_lang[2][11]}
-        <th>{$report_lang[2][12]}
-        <th>{$report_lang[2][13]}
-        <th>{$report_lang[2][14]}
+        <th class="tdc">Type
+        <th class="tdc">Status
+        <th class="tdc">Source
+        <th class="tdc">Server/Database
+        <th class="tdc">Location
+        <th class="tdc">Risk Level
+        <th class="tdc">Recommendation
+        <th class="tdc">Corrective Action
+        <th class="tdc">ECD
     </tr>
 
 	{section name=row loop=$rpdata}
 
     <tr>
         <!-- <td class="tdc">{$rpdata[row].po}</td> -->
-        <td class="tdc">{$rpdata[row].system}</td>
+        <td class="tdc" align="center">{$rpdata[row].system}</td>
         <!-- <td class="tdc">{$rpdata[row].tier}</td> -->
-        <td class="tdc">{$rpdata[row].findingnum}</td>
+        <td class="tdc" align="center">{$rpdata[row].findingnum}</td>
         <!-- <td class="tdc">{$rpdata[row].finding}</td> -->
-        <td class="tdc">{$rpdata[row].ptype}</td>
-        <td class="tdc">{$rpdata[row].pstatus}</td>
-        <td class="tdc">{$rpdata[row].source}</td>
+        <td class="tdc" align="center">{$rpdata[row].ptype}</td>
+        <td class="tdc" align="center">{$rpdata[row].pstatus}</td>
+        <td class="tdc" align="center">{$rpdata[row].source}</td>
         <td class="tdc">{$rpdata[row].SD}</td>
-        <td class="tdc">{$rpdata[row].location}</td>
-        <td class="tdc">{$rpdata[row].risklevel}</td>
+        <td class="tdc" align="center">{$rpdata[row].location}</td>
+        <td class="tdc" align="center">{$rpdata[row].risklevel}</td>
         <td class="tdc">{$rpdata[row].recommendation}</td>
         <td class="tdc">{$rpdata[row].correctiveaction}</td>
-        <td class="tdc">{$rpdata[row].EstimatedCompletionDate}</td>
+        <td class="tdc" align="center">{$rpdata[row].EstimatedCompletionDate}</td>
     </tr>
 
 	{/section}

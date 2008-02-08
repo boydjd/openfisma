@@ -83,9 +83,9 @@ $headinfo="Report run time: ".date("Y-m-d H:i:s");
 // on simple integer indexing to line up the columns.
 //
 
-$poam_col_names[] = 'po';
+//$poam_col_names[] = 'po';
 $poam_col_names[] = 'system';
-$poam_col_names[] = 'tier';
+//$poam_col_names[] = 'tier';
 $poam_col_names[] = 'findingnum';
 $poam_col_names[] = 'finding';
 $poam_col_names[] = 'ptype';
@@ -194,12 +194,12 @@ switch ($f) {
 			*/
 			case "2"://report 2
 
-				$column_widths = array(25,38,25,42,100,28,34,40,42,42,58,80,100,60);
+				$column_widths = array(38,25,100,36,36,40,60,45,50,95,100,70);
 				$pdf = open_PDF_doc($report_stats, 'landscape');
 
 				$cols = array($report_lang[2][1],$report_lang[2][2],$report_lang[2][3],$report_lang[2][4],$report_lang[2][5]
 					,$report_lang[2][6],$report_lang[2][7],$report_lang[2][8],$report_lang[2][9],$report_lang[2][10],$report_lang[2][11]
-					,$report_lang[2][12],$report_lang[2][13],$report_lang[2][14]);
+					,$report_lang[2][12]);
 
 				//Print_R($rpdata);
 				$data = array();
@@ -562,6 +562,12 @@ switch ($f) {
 			*/
 			case "2"://report 2
 
+				$worksheet->setColumn(0,1,10);
+				$worksheet->setColumn(2,2,50);
+				$worksheet->setColumn(3,8,10);
+				$worksheet->setColumn(9,10,50);
+				$worksheet->setColumn(11,11,50);
+				
 				$worksheet->write($rowi, 0, $report_lang[2][0],$format_header);
 				$worksheet->mergeCells($rowi,0,$rowi,13);
 				$rowi++;
