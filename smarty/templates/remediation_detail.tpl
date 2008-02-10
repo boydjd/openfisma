@@ -527,8 +527,13 @@ function go(step) {
 	<tr> <!-- REMEDIATION INFORMATION ROW -->
 		<td width='50%' valign='top'>
 
-			<table border="0" cellpadding="3" cellspacing="1" width="100%" class="tipframe">
+			<table border="0" cellpadding="5" cellspacing="1" width="100%" class="tipframe">
 				<th align="left" colspan='2'>Risk Analysis Form</th>
+				<tr>
+					<td>
+						Based on the guidance provided by NIST Special Publication 800-37, to derive an overall likelihood rating that indicates the probability that a potential vulnerability may be exercised, we must first define the threat-source motivation and capability while considering the nature of the vulnerability and the existence and effectiveness of current controls or countermeasures. The following two sections on Threat Information and Countermeasure Information will help us define the iformation required to generate a threat likelihood risk level which will be used to generate the overall risk level of this vulnerability as it pertains to your information system.
+					</td>
+				</tr>
 				<tr>
 						{* RESTRICT BY ROLE *}
 						{if $generate_raf eq '1'}
@@ -561,10 +566,7 @@ function go(step) {
 	        	<th align='left'>Threat Information</th>
 					<tr>
 						<td>
-						<b>The goal of this step is to identify the potential threat-sources and compile a threat statement
-listing potential threat-sources that are applicable to the IT system being evaluated. A threat-source is defined as any
-circumstance or event with the potential to cause harm to an IT system. The common threatsources can be natural, human, or
-environmental.</b>
+							A threat is the potential for a particular threat-source to successfully exercise a particular vulnerability. A vulnerability is a weakness that can be accidentally triggered or intentionally exploited. A threat-source does not present a risk when there is no vulnerability that can be exercised. In determining the likelihood of a threat, one must consider threat-sources, potential vulnerabilities, and existing controls. Common threat sources are: (1) Natural Threats—Floods, earthquakes, tornadoes, landslides, avalanches, electrical storms, and other such events, (2) Human Threats—Events that are either enabled by or caused by human beings, such as unintentional acts (inadvertent data entry) or deliberate actions (network based attacks, malicious software upload, unauthorized access to confidential information), and (3) Environmental Threats—Long-term power failure, pollution, chemicals, liquid leakage.
 						</td>
 					</tr>
 					<tr>
@@ -644,6 +646,11 @@ environmental.</b>
 			<!-- COUNTERMEASURE TABLE -->
     		<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 	        	<th align="left" colspan="2">Countermeasure Information</th>
+					<tr>
+						<td>
+							The goal of this step is to analyze the controls that have been implemented, or are planned for implementation, by the organization to minimize or eliminate the likelihood (or probability) of a threat’s exercising a system vulnerability. Countermeasures or Security controls encompass the use of technical and nontechnical methods. Technical controls are safeguards that are incorporated into computer hardware, software, or firmware (e.g., access control mechanisms, identification and authentication mechanisms, encryption methods, intrusion detection software). Nontechnical controls are management and operational controls, such as security policies; operational procedures; and personnel, physical, and environmental security.
+						</td>
+					</tr>
 					<tr>
 						<td>
 							<form action='remediation_modify.php' method='POST'>

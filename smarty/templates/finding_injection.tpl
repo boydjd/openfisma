@@ -52,7 +52,7 @@
 			  <tr>
 				<td align="center" NOWRAP><strong>Step 2.</strong></td>
 				<td align="left">
-						Fill the work sheet with your fingding data and save it as CSV fromat.
+						Fill the work sheet with your fingding data and save it as CSV format.
 				</td>
 				</tr>
 
