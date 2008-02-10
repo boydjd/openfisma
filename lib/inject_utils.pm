@@ -19,13 +19,13 @@ require DBI;
 
 
 # VARIABLES -----------------------------------------------------------------
-our $splitter	= '<>';			# set here and used by all others
+our $splitter	= '<>';		# set here and used by all others
 our %config;				# set by get_config, used internally
 
-our $db_host	= 'localhost';	        # where are we connecting?
-our $db_name	= 'ovms';		# what is our database name?
-our $db_user	= 'ovms';		# who do we connect as?
-our $db_pass	= '1qaz@WSX';		# what is our password?
+our $db_host	= 'localhost';	# where are we connecting?
+our $db_name	= 'openfisma';		# what is our database name?
+our $db_user	= 'openfisma';		# who do we connect as?
+our $db_pass	= '0p3nfism@';	# what is our password?
 
 # Check for ini file settings for db user and pass
 ($ini_user, $ini_pass) = read_php_login('../www/ovms.ini.php');
