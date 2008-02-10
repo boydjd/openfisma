@@ -10,7 +10,7 @@
 {/if}
 
 
-<table align="center" width="800" border="0" cellpadding="3" cellspacing="1">
+<table align="center" width="900" border="0" cellpadding="3" cellspacing="1">
 	
     <tr id="row 1">
 		<td>
@@ -80,7 +80,7 @@
 				<tr>
 					<td valign="top">
 		       	        <!-- General Information Table -->
-						<table border="0" width="400" cellpadding="5" class="tipframe">
+						<table border="0" width="450" cellpadding="5" class="tipframe">
 						<tr>
 							<th align="left">General Information</th>
 						</tr>
@@ -121,7 +121,7 @@
         			</td>
             	    <td valign="top">
 		   				<!-- Asset Information Table -->
-						<table border="0" width="400" cellpadding="5" class="tipframe">
+						<table border="0" width="450" cellpadding="5" class="tipframe">
 						<tr>
 							<th align="left" >Asset: {$finding->asset_obj->asset_name}	</th>
 						</tr>
@@ -217,7 +217,7 @@
                                 <tr>
                                     <td width="10"></td>
                                     <td width="100%">
-                                        <table border="0" width="100%" cellpadding="3" cellspacing="1" class="tbframe">
+                                        <table border="0" width="100%" cellpadding="3" cellspacing="1">
                 <tr>
                     <td>
                         <table border="0" width="100%">
