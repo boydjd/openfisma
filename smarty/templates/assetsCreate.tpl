@@ -101,17 +101,17 @@ function checkValidator(){
 	
 	if (form.assetname.value=='') 
 	{
-		error = '\'Asset Name\' must not be empty\n';
+		error = "Asset Name must not be empty\n";
 	}	
 
 	if (form.system.selectedIndex==0)
 	{
-		error = error + 'Please make a selection from the \'System\' list\n';
+		error = error + "Please make a selection from the System list\n";
 	}	
 
 	if (form.network.selectedIndex==0)
 	{
-		error = error + 'Please make a selection from the \'Network\' list\n';	
+		error = error + "Please make a selection from the Network list\n'";	
 	}
 
 	if (form.port.value.length>=0)
@@ -135,11 +135,11 @@ function checkValidator(){
 	{
 		if (addrtype == 1 && !checkip(form.ip.value,true))
 		{
-			error = error + 'IP Address \'IP Address\' is an invalid IPv4 format\n';	
+			error = error + "IP Address is an invalid IPv4 format\n";	
 		}
 		if (addrtype == 2 && !checkip(form.ip.value,false))
 		{
-			error = error + 'IP Address \'IP Address\' is an invalid IPv6 format\n';	
+			error = error + "IP Address is an invalid IPv6 format\n";	
 		}
 			
 	}
