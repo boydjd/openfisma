@@ -63,12 +63,10 @@
   </tr>
   <tr>
     <td><b>{$raf_lang[1][5]}</b></td>
-  </tr>
-  {section name=row loop=$rpdata[1]}
-    <tr>
-      <td>{$rpdata[1][row].vuln}</td>
-    </tr>
+    {section name=row loop=$rpdata[1]}
+    <td>{$rpdata[1][row].vuln}</td>
     {/section}
+  </tr>
 </table>
 
 <!-- Header Block -->
