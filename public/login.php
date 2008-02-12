@@ -105,20 +105,20 @@ else if($login == 1) {
 		if($ret == 0) {
 			// login ok, redirect to first page allowed on the header bar
 			$header_screen = 'header';
-			if($user->checkRightByFunction($header_screen, "dashboard_menu")) {
+			if($user->checkRightByFunction("dashboard", "view")) {
 			  header("Location: dashboard.php");
 			  }
-			elseif($user->checkRightByFunction($header_screen, "finding_menu")) {
+			elseif($user->checkRightByFunction("finding", "view")) {
 			  header("Location: finding.php");
 			  }
-			elseif($user->checkRightByFunction($header_screen, "asset_menu")) {
+			elseif($user->checkRightByFunction("asset", "view")) {
 			  header("Location: asset.php");
 			  }
-			elseif($user->checkRightByFunction($header_screen, "remediation_menu")) {
+			elseif($user->checkRightByFunction("remediation", "view")) {
 			//echo "yes.";
 			  header("Location: remediation.php");
 			  }
-			elseif($user->checkRightByFunction($header_screen, "report_menu")) {
+			elseif($user->checkRightByFunction("report", "view")) {
 			  header("Location: report.php");
 			  }
 			elseif($user->checkRightByFunction($header_screen, "admin_menu")) {
