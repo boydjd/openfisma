@@ -9,16 +9,16 @@ Input:
 *}
 
 {*<TABLE FRAME='box' RULES='all'>*}
-<TABLE class="tbframe" cellspacing="0">
+<TABLE class="tbframe" cellspacing="0" cellpadding="5">
  <TR BGCOLOR='AAAAAA'>
-  <TD COLSPAN='4' ALIGN='center' class='tdc'><b>Impact&nbsp;Table</b></TD>
+  <TD COLSPAN='4' ALIGN='center' class='tdc'><b>Impact Table</b></TD>
  </TR>
  <TR>
   <TD ALIGN='center' BGCOLOR='AAAAAA' class='tdc'></TD>
-  <TD COLSPAN='3' ALIGN='center' BGCOLOR='CCCCCC' class='tdc'><b>Mission&nbsp;Criticality</b></TD>
+  <TD COLSPAN='3' ALIGN='center' BGCOLOR='CCCCCC' class='tdc'><b>Mission Criticality</b></TD>
  </TR>
  <TR>
-  <TD ALIGN='center' class='tdc'><b>Data&nbsp;Sensitivity</b></TD>
+  <TD ALIGN='center' class='tdc' BGCOLOR='CCCCCC'><b>Data Sensitivity</b></TD>
   <TD ALIGN='center' class='tdc'><b>Supportive</b></TD>
   <TD ALIGN='center' class='tdc'><b>Important</b></TD>
   <TD ALIGN='center' class='tdc'><b>Critical</b></TD>

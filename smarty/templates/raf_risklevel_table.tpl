@@ -1,17 +1,17 @@
 
-<TABLE class="tbframe" cellspacing="0">
+<TABLE class="tbframe" cellspacing="0" cellpadding="5">
  <TR BGCOLOR='AAAAAA'>
-  <TD COLSPAN='4' ALIGN='center' class='tdc'><b>Risk&nbsp;Level&nbsp;Table</b></TD>
+  <TD COLSPAN='4' ALIGN='center' class='tdc'><b>Overall Risk Level</b></TD>
  </TR>
  <TR>
   <TD ALIGN='center' BGCOLOR='AAAAAA' class='tdc'></TD>
   <TD COLSPAN='3' ALIGN='center' BGCOLOR='CCCCCC' class='tdc'><b>Impact</b></TD>
  </TR>
  <TR>
-  <TD ALIGN='center' class='tdc'><b>Likelihood</b></TD>
-  <TD ALIGN='center' class='tdc'><b>Low</b></TD>
-  <TD ALIGN='center' class='tdc'><b>Moderate</b></TD>
-  <TD ALIGN='center' class='tdc'><b>High</b></TD>
+  <TD ALIGN='center' class='tdc' BGCOLOR='CCCCCC'><b>Likelihood</b></TD>
+  <TD ALIGN='center' class='tdc' width="70px"><b>Low</b></TD>
+  <TD ALIGN='center' class='tdc' width="70px"><b>Moderate</b></TD>
+  <TD ALIGN='center' class='tdc' width="70px"><b>High</b></TD>
  </TR>
  <TR>
   <TD ALIGN='center' class='tdc'><b>High</b></TD>
