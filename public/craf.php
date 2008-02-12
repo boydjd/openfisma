@@ -322,8 +322,8 @@ function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
     */
     $threatdata = array(
     array("<b>Threat Source</b>","<b>Low</b>","<b>Moderate</b>","<b>High</b>"),
-    array("<b>High</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>High</c:deemphasize>"),
-    array("<b>Moderate</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>"),
+    array("<b>High</b>","<c:deemphasize>High</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
+    array("<b>Moderate</b>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
     array("<b>Low</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
     );
     
