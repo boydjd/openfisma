@@ -97,30 +97,33 @@ function checkValidator(){
 	var form = document.assetcreate;
 	
 	var error = '';
-	var p_int = /^[1-9]\d{0,4}$/;
+	var p_int = /^[0-9]\d{0,4}$/;
 	
 	if (form.assetname.value=='') 
 	{
 		error = '\'Asset Name\' must not be empty\n';
 	}	
+
 	if (form.system.selectedIndex==0)
 	{
 		error = error + 'Please make a selection from the \'System\' list\n';
 	}	
+
 	if (form.network.selectedIndex==0)
 	{
 		error = error + 'Please make a selection from the \'Network\' list\n';	
 	}
-	if (form.port.value.length>0)
+
+	if (form.port.value.length>=0)
 	{
 		var port = form.port.value;
 		if (!p_int.test(port))
 		{
-			error = error + '\'Port\' is an invalid port number\n';	
+			error = error + port + " is an invalid port number\n";	
 		}	
-		else if (port<1 || port>65535)
+		else if (port < 0 || port > 65535)
 		{
-			error = error + 'Port \'Port\' is out of range (1 - 65535)\n';	
+			error = error + "Port " + port + " is out of range (1 - 65535)\n";	
 		}
 	}
 	
