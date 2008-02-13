@@ -26,7 +26,7 @@
 <!-- Header Section -->
 
 <body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" onLoad="" bgcolor="#ffffff">
-<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" >
+<table width="98%" align="center" border="0" cellpadding="5" cellspacing="0" >
 	<tr>
     	<td align="left">
 			<img src="{$customer_logo}" border="0"></a>
