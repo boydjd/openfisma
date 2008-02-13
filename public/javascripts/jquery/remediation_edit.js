@@ -7,6 +7,7 @@ $(document).ready(function(){
     var estDateChanged = false;		// ensure estimated date is not changed without comment. request in email 2007-12-19.
     aQuery.comment_type = 'NONE';	// set default value of comment type
     evArray.length = 0;
+    evArray.needComments = 0;
     
     var dw = $(this).width();
     var dh = $(this).height();
@@ -105,13 +106,26 @@ $(document).ready(function(){
             Comments only needed when :
                 *1. SSO denied. -- deleted on 20080130  | ('DENIED'!=aQuery.poam_action_status) && 
                 2. EST date changed.
+                3. Evidence denied.
             If evidence provided, a popup window will also appered.
         **/
-        if (!estDateChanged && !evArray.length){
+        if (!estDateChanged && (evArray.needComments<=0)){
         	aQuery.poam_id = $('input[name="remediation_id"]').val();
-		    $.post('remediation_save.php', aQuery, function(r,t,x){
-                eval(r); // to redirect bowser by JS
-            });
+            if (evArray.length > 0){
+    		    for (var ev in evArray){
+    		        evArray[ev].remediation_id = aQuery.poam_id;
+    		        if(ev!='length' && ev!='needComments'){
+        		        $.post('evidence_save.php', evArray[ev], function(r,t,x){
+        		            eval(r);
+        		        });
+    		        }
+    		    }
+            }
+            else{
+    		    $.post('remediation_save.php', aQuery, function(r,t,x){
+                    eval(r); // to redirect bowser by JS
+                });
+            }
         	return false;
         }
 
@@ -149,7 +163,7 @@ $(document).ready(function(){
             		    if (evArray.length > 0){
             		        var return_js = '';
                 		    for (var ev in evArray){
-                		        if(ev!='length'){
+                		        if(ev!='length' && ev!='needComments'){
                     		        evArray[ev].remediation_id = aQuery.poam_id;
                     		        evArray[ev].comment_topic = aQuery.comment_topic;
                     		        evArray[ev].comment_body = aQuery.comment_body;
@@ -236,7 +250,13 @@ $(document).ready(function(){
                     // bulid query and log string
                     if (input_obj.className == 'ev'){
                         eval('evArray.ev_'+input_obj.id+" = {'action':input_obj.name, 'new_value':input_JQ_obj.val(), 'ev_id':input_obj.id};");
-                        evArray.length ++;
+                        evArray.length++;
+                        if (input_JQ_obj.val() == 'DENIED'){
+                            evArray.needComments++;
+                        }
+                        else{
+                            evArray.needComments--;
+                        }
                         // need special log
                     }
                     else{

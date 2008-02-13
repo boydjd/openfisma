@@ -34,6 +34,7 @@ function openfisma_log($db, $userid, $finding_id, $field, $old_val, $new_val, $t
             	  $time."','".
             	  $event."','".
             	  "Original: \"$old_val\"\n New: \"$new_val\"')";
+//            	  echo $SQL;
     return $db->sql_query($SQL);
 }
 

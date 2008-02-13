@@ -35,8 +35,13 @@ if ($_FILES && ($poam_id > 0)) {
     
     // move the file and make sure it is readable
     $dest = 'evidence/'.$poam_id.'/'.gmdate('Ymd-His-', time()).$_FILES['evidence']['name'];
-    $result_move = move_uploaded_file($_FILES['evidence']['tmp_name'], $dest);
-    chmod($dest, 0755);
+    $result_move = move_uploaded_file($_FILES['evidence']['tmp_name'], dirname(__FILE__).'/'.$dest);
+    if($result_move){
+        chmod(dirname(__FILE__).'/'.$dest, 0755);
+    }
+    else {
+    	die('Move upload file fail. ' . dirname(__FILE__).'/'.$dest);
+    }
       
     // generate our query
     $query =
@@ -93,6 +98,13 @@ end;
 }
 elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evaluate') || ($_POST['action'] == 'ivv_evaluate')) {
 
+    $field = 'ev_'.getEvType($_POST['action']);
+    $sql_get_finding_id = "SELECT ".TN_POAMS.".finding_id, ".TN_POAM_EVIDENCE.'.'.$field." FROM ".
+                            TN_POAMS." LEFT JOIN ".TN_POAM_EVIDENCE." ON ".TN_POAMS.".`poam_id`=".TN_POAM_EVIDENCE.".`poam_id`"
+                            ." WHERE ".TN_POAMS.".`poam_id`=".intval($poam_id)." AND ev_id=".$_POST['ev_id'];
+    $db->sql_query($sql_get_finding_id);
+    $old_val = $db->sql_fetchrow();
+    
     // generate our query
     $query = "UPDATE POAM_EVIDENCE AS pe SET ";
 
@@ -177,12 +189,13 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     $reload_page .= '</form>\').appendTo("body").submit();';
     
 //    die($reload_page);
+    $unix_timestamp = time();
+    $now = gmdate('Y-m-d H:i:s', $unix_timestamp);
+    $userid = $user->getUserId();
+    openfisma_log($db, $userid, $old_val['finding_id'], $field, $old_val[$field], $_POST['new_value'], $unix_timestamp);
 
 	if(isset($_POST['comment_topic'])){
-	    $unix_timestamp = time();
-        $now = gmdate('Y-m-d H:i:s', $unix_timestamp);
         $type = 'EV_'.strtoupper(substr($_POST['action'],0,3));
-//        var_dump($_POST);die();
         add_poam_comment($db,$user->getUserId(),$poam_id, $_POST['ev_id'], 0,
                         $_POST['comment_topic'], $_POST['comment_body'], $_POST['comment_log'], $now, $type);
     }
@@ -191,7 +204,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
 
 function getEvType($ev){
     switch ($ev){
-        case 'sso_evaluation':
+        case 'sso_evaluate':
             return 'sso_evaluation';
         case 'fsa_evaluate':
             return 'fsa_evaluation';
