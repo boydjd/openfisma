@@ -174,7 +174,8 @@ switch ($op){
         $writeok = array(0=>OVMS_SMARTY_PATH."/templates_c",
         1=>OVMS_WEB_PATH."/temp",
         2=>OVMS_ROOT_PATH."/log",
-        3=>OVMS_WEB_PATH."/ovms.ini.php");
+        3=>OVMS_WEB_PATH."/evidence",
+        4=>OVMS_WEB_PATH."/ovms.ini.php");
         $title = _INST_DW_L1;
         $content = "<table align='center'><tr><td align='left'>\n";
         $error = false;
