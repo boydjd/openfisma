@@ -805,8 +805,8 @@ function go(step) {
 						<tr>
 							<td nowrap>{$comments_sso[row].comment_date}</td>
 							<td nowrap>{$comments_sso[row].user_name}</td>
-							<td nowrap>{$comments_sso[row].comment_topic}</td>
-							<td nowrap>{$comments_sso[row].comment_body}</td>
+							<td>{$comments_sso[row].comment_topic}</td>
+							<td>{$comments_sso[row].comment_body}</td>
 						</tr>
 						
 						{/section}
