@@ -389,7 +389,7 @@ function go(step) {
 			{/if}
 		</td>
 	</tr>
-			{* if $num_comments_est gt 0 *}
+			{ if $num_comments_est gt 0 }
 	<tr>
 		<td colspan='2'>
 					
@@ -402,17 +402,17 @@ function go(step) {
 						<!-- COMMENT TABLE -->
 						<table border="1" align="left" cellpadding="5" cellspacing="1" width="100%" class="tbframe">
 							<tr>
-								<th width="15%">Changed On</td>
-								<th width="15%">Changed By</td>
-								<th width="15%">Event</td>
-								<th width="55%">Reason for Change</td>
+								<th nowrap>Changed On</td>
+								<th nowrap>Changed By</td>
+								<th nowrap>Event</td>
+								<th nowrap>Reason for Change</td>
 							</tr>
 
 							{section name=row loop=$comments_est}
 				
 							<tr>
-								<td class="tdc">{$comments_est[row].comment_date}</td>
-								<td class="tdc">{$comments_est[row].user_name}</td>
+								<td class="tdc" nowrap>{$comments_est[row].comment_date}</td>
+								<td class="tdc" nowrap>{$comments_est[row].user_name}</td>
 								<td class="tdc">{$comments_est[row].comment_topic}</td>
 								<td class="tdc">{$comments_est[row].comment_body}</td>
 							</tr>
@@ -429,7 +429,7 @@ function go(step) {
 					
 		</td>
 	</tr>
-					{*/if*}
+					{/if}
 </table>
 <!-- END MITIGATION STRATEGY TABLE -->
 
