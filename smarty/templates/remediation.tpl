@@ -380,7 +380,7 @@ function order_page(para)
 	<tr>
 		<td>
 	
-		<table border="1" cellpadding="5" cellspacing="0" class="tbframe">
+		<table width="100%" border="1" cellpadding="5" cellspacing="0" class="tbframe">
 				<form  name="order_by_ID" action='remediation.php' method='POST'>
 			<th nowrap>
 				<input type='hidden' name='remediation_id'          value='{$list[row].poam_id}'>
