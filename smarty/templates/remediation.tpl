@@ -139,6 +139,7 @@ function order_page(para)
 	document.order_by_ID.submit();
 	
 }
+
 </script>
 {/literal}
 
@@ -158,30 +159,6 @@ function order_page(para)
 <!-- End Heading Block -->
 
 <br>
-
-<!-- Search by ID Table -->
-<!--<table class="tbline">
-	<tr>
-		<td align="right" width="40%">
-			{if $poam_id_not_exists eq ''}
-			{else}
-    		<span style="color:red;">Sorry, <b>#{$poam_id_not_exists}</b> is not available, try again :</span>
-			{/if}
-		</td>
-		<td align="left">
-			<div style = "*padding-top:2px;">
-    		<form action='remediation_detail.php' method='POST'>
-    		Remediation ID : 
-    		<input type="text" name="remediation_id" size="20">
-    		<input type="radio" value="remediation" name="radio_id" checked>Remediation ID
-    		<input type="radio" value="finding" name="radio_id" >Finding ID
-    		<input type="submit" value="I'm Feeling Lucky">
-    		</form>
-			</div>
-		</td>
-	</tr>
-</table>-->
-<!-- End Search by ID Table -->
 
 <!-- SUMMARY TABLE -->
 <table align="center" cellpadding="5" class="tbframe">
@@ -373,119 +350,132 @@ function order_page(para)
 </table>
 <!-- End Heading Block -->
 
-
-<!-- Pagination -->
-<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0">
-<tr>
- <td width="15pt" align="left" valign="bottom">
- {if $remediation_page ne 1}<input type="button" value="Previous" onclick="pageskip(false);">{/if}
- </td>
- <td width="15pt" align="center" valign="bottom">
-   <input type="text" name="remediation_page" size="3" maxlength="3" value="{$remediation_page}"></td>
- <td width="15pt" align="left" valign="bottom">
-    {if $remediation_page ne $total_pages}<input type="button" value="Next" onclick="pageskip(true);">{/if}
- </td>
- <td align="center" valign="bottom">Total pages: <b>{$total_pages}</b></td>
- <td width="200pt" align="right" valign="bottom">Number of Results to Display <input type="text" name="row_no" size="3" maxlength="3" value="{$row_no}"></td>
-</tr>
-</table>
-<!-- End Pagination -->
-
-</form>
-
 <!-- Remediation Summary Table -->
-<table align="center" border="1" cellpadding="5" cellspacing="0" class="tbframe">
-	<tr align="center">
-		<form  name="order_by_ID" action='remediation.php' method='POST'>
-		<th nowrap>
-			<input type='hidden' name='remediation_id'          value='{$list[row].poam_id}'>
-			<input type='hidden' name='filter_source'           value='{$filter_source}'>
-			<input type='hidden' name='filter_system'           value='{$filter_system}'>
-			<input type='hidden' name='filter_status'           value='{$filter_status}'>
-			<input type='hidden' name='filter_type'             value='{$filter_type}'>
-			<input type='hidden' name='filter_startdate'        value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'          value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate'  value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'    value='{$filter_endcreatedate}'>
-			<input type='hidden' name='sort_by'        value='remediation_id'> 
-			<input type='hidden' name='sort_order' > 
-		ID 
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(11)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(12)">			
-		</th>
-
-		<th nowrap>Source 
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(21)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(22)">			
-		</th>
-
-		<th nowrap>System 
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(41)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(42)">			
-		</th>
-
-		<th nowrap>Type 
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(51)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(52)">			
-		</th>
-
-		<th nowrap>Status 
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(61)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(62)">
-		</th>
-
-		<th nowrap>Finding
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(71)">
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(72)">
-		</th>
-
-		<th nowrap>ECD 
-			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(81)"> 
-			<input type='image'  src='images/down_arrow.gif' onClick="order_page(82)">			
-		</th>
-		</form>
-
-		<th nowrap>View</th>
-
-	</tr>
-
-	<!-- REMEDIATION ROWS -->	
-	{section name=row loop=$list}
+<table width="95" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
-
-		<td align='center' class='tdc'>{$list[row].nice_poam_id}</td>
-		<td align='center' class='tdc'>{$list[row].source_nickname}</td>
-		<td align='center' class='tdc'>{$list[row].action_owner_nickname}</td>
-		<td align='center' class='tdc'>{$list[row].poam_type}</td>
-		<td align='center' class='tdc'>{$list[row].poam_status}</td>
-		<td align='left'   class='tdc'>{$list[row].finding_data|truncate:80:"..."}</td>
-		<td align='center' class='tdc'>{$list[row].poam_action_date_est}</td> 
-
-		<!-- view button -->
-		<form action='remediation_detail.php' method='POST'>
-
-			<!-- filter values -->
-			<input type='hidden' name='filter_source'          value='{$filter_source}'>
-			<input type='hidden' name='filter_system'          value='{$filter_system}'>
-			<input type='hidden' name='filter_status'          value='{$filter_status}'>
-			<input type='hidden' name='filter_type'            value='{$filter_type}'>
-
-			<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
-			<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
-			<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
-			<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
-
-			<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
-			<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
-
-			<input type='hidden' name='sort_order'             value='{$sort_order}'>
-			<input type='hidden' name='sort_by'                value='{$sort_by}'>
-
-			<input type='hidden' name='remediation_id' value='{$list[row].poam_id}'>
-			<td align="center" valign='middle' class='tdc'><input type='image'  src='images/view.gif'></td>
-		</form>
+		<td>
+		
+			<!-- Pagination -->
+			<table width="100%" align="left" border="1" cellpadding="5" cellspacing="0">
+				<tr>
+					<td align="left">Number of Results to Display <input type="text" name="row_no" size="3" maxlength="3" value="{$row_no}"></td>
+					<td>
+						{if $remediation_page ne 1}<input type="button" value="Previous" onclick="pageskip(false);">{/if}
+					</td>
+					<td>Page:</td>
+					<td>
+						<input type="text" name="remediation_page" size="3" maxlength="3" value="{$remediation_page}"></td>
+					<td>
+						{if $remediation_page ne $total_pages}<input type="button" value="Next" onclick="pageskip(true);">{/if}
+					</td>
+					<td>Total pages: <b>{$total_pages}</b></td>
+				</tr>
+			</table>
+			<!-- End Pagination -->
+			</form>
+		
+		</td>
+	
 	</tr>
-	{/section}
+	<tr>
+		<td>
+	
+		<table border="1" cellpadding="5" cellspacing="0" class="tbframe">
+				<form  name="order_by_ID" action='remediation.php' method='POST'>
+			<th nowrap>
+				<input type='hidden' name='remediation_id'          value='{$list[row].poam_id}'>
+				<input type='hidden' name='filter_source'           value='{$filter_source}'>
+				<input type='hidden' name='filter_system'           value='{$filter_system}'>
+				<input type='hidden' name='filter_status'           value='{$filter_status}'>
+				<input type='hidden' name='filter_type'             value='{$filter_type}'>
+				<input type='hidden' name='filter_startdate'        value='{$filter_startdate}'>
+				<input type='hidden' name='filter_enddate'          value='{$filter_enddate}'>
+				<input type='hidden' name='filter_startcreatedate'  value='{$filter_startcreatedate}'>
+				<input type='hidden' name='filter_endcreatedate'    value='{$filter_endcreatedate}'>
+				<input type='hidden' name='sort_by'        value='remediation_id'> 
+				<input type='hidden' name='sort_order' > 
+			ID 
+				<input type='image'  src='images/up_arrow.gif'   onClick="order_page(11)"> 
+				<input type='image'  src='images/down_arrow.gif' onClick="order_page(12)">			
+			</th>
+
+			<th nowrap>Source 
+				<input type='image'  src='images/up_arrow.gif'   onClick="order_page(21)"> 
+				<input type='image'  src='images/down_arrow.gif' onClick="order_page(22)">			
+			</th>
+
+			<th nowrap>System 
+				<input type='image'  src='images/up_arrow.gif'   onClick="order_page(41)"> 
+				<input type='image'  src='images/down_arrow.gif' onClick="order_page(42)">			
+			</th>
+
+			<th nowrap>Type 
+				<input type='image'  src='images/up_arrow.gif'   onClick="order_page(51)"> 
+				<input type='image'  src='images/down_arrow.gif' onClick="order_page(52)">			
+			</th>
+
+			<th nowrap>Status 
+				<input type='image'  src='images/up_arrow.gif'   onClick="order_page(61)"> 
+				<input type='image'  src='images/down_arrow.gif' onClick="order_page(62)">
+			</th>
+
+			<th nowrap>Finding
+				<input type='image'  src='images/up_arrow.gif'   onClick="order_page(71)">
+				<input type='image'  src='images/down_arrow.gif' onClick="order_page(72)">
+			</th>
+
+			<th nowrap>ECD 
+				<input type='image'  src='images/up_arrow.gif'   onClick="order_page(81)"> 
+				<input type='image'  src='images/down_arrow.gif' onClick="order_page(82)">			
+			</th>
+				</form>
+
+			<th nowrap>View</th>
+
+			</tr>
+
+			<!-- REMEDIATION ROWS -->	
+			{section name=row loop=$list}
+			<tr>
+
+				<td align='center' class='tdc'>{$list[row].nice_poam_id}</td>
+				<td align='center' class='tdc'>{$list[row].source_nickname}</td>
+				<td align='center' class='tdc'>{$list[row].action_owner_nickname}</td>
+				<td align='center' class='tdc'>{$list[row].poam_type}</td>
+				<td align='center' class='tdc'>{$list[row].poam_status}</td>
+				<td align='left'   class='tdc'>{$list[row].finding_data|truncate:120:"..."}</td>
+				<td align='center' class='tdc'>{$list[row].poam_action_date_est}</td> 
+
+					<!-- view button -->
+					<form action='remediation_detail.php' method='POST'>
+
+					<!-- filter values -->
+					<input type='hidden' name='filter_source'          value='{$filter_source}'>
+					<input type='hidden' name='filter_system'          value='{$filter_system}'>
+					<input type='hidden' name='filter_status'          value='{$filter_status}'>
+					<input type='hidden' name='filter_type'            value='{$filter_type}'>
+	
+					<input type='hidden' name='filter_startdate'       value='{$filter_startdate}'>
+					<input type='hidden' name='filter_enddate'         value='{$filter_enddate}'>
+					<input type='hidden' name='filter_startcreatedate' value='{$filter_startcreatedate}'>
+					<input type='hidden' name='filter_endcreatedate'   value='{$filter_endcreatedate}'>
+
+					<input type='hidden' name='filter_asset_owners'    value='{$filter_asset_owners}'>
+					<input type='hidden' name='filter_action_owners'   value='{$filter_action_owners}'>
+	
+					<input type='hidden' name='sort_order'             value='{$sort_order}'>
+					<input type='hidden' name='sort_by'                value='{$sort_by}'>
+
+					<input type='hidden' name='remediation_id' value='{$list[row].poam_id}'>
+				
+				<td align="center" valign='middle' class='tdc'><input type='image'  src='images/view.gif'></td>
+					</form>
+			</tr>
+				{/section}
+		</table>
+	
+		</td>
+	</tr>
 </table>
 
 {else}
