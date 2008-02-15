@@ -439,12 +439,12 @@ function order_page(para)
 			<tr>
 
 				<td align='center' class='tdc'>{$list[row].nice_poam_id}</td>
-				<td align='center' class='tdc'>{$list[row].source_nickname}</td>
+				<td align='center' class='tdc' nowrap>{$list[row].source_nickname}</td>
 				<td align='center' class='tdc'>{$list[row].action_owner_nickname}</td>
-				<td align='center' class='tdc'>{$list[row].poam_type}</td>
-				<td align='center' class='tdc'>{$list[row].poam_status}</td>
+				<td align='center' class='tdc' nowrap>{$list[row].poam_type}</td>
+				<td align='center' class='tdc' nowrap>{$list[row].poam_status}</td>
 				<td align='left'   class='tdc'>{$list[row].finding_data|truncate:120:"..."}</td>
-				<td align='center' class='tdc'>{$list[row].poam_action_date_est}</td> 
+				<td align='center' class='tdc' nowrap>{$list[row].poam_action_date_est}</td> 
 
 					<!-- view button -->
 					<form action='remediation_detail.php' method='POST'>
