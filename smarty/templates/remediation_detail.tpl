@@ -261,6 +261,7 @@ function go(step) {
    	<tr>
 		<td colspan='2'>
             
+			<!-- Course of Action Table -->
 			<table width="100%" cellpadding="5" class="tipframe">
 				<th align="left">Course of Action</th>
 
@@ -316,12 +317,14 @@ function go(step) {
 					</td>
 				</tr>
 			</table>
+			<!-- End Course of Action Table -->
 			
 		</td>
 	</tr>
 	<tr>
 		<td colspan='2'>
 		
+			<!-- Resources Required for Course of Action Table -->
 			<table width="100%" cellpadding="5" class="tipframe">
 				<th align="left">Resources Required for Course of Action</th>
 				<tr>
@@ -349,70 +352,86 @@ function go(step) {
 						</td>
 				</tr>
 			</table>
+			<!-- End Resources Required for Course of Action Table -->
 		
 		</td>
 	</tr>
 		
-		<tr>
-					<td width='50%'>
-                        <form action='remediation_modify.php' method='POST'>
-                        <input type='hidden' name='remediation_id' value='{$remediation_id}'>
-                        <input type='hidden' name='root_comment'   value='{$root_comment}'>
-                        <input type='hidden' name='target' 		   value='action_date_est'>
-                        <input type='hidden' name='action'         value='update'>
-                        <input type='hidden' name='validated'      value='no'>
-                        <input type='hidden' name='approved'       value='no'>
+	<tr>
+		<td width='50%'>
+            <form action='remediation_modify.php' method='POST'>
+            <input type='hidden' name='remediation_id' value='{$remediation_id}'>
+            <input type='hidden' name='root_comment'   value='{$root_comment}'>
+            <input type='hidden' name='target' 		   value='action_date_est'>
+            <input type='hidden' name='action'         value='update'>
+            <input type='hidden' name='validated'      value='no'>
+            <input type='hidden' name='approved'       value='no'>
 
-						<b>Estimated Completion Date:</b> 
+			<b>Estimated Completion Date:</b> 
 
-						{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
-						{if $modify_mitigation_completion_date eq '1'}
-						{if $remediation_status eq 'OPEN'}
+			{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
+			{if $modify_mitigation_completion_date eq '1'}
+			{if $remediation_status eq 'OPEN'}
 
-						<input type='hidden' name='form_action' value='Update'>
-						<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
+			<input type='hidden' name='form_action' value='Update'>
+			<input type='image' src='images/button_modify.png' name='form_action' value='Update'>
 
-						{/if}
-						{/if}
+			{/if}
+			{/if}
 
-						<span>{$remediation.poam_action_date_est}</span>
-						</form>
-					</td>
-					<td width='50%'>
-						<b>Actual Completion Date:</b> 
-						{if $remediation.poam_action_date_actual neq ""}{$remediation.poam_action_date_actual}
-						{else}<i>(action not yet completed)</i>
-						{/if}
-					</td>
-				</tr>
-					{if $num_comments_est > 0}
+			<span>{$remediation.poam_action_date_est}</span>
+			</form>
+		</td>
+		<td width='50%'>
+			<b>Actual Completion Date:</b> 
+			{if $remediation.poam_action_date_actual neq ""}{$remediation.poam_action_date_actual}
+			{else}<i>(action not yet completed)</i>
+			{/if}
+		</td>
+	</tr>
+			{* if $num_comments_est gt 0 *}
+	<tr>
+		<td colspan='2'>
+					
+			<!-- Comments for ECD Modification Table -->
+			<table width="100%" border="0" cellpadding="5" class="tipframe">
+				<th align="left">Comments For Date Modification <i>({$num_comments_est} total)</i></th>
 				<tr>
-                	<th align="left" colspan="2">Comments For Estimated Completion Date Changed <i>({$num_comments_est} total)</i></th>
-               	</tr>
-					{section name=row loop=$comments_est}	
-				<tr>
-	    			<td colspan="2" width="90%">
+					<td>
 	    		
-                		<table border="0" cellpadding="3" cellspacing="1" width="100%">
+						<!-- COMMENT TABLE -->
+						<table border="1" align="left" cellpadding="5" cellspacing="1" width="100%" class="tbframe">
 							<tr>
-								<td>
-			    	
-                    				<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
-										<th align='left'>{$comments_est[row].comment_topic}</th>
-										<tr><td colspan='2'>{$comments_est[row].comment_body}</td></tr>
-										<tr><td align='right'><i>{$comments_est[row].comment_date} by {$comments_est[row].user_name}</i></td></tr>
-									</table>
-								
-                                </td>
+								<th width="15%">Changed On</td>
+								<th width="15%">Changed By</td>
+								<th width="15%">Event</td>
+								<th width="55%">Reason for Change</td>
 							</tr>
-						</table>
+
+							{section name=row loop=$comments_est}
 				
-                	</td>
+							<tr>
+								<td class="tdc">{$comments_est[row].comment_date}</td>
+								<td class="tdc">{$comments_est[row].user_name}</td>
+								<td class="tdc">{$comments_est[row].comment_topic}</td>
+								<td class="tdc">{$comments_est[row].comment_body}</td>
+							</tr>
+				
+							{/section}
+				
+						</table>
+						<!-- COMMENT TABLE -->
+
+					</td>
 				</tr>
-					{/section}
-					{/if}
 			</table>
-			<!-- END MITIGATION STRATEGY TABLE -->
+			<!-- End Comments for ECD Modification Table -->
+					
+		</td>
+	</tr>
+					{*/if*}
+</table>
+<!-- END MITIGATION STRATEGY TABLE -->
 
 <br>
 <!-- Heading Block -->
