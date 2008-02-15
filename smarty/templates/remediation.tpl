@@ -356,7 +356,7 @@ function order_page(para)
 		<td>
 		
 			<!-- Pagination -->
-			<table width="100%" align="left" border="1" cellpadding="5" cellspacing="0">
+			<table width="100%" align="left" border="0" cellpadding="5" cellspacing="0">
 				<tr>
 					<td align="left">Number of Results to Display <input type="text" name="row_no" size="3" maxlength="3" value="{$row_no}"></td>
 					<td>
