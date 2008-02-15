@@ -448,6 +448,13 @@ $num_evidence = $db->sql_numrows($results);
 if($num_evidence){
     foreach ($all_evidence as &$evidence) {
     	$evidence['comments'] = $comments_ev[$evidence['ev_id']];
+        $evidence['fileName'] = basename($evidence['ev_submission']);
+        if (file_exists($evidence['ev_submission'])) {
+            $evidence['fileExists'] = 1;
+        }
+        else {
+        	$evidence['fileExists'] = 0;
+        }
     }
 }
 $smarty->assign('all_evidence', $all_evidence);

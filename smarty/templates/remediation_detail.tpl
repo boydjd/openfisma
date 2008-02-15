@@ -566,7 +566,7 @@ function go(step) {
 	        	<th align='left'>Threat Information</th>
 					<tr>
 						<td>
-							A threat is the potential for a particular threat-source to successfully exercise a particular vulnerability. A vulnerability is a weakness that can be accidentally triggered or intentionally exploited. A threat-source does not present a risk when there is no vulnerability that can be exercised. In determining the likelihood of a threat, one must consider threat-sources, potential vulnerabilities, and existing controls. Common threat sources are: (1) Natural Threats—Floods, earthquakes, tornadoes, landslides, avalanches, electrical storms, and other such events, (2) Human Threats—Events that are either enabled by or caused by human beings, such as unintentional acts (inadvertent data entry) or deliberate actions (network based attacks, malicious software upload, unauthorized access to confidential information), and (3) Environmental Threats—Long-term power failure, pollution, chemicals, liquid leakage.
+							A threat is the potential for a particular threat-source to successfully exercise a particular vulnerability. A vulnerability is a weakness that can be accidentally triggered or intentionally exploited. A threat-source does not present a risk when there is no vulnerability that can be exercised. In determining the likelihood of a threat, one must consider threat-sources, potential vulnerabilities, and existing controls. Common threat sources are: (1) Natural Threatsï¿½Floods, earthquakes, tornadoes, landslides, avalanches, electrical storms, and other such events, (2) Human Threatsï¿½Events that are either enabled by or caused by human beings, such as unintentional acts (inadvertent data entry) or deliberate actions (network based attacks, malicious software upload, unauthorized access to confidential information), and (3) Environmental Threatsï¿½Long-term power failure, pollution, chemicals, liquid leakage.
 						</td>
 					</tr>
 					<tr>
@@ -648,7 +648,7 @@ function go(step) {
 	        	<th align="left" colspan="2">Countermeasure Information</th>
 					<tr>
 						<td>
-							The goal of this step is to analyze the controls that have been implemented, or are planned for implementation, by the organization to minimize or eliminate the likelihood (or probability) of a threat’s exercising a system vulnerability. Countermeasures or Security controls encompass the use of technical and nontechnical methods. Technical controls are safeguards that are incorporated into computer hardware, software, or firmware (e.g., access control mechanisms, identification and authentication mechanisms, encryption methods, intrusion detection software). Nontechnical controls are management and operational controls, such as security policies; operational procedures; and personnel, physical, and environmental security.
+							The goal of this step is to analyze the controls that have been implemented, or are planned for implementation, by the organization to minimize or eliminate the likelihood (or probability) of a threatï¿½s exercising a system vulnerability. Countermeasures or Security controls encompass the use of technical and nontechnical methods. Technical controls are safeguards that are incorporated into computer hardware, software, or firmware (e.g., access control mechanisms, identification and authentication mechanisms, encryption methods, intrusion detection software). Nontechnical controls are management and operational controls, such as security policies; operational procedures; and personnel, physical, and environmental security.
 						</td>
 					</tr>
 					<tr>
@@ -882,7 +882,7 @@ function go(step) {
 
 				<tr><th align='left' colspan="2">Evidence Submitted by {$all_evidence[row].submitted_by} on {$all_evidence[row].ev_date_submitted}</th></tr>
 				<tr colspan="2">
-					<td><b>Evidence:</b><a href="javascript:void(0)" onClick="window.open('{$all_evidence[row].ev_submission}', 'evidence_window', config='resizable=yes,menubar=no,scrollbars=yes')">{$all_evidence[row].ev_submission}</a></td>
+                    <td><b>Evidence:</b>{if $all_evidence[row].fileExists eq 1}<a href="javascript:void(0)" onClick="window.open('{$all_evidence[row].ev_submission}', 'evidence_window', config='resizable=yes,menubar=no,scrollbars=yes')">{$all_evidence[row].fileName}</a>{else}{$all_evidence[row].fileName}{/if}</td>
 				</tr>
 
 				{* SSO EVALUATION *}
