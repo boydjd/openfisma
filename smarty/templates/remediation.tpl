@@ -394,10 +394,10 @@ function order_page(para)
 </form>
 
 <!-- Remediation Summary Table -->
-<table align="center" border="0" cellpadding="5" cellspacing="0" class="tbframe">
+<table align="center" border="1" cellpadding="5" cellspacing="0" class="tbframe">
 	<tr align="center">
 		<form  name="order_by_ID" action='remediation.php' method='POST'>
-		<th>
+		<th nowrap>
 			<input type='hidden' name='remediation_id'          value='{$list[row].poam_id}'>
 			<input type='hidden' name='filter_source'           value='{$filter_source}'>
 			<input type='hidden' name='filter_system'           value='{$filter_system}'>
@@ -414,38 +414,38 @@ function order_page(para)
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(12)">			
 		</th>
 
-		<th>Source 
+		<th nowrap>Source 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(21)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(22)">			
 		</th>
 
-		<th>System 
+		<th nowrap>System 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(41)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(42)">			
 		</th>
 
-		<th>Type 
+		<th nowrap>Type 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(51)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(52)">			
 		</th>
 
-		<th>Status 
+		<th nowrap>Status 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(61)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(62)">
 		</th>
 
-		<th>Finding
+		<th nowrap>Finding
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(71)">
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(72)">
 		</th>
 
-		<th>ECD 
+		<th nowrap>ECD 
 			<input type='image'  src='images/up_arrow.gif'   onClick="order_page(81)"> 
 			<input type='image'  src='images/down_arrow.gif' onClick="order_page(82)">			
 		</th>
 		</form>
 
-		<th>View</th>
+		<th nowrap>View</th>
 
 	</tr>
 
@@ -458,7 +458,7 @@ function order_page(para)
 		<td align='center' class='tdc'>{$list[row].action_owner_nickname}</td>
 		<td align='center' class='tdc'>{$list[row].poam_type}</td>
 		<td align='center' class='tdc'>{$list[row].poam_status}</td>
-		<td align='left'   class='tdc'>{$list[row].finding_data|truncate:80:"---"}</td>
+		<td align='left'   class='tdc'>{$list[row].finding_data|truncate:80:"..."}</td>
 		<td align='center' class='tdc'>{$list[row].poam_action_date_est}</td> 
 
 		<!-- view button -->
