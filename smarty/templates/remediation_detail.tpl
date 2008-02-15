@@ -791,23 +791,30 @@ function go(step) {
 			{if $num_comments_sso > 0}
 			
 			<tr><th align="left" colspan="2">Comments From SSO <i>({$num_comments_sso} total)</i></th></tr>
-			{section name=row loop=$comments_sso}
+
 			<tr>
 	    		<td colspan="2" width="90%">
-	    		<table border="0" cellpadding="3" cellspacing="1" width="100%">
-					<tr>
-					<td>
-			    	<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
-						<th align='left'>{$comments_sso[row].comment_topic}</th>
-						<tr><td colspan='2'>{$comments_sso[row].comment_body}</td></tr>
-						<tr><td align='right'><i>{$comments_sso[row].comment_date} by {$comments_sso[row].user_name}</i></td></tr>
+					<table border="1" cellpadding="5" cellspacing="0" width="100%" class="tbframe">
+						<th nowrap>Comment On</th>
+						<th nowrap>Comment By</th>
+						<th nowrap>Event</th>
+						<th nowrap>Description</th>
+						
+						{section name=row loop=$comments_sso}
+
+						<tr>
+							<td nowrap>{$comments_sso[row].comment_date}</td>
+							<td nowrap>{$comments_sso[row].user_name}</td>
+							<td nowrap>{$comments_sso[row].comment_topic}</td>
+							<td nowrap>{$comments_sso[row].comment_body}</td>
+						</tr>
+						
+						{/section}
+						
 					</table>
-					</td>
-					</tr>
-				</table>
+
 				</td>
 			</tr>
-			{/section}
 			
 			{/if}
 		</table>
