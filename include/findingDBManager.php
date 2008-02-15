@@ -570,7 +570,9 @@ class FindingDBManager {
                 $sql = "update FINDINGS set finding_status='deleted' where finding_id='$fid'";
                 //echo $sql;
                 $res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
-
+                
+                $sql = "DELETE FROM ".TN_POAMS." WHERE `finding_id`='$fid'";
+                $res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
                 //$sql = "delete from ".TN_FINDING_VULNS where finding_id='$fid'";
                 //$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
             }
