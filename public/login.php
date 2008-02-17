@@ -16,7 +16,7 @@ $user = new User($db);
 $smarty->assign("warning", $login_warning);
 $login = 0;
 
-// Check to see if the user is logged out
+// Check to see if the user is logged out, if so set status to 1 and display error message.
 if(isset($_GET["logout"])) {
 	$user->logout();
 	$smarty->assign("login", 1);
@@ -29,23 +29,15 @@ if(isset($_GET["logout"])) {
 if(isset($_POST["login"]))
 	$login = intval($_POST["login"]);
 
-
-if($login == 2) {
+// if the login status is set to 1 do the following
+if($login == 1){
 	$smarty->assign("login", $login);
 
-	// init root user
+	// check to see if username exists in _POST, if so set it to $username
 	if(isset($_POST["username"]))
 		$username = $_POST["username"];
-	if(isset($_POST["userpass"]))
-		$password = $_POST["userpass"];
-	if(isset($_POST["cfmpass"]))
-		$cfmpass = $_POST["cfmpass"];
-}
-else if($login == 1) {
-	$smarty->assign("login", $login);
 
-	if(isset($_POST["username"]))
-		$username = $_POST["username"];
+	// check to see if password exists in _POST, if so set it to $userpass
 	if(isset($_POST["userpass"]))
 		$password = $_POST["userpass"];
 
@@ -64,6 +56,7 @@ else if($login == 1) {
 		exit;
 	}
 
+	// calls the login function in user.class.php
 	$logined = $user->login($username, $password);
 
 	if($logined == 1) {

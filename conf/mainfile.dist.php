@@ -72,8 +72,6 @@ define("SESSION_DOMAIN",'localhost.tld');
 define("SESSION_EXPIRATION",'86400');
 define("SESSION_SECURE_ONLY",'1');
 
-define("CIPHER_HASH",' SHA1');
-
 define("BUFFER_OUTPUT", '1');
 
 //Above was added by david from .../conf/ovms.ini
