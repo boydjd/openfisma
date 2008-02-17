@@ -37,7 +37,7 @@ if(isset($_POST['oldpass']) && isset($_POST['newpass']) && isset($_POST['cfmpass
 		$firstlogin = false;
 	}
 
-	$smarty->assign('chgreturn', $ret);
+	$smarty->assign("errmsg", $ret);
 	$smarty->assign('chgflag', true);
 }
 else {

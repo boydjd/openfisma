@@ -1,66 +1,43 @@
 <html>
 <head>
 <title>User login</title>
+
 {literal}
-<style type="text/css">
-body {
-	margin: 0px;
-	padding: 0px;
-	background-color: #44627A;
-}
 
-body,p,td,input,select,textarea {
-	font-family: Tahoma, verdana, arial, helvetica, sans-serif;
-	font-weight: normal;
-	font-size: 12px;
-}
+	<style type="text/css">
 
-.msg {
-	font-family: Tahoma, verdana, arial, helvetica, sans-serif;
-	font-style: normal;
-	color: #CCCCCC;
-	height: 30px;
-	font-size: 12px;
-	background-color: #55758C;
-	border: 1px solid #738DA0;
-}
+		body {
+			margin: 0px;
+			padding: 0px;
+			background-color: #44627A;
+		}
 
-</style>
-<!-- <script language="JavaScript" src="javascripts/pass.js"></script> -->
+		body,p,td,input,select,textarea {
+			font-family: Tahoma, verdana, arial, helvetica, sans-serif;
+			font-weight: normal;
+			font-size: 12px;
+		}
 
-<script language="javascript">
-<!--
-function checkuser() {
-	var user = document.login.username.value;
-	var pass = document.login.userpass.value;
-	
-	if(user.length == 0) {
-		alert("Sorry, You did not enter a Username. Please enter a Username to continue.");
-		document.login.username.focus();
-		return false;
-	}
+		.msg {
+			font-family: Tahoma, verdana, arial, helvetica, sans-serif;
+			font-style: normal;
+			color: #CCCCCC;
+			height: 30px;
+			font-size: 12px;
+			background-color: #55758C;
+			border: 1px solid #738DA0;
+		}
 
-	if(pass.length == 0) {
-		alert("Sorry, You did not enter a Password. Please enter a Password to continue.");
-		document.login.userpass.focus();
-		return false;
-	}
+	</style>
 
-	return true;
-}
--->
-</script>
 {/literal}
+
 </head>
 
 <body>
 
 
-<table border="0" cellpadding="0" cellspacing="0" height="60" width="100%" background="images/title_vline.jpg">
-	<tr>
-		<td><!-- <img src="images/fl_logo.gif" border="0">--></td>
-	</tr>
-</table>
+<table border="1" cellpadding="0" cellspacing="0" height="60" width="100%" background="images/title_vline.jpg"><tr><td></td></tr></table>
 
 <table border="0" cellpadding="0" cellspacing="0" height="82" width="100%" background="images/login_bg.jpg">
 	<tr>

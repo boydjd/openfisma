@@ -16,18 +16,19 @@ $user = new User($db);
 $smarty->assign("warning", $login_warning);
 $login = 0;
 
+// Check to see if the user is logged out
 if(isset($_GET["logout"])) {
 	$user->logout();
-
 	$smarty->assign("login", 1);
 	$smarty->assign("errmsg", "You are currently logged out.");
 	$smarty->display("login.tpl");
 	exit;
 }
 
-
+// Check to see if the user is trying to login and grab the status from _POST
 if(isset($_POST["login"]))
 	$login = intval($_POST["login"]);
+
 
 if($login == 2) {
 	$smarty->assign("login", $login);
@@ -39,37 +40,6 @@ if($login == 2) {
 		$password = $_POST["userpass"];
 	if(isset($_POST["cfmpass"]))
 		$cfmpass = $_POST["cfmpass"];
-	
-	if($username == "root") {
-		if($password == $cfmpass) {
-			if($user->checkPassword($password)) {
-				if($user->initRoot($password)) {
-					$smarty->assign("errmsg", "Root Account Password Reset, Please login with new password.");
-					$smarty->assign("login", 1);
-				}
-				else {
-					$smarty->assign("errmsg", "Default root password has already been changed, you may login here.");
-					$smarty->assign("login", 1);
-				}
-			}
-			else {
-				// try again
-				$smarty->assign("errmsg", "Sorry, Password does not meet complexity requirements.");
-			}
-		}
-		else {
-			// try again
-			$smarty->assign("errmsg", "The Passwords you entered do not match, please retry.");
-		}
-	}
-	else {
-		// try again
-		$smarty->assign("errmsg", "Cannot creat user \"$username\", please enter the password for root first.");
-	}
-	
-	$smarty->assign("username", "root");
-	$smarty->display("login.tpl");
-	exit;	
 }
 else if($login == 1) {
 	$smarty->assign("login", $login);
@@ -79,12 +49,14 @@ else if($login == 1) {
 	if(isset($_POST["userpass"]))
 		$password = $_POST["userpass"];
 
+	// Check to see if the username field was left blank and display error if it was
 	if(empty($username)) {
 		$smarty->assign("errmsg", "No Username was given, Please enter a Username to continue.");
 		$smarty->display("login.tpl");
 		exit;
 	}
 
+	// Check to see if the password field was left blank and display error if it was
 	$smarty->assign("username", $username);
 	if(empty($password)) {
 		$smarty->assign("errmsg", "No Password was given, Please enter a Password to continue.");
@@ -92,18 +64,16 @@ else if($login == 1) {
 		exit;
 	}
 
-
 	$logined = $user->login($username, $password);
-//echo "remediation: " . $user->checkRightByFunction('header', "remediation_menu");
+
 	if($logined == 1) {
 		session_unregister('ovms_session_error_password');
 		
-		//$user->checkRightByFunction("finding", "view");
-		//$right = $user->getRightFormScreen("finding");
 		$ret = $user->checkExpired();
 		$user->login(null,null);
+
 		if($ret == 0) {
-			// login ok, redirect to first page allowed on the header bar
+			// login ok, redirect to first page the user is allowed to view
 			$header_screen = 'header';
 			if($user->checkRightByFunction("dashboard", "view")) {
 			  header("Location: dashboard.php");
@@ -115,7 +85,6 @@ else if($login == 1) {
 			  header("Location: asset.php");
 			  }
 			elseif($user->checkRightByFunction("remediation", "view")) {
-			//echo "yes.";
 			  header("Location: remediation.php");
 			  }
 			elseif($user->checkRightByFunction("report", "view")) {
@@ -130,11 +99,11 @@ else if($login == 1) {
 			// default back to dashboard - which will just be rejected with an 
 			// error message.
 			else {
-//	echo "no. '$header_screen'";
   			  header("Location: dashboard.php");
 			  }
 			exit;
 		}
+
 		else {
 			switch($ret) {
 			case 1:
@@ -159,15 +128,6 @@ else if($login == 1) {
 		}
 	}
 	else {
-		// check if need init the root user or not
-		if($user->getLoginStatus() == 5 && $username == "root") {
-			// init root user for system
-			$smarty->assign("errmsg", "Please change the default password for root.");
-			$smarty->assign("username", "root");
-			$smarty->assign("login", 2);
-			$smarty->display("login.tpl");
-			exit;
-		}
 
 		$ec = 0;
 		if($user->getLoginStatus() == 3) {

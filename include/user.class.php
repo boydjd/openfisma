@@ -43,35 +43,6 @@ class User {
 		return $this->role_id;
 	}
 
-	function initRoot($pass) {
-		$sql = "select user_id from " . TN_USERS . " where user_name='root'";
-		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
-
-		$uid  = 0;
-		if($result) {
-			if($row = $this->dbConn->sql_fetchrow($result)) {
-				$uid = $row["user_id"];
-			}
-
-			$this->dbConn->sql_freeresult($result);
-		}
-
-		if($uid > 0)
-			return false; // "root" has already exist in this system.
-
-
-		$now = date("Y-m-d H:i:s");
-		$userpass = md5($pass);
-
-		$sql = "insert into USERS (user_name, user_password, user_date_created) values ('root', '$userpass', '$now')";
-		//echo $sql;
-		$res = $this->dbConn->sql_query($sql);
-
-		return $res;
-
-	}
-
-
 	/* this function get user login status or do login
 	 * not to provide '$user' & '$pass' parameters, it will get user value from " . TN_session or cookie
 	 * so only put the parameters when user do login.
@@ -113,7 +84,7 @@ class User {
 			$this->user_name	= $row['user_name'];
 			$this->user_password = $row['user_password'];
 
-			// root has not suspend status
+			// Check to ensure the account is in an active state, if it is not set status to 2, root cannot be deactivated and is always in a state of 1
 			if($logined) {
 				// already logined, only check the status
 				if($username == "root" || $row['user_is_active'] == 1)
@@ -328,7 +299,7 @@ class User {
 
 	// check user's right by screen name & function point
 	function checkRightByFunction($screen, $rightname) {
-		// "root" user have all right
+		// username root inherets all security functions by default
 		if($this->user_name == "root")
 			return true;
 
@@ -532,23 +503,29 @@ class User {
 
 	function changePassword($oldpass, $newpass, $cfmpass) {
 		if($this->login_status != 1)
-			return 1; // not login
+			return "You must be logged in to change your password."; 
 
 		if($this->user_password != md5($oldpass))
-			return 2; // old password error
+			return "The old password supplied does not match what we have on file, please try again.";
 
 		if($newpass != $cfmpass)
-			return 3; // confirm password is invalid
+			return "The new password does not match the confirm password, please try again.";
 
 		if(!$this->checkPassword($newpass, 2))
-			return 4; // password is too simple.
+			return "This password does not meet the password complexity requirements.<br>
+Please create a password that adheres to these complexity requirements:<br>
+--The password must be at least 8 character long<br>
+--The password must contain at least 1 lower case letter (a-z), 1 upper case letter (A-Z), and 1 digit (0-9)<br>
+--The password can also contain National Characters if desired (Non-Alphanumeric, !,@,#,$,% etc.)<br>
+--The password cannot be the same as your last 3 passwords<br>
+--The password cannot contain your first name or last name<br>";
 
 		$user_id = $this->user_id;
 		$temppass = md5($newpass);
 
 		// added by yoyo, 2006-04-07
 		if($this->user_password == $temppass)
-			return 4; // password is same as old password
+			return "Your new password cannot be the same as your old password."; 
 
 		// alter table USERS add user_history_password varchar(100) not null default '' after user_date_password
 		// check new password if is last three password.
@@ -561,7 +538,7 @@ class User {
 		}
 		// first char is ":", so search position > 0
 		if(strpos($user_history_password, $temppass) > 0)
-			return 4; // password is repeated with last three password.
+			return "Your password must be different from the last three passwords you have used. Please pick a different password."; // password is repeated with last three password.
 
 		// $user_history_password = ":" . $this->user_password . $user_history_password;
 		if(strpos($user_history_password, $this->user_password) > 0)
@@ -666,16 +643,18 @@ class User {
 		session_destroy();
 	}
 
+	// Checks to see if the password of the user has expired, the password for root may not expire.
 	function checkExpired() {
+		// if username is root return false, root password cannot expire
 		if($this->user_name == "root")
 			return 0;
-
+		// find the userid of the user
 		$uid = $this->user_id;
-		// pcd: password change date
+		// find the date the password was last changed
 		$pcd = $this->user_date_password;
-
+		// check to see if the password change date is zero, if so report the password needs to be changed
 		if(empty($pcd) || $pcd == 0 || $pcd == "0000-00-00") {
-			return -1; // need change password
+			return 1; // need change password
 		}
 		// 0000-00-00
 		$y = substr($pcd, 0, 4);
@@ -693,7 +672,7 @@ class User {
 			$now = date("Y-m-d H:i:s");
 			$sql = "update USERS set user_is_active=0,user_date_deleted='$now' where user_id='$uid'";
 			$res = $this->dbConn->sql_query($sql);
-			return -2; // date expired
+			return 2; // date expired
 		}
 		else if($warnning > $changedate) {
 			// $leftdays = floor(($warnning - $changedate) / (60 * 60 * 24));
