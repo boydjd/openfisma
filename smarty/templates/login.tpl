@@ -50,7 +50,7 @@
 <!-- End Login Image and spacer -->
 
 <!-- Login and Warning Banner Table -->
-<table border="1" cellpadding="0" cellspacing="0" width="100%">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
 		<td width="50">&nbsp;</td>
 		<td align="right"><b><font color="#FCB907">{$errmsg}</font></b>&nbsp;</td>
@@ -66,7 +66,7 @@
 					<td width="40%" valign="top">
 						
 						<!-- Display error messages back to user -->
-						<table border="1" cellpadding="3" cellspacing="2" width="100%" class="tipframe">
+						<table border="0" cellpadding="3" cellspacing="2" width="100%" class="tipframe">
 							<tr>
 								<td class="msg">{$warning}&nbsp;</td>
 							</tr>
