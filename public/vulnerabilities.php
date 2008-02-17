@@ -228,12 +228,8 @@ if($view_right || $del_right || $edit_right)
     //print_r($_SESSION) ;
 
 }
-    $smarty->assign("firstname", $user->user_name_first);
-    $smarty->assign("lastname", $user->user_name_last);
-    $smarty->assign("customer_url", $customer_url);
-    $smarty->assign("customer_logo", $customer_logo);
-    $smarty->assign("pageName","Vulnerabilities Summary");
 
+    $smarty->assign("pageName","Vulnerabilities Summary");
     $smarty->display('vulnerabilities.tpl');
 
 //convert any date format to 2006-12-31

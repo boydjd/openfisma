@@ -46,11 +46,6 @@ displayLoginInfor($smarty, $user);
 
 verify_login($user, $smarty);
 
-// assign header information
-$smarty->assign("username", $user->getUsername());
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
-
 // let's template know how to display the page
 $smarty->assign('view_right',	 						$user->checkRightByFunction("remediation", "view"));				
 $smarty->assign('modify_type',							$user->checkRightByFunction("remediation", 'modify_type'));

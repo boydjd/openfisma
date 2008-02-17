@@ -1,13 +1,12 @@
 <?PHP
 
-require_once("ovms.ini.php"); # $CUSTOMER_URL, $CUSTOMER_LOGO, $LOGIN_WARNING
+require_once("ovms.ini.php"); 
 
-$customer_url  = $CUSTOMER_URL;
 $customer_logo = $CUSTOMER_LOGO;
 $login_warning = $LOGIN_WARNING;
 
 function displayLoginInfor($smarty, $user) {
-	global $customer_url, $customer_logo;
+	global $customer_logo;
 
 	$screen_name = "header";
 	if(isset($smarty)) {
@@ -45,11 +44,6 @@ function displayLoginInfor($smarty, $user) {
 			$vulner_summary = $user->checkRightByFunction("vulnerability", "summary");
 			$vulner_add = $user->checkRightByFunction("vulnerability", "add");
 
-
-			// let's template know how to display the menu
-			//$smarty->assign('pass_change', $pass_change);
-			//$smarty->assign('logout', $logout);
-
 			$smarty->assign('dashboard_menu', $dashboard_menu);
 			$smarty->assign('finding_menu', $finding_menu);
 			$smarty->assign('asset_menu', $asset_menu);
@@ -59,7 +53,6 @@ function displayLoginInfor($smarty, $user) {
 			$smarty->assign('admin_menu', $admin_menu);
 			$smarty->assign('vulner_menu', $vulner_menu);
 
-			//$smarty->assign('finding_summary', $finding_summary);
 			$smarty->assign('finding_add', $finding_add);
 			$smarty->assign('finding_upload', $finding_upload);
 
@@ -89,7 +82,6 @@ function displayLoginInfor($smarty, $user) {
 			}
 		}
 
-		$smarty->assign("customer_url", $customer_url);
 		$smarty->assign("customer_logo", $customer_logo);
 	}
 }

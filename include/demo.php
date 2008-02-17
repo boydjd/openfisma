@@ -20,11 +20,6 @@ if($loginstatus != 1) {
 	exit;
 }
 
-$smarty->assign("username", $user->getUsername());
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
-
-
 // check the user's right
 $view_right	= $user->checkRightByFunction($screen_name, "view");
 $edit_right = $user->checkRightByFunction($screen_name, "edit");

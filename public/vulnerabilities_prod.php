@@ -27,10 +27,6 @@ displayLoginInfor($smarty, $user);
 */
 verify_login($user, $smarty);
 
-$smarty->assign("username", $user->getUsername());
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
-
 $view_right	= $user->checkRightByFunction($screen_name, "view");
 $edit_right = $user->checkRightByFunction($screen_name, "edit");
 $add_right  = $user->checkRightByFunction($screen_name, "add");
@@ -110,16 +106,6 @@ if($add_right)
 		$smarty->assign('vp_list', $vp_list);
 
 	
-
-
-
-	
-	$smarty->assign("firstname", $user->user_name_first);
-	$smarty->assign("lastname", $user->user_name_last);
-	$smarty->assign("customer_url", $customer_url);
-	$smarty->assign("customer_logo", $customer_logo);	
-		
-
 }
 	$smarty->display('vulnerabilities_prod.tpl');
 

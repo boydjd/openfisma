@@ -19,10 +19,6 @@ if($loginstatus != 1) {
 
 displayLoginInfor($smarty, $user);
 
-$smarty->assign("username",      $user->getUsername());
-$smarty->assign("customer_url",  $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
-
 //
 // turn off magic quotes
 //

@@ -36,8 +36,6 @@ $role_id =  $user.role_id;
 
 
 $smarty->assign("username", $user->getUsername());
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
 
 $view_right	= $user->checkRightByFunction($screen_name, "view");
 $edit_right = $user->checkRightByFunction($screen_name, "edit");
@@ -84,11 +82,6 @@ if($add_right)
 
 	$smarty->assign('p_list', $p_list);
 	$smarty->assign('para', $_POST["p_keyword"]);	
-
-	$smarty->assign("firstname", $user->user_name_first);
-	$smarty->assign("lastname", $user->user_name_last);
-	$smarty->assign("customer_url", $customer_url);
-	$smarty->assign("customer_logo", $customer_logo);	
 }
 	$smarty->display('vulnerabilities_new.tpl');
 

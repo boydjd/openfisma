@@ -30,12 +30,6 @@ displayLoginInfor($smarty, $user);
 */
 verify_login($user, $smarty);
 
-/*
-$smarty->assign("username", $user->getUsername());
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
-*/
-
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
 

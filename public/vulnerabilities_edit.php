@@ -27,10 +27,6 @@ displayLoginInfor($smarty, $user);
 */
 verify_login($user, $smarty);
 
-$smarty->assign("username", $user->getUsername());
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);
-
 $view_right	= $user->checkRightByFunction($screen_name, "view");
 $edit_right = $user->checkRightByFunction($screen_name, "edit");
 $add_right  = $user->checkRightByFunction($screen_name, "add");
@@ -145,10 +141,6 @@ if($view_right || $del_right || $edit_right)
 //	$smarty->assign("pass_page_no", stripslashes($_POST[pass_page_no]));		
 
 }
-$smarty->assign("firstname", $user->user_name_first);
-$smarty->assign("lastname", $user->user_name_last);
-$smarty->assign("customer_url", $customer_url);
-$smarty->assign("customer_logo", $customer_logo);	
 
 $smarty->display('vulnerabilities_edit.tpl');
 
