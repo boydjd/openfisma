@@ -1,23 +1,20 @@
 <?php
-// Smarty specific includes
 require_once("config.php");
 require_once("smarty.inc.php");
-// db includes
 require_once("dblink.php");
-
-session_start();
 require_once("user.class.php");
 require_once("log.inc.php");
+require_once("page_utils.php");
 
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
+session_start();
+
+// creates a new user object from the user class
 $user = new User($db);
-$loginstatus = $user->login();
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
 
-displayLoginInfor($smarty, $user);
+// validates that the user is logged in properly, if not redirects to the login page.
+verify_login($user, $smarty);
 
 //
 // turn off magic quotes

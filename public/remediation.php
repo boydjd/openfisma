@@ -1,13 +1,6 @@
 <?PHP
-/*******************************************************************************
-* File    : remediation.php
-* Purpose : performs application requests for the remediation summary page
-* Author  : Brian Gant
-* Date    : 
-*******************************************************************************/
-
-
-
+// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate"); 
 
 require_once("config.php");
@@ -19,26 +12,24 @@ require_once("user.class.php");
 require_once("pubfunc.php");
 require_once("page_utils.php");
 
+// set the screen name used for security functions
 $screen_name = "remediation";
+
+// set the page name
 $smarty->assign('pageName', 'Remediation Summary');
+
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
+session_start();
 
 // grab today's date
 $today = gmdate("Ymd", time());
 $sql_today = gmdate("Y-m-d", time());
 
-session_start();
-
+// creates a new user object from the user class
 $user = new User($db);
 
-
-$loginstatus = $user->login();
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
-displayLoginInfor($smarty, $user);
-
+// validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
 if(isset($_GET['unlucky'])) $smarty->assign('poam_id_not_exists', $_GET['unlucky']);
@@ -54,11 +45,6 @@ $total_pages = 0 ;
 /**************Main Area*****************/
 if($view_right) 
 {
-
-
-
-
-
 
 	//added by chang  row_no
 	if (!isset($_POST['row_no'])) 
@@ -82,13 +68,6 @@ if($view_right)
 		$smarty->assign('remediation_page', '1'); 
 	}
 
-
-
-
-
-
-
-	
 	/*******************************************************************************
 	* FORM ACTIONS
 	*******************************************************************************/
@@ -182,11 +161,6 @@ if($view_right)
 	$systems = $db->sql_fetchrowset($results);
 	$smarty->assign('systems', $systems);
 	
-
-
-
-
-
 
 	// updated by chang - 03162006
 	// Asset Owners FILTER QUERY

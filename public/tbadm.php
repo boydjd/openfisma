@@ -1,4 +1,6 @@
 <?PHP
+// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 require_once("config.php");
@@ -8,17 +10,24 @@ require_once("pubfunc.php");
 require_once("tbfunc.php");
 require_once("tbopt.php");
 require_once("roleright.php");
-
-$pageurl = "tbadm.php";
-$pagesize = 20;
-
-/**************User Rigth*****************/
 require_once("user.class.php");
 require_once("page_utils.php");
 
+$smarty->assign("title", $page_title);
+$smarty->assign("name", $tablename);
+
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
 session_start();
+
+// creates a new user object from the user class
 $user = new User($db);
+
+// validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
+
+$pageurl = "tbadm.php";
+$pagesize = 20;
 
 // table count, table option must be unique with database schema, or will be occur error
 $table_count = count($table_arr);
@@ -64,11 +73,6 @@ $smarty->assign('edit_right', $edit_right);
 $smarty->assign('add_right', $add_right);
 $smarty->assign('del_right', $del_right);
 /**************User Rigth*****************/
-
-
-
-$smarty->assign("title", $page_title);
-$smarty->assign("name", $tablename);
 
 $smarty->display('header.tpl');
 

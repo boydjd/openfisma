@@ -1,4 +1,6 @@
 <?PHP
+// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // include files
@@ -17,12 +19,14 @@ $screen_name = "finding";
 // set the page name
 $smarty->assign('pageName', 'Finding Summary');
 
-// creates a session
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
 session_start();
 
+// creates a new user object from the user class
 $user = new User($db);
 
-// uses the verify login function in page_utils.php to verify username and password
+// validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
 // get user right for this screen
@@ -36,11 +40,7 @@ $smarty->assign('view_right', $view_right);
 $smarty->assign('edit_right', $edit_right);
 $smarty->assign('add_right', $add_right);
 $smarty->assign('del_right', $del_right);
-/**************User Rigth*****************/
 
-
-
-/**************Main Area*****************/
 if($view_right || $del_right || $edit_right) {
 	$dbObj = new FindingDBManager($db);
 

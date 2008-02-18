@@ -1,50 +1,43 @@
 <?PHP
+// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 error_reporting(0);
-session_start();
 ob_start();
-
 $query_string = @$_REQUEST;
 require_once("config.php");
 require_once("smarty.inc.php");
 require_once("dblink.php");
-
 require_once("asset.class.php");
 require_once("assetDBManager.php");
-
-/* BEGIN **** User Right ***************/
 require_once("user.class.php");
 require_once("page_utils.php");
 
-
+// set the screen name used for security functions
 $screen_name = "asset";
 
+// set the page name
+$smarty->assign('pageName', 'Update an Asset');
+
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
+session_start();
+
+// creates a new user object from the user class
 $user = new User($db);
 
-/*
-$loginstatus = $user->login();
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
-displayLoginInfor($smarty, $user);
-*/
+// validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
 
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
-
 $view_right	= $user->checkRightByFunction($screen_name, "view");
 $edit_right = $user->checkRightByFunction($screen_name, "edit");
 $add_right  = $user->checkRightByFunction($screen_name, "add");
 $del_right  = $user->checkRightByFunction($screen_name, "delete");
-//$view_right=0;
-//$edit_right=0;
-//$add_right=0;
-//$del_right=0;
+
 // let's template know how to display the page
 $smarty->assign('view_right', $view_right);
 $smarty->assign('edit_right', $edit_right);
@@ -52,13 +45,9 @@ $smarty->assign('add_right', $add_right);
 $smarty->assign('del_right', $del_right);
 /* END **** User Right ***************/
 
-
-
 // redirect if there was no information posted
 if (isset($_POST['asset_id'])) { $asset_id = $_POST['asset_id']; }
 else { header('Location: asset.php'); }
-
-
 
 if($edit_right && $asset_id>0)
 {
@@ -159,9 +148,6 @@ if($edit_right && $asset_id>0)
 	//$smarty->assign('formaction','asset_modify.php?asset_id='.$asset_id);
 	$smarty->assign('formaction','asset_modify.php');
 }
-	$smarty->assign('pageTitle', 'OpenFISMA');
-	$smarty->assign('pageName', 'Update an Asset');
 	$smarty->assign('now', get_page_datetime());
-
 	$smarty->display('asset_modify.tpl');
 ?>

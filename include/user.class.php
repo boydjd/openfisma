@@ -715,6 +715,7 @@ Please create a password that adheres to these complexity requirements:<br>
 			}
 		}
 		$smarty->assign("errmsg", $errmsg);
+		$smarty->assign("warning", $login_warning);
 		$smarty->display("login.tpl");
 		exit;
 	}

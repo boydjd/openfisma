@@ -1,4 +1,6 @@
 <?PHP
+// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 error_reporting(0);
@@ -6,28 +8,25 @@ $query_string = @$_REQUEST;
 require_once("config.php");
 require_once("smarty.inc.php");
 require_once("dblink.php");
-//require_once("asset.class.php");
 require_once("assetDBManager.php");
 require_once("page_utils.php");
-/* BEGIN **** User Right ***************/
 require_once("user.class.php");
+
+// set the screen name used for security functions
 $screen_name = "asset";
+
+// set the page name
 $smarty->assign('pageName', 'Assets');
 
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
 session_start();
+
+// creates a new user object from the user class
 $user = new User($db);
 
-$loginstatus = $user->login();
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
-
-
-
-displayLoginInfor($smarty, $user);
-
+// validates that the user is logged in properly, if not redirects to the login page.
+verify_login($user, $smarty);
 
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");

@@ -2,23 +2,25 @@
 
 require_once("config.php");
 require_once("smarty.inc.php");
-
 require_once("dblink.php");
-
-/**************User Rigth*****************/
 require_once("user.class.php");
+require_once("page_utils.php");
 
+// set the screen name used for security functions
 $screen_name = "demo";
 
+// set the page name
+$smarty->assign('pageName', 'Demo Page');
+
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
 session_start();
 
+// creates a new user object from the user class
 $user = new User($db);
-$loginstatus = $user->login();
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
+
+// validates that the user is logged in properly, if not redirects to the login page.
+verify_login($user, $smarty);
 
 // check the user's right
 $view_right	= $user->checkRightByFunction($screen_name, "view");
@@ -52,11 +54,6 @@ if($add_right) {
 	
 }
 
-
-// if user have the right for his request, then set the "noright" message
-$smarty->assign('noright', $noright);
-
 $smarty->assign('now', gmdate ("M d Y H:i:s", time()));
-
 $smarty->display('demo.tpl');
 ?>

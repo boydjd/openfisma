@@ -5,42 +5,34 @@ $query_string = @$_REQUEST;
 require_once("config.php");
 require_once("smarty.inc.php");
 require_once("dblink.php");
-
 require_once("asset.class.php");
 require_once("assetDBManager.php");
-
-/* BEGIN **** User Right ***************/
 require_once("user.class.php");
 require_once("page_utils.php");
 
+// set the screen name used for security functions
 $screen_name = "asset";
+
+// set the page name
 $smarty->assign('pageName', 'Update an Asset');
 
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
 session_start();
+
+// creates a new user object from the user class
 $user = new User($db);
 
-/*
-$loginstatus = $user->login();
-if($loginstatus != 1) {
-	// redirect to the login page
-	$user->loginFailed($smarty);
-	exit;
-}
-displayLoginInfor($smarty, $user);
-*/
+// validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
-
 $view_right	= $user->checkRightByFunction($screen_name, "view");
 $edit_right = $user->checkRightByFunction($screen_name, "edit");
 $add_right  = $user->checkRightByFunction($screen_name, "add");
 $del_right  = $user->checkRightByFunction($screen_name, "delete");
-//$view_right=0;
-//$edit_right=0;
-//$add_right=0;
-//$del_right=0;
+
 // let's template know how to display the page
 $smarty->assign('view_right', $view_right);
 $smarty->assign('edit_right', $edit_right);
@@ -51,19 +43,14 @@ $smarty->assign('del_right', $del_right);
 if (isset($_REQUEST['aid'])) 
 	$aid = $_REQUEST['aid'];
  
-	
 if($edit_right && $aid>0) {
 	
-	
 	extract($query_string);
-	
 		
 	//echo(__LINE__.$search.__LINE__.$add.__LINE__.$edit);
 	$dbObj = new AssetDBManager($db);
 	if ($edit)
 	{
-		
-		
 		
 		if ($dbObj->updateAsset($query_string,$aid))
 		{
@@ -85,7 +72,6 @@ if($edit_right && $aid>0) {
 		if (strlen($ip)>7 && sizeof(explode('.',$ip))>4) $addrtype=2;
 		if (strlen($ip)>7 && sizeof(explode('.',$ip))>4) $addrtype=1;
 		
-		
 	}
 	if (!isset($prod_id)) $prod_id=0;
 	
@@ -106,7 +92,6 @@ if($edit_right && $aid>0) {
 	
 	$system_list  = $dbObj->getSystemList();
 	$network_list = $dbObj->getNetworkList();
-	
 	
 	$smarty->assign('listall',$listall);
 	$smarty->assign('pageno',$pageno);

@@ -10,12 +10,20 @@ require_once("assetDBManager.php");
 require_once("user.class.php");
 require_once("page_utils.php");
 
+// set the screen name used for security functions
 $screen_name = "asset";
 
+// set the page name
+$smarty->assign('pageName', 'Create an Asset');
+
+// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
+// If you want to use a named session, you must call session_name() before calling session_start().
 session_start();
 
+// creates a new user object from the user class
 $user = new User($db);
 
+// validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
 $view_right	= $user->checkRightByFunction($screen_name, "view");
@@ -75,7 +83,6 @@ if($edit_right) {
 	$smarty->assign('action','create');
 	$smarty->assign('formaction','asset.create.php');
 }	
-	$smarty->assign('pageName', 'Create an Asset');
 	$smarty->display('assetsCreate.tpl');
 
 ?>
