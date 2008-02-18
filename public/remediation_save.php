@@ -1,7 +1,9 @@
 <?php
 
 require_once("log.inc.php");
+// required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
+// required for all pages, sets smarty directory locations for cache, templates, etc.
 require_once("smarty.inc.php");
 require_once("dblink.php");
 // User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)

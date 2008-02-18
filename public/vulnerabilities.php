@@ -10,7 +10,9 @@ header("Cache-Control: no-cache, must-revalidate");
 $my_v_type = isset($_POST['my_v_type']) ? $_POST['my_v_type'] : null;
 
 require_once("pubfunc.php");
+// required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
+// required for all pages, sets smarty directory locations for cache, templates, etc.
 require_once("smarty.inc.php");
 require_once("dblink.php");
 require_once("finding.class.php");

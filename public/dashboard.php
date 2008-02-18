@@ -3,9 +3,10 @@
 // must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate"); 
 
-// include files
+// required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
 require_once("dblink.php");
+// required for all pages, sets smarty directory locations for cache, templates, etc.
 require_once("smarty.inc.php");
 require_once("finding.class.php");
 require_once("findingDBManager.php");

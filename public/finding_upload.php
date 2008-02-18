@@ -4,9 +4,10 @@
 header("Cache-Control: no-cache, must-revalidate");
 
 require_once("upload_utils.php");
+// required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
+// required for all pages, sets smarty directory locations for cache, templates, etc.
 require_once("smarty.inc.php");
-require_once("ovms.ini.php");
 require_once("dblink.php");
 require_once("finding.class.php");
 require_once("findingDBManager.php");
