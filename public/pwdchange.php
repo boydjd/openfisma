@@ -3,7 +3,9 @@
 require_once("config.php");
 require_once("smarty.inc.php");
 require_once("dblink.php");
+// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
 require_once("user.class.php");
+// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
 require_once("page_utils.php");
 
 // set the page name

@@ -10,12 +10,14 @@ require_once("smarty.inc.php");
 require_once("report_lang.php");
 require_once("report.class.php");
 require_once("RiskAssessment.class.php");
-require_once("user.class.php");
-require_once("page_utils.php");
 require_once("assetDBManager.php");
+// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
+require_once("user.class.php");
+// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
+require_once("page_utils.php");
 
 // set the screen name used for security functions
-$screen_name = 'report';
+$screen_name = "report";
 
 // set the page name
 $smarty->assign('pageName', 'Reports');
@@ -106,7 +108,7 @@ if(!array_key_exists($full_type, $function_for)){
 
 $function = $function_for[$full_type];
 
-$generate_right = $user->checkRightByFunction($screen_name, $function);
+$generate_right = $user->checkRightByFunction("report", $function);
 
 /*if(!$generate_right) {
   $smarty->assign('err_msg', "Insufficient user privilege to generate this report.");

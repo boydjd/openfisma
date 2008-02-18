@@ -10,7 +10,9 @@ require_once("pubfunc.php");
 require_once("tbfunc.php");
 require_once("tbopt.php");
 require_once("roleright.php");
+// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
 require_once("user.class.php");
+// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
 require_once("page_utils.php");
 
 $smarty->assign("title", $page_title);

@@ -9,7 +9,7 @@ ini_set('memory_limit', '256M');
 */
 header('Pragma:');
 
-
+require_once("smarty.inc.php");
 require_once("ovms.ini.php"); // $PDF_FONT_FOLDER
 require_once("config.php");
 require_once("dblink.php");
@@ -17,8 +17,10 @@ require_once("raf_lang.php");
 require_once("notice_lang.php"); // $REPORT_FOOTER_WARNING
 require_once("report_utils.php"); 
 require_once("raf.class.php");
+// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
 require_once("user.class.php");
-require_once("smarty.inc.php");
+// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
+require_once("page_utils.php");
 
 // session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
 // If you want to use a named session, you must call session_name() before calling session_start().

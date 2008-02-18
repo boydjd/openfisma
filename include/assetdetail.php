@@ -1,17 +1,17 @@
 <?PHP
-error_reporting(0);
-ob_start();
 $query_string = @$_REQUEST;
 require_once("config.php");
 require_once("smarty.inc.php");
 require_once("dblink.php");
 require_once("asset.class.php");
 require_once("assetDBManager.php");
+// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
 require_once("user.class.php");
+// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
 require_once("page_utils.php");
 
-// set the screen name used for security functions
-$screen_name = "asset";
+// This function will turn output buffering on. While output buffering is active no output is sent from the script (other than headers), instead the output is stored in an internal buffer.
+ob_start();
 
 // set the page name
 $smarty->assign('pageName', 'Update an Asset');
@@ -28,10 +28,10 @@ verify_login($user, $smarty);
 
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
-$view_right	= $user->checkRightByFunction($screen_name, "view");
-$edit_right = $user->checkRightByFunction($screen_name, "edit");
-$add_right  = $user->checkRightByFunction($screen_name, "add");
-$del_right  = $user->checkRightByFunction($screen_name, "delete");
+$view_right	= $user->checkRightByFunction("asset", "view");
+$edit_right = $user->checkRightByFunction("asset", "edit");
+$add_right  = $user->checkRightByFunction("asset", "add");
+$del_right  = $user->checkRightByFunction("asset", "delete");
 
 // let's template know how to display the page
 $smarty->assign('view_right', $view_right);

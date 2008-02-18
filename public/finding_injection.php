@@ -9,12 +9,11 @@ require_once("ovms.ini.php");
 require_once("dblink.php");
 require_once("finding.class.php");
 require_once("findingDBManager.php");
-require_once("page_utils.php");
 require_once("upload_utils.php");
+// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
 require_once("user.class.php");
-
-// set the screen name used for security functions
-$screen_name = "finding";
+// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
+require_once("page_utils.php");
 
 // set the page name
 $smarty->assign('pageName', 'Spreadsheet Upload');
@@ -30,7 +29,7 @@ $user = new User($db);
 verify_login($user, $smarty);
 
 // retrieve the user's persmissions
-$upload_right = $user->checkRightByFunction($screen_name, "upload");
+$upload_right = $user->checkRightByFunction("finding", "upload");
 
 // assign user right to smarty template
 $smarty->assign('upload_right', $upload_right);
