@@ -82,7 +82,7 @@
 						<table border="0" cellpadding="2" cellspacing="3">
 							<tr>
 								<td align="right"><font color="#eeeeee">Username:</font></td>
-								<td><input type="text" name="username" value="{$username}" size="16"></td>
+								<td><input type="text" name="username" value="" size="16"></td>
 							</tr>
 		
 							<tr>

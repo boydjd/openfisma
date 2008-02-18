@@ -331,7 +331,9 @@ function findingdetail(fid, func) {
 </form>
 
 {else}
-<p class="errormessage">{$noright}</p>
+
+<div class="noright">{$noright}</div>
+
 {/if}
 
 {include file="footer.tpl"}

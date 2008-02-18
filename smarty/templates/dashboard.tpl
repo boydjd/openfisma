@@ -2,10 +2,6 @@
 {include file="header.tpl" title="$pageTitle" name="$pageName"} 
 <!-- END HEADER TEMPLATE INCLUDE --> 
 
-{literal}
-<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/func.js"></script>
-{/literal}
-
 {if $view_right == 1}
 
 <br>
@@ -24,39 +20,24 @@
 <br>
 
 <table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
-    <tr>
-      <td  align="left"><b>Alerts </b><br>
-        <br>
-
-	<!-- Awaiting Type -->
-	<!--	{$need_type} -->
-
-	<!-- Awaiting Mitigation Strategy -->
-	{$need_mit}
-
-	<!-- Awaiting Evidence -->
-	{$need_ev_ot}
-
-	<!-- Overdue Awaiting Evidence -->
-	{$need_ev_od}
-
-	{$new_poam}
-        {$cap_expected} 
-        {$cap_overdue} 
-
-	{$new_cap}
-
-	{$review_pkg}		  		  
-
-	<br>
-      </td>
-    </tr>
-  </table>  
+	<tr>
+		<td  align="left"><b>Alerts </b><br>
+			<br>
+			<!-- Awaiting Mitigation Strategy -->
+			{$need_mit}
+			<!-- Awaiting Evidence -->
+			{$need_ev_ot}
+			<!-- Overdue Awaiting Evidence -->
+			{$need_ev_od}
+			<br>
+		</td>
+	</tr>
+</table>  
 
 <br>
 
 <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tipframe">
-<tr><td colspan="3"  align="left"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
+	<tr><td colspan="3"  align="left"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
     <tr>
       <td width="33%"  align="center">{$dashboard1}</td>
       <td width="34%"  align="center">{$dashboard2}</td>
@@ -70,7 +51,9 @@
 </table>
 
 {else}
-<p align="center">Sorry, You currently have insuficient privileges to view the dashboard.</p>
+
+<div class="noright">{$noright}</div>
+
 {/if}
 
 <br>

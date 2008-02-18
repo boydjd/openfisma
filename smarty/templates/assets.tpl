@@ -370,7 +370,9 @@ function do_order(param)
 {literal} {/literal}
 
 {else}
-<p class="errormessage">{$noright}</p>
+
+<div class="noright">{$noright}</div>
+
 {/if}
 
 {include file="footer.tpl"} 

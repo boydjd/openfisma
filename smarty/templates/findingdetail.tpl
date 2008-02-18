@@ -324,7 +324,9 @@
 </table>
 		
 {else}
-<p class="errormessage">{$noright}</p>
+
+<div class="noright">{$noright}</div>
+
 {/if}
 
 {include file="footer.tpl"}

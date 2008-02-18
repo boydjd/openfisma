@@ -150,7 +150,9 @@
 </form>
 
 {else}
-<p>{$noright}</p>
+
+<div class="noright">{$noright}</div>
+
 {/if}
 
 {include file="footer.tpl"}

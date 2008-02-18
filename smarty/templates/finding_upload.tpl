@@ -149,7 +149,9 @@ function validate_input() {
 <br>
 
 {else}
-<p class="errormessage">{$noright}</p>
+
+<div class="noright">{$noright}</div>
+
 {/if}
 
 <!-- ---------------------------------------------------------------------- -->
