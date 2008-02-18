@@ -3,15 +3,9 @@ $query_string = @$_REQUEST;
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
-// required for all pages, sets smarty directory locations for cache, templates, etc.
-require_once("smarty.inc.php");
 require_once("dblink.php");
 require_once("asset.class.php");
 require_once("assetDBManager.php");
-// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
-require_once("user.class.php");
-// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
-require_once("page_utils.php");
 
 // This function will turn output buffering on. While output buffering is active no output is sent from the script (other than headers), instead the output is stored in an internal buffer.
 ob_start();

@@ -1,4 +1,5 @@
 <?PHP
+// required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
 require_once("piegraph.class.php");
 require_once("report_lang.php");

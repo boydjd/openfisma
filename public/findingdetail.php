@@ -5,15 +5,9 @@ header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
-// required for all pages, sets smarty directory locations for cache, templates, etc.
-require_once("smarty.inc.php");
 require_once("dblink.php");
 require_once("finding.class.php");
 require_once("findingDBManager.php");
-// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
-require_once("user.class.php");
-// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
-require_once("page_utils.php");
 
 // set the page name
 $smarty->assign('pageName', 'Create a Finding');
@@ -50,27 +44,25 @@ if(isset($_POST['fid']))
 	$fid = intval($_POST['fid']);
 if(isset($_POST['act']))
 	$act = strtolower(trim($_POST['act']));
-//var_dump($_POST);
-/***************finding page search informations******************************************/
+
 if(!empty($_POST)){
-    $smarty->assign('pageno', $_POST['pageno']);
-    $smarty->assign('asc', $_POST['asc']);
-    $smarty->assign('fn', $_POST['fn']);
-    $smarty->assign('submit', strtolower($_POST['sbt']));
-    $smarty->assign('startdate', $_POST['startdate']);
-    $smarty->assign('enddate', $_POST['enddate']);
+    if(isset($_POST['pageno']))		$smarty->assign('pageno', $_POST['pageno']);
+    if(isset($_POST['asc']))		$smarty->assign('asc', $_POST['asc']);
+    if(isset($_POST['fn']))			$smarty->assign('fn', $_POST['fn']);
+    if(isset($_POST['sbt']))		$smarty->assign('submit', strtolower($_POST['sbt']));
+    if(isset($_POST['startdate']))	$smarty->assign('startdate', $_POST['startdate']);
+    if(isset($_POST['enddate']))	$smarty->assign('enddate', $_POST['enddate']);
     
-    $smarty->assign('status', $_POST['status']);
-    $smarty->assign('source', $_POST['source']);
-    $smarty->assign('system', $_POST['system']);
-    $smarty->assign('vulner', $_POST['vulner']);
+    if(isset($_POST['status']))		$smarty->assign('status', $_POST['status']);
+    if(isset($_POST['source']))		$smarty->assign('source', $_POST['source']);
+    if(isset($_POST['system']))		$smarty->assign('system', $_POST['system']);
+    if(isset($_POST['vulner']))		$smarty->assign('vulner', $_POST['vulner']);
     
-    $smarty->assign('product', $_POST['product']);
-    $smarty->assign('network', $_POST['network']);
-    $smarty->assign('ip', $_POST['ip']);
-    $smarty->assign('port', $_POST['port']);
+    if(isset($_POST['product']))	$smarty->assign('product', $_POST['product']);
+    if(isset($_POST['network']))	$smarty->assign('network', $_POST['network']);
+    if(isset($_POST['ip']))			$smarty->assign('ip', $_POST['ip']);
+    if(isset($_POST['port']))		$smarty->assign('port', $_POST['port']);
 }
-/******************************************************************/
 
 if(isset($_POST['do']))
 	$do = strtolower(trim($_POST['do']));

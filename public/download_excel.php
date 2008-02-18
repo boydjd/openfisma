@@ -1,7 +1,7 @@
 <? 
+
+// required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once('config.php');
-require_once('smarty.inc.php');
-require_once('ovms.ini.php');
 require_once('dblink.php');
 
 $xlsname = "OpenFISMA_Injection_Template"; 

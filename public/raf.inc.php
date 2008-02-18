@@ -7,22 +7,12 @@ session_register('rpdata');
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
-// required for all pages, sets smarty directory locations for cache, templates, etc.
-require_once("smarty.inc.php");
 require_once("dblink.php");
 require_once("raf_lang.php");
 require_once("notice_lang.php");  // $REPORT_FOOTER_WARNING
 require_once("report_utils.php");
 require_once("RiskAssessment.class.php");
 require_once("raf.class.php");
-// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
-require_once("user.class.php");
-// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
-require_once("page_utils.php");
-
-// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
-// If you want to use a named session, you must call session_name() before calling session_start().
-session_start();
 
 // creates a new user object from the user class
 $user = new User($db);

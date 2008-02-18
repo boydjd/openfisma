@@ -8,26 +8,16 @@ session_register('rpdata');//register a session var for save report data.
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
 require_once("dblink.php");
-// required for all pages, sets smarty directory locations for cache, templates, etc.
-require_once("smarty.inc.php");
 require_once("report_lang.php");
 require_once("report.class.php");
 require_once("RiskAssessment.class.php");
 require_once("assetDBManager.php");
-// User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
-require_once("user.class.php");
-// Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
-require_once("page_utils.php");
 
 // set the screen name used for security functions
 $screen_name = "report";
 
 // set the page name
 $smarty->assign('pageName', 'Reports');
-
-// session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
-// If you want to use a named session, you must call session_name() before calling session_start().
-session_start();
 
 // creates a new user object from the user class
 $user = new User($db);
@@ -380,7 +370,7 @@ else if ($t==$REPORT_TYPE_RAF){
     $dbObj = new AssetDBManager($db);
 	$system_list  = $dbObj->getSystemList();
 	$smarty->assign('system_list', $system_list);
-	$system_id = $_POST['system_id'];
+	if(isset($_POST['system_id']))	$system_id = $_POST['system_id'];
 	if(!empty($system_id) && is_numeric($system_id) && $system_id>0){
 	    $sql = "SELECT poam_id FROM `POAMS` P
 	               LEFT JOIN `FINDINGS` F ON F.finding_id = P.finding_id
