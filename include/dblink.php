@@ -1,14 +1,12 @@
 <?PHP
 
-require_once("ovms.ini.php");
 require_once("sql_db.php");
+require_once(OVMS_INCLUDE_PATH . DS . "tablenames_def.php");
 
 $dbhost = (isset($DB_HOST)) ? $DB_HOST : "localhost";
-$dbuser = (isset($DB_USER)) ? $DB_USER :  "ovms";
-$dbpass = (isset($DB_PASS)) ? $DB_PASS :  "ovms";
-$dbname = (isset($DB)) ? $DB :  "ovms";
-
-require_once(OVMS_INCLUDE_PATH . DS . "tablenames_def.php");
+$dbuser = (isset($DB_USER)) ? $DB_USER :  "openfisma";
+$dbpass = (isset($DB_PASS)) ? $DB_PASS :  "0p3nfism@";
+$dbname = (isset($DB)) ? $DB :  "openfisma";
 
 $db = new sql_db($dbhost, $dbuser, $dbpass, $dbname, false);
 if(!$db->db_connect_id)
