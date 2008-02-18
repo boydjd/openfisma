@@ -144,6 +144,5 @@ if($edit_right && $asset_id>0)
 	//$smarty->assign('formaction','asset_modify.php?asset_id='.$asset_id);
 	$smarty->assign('formaction','asset_modify.php');
 }
-	$smarty->assign('now', get_page_datetime());
 	$smarty->display('asset_modify.tpl');
 ?>

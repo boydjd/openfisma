@@ -45,8 +45,6 @@ $total_pages = 0 ;
 /**************Main Area*****************/
 if($view_right || $del_right || $edit_right)
 {
-    $smarty->assign('now', get_page_datetime());
-
     $v_data = Get_Vul_Type();
 
     if (isset($_POST['v_page']) && ($_POST['v_search'] != 'Search'))

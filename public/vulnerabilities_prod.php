@@ -38,8 +38,6 @@ $smarty->assign('del_right', $del_right);
 //if($view_right || $del_right || $edit_right) 
 if($add_right) 
 {
-	$smarty->assign('now', get_page_datetime());
-
 
 	//Add new vulnerability
 	if ($_POST[submit] == 'Create new vulnerability') 

@@ -19,6 +19,9 @@ function get_page_datetime() {
   return strftime("%b %d %Y %I:%M:%S %p");
 }
 
+// Sets the master time for smarty
+$smarty->assign('now', get_page_datetime());
+
 // Sets the master pagetitle for OpenFISMA
 $smarty->assign('pageTitle', 'OpenFISMA');
 

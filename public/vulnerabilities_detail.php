@@ -29,68 +29,9 @@ $smarty->assign('view_right', $view_right);
 $smarty->assign('edit_right', $edit_right);
 $smarty->assign('add_right', $add_right);
 $smarty->assign('del_right', $del_right);
-/**************User Rigth*****************/
 
-//	echo "view_right : ". $view_right . " edit_right : ". $edit_right. " add_right : ". $add_right . " del_right : ". $del_right ;
-
-
-/**************Main Area*****************/
 if($view_right || $del_right || $edit_right) 
 {
-/*	$dbObj = new FindingDBManager($db);
-
-	$summary_data = $dbObj->getSummaryList();
-	$source_list  = $dbObj->getSourceList();
-	$system_list  = $dbObj->getSystemList();
-	$network_list = $dbObj->getNetworkList();
-
-
-	//print_r($summary_data);
-	$smarty->assign('summary_data', $summary_data);
-	$smarty->assign('source_list', $source_list);
-	$smarty->assign('system_list', $system_list);
-	$smarty->assign('network_list', $network_list);
-
-
-
-	$dbObj = new FindingDBManager($db);
-	
-	$summary_data = $dbObj->getSummaryList();
-	$source_list = $dbObj->getSourceList();
-	$system_list = $dbObj->getSystemList();
-	$network_list = $dbObj->getNetworkList();
-	
-	$smarty->assign('summary_data', $summary_data);
-	$smarty->assign('source_list', $source_list);
-	$smarty->assign('system_list', $system_list);
-	$smarty->assign('network_list', $network_list);
-
-	$asc = 0;
-	//if(isset($_GET['asc'])) {
-	//	$asc = intval($_GET['asc']);
-	//	if($_GET['ff'] == $_GET['lf'])
-	//		$asc = $asc == 1 ? 0 : 1;
-	//}
-	if(isset($_POST['action']))
-		$action = $_POST['action'];
-	
-	if($action == 'filter' && $_POST['search'] == 'Search') {
-		$filter_data = $dbObj->searchFinding($_POST);
-		//print_r($filter_data);
-		$smarty->assign('filter_data', $filter_data);
-	}
-	else if($action == 'delete') {
-		$dbObj->deleteFinding($_POST);
-	}
-	else {
-		$smarty->assign('filter_data', null);
-	}
-	
-	$smarty->assign('ff', $_POST['ff']);
-	$smarty->assign('asc', $asc);
-*/
-	
-	$smarty->assign('now', get_page_datetime());
 
 	$search_para = $_POST['vn'];
 	
@@ -99,8 +40,7 @@ if($view_right || $del_right || $edit_right)
 
 	$v_product = Get_Product_Detail($search_para);	
 	$smarty->assign('v_product', $v_product);
-	
-	
+		
 }
 	$smarty->display('vulnerabilities_detail.tpl');
 
@@ -135,12 +75,6 @@ function Get_Product_Detail($para)
 */	//print_r($data) ;
 	return $data;
 }
-
-
-
-
-
-
 
 function Get_Vul_Detail($para) 
 {

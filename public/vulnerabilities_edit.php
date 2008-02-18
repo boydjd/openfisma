@@ -73,8 +73,6 @@ if($view_right || $del_right || $edit_right)
 		$remove_result  = mysql_query($remove_sql) or die("Query failed: " . mysql_error());
 	}
 	
-	$smarty->assign('now', get_page_datetime());
-
 	$search_para = $_POST[vn];
 	
 	$v_table = Get_Vul_Detail($search_para);	
@@ -83,8 +81,6 @@ if($view_right || $del_right || $edit_right)
 	$v_product = Get_Product_Detail($search_para);	
 	$smarty->assign('v_product', $v_product);
 	
-
-
 	//$k_para =  ' limit 20';
 
 	$p_page = $_POST[p_page] ;

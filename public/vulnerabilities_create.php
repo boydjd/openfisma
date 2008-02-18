@@ -47,9 +47,6 @@ if( $add_right )
 {
  	Keep_All_Paras();
 
-
-	$smarty->assign('now', get_page_datetime());
-
  	if (isset($_POST['submit_val']) && ($_POST['submit_val'] == 'Add Products'))
 	{
 /*

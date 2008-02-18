@@ -14,6 +14,9 @@ require_once("page_utils.php");
 $customer_logo = $CUSTOMER_LOGO;
 $login_warning = $LOGIN_WARNING;
 
+// uncomment this line to start smarty debugging
+// $smarty->debugging = TRUE;
+
 function displayLoginInfor($smarty, $user) {
 	global $customer_logo;
 

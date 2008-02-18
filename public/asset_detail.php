@@ -58,9 +58,6 @@ if($view_right && $asset_id>0) {
 
 }
 
-$smarty->assign('now', get_page_datetime());
-
-
 // display our template
 $smarty->display('asset_detail.tpl');
 

@@ -39,10 +39,6 @@ else {
 	$smarty->assign('chgflag', false);   
 }
 
-//
 $smarty->assign('firstlogin', $firstlogin); 
-// pass variables to smarty template
-$smarty->assign('now', get_page_datetime());   
-
 $smarty->display('pwdchange.tpl');
 ?>

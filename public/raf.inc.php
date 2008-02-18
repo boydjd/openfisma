@@ -190,11 +190,8 @@ $smarty->assign('impact_idx', $impact_index);
 $smarty->assign('threat_idx', $threat_index);
 $smarty->assign('risk_idx',   $risk_index);
 
-
 $smarty->assign('rpdata', $rpdata);
 
-
-$smarty->assign('now', get_page_datetime());
 $_SESSION['rpdata']   = $smarty->get_template_vars();
 
 //foreach (array_keys($_SESSION['rpdata']) as $key) {
