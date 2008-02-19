@@ -187,16 +187,17 @@ CREATE TABLE `POAMS` (
 --
 
 DROP TABLE IF EXISTS `POAM_COMMENTS`;
-CREATE TABLE `POAM_COMMENTS` (
+CREATE TABLE IF NOT EXISTS `POAM_COMMENTS` (
   `comment_id` int(10) unsigned NOT NULL auto_increment,
   `poam_id` int(10) unsigned NOT NULL default '0',
   `user_id` int(10) unsigned NOT NULL default '0',
+  `ev_id` int(10) unsigned NOT NULL default '0',
   `comment_parent` int(10) unsigned default NULL,
   `comment_date` datetime NOT NULL default '0000-00-00 00:00:00',
   `comment_topic` varchar(64) NOT NULL default '',
   `comment_body` text NOT NULL,
   `comment_log` text NOT NULL,
-  `comment_type` ENUM( 'EST', 'SSO', 'NONE' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'NONE',
+  `comment_type` enum('EST','SSO','NONE','EV_SSO','EV_FSA','EV_IVV') NOT NULL default 'NONE',
   PRIMARY KEY  (`comment_id`,`poam_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

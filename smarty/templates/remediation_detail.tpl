@@ -888,7 +888,7 @@ function go(step) {
 <!-- EVIDENCE TABLE -->
 <table border="0" cellpadding="5" cellspacing="1" width="95%" align="center" class="tipframe">
 
-	<th align='left'>Evidence Submissions <i>({$num_evidence} total)</i></th>
+	<th align='left' colspan="2">Evidence Submissions <i>({$num_evidence} total)</i></th>
 	
 		{* loop through the evidence *}
 		{if $num_evidence gt 0} <!-- Statement 3 -->
@@ -1063,10 +1063,9 @@ function go(step) {
 
 		{* RESTRICT UPDATE BASED ON STATUS AND ROLE *}
 		{if $modify_evidence_upload eq '1'}
-		{if $remediation_status eq 'EN' || $remediation_status eq 'EO'}
-
 			<tr align='left'>
-				<td>
+			{if $remediation_status eq 'EN' || $remediation_status eq 'EO'}
+				<td colspan="2">
 					<form action='remediation_modify.php' method='POST'>
 						<input type='hidden' name='remediation_id' value='{$remediation_id}'>
 						<input type='hidden' name='root_comment'   value='{$root_comment}'>
@@ -1079,9 +1078,21 @@ function go(step) {
 						<input type='button' name="form_action" title='Submit Evidence' value="Upload Evidence">
 					</form>
 				</td>
+			{else}
+				<td colspan="2">
+        			<!-- SAVE MODIFICATIONS TO EVIDENCE -->
+        			<form action='remediation_modify.php' method='POST'>
+        				<input type='hidden' name='action'         value='add'>
+        				<input type='hidden' name='validated'      value='no'>
+        				<input type='hidden' name='approved'       value='no'>
+        				<input type='hidden' name='target'         value='save_poam'>
+        				<input type='hidden' name='remediation_id' value='{$remediation_id}'>
+        				<input type='hidden' name='form_action' value=''>
+        				<input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
+        			</form>
+				</td>
 			</tr>
-
-		{/if}
+		  {/if}
 		{/if}
 	
 	</table>

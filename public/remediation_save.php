@@ -69,11 +69,12 @@ if (isset($_POST['poam_action_status'])){		// if poam_action_status changed
 	}
 }
 $sql_update .= " WHERE `poam_id`=".intval($poam_id);
-$sql_get_old_val .= TN_POAMS.".finding_id FROM ".TN_POAMS.",".TN_POAM_EVIDENCE." WHERE ".TN_POAMS.".`poam_id`=".intval($poam_id);
+$sql_get_old_val .= TN_POAMS.".finding_id FROM ".TN_POAMS
+                    ." LEFT JOIN ".TN_POAM_EVIDENCE." ON ".TN_POAMS.".`poam_id`=".TN_POAM_EVIDENCE.".`poam_id`"
+                    ." WHERE ".TN_POAMS.".`poam_id`=".intval($poam_id);
 //die($sql_update);
 $db->sql_query($sql_get_old_val);
 $row = $db->sql_fetchrow();
-
 // write log
 if ($i?$db->sql_query($sql_update):1) {
     foreach ($logArr as $field=>$value) {
