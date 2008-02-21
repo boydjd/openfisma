@@ -16,7 +16,9 @@ class FindingDBManager {
         $this->dbConn = $conn;
     }
 
-    function getSystemList() {
+	// function call to generate a list of system ids and names and sort the list alphabetically 
+    // no variables are passed to the function
+	function getSystemList() {
         $sql = "select system_id as sid, system_name as sname from " . TN_SYSTEMS . " order by sname asc";
         $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
         $data = null;
@@ -32,7 +34,26 @@ class FindingDBManager {
         return $data;
     }
 
+	// function call to generate a list of finding sources by id and name and sort alphabetically
+	// no variables are passed to the function
+    function getSourceList() {
+        $sql = "select source_id as sid, source_name as sname from " . TN_FINDING_SOURCES . " order by sname asc";
+        $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
+        $data = null;
+        if($result) {
+            while($row = $this->dbConn->sql_fetchrow($result)) {
+                $sid = $row['sid'];
+                $sname = $row['sname'];
+                $data[$sid] = $sname;
+            }
+            $this->dbConn->sql_freeresult($result);
+        }
 
+        return $data;
+    }	
+
+	// function call to generate a list of product ids and names from the products table and sort the list alphabetically
+	// no variables are passed to the function
     function getProductList() {
         $sql = "select prod_id as sid, prod_name as sname from " . TN_PRODUCTS . " order by sname asc";
         $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
@@ -49,6 +70,8 @@ class FindingDBManager {
         return $data;
     }
 
+	// function call to generate a list of network ids and names from the networks table and sort the list alphabetically
+	// no variables are passed to the function
     function getNetworkList() {
         $sql = "select network_id as sid, network_name as sname from " . TN_NETWORKS ." order by sname asc";
         $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
@@ -65,20 +88,27 @@ class FindingDBManager {
         return $data;
     }
 
-
+	// function call to generate a list of asset ids and names from the assets table and sort the list alphabetically
+	// the $needle variable is used to identify an asset
     function getAssetList($needle = "", $sid = 0) {
         $sql = "select a.asset_id as sid, a.asset_name as sname from " . TN_ASSETS . " as a ";
-        if(empty($needle)) {
-            if(!empty($sid) && $sid > 0)
+        // if variable $needle is empty do the following
+		if(empty($needle)) {
+            // if variable $sid is not empty and greater than zero select the assets that map to the corresponding system_id
+			if(!empty($sid) && $sid > 0)
                 $sql .= ", SYSTEM_ASSETS as sa where a.asset_id=sa.asset_id and sa.system_id=$sid ";
         }
+		// if variable $needle is not empty to the following
         else {
+			// if variable $sid is empty or zero select assets that correspond to systems that sound like $needle
             if(empty($sid) || $sid == 0)
                 $sql .= " where a.asset_name like '%$needle%' ";
-            else
+			// if variable $sid exists then select assets that correspond to the system_id and systems that sound like $needle
+			else
                 $sql .= " ,SYSTEM_ASSETS as sa where a.asset_id=sa.asset_id and sa.system_id='$sid' and a.asset_name like '%$needle%' ";
         }
-        $sql .= " order by sname asc limit 50";
+		// append to search query and ensure the list is sorted alphabetically
+        $sql .= " order by sname asc";
 
         //echo $sql;
         $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
@@ -95,78 +125,7 @@ class FindingDBManager {
         return $data;
     }
 
-/*
-    function getAssetListBySearch($sid, $nid, $ip, $port) {
-        $sysflag = false;
-        $addflag = false;
-        $consql = "";
-        if($sid > 0) {
-            $consql .= " and sa.system_id='$sid' ";
-            $sysflag = true;
-        }
-
-        if($nid > 0) {
-            $consql .= " and aa.network_id='$nid' ";
-            $addflag = true;
-        }
-        if(!empty($ip)) {
-            $consql .= " and aa.address_ip like '%ip%' ";
-            $addflag = true;
-        }
-        if($port > 0) {
-            $consql .= " and aa.address_port='port' ";
-            $addflag = true;
-        }
-
-        if($sysflag && $addflag) {
-            $ssql = "select a.asset_id as sid, a.asset_name as sname
-                            from " . TN_ASSETS ." as a, SYSTEM_ASSETS as sa, ASSET_ADDRESSES as aa
-                            where a.asset_id=sa.asset_id and a.asset_id=aa.asset_id ";
-        }
-        else if($sysflag) {
-            $ssql = "select a.asset_id as sid, a.asset_name as sname from " . TN_ASSETS . " as a, SYSTEM_ASSETS as sa where a.asset_id=sa.asset_id ";
-        }
-        else if($addflag) {
-            $ssql = "select a.asset_id as sid, a.asset_name as sname from " . TN_ASSETS . " as a, ASSET_ADDRESSES as aa where a.asset_id=aa.asset_id ";
-        }
-        else {
-            $ssql = "select a.asset_id as sid, a.asset_name as sname from " . TN_ASSETS . " as a ";
-        }
-        $sql = $ssql . $consql . " limit 50";
-
-        //echo $sql;
-        $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
-        $data = array();
-        if($result) {
-            while($row = $this->dbConn->sql_fetchrow($result)) {
-                $sid = $row['sid'];
-                $sname = $row['sname'];
-                $data[$sid] = $sname;
-            }
-            $this->dbConn->sql_freeresult($result);
-        }
-
-        return $data;
-    }
-*/
-
-    function getSourceList() {
-        $sql = "select source_id as sid, source_name as sname from " . TN_FINDING_SOURCES . " order by sname asc";
-        $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
-        $data = null;
-        if($result) {
-            while($row = $this->dbConn->sql_fetchrow($result)) {
-                $sid = $row['sid'];
-                $sname = $row['sname'];
-                $data[$sid] = $sname;
-            }
-            $this->dbConn->sql_freeresult($result);
-        }
-
-        return $data;
-    }
-
-
+	// function call the generate the summary list used on the finding page
     function getSummaryList() {
         $data = array();
         $sql = "SELECT s.system_name AS sname, f.finding_status AS status, COUNT(f.finding_id) AS num 
@@ -232,7 +191,7 @@ class FindingDBManager {
         return array_values($data);
     }
 
-
+	// function call to search findings only used on the findings page
     function searchFinding($post, $asc, $pgno, $fn = "") {
         $pagesize = $this->pagesize;
         $finding_arr = array();
