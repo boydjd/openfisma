@@ -57,6 +57,7 @@ function xmlFormatOfVulner($arr) {
 	echo "<vulners>\r\n";
 	foreach($arr as $vkey=>$vdesc) {
 		list($seq, $type) = explode(":", $vkey);
+		$vdesc = htmlspecialchars($vdesc);
 		echo "\t<vulner vuln_seq='$seq' vuln_type='$type'>\r\n";
 		echo "\t\t<vuln_desc>$vdesc</vuln_desc>\r\n";
 		echo "\t</vulner>\r\n";
@@ -69,6 +70,7 @@ function xmlFormatOfAssetList($arr) {
 
 	echo "<assets>\r\n";
 	foreach($arr as $akey=>$aname) {
+	    $aname = htmlspecialchars($aname);
 		echo "\t<asset asset_id='$akey' asset_name='$aname' />\r\n";
 	}
 	echo "</assets>\r\n";

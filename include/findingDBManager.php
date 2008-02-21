@@ -91,26 +91,26 @@ class FindingDBManager {
 	// function call to generate a list of asset ids and names from the assets table and sort the list alphabetically
 	// the $needle variable is used to identify an asset
     function getAssetList($needle = "", $sid = 0) {
-        $sql = "select a.asset_id as sid, a.asset_name as sname from " . TN_ASSETS . " as a ";
+        $sql = "SELECT a.asset_id AS sid, a.asset_name AS sname FROM " . TN_ASSETS . " AS a ";
         // if variable $needle is empty do the following
 		if(empty($needle)) {
             // if variable $sid is not empty and greater than zero select the assets that map to the corresponding system_id
 			if(!empty($sid) && $sid > 0)
-                $sql .= ", SYSTEM_ASSETS as sa where a.asset_id=sa.asset_id and sa.system_id=$sid ";
+                $sql .= " LEFT JOIN ".TN_SYSTEM_ASSETS." AS sa ON a.asset_id=sa.asset_id WHERE sa.system_id=$sid ";
         }
 		// if variable $needle is not empty to the following
         else {
 			// if variable $sid is empty or zero select assets that correspond to systems that sound like $needle
             if(empty($sid) || $sid == 0)
-                $sql .= " where a.asset_name like '%$needle%' ";
+                $sql .= " WHERE a.asset_name LIKE '%$needle%' ";
 			// if variable $sid exists then select assets that correspond to the system_id and systems that sound like $needle
 			else
-                $sql .= " ,SYSTEM_ASSETS as sa where a.asset_id=sa.asset_id and sa.system_id='$sid' and a.asset_name like '%$needle%' ";
+                $sql .= " LEFT JOIN ".TN_SYSTEM_ASSETS." AS sa ON a.asset_id=sa.asset_id WHERE sa.system_id='$sid' AND a.asset_name LIKE '%$needle%' ";
         }
 		// append to search query and ensure the list is sorted alphabetically
-        $sql .= " order by sname asc";
+        $sql .= " ORDER BY sname ASC";
 
-        //echo $sql;
+//        die($sql);
         $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
         $data = array();
         if($result) {
