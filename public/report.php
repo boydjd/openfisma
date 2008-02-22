@@ -250,6 +250,9 @@ if ($t==$REPORT_TYPE_POAM){
 	 // Set 'risklevel' value in each record for use by template
 	if($poams) {
 	 foreach ($poams as &$poam_record) {
+	     if (($poam_record['pstatus'] == 'EN') && ($poam_record['EstimatedCompletionDate'] < date('Y-m-d'))) {
+	         $poam_record['pstatus'] = 'EO';
+	     }
 	   //
 	   // Collect risk assessment component values from row fields
 	   //
