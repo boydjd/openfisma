@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ?forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ?tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 $query_string = @$_REQUEST;
@@ -23,6 +23,7 @@ $user = new User($db);
 
 // validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
+$user_id = $user->getUserId();
 
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
@@ -44,7 +45,7 @@ $smarty->assign('del_right', $del_right);
 if($view_right || $del_right || $edit_right) {
 	//$query_string = $_REQUEST;
 	extract($query_string);
-	$dbObj = new AssetDBManager($db);
+	$dbObj = new AssetDBManager($db,$user_id);
 	if (isset($act) && $act == "Delete" && $del_right)
 	{
 

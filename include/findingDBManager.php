@@ -4,9 +4,11 @@ class FindingDBManager {
     private $pagesize = 20;
     private $totalfindings = 0;
     private $dbConn;
+    public  $user_id;
 
-    function __construct($conn) {
+    function __construct($conn,$user_id=null) {
         $this->dbConn = $conn;
+        $this->user_id = $user_id;
     }
 
     function __destruct() {
@@ -129,9 +131,9 @@ class FindingDBManager {
     function getSummaryList() {
         $data = array();
         $sql = "SELECT s.system_name AS sname, f.finding_status AS status, COUNT(f.finding_id) AS num 
-                FROM " . TN_FINDINGS . " AS f, " . TN_SYSTEM_ASSETS . " AS a, " . TN_SYSTEMS . " AS s 
+                FROM " . TN_FINDINGS . " AS f, " . TN_SYSTEM_ASSETS . " AS a, " . TN_SYSTEMS . " AS s, ".TN_USER_SYSTEM_ROLES." as u
                 WHERE f.asset_id=a.asset_id 
-                    AND s.system_id=a.system_id 
+                    AND s.system_id=a.system_id AND u.user_id=".$this->user_id." AND u.system_id=a.system_id AND a.asset_id=f.asset_id
                 GROUP BY s.system_id, f.finding_status 
                 ORDER BY s.system_name";
         $result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
@@ -160,10 +162,9 @@ class FindingDBManager {
         }
         
         $sql = "SELECT s.system_name AS sname, COUNT(f.finding_id) AS num, DATE_FORMAT(f.finding_date_created, '%Y%m%d') AS date_num 
-                FROM " . TN_FINDINGS . " AS f, " . TN_SYSTEM_ASSETS . " AS a, " . TN_SYSTEMS . " AS s
+                FROM " . TN_FINDINGS . " AS f, " . TN_SYSTEM_ASSETS . " AS a, " . TN_SYSTEMS . " AS s, ".TN_USER_SYSTEM_ROLES." as u
                 WHERE f.asset_id=a.asset_id 
-                    AND s.system_id=a.system_id 
-                    AND f.finding_status='OPEN' 
+                    AND s.system_id=a.system_id  AND f.finding_status='OPEN' AND u.user_id=".$this->user_id." AND u.system_id=a.system_id AND a.asset_id=f.asset_id
                 GROUP BY s.system_id, date_num";
         $result = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
         $today = date('Ymd',mktime(0, 0, 0, date("m")  , date("d"), date("Y")));
@@ -235,10 +236,10 @@ class FindingDBManager {
             $fn = "date";
 
         // relative tables
-        $sql_table = " from ".TN_FINDINGS . " as f";
+        $sql_table = " from ".TN_FINDINGS . " as f,".TN_USER_SYSTEM_ROLES." as u,".TN_SYSTEM_ASSETS." as sa";
         // query condition
         $sql_con = " where ";
-
+        $sql_con .="u.user_id=".$this->user_id." and u.system_id=sa.system_id and sa.asset_id=f.asset_id and";
         if(!empty($status) && $status != "DELETED") {
             $sql_con .= " f.finding_status='$status' ";
         }
@@ -297,7 +298,6 @@ class FindingDBManager {
         if($system > 0) {
             $assethave = true;
             $syshave = true;
-            $asset_table .= ",SYSTEM_ASSETS as sa";
             $asset_con .= " and a.asset_id=sa.asset_id ";
 
             $asset_con .= " and sa.system_id='$system' ";

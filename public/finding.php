@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ?forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ?tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -23,6 +23,9 @@ $user = new User($db);
 // validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
+// get user_id for system limit of finding views
+$user_id = $user->getUserId();
+
 // get user right for this screen
 $view_right	= $user->checkRightByFunction("finding", "view");
 $edit_right = $user->checkRightByFunction("finding", "edit");
@@ -36,7 +39,7 @@ $smarty->assign('add_right', $add_right);
 $smarty->assign('del_right', $del_right);
 
 if($view_right || $del_right || $edit_right) {
-	$dbObj = new FindingDBManager($db);
+	$dbObj = new FindingDBManager($db,$user_id);
 
 	$summary_data = $dbObj->getSummaryList();
 	$source_list  = $dbObj->getSourceList();

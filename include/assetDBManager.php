@@ -3,14 +3,16 @@
 class AssetDBManager {
 	private $dbConn;
     private $limit = true;
+    private $user_id;
     function setLimit($flag = true)
     {
     	if ($flag) $this->limit=true;
     	else $this->limit=false;
     }
 
-	function __construct($conn) {
+	function __construct($conn,$user_id = null) {
 		$this->dbConn = $conn;
+		$this->user_id = $user_id;
 	}
 
 	function __destruct() {
@@ -437,7 +439,35 @@ class AssetDBManager {
 		/*
 		** New OUTER JOIN query structure (Mar.24 2006)
 		*/
-		$asset_sql_from_where = "FROM $product_sql
+		if($this->user_id !=""){
+		    $asset_sql_from_where = "FROM $product_sql
+					RIGHT OUTER JOIN
+					(SELECT 
+                        a.asset_id, 
+                        a.prod_id,
+                        a.asset_name, 
+                        s.system_id, 
+                        s.system_name, 
+                        aa.network_id, 
+                        aa.address_ip, 
+                        aa.address_port
+					FROM ASSETS AS a,
+					$asset_address_sql,
+					$system_sql,
+					$system_asset_sql,
+					".TN_USER_SYSTEM_ROLES." as u
+					where aa.asset_id=a.asset_id
+					and a.asset_id=sa.asset_id
+					and sa.system_id=s.system_id
+					and u.user_id =".$this->user_id."
+                    and sa.system_id = u.system_id
+					$a_filter
+					$aa_filter
+					$sa_filter) AS aaa
+					ON aaa.prod_id = p.prod_id
+					$prod_filter";
+		} else {
+		    $asset_sql_from_where = "FROM $product_sql
 					RIGHT OUTER JOIN
 					(SELECT 
                         a.asset_id, 
@@ -460,6 +490,7 @@ class AssetDBManager {
 					$sa_filter) AS aaa
 					ON aaa.prod_id = p.prod_id
 					$prod_filter";
+		}
 
 		//echo __LINE__.$order.$orderbyfield.$orderby_sql;
 		//echo("<br>$asset_sql<br>");
