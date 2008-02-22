@@ -919,7 +919,7 @@ class Report {
 		// Track overall total of open vulnerabilities.
 		//	
 		$total_open = 0;
-		foreach($sys_vulncounts as $sv_row) {
+		foreach((array)$sys_vulncounts as $sv_row) {
 		  $system_nick = $sv_row['sysnick'];
 		  $system_totals[$system_nick] = $sv_row['vulncount'];
 //		echo "$system_nick ";
