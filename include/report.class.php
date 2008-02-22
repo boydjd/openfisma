@@ -52,16 +52,16 @@ class Report {
 		$this->poam_id=$poam_id;
 	}
 ///////////
-	function getSysIDSQL(){//construct get system_id sql,we can use it future
+	function getSysIDSQL($system){//construct get system_id sql,we can use it future
 		return "SELECT system_id AS id
 		FROM " . TN_SYSTEMS ."
-		WHERE system_nickname = 'FSA'
+		WHERE system_nickname = '$system'
 		LIMIT 1 ";
 	}
-	function getSysGIDSQL(){//construct get sysgroup_id sql,we can use it future
+	function getSysGIDSQL($system){//construct get sysgroup_id sql,we can use it future
 		return "SELECT sysgroup_id AS id
 		FROM " . TN_SYSTEM_GROUPS . "
-		WHERE sysgroup_nickname = 'FSA'
+		WHERE sysgroup_nickname = '$system'
 		LIMIT 1 ";
 	}
 	////
@@ -78,9 +78,9 @@ class Report {
 	** Return:
 	**  $fsa_system_id - systems.system_id corresponding to FSA
 	*/
-	function getFSASysID() {
+	function getFSASysID($system) {
 	  // Fetch and call FSA system id query
-	  $sql = $this->getSysIDSQL();
+	  $sql = $this->getSysIDSQL($system);
 
 	  $result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());
 
@@ -107,9 +107,9 @@ class Report {
 	**  $fsa_sysgroup_id - system_groups.sysgroup_id 
 	**  corresponding to FSA
 	*/
-	function getFSASysGroupID() {
+	function getFSASysGroupID($system) {
 	  // Fetch and call FSA system id query
-	  $sql = $this->getSysGIDSQL();
+	  $sql = $this->getSysGIDSQL($system);
 	
 	  $result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());
 

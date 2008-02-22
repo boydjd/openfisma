@@ -41,6 +41,10 @@ function dosub() {
 	    return false;
 	    }
 	  }
+	  if (filter.system.value == '') {
+	      alert("Please choose a system.");
+	      return false;
+	  }
 	  filter.submit();
 	}
 	else{
@@ -85,13 +89,13 @@ function start_end_dates_ok(start_dt, end_dt) {
 <table width="850"  align="center" border="0" cellpadding="3" cellspacing="1" class="tipframe">
 	<tr>
 		<td>
-        	<input name="dr" type="radio" value="y" onClick="javascript:selectr();"> 
+        	<input name="dr" type="radio" value="y" onClick="javascript:selectr();" {if $dr eq 'y'}checked{/if}> 
     		<b>Yearly</b>    
-            <input name="dr" type="radio" value="q"  onClick="javascript:selectr();"> 
+            <input name="dr" type="radio" value="q"  onClick="javascript:selectr();" {if $dr eq 'q'}checked{/if}>  
       		<b>Quarterly</b>
        	</td>
   		<td>
-        	<input name="dr" type="radio" value="c"  onClick="javascript:selectr();">
+        	<input name="dr" type="radio" value="c"  onClick="javascript:selectr();" {if $dr eq 'c'}checked{/if}> 
     		<b>Custom</b>
        	</td>
 	</tr>
@@ -100,26 +104,30 @@ function start_end_dates_ok(start_dt, end_dt) {
         
         	<table width="100%" border="0" cellpadding="3" cellspacing="1"class="tipframe">
     			<tr>
+            		<td width="47%">
+                        <select name="system">
+                        	{html_options options=$systems selected=$system}
+                        </select>
+            		</td>
       				<td  width="47%">
-        				<select name="sy">
+        				<select name="sy" id="{$sy}">
         				<option value="">Select Fiscal Year </option>
-        				<option value="{$nowy-3}">{$nowy-3}</option>
-        				<option value="{$nowy-2}">{$nowy-2}</option>
-        				<option value="{$nowy-1}">{$nowy-1}</option>
-        				<option value="{$nowy}">{$nowy}</option>
-        				<option value="{$nowy+1}">{$nowy+1}</option>
+        				<option value="{$nowy-3}" {if $sy eq $nowy-3}selected{/if}>{$nowy-3}</option>
+        				<option value="{$nowy-2}" {if $sy eq $nowy-2}selected{/if}>{$nowy-2}</option>
+        				<option value="{$nowy-1}" {if $sy eq $nowy-1}selected{/if}>{$nowy-1}</option>
+        				<option value="{$nowy}" {if $sy eq $nowy}selected{/if}>{$nowy}</option>
+        				<option value="{$nowy+1}" {if $sy eq $nowy+1}selected{/if}>{$nowy+1}</option>
       					</select>
       				</td>
         			<td  width="6%">
-        				<select name="sq">
+        				<select name="sq" id="{$sq}">
         				<option value="">Select Fiscal Quarter </option>
-        				<option value="1">1Q</option>
-        				<option value="2">2Q</option>
-        				<option value="3">3Q</option>
-        				<option value="4">4Q</option>
+        				<option value="1" {if $sq eq '1'}selected{/if}>1Q</option>
+        				<option value="2" {if $sq eq '2'}selected{/if}>2Q</option>
+        				<option value="3" {if $sq eq '3'}selected{/if}>3Q</option>
+        				<option value="4" {if $sq eq '4'}selected{/if}>4Q</option>
       					</select>
  					</td>
-      				<td  width="47%">&nbsp;</td>
     			</tr>
 			</table>
 
@@ -132,14 +140,14 @@ function start_end_dates_ok(start_dt, end_dt) {
       				<td>&nbsp;</td>
       				<td>From:</td>
       				<td>
-                    	<input type="text" name="startdate" size="10" maxlength="10" value="" onclick="javascript:show_calendar('filter.startdate');" readonly>
+                    	<input type="text" name="startdate" value="{$startdate}" size="10" maxlength="10" value="" onclick="javascript:show_calendar('filter.startdate');" readonly>
                     </td>
       				<td><a href="#" onclick="javascript:show_calendar('filter.startdate');">
                     	<img src="images/picker.gif" width=24 height=22 border=0></a>
                   	</td>
       				<td>&nbsp;</td>
       				<td>End Date:</td>
-      				<td><input type="text" name="enddate" size="10" maxlength="10" value="" onclick="javascript:show_calendar('filter.enddate');" readonly></td>
+      				<td><input type="text" name="enddate" value="{$enddate}" size="10" maxlength="10" value="" onclick="javascript:show_calendar('filter.enddate');" readonly></td>
       				<td><a href="#" onclick="javascript:show_calendar('filter.enddate');">
       					<img src="images/picker.gif" width=24 height=22 border=0></a>
                  	</td>
