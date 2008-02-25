@@ -242,7 +242,11 @@ INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the u
 (108,'Approve Evidence [SECOND]','remediation','modify_evidence_fsa_approval','Allows the user to provide approval/rejection of evidence submissions.','1'),
 (109,'Approve Evidence [THIRD]','remediation','modify_evidence_ivv_approval','Allows the user to provide approval/rejection of evidence submissions.','1'),
 (110,'View Comments','remediation','view_comments','restricts view of comments','1'),
-(111,'Create Comments','remediation','modify_comments','restricts creation of comments','1');
+(111,'Create Comments','remediation','modify_comments','restricts creation of comments','1'),
+(112,'View Finding Sources List','admin_finding_sources','view','','1'),
+(112,'Edit Finding Sources','admin_finding_sources','edit','','1'),
+(112,'Delete Finding Sources','admin_finding_sources','delete','','1'),
+(112,'Add Finding Sources','admin_finding_sources','add','','1');
 
 
 /* default finding sources */
