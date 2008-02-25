@@ -4,7 +4,7 @@
 	</tr>
 	<tr>
 		<td valign="top"> 
-			Found a Bug? or Have a Suggestion? <a href="https://sourceforge.net/tracker/?group_id=208522">Report it Here</a>
+			Found a Bug? or Have a Suggestion? <a href="https://sourceforge.net/tracker/?group_id=208522" target="_blank">Report it Here</a>
 		</td>
 		<td valign="top" align="right">
 			<i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i>
