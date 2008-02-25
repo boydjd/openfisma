@@ -20,13 +20,16 @@ class sql_db
 		$this->dbname = $database;
 
 		if($this->persistency)
+			// connect to mysql using mysql_pconnect which unlike mysql_connect checks to see if an already open connection exists before establishing another
 			$this->db_connect_id = mysql_pconnect($this->server, $this->user, $this->password);
 		else
+			// connect to mysql using mysql_connect to establish an initial connection to the mysql server
 			$this->db_connect_id = mysql_connect($this->server, $this->user, $this->password);
 
 		if($this->db_connect_id) {
 			if($database != "") {
 				$this->dbname = $database;
+				// after connecting to mysql server select correct database
 				$dbselect = mysql_select_db($this->dbname);
 				if(!$dbselect) {
 					mysql_close($this->db_connect_id);
@@ -113,6 +116,8 @@ class sql_db
 	//
 	// Other query methods
 	//
+
+	//
 	function sql_numrows($query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -120,10 +125,12 @@ class sql_db
 		return ($query_id) ? mysql_num_rows($query_id) : false;
 	}
 
+	//
 	function sql_affectedrows() {
 		return ($this->db_connect_id) ? mysql_affected_rows($this->db_connect_id) : false;
 	}
 
+	//
 	function sql_numfields($query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -132,6 +139,7 @@ class sql_db
 		return ($query_id) ? mysql_num_fields($query_id) : false;
 	}
 
+	//
 	function sql_fieldname($offset, $query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -140,6 +148,7 @@ class sql_db
 		return ($query_id) ? mysql_field_name($query_id, $offset) : false;
 	}
 
+	//
 	function sql_fieldtype($offset, $query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -147,6 +156,7 @@ class sql_db
 		return ($query_id) ? mysql_field_type($query_id, $offset) : false;
 	}
 
+	// 
 	function sql_fetchrow($query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -161,6 +171,7 @@ class sql_db
 		}
 	}
 
+	// 
 	function sql_fetchrowset($query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -180,6 +191,7 @@ class sql_db
 		}
 	}
 
+	// 
 	function sql_fetchfield($field, $rownum = -1, $query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -212,6 +224,7 @@ class sql_db
 		}
 	}
 
+	//
 	function sql_rowseek($rownum, $query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -220,10 +233,12 @@ class sql_db
 		return ($query_id) ? mysql_data_seek($query_id, $rownum) : false;
 	}
 
+	//
 	function sql_nextid() {
 		return ($this->db_connect_id) ? mysql_insert_id($this->db_connect_id) : false;
 	}
 
+	//
 	function sql_freeresult($query_id = 0) {
 		if(!$query_id) {
 			$query_id = $this->query_result;
@@ -241,11 +256,13 @@ class sql_db
 		}
 	}
 
+	//
 	function sql_error()
 	{
 		return mysql_error($this->db_connect_id);
 	}
 
+	//
 	function sql_errno()
 	{
 		return mysql_errno($this->db_connect_id);

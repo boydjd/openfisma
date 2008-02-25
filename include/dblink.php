@@ -1,14 +1,21 @@
 <?PHP
-
+// class for connecting to the mysql database
 require_once("sql_db.php");
+// loads the mappings of table names to tables in the mysql database, allows different names than the actual database table names
 require_once(OVMS_INCLUDE_PATH . DS . "tablenames_def.php");
 
+//sets the database host, if blank or null set it to localhost
 $dbhost = (isset($DB_HOST)) ? $DB_HOST : "localhost";
-$dbuser = (isset($DB_USER)) ? $DB_USER :  "openfisma";
-$dbpass = (isset($DB_PASS)) ? $DB_PASS :  "0p3nfism@";
-$dbname = (isset($DB)) ? $DB :  "openfisma";
+//sets the database user, if blank set it to null
+$dbuser = (isset($DB_USER)) ? $DB_USER :  "";
+//sets the database password, if blank set to null
+$dbpass = (isset($DB_PASS)) ? $DB_PASS :  "";
+//sets the database name, if blank set to null
+$dbname = (isset($DB)) ? $DB :  "";
 
+// create new sql_db object
 $db = new sql_db($dbhost, $dbuser, $dbpass, $dbname, false);
+
 if(!$db->db_connect_id)
 	exit("Could not connect to the database");
 
