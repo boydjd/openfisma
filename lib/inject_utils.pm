@@ -26,13 +26,17 @@ our $db_host	= 'localhost';	# where are we connecting?
 our $db_name	= 'openfisma';		# what is our database name?
 our $db_user	= 'openfisma';		# who do we connect as?
 our $db_pass	= '0p3nfism@';	# what is our password?
+our $db_port	= '3306';	# what is our password?
 
 # Check for ini file settings for db user and pass
-($ini_user, $ini_pass) = read_php_login('../www/ovms.ini.php');
-if (defined($ini_user) && defined($ini_pass)) {
-  #print "found: $ini_user $ini_pass\n";
+($ini_user, $ini_pass, $ini_host, $ini_name, $ini_port) = read_php_login('../public/ovms.ini.php');
+if (defined($ini_user) && defined($ini_pass) && defined($ini_host) && defined($ini_name) && defined($ini_port)) {
+  #print "found: $ini_user $ini_pass $ini_host $ini_name\n";
   $db_user	= $ini_user;
   $db_pass	= $ini_pass;
+  $db_name	= $ini_name;
+  $db_host	= $ini_host;
+  $db_port	= $ini_port;
   }
 
 our $ovms_root  = $ENV{'OVMS_ROOT'};    # grab the root OVMS directory21~b
@@ -266,7 +270,7 @@ sub db_open {
 	# -----------------------------------------------------------------------
 
 	# attempt to make the connection
-        my $db = DBI->connect("DBI:mysql:$db_name:$db_host", $db_user, $db_pass) or undef;
+        my $db = DBI->connect("DBI:mysql:$db_name:$db_host:$db_port", $db_user, $db_pass) or undef;
 
 	# LOGGING
 	unless (defined $db) { log_write(0, "database connection could not be opened"); }
@@ -936,20 +940,32 @@ sub read_php_login {
   #
   $db_user = '';
   $db_pass = '';
+  $db_host = '';
+  $db_name = '';
+  $db_port = '';
   while (<INIFILE>) {
-    if(/DB_USER.*=.*['"]([^'"]*)['"]/) {
+    if(/DB_USER'.*,.*'([^'"]*)'/) {
       $db_user = $1;
       }
-    if(/DB_PASS.*=.*['"]([^'"]*)['"]/) {
+    if(/DB_PASS'.*,.*'([^'"]*)'/) {
       $db_pass = $1;
+      }
+    if(/DB_HOST'.*,.*'([^'"]*)'/) {
+      $db_host = $1;
+      }
+    if(/DB_NAME'.*,.*'([^'"]*)'/) {
+      $db_name = $1;
+      }
+    if(/DB_PORT'.*,.*'([^'"]*)'/) {
+      $db_port = $1;
       }
     }
     
-  if ($db_user ne '' && $db_pass ne '') {
-    return ($db_user, $db_pass);
+  if ($db_user ne '' && $db_pass ne '' && $db_host ne '' && $db_name ne '' && $db_port ne '') {
+    return ($db_user, $db_pass, $db_host, $db_name, $db_port);
     }
   else {
-    return (undef, undef);
+    return (undef, undef, undef, undef, undef);
     }
 }
 
