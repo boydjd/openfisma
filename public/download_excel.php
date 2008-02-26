@@ -8,11 +8,11 @@ $xlsname = "OpenFISMA_Injection_Template";
 header("Content-type:application/vnd.ms-excel"); 
 header("Content-Disposition:filename=$xlsname.xls"); 
 
-$sql =  "select system_nickname from SYSTEMS order by system_id DESC";
+$sql =  "SELECT system_nickname FROM " . TN_SYSTEMS . " ORDER BY system_id DESC";
 $System = getfeild($sql,"System",$db);
-$sql = "select network_nickname from NETWORKS order by network_id DESC";
+$sql = "SELECT network_nickname FROM " . TN_NETWORKS . " ORDER BY network_id DESC";
 $Network = getfeild($sql,"Network",$db);
-$sql = "select source_nickname from FINDING_SOURCES order by source_id DESC";
+$sql = "SELECT source_nickname FROM " . TN_FINDING_SOURCES . " ORDER BY source_id DESC";
 $AduitSource = getfeild($sql,"AuditSource",$db);
 
 $smarty->assign('System',$System);

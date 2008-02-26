@@ -79,7 +79,7 @@ class Report {
 	**  $fsa_system_id - systems.system_id corresponding to FSA
 	*/
 	function getFSASysID($system) {
-	  // Fetch and call FSA system id query
+	  // Fetch AND call FSA system id query
 	  $sql = $this->getSysIDSQL($system);
 
 	  $result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());
@@ -136,13 +136,13 @@ class Report {
         function getSystems() {
           $system_filter = $this->getSystemFilter();
 
-          $sql = "SELECT DISTINCT system_nickname AS name from " . TN_SYSTEMS . "where $system_filter";
+          $sql = "SELECT DISTINCT system_nickname AS name FROM " . TN_SYSTEMS . "WHERE $system_filter";
 //echo "sql: $sql<br>";
           $result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());                                                    return $this->dbConn->sql_fetchrowset($result);
           }
 
 //	function getSystems() {
-//	  $sql = "SELECT DISTINCT system_nickname AS name from SYSTEMS";
+//	  $sql = "SELECT DISTINCT system_nickname AS name FROM SYSTEMS";
 //	  $result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());
 //	  return $this->dbConn->sql_fetchrowset($result);
 //	  }
@@ -157,7 +157,7 @@ class Report {
 	**   one column, aliased to 'name'
 	*/
 	function getSources() {
-	  $sql = "SELECT DISTINCT source_nickname AS name from FINDING_SOURCES";
+	  $sql = "SELECT DISTINCT source_nickname AS name FROM ".TN_FINDING_SOURCES."";
 	  $result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());
 	  return $this->dbConn->sql_fetchrowset($result);
 	  }
@@ -180,21 +180,21 @@ class Report {
 		** current user
 		*/
 		if (!is_null($this->system) && strlen($this->system) > 0) {
-		  $system_filter = " and sys_owner.system_nickname = '$this->system'";
+		  $system_filter = " AND sys_owner.system_nickname = '$this->system'";
 		  }
 		else {
-		  $system_filter = ' and sys_owner.' . $this->getSystemFilter();
+		  $system_filter = ' AND sys_owner.' . $this->getSystemFilter();
 		  }
 
 		if (!is_null($this->source) && strlen($this->source) > 0) {
-		  $source_filter = " and fins.source_nickname = '$this->source'";
+		  $source_filter = " AND fins.source_nickname = '$this->source'";
 		  }
 
 		if (!is_null($this->sy) && strlen($this->sy) > 0) {
 		  $begin_date = $this->sy . "-01-01";
 		  $end_date   = $this->sy . "-12-31";
-		  $FY_filter =  " and p.poam_date_created >= '$begin_date'";
-		  $FY_filter .= " and p.poam_date_created <= '$end_date'";
+		  $FY_filter =  " AND p.poam_date_created >= '$begin_date'";
+		  $FY_filter .= " AND p.poam_date_created <= '$end_date'";
 		  }
 
 		//
@@ -221,7 +221,7 @@ class Report {
 		      }
 		    $is_first = false;
 		    }
-		  $type_filter = " and p.poam_type IN ($type_list)";
+		  $type_filter = " AND p.poam_type IN ($type_list)";
 
 //		print $type_list;
 		  }
@@ -250,7 +250,7 @@ class Report {
 		      }
 		    $is_first = false;
 		    }
-		  $status_filter = " and p.poam_status IN ($status_list, 'OPEN')";
+		  $status_filter = " AND p.poam_status IN ($status_list, 'OPEN')";
 		  }
 
 		/*
@@ -258,7 +258,7 @@ class Report {
 		** any other filters.
 		*/
 		if($this->poam_id) {
-		  $query_filter = " and p.poam_id = " . $this->poam_id;
+		  $query_filter = " AND p.poam_id = " . $this->poam_id;
 		  }
 		else {
  		  // if not a specific poam, concatenate the other criteria
@@ -292,24 +292,23 @@ class Report {
 		p.poam_cmeasure_effectiveness effectiveness,
 		p.poam_threat_level threatlevel,
 		p.poam_action_date_est EstimatedCompletionDate 
-		FROM " . TN_POAMS . "
-                 p,
-		SYSTEMS sys,
-		SYSTEMS sys_owner,
-		FINDINGS fin,
-		ASSETS a,
-		ASSET_ADDRESSES aadd,
-		NETWORKS net,
-		FINDING_SOURCES fins,
-		SYSTEM_ASSETS sa
-		where fin.finding_id = p.finding_id and
-		a.asset_id = fin.asset_id and
-		sa.asset_id = a.asset_id and
- 		sys.system_id = sa.system_id and
-		sa.system_is_owner = 1 and
- 		aadd.asset_id = a.asset_id and
-		net.network_id = aadd.network_id and
-		fins.source_id = fin.source_id and
+		FROM " . TN_POAMS . " p,
+		".TN_SYSTEMS." sys,
+		".TN_SYSTEMS." sys_owner,
+		".TN_FINDINGS." fin,
+		".TN_ASSETS." a,
+		".TN_ASSET_ADDRESSES." aadd,
+		".TN_NETWORKS." net,
+		".TN_FINDING_SOURCES." fins,
+		".TN_SYSTEM_ASSETS." sa
+		WHERE fin.finding_id = p.finding_id AND
+		a.asset_id = fin.asset_id AND
+		sa.asset_id = a.asset_id AND
+ 		sys.system_id = sa.system_id AND
+		sa.system_is_owner = 1 AND
+ 		aadd.asset_id = a.asset_id AND
+		net.network_id = aadd.network_id AND
+		fins.source_id = fin.source_id AND
 		sys_owner.system_id = p.poam_action_owner
 		$query_filter
 		";
@@ -338,9 +337,9 @@ class Report {
 	    COUNT(DISTINCT p.poam_id) AS num_poams
             FROM " . TN_POAMS ."
              p, 
-            FINDINGS f,
-            ASSETS a,
-            SYSTEM_ASSETS sa
+            ".TN_FINDINGS." f,
+            ".TN_ASSETS." a,
+            ".TN_SYSTEM_ASSETS." sa
             WHERE
             f.finding_id = p.finding_id AND
             a.asset_id = f.asset_id AND
@@ -368,9 +367,9 @@ class Report {
 	    COUNT(DISTINCT p.poam_id) AS num_poams
             FROM " . TN_POAMS . "
              p, 
-            FINDINGS f,
-            ASSETS a,
-            SYSTEM_ASSETS sa
+            ".TN_FINDINGS." f,
+            ".TN_ASSETS." a,
+            ".TN_SYSTEM_ASSETS." sa
             WHERE
             f.finding_id = p.finding_id AND
             a.asset_id = f.asset_id AND
@@ -722,7 +721,7 @@ class Report {
 		// Use outer join to get zero-count entries.	
 		$sql = "SELECT b.blscr_number AS t, count(p.poam_id) AS n
 		  FROM " . TN_POAMS . " p 
-		  RIGHT OUTER JOIN BLSCR b ON p.poam_blscr = b.blscr_number
+		  RIGHT OUTER JOIN " . TN_BLSCR . " b ON p.poam_blscr = b.blscr_number
 		  WHERE b.blscr_class = 'MANAGEMENT'
 		  GROUP BY b.blscr_number";
 		
@@ -735,7 +734,7 @@ class Report {
 		// Use outer join to get zero-count entries.	
 		$sql = "SELECT b.blscr_number AS t, count(p.poam_id) AS n
 		  FROM " . TN_POAMS ." p 
-		  RIGHT OUTER JOIN BLSCR b ON p.poam_blscr = b.blscr_number
+		  RIGHT OUTER JOIN " . TN_BLSCR . " b ON p.poam_blscr = b.blscr_number
 		  WHERE b.blscr_class = 'OPERATIONAL'
 		  GROUP BY b.blscr_number";
 
@@ -748,7 +747,7 @@ class Report {
 		// Use outer join to get zero-count entries.	
 		$sql = "SELECT b.blscr_number AS t, count(p.poam_id) AS n
 		  FROM " . TN_POAMS . "p 
-		  RIGHT OUTER JOIN BLSCR b ON p.poam_blscr = b.blscr_number
+		  RIGHT OUTER JOIN " . TN_BLSCR . " b ON p.poam_blscr = b.blscr_number
 		  WHERE b.blscr_class = 'TECHNICAL'
 		  GROUP BY b.blscr_number";
 
@@ -793,7 +792,7 @@ class Report {
 //		$arr_tmp= array();
 //		$arr_tmp2= array();
 //		//Low Moderate High 
-//		$sql="select FIPS199Catagory as t,count(*) as n from xxx where xxx='yyy' group by FIPS199Catagory";
+//		$sql="select FIPS199Catagory as t,count(*) as n FROM xxx where xxx='yyy' group by FIPS199Catagory";
 //		$sql="select 'Low' as t,123 as n union 
 //					select 'Moderate' as t,234 as n union 
 //					select 'High' as t,345 as n 
@@ -829,7 +828,7 @@ class Report {
 			prod.prod_name AS Product, 
 			prod.prod_version AS Version, 
 			count(prod.prod_id) AS NumoOV
-			FROM " . TN_POAMS . "p, FINDINGS f, ASSETS a, PRODUCTS prod
+			FROM " . TN_POAMS . "p, " . TN_FINDINGS . " f, " . TN_ASSETS . " a, " . TN_PRODUCTS . " prod
 			WHERE p.poam_status IN ('OPEN', 'EN', 'EP', 'ES')
 			AND f.finding_id = p.finding_id
 			AND a.asset_id = f.asset_id 
@@ -854,7 +853,7 @@ class Report {
 			p.prod_vendor AS Vendor, 
 			p.prod_name AS Product,
 			p.prod_version AS Version
-			FROM " . TN_PRODUCTS . "p, ASSETS a
+			FROM " . TN_PRODUCTS . "p, " . TN_ASSETS . " a
 			WHERE a.asset_source = 'SCAN'
 			AND p.prod_id = a.prod_id";
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());
@@ -882,8 +881,8 @@ class Report {
 		//
 		$sql="SELECT sys.system_nickname AS sysnick, 
 		      COUNT(sys.system_id) AS vulncount
-		      FROM " . TN_POAMS . "p, FINDINGS f, 
-		      ASSETS a, SYSTEM_ASSETS sa, SYSTEMS sys
+		      FROM " . TN_POAMS . "p, " . TN_FINDINGS . " f, 
+		      " . TN_ASSETS . " a, " . TN_SYSTEM_ASSETS . " sa, " . TN_SYSTEMS . " sys
 		      WHERE p.poam_type IN ('CAP', 'AR', 'FP') 
 		      AND p.poam_status IN ('OPEN', 'EN', 'EP', 'ES')
 		      AND f.finding_id = p.finding_id

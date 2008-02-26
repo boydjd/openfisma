@@ -48,7 +48,7 @@ class System {
 	if ($system_id == 0) {
 
 	  // define our query
-	  $query = "INSERT INTO SYSTEMS (system_id) VALUES (NULL)";
+	  $query = "INSERT INTO " . TN_SYSTEMS . " (system_id) VALUES (NULL)";
 
 	  // execute our query
 	  $handler = $this->db->sql_query($query);	  
@@ -177,7 +177,7 @@ class System {
 		
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_name = $this->system_name) ".
 		  "WHERE (system_id   = $this->system_id)";
 		
@@ -204,7 +204,7 @@ class System {
 		
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_nickname = $this->system_nickname) ".
 		  "WHERE (system_id       = $this->system_id)";
 		
@@ -231,7 +231,7 @@ class System {
 	   
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_desc = $this->system_desc) ".
 		  "WHERE (system_id   = $this->system_id)";
 		
@@ -263,7 +263,7 @@ class System {
 		
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_type = $this->system_type) ".
 		  "WHERE (system_id   = $this->system_id)";
 		
@@ -303,7 +303,7 @@ class System {
 		
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_availability = $this->system_availability) ".
 		  "WHERE (system_id           = $this->system_id)";
 		
@@ -333,7 +333,7 @@ class System {
 		
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_integrity = $this->system_integrity) ".
 		  "WHERE (system_id        = $this->system_id)";
 		
@@ -363,7 +363,7 @@ class System {
 		
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_confidentiality = $this->system_confidentiality) ".
 		  "WHERE (system_id              = $this->system_id)";
 		
@@ -390,7 +390,7 @@ class System {
 	   
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_criticality_justification = $this->system_criticality_justification) ".
 		  "WHERE (system_id                        = $this->system_id)";
 		
@@ -417,7 +417,7 @@ class System {
 	   
 		// define our query
 		$query = 
-		  "UPDATE SYSTEMS ".
+		  "UPDATE " . TN_SYSTEMS . " ".
 		  "SET   (system_sensitivity_justification = $this->system_sensitivity_justification) ".
 		  "WHERE (system_id                        = $this->system_id)";
 		

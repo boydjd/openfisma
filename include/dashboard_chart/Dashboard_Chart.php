@@ -23,8 +23,8 @@ class Dashboard_Chart
 		$sql_none = "";
 
 		// use query dependent on presence of system id
-		if ($system_ids) { $sql_none = "select count(*) as v_none from " . TN_POAMS . " where (poam_type='NONE' and poam_action_owner IN ($system_ids))"; }
-		else { $sql_none = "select count(*) as v_none from " . TN_POAMS . " where poam_type='NONE' " ; }
+		if ($system_ids) { $sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " WHERE (poam_type='NONE' AND poam_action_owner IN ($system_ids))"; }
+		else { $sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " WHERE poam_type='NONE' " ; }
 
 //		print $sql_none;
 
@@ -50,11 +50,11 @@ class Dashboard_Chart
 		$sql_none = "";
 
 		// use the query dependent on the presence of system_id
-		if ($system_ids) { $sql_none = "select count(*) as v_none from " . TN_POAMS . " where (poam_type='CAP' and poam_status='OPEN' and poam_action_status='NONE' and poam_action_owner IN ($system_ids))"; }
+		if ($system_ids) { $sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " WHERE (poam_type='CAP' AND poam_status='OPEN' AND poam_action_status='NONE' AND poam_action_owner IN ($system_ids))"; }
 		else {
 
-			//$sql_none = "select count(*) as v_none from " . TN_POAMS where poam_type='CAP' and poam_status='OPEN' and poam_action_is_approved=0 " ;
-			$sql_none = "select count(*) as v_none from " . TN_POAMS . " where poam_type='CAP' and poam_status='OPEN' and poam_action_status = 'NONE' " ;
+			//$sql_none = "select count(*) as v_none FROM " . TN_POAMS where poam_type='CAP' and poam_status='OPEN' and poam_action_is_approved=0 " ;
+			$sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " WHERE poam_type='CAP' AND poam_status='OPEN' AND poam_action_status = 'NONE' " ;
 
 		}
 
@@ -76,16 +76,16 @@ class Dashboard_Chart
 
 	function review_pkg($Role_ID)
     {
-       //$sql_none = "select count(*) as v_none from " . TN_POAMS as p , POAM_EVIDENCE as e where p.poam_type!='NONE' and p.poam_status='EP' and e.ev_accepted=0 and p.poam_id=e.poam_id " ;
+       //$sql_none = "select count(*) as v_none FROM " . TN_POAMS as p , POAM_EVIDENCE as e where p.poam_type!='NONE' and p.poam_status='EP' and e.ev_accepted=0 and p.poam_id=e.poam_id " ;
               //if user has role sso, it would be e.ev_sso_evaluation = 'NONE'
        //if they have role of FSA, then it would be (e.ev_sso_evaluation = 'APPROVED' AND e.ev_fsa_evaluation = 'NONE')
        //if they have role of IV&V it would be (e.ev_sso_evaluation = 'APPROVED' AND e.ev_fsa_evaluation = 'APPROVED')
 		if ( $Role_ID == 3 ) //sso
-			$sql_none = "select count(*) as v_none from " . TN_POAMS . " as p , POAM_EVIDENCE as e where p.poam_type!='NONE' and p.poam_status='EP' and e.ev_sso_evaluation = 'NONE' and p.poam_id=e.poam_id " ;
+			$sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " AS p , POAM_EVIDENCE AS e WHERE p.poam_type!='NONE' AND p.poam_status='EP' AND e.ev_sso_evaluation = 'NONE' AND p.poam_id=e.poam_id " ;
 		else if ( $Role_ID == 4 ) //FSA
-			$sql_none = "select count(*) as v_none from " . TN_POAMS . " as p , POAM_EVIDENCE as e where p.poam_type!='NONE' and p.poam_status='EP' and e.ev_sso_evaluation = 'APPROVED' AND e.ev_fsa_evaluation = 'NONE' and p.poam_id=e.poam_id " ;               
+			$sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " AS p , POAM_EVIDENCE AS e WHERE p.poam_type!='NONE' AND p.poam_status='EP' AND e.ev_sso_evaluation = 'APPROVED' AND e.ev_fsa_evaluation = 'NONE' AND p.poam_id=e.poam_id " ;               
 		else if ( $Role_ID == 7 ) //IVV
-			$sql_none = "select count(*) as v_none from " . TN_POAMS . " as p , POAM_EVIDENCE as e where p.poam_type!='NONE' and p.poam_status='EP' and e.ev_sso_evaluation = 'APPROVED' AND e.ev_fsa_evaluation = 'APPROVED' and p.poam_id=e.poam_id " ;               
+			$sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " AS p , POAM_EVIDENCE AS e WHERE p.poam_type!='NONE' AND p.poam_status='EP' AND e.ev_sso_evaluation = 'APPROVED' AND e.ev_fsa_evaluation = 'APPROVED' AND p.poam_id=e.poam_id " ;               
 		else // other roles
 			return " " ;
 		
@@ -103,12 +103,12 @@ class Dashboard_Chart
 
 	function cap_expected() 
 	{
-		// $sql_none = "select count(*) as v_none from " . TN_POAMS where poam_type='CAP' and poam_status='OPEN' or poam_status='EN' and poam_action_date_est <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) and poam_action_date_est >= CURDATE()" ;
+		// $sql_none = "select count(*) as v_none FROM " . TN_POAMS where poam_type='CAP' and poam_status='OPEN' or poam_status='EN' and poam_action_date_est <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) and poam_action_date_est >= CURDATE()" ;
 		
 		$current_date = date("Y-m-d");  
 		$next_week  = date("Y-") . date("m-") . ( date("d")+7 )  ;
 		
-		$sql_none = "select count(*) as v_none from " . TN_POAMS . " where poam_type='CAP' and ( poam_status='OPEN' or poam_status='EN' )	and poam_action_date_est <= '$next_week'  and poam_action_date_est >= '$current_date' " ;		//$sql_none = "select count(*) as v_none from POAMS where poam_type='CAP' and poam_status='OPEN' or poam_status='EN' and poam_action_date_est < DATE_ADD(CURDATE(), INTERVAL 7 DAY) " ;
+		$sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " WHERE poam_type='CAP' AND ( poam_status='OPEN' OR poam_status='EN' )	AND poam_action_date_est <= '$next_week'  AND poam_action_date_est >= '$current_date' " ;		//$sql_none = "select count(*) as v_none FROM POAMS where poam_type='CAP' and poam_status='OPEN' or poam_status='EN' and poam_action_date_est < DATE_ADD(CURDATE(), INTERVAL 7 DAY) " ;
 		
 		$result_none  = mysql_query($sql_none) or die("Query failed: " . mysql_error());
 		$row_none = mysql_fetch_array($result_none, MYSQL_ASSOC);
@@ -124,7 +124,7 @@ class Dashboard_Chart
 
 	function cap_overdue() 
 	{
-		$sql_none = "select count(*) as v_none from " . TN_POAMS . " where poam_type='CAP' and ( poam_status='OPEN' or poam_status='EN' ) and poam_action_date_est < CURDATE() " ;
+		$sql_none = "SELECT COUNT(*) AS v_none FROM " . TN_POAMS . " WHERE poam_type='CAP' AND ( poam_status='OPEN' OR poam_status='EN' ) AND poam_action_date_est < CURDATE() " ;
 		$result_none  = mysql_query($sql_none) or die("Query failed: " . mysql_error());
 		$row_none = mysql_fetch_array($result_none, MYSQL_ASSOC);
 		$v_none = $row_none['v_none'] ; 

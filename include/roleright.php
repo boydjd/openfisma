@@ -5,14 +5,14 @@
 function RoleFunctionDefine($rid, $post) {
 	global $db,$_db_name;
 
-	$sql = "delete from " . TN_ROLE_FUNCTIONS . " where role_id='$rid'";
+	$sql = "DELETE FROM " . TN_ROLE_FUNCTIONS . " WHERE role_id='$rid'";
 	$res = $db->sql_query($sql);
 
 	$errnum = 0;
 	if($res) {
 		foreach($post as $fname=>$fid) {
 			if(substr($fname, 0, 9) == "function_") {
-				$sql = "insert into ROLE_FUNCTIONS (role_id, function_id) values ('$rid', '$fid')";
+				$sql = "INSERT INTO " . TN_ROLE_FUNCTIONS . " (role_id, function_id) VALUES ('$rid', '$fid')";
 				//echo $sql;
 				$res  = $db->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 				if(!$res)
@@ -32,7 +32,7 @@ function RoleFunctionDefine($rid, $post) {
 function RoleFunctionDefineForm($tb_id,$pgno,$of,$asc,$rid, $edit_right) {
 	global $db, $pageurl, $page_title;
 
-	$sql = "select role_name from " . TN_ROLES . " where role_id='$rid'";
+	$sql = "SELECT role_name FROM " . TN_ROLES . " WHERE role_id='$rid'";
 	$result = $db->sql_query($sql);
 	if($result && $line_arr = $db->sql_fetchrow($result)) {
 		$rolename = $line_arr['role_name'];
@@ -90,7 +90,7 @@ function RoleFunctionDefineTable($rid, $edit_right) {
 
 	$fid_arr = array();
 
-	$sql = "select function_id from " . TN_ROLE_FUNCTIONS . " where role_id='$rid' order by function_id";
+	$sql = "SELECT function_id FROM " . TN_ROLE_FUNCTIONS . " WHERE role_id='$rid' ORDER BY function_id";
 	$result = $db->sql_query($sql);
 
 	if($result) {
@@ -100,7 +100,7 @@ function RoleFunctionDefineTable($rid, $edit_right) {
 		$db->sql_freeresult($result);
 		//print_r($fid_arr);
 	}
-	$sql = "select function_screen,function_id,function_name,function_desc from " . TN_FUNCTIONS . " where function_open = 1 order by function_screen,function_id";
+	$sql = "SELECT function_screen,function_id,function_name,function_desc FROM " . TN_FUNCTIONS . " WHERE function_open = 1 ORDER BY function_screen,function_id";
 	$result = $db->sql_query($sql);
 
 	if($result) {
@@ -193,10 +193,10 @@ function UserSystemRoleDefine($uid, $post) {
 	global $db,$_db_name;
 
 	$rid = 0;
-	$sql = "delete from " . TN_USER_SYSTEM_ROLES . " where user_id='$uid'";
+	$sql = "DELETE FROM " . TN_USER_SYSTEM_ROLES . " WHERE user_id='$uid'";
 	$res = $db->sql_query($sql);
 
-	$sql = "select role_id from " . TN_USERS . " where user_id='$uid'";
+	$sql = "SELECT role_id FROM " . TN_USERS . " WHERE user_id='$uid'";
 	$result = $db->sql_query($sql);
 	if($result && $line_arr = $db->sql_fetchrow($result)) {
 		$rid = $line_arr['role_id'];
@@ -208,7 +208,7 @@ function UserSystemRoleDefine($uid, $post) {
 	if($rid > 0) {
 		foreach($post as $sysname=>$sysid) {
 			if(substr($sysname, 0, 7) == "system_") {
-				$sql = "insert into USER_SYSTEM_ROLES (user_id, system_id, role_id) values ('$uid', '$sysid', '$rid')";
+				$sql = "INSERT INTO " . TN_USER_SYSTEM_ROLES . " (user_id, system_id, role_id) VALUES ('$uid', '$sysid', '$rid')";
 				//echo $sql;
 				$res  = $db->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 				if(!$res)
@@ -234,7 +234,7 @@ function UserSystemRoleDefineTable($uid, $editflag) {
 
 	$sysid_arr = array();
 
-	$sql = "select system_id from " . TN_USER_SYSTEM_ROLES . " where user_id='$uid' order by system_id";
+	$sql = "SELECT system_id FROM " . TN_USER_SYSTEM_ROLES . " WHERE user_id='$uid' ORDER BY system_id";
 	$result = $db->sql_query($sql);
 
 	if($result) {
@@ -244,7 +244,7 @@ function UserSystemRoleDefineTable($uid, $editflag) {
 		$db->sql_freeresult($result);
 		//print_r($sgid_arr);
 	}
-	$sql = "select system_name,system_id,system_nickname from " . TN_SYSTEMS . " order by system_id";
+	$sql = "SELECT system_name,system_id,system_nickname FROM " . TN_SYSTEMS . " ORDER BY system_id";
 	$result = $db->sql_query($sql);
 
 	if($result) {
@@ -321,20 +321,20 @@ function SystemDefine($sid, $post) {
 
 	$sysgroup_id = SystemGroup4Self($sid, $post['r_system_name'], $post['r_system_nickname']);
 
-	$sql = "delete from " . TN_SYSTEM_GROUP_SYSTEMS . " where system_id='$sid'";
+	$sql = "DELETE FROM " . TN_SYSTEM_GROUP_SYSTEMS . " WHERE system_id='$sid'";
 	$res = $db->sql_query($sql);
 
 	$errnum = 0;
 	if($res) {
 		// same name's system group
-		$sql = "insert into SYSTEM_GROUP_SYSTEMS (system_id, sysgroup_id) values ('$sid', '$sysgroup_id')";
+		$sql = "INSERT INTO " . TN_SYSTEM_GROUP_SYSTEMS . " (system_id, sysgroup_id) VALUES ('$sid', '$sysgroup_id')";
 		$res  = $db->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		if(!$res)
 			$errnum++;
 
 		foreach($post as $sgname=>$sgid) {
 			if(substr($sgname, 0, 9) == "sysgroup_") {
-				$sql = "insert into SYSTEM_GROUP_SYSTEMS (system_id, sysgroup_id) values ('$sid', '$sgid')";
+				$sql = "INSERT INTO " . TN_SYSTEM_GROUP_SYSTEMS . " (system_id, sysgroup_id) VALUES ('$sid', '$sgid')";
 				//echo $sql;
 				$res  = $db->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 				if(!$res)
@@ -355,8 +355,8 @@ function SystemGroup4Self($id, $sname, $nname) {
 	global $db,$_db_name;
 	$sysgroup_id = 0;
 
-	$sql = "select sgs.sysgroup_id as system_id from " . TN_SYSTEM_GROUP_SYSTEMS . " as sgs, SYSTEM_GROUPS as sg
-				where sgs.sysgroup_id=sg.sysgroup_id and sgs.system_id='$id' and sg.sysgroup_is_identity=1";
+	$sql = "SELECT sgs.sysgroup_id AS system_id FROM " . TN_SYSTEM_GROUP_SYSTEMS . " AS sgs, " . TN_SYSTEM_GROUPS . " AS sg
+				WHERE sgs.sysgroup_id=sg.sysgroup_id AND sgs.system_id='$id' AND sg.sysgroup_is_identity=1";
 	$result = $db->sql_query($sql);
 
 	if($result && $line_arr = $db->sql_fetchrow($result)) {
@@ -366,12 +366,12 @@ function SystemGroup4Self($id, $sname, $nname) {
 	}
 
 	if($sysgroup_id == 0) {
-		$sql = "insert into SYSTEM_GROUPS (sysgroup_name,sysgroup_nickname,sysgroup_is_identity) values ('$sname','$nname',1)";
+		$sql = "INSERT INTO " . TN_SYSTEM_GROUPS . " (sysgroup_name,sysgroup_nickname,sysgroup_is_identity) VALUES ('$sname','$nname',1)";
 		$res = $db->sql_query($sql);
 		$sysgroup_id = $db->sql_nextid();
 	}
 	else {
-		$sql = "update SYSTEM_GROUPS set sysgroup_name='$sname',sysgroup_nickname='$nname' where sysgroup_id='$sysgroup_id'";
+		$sql = "UPDATE " . TN_SYSTEM_GROUPS . " SET sysgroup_name='$sname',sysgroup_nickname='$nname' WHERE sysgroup_id='$sysgroup_id'";
 		$res = $db->sql_query($sql);
 	}
 
@@ -389,7 +389,7 @@ function SystemDefineTable($sid, $editflag) {
 
 	$sgid_arr = array();
 
-	$sql = "select sysgroup_id from " . TN_SYSTEM_GROUP_SYSTEMS . " where system_id='$sid' order by sysgroup_id";
+	$sql = "SELECT sysgroup_id FROM " . TN_SYSTEM_GROUP_SYSTEMS . " WHERE system_id='$sid' ORDER BY sysgroup_id";
 	$result = $db->sql_query($sql);
 
 	if($result) {
@@ -399,7 +399,7 @@ function SystemDefineTable($sid, $editflag) {
 		$db->sql_freeresult($result);
 		//print_r($sgid_arr);
 	}
-	$sql = "select sysgroup_name,sysgroup_id,sysgroup_nickname from " . TN_SYSTEM_GROUPS . " where sysgroup_is_identity=0 order by sysgroup_id";
+	$sql = "SELECT sysgroup_name,sysgroup_id,sysgroup_nickname FROM " . TN_SYSTEM_GROUPS . " WHERE sysgroup_is_identity=0 ORDER BY sysgroup_id";
 	$result = $db->sql_query($sql);
 
 	if($result) {

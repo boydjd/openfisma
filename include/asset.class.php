@@ -36,7 +36,7 @@ class Asset {
 
 		// retrieve the product information
 		$product = Array();
-		$query   = "SELECT p.* FROM " . PRODUCTS . " AS p WHERE (p.prod_id = '".$this->asset['prod_id']."')";
+		$query   = "SELECT p.* FROM " . TN_PRODUCTS . " AS p WHERE (p.prod_id = '".$this->asset['prod_id']."')";
 		$result  = $this->dbConn->sql_query($query) or die("Query failed: ".$this->dbConn->sql_error());
 		$this->product = $this->dbConn->sql_fetchrow($result);
 
@@ -68,7 +68,7 @@ class Asset {
 
 			$this->dbConn->sql_freeresult($result);
 
-			$sql = "select s.system_name from ".TN_SYSTEM_ASSETS." as sa, SYSTEMS as s where sa.asset_id='$aid' and sa.system_id=s.system_id";
+			$sql = "SELECT s.system_name FROM ".TN_SYSTEM_ASSETS." AS sa, ".TN_SYSTEMS." AS s WHERE sa.asset_id='$aid' AND sa.system_id=s.system_id";
 			$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 			if($result) {
 				$arr = array();
@@ -80,9 +80,9 @@ class Asset {
 				$this->dbConn->sql_freeresult($result);
 			}
 
-			$sql = "select aa.address_ip,aa.address_port,n.network_name 
-						from ".TN_ASSET_ADDRESSES." as aa,NETWORKS as n 
-						where aa.asset_id='$asset_id' and
+			$sql = "SELECT aa.address_ip,aa.address_port,n.network_name 
+						FROM ".TN_ASSET_ADDRESSES." AS aa,".TN_NETWORKS." AS n 
+						WHERE aa.asset_id='$asset_id' AND
 							aa.network_id=n.network_id";
 			$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 			if($result) {

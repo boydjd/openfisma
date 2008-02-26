@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -277,7 +277,7 @@ else {
 	*/
 
 
-	$sql = 'SELECT plugin_id, plugin_name, plugin_nickname FROM ' . TN_PLUGINS . ' order by plugin_nickname asc';
+	$sql = 'SELECT plugin_id, plugin_name, plugin_nickname FROM ' . TN_PLUGINS . ' ORDER BY plugin_nickname asc';
 	$plugins = get_list($db, $sql);
 	$smarty->assign('plugins', $plugins);
 
@@ -285,7 +285,7 @@ else {
 	** Load sources list
 	*/
 
-	$sql = 'SELECT source_id, source_name, source_nickname FROM ' . TN_FINDING_SOURCES . ' order by source_nickname asc';
+	$sql = 'SELECT source_id, source_name, source_nickname FROM ' . TN_FINDING_SOURCES . ' ORDER BY source_nickname asc';
 	$sources = get_list($db, $sql);
 	$smarty->assign('finding_sources', $sources);
 
@@ -293,7 +293,7 @@ else {
 	** Load system list
 	*/
 
-	$sql = 'SELECT system_id, system_name, system_nickname FROM ' . TN_SYSTEMS . ' order by system_nickname asc';
+	$sql = 'SELECT system_id, system_name, system_nickname FROM ' . TN_SYSTEMS . ' ORDER BY system_nickname asc';
 	$systems = get_list($db, $sql);
 	$smarty->assign('systems', $systems);
 
@@ -301,7 +301,7 @@ else {
 	** Load network list
 	*/
 
-	$sql = 'SELECT network_id, network_name, network_nickname FROM ' . TN_NETWORKS . ' order by network_nickname asc';
+	$sql = 'SELECT network_id, network_name, network_nickname FROM ' . TN_NETWORKS . ' ORDER BY network_nickname asc';
 	$networks = get_list($db, $sql);
 	$smarty->assign('networks', $networks);
 

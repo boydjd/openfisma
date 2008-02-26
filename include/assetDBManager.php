@@ -23,7 +23,7 @@ class AssetDBManager {
 	}
 
 	function getSystemList() {
-		$sql = "select system_id as sid, system_name as sname from ".TN_SYSTEMS;
+		$sql = "SELECT system_id AS sid, system_name AS sname FROM ".TN_SYSTEMS;
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		$data = null;
 		if($result) {
@@ -40,7 +40,7 @@ class AssetDBManager {
 
 
 	function getProductList() {
-		$sql = "select prod_id as sid, prod_name as sname from ".TN_PRODUCTS;
+		$sql = "SELECT prod_id AS sid, prod_name AS sname FROM ".TN_PRODUCTS;
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		$data = null;
 		if($result) {
@@ -58,7 +58,7 @@ class AssetDBManager {
 	/////////////////////////////added by chang 03232006
 	  function getProductByID($PID)
 	  {
-		$sql = "select prod_id , prod_name, prod_vendor , prod_version  from ".TN_PRODUCTS." where prod_id = '$PID'";
+		$sql = "SELECT prod_id , prod_name, prod_vendor , prod_version  FROM ".TN_PRODUCTS." WHERE prod_id = '$PID'";
 		$result  = $this->dbConn->sql_query($sql) or die("Query 21 failed: " . $this->dbConn->sql_error());
 		$data = null;
 		if($result)
@@ -77,7 +77,7 @@ class AssetDBManager {
 	  }
 
 	function getNetworkList() {
-		$sql = "select network_id as sid, network_name as sname from ".TN_NETWORKS;
+		$sql = "SELECT network_id AS sid, network_name AS sname FROM ".TN_NETWORKS;
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		$data = null;
 		if($result) {
@@ -94,7 +94,7 @@ class AssetDBManager {
 
 
 	function getAssetList() {
-		$sql = "select asset_id as sid, asset_name as sname from ".TN_ASSETS;
+		$sql = "SELECT asset_id AS sid, asset_name AS sname FROM ".TN_ASSETS;
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		$data = null;
 		if($result) {
@@ -112,7 +112,7 @@ class AssetDBManager {
 
 
 	function getSourceList() {
-		$sql = "select source_id as sid, source_name as sname from ".TN_FINDING_SOURCES;
+		$sql = "SELECT source_id AS sid, source_name AS sname FROM ".TN_FINDING_SOURCES;
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		$data = null;
 		if($result) {
@@ -131,17 +131,17 @@ class AssetDBManager {
 		$total = 0;
 
 		/*
-		$sql = "select s.system_name as name, count(a.asset_id) as num
-				from ".TN_ASSETS as a, SYSTEM_ASSETS as sa, SYSTEMS as s ,PRODUCTS as p, (select DISTINCT asset_id from ASSET_ADDRESSES) as aa
-				where a.asset_id = sa.asset_id and sa.system_id = s.system_id and p.prod_id = a.prod_id and aa.asset_id= a.asset_id and sa.system_is_owner = '1'
+		$sql = "SELECT s.system_name AS name, count(a.asset_id) AS num
+				FROM ".TN_ASSETS AS a, SYSTEM_ASSETS AS sa, SYSTEMS AS s ,PRODUCTS AS p, (SELECT DISTINCT asset_id FROM ASSET_ADDRESSES) AS aa
+				WHERE a.asset_id = sa.asset_id AND sa.system_id = s.system_id AND p.prod_id = a.prod_id AND aa.asset_id= a.asset_id AND sa.system_is_owner = '1'
 				group by s.system_id
 				order by s.system_name";
 		*/
-		$sql = "select s.system_name as name, count(a.asset_id) as num
-				from ".TN_ASSETS." as a, SYSTEM_ASSETS as sa, SYSTEMS as s
-				where a.asset_id = sa.asset_id and sa.system_id = s.system_id and sa.system_is_owner = '1'
-				group by s.system_id
-				order by s.system_name";
+		$sql = "SELECT s.system_name AS name, count(a.asset_id) AS num
+				FROM ".TN_ASSETS." AS a, ".TN_SYSTEM_ASSETS." AS sa, ".TN_SYSTEMS." AS s
+				WHERE a.asset_id = sa.asset_id AND sa.system_id = s.system_id AND sa.system_is_owner = '1'
+				GROUP BY s.system_id
+				ORDER BY s.system_name";
 	//echo "$sql<br/>";
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		if($result) {
@@ -180,16 +180,16 @@ class AssetDBManager {
 
 
 
-		$sql = "INSERT INTO ASSETS (`asset_id` , `prod_id` , `asset_name` , `asset_date_created` , `asset_source` )
+		$sql = "INSERT INTO ".TN_ASSETS." (`asset_id` , `prod_id` , `asset_name` , `asset_date_created` , `asset_source` )
 				VALUES ('', '$prod_id' , '$asset_name', '$created_date_time', 'MANUAL')";
 		//echo(__LINE__." ".$sql."<br>");
 		$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
 		if($res) {
-			$sql = "select max(asset_id) as asset_id from ".TN_ASSETS."
-						WHERE prod_id='$prod_id' and
-							asset_name='$asset_name' and
-							asset_date_created='$created_date_time'";
+			$sql = "SELECT MAX(asset_id) AS asset_id FROM ".TN_ASSETS."
+						WHERE prod_id     = '$prod_id' AND
+							  asset_name  = '$asset_name' AND
+							  asset_date_created = '$created_date_time'";
 			//echo(__LINE__." ".$sql."<br>");
 			$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 			if($result) {
@@ -200,11 +200,11 @@ class AssetDBManager {
 			}
 			//echo(__LINE__." ".$aid."<br>");
 			if($aid > 0) {
-				$sql = "INSERT INTO ASSET_ADDRESSES(`asset_id`,`network_id`,`address_date_created`,`address_ip`,`address_port`)
+				$sql = "INSERT INTO ".TN_ASSET_ADDRESSES."(`asset_id`,`network_id`,`address_date_created`,`address_ip`,`address_port`)
 						VALUES ('$aid', '$network_id', '$created_date_time', '$ip' ,'$port')";
 				//echo(__LINE__." ".$sql."<br>");
 				$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
-				$sql = "INSERT INTO SYSTEM_ASSETS(`system_id`,`asset_id`,`system_is_owner`)
+				$sql = "INSERT INTO ".TN_SYSTEM_ASSETS."(`system_id`,`asset_id`,`system_is_owner`)
 						VALUES ('$system_id', '$aid', '1')";
 				//echo(__LINE__." ".$sql."<br>");
 				$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
@@ -227,10 +227,10 @@ class AssetDBManager {
 			$product_search = addslashes($product_search);
 		}
 
-		if ($product_search != "") $where = "and instr(prod_name,'$product_search')>0";
-		if ($prod_id>0) $where .= " and prod_id='$prod_id' ";
+		if ($product_search != "") $where = "AND instr(prod_name,'$product_search')>0";
+		if ($prod_id>0) $where .= " AND prod_id='$prod_id' ";
 
-		$sql = "select count(prod_id) as num from ".TN_PRODUCTS." where 1=1 ".$where;
+		$sql = "SELECT COUNT(prod_id) AS num FROM ".TN_PRODUCTS." WHERE 1=1 ".$where;
 		$result = $this->dbConn->sql_query($sql);
 
 		if ($result)
@@ -248,7 +248,7 @@ class AssetDBManager {
 		if ($pageno > $maxpageno) $pageno = $maxpageno;
 		if ($pageno<1) $pageno = 1;
 		$limitclause = " limit ".($pageno-1)*$listnum.",".$listnum;
-		$sql = "select prod_id as sid, prod_name as sname,prod_vendor as svendor,prod_version as sversion from ".TN_PRODUCTS." where 1=1 ".$where.$limitclause;
+		$sql = "SELECT prod_id AS sid, prod_name AS sname,prod_vendor AS svendor,prod_version AS sversion FROM ".TN_PRODUCTS." WHERE 1=1 ".$where.$limitclause;
 		//echo($sql);
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
@@ -295,59 +295,59 @@ class AssetDBManager {
 
 		}
 
-	//	$asset_address_sql = "(select t.asset_id,t.address_date_created,t.address_ip,t.address_port,t.network_id from ".TN_(select * from ASSET_ADDRESSES order by asset_id asc,address_date_created desc) as t  group by t.asset_id asc) as aa";
-		$asset_address_sql = "ASSET_ADDRESSES as aa";
-		$system_asset_sql = "(select system_id,asset_id,system_is_owner from ".TN_SYSTEM_ASSETS." where system_is_owner=1 group by asset_id,system_id) as sa";
+	//	$asset_address_sql = "(SELECT t.asset_id,t.address_date_created,t.address_ip,t.address_port,t.network_id FROM ".TN_(SELECT * FROM ASSET_ADDRESSES order by asset_id ASc,address_date_created desc) AS t  group by t.asset_id ASc) AS aa";
+		$asset_address_sql = "ASSET_ADDRESSES AS aa";
+		$system_asset_sql = "(SELECT system_id,asset_id,system_is_owner FROM ".TN_SYSTEM_ASSETS." WHERE system_is_owner=1 GROUP BY asset_id,system_id) AS sa";
 
-		$product_sql = "PRODUCTS as p";
-		$system_sql = "SYSTEMS as s";
-		$network_sql = "NETWORKS as n";
-		$assets_sql = "ASSETS as a";
+		$product_sql = "" . TN_PRODUCTS . " AS p";
+		$system_sql = "" . TN_SYSTEMS . " AS s";
+		$network_sql = "" . TN_NETWORKS . " AS n";
+		$assets_sql = "" . TN_ASSETS . " AS a";
 
 
 	/*
-		$asset_sql = "select a.asset_id,a.asset_name,s.system_id,s.system_name,p.prod_id,p.prod_name,p.prod_vendor,aa.network_id,aa.address_ip,aa.address_port";
+		$asset_sql = "SELECT a.asset_id,a.asset_name,s.system_id,s.system_name,p.prod_id,p.prod_name,p.prod_vendor,aa.network_id,aa.address_ip,aa.address_port";
 	*/
-		$asset_sql = "select aaa.asset_id,aaa.asset_name,aaa.system_id,aaa.system_name,p.prod_id,p.prod_name,p.prod_vendor,aaa.network_id,aaa.address_ip,aaa.address_port ";
+		$asset_sql = "SELECT aaa.asset_id,aaa.asset_name,aaa.system_id,aaa.system_name,p.prod_id,p.prod_name,p.prod_vendor,aaa.network_id,aaa.address_ip,aaa.address_port ";
 
 /*
 		$asset_sql_from_where = " from ".TN_$assets_sql,$asset_address_sql,$product_sql,$system_sql,$system_asset_sql
-				where aa.asset_id=a.asset_id and a.asset_id=sa.asset_id and a.prod_id=p.prod_id and sa.system_id=s.system_id ";
+				WHERE aa.asset_id=a.asset_id AND a.asset_id=sa.asset_id AND a.prod_id=p.prod_id AND sa.system_id=s.system_id ";
 */
 
 /*
 		if(!empty($ip) && strlen($ip) > 0) {
 			$assethave = true;
-			$asset_sql_from_where .= "and aa.address_ip='$ip' ";
+			$asset_sql_from_where .= "AND aa.address_ip='$ip' ";
 		}
 		if(intval($port) > 0) {
 			$assethave = true;
-			$asset_sql_from_where .= "and aa.address_port='$port' ";
+			$asset_sql_from_where .= "AND aa.address_port='$port' ";
 		}
 
 
 		if(!empty($vendor) && strlen($vendor) > 0) {
 			$assethave = true;
-			$asset_sql_from_where .= "and instr(p.prod_vendor,'$vendor') ";
+			$asset_sql_from_where .= "AND instr(p.prod_vendor,'$vendor') ";
 		}
 		if(!empty($version) && strlen($version) > 0) {
 			$assethave = true;
-			$asset_sql_from_where .= "and instr(p.prod_version,'$version') ";
+			$asset_sql_from_where .= "AND instr(p.prod_version,'$version') ";
 		}
 		if(!empty($product) && strlen($product) > 0) {
 			$assethave = true;
-			$asset_sql_from_where .= "and instr(p.prod_name ,'$product')>0 ";
+			$asset_sql_from_where .= "AND instr(p.prod_name ,'$product')>0 ";
 		}
 
 
 		if($system > 0) {
 			$assethave = true;
-			$asset_sql_from_where .= "and sa.system_id='$system' ";
+			$asset_sql_from_where .= "AND sa.system_id='$system' ";
 		}
 
 		if (intval($aid) >0 ) {
 			$assethave = true;
-			$asset_sql_from_where .= "and a.asset_id='$aid' ";
+			$asset_sql_from_where .= "AND a.asset_id='$aid' ";
 		}
 
 */
@@ -359,12 +359,12 @@ class AssetDBManager {
 
 		if(isset($ip) && strlen($ip) > 0) {
 			$assethave = true;
-			$aa_filter .= "and aa.address_ip='$ip' ";
+			$aa_filter .= "AND aa.address_ip='$ip' ";
 		}
 		if(isset($port) && (intval($port) > 0)) {
 			$assethave = true;
-//			$glue = (strlen($aa_filter) > 0) ? "and" : "where";
-			$aa_filter .= "and aa.address_port='$port' ";
+//			$glue = (strlen($aa_filter) > 0) ? "AND" : "WHERE";
+			$aa_filter .= "AND aa.address_port='$port' ";
 		}
 
 
@@ -375,17 +375,17 @@ class AssetDBManager {
 
 		if(isset($vendor) && strlen($vendor) > 0) {
 			$assethave = true;
-			$glue = (strlen($prod_filter) > 0) ? "and" : "where";
+			$glue = (strlen($prod_filter) > 0) ? "AND" : "WHERE";
 			$prod_filter .= "$glue instr(p.prod_vendor,'$vendor') ";
 		}
 		if(isset($version) && strlen($version) > 0) {
 			$assethave = true;
-			$glue = (strlen($prod_filter) > 0) ? "and" : "where";
+			$glue = (strlen($prod_filter) > 0) ? "AND" : "WHERE";
 			$prod_filter .= "$glue instr(p.prod_version,'$version') ";
 		}
 		if(isset($product) && strlen($product) > 0) {
 			$assethave = true;
-			$glue = (strlen($prod_filter) > 0) ? "and" : "where";
+			$glue = (strlen($prod_filter) > 0) ? "AND" : "WHERE";
 			$prod_filter .= "$glue instr(p.prod_name ,'$product')>0 ";
 		}
 
@@ -395,7 +395,7 @@ class AssetDBManager {
 		$sa_filter = "";
 		if(isset($system) && ($system > 0)) {
 			$assethave = true;
-			$sa_filter .= "and sa.system_id='$system' ";
+			$sa_filter .= "AND sa.system_id='$system' ";
 		}
 
 		/*
@@ -404,12 +404,12 @@ class AssetDBManager {
 		$a_filter = "";
 		if (isset($aid) && ($aid > 0)) {
 			$assethave = true;
-			$a_filter .= "and a.asset_id='$aid' ";
+			$a_filter .= "AND a.asset_id='$aid' ";
 		}
 
 		if (isset($limit) && ($limit > 0))
 		{
-			$limitclause = " limit 0,$limit";
+			$limitclause = " LIMIT 0,$limit";
 		}
 /*
 		$Aorderby['asset_name'] = "a.asset_name";
@@ -429,7 +429,7 @@ class AssetDBManager {
 		a.asset_id,a.asset_name,s.system_id,s.system_name,p.prod_id,p.prod_name,p.prod_vendor,aa.network_id,aa.address_ip,aa.address_port*/
 		if (isset($order) && ($order == "ASC" || $order == "DESC") && (isset($Aorderby[$orderbyfield])))
 		{
-			$orderby_sql = " order by ".$Aorderby[$orderbyfield]." ".$order;
+			$orderby_sql = " ORDER BY ".$Aorderby[$orderbyfield]." ".$order;
 
 		}
 		else {
@@ -451,16 +451,16 @@ class AssetDBManager {
                         aa.network_id, 
                         aa.address_ip, 
                         aa.address_port
-					FROM ASSETS AS a,
+					FROM ".TN_ASSETS." AS a,
 					$asset_address_sql,
 					$system_sql,
 					$system_asset_sql,
-					".TN_USER_SYSTEM_ROLES." as u
-					where aa.asset_id=a.asset_id
-					and a.asset_id=sa.asset_id
-					and sa.system_id=s.system_id
-					and u.user_id =".$this->user_id."
-                    and sa.system_id = u.system_id
+					".TN_USER_SYSTEM_ROLES." AS u
+					WHERE aa.asset_id=a.asset_id
+					AND a.asset_id=sa.asset_id
+					AND sa.system_id=s.system_id
+					AND u.user_id =".$this->user_id."
+                    AND sa.system_id = u.system_id
 					$a_filter
 					$aa_filter
 					$sa_filter) AS aaa
@@ -478,13 +478,13 @@ class AssetDBManager {
                         aa.network_id, 
                         aa.address_ip, 
                         aa.address_port
-					FROM ASSETS AS a,
+					FROM ".TN_ASSETS." AS a,
 					$asset_address_sql,
 					$system_sql,
 					$system_asset_sql
-					where aa.asset_id=a.asset_id
-					and a.asset_id=sa.asset_id
-					and sa.system_id=s.system_id
+					WHERE aa.asset_id=a.asset_id
+					AND a.asset_id=sa.asset_id
+					AND sa.system_id=s.system_id
 					$a_filter
 					$aa_filter
 					$sa_filter) AS aaa
@@ -494,7 +494,7 @@ class AssetDBManager {
 
 		//echo __LINE__.$order.$orderbyfield.$orderby_sql;
 		//echo("<br>$asset_sql<br>");
-		$sql = "select count(aaa.asset_id) as num ".$asset_sql_from_where;
+		$sql = "SELECT COUNT(aaa.asset_id) AS num ".$asset_sql_from_where;
 
 //		echo("<br/>$sql<br/>");
 
@@ -513,7 +513,7 @@ class AssetDBManager {
 		if ($pageno > $maxpageno) $pageno = $maxpageno;
 		if ($pageno<1) $pageno = 1;
 		if ($this->limit)
-		$limitclause = " limit ".($pageno-1)*$listnum.",".$listnum;
+		$limitclause = " LIMIT ".($pageno-1)*$listnum.",".$listnum;
 
 
 		//echo("<br/>$asset_sql.$asset_sql_from_where.$orderby_sql.$limitclause<br/>");
@@ -552,16 +552,16 @@ class AssetDBManager {
 
 	function deleteAssets($post)
 	{
-		foreach($post as $skey=>$svalue) {
+		foreach($post AS $skey=>$svalue) {
 			if(substr($skey, 0, 4) == "aid_" && substr($svalue, 0, 4) == "aid.") {
 				$aid = intval(substr($svalue, 4));
-				$sql = "DELETE from ".TN_ASSETS." WHERE asset_id='$aid'";
+				$sql = "DELETE FROM ".TN_ASSETS." WHERE asset_id='$aid'";
 				$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 				//echo "<br>".$sql."<br>";
-				$sql = "DELETE from ".TN_ASSET_ADDRESSES." WHERE asset_id='$aid'";
+				$sql = "DELETE FROM ".TN_ASSET_ADDRESSES." WHERE asset_id='$aid'";
 				$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 				//echo $sql."<br>";
-				$sql = "UPDATE SYSTEM_ASSETS SET system_is_owner='0' WHERE asset_id='$aid'";
+				$sql = "UPDATE ".TN_SYSTEM_ASSETS." SET system_is_owner='0' WHERE asset_id='$aid'";
 				$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 				//echo $sql."<br><br>";
 				//echo $sql;
@@ -590,28 +590,28 @@ class AssetDBManager {
 			$prod_id 	= addslashes($prod_id);
 		}
 
-		$sql = "UPDATE ASSETS SET asset_name='$asset_name',prod_id='$prod_id' WHERE asset_id='$aid'";
+		$sql = "UPDATE ".TN_ASSETS." SET asset_name='$asset_name',prod_id='$prod_id' WHERE asset_id='$aid'";
 		$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		//echo("<br>".$sql."<br>");
-		$sql = "SELECT max(address_date_created) as max_date_created from ".TN_ASSET_ADDRESSES." WHERE asset_id='$aid'";
+		$sql = "SELECT MAX(address_date_created) AS max_date_created FROM ".TN_ASSET_ADDRESSES." WHERE asset_id='$aid'";
 		//echo("<br>".$sql."<br>");
 		$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		if($res) {
 			if ($row = $this->dbConn->sql_fetchrow($res))
 			{
 				$address_date_created = $row['max_date_created'];
-				$sql = "UPDATE ASSET_ADDRESSES SET network_id='$network_id',address_ip='$ip',address_port='$port'
-				 	WHERE asset_id='$aid' and address_date_created='$address_date_created'";
+				$sql = "UPDATE ".TN_ASSET_ADDRESSES." SET network_id='$network_id',address_ip='$ip',address_port='$port'
+				 	WHERE asset_id='$aid' AND address_date_created='$address_date_created'";
 			}
 			else
 			{
-				$sql = "INSERT INTO ASSET_ADDRESSES(`asset_id`,`network_id`,`address_date_created`,`address_ip`,`address_port`)
+				$sql = "INSERT INTO ".TN_ASSET_ADDRESSES."(`asset_id`,`network_id`,`address_date_created`,`address_ip`,`address_port`)
 					VALUES ('$aid', '$network_id', '$created_date_time', '$ip' ,'$port')";
 			}
 		}
 		else
 		{
-			$sql = "INSERT INTO ASSET_ADDRESSES(`asset_id`,`network_id`,`address_date_created`,`address_ip`,`address_port`)
+			$sql = "INSERT INTO ".TN_ASSET_ADDRESSES."(`asset_id`,`network_id`,`address_date_created`,`address_ip`,`address_port`)
 					VALUES ('$aid', '$network_id', '$created_date_time', '$ip' ,'$port')";
 				//echo(__LINE__." ".$sql."<br>");
 		}
@@ -620,29 +620,29 @@ class AssetDBManager {
 		$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
 
-		$sql = "SELECT system_id from ".TN_SYSTEM_ASSETS." WHERE asset_id='$aid' and system_id='$system_id'";
+		$sql = "SELECT system_id FROM ".TN_SYSTEM_ASSETS." WHERE asset_id='$aid' AND system_id='$system_id'";
 		//echo("<br>".$sql."<br>");
 		$res  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		if($res) {
 			if ($row = $this->dbConn->sql_fetchrow($res))
 			{
-				$sql_2 = "UPDATE SYSTEM_ASSETS SET system_is_owner=1
-				 	WHERE system_id='$system_id' and asset_id='$aid'";
+				$sql_2 = "UPDATE ".TN_SYSTEM_ASSETS." SET system_is_owner=1
+				 	WHERE system_id='$system_id' AND asset_id='$aid'";
 			}
 			else
 			{
-				$sql_2 = "INSERT INTO SYSTEM_ASSETS(`system_id`,`asset_id`,`system_is_owner`)
+				$sql_2 = "INSERT INTO ".TN_SYSTEM_ASSETS."(`system_id`,`asset_id`,`system_is_owner`)
 						VALUES ('$system_id', '$aid', '1')";
 			}
 		}
 		else
 		{
-			$sql_2 = "INSERT INTO SYSTEM_ASSETS(`system_id`,`asset_id`,`system_is_owner`)
+			$sql_2 = "INSERT INTO ".TN_SYSTEM_ASSETS."(`system_id`,`asset_id`,`system_is_owner`)
 						VALUES ('$system_id', '$aid', '1')";
 				//echo(__LINE__." ".$sql."<br>");
 		}
 		$this->dbConn->sql_freeresult($res);
-		$sql_1 = "UPDATE SYSTEM_ASSETS SET system_is_owner=0 WHERE asset_id='$aid'";
+		$sql_1 = "UPDATE ".TN_SYSTEM_ASSETS." SET system_is_owner=0 WHERE asset_id='$aid'";
 		$res  = $this->dbConn->sql_query($sql_1) or die("Query failed: " . $this->dbConn->sql_error());
 		$res  = $this->dbConn->sql_query($sql_2) or die("Query failed: " . $this->dbConn->sql_error());
 		//echo("<br>".$sql_1."<br>");

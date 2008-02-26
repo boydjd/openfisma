@@ -147,7 +147,7 @@ class Asset {
 	public function saveAsset(){
 	
 	    if ($this->asset_id && $this->assetExists($this->asset_id)){
-    	    $query = "UPDATE `ASSETS` SET ";    
+    	    $query = "UPDATE " . TN_ASSETS . " SET ";    
             	    $query .= " `prod_id`                                            = '$this->prod_id', ";
             	    $query .= " `asset_name`                                         = '$this->asset_name', ";
             	    $query .= " `asset_date_created`                                 = '$this->asset_date_created', ";
@@ -155,7 +155,7 @@ class Asset {
                     $query .= " WHERE `asset_id`                                     = '$this->asset_id' ";
 	    }
 	    else {
-	       $query = "INSERT INTO `ASSETS` (
+	       $query = "INSERT INTO " . TN_ASSETS . " (
                             `prod_id`, 
                             `asset_name`, 
                             `asset_date_created`, 
@@ -196,7 +196,7 @@ class Asset {
 	public function createAsset() {
 		
 		// designate our insertion query
-		$query = "INSERT INTO ASSETS (asset_id, asset_date_created) VALUES (NULL, NOW())";
+		$query = "INSERT INTO " . TN_ASSETS . " (asset_id, asset_date_created) VALUES (NULL, NOW())";
 		
 		// execute the query
 		$this->db->query($query);
@@ -252,7 +252,7 @@ class Asset {
 		$id_array = array();
 
 		// create our query
-		$query = "SELECT asset_id from " . TN_ASSETS;
+		$query = "SELECT asset_id FROM " . TN_ASSETS;
 		
 		// add in our offset and limit if a limit is provided
 		if ($limit) { $query .= " LIMIT $offset, $limit";  }		

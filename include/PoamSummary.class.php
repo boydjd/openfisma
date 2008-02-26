@@ -50,28 +50,28 @@ class PoamSummary {
   function poamCount($type = NULL, $status = NULL) {
 
 	// start building our query
-	$query = "select count(*) as count from " . TN_POAMS . " where (poam_action_owner = '" . $this->system_id . "'";
+	$query = "SELECT COUNT(*) AS count FROM " . TN_POAMS . " WHERE (poam_action_owner = '" . $this->system_id . "'";
 
-	// add in our types and statuses
+	// add in our types AND statuses
 	if ($type or $status) {
 
 	  // add in type
-	  if ($type)   { $query .= " and poam_type = '$type'";  }
+	  if ($type)   { $query .= " AND poam_type = '$type'";  }
 
 	  // add in statys
 	  if ($status) { 
 
 		switch ($status) {
 		case "EN" :
-		  $query .= " and poam_status = '$status' and poam_action_date_est > NOW()";
+		  $query .= " AND poam_status = '$status' AND poam_action_date_est > NOW()";
 		  break;
 
 		case "EO" :
-		  $query .= " and poam_status = 'EN' and (poam_action_date_est <= NOW() or poam_action_date_est IS NULL)";
+		  $query .= " AND poam_status = 'EN' AND (poam_action_date_est <= NOW() OR poam_action_date_est IS NULL)";
 		  break;
 
 		default   : 
-		  $query .= " and poam_status = '$status'"; 
+		  $query .= " AND poam_status = '$status'"; 
 		  break;
 
 		} // switch

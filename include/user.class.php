@@ -73,10 +73,11 @@ class User {
 			$password = md5($pass);
 		}
 
-		$sql = "select user_id,user_name,user_password,role_id,user_title,user_name_last,user_name_middle,user_name_first,
-						user_date_created,DATE_FORMAT(user_date_password, '%Y-%m-%d') as user_date_password,user_date_last_login,
-						user_date_deleted,user_is_active,user_phone_office,user_phone_mobile,user_email from " . TN_USERS . "
-					where user_name='$username'";
+		$sql = "SELECT user_id,user_name,user_password,role_id,user_title,user_name_last,user_name_middle,user_name_first,
+						user_date_created,DATE_FORMAT(user_date_password, '%Y-%m-%d') AS user_date_password,
+						user_date_last_login,user_date_deleted,user_is_active,user_phone_office,user_phone_mobile,user_email
+				FROM " . TN_USERS . "
+				WHERE user_name='$username'";
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
 		if($result && $row = $this->dbConn->sql_fetchrow($result)) {
@@ -162,18 +163,18 @@ class User {
 	private function _function_init($role_id) {
 		if($this->user_name == "root") {
 			// root user have all right
-			$sql = "select f.function_screen,f.function_id,f.function_name,f.function_action
-						from " . TN_FUNCTIONS . " as f
-						order by f.function_screen";
+			$sql = "SELECT f.function_screen,f.function_id,f.function_name,f.function_action
+						FROM " . TN_FUNCTIONS . " AS f
+						ORDER BY f.function_screen";
 		}
 		else {
 			// get user's right via his ROLE
-			$sql = "select f.function_screen,f.function_id,f.function_name,f.function_action
-						from " . TN_ROLE_FUNCTIONS . " as rf,FUNCTIONS as f
-						where rf.role_id='$role_id' and
-							rf.function_id=f.function_id and
+			$sql = "SELECT f.function_screen,f.function_id,f.function_name,f.function_action
+						FROM " . TN_ROLE_FUNCTIONS . " AS rf," . TN_FUNCTIONS . " AS f
+						WHERE rf.role_id='$role_id' AND
+							rf.function_id=f.function_id AND
 							f.function_open=1
-						order by f.function_screen";
+						ORDER BY f.function_screen";
 		}
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
@@ -213,12 +214,12 @@ class User {
 
 	private function _system_init($user_id) {
 		// user can do system_group entry data with POAM via his ROLE
-		$sql = "select r.role_id,r.role_name,s.system_id,s.system_name
-						from " . TN_USER_SYSTEM_ROLES . " as usr,SYSTEMS as s, ROLES as r
-						where usr.user_id='$user_id' and
-							usr.system_id=s.system_id and
+		$sql = "SELECT r.role_id,r.role_name,s.system_id,s.system_name
+						FROM " . TN_USER_SYSTEM_ROLES . " AS usr," . TN_SYSTEMS . " AS s, " . TN_ROLES . " AS r
+						WHERE usr.user_id='$user_id' AND
+							usr.system_id=s.system_id AND
 							usr.role_id=r.role_id
-						order by usr.role_id";
+						ORDER BY usr.role_id";
 		//echo $sql;
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
@@ -253,7 +254,7 @@ class User {
 		$now = date("Y-m-d H:i:s");
 
 		// set user login datetime
-		$sql = "update USERS set user_date_last_login=NOW() where user_id='$user_id'";
+		$sql = "UPDATE " . TN_USERS . " SET user_date_last_login=NOW() WHERE user_id='$user_id'";
 		$res = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
 		$logMsg = "login:";
@@ -531,7 +532,7 @@ Please create a password that adheres to these complexity requirements:<br>
 
 		// alter table USERS add user_history_password varchar(100) not null default '' after user_date_password
 		// check new password if is last three password.
-		$sql = "select user_history_password from " . TN_USERS . " where user_id='$user_id'";
+		$sql = "SELECT user_history_password FROM " . TN_USERS . " WHERE user_id='$user_id'";
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		$user_history_password = "";
 		if($result && $row = $this->dbConn->sql_fetchrow($result)) {
@@ -550,7 +551,7 @@ Please create a password that adheres to these complexity requirements:<br>
 		$user_history_password = substr($user_history_password, 0, 99);
 
 		$now = date("Y-m-d H:i:s");
-		$sql = "UPDATE USERS set user_password='$temppass',user_history_password='$user_history_password',user_date_password='$now' where user_id='$user_id'";
+		$sql = "UPDATE " . TN_USERS . " set user_password='$temppass',user_history_password='$user_history_password',user_date_password='$now' WHERE user_id='$user_id'";
 		$res = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
 		if($res) {
@@ -672,7 +673,7 @@ Please create a password that adheres to these complexity requirements:<br>
 		if($checkday >= $changedate) {
 			// set user active status to suspend
 			$now = date("Y-m-d H:i:s");
-			$sql = "update USERS set user_is_active=0,user_date_deleted='$now' where user_id='$uid'";
+			$sql = "UPDATE " . TN_USERS . " set user_is_active=0,user_date_deleted='$now' WHERE user_id='$uid'";
 			$res = $this->dbConn->sql_query($sql);
 			return 2; // date expired
 		}
@@ -691,7 +692,7 @@ Please create a password that adheres to these complexity requirements:<br>
 			// > 5 times error, user will be locked out, except "root" user
 			$uid = $this->user_id;
 			$now = date("Y-m-d H:i:s");
-			$sql = "update USERS set user_is_active=0,user_date_deleted='$now' where user_id='$uid'";
+			$sql = "UPDATE " . TN_USERS . " set user_is_active=0,user_date_deleted='$now' WHERE user_id='$uid'";
 			$res = $this->dbConn->sql_query($sql);
 
 			$errmsg = "Your account is currently locked out. Please contact the administrator for further assistance.";

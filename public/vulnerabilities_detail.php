@@ -48,7 +48,7 @@ if($view_right || $del_right || $edit_right)
 //select p.prod_vendor, p.prod_name, p.prod_version from PRODUCTS as p, VULN_PRODUCTS as vp, VULNERABILITIES as v where v.vuln_seq=1 and v.vuln_seq=vp.vuln_seq and vp.prod_id=p.prod_id
 function Get_Product_Detail($para) 
 {
-	$sql = "select p.prod_vendor, p.prod_name, p.prod_version from " . TN_PRODUCTS . " as p, VULN_PRODUCTS as vp, VULNERABILITIES as v where v.vuln_seq=$para and v.vuln_seq=vp.vuln_seq and vp.prod_id=p.prod_id";
+	$sql = "SELECT p.prod_vendor, p.prod_name, p.prod_version FROM " . TN_PRODUCTS . " AS p, " . TN_VULN_PRODUCTS . " AS vp, " . TN_VULNERABILITIES . " AS v WHERE v.vuln_seq=$para AND v.vuln_seq=vp.vuln_seq AND vp.prod_id=p.prod_id";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 
@@ -78,7 +78,7 @@ function Get_Product_Detail($para)
 
 function Get_Vul_Detail($para) 
 {
-	$sql = "select * from " . TN_VULNERABILITIES . " where vuln_seq = $para";
+	$sql = "SELECT * FROM " . TN_VULNERABILITIES . " WHERE vuln_seq = $para";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 

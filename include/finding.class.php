@@ -42,10 +42,10 @@ class Finding {
 		$this->errno = 1;
 
 		if($fid > 0) {
-			$sql = "select f.finding_id,f.source_id,fs.source_name,f.asset_id,f.finding_status,f.finding_date_created,
-							DATE_FORMAT(f.finding_date_discovered,'%Y-%m-%d') as finding_date_discovered,f.finding_date_closed,f.finding_data 
-						from ".TN_FINDINGS." as f, FINDING_SOURCES as fs 
-						where finding_id='$fid' and f.source_id=fs.source_id";
+			$sql = "SELECT f.finding_id,f.source_id,fs.source_name,f.asset_id,f.finding_status,f.finding_date_created,
+							DATE_FORMAT(f.finding_date_discovered,'%Y-%m-%d') AS finding_date_discovered,f.finding_date_closed,f.finding_data 
+						from ".TN_FINDINGS." AS f, ".TN_FINDING_SOURCES." AS fs 
+						WHERE finding_id='$fid' AND f.source_id=fs.source_id";
 			
 			$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 			
@@ -68,10 +68,10 @@ class Finding {
 					
 				}
 
-				$sql = "select v.vuln_seq,v.vuln_type,v.vuln_desc_primary,v.vuln_desc_secondary 
-								from ".TN_FINDING_VULNS." as fv, VULNERABILITIES as v 
-								where fv.finding_id='$fid' and 
-									fv.vuln_seq=v.vuln_seq and 
+				$sql = "SELECT v.vuln_seq,v.vuln_type,v.vuln_desc_primary,v.vuln_desc_secondary 
+								FROM ".TN_FINDING_VULNS." AS fv, ".TN_VULNERABILITIES." AS v 
+								WHERE fv.finding_id='$fid' AND 
+									fv.vuln_seq=v.vuln_seq AND 
 									fv.vuln_type=v.vuln_type";
 				$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 				$seq_arr = array();
@@ -134,8 +134,8 @@ class Asset {
 	}
 
 	function init($aid) {
-//		$sql = "select a.asset_name,p.prod_name,p.prod_vendor,p.prod_version from ".TN_ASSETS as a, PRODUCTS as p where a.asset_id='$aid' and a.prod_id=p.prod_id";
-                $sql = "select a.asset_name,p.prod_name,p.prod_vendor,p.prod_version from ".TN_PRODUCTS." p RIGHT OUTER JOIN ASSETS a ON p.prod_id = a.prod_id where a.asset_id='$aid'";
+//		$sql = "SELECT a.asset_name,p.prod_name,p.prod_vendor,p.prod_version FROM ".TN_ASSETS AS a, PRODUCTS AS p WHERE a.asset_id='$aid' AND a.prod_id=p.prod_id";
+                $sql = "SELECT a.asset_name,p.prod_name,p.prod_vendor,p.prod_version FROM ".TN_PRODUCTS." p RIGHT OUTER JOIN " . TN_ASSETS." a ON p.prod_id = a.prod_id WHERE a.asset_id='$aid'";
 
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		if($result && $row = $this->dbConn->sql_fetchrow($result)) {
@@ -147,7 +147,7 @@ class Asset {
 
 			$this->dbConn->sql_freeresult($result);
 
-			$sql = "select s.system_name from ".TN_SYSTEM_ASSETS." as sa, SYSTEMS as s where sa.asset_id='$aid' and sa.system_id=s.system_id";
+			$sql = "SELECT s.system_name FROM ".TN_SYSTEM_ASSETS." AS sa, ".TN_SYSTEMS." AS s WHERE sa.asset_id='$aid' AND sa.system_id=s.system_id";
 			$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 			if($result) {
 				$arr = array();
@@ -159,9 +159,9 @@ class Asset {
 				$this->dbConn->sql_freeresult($result);
 			}
 		}
-			$sql = "select aa.address_ip,aa.address_port,n.network_name 
-						from ".TN_ASSET_ADDRESSES." as aa,NETWORKS as n 
-						where aa.asset_id='$aid' and
+			$sql = "SELECT aa.address_ip,aa.address_port,n.network_name 
+						FROM ".TN_ASSET_ADDRESSES." AS aa,".TN_NETWORKS." AS n 
+						WHERE aa.asset_id='$aid' AND
 							aa.network_id=n.network_id";
 			$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 			if($result) {
@@ -240,7 +240,7 @@ class Vulnerability {
 	}
 
 	private function _init($vseq, $vtype) {
-		$sql = "select * from ".TN_VULNERABILITIES." where vuln_seq='$vseq' and vuln_type='$vtype'";
+		$sql = "SELECT * FROM ".TN_VULNERABILITIES." WHERE vuln_seq='$vseq' AND vuln_type='$vtype'";
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 		if($result && $row = $this->dbConn->sql_fetchrow($result)) {
 			$this->vuln_desc_primary		= $row["vuln_desc_primary"];

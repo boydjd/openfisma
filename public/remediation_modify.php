@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 //
@@ -999,7 +999,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_previous_audits = '".$_POST['new_value']."' ".
 		  "WHERE ".
@@ -1021,7 +1021,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 
 		  // generate our query
 		  $query =
-			"INSERT INTO POAM_EVIDENCE ( ".
+			"INSERT INTO " . TN_POAM_EVIDENCE . " ( ".
 			"  poam_id, ".
 			"  ev_submission, ".
 			"  ev_submitted_by, ".
@@ -1037,7 +1037,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  $results = $db->sql_query($query);
 
 		  // we now have provided evidence, update the POAM status and completion date
-		  $query = "UPDATE POAMS SET poam_status = 'EP', poam_action_date_actual = NOW() WHERE (poam_id = '".$_POST['remediation_id']."')";
+		  $query = "UPDATE " . TN_POAMS . " SET poam_status = 'EP', poam_action_date_actual = NOW() WHERE (poam_id = '".$_POST['remediation_id']."')";
 		  $results = $db->sql_query($query);
 
 		}
@@ -1046,7 +1046,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		if (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evaluate') || ($_POST['action'] == 'ivv_evaluate')) {
 
 		  // generate our query
-		  $query = "UPDATE POAM_EVIDENCE AS pe SET ";
+		  $query = "UPDATE " . TN_POAM_EVIDENCE . " AS pe SET ";
 
 		  // handle the sso evaluation
 		  if ($_POST['action'] == 'sso_evaluate') {
@@ -1088,7 +1088,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  // FSA approval changes status to ES
 		  if (($_POST['action'] == 'fsa_evaluate') && ($_POST['new_value'] == 'APPROVED')) {
 
-			$query   = "UPDATE POAMS AS p SET p.poam_status = 'ES' WHERE p.poam_id = '".$_POST['remediation_id']."' ";
+			$query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'ES' WHERE p.poam_id = '".$_POST['remediation_id']."' ";
 			$results = $db->sql_query($query);
 
 		  }
@@ -1097,14 +1097,14 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  if (($_POST['action'] == 'ivv_evaluate') && ($_POST['new_value'] == 'APPROVED')) {
 
 			// change POAM status
-			$query   = "UPDATE POAMS AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = NOW() WHERE p.poam_id = '".$_POST['remediation_id']."' ";
+			$query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = NOW() WHERE p.poam_id = '".$_POST['remediation_id']."' ";
 			$results = $db->sql_query($query);
 
 			// change FINDING status
 			$query   =
 			  "UPDATE ".
-			  "  FINDINGS AS f,".
-			  "  POAMS AS p ".
+			  "  " . TN_FINDINGS . " AS f,".
+			  "  " . TN_POAMS . " AS p ".
 			  "SET ".
 			  "  f.finding_status = 'CLOSED', ".
 			  "  f.finding_date_closed = NOW() ".
@@ -1119,7 +1119,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  if ($_POST['new_value'] == 'DENIED') {
 
 			// update the poam status and completion date
-			$query = "UPDATE POAMS SET poam_status = 'EN', poam_action_date_actual = NULL WHERE (poam_id = '".$_POST['remediation_id']."')";
+			$query = "UPDATE " . TN_POAMS . " SET poam_status = 'EN', poam_action_date_actual = NULL WHERE (poam_id = '".$_POST['remediation_id']."')";
 			$results = $db->sql_query($query);
 
 		  }
@@ -1137,7 +1137,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_status = '".$_POST['new_value']."' ".
 		  "WHERE ".
@@ -1157,7 +1157,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_action_owner = '".$_POST['new_value']."' ".
 		  "WHERE ".
@@ -1177,7 +1177,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// update our POAM to reflect the new type
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_type               = '".$_POST['new_value']."', ".
 		  "  p.poam_status             = 'OPEN', ".
@@ -1214,7 +1214,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 
 		// exclude all sso non-evaluations
 		$query   =
-		  "UPDATE POAM_EVIDENCE as pe ".
+		  "UPDATE " . TN_POAM_EVIDENCE . " as pe ".
 		  "SET    pe.ev_sso_approval = 'EXCLUDED' ".
 		  "WHERE  pe.ev_sso_approval = 'NONE' ".
 		  "AND    poam_id = '".$_POST['remediation_id']."'";
@@ -1222,7 +1222,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 
 		// exclude all fsa non-evaluations
 		$query   =
-		  "UPDATE POAM_EVIDENCE as pe ".
+		  "UPDATE " . TN_POAM_EVIDENCE . " as pe ".
 		  "SET    pe.ev_fsa_approval = 'EXCLUDED' ".
 		  "WHERE  pe.ev_fsa_approval = 'NONE' ".
 		  "AND    poam_id = '".$_POST['remediation_id']."'";
@@ -1230,7 +1230,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 
 		// exclude all iv&v non-evaluations
 		$query   =
-		  "UPDATE POAM_EVIDENCE as pe ".
+		  "UPDATE " . TN_POAM_EVIDENCE . " as pe ".
 		  "SET    pe.ev_ivv_approval = 'EXCLUDED' ".
 		  "WHERE  pe.ev_ivv_approval = 'NONE' ".
 		  "AND    poam_id = '".$_POST['remediation_id']."'";
@@ -1247,7 +1247,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_blscr = '".$_POST['new_value']."' ".
 		  "WHERE ".
@@ -1274,7 +1274,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_action_date_est   = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status     = 'NONE' ".
@@ -1295,7 +1295,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_action_suggested   = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status      = 'NONE' ".
@@ -1316,7 +1316,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_action_planned = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status  = 'NONE' ".
@@ -1337,7 +1337,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_action_resources = '".$_POST['new_value']."' ".
 		  "WHERE ".
@@ -1357,7 +1357,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_action_status = '".$_POST['new_value']."' ".
 		  "WHERE ".
@@ -1369,7 +1369,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// if it was an approval, change status to EN
 		if ($_POST['new_value'] == 'APPROVED') {
 
-		  $query   = "UPDATE POAMS SET poam_status = 'EN' WHERE poam_id = '".$_POST['remediation_id']."' ";
+		  $query   = "UPDATE " . TN_POAMS . " SET poam_status = 'EN' WHERE poam_id = '".$_POST['remediation_id']."' ";
 		  $results = $db->sql_query($query);
 
 		}
@@ -1377,7 +1377,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// if it was a denial, change status to OPEN
 		else {
 
-		  $query   = "UPDATE POAMS SET poam_status = 'OPEN' WHERE poam_id = '".$_POST['remediation_id']."' ";
+		  $query   = "UPDATE " . TN_POAMS . " SET poam_status = 'OPEN' WHERE poam_id = '".$_POST['remediation_id']."' ";
 		  $results = $db->sql_query($query);
 
 		}
@@ -1393,7 +1393,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_cmeasure_effectiveness = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status          = 'NONE' ".
@@ -1414,7 +1414,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_cmeasure      = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status = 'NONE' ".
@@ -1435,7 +1435,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_cmeasure_justification = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status          = 'NONE' ".
@@ -1456,7 +1456,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_threat_level  = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status = 'NONE' ".
@@ -1477,7 +1477,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_threat_source = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status = 'NONE' ".
@@ -1498,7 +1498,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		// create our update query
 		$query =
 		  "UPDATE ".
-		  "  POAMS AS p ".
+		  "  " . TN_POAMS . " AS p ".
 		  "SET ".
 		  "  p.poam_threat_justification = '".$_POST['new_value']."', ".
 		  "  p.poam_action_status        = 'NONE' ".
@@ -1521,7 +1521,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 	//
 	$query =
 	  "UPDATE ".
-	  "  POAMS AS p ".
+	  "  " . TN_POAMS . " AS p ".
 	  "SET ".
 	  "  p.poam_date_modified = NOW(), ".
 	  "  p.poam_modified_by = '".$user->getUserId()."' ".
@@ -1537,7 +1537,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 
 	$query =
       "INSERT INTO ".
-	  "  POAM_COMMENTS ".
+	  "  " . TN_POAM_COMMENTS . " ".
 	  "( ".
 	  "  poam_id, ".
 	  "  user_id, ".

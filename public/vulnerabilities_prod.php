@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -63,7 +63,7 @@ if($add_right)
 		{
 			foreach ($p_id as $s) 
 			{
-				$product_sql = "replace into VULN_PRODUCTS values( $vuln_id  , 'MAN' , $s)";   //echo "$s<br />";
+				$product_sql = "REPLACE INTO " . TN_VULN_PRODUCTS . " VALUES( $vuln_id  , 'MAN' , $s)";   //echo "$s<br />";
 				$product_result  = mysql_query($product_sql) or die("Query failed: " . mysql_error());
 			}
 		}	
@@ -75,15 +75,15 @@ if($add_right)
 		
 		$p_id = $_POST['remove_product'];
 		//print_r($p_id);
-		$remove_sql = "delete  from " . TN_VULN_PRODUCTS . " where prod_id=$p_id and vuln_seq=$vuln_id";   //echo "$s<br />";
+		$remove_sql = "DELETE  FROM " . TN_VULN_PRODUCTS . " WHERE prod_id=$p_id AND vuln_seq=$vuln_id";   //echo "$s<br />";
 		$remove_result  = mysql_query($remove_sql) or die("Query failed: " . mysql_error());
 	}
 
 	
 	//search products
-	$para = ' limit 20';
+	$para = ' LIMIT 20';
 	if (($_POST["p_keyword"] !='' )	&& ($_POST[submit] == 'Search') )
-		$para = " where prod_meta  LIKE '%". $_POST[p_keyword]. "%' ";	 
+		$para = " WHERE prod_meta  LIKE '%". $_POST[p_keyword]. "%' ";	 
 	else if ($_POST[submit] == 'All Products') 
 		$para = "";	 
 	$smarty->assign('para', $_POST["p_keyword"]);		
@@ -102,7 +102,7 @@ if($add_right)
 
 function Get_Product_List($para) //$para
 {
-	$sql = "select  prod_vendor, prod_name, prod_version, prod_id from " . TN_PRODUCTS . "  $para ";
+	$sql = "SELECT  prod_vendor, prod_name, prod_version, prod_id FROM " . TN_PRODUCTS . "  $para ";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 
@@ -125,7 +125,7 @@ function Get_Vuln_Prod_List($vid) //$para
 {
 	if ($vid != '')	
 	{
-		$sql = "select  p.prod_vendor, p.prod_name, p.prod_version, p.prod_id from " . TN_PRODUCTS . " as p, VULN_PRODUCTS as v where v.vuln_seq = $vid and v.prod_id = p.prod_id";
+		$sql = "SELECT  p.prod_vendor, p.prod_name, p.prod_version, p.prod_id FROM " . TN_PRODUCTS . " as p, " . TN_VULN_PRODUCTS . " AS v WHERE v.vuln_seq = $vid AND v.prod_id = p.prod_id";
 	
 	
 		$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
@@ -154,7 +154,7 @@ function Add_New_Vul() //$para
 {
 	$current_date = date("Y-m-d");   
 	
-	$sql = "insert into VULNERABILITIES(   
+	$sql = "INSERT INTO " . TN_VULNERABILITIES . "(   
 							vuln_type,
 							vuln_desc_primary , 
 							vuln_desc_secondary ,
@@ -181,7 +181,7 @@ function Add_New_Vul() //$para
 							vuln_range_local ,
 							vuln_range_remote ,
 							vuln_range_user		
-							)  values (					
+							)  VALUES (					
 							'MAN' ,  '".
 							$_POST[vuln_desc_primary] . "' ,  '" . 
 							$_POST[vuln_desc_secondary] . "' ,  '" . 
@@ -214,7 +214,7 @@ function Add_New_Vul() //$para
 
 	if($result) 
 	{		
-		$lastest_vul_sql = "select max(vuln_seq) from " . TN_VULNERABILITIES ;
+		$lastest_vul_sql = "SELECT MAX(vuln_seq) FROM " . TN_VULNERABILITIES ;
 		$lastest_vul_result = mysql_query($lastest_vul_sql) or die("Query failed: " . mysql_error());
 		$lastest_vul_value = mysql_fetch_row($lastest_vul_result);
 		$lastest_vul_value[0];

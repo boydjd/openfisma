@@ -22,7 +22,7 @@ $logArray = array('poam_action_owner'=>'UPDATE: responsible system',
 
 function openfisma_log($db, $userid, $finding_id, $field, $old_val, $new_val, $time){
     $event = getEventName($field);
-    $SQL = "INSERT INTO AUDIT_LOG ( ".
+    $SQL = "INSERT INTO ".TN_AUDIT_LOG." ( ".
             	  "  finding_id, ".
             	  "  user_id, ".
             	  "  date, ".
@@ -39,7 +39,7 @@ function openfisma_log($db, $userid, $finding_id, $field, $old_val, $new_val, $t
 }
 
 function add_poam_comment($db, $user_id, $poam_id, $ev_id, $parent_id, $topic, $body, $log, $time, $type){
-    $sql = "INSERT INTO `POAM_COMMENTS` 
+    $sql = "INSERT INTO ".TN_POAM_COMMENTS." 
                 (
                     `poam_id`,
                     `user_id`,

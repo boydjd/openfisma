@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate"); 
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -117,9 +117,9 @@ if($view_right)
 			 "  fs.source_nickname, ".
 			 "  fs.source_name ".
 			 "FROM ".
-			 "  FINDINGS AS f, ".
-			 "  FINDING_SOURCES AS fs, ".
-			 "  POAMS AS p ".
+			 "  " . TN_FINDINGS . " AS f, ".
+			 "  " . TN_FINDING_SOURCES . " AS fs, ".
+			 "  " . TN_POAMS . " AS p ".
 			 "WHERE ( ".
 			 "  p.finding_id = f.finding_id AND ".
 			 "  fs.source_id = f.source_id ".
@@ -142,8 +142,8 @@ if($view_right)
 			 "  s.system_nickname, ".
 			 "  s.system_name ".
 			 "FROM ".
-			 "  SYSTEMS AS s, ".
-			 "  POAMS AS p ".
+			 "  " . TN_SYSTEMS . " AS s, ".
+			 "  " . TN_POAMS . " AS p ".
 			 "WHERE ( ".
 	         "  s.system_id IN (".$system_list.") ".
 			 ") ".
@@ -165,7 +165,7 @@ if($view_right)
 			 "  system_nickname, ".
 			 "  system_name ".
 			 "FROM ".
-			 "  SYSTEMS ORDER BY system_nickname ASC" ;
+			 "  " . TN_SYSTEMS . " ORDER BY system_nickname ASC" ;
 
 	// execute our built query
 	$results = $db->sql_query($query);
@@ -180,7 +180,7 @@ if($view_right)
 			 "  system_nickname, ".
 			 "  system_name ".
 			 "FROM ".
-			 "  SYSTEMS ORDER BY system_nickname ASC" ;
+			 "  " . TN_SYSTEMS . " ORDER BY system_nickname ASC" ;
 
 	// execute our built query
 	$results = $db->sql_query($query);
@@ -207,12 +207,12 @@ if($view_right)
 			   "  p.poam_date_created, ".
 			   "  p.poam_action_date_est ".
 			   "FROM ".
-			   "  FINDINGS AS f, ".
-			   "  FINDING_SOURCES AS fs, ".
-			   "  POAMS AS p, ".	
-			   "  SYSTEMS AS s1, ".
-			   "  SYSTEMS AS s2, ".
-	           "  SYSTEM_ASSETS AS sa ".
+			   "  " . TN_FINDINGS . " AS f, ".
+			   "  " . TN_FINDING_SOURCES . " AS fs, ".
+			   "  " . TN_POAMS . " AS p, ".	
+			   "  " . TN_SYSTEMS . " AS s1, ".
+			   "  " . TN_SYSTEMS . " AS s2, ".
+	           "  " . TN_SYSTEM_ASSETS . " AS sa ".
 			   "WHERE ( ";
 	
 	// only show relevant systems
@@ -287,27 +287,27 @@ if($view_right)
 
 		case "REJ-SSO":
 
-			$query .= " p.poam_status = 'EN' AND p.poam_id in (select pe.poam_id from " . TN_POAM_EVIDENCE . " as pe where (pe.ev_sso_evaluation = 'DENIED')) AND ";
+			$query .= " p.poam_status = 'EN' AND p.poam_id IN (select pe.poam_id from " . TN_POAM_EVIDENCE . " AS pe WHERE (pe.ev_sso_evaluation = 'DENIED')) AND ";
 			break;
 
 		case "REJ-SNP":
 
-			$query .= " p.poam_status = 'EN' AND p.poam_id in (select pe.poam_id from " . TN_POAM_EVIDENCE  . " as pe where (pe.ev_fsa_evaluation = 'DENIED')) AND ";
+			$query .= " p.poam_status = 'EN' AND p.poam_id IN (select pe.poam_id from " . TN_POAM_EVIDENCE  . " AS pe WHERE (pe.ev_fsa_evaluation = 'DENIED')) AND ";
 			break;
 
 		case "REJ-IVV":
 
-			$query .= " p.poam_status = 'EN' AND p.poam_id in (select pe.poam_id from " . TN_POAM_EVIDENCE . " as pe where (pe.ev_ivv_evaluation = 'DENIED')) AND ";
+			$query .= " p.poam_status = 'EN' AND p.poam_id IN (select pe.poam_id from " . TN_POAM_EVIDENCE . " AS pe WHERE (pe.ev_ivv_evaluation = 'DENIED')) AND ";
 			break;
 
 		case "EP-SSO":
 
-			$query .= " p.poam_status = 'EP' AND p.poam_id in (select distinct pe.poam_id from " . TN_POAM_EVIDENCE . " as pe where (pe.ev_sso_evaluation = 'NONE' and pe.ev_fsa_evaluation = 'NONE' and pe.ev_ivv_evaluation = 'NONE')) AND ";
+			$query .= " p.poam_status = 'EP' AND p.poam_id in (select distinct pe.poam_id from " . TN_POAM_EVIDENCE . " AS pe WHERE (pe.ev_sso_evaluation = 'NONE' AND pe.ev_fsa_evaluation = 'NONE' AND pe.ev_ivv_evaluation = 'NONE')) AND ";
 			break;
 
 		case "EP-SNP":
 
-			$query .= " p.poam_status = 'EP' AND p.poam_id in (select distinct pe.poam_id from " . TN_POAM_EVIDENCE . " as pe where (pe.ev_sso_evaluation = 'APPROVED' and pe.ev_fsa_evaluation = 'NONE' and pe.ev_ivv_evaluation = 'NONE') order by ev_id desc) AND ";
+			$query .= " p.poam_status = 'EP' AND p.poam_id IN (select distinct pe.poam_id FROM " . TN_POAM_EVIDENCE . " AS pe WHERE (pe.ev_sso_evaluation = 'APPROVED' AND pe.ev_fsa_evaluation = 'NONE' AND pe.ev_ivv_evaluation = 'NONE') ORDER BY ev_id desc) AND ";
 			break;
 
 		case "ES":
@@ -416,7 +416,7 @@ if($view_right)
 	$list    = $db->sql_fetchrowset($results);
 
 	//updated by chang 03022006
-	$current_page_query = $query . " limit $from_record,$row_no" ;
+	$current_page_query = $query . " LIMIT $from_record,$row_no" ;
 	//echo $current_page_query = $query; // . " limit $from_record, 10 " ;
 	$results_current_page  = $db->sql_query($current_page_query );
 	$current_page_list = $db->sql_fetchrowset($results_current_page);
@@ -528,7 +528,7 @@ if($view_right)
 		$query = 
 			"SELECT ".
 			"ev_sso_evaluation ".
-			"FROM POAM_EVIDENCE ".
+			"FROM " . TN_POAM_EVIDENCE . " ".
 			"WHERE ( ".
 			"poam_id = '".$list[$row]['poam_id']."'".
 			") ".

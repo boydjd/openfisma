@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -139,11 +139,10 @@ function csvQueryBuild($row, &$db){
     $row[1] = getSnsIdByName('NETWORK', $row[1], $db);
     $row[5] = getSnsIdByName('SOURCE', $row[5], $db);
     if (!$row[0] || !$row[1] || !$row[5]) return false;
-    $sql[] = "INSERT INTO ASSETS (asset_name, asset_date_created, asset_source) VALUES(':$row[3]:$row[4]', '$row[2]', 'SCAN')";
-    $sql[] = "INSERT INTO SYSTEM_ASSETS (system_id, asset_id, system_is_owner) VALUES($row[0], LAST_INSERT_ID(), 1)";
-    $sql[] = "INSERT INTO ASSET_ADDRESSES (asset_id,network_id,address_date_created,address_ip,address_port) VALUES(
-              LAST_INSERT_ID(), $row[1], '$row[2]', '$row[3]', '$row[4]')";
-    $sql[] = "INSERT INTO FINDINGS (source_id,asset_id,finding_status,finding_date_created,finding_date_discovered,finding_data) VALUES(
+    $sql[] = "INSERT INTO " . TN_ASSETS . " (asset_name, asset_date_created, asset_source) VALUES(':$row[3]:$row[4]', '$row[2]', 'SCAN')";
+    $sql[] = "INSERT INTO " . TN_SYSTEM_ASSETS . " (system_id, asset_id, system_is_owner) VALUES($row[0], LAST_INSERT_ID(), 1)";
+    $sql[] = "INSERT INTO " . TN_ASSET_ADDRESSES . " (asset_id,network_id,address_date_created,address_ip,address_port) VALUES(LAST_INSERT_ID(), $row[1], '$row[2]', '$row[3]', '$row[4]')";
+    $sql[] = "INSERT INTO " . TN_FINDINGS . " (source_id,asset_id,finding_status,finding_date_created,finding_date_discovered,finding_data) VALUES(
               $row[5], LAST_INSERT_ID(), 'OPEN', NOW(), '$row[2]', '$row[6]')";
     return $sql;
 }
@@ -154,13 +153,13 @@ function getSnsIdByName($type, $name_str, &$db){
     }
     switch ($type) {
         case 'SYSTEM':
-            $sql = "SELECT system_id FROM SYSTEMS WHERE system_nickname = '$name_str'";
+            $sql = "SELECT system_id FROM " . TN_SYSTEMS . " WHERE system_nickname = '$name_str'";
             break;
         case 'NETWORK':
-            $sql = "SELECT network_id FROM NETWORKS WHERE network_nickname = '$name_str'";
+            $sql = "SELECT network_id FROM " . TN_NETWORKS . " WHERE network_nickname = '$name_str'";
             break;
         case 'SOURCE':
-            $sql = "SELECT source_id FROM FINDING_SOURCES WHERE source_nickname = '$name_str'";
+            $sql = "SELECT source_id FROM " . TN_FINDING_SOURCES . " WHERE source_nickname = '$name_str'";
             break;
     
         default:

@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -57,7 +57,7 @@ if($view_right || $del_right || $edit_right)
 		{
 			foreach ($p_id as $s) 
 			{
-				$product_sql = "replace into VULN_PRODUCTS values( $vuln_id  , 'MAN' , $s)";   //echo "$s<br />";
+				$product_sql = "REPLACE INTO " . TN_VULN_PRODUCTS . " VALUES( $vuln_id  , 'MAN' , $s)";   //echo "$s<br />";
 				$product_result  = mysql_query($product_sql) or die("Query failed: " . mysql_error());
 			}
 		}	
@@ -69,7 +69,7 @@ if($view_right || $del_right || $edit_right)
 		
 		$p_id = $_POST['remove_product'];
 		
-		$remove_sql = "delete  from " . TN_VULN_PRODUCTS . " where prod_id=$p_id and vuln_seq=$vuln_id ";   //echo "$s<br />";
+		$remove_sql = "DELETE  FROM " . TN_VULN_PRODUCTS . " WHERE prod_id=$p_id and vuln_seq=$vuln_id ";   //echo "$s<br />";
 		$remove_result  = mysql_query($remove_sql) or die("Query failed: " . mysql_error());
 	}
 	
@@ -94,7 +94,7 @@ if($view_right || $del_right || $edit_right)
 
 	
 	if ($_POST["p_keyword"] !='' )	
-		$k_para = " where prod_meta  LIKE '%". $_POST[p_keyword]. "%'  ";	 
+		$k_para = " WHERE prod_meta  LIKE '%". $_POST[p_keyword]. "%'  ";	 
 
 	$smarty->assign('p_page', $p_page);
 		
@@ -140,7 +140,7 @@ function Get_Product_List($para, $p_n) //$para
 {
 	$from_page = ($p_n - 1) * 20 ;
 
-	$sql = "select  prod_vendor, prod_name, prod_version, prod_id from " . TN_PRODUCTS . "  $para  limit $from_page , 20 ";
+	$sql = "SELECT  prod_vendor, prod_name, prod_version, prod_id FROM " . TN_PRODUCTS . "  $para  LIMIT $from_page , 20 ";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 
@@ -161,7 +161,7 @@ function Get_Product_List($para, $p_n) //$para
 
 function Get_Product_Page_Amount($para) //$para
 {
-	$sql = "select prod_id from " . TN_PRODUCTS . " $para ";
+	$sql = "SELECT prod_id FROM " . TN_PRODUCTS . " $para ";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$no_rows = mysql_num_rows($result) ;
 	
@@ -173,7 +173,7 @@ function Get_Product_Page_Amount($para) //$para
 
 function Get_Product_Detail($para) 
 {
-	$sql = "select p.prod_vendor, p.prod_name, p.prod_version, p.prod_id from " . TN_PRODUCTS . " as p, VULN_PRODUCTS as vp, VULNERABILITIES as v where v.vuln_seq=$para and v.vuln_seq=vp.vuln_seq and vp.prod_id=p.prod_id";
+	$sql = "SELECT p.prod_vendor, p.prod_name, p.prod_version, p.prod_id FROM " . TN_PRODUCTS . " AS p, " . TN_VULN_PRODUCTS . " AS vp, " . TN_VULNERABILITIES . " AS v WHERE v.vuln_seq=$para AND v.vuln_seq=vp.vuln_seq AND vp.prod_id=p.prod_id";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 
@@ -199,7 +199,7 @@ function Get_Product_Detail($para)
 
 function Get_Vul_Detail($para) 
 {
-	$sql = "select * from " . TN_VULNERABILITIES . " where vuln_seq = $para";
+	$sql = "SELECT * FROM " . TN_VULNERABILITIES . " WHERE vuln_seq = $para";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 
@@ -290,7 +290,7 @@ function Get_Vuln_Prod_List($vid) //$para
 {
 	if ($vid != '')	
 	{
-		$sql = "select  p.prod_vendor, p.prod_name, p.prod_version, p.prod_id from " . TN_PRODUCTS . " as p, VULN_PRODUCTS as v where v.vuln_seq = $vid and v.prod_id = p.prod_id";
+		$sql = "SELECT  p.prod_vendor, p.prod_name, p.prod_version, p.prod_id FROM " . TN_PRODUCTS . " AS p, " . TN_VULN_PRODUCTS . " AS v WHERE v.vuln_seq = $vid AND v.prod_id = p.prod_id";
 	
 	
 		$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
@@ -317,7 +317,7 @@ function Get_Vuln_Prod_List($vid) //$para
 
 function update_Vul($vid) //$para
 {
- 	$sql = "update VULNERABILITIES set    
+ 	$sql = "UPDATE " . TN_VULNERABILITIES . " SET    
 							vuln_desc_primary = '". $_POST[vuln_desc_primary] . "',  
 							vuln_desc_secondary = '". $_POST[vuln_desc_secondary]  . "',  
 							vuln_date_modified = '". $current_date . "',

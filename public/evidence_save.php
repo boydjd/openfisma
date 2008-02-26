@@ -37,7 +37,7 @@ if ($_FILES && ($poam_id > 0)) {
       
     // generate our query
     $query =
-    "INSERT INTO POAM_EVIDENCE ( ".
+    "INSERT INTO " . TN_POAM_EVIDENCE . " ( ".
     "  poam_id, ".
     "  ev_submission, ".
     "  ev_submitted_by, ".
@@ -53,7 +53,7 @@ if ($_FILES && ($poam_id > 0)) {
     $result_insert = $db->sql_query($query);
     
     // we now have provided evidence, update the POAM status and completion date
-    $query = "UPDATE POAMS SET poam_status = 'EP', poam_action_date_actual = NOW() WHERE (poam_id = '".$poam_id."')";
+    $query = "UPDATE " . TN_POAMS . " SET poam_status = 'EP', poam_action_date_actual = NOW() WHERE (poam_id = '".$poam_id."')";
     $result_update = $db->sql_query($query);
     
 //    $reload_page = '<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.js"></script>';
@@ -98,7 +98,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     $old_val = $db->sql_fetchrow();
     
     // generate our query
-    $query = "UPDATE POAM_EVIDENCE AS pe SET ";
+    $query = "UPDATE " . TN_POAM_EVIDENCE . " AS pe SET ";
 
     // handle the sso evaluation
     if ($_POST['action'] == 'sso_evaluate') {
@@ -140,7 +140,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     // FSA approval changes status to ES
     if (($_POST['action'] == 'fsa_evaluate') && ($_POST['new_value'] == 'APPROVED')) {
 
-        $query   = "UPDATE POAMS AS p SET p.poam_status = 'ES' WHERE p.poam_id = '".$_POST['remediation_id']."' ";
+        $query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'ES' WHERE p.poam_id = '".$_POST['remediation_id']."' ";
         $results = $db->sql_query($query);
 
     }
@@ -149,14 +149,14 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     if (($_POST['action'] == 'ivv_evaluate') && ($_POST['new_value'] == 'APPROVED')) {
 
         // change POAM status
-        $query   = "UPDATE POAMS AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = NOW() WHERE p.poam_id = '".$_POST['remediation_id']."' ";
+        $query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = NOW() WHERE p.poam_id = '".$_POST['remediation_id']."' ";
         $results = $db->sql_query($query);
 
         // change FINDING status
         $query   =
         "UPDATE ".
-        "  FINDINGS AS f,".
-        "  POAMS AS p ".
+        "  " . TN_FINDINGS . " AS f,".
+        "  " . TN_POAMS . " AS p ".
         "SET ".
         "  f.finding_status = 'CLOSED', ".
         "  f.finding_date_closed = NOW() ".
@@ -171,7 +171,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     if ($_POST['new_value'] == 'DENIED') {
 
         // update the poam status and completion date
-        $query = "UPDATE POAMS SET poam_status = 'EN', poam_action_date_actual = NULL WHERE (poam_id = '".$_POST['remediation_id']."')";
+        $query = "UPDATE " . TN_POAMS . " SET poam_status = 'EN', poam_action_date_actual = NULL WHERE (poam_id = '".$_POST['remediation_id']."')";
         $results = $db->sql_query($query);
 
     }

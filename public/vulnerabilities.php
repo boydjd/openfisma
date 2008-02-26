@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 /*
@@ -285,12 +285,12 @@ function Get_Vul_List($para, $p_n)
 
     if ($para=='')
     {
-        $total_sql = "select vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity from " . TN_VULNERABILITIES ;
+        $total_sql = "SELECT vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity FROM " . TN_VULNERABILITIES ;
         $total_result  = mysql_query($total_sql) or die("Query failed: " . mysql_error());
         $total_row = mysql_num_rows($total_result) ;
         $total_pages = ceil( $total_row / 20 );
 
-        $sql = "select vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity from " . TN_VULNERABILITIES." limit $from_page , 20";
+        $sql = "SELECT vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity FROM " . TN_VULNERABILITIES." LIMIT $from_page , 20";
         $result  = mysql_query($sql) or die("Query failed: " . mysql_error());
         $data = null;
 
@@ -308,12 +308,12 @@ function Get_Vul_List($para, $p_n)
     }
     else//  if ($para=='')
     {
-        $total_sql = "select vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity from " . TN_VULNERABILITIES." where $para ";
+        $total_sql = "SELECT vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity FROM " . TN_VULNERABILITIES." where $para ";
         $total_result  = mysql_query($total_sql) or die("Query failed: " . mysql_error());
         $total_row = mysql_num_rows($total_result) ;
         $total_pages = ceil( $total_row / 20 );
 
-        $sql = "select vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity from " . TN_VULNERABILITIES . " where $para  limit $from_page , 20";
+        $sql = "SELECT vuln_seq, vuln_type, vuln_desc_primary, vuln_date_published, vuln_severity FROM " . TN_VULNERABILITIES . " WHERE $para  LIMIT $from_page , 20";
         $result  = mysql_query($sql) or die("Query failed: " . mysql_error());
         $data = null;
 
@@ -336,7 +336,7 @@ function Get_Vul_List($para, $p_n)
 //get amount of vulnerabilities
 function get_quanlity()
 {
-    $t_sql = "select count(vuln_type) from " . TN_VULNERABILITIES ;
+    $t_sql = "SELECT COUNT(vuln_type) FROM " . TN_VULNERABILITIES ;
     $t_results  = mysql_query($t_sql) ;
 
     $t_count = mysql_fetch_row($t_results);
@@ -348,7 +348,7 @@ function get_quanlity()
 //return vulnerability data : type, amount
 function Get_Vul_Type()
 {
-    $vul_sql = " select vuln_type, count(vuln_type) as vuln_total  from " . TN_VULNERABILITIES . " group by vuln_type " ;
+    $vul_sql = " SELECT vuln_type, COUNT(vuln_type) AS vuln_total  FROM " . TN_VULNERABILITIES . " GROUP BY vuln_type " ;
 
     $vul_results  = mysql_query($vul_sql) ;
 

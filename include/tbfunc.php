@@ -224,10 +224,10 @@ function PageScroll($tb_id,$pgno,$of=0,$asc=0)
 	$index = $tb_id - 1;
 	$tbname = $table_arr[$index];
 
-	if($tbname == "SYSTEM_GROUPS")
-		$sql = "select count(*) as num from $_db_name.$tbname where sysgroup_is_identity=0";
+	if($tbname == "" . TN_SYSTEM_GROUPS . "")
+		$sql = "SELECT COUNT(*) AS num FROM $_db_name.$tbname WHERE sysgroup_is_identity=0";
 	else
-		$sql = "select count(*) as num from $_db_name.$tbname";
+		$sql = "SELECT COUNT(*) AS num FROM $_db_name.$tbname";
 
 	$result = $db->sql_query($sql);
 	if($line = $db->sql_fetchrow($result))
@@ -329,7 +329,7 @@ function DoStat($tb_id, $n_id)
 
 		if($relation[0] == 1 && count($relation) == 4)
 		{
-			$sql = "select $relation[2] as skey,$relation[3] as svalue from $relation[1]";
+			$sql = "SELECT $relation[2] AS skey,$relation[3] AS svalue FROM $relation[1]";
 			//echo $sql;
 			$result = $db->sql_query($sql);
 			$num = 0;
@@ -369,10 +369,10 @@ function DoStat($tb_id, $n_id)
 		else
 			$fn = $field_arr[$fnid];
 
-		if($tbname == "SYSTEM_GROUPS")
-			$sql = "select $fn, count(*) from $_db_name.$tbname where sysgroup_is_identity=0 group by $field_arr[$fnid]";
+		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+			$sql = "SELECT $fn, COUNT(*) FROM $_db_name.$tbname WHERE sysgroup_is_identity=0 GROUP BY $field_arr[$fnid]";
 		else
-			$sql = "select $fn, count(*) from $_db_name.$tbname group by $field_arr[$fnid]";
+			$sql = "SELECT $fn, COUNT(*) FROM $_db_name.$tbname GROUP BY $field_arr[$fnid]";
 		//echo $sql;
 		$result = $db->sql_query($sql);
 
@@ -466,7 +466,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 
 			if($relation[0] == 1 && count($relation) == 4)
 			{
-				$sql = "select $relation[2],$relation[3] from $relation[1]";
+				$sql = "SELECT $relation[2],$relation[3] FROM $relation[1]";
 				//echo $sql;
 				$result = $db->sql_query($sql);
 
@@ -540,15 +540,15 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 			$startpos = 0;
 
 		$othersql = "";
-		if($tbname == "SYSTEM_GROUPS")
+		if($tbname == "" . TN_SYSTEM_GROUPS . "")
 			$othersql = " and sysgroup_is_identity=0 ";
 
 		if($n_id == 0)
-			$sql = "select $field from $_db_name.$tbname where $tb_fid='$q_v' $othersql limit $startpos, $pagesize";
+			$sql = "SELECT $field FROM $_db_name.$tbname WHERE $tb_fid='$q_v' $othersql LIMIT $startpos, $pagesize";
 		else if($relationsearch)
-			$sql = "select $field from $_db_name.$tbname where $field_arr[$nid] in ($real_con) $othersql limit $startpos, $pagesize";
+			$sql = "SELECT $field FROM $_db_name.$tbname WHERE $field_arr[$nid] IN ($real_con) $othersql LIMIT $startpos, $pagesize";
 		else
-			$sql = "select $field from $_db_name.$tbname where $field_arr[$nid] like '%$q_v%' $othersql limit $startpos, $pagesize";
+			$sql = "SELECT $field FROM $_db_name.$tbname WHERE $field_arr[$nid] LIKE '%$q_v%' $othersql LIMIT $startpos, $pagesize";
 
 		//echo $sql;
 		$result = $db->sql_query($sql);
@@ -626,7 +626,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=form&r_id=$id\" title=\"edit this $tbcnname\"><img src=\"images/edit.png\" border=\"0\"></a></td>\n";
 			if($view_right)
 				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=view&r_id=$id\" title=\"display the $tbcnname\"><img src=\"images/view.gif\" border=\"0\"></a></td>\n";
-			if($tbname == "ROLES") {
+			if($tbname == "" . TN_ROLES . "") {
 				if($edit_right && $view_right)
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=rrform&r_id=$id\" title=\"set rights for this $tbcnname\"><img src=\"images/signtick.gif\" border=\"0\"></a></td>\n";
 			}
@@ -652,7 +652,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 		$body .= "<th>Edit</td>\n";
 	if($view_right)
 		$body .= "<th>View</td>\n";
-	if($tbname == "ROLES") {
+	if($tbname == "" . TN_ROLES . "") {
 		if($edit_right && $view_right)
 			$body .= "<th>Right</td>\n";
 	}
@@ -714,7 +714,7 @@ function AddRecord($tb_id)
 
 		if($field_key_arr[$i] == 2)
 		{
-			$sql = "select $tb_fid from $_db_name.$tbname where $field_arr[$i]='$$fieldname'";
+			$sql = "SELECT $tb_fid FROM $_db_name.$tbname WHERE $field_arr[$i]='$$fieldname'";
 			$result = $db->sql_query($sql);
 
 			if($line_arr = $db->sql_fetchrow($result))
@@ -743,23 +743,23 @@ function AddRecord($tb_id)
 
 	if($res)
 	{
-		$sql = "insert into $_db_name.$tbname ($field) values ($field_v)";
+		$sql = "INSERT INTO $_db_name.$tbname ($field) VALUES ($field_v)";
 		//echo $sql;
 		$res = $db->sql_query($sql);
 
 		$id = $db->sql_nextid();
 		// special funciton for the USERS create date field
-		if($tbname == "USERS") {
+		if($tbname == "" . TN_USERS . "") {
 			user_create_date($tbname, $id);
 			UserSystemRoleDefine($id, $_POST);
 		}
-		if($tbname == "SYSTEMS") {
+		if($tbname == "" . TN_SYSTEMS . "") {
 			SystemDefine($id, $_POST);
 		}
 		// special operation for PRODUCTS - need to generate META field
 		// and ensure that nvd_created is set false. 04-04-2006cfd
-		if($tbname == "PRODUCTS") {
-		  $meta_sql = "update PRODUCTS set prod_meta = concat(prod_vendor, ' ', prod_name, ' ', prod_version), prod_nvd_defined = 0 where prod_id = $id";
+		if($tbname == "" . TN_PRODUCTS . "") {
+		  $meta_sql = "UPDATE " . TN_PRODUCTS . " SET prod_meta = concat(prod_vendor, ' ', prod_name, ' ', prod_version), prod_nvd_defined = 0 WHERE prod_id = $id";
 		  $db->sql_query($meta_sql);
 		  }
 	}
@@ -814,7 +814,7 @@ function UpdateRecord($tb_id, $id)
 
 		if($field_key_arr[$i] == 2)
 		{
-			$sql = "select $tb_fid from $_db_name.$tbname where $field_arr[$i]='$$fieldname'";
+			$sql = "SELECT $tb_fid FROM $_db_name.$tbname WHERE $field_arr[$i]='$$fieldname'";
 			$result = $db->sql_query($sql);
 
 			if($line_arr = $db->sql_fetchrow($result))
@@ -841,22 +841,22 @@ function UpdateRecord($tb_id, $id)
 
 	if($res)
 	{
-		if($tbname == "SYSTEM_GROUPS")
-			$sql = "update $_db_name.$tbname set $field where $tb_fid='$id' and sysgroup_is_identity=0";
+		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+			$sql = "UPDATE $_db_name.$tbname SET $field WHERE $tb_fid='$id' AND sysgroup_is_identity=0";
 		else
-			$sql = "update $_db_name.$tbname set $field where $tb_fid='$id'";
+			$sql = "UPDATE $_db_name.$tbname SET $field WHERE $tb_fid='$id'";
 		//echo $sql;
 		$res = $db->sql_query($sql);
 
 		// special funciton for the USERS deactive date field
-		if($tbname == "USERS") {
+		if($tbname == "" . TN_USERS . "") {
 			user_deactive_date($tbname, $id);
 			// modify user password, reset change password date to "0000-00-00"
 			if(!empty($temp_password))
 				user_change_password($tbname, $id);
 			UserSystemRoleDefine($id, $_POST);
 		}
-		if($tbname == "SYSTEMS") {
+		if($tbname == "" . TN_SYSTEMS . "") {
 			SystemDefine($id, $_POST);
 		}
 	}
@@ -878,25 +878,25 @@ function DeleteRecord($tb_id, $id)
 	$res = false;
 	if($id > 0)
 	{
-		$sql = "delete from $_db_name.$tbname where $tb_fid='$id'";
+		$sql = "DELETE FROM $_db_name.$tbname WHERE $tb_fid='$id'";
 		//echo $sql;
 		$res = $db->sql_query($sql);
 
 		// delete all role's right
-		if($tbname == "ROLES") {
-			$sql = "delete from $_db_name.ROLE_FUNCTIONS where role_id='$id'";
+		if($tbname == "" . TN_ROLES . "") {
+			$sql = "DELETE FROM $_db_name.ROLE_FUNCTIONS WHERE role_id='$id'";
 			//echo $sql;
 			$res = $db->sql_query($sql);
 		}
 
-		if($tbname == "USERS") {
-			$sql = "delete from $_db_name.USER_SYSTEM_ROLES where user_id='$id'";
+		if($tbname == "" . TN_USERS . "") {
+			$sql = "DELETE FROM $_db_name.USER_SYSTEM_ROLES WHERE user_id='$id'";
 			//echo $sql;
 			$res = $db->sql_query($sql);
 		}
 
-		if($tbname == "SYSTEMS") {
-			$sql = "delete from $_db_name.SYSTEM_GROUP_SYSTEMS where system_id='$id'";
+		if($tbname == "" . TN_SYSTEMS . "") {
+			$sql = "DELETE FROM $_db_name.SYSTEM_GROUP_SYSTEMS WHERE system_id='$id'";
 			//echo $sql;
 			$res = $db->sql_query($sql);
 		}
@@ -937,7 +937,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 			$type = $field_type_arr[$i];
 			if($relation[0] == 1 && count($relation) == 4)
 			{
-				$sql = "select $relation[2],$relation[3] from $relation[1]";
+				$sql = "SELECT $relation[2],$relation[3] FROM $relation[1]";
 				//echo $sql;
 				$result = $db->sql_query($sql);
 				$num = 0;
@@ -988,10 +988,10 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 		if($asc == 1)
 			$order .= " DESC ";
 
-		if($tbname == "SYSTEM_GROUPS")
-			$sql = "select $field from $_db_name.$tbname where  sysgroup_is_identity=0 order by $order limit $startpos, $pagesize";
+		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+			$sql = "SELECT $field FROM $_db_name.$tbname WHERE  sysgroup_is_identity=0 ORDER BY $order LIMIT $startpos, $pagesize";
 		else
-			$sql = "select $field from $_db_name.$tbname order by $order limit $startpos, $pagesize";
+			$sql = "SELECT $field FROM $_db_name.$tbname ORDER BY $order LIMIT $startpos, $pagesize";
 		//echo $sql;
 		$result = $db->sql_query($sql);
 
@@ -1069,7 +1069,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=form&r_id=$id\" title=\"edit the $tbcnname\"><img src=\"images/edit.png\" border=\"0\"></a></td>\n";
 				if($view_right)
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=view&r_id=$id\" title=\"display the $tbcnname\"><img src=\"images/view.gif\" border=\"0\"></a></td>\n";
-				if($tbname == "ROLES") {
+				if($tbname == "" . TN_ROLES . "") {
 					if($edit_right && $view_right)
 						$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=rrform&r_id=$id\" title=\"set right for this $tbcnname\"><img src=\"images/signtick.gif\" border=\"0\"></a></td>\n";
 				}
@@ -1111,7 +1111,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 		$body .= "<th>Edit</td>\n";
 	if($view_right)
 		$body .= "<th>View</td>\n";
-	if($tbname == "ROLES") {
+	if($tbname == "" . TN_ROLES . "") {
 		if($edit_right && $view_right)
 			$body .= "<th>Right</td>\n";
 	}
@@ -1173,10 +1173,10 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 				$field .= "," . $fn;
 		}
 
-		if($tbname == "SYSTEM_GROUPS")
-			$sql = "select $field from $_db_name.$tbname where $tb_fid='$id' and sysgroup_is_identity=0";
+		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+			$sql = "SELECT $field FROM $_db_name.$tbname WHERE $tb_fid='$id' AND sysgroup_is_identity=0";
 		else
-			$sql = "select $field from $_db_name.$tbname where $tb_fid='$id'";
+			$sql = "SELECT $field FROM $_db_name.$tbname WHERE $tb_fid='$id'";
 		$result = $db->sql_query($sql);
 
 		if($line_arr = $db->sql_fetchrow($result))
@@ -1211,7 +1211,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 ?>
 
 
-<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
+<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" clASs="tbframe">
 <form name="tbform" method="post" action="<?=$pageurl?>" onsubmit="return go(document.tbform);">
 <input type="hidden" name="tid" value="<?=$tb_id?>">
 <input type="hidden" name="pgno" value="<?=$pgno?>">
@@ -1244,7 +1244,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 	<?
 			if($bFlag && isset($line[$i]))
 				$nowval =  $line[$i];
-			$sql = "select $relation[2],$relation[3] from $relation[1]";
+			$sql = "SELECT $relation[2],$relation[3] FROM $relation[1]";
 			//echo $sql;
 			$result = $db->sql_query($sql);
 			$num = 0;
@@ -1367,9 +1367,9 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 </table>
 <br>
 <?
-	if($tbname == "USERS")
+	if($tbname == "" . TN_USERS . "")
 		echo UserSystemRoleDefineTable($id, true);
-	if($tbname == "SYSTEMS")
+	if($tbname == "" . TN_SYSTEMS."")
 		echo SystemDefineTable($id, true);
 ?>
 <table border="0" width="300">
@@ -1431,7 +1431,7 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 				$field .= "," . $fn;
 		}
 
-		$sql = "select $field from $_db_name.$tbname where $tb_fid='$id'";
+		$sql = "SELECT $field FROM $_db_name.$tbname WHERE $tb_fid='$id'";
 		$result = $db->sql_query($sql);
 
 		if($line_arr = $db->sql_fetchrow($result))
@@ -1484,7 +1484,7 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 		{
 			if($bFlag && isset($line[$i]))
 				$nowval =  $line[$i];
-			$sql = "select $relation[2],$relation[3] from $relation[1]";
+			$sql = "SELECT $relation[2],$relation[3] FROM $relation[1]";
 			//echo $sql;
 			$result = $db->sql_query($sql);
 			$optionlist = "N/A";
@@ -1529,10 +1529,10 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 	}
 
 	echo "</table><br>";
-	if($tbname == "USERS") {
+	if($tbname == "" . TN_USERS . "") {
 		echo UserSystemRoleDefineTable($id, false);
 	}
-	if($tbname == "SYSTEMS") {
+	if($tbname == "" . TN_SYSTEMS . "") {
 		echo SystemDefineTable($id, false);
 	}
 }
@@ -1557,7 +1557,7 @@ function user_deactive_date($tbname, $uid) {
 	global $db,$_db_name;
 
 	$flag = 0;
-	$sql = "select user_is_active from $_db_name.$tbname where user_id='$uid'";
+	$sql = "SELECT user_is_active FROM $_db_name.$tbname WHERE user_id='$uid'";
 	$result = $db->sql_query($sql);
 	if($line_arr = $db->sql_fetchrow($result)) {
 		$flag = $line_arr['user_is_active'];
@@ -1569,11 +1569,11 @@ function user_deactive_date($tbname, $uid) {
 		// 0: suspend
 		//$now = strftime("%Y-%m-%d", (mktime(0, 0, 0, date("m")  , date("d"), date("Y"))));
 		$now = date("Y-m-d H:m:s");
-		$sql = "update $_db_name.$tbname set user_date_deleted='$now' where user_id='$uid'";
+		$sql = "UPDATE $_db_name.$tbname SET user_date_deleted='$now' WHERE user_id='$uid'";
 	}
 	else {
 		// 1: active
-		$sql = "update $_db_name.$tbname set user_date_deleted='' where user_id='$uid'";
+		$sql = "UPDATE $_db_name.$tbname SET user_date_deleted='' WHERE user_id='$uid'";
 	}
 	$res = $db->sql_query($sql);
 
@@ -1585,7 +1585,7 @@ function user_create_date($tbname, $uid) {
 
 	//$now = strftime("%Y-%m-%d", (mktime(0, 0, 0, date("m")  , date("d"), date("Y"))));
 	$now = date("Y-m-d H:m:s");
-	$sql = "update $_db_name.$tbname set user_date_created='$now' where user_id='$uid'";
+	$sql = "UPDATE $_db_name.$tbname SET user_date_created='$now' WHERE user_id='$uid'";
 	$res = $db->sql_query($sql);
 
 	return $res;
@@ -1595,7 +1595,7 @@ function user_change_password($tbname, $uid) {
 	global $db, $_db_name;
 
 	// reset user_date_password, then user login again need enforce to change password
-	$sql = "update $_db_name.$tbname set user_date_password='0' where user_id='$uid'";
+	$sql = "UPDATE $_db_name.$tbname SET user_date_password='0' WHERE user_id='$uid'";
 	$res = $db->sql_query($sql);
 
 	return $res;

@@ -217,7 +217,7 @@ function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
     ** Each 'row' contains one entry of name 'vuln'
     */
     $vuln_array = $rpdata['rpdata'][1];
-    foreach ($vuln_array as $vuln_description) {
+    foreach ((array)$vuln_array as $vuln_description) {
       array_push($data, array($vuln_description['vuln']));
       }
     

@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 /*
@@ -22,7 +22,7 @@ $smarty->assign("pageName","New Vulnerablities");
 // If you want to use a named session, you must call session_name() before calling session_start().
 session_start();
 
-// creates a new user object from the user class
+// creates a new user object FROM the user class
 $user = new User($db);
 
 // validates that the user is logged in properly, if not redirects to the login page.
@@ -86,7 +86,7 @@ if( $add_right )
 	if (isset($_SESSION['selected_product']))
 	{
 		$_SESSION['selected_product'] = array_unique($_SESSION['selected_product']);
-		//echo "<br>Remove duplicate varible from ".TN_session <br>" ;
+		//echo "<br>Remove duplicate varible FROM ".TN_session <br>" ;
 		//print_r($_SESSION['selected_product']) ;
 
 		$final_array = null ;
@@ -119,7 +119,7 @@ if( $add_right )
 	//$para = ' limit 5';
 	if (isset($_POST["p_keyword"])	&& ($_POST['submit_val'] == 'Search') )
 	{
-		$para = " where prod_meta  LIKE '%". $_POST[p_keyword]. "%' ";
+		$para = " WHERE prod_meta  LIKE '%". $_POST[p_keyword]. "%' ";
 	}
 
 	$p_page = isset($_POST['p_page'])?$_POST['p_page']:NULL;
@@ -134,7 +134,7 @@ if( $add_right )
     }
 
 	if (isset($_POST["p_keyword"]))
-		$k_para = " where prod_meta  LIKE '%". $_POST['p_keyword']. "%'  ";
+		$k_para = " WHERE prod_meta  LIKE '%". $_POST['p_keyword']. "%'  ";
 
 	$smarty->assign('p_page', $p_page);
 
@@ -197,7 +197,7 @@ function Create_New_Vulnerability($p_lists) //$para
 {
 	$current_date = date("Y-m-d");
 
-	$sql = "insert into VULNERABILITIES(
+	$sql = "INSERT INTO " . TN_VULNERABILITIES . "(
 							vuln_type,
 							vuln_desc_primary ,
 							vuln_desc_secondary ,
@@ -224,7 +224,7 @@ function Create_New_Vulnerability($p_lists) //$para
 							vuln_range_local ,
 							vuln_range_remote ,
 							vuln_range_user
-							)  values (
+							)  VALUES (
 							'MAN' ,  '".
 							$_POST['vuln_desc_primary'] . "' ,  '" .
 							$_POST['vuln_desc_secondary'] . "' ,  '" .
@@ -260,7 +260,7 @@ function Create_New_Vulnerability($p_lists) //$para
 		//$correct_msg = "<p align=center><font color=red>You have created a new Vulnerabaility successfully.</font></p>" ;
 
 		// add product into the table
-		$latest_vul_sql = "select max(vuln_seq) from " . TN_VULNERABILITIES ;
+		$latest_vul_sql = "SELECT MAX(vuln_seq) FROM " . TN_VULNERABILITIES ;
 		$latest_vul_result = mysql_query($latest_vul_sql) or die("Query failed: " . mysql_error());
 		$latest_vul_value = mysql_fetch_row($latest_vul_result);
 		$latest_vul_ID = $latest_vul_value[0];
@@ -277,7 +277,7 @@ function Create_New_Vulnerability($p_lists) //$para
 				//print_r($s);
 				$temp_product_id = $s[prod_id] ;
 				//echo "temp_product_id : $temp_product_id <br>" ;
-				$product_sql = "replace into VULN_PRODUCTS values( $latest_vul_ID  , 'MAN' , $temp_product_id)";   //echo "$s<br />";
+				$product_sql = "REPLACE INTO " . TN_VULN_PRODUCTS . " VALUES( $latest_vul_ID  , 'MAN' , $temp_product_id)";   //echo "$s<br />";
 				$product_result  = mysql_query($product_sql) or die("Query failed: " . mysql_error());
 			}
 
@@ -307,7 +307,7 @@ function Get_Selected_Product($pid_array) //$para
 
 	foreach ($pid_array as $my_value)
 	{
-		$sql = "select  prod_vendor, prod_name, prod_version, prod_id from " . TN_PRODUCTS . "  where prod_id=$my_value ";
+		$sql = "SELECT  prod_vendor, prod_name, prod_version, prod_id FROM " . TN_PRODUCTS . "  WHERE prod_id=$my_value ";
 		$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 
 
@@ -540,7 +540,7 @@ function Add_New_Vul() //$para
 {
 	$current_date = date("Y-m-d");
 
-	$sql = "insert into VULNERABILITIES(
+	$sql = "INSERT INTO " . TN_VULNERABILITIES . "(
 							vuln_type,
 							vuln_desc_primary ,
 							vuln_desc_secondary ,
@@ -567,7 +567,7 @@ function Add_New_Vul() //$para
 							vuln_range_local ,
 							vuln_range_remote ,
 							vuln_range_user
-							)  values (
+							)  VALUES (
 							'MAN' ,  '".
 							$_POST[vuln_desc_primary] . "' ,  '" .
 							$_POST[vuln_desc_secondary] . "' ,  '" .
@@ -604,7 +604,7 @@ function Add_New_Vul() //$para
 		//$correct_msg = "<p align=center><font color=red>You have created a new Vulnerabaility successfully.</font></p>" ;
 
 		// add product into the table
-		$latest_vul_sql = "select max(vuln_seq) from " . TN_VULNERABILITIES;
+		$latest_vul_sql = "SELECT MAX(vuln_seq) FROM " . TN_VULNERABILITIES;
 		$latest_vul_result = mysql_query($latest_vul_sql) or die("Query failed: " . mysql_error());
 		$latest_vul_value = mysql_fetch_row($latest_vul_result);
 		$latest_vul_value[0];
@@ -622,7 +622,7 @@ function Get_Product_List($para, $p_n) //$para
 {
 	$from_page = ($p_n - 1) * 20 ;
 
-	$sql = "select  prod_vendor, prod_name, prod_version, prod_id from " . TN_PRODUCTS . " $para  limit $from_page , 20 ";
+	$sql = "SELECT  prod_vendor, prod_name, prod_version, prod_id FROM " . TN_PRODUCTS . " $para  LIMIT $from_page , 20 ";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 
@@ -643,7 +643,7 @@ function Get_Product_List($para, $p_n) //$para
 
 function Get_Product_Page_Amount($para) //$para
 {
-	$sql = "select prod_id from " . TN_PRODUCTS . " $para ";
+	$sql = "SELECT prod_id FROM " . TN_PRODUCTS . " $para ";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$no_rows = mysql_num_rows($result) ;
 
@@ -658,7 +658,7 @@ function Get_Product_Page_Amount($para) //$para
 
 function Get_Vul_Detail($para)
 {
-	$sql = "select * from " . TN_VULNERABILITIES . " where vuln_seq = $para";
+	$sql = "SELECT * FROM " . TN_VULNERABILITIES . " WHERE vuln_seq = $para";
 	$result  = mysql_query($sql) or die("Query failed: " . mysql_error());
 	$data = null;
 

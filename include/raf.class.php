@@ -65,8 +65,8 @@ class Raf {
 		  s.system_sensitivity_justification AS s_s_just,
 		  s.system_primary_office AS s_po,
 		  s.system_nickname AS s_nick
-		  FROM POAMS p, FINDINGS f, FINDING_SOURCES fs, 
-		  SYSTEM_ASSETS sa, SYSTEMS s
+		  FROM ".TN_POAMS." p, ".TN_FINDINGS." f, ".TN_FINDING_SOURCES." fs, 
+		  ".TN_SYSTEM_ASSETS." sa, ".TN_SYSTEMS." s
 		  WHERE p.poam_id = '$poam_id'
 		  AND f.finding_id = p.finding_id
 		  AND fs.source_id = f.source_id
@@ -97,7 +97,7 @@ class Raf {
           $poam_id = $this->poam_id;
 
 	  $sql = "SELECT v.vuln_desc_primary AS vuln
-		  FROM POAMS p, FINDINGS f, FINDING_VULNS fv, VULNERABILITIES v
+		  FROM " . TN_POAMS . " p, " . TN_FINDINGS . " f, " . TN_FINDING_VULNS . " fv, " . TN_VULNERABILITIES . " v
 		  WHERE p.poam_id = '$poam_id'
 		  AND f.finding_id = p.finding_id
 		  AND fv.finding_id = f.finding_id
@@ -120,8 +120,8 @@ class Raf {
 	function getAssetNames() {
           $poam_id = $this->poam_id;
 
-	  $sql = "SELECT prod.prod_name as pname
-		  FROM POAMS p, FINDINGS f, ASSETS a, PRODUCTS prod
+	  $sql = "SELECT prod.prod_name AS pname
+		  FROM " . TN_POAMS . " p, " . TN_FINDINGS . " f, " . TN_ASSETS . " a, " . TN_PRODUCTS . " prod
 		  WHERE p.poam_id = '$poam_id'
 		  AND f.finding_id = p.finding_id
 		  AND a.asset_id = f.asset_id

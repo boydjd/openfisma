@@ -1,6 +1,6 @@
 <?PHP
-// no-cache � forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate � tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you�re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you?re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 session_register('rpdata');//register a session var for save report data.
@@ -389,9 +389,9 @@ else if ($t==$REPORT_TYPE_RAF){
 	$smarty->assign('system_list', $system_list);
 	if(isset($_POST['system_id']))	$system_id = $_POST['system_id'];
 	if(!empty($system_id) && is_numeric($system_id) && $system_id>0){
-	    $sql = "SELECT poam_id FROM `POAMS` P
-	               LEFT JOIN `FINDINGS` F ON F.finding_id = P.finding_id
-	               LEFT JOIN `SYSTEM_ASSETS` SA ON SA.asset_id = F.asset_id
+	    $sql = "SELECT poam_id FROM " . TN_POAMS . " P
+	               LEFT JOIN " . TN_FINDINGS . " F ON F.finding_id = P.finding_id
+	               LEFT JOIN " . TN_SYSTEM_ASSETS . " SA ON SA.asset_id = F.asset_id
 	               WHERE P.poam_threat_level != 'NONE' 
 	                   AND P.poam_cmeasure_effectiveness != 'NONE' 
 	                   AND SA.system_id=".$system_id;

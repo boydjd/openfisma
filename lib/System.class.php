@@ -168,7 +168,7 @@ class System {
 	public function saveSystem(){
 	
 	    if ($this->system_id && $this->systemExists($this->system_id)){
-    	    $query = "UPDATE `SYSTEMS` SET ";    
+    	    $query = "UPDATE " . TN_SYSTEMS . " SET ";    
             	    $query .= " `system_name`                                        = '$this->system_name', ";
             	    $query .= " `system_nickname`                                    = '$this->system_nickname', ";
             	    $query .= " `system_desc`                                        = '$this->system_desc', ";
@@ -183,7 +183,7 @@ class System {
                     $query .= " WHERE `system_id`                                    = '$this->system_id' ";
 	    }
 	    else {
-	       $query = "INSERT INTO `SYSTEMS` (
+	       $query = "INSERT INTO " . TN_SYSTEMS . " (
                             `system_name`, 
                             `system_nickname`, 
                             `system_desc`, 
