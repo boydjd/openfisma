@@ -68,6 +68,7 @@ if($view_right)
 	*******************************************************************************/
 	
 	// initialize or propagate filter values
+	if (isset($_POST['remediation_ids'])) { $smarty->assign('remediation_ids', $_POST['remediation_ids']); } else { $smarty->assign('remediation_ids', 'any'); }
 	if (isset($_POST['filter_source'])) { $smarty->assign('filter_source', $_POST['filter_source']); } else { $smarty->assign('filter_source', 'any'); }
 	if (isset($_POST['filter_system'])) { $smarty->assign('filter_system', $_POST['filter_system']); } else { $smarty->assign('filter_system', 'any'); }
 	if (isset($_POST['filter_status'])) { $smarty->assign('filter_status', $_POST['filter_status']); } else { $smarty->assign('filter_status', 'any'); }

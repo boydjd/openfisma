@@ -384,6 +384,7 @@ function order_page(para)
 				<form  name="order_by_ID" action='remediation.php' method='POST'>
 			<th nowrap>
 				<input type='hidden' name='remediation_id'          value='{$list[row].poam_id}'>
+				<input type='hidden' name='remediation_ids'         value='{$remediation_ids}'>
 				<input type='hidden' name='filter_source'           value='{$filter_source}'>
 				<input type='hidden' name='filter_system'           value='{$filter_system}'>
 				<input type='hidden' name='filter_status'           value='{$filter_status}'>
@@ -450,6 +451,7 @@ function order_page(para)
 					<form action='remediation_detail.php' method='POST'>
 
 					<!-- filter values -->
+					<input type="hidden" name="remediation_ids"        value='{$remediation_ids}'>
 					<input type='hidden' name='filter_source'          value='{$filter_source}'>
 					<input type='hidden' name='filter_system'          value='{$filter_system}'>
 					<input type='hidden' name='filter_status'          value='{$filter_status}'>

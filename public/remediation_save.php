@@ -30,6 +30,17 @@ else {
 //    $reload_page = "alert('Operation succeed.');";
 	$reload_page = '$(\'<form id="frmJump" action="remediation_detail.php" method="POST">';
     $reload_page .= '<input type="hidden" name="remediation_id" value="'.$poam_id.'">';
+    $reload_page .= '<input type="hidden" name="remediation_ids" value="'.$_POST['remediation_ids'].'">';
+    $reload_page .= '<input type="hidden" name="filter_source" value="'.$_POST['filter_source'].'">';
+    $reload_page .= '<input type="hidden" name="filter_system" value="'.$_POST['filter_system'].'">';
+    $reload_page .= '<input type="hidden" name="filter_status" value="'.$_POST['filter_status'].'">';
+    $reload_page .= '<input type="hidden" name="filter_type" value="'.$_POST['filter_type'].'">';
+    $reload_page .= '<input type="hidden" name="filter_startdate" value="'.$_POST['filter_startdate'].'">';
+    $reload_page .= '<input type="hidden" name="filter_enddate" value="'.$_POST['filter_enddate'].'">';
+    $reload_page .= '<input type="hidden" name="filter_startcreatedate" value="'.$_POST['filter_startcreatedate'].'">';
+    $reload_page .= '<input type="hidden" name="filter_endcreatedate" value="'.$_POST['filter_endcreatedate'].'">';
+    $reload_page .= '<input type="hidden" name="filter_asset_owners" value="'.$_POST['filter_asset_owners'].'">';
+    $reload_page .= '<input type="hidden" name="filter_action_owners" value="'.$_POST['filter_action_owners'].'">';
     $reload_page .= '</form>\').appendTo("body").submit();';
 
 $sql_update = "UPDATE ".TN_POAMS." SET ";
@@ -43,9 +54,10 @@ $now = gmdate('Y-m-d H:i:s', $unix_timestamp);
 
 $userid = $user->getUserId();
 $username = $user->getUsername();
-
+$filter = array('remediation_ids','filter_source','filter_system','filter_status','filter_type','filter_startdate','filter_enddate','filter_startcreatedate',
+                'filter_endcreatedate','filter_asset_owners','filter_action_owners');
 foreach ($_POST as $k => $v) {
-    if (!in_array($k, array('poam_id')) && (substr($k, 0, 7) != 'comment')){
+    if (!in_array($k, array('poam_id')) && (substr($k, 0, 7) != 'comment') && !(in_array($k,$filter))){
 	   $sql_update .= " `$k`= '".$v."', ";
 	   $sql_get_old_val .= "`$k`,";
 	   $i++;

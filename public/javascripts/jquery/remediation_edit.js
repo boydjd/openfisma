@@ -111,6 +111,17 @@ $(document).ready(function(){
         **/
         if (!estDateChanged && (evArray.needComments<=0)){
         	aQuery.poam_id = $('input[name="remediation_id"]').val();
+        	aQuery.remediation_ids = $('input[name="remediation_ids"]').val();
+        	aQuery.filter_source = $('input[name="filter_source"]').val();
+        	aQuery.filter_system = $('input[name="filter_system"]').val();
+        	aQuery.filter_status = $('input[name="filter_status"]').val();
+        	aQuery.filter_type = $('input[name="filter_type"]').val();
+        	aQuery.filter_startdate = $('input[name="filter_startdate"]').val();
+        	aQuery.filter_enddate = $('input[name="filter_enddate"]').val();
+        	aQuery.filter_startcreatedate = $('input[name="filter_startcreatedate"]').val();
+        	aQuery.filter_endcreatedate = $('input[name="filter_endcreatedate"]').val();
+        	aQuery.filter_asset_owners = $('input[name="filter_asset_owners"]').val();
+        	aQuery.filter_action_owners = $('input[name="filter_action_owners"]').val();
             if (evArray.length > 0){
     		    for (var ev in evArray){
     		        evArray[ev].remediation_id = aQuery.poam_id;

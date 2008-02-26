@@ -44,6 +44,7 @@ function go(step) {
 		<td>
 			<!-- RETURN TO THE SUMAMRY LIST -->
 			<form action='remediation.php' method='POST'>
+			    <input type='hidden' name='remediation_ids'        value='{$remediation_ids}'>
 				<input type='hidden' name='filter_source'          value='{$filter_source}'>
 				<input type='hidden' name='filter_system'          value='{$filter_system}'>
 				<input type='hidden' name='filter_status'          value='{$filter_status}'>
@@ -848,6 +849,7 @@ function go(step) {
 		<td>
 			<!-- RETURN TO THE SUMAMRY LIST -->
 			<form action='remediation.php' method='POST'>
+			    <input type='hidden' name='remediation_ids'        value='{$remediation_ids}'>
 				<input type='hidden' name='filter_source'          value='{$filter_source}'>
 				<input type='hidden' name='filter_system'          value='{$filter_system}'>
 				<input type='hidden' name='filter_status'          value='{$filter_status}'>
