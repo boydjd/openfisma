@@ -1,6 +1,6 @@
 <?PHP
 // no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, youï¿½re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -35,7 +35,12 @@ $smarty->assign('upload_right', $upload_right);
 //  }
 //  die('submitted?');
 //ENDTEST!
-
+system('perl -e "print \'\';"', $rcode);
+if ($rcode != 0) {
+	$smarty->assign('err_msg', 'It looks no "perl" in the server\'s $PATH. Please contact with the administrator.');
+	$smarty->display('finding_upload_status.tpl');
+	return ;
+}
 
 /*
 ** Privilege sufficient.
@@ -105,8 +110,9 @@ if (isset($_POST['submitted'])) {
 	}
 
 	# convert the file from dos to unix formatting
-	$cmd = "dos2unix $working_file";
-	exec($cmd);
+//	$cmd = "dos2unix $working_file";
+//	exec($cmd);
+    dos2unix($working_file, $working_file);
 
 //print "$cmd<br>";
 
@@ -189,11 +195,12 @@ if (isset($_POST['submitted'])) {
 	# CREATE THE PREPEND FILE WITH UPLOAD INFORMATION
 	#
 
-	$cmd = "echo '$upload_attrs' > $prepend_file";
+//	$cmd = "echo '$upload_attrs' > $prepend_file";
 //print "$cmd<br>";
-	$return_str = system($cmd, $return_code);
+//	$return_str = system($cmd, $return_code);
+    $return_code = file_put_contents($prepend_file, $upload_attrs);
 
-	if($return_code != 0) {
+	if(!$return_code) {
 
 		$smarty->assign('err_msg', "Server error: prepend operation, code '$return_code' - please retry upload");
 		$smarty->display('finding_upload_status.tpl');
@@ -207,11 +214,12 @@ if (isset($_POST['submitted'])) {
 	# PREPEND THE UPLOAD INFORMATION
 	#
 
-	$cmd = "cat $prepend_file $working_file > $consolidated_file";
+//	$cmd = "cat $prepend_file $working_file > $consolidated_file";
 //print "$cmd<br>";
-	$return_str = system($cmd, $return_code);
+//	$return_str = system($cmd, $return_code);
+    $return_code = file_put_contents($consolidated_file, file_get_contents($prepend_file) . file_get_contents($working_file));
 
-	if($return_code != 0) {
+	if(!$return_code) {
 
 		$smarty->assign('err_msg', "Server error: concatenation operation, code '$return_code' - please retry upload");
 		$smarty->display('finding_upload_status.tpl');
@@ -225,9 +233,10 @@ if (isset($_POST['submitted'])) {
 	# TRANSLATE THE FINDINGS
 	#
 
-	$cmd = "rm $working_file";
+//	$cmd = "rm $working_file";
 //print "$cmd<br>";
-	system($cmd, $return_code);
+//	system($cmd, $return_code);
+    @unlink($working_file);
 
 	$cmd = "perl ".OVMS_INJECT_PATH."/plugins/$plugin_module/$plugin_module.pl < $consolidated_file > $translated_file";
 //print "$cmd<br>";
@@ -260,9 +269,11 @@ if (isset($_POST['submitted'])) {
 
 	}
 
-	$cmd = "rm $consolidated_file; rm $prepend_file";
+//	$cmd = "rm $consolidated_file; rm $prepend_file";
 //print "$cmd<br>";
-	$return_str = system($cmd, $return_code);
+//	$return_str = system($cmd, $return_code);
+    @unlink($consolidated_file);
+    @unlink($prepend_file);
 
 	$smarty->assign('status_msg', 'Injection complete.');
 	$smarty->display('finding_upload_status.tpl');
@@ -332,62 +343,71 @@ function is_valid_data($data_file_name, $plugin_module) {
 	// false until proven true
 	$status = false;
 	$result = '';
-
+    $regexp = '';
 	// 
 	switch ($plugin_module) {
 
 	case 'blscr':
 
 		// Check for existence of Management, Operational or Technical records
-		$result = shell_exec("grep -e '^Management\|^Operational\|^Technical' $data_file_name");
+//		$result = shell_exec("grep -e '^Management\|^Operational\|^Technical' $data_file_name");
+        $regexp = "/^Management\|^Operational\|^Technical/";
 		break;
 
 	case 'nvd':
 
 		// Check for nvd_xml_version declaration
-		$result = shell_exec("grep -e 'nvd_xml_version' $data_file_name");
+//		$result = shell_exec("grep -e 'nvd_xml_version' $data_file_name");
+        $regexp = "/nvd_xml_version/";
 		break;
  
 	case 'nessus':
 
 		// Check for nessus stylesheet declaration
-		$result = shell_exec("grep -e 'xml-stylesheet.*nessus.xsl' $data_file_name");
+//		$result = shell_exec("grep -e 'xml-stylesheet.*nessus.xsl' $data_file_name");
+        $regexp = "/xml-stylesheet.*nessus.xsl/";
 		break;
 
 	case 'appdetective':
 
 		// Check for root_header declaration
-		$result = shell_exec("grep -e 'root_header' $data_file_name");
+//		$result = shell_exec("grep -e 'root_header' $data_file_name");
+        $regexp = "/root_header/";
 		break;
 
 	case 'shadowscan':
 
 		// Check for ShadowSecurityScannerXML declaration
-		$result = shell_exec("grep -e 'ShadowSecurityScannerXML' $data_file_name");
+//		$result = shell_exec("grep -e 'ShadowSecurityScannerXML' $data_file_name");
+        $regexp = "/ShadowSecurityScannerXML/";
 		break;
 
 	case 'finding':
 
 		//
-		$result = shell_exec("grep -e 'MANUAL FINDINGS SPREADSHEET' $data_file_name");
+//		$result = shell_exec("grep -e 'MANUAL FINDINGS SPREADSHEET' $data_file_name");
+        $regexp = "/MANUAL FINDINGS SPREADSHEET/";
 		break;
 
 	case 'inventory':
 
 		//
-		$result = shell_exec("grep -e 'Inventory Upload Spreadsheet\t' $data_file_name");
+//		$result = shell_exec("grep -e 'Inventory Upload Spreadsheet\t' $data_file_name");
+        $regexp = "/Inventory Upload Spreadsheet\t/";
 		break;
 
 	case 'product':
 
 		//
-		$result = "true";
+//		$result = "true";
+		$result = 1;
 		break;
 
 	} // switch plugin_module
 
+    $result = preg_match($regexp, file_get_contents($data_file_name));
 	// return the results based on length of the result string
-	if (strlen($result) > 0) { return (true); } else { return (false); }
+	if ($result > 0) { return (true); } else { return (false); }
 
 } // is_valid_data()
 

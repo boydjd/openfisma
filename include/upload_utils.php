@@ -170,4 +170,23 @@ function move_upload_file($form_file_name, $destination_file) {
   $status = move_uploaded_file($temp_file, $destination_file);
   return ($status);
   }
+  
+/**
+ * Do what command "dos2unix" did. So it can support both unix and windows.
+ *
+ * @param string $original_file
+ * @param string $destination_file
+ */
+function dos2unix($original_file, $destination_file) {
+	//original and destination file could have the same name
+	$line_feed = chr(13).chr(10);
+	$content = file_get_contents($original_file);
+	$content = str_replace($line_feed, "\n", $content);
+//	if (seems_utf8($content)) $content = utf8_decode($content);
+	$handle = fopen($destination_file, "w");
+	fputs($handle, $content);
+	fclose($handle);
+	//	file_put_contents($destination_file,$content);
+}
+  
 ?>
