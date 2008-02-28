@@ -98,7 +98,7 @@ if (isset($_POST['submitted'])) {
 	$DEST_SUBFOLDER = OVMS_TEMP;
 
 	// grab the file and move to the upload direcoty
-	$working_file = $DEST_SUBFOLDER._S.'ovms'.$temp_basename;
+	$working_file = $DEST_SUBFOLDER.DS.'ovms'.$temp_basename;
 	$move_status  = move_upload_file($FORM_FILE_NAME, $working_file);
 
 	if (!$move_status) {

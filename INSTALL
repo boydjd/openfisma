@@ -7,10 +7,19 @@ NOTE: The installation of Apache 2 or higher is outside the scope of this
 installation, however an example Apache configuration files is included
 in the conf directory.
 
-/*  Step Two: Setup PHP 5     */
+/*  Step Two: Setup PHP 5 And Perl */
 -------------------------------
 NOTE: The installation of PHP 5 or higher is outside the scope of this
 installation tutorial. Please follow your vendor documentation.
+
+We need Perl to run plugins in this system. In Unix/Linux, Perl usually
+auto installed in your OS. If you are running Windows, please download
+"ActivePerl" and install it, you must make sure command "perl" is in your
+path setting. 
+
+NOTE: Don't fotgot install DBD::mysql if you are using Windows + ActivePerl
+Just use this command below :
+  ppm install http://theoryx5.uwinnipeg.ca/ppms/DBD-mysql.ppd
 
 /* Step Three: Setup MySQL    */
 -------------------------------
