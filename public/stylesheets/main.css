@@ -177,4 +177,26 @@ DIV.noright
   FONT-VARIANT: normal;
 }
 
+DIV.error_msg
+{
+  BORDER-RIGHT: RED 2px solid;
+  PADDING-RIGHT: 10px;
+  BORDER-TOP: RED 2px solid;
+  PADDING-LEFT: 10px;
+  FONT-WEIGHT: bolder;
+  FONT-SIZE: 14px;
+  PADDING-BOTTOM: 10px;
+  MARGIN: 5%;
+  TEXT-TRANSFORM: none;
+  BORDER-LEFT: RED 2px solid;
+  COLOR: #44637A;
+  PADDING-TOP: 10px;
+  BORDER-BOTTOM: RED 2px solid;
+  FONT-STYLE: normal;
+  FONT-FAMILY: Verdana, Arial;
+  BACKGROUND-COLOR: PINK;
+  TEXT-ALIGN: center;
+  FONT-VARIANT: normal;
+}
+
 
