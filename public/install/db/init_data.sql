@@ -244,9 +244,9 @@ INSERT INTO `FUNCTIONS` VALUES (1,'View Findings','finding','view','Allows the u
 (110,'View Comments','remediation','view_comments','restricts view of comments','1'),
 (111,'Create Comments','remediation','modify_comments','restricts creation of comments','1'),
 (112,'View Finding Sources List','admin_finding_sources','view','','1'),
-(112,'Edit Finding Sources','admin_finding_sources','edit','','1'),
-(112,'Delete Finding Sources','admin_finding_sources','delete','','1'),
-(112,'Add Finding Sources','admin_finding_sources','add','','1');
+(113,'Edit Finding Sources','admin_finding_sources','edit','','1'),
+(114,'Delete Finding Sources','admin_finding_sources','delete','','1'),
+(115,'Add Finding Sources','admin_finding_sources','add','','1');
 
 
 /* default finding sources */
