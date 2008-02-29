@@ -29,21 +29,17 @@ $upload_right = $user->checkRightByFunction("finding", "upload");
 // assign user right to smarty template
 $smarty->assign('upload_right', $upload_right);
 
-//TEST!
-//foreach(array_keys($_POST) as $key) {
-//  echo "$key - $_POST[$key]<br/>";
-//  }
-//  die('submitted?');
-//ENDTEST!
-system('perl -e "print \'\';"', $rcode);
+// Execute an external program and display the output
+// string system  ( string $command  [, int &$return_var  ] )
+// check to see if the system has perl installed and is in current path
+$rcode = system('perl -e "print 0"');
 if ($rcode != 0) {
-	$smarty->assign('err_msg', 'It looks no "perl" in the server\'s $PATH. Please contact with the administrator.');
+	$smarty->assign('err_msg', "System could not locate PERL in the server's path. Please install PERL and try again.");
 	$smarty->display('finding_upload_status.tpl');
 	return ;
 }
 
 /*
-** Privilege sufficient.
 ** If this is called for submission, act on the upload file.
 ** Otherwise display the submission form.
 */

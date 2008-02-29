@@ -157,46 +157,89 @@ strong {
 
 DIV.noright
 {
-  BORDER-RIGHT: RED 2px solid;
-  PADDING-RIGHT: 10px;
-  BORDER-TOP: RED 2px solid;
-  PADDING-LEFT: 10px;
-  FONT-WEIGHT: bolder;
-  FONT-SIZE: 14px;
-  PADDING-BOTTOM: 10px;
-  MARGIN: 5%;
-  TEXT-TRANSFORM: none;
-  BORDER-LEFT: RED 2px solid;
+  BORDER-TOP: 		RED 2px solid;
+  BORDER-BOTTOM: 	RED 2px solid;
+  BORDER-LEFT: 		RED 2px solid;
+  BORDER-RIGHT: 	RED 2px solid;
+
+  PADDING-TOP: 		10px;
+  PADDING-BOTTOM: 	10px;
+  PADDING-LEFT: 	10px;
+  PADDING-RIGHT: 	10px;
+
+  FONT-WEIGHT: 		bolder;
+  FONT-SIZE: 		14px;
+  FONT-STYLE: 		normal;
+  FONT-FAMILY: 		Verdana, Arial;
+  FONT-VARIANT: 	normal;
+
+  TEXT-ALIGN: 		center;
+  TEXT-TRANSFORM: 	none;  
   COLOR: #44637A;
-  PADDING-TOP: 10px;
-  BORDER-BOTTOM: RED 2px solid;
-  FONT-STYLE: normal;
-  FONT-FAMILY: Verdana, Arial;
   BACKGROUND-COLOR: PINK;
-  TEXT-ALIGN: center;
-  FONT-VARIANT: normal;
+  
+  MARGIN-TOP: 		1%;
+  MARGIN-BOTTOM: 	1%;  
+  MARGIN-LEFT: 		5%;
+  MARGIN-RIGHT:		5%;
 }
 
 DIV.error_msg
 {
-  BORDER-RIGHT: RED 2px solid;
-  PADDING-RIGHT: 10px;
-  BORDER-TOP: RED 2px solid;
-  PADDING-LEFT: 10px;
-  FONT-WEIGHT: bolder;
-  FONT-SIZE: 14px;
-  PADDING-BOTTOM: 10px;
-  MARGIN: 5%;
-  TEXT-TRANSFORM: none;
-  BORDER-LEFT: RED 2px solid;
+  BORDER-TOP: 		RED 2px solid;
+  BORDER-BOTTOM: 	RED 2px solid;
+  BORDER-LEFT: 		RED 2px solid;
+  BORDER-RIGHT: 	RED 2px solid;
+
+  PADDING-TOP: 		10px;
+  PADDING-BOTTOM: 	10px;
+  PADDING-LEFT: 	10px;
+  PADDING-RIGHT: 	10px;
+
+  FONT-WEIGHT: 		bolder;
+  FONT-SIZE: 		14px;
+  FONT-STYLE: 		normal;
+  FONT-FAMILY: 		Verdana, Arial;
+  FONT-VARIANT: 	normal;
+
+  TEXT-ALIGN: 		center;
+  TEXT-TRANSFORM: 	none;  
   COLOR: #44637A;
-  PADDING-TOP: 10px;
-  BORDER-BOTTOM: RED 2px solid;
-  FONT-STYLE: normal;
-  FONT-FAMILY: Verdana, Arial;
   BACKGROUND-COLOR: PINK;
-  TEXT-ALIGN: center;
-  FONT-VARIANT: normal;
+  
+  MARGIN-TOP: 		1%;
+  MARGIN-BOTTOM: 	1%;  
+  MARGIN-LEFT: 		5%;
+  MARGIN-RIGHT:		5%;
+}
+
+DIV.status_msg
+{
+  BORDER-TOP:		GREEN 2px solid;
+  BORDER-BOTTOM:	GREEN 2px solid;
+  BORDER-LEFT:		GREEN 2px solid;
+  BORDER-RIGHT:		GREEN 2px solid;
+
+  PADDING-TOP:		10px;
+  PADDING-BOTTOM:	10px;
+  PADDING-LEFT:		10px;
+  PADDING-RIGHT:	10px;
+
+  FONT-STYLE:		normal;
+  FONT-FAMILY:		Verdana, Arial;
+  FONT-WEIGHT:		bolder;
+  FONT-SIZE:		14px;
+  FONT-VARIANT:		normal;
+  COLOR:			#44637A;
+  TEXT-ALIGN:		center;  
+  TEXT-TRANSFORM:	none;
+  
+  MARGIN-TOP: 		1%;
+  MARGIN-BOTTOM: 	1%;  
+  MARGIN-LEFT: 		5%;
+  MARGIN-RIGHT:		5%;
+  
+  BACKGROUND-COLOR:	LIGHTGREEN;
 }
 
 
