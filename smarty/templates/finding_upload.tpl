@@ -5,44 +5,32 @@
 {literal}
 <script language="javascript">
 
+// Validates all fields are filled out correctly
 function validate_input() {
 
-  //
-  // Make sure all necessary form fields have been set by the user 
-  // - if necessary (nessus, appdetective, shadowscan)
-  //
-  if((
-      (finding_upload.system.value  != "0" &&
-       finding_upload.source.value  != "0" &&
-       finding_upload.network.value != "0"
-       )
-      &&
-      (finding_upload.plugin.value == "Nessus" ||
-       finding_upload.plugin.value == "AppDetective" ||
-       finding_upload.plugin.value == "ShadowScan"
-       )
-      )
-      || 
-      (finding_upload.plugin.value == "BLSCR" ||
-       finding_upload.plugin.value == "NVD Products" ||
-       finding_upload.plugin.value == "NVD List" ||
-       finding_upload.plugin.value == "ManualList" ||
-       finding_upload.plugin.value == "Inventory"
-       )
-     ){
-    // ok - pass through
-    }
-  else {
-    alert("Please ensure Plugin, System, Source and Network are all selected.");
-    return false;
+	// Check to ensure plugin, system, source, and network are all selected
+	if( 	
+		finding_upload.system.selectedIndex 	== 0 	&& 
+		finding_upload.source.selectedIndex 	== 0 	&& 
+		finding_upload.network.selectedIndex 	== 0 	&& 
+		finding_upload.plugin.selectedIndex 	== 0	
+		)
+	{
+		alert("Please ensure Plugin, System, Source and Network are all selected.");
+		return false;
     }
 
-  if(finding_upload.upload_file.value == "") {
-    alert("Please select a file to upload.");
-    return false;
+	// Check to ensure a file has been selected for upload
+	if(finding_upload.upload_file.value == "") 
+	{
+		alert("Please select a file to upload.");
+		return false;
     }
   
+  // Set the value of the function to true
   finding_upload.submitted.value = true;
+
+  // All validation passed, continue with submit
   finding_upload.submit();
   }
 
