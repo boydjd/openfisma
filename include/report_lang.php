@@ -73,7 +73,19 @@ array(
 	)
 	//,6=>array(),
 )
-)
+),
+array("0"=>array("","All Status",0),
+      "1"=>array("closed","Closed",0),
+      "2"=>array("notclosed","Not Closed",0),
+      "3"=>array("new","&nbsp;&nbsp;&nbsp;New",0),
+      "4"=>array("open","&nbsp;&nbsp;&nbsp;Open",1),
+      "5"=>array("en","&nbsp;&nbsp;&nbsp;Ev Needed",1)),
+      
+array("0"=>array("","Select Date Picker"),
+      "1"=>array("30","0-29 days"),
+      "2"=>array("60","30-59 days"),
+      "3"=>array("90","60-89 days"),
+      "4"=>array("120","90-119 days"),
+      "5"=>array("greater","120 and greater days"))
 );
-
 ?>

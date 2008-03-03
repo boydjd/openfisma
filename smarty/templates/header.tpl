@@ -4,8 +4,7 @@
 <title>{$title} - {$name}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 {literal}
-<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/menu.js"></script>
-<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/cal.js"></script>
+
 <!-- jQuery include file start -->
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.ui/jquery.dimensions.js"></script>
@@ -14,7 +13,8 @@
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.ui/ui.mouse.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.ui/ui.draggable.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.ui/datepicker/core/ui.datepicker.js"></script>
-
+<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/menu.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/cal.js"></script>
 <link rel="stylesheet" href="javascripts/jquery/jquery.ui/themes/flora/flora.all.css" type="text/css">
 <link rel="stylesheet" href="javascripts/jquery/jquery.ui/datepicker/core/ui.datepicker.css" type="text/css">
 <!-- jQuery include file end -->

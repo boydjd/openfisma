@@ -29,53 +29,54 @@
 
 <table width="95%" align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
 	<tr>
-		<td><b>System</b></td>
-  		<td><b>Source</b></td>
-  		<td><b>Fiscal Year</b></td>
-  		<td><b>Type</b></td>
-  		<td><b>Status</b></td>
-		<td width="10%" rowspan="2"><input type="submit" name="search" value="Generate">
-    		<input type="hidden" name="t" value="{$t}" />
-    		<input type="hidden" name="sub" value="1" />
-  		</td>
+        <td width="6%"><b>System </b></td>
+        <td width="21%">
+        <select name="system">
+        <option value="">All System </option>
+        {section name=row loop=$systems}
+            <option value="{$systems[row].name}"{if $systems[row].name eq $system}selected{/if}>{$systems[row].name}</option>
+        {/section}
+        </select>
+        </td>
+        <td width="6%"><b>Source</b></td>
+        <td width="18%"><select name="source">
+        <option value="">All Source </option>
+            {section name=row loop=$sources}
+            <option value="{$sources[row].name}"{if $sources[row].name eq $source}selected{/if}>{$sources[row].name}</option>
+            {/section}
+        </select></td>
+        <td width="9%"><b>Fiscal Year</b></td>
+        <td width="40%">
+        <select name="sy">
+            <option value="">All Fiscal Year </option>
+            <option value="{$nowy-3}"{if $sy eq $nowy-3}selected{/if}>{$nowy-3}</option>
+            <option value="{$nowy-2}"{if $sy eq $nowy-2}selected{/if}>{$nowy-2}</option>
+            <option value="{$nowy-1}"{if $sy eq $nowy-1}selected{/if}>{$nowy-1}</option>
+            <option value="{$nowy}"{if $sy eq $nowy}selected{/if}>{$nowy}</option>
+            <option value="{$nowy+1}"{if $sy eq $nowy+1}selected{/if}>{$nowy+1}</option>
+         </select></td>
 	</tr>
-	<tr>
-		<td>
-			<select name="system">
-        	<option value="">Select System </option>
-			{section name=row loop=$systems}
-        	<option value="{$systems[row].name}">{$systems[row].name}</option>
-        	{/section}
-			</select>
-		</td>
-		<td>
-    		<select name="source">
-        	<option value="">Select Source </option>
-			{section name=row loop=$sources}
-          	<option value="{$sources[row].name}">{$sources[row].name}</option>
-        	{/section}
-    		</select>
-  		</td>
-		<td>
-    		<select name="sy">
-        	<option value="">Select Fiscal Year </option>
-        	<option value="{$nowy-3}">{$nowy-3}</option>
-        	<option value="{$nowy-2}">{$nowy-2}</option>
-        	<option value="{$nowy-1}">{$nowy-1}</option>
-        	<option value="{$nowy}">{$nowy}</option>
-        	<option value="{$nowy+1}">{$nowy+1}</option>
-    		</select>
-  		</td>
-		<td>
-    		<input name="poam_type[]" type="checkbox" id="poam_type[]" value="CAP"> CAP
-    		<input name="poam_type[]" type="checkbox" id="poam_type[]" value="FP"> FP
-    		<input name="poam_type[]" type="checkbox" id="poam_type[]" value="AR"> AR
-		</td>
-		<td>
-			<input name="status[]" type="checkbox" id="status[]" value="open"> Open
-    		<input name="status[]" type="checkbox" id="status[]" value="closed"> Closed
-  		</td>
-	</tr>
+    <tr>
+        <td height="30"><b>Status</b></td>
+        <td colspan="5"><select name="status" id="status">
+        {foreach from=$report_lang[4] item=v} 
+            <option value="{$v[0]}" {if $v[0] eq $status}selected{/if} has_datepicker="{$v[2]}">{$v[1]}</option>
+        {/foreach}
+        </select></td>
+    </tr>
+    <tr>
+        <td height="40"><b>Overdue</b></td>
+        <td colspan="5"><select name="overdue" id="overdue">
+        {foreach from=$report_lang[5] item=d}
+        <option value="{$d[0]}" {if $d[0] eq $overdue}selected{/if}>{$d[1]}</option>
+        {/foreach}
+        </select></td>
+    </tr>
+    <tr>
+        <td height="39" colspan="6"><input type="submit" name="search" value="Generate">
+        <input type="hidden" name="t" value="{$t}" />
+        <input type="hidden" name="sub" value="1" /></td>
+    </tr>
 </table>
 
 </form>

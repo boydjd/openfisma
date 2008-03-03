@@ -11,9 +11,9 @@ class Report {
 	private $system  = NULL;
 	private $source  = NULL;
 	private $sy      = NULL;
-	private $type    = NULL;
-	private $status  = NULL;
+	private $status = NULL;
 	private $poam_id = NULL;
+    private $overdue = NULL;
 	
 	
 	function __construct($conn, $user) {
@@ -42,15 +42,15 @@ class Report {
 	function setSy($sy){
 		$this->sy=$sy;
 	}
-	function setType($type){
-		$this->type=$type;
-	}
 	function setStatus($status){
 		$this->status=$status;
 	}
 	function setPoamID($poam_id){
 		$this->poam_id=$poam_id;
 	}
+    function setOverdue($overdue){
+        $this->overdue=$overdue;
+    }
 ///////////
 	function getSysIDSQL($system){//construct get system_id sql,we can use it future
 		return "SELECT system_id AS id
@@ -234,25 +234,66 @@ class Report {
 		// the HTML form.
 		// Convert this to an IN clause like ('OPEN', 'CLOSED')
 		//
-		if ($this->status && array_keys($this->status)) {
 
-//			print "ping!";
-
-		  $is_first = true;
-		  $status_list = '';
-		  foreach (array_keys($this->status) as $key) {
-		    $val = strtoupper($this->status[$key]);
-		    if($is_first) {
-		      $status_list .= "'$val'";
-		      }
-		    else {
-		      $status_list .= ", '$val'";
-		      }
-		    $is_first = false;
-		    }
-		  $status_filter = " AND p.poam_status IN ($status_list, 'OPEN')";
-		  }
-
+        if($this->status) {
+            switch ($this->status) {
+                case "closed":
+                    $status_filter = " AND p.poam_status = 'closed'";
+                    break;
+                case "notclosed":
+                    $status_filter = " AND p.poam_status != 'closed'";
+                    break;
+                case "new":
+                    $status_filter = " AND p.poam_status = 'open' AND p.poam_type = 'NONE'";
+                    break;
+                case "open":
+                    $status_filter = " AND p.poam_status = 'open' AND p.poam_type = 'CAP'";
+                    break;
+                case "en":
+                    $status_filter = " AND p.poam_status ='en' AND p.poam_type = 'CAP'";
+                    break;
+              }              
+          }
+ 
+         if($this->status == "open" && $this->overdue) {
+             switch ($this->overdue) {
+                 case "30":
+                     $overdue_filter = " AND p.poam_date_modified > SUBDATE(NOW(), 30)";
+                     break;
+                 case "60":
+                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),30) AND p.poam_date_modified > SUBDATE(NOW(),60)";
+                     break;
+                 case "90":
+                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),60) AND p.poam_date_modified > SUBDATE(NOW(),90)";
+                     break;
+                 case "120":
+                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),90) AND p.poam_date_modified > SUBDATE(NOW(),120)";
+                     break;
+                 case "greater":
+                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),120)";
+                     break;
+		     }
+		 }
+         
+         if($this->status == "en" && $this->overdue) {
+             switch ($this->overdue) {
+                 case "30":
+                     $overdue_filter = " AND p.poam_action_date_est > SUBDATE(NOW(), 30)";
+                     break;
+                 case "60":
+                     $overdue_filter = " AND p.poam_action_date_est < SUBDATE(NOW(),30) AND p.poam_action_date_est > SUBDATE(NOW(),60)";
+                     break;
+                 case "90":
+                     $overdue_filter = " AND p.poam_action_date_est < SUBDATE(NOW(),60) AND p.poam_action_date_est > SUBDATE(NOW(),90)";
+                     break;
+                 case "120":
+                     $overdue_filter = " AND p.poam_action_date_est < SUBDATE(NOW(),90) AND p.poam_action_date_est > SUBDATE(NOW(),120)";
+                     break;
+                 case "greater":
+                     $overdue_filter = " AND p.poam_action_date_est < SUBDATE(NOW(),120)";
+                     break;
+		     }
+        }
 		/*
 		** Existence of a particular poam_id request overrides
 		** any other filters.
@@ -265,8 +306,8 @@ class Report {
 		  $query_filter = "$system_filter
 				   $source_filter
 				   $FY_filter
-				   $type_filter
-				   $status_filter";
+                   $status_filter
+                   $overdue_filter";
 		  }
 
 		/*
@@ -291,7 +332,7 @@ class Report {
 		p.poam_action_planned correctiveaction,
 		p.poam_cmeasure_effectiveness effectiveness,
 		p.poam_threat_level threatlevel,
-		p.poam_action_date_est EstimatedCompletionDate 
+		p.poam_action_date_est EstimatedCompletionDate
 		FROM " . TN_POAMS . " p,
 		".TN_SYSTEMS." sys,
 		".TN_SYSTEMS." sys_owner,

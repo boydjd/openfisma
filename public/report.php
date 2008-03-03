@@ -220,9 +220,14 @@ if ($t==$REPORT_TYPE_POAM){
 	 $system = isset($_POST['system'])?$_POST['system']:'';
 	 $source = isset($_POST['source'])?$_POST['source']:'';
 	 $sy     = isset($_POST['sy'])?$_POST['sy']:'';
-	 $type   = isset($_POST['poam_type'])?$_POST['poam_type']:'';
-	 $status = isset($_POST['status'])?$_POST['status']:'';
-
+     $status = isset($_POST['status'])?$_POST['status']:'';     
+     $overdue = isset($_POST['overdue'])?$_POST['overdue']:'';
+     
+     $smarty->assign('system',$_POST['system']);
+     $smarty->assign('source',$_POST['source']);
+     $smarty->assign('sy',$_POST['sy']);
+     $smarty->assign('status',$_POST['status']);
+     $smarty->assign('overdue',$_POST['overdue']);
 //print "<pre>";
 //print_r($_POST);
 //print "</pre>";
@@ -231,8 +236,8 @@ if ($t==$REPORT_TYPE_POAM){
 	 $rpObj->setSystem($system);
 	 $rpObj->setSource($source);
 	 $rpObj->setSy($sy);
-	 $rpObj->setType($type);
 	 $rpObj->setStatus($status);
+     $rpObj->setOverdue($overdue);
 
 	 // check to see if this is a case of a single-POAM report
 	 // (for closure packet)
@@ -310,7 +315,7 @@ if ($t==$REPORT_TYPE_POAM){
 	$source_list = $rpObj->getSources();
 	$smarty->assign('sources', $source_list);
 
-	$smarty->display('report2.tpl');
+    $smarty->display('report2.tpl');
 }
 else if ($t==$REPORT_TYPE_GENERAL){
 	if ($sub){ //if submited
