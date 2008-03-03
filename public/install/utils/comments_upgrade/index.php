@@ -7,7 +7,7 @@ require_once("dblink.php");
 // required for all pages, sets smarty directory locations for cache, templates, etc.
 require_once("smarty.inc.php");
 
-$page_size = 30;
+$page_size = 10;
 $step = (isset($_GET['s']) && (int)$_GET['s']>0)?(int)$_GET['s']:1;
 
 $keywords = array();
@@ -52,7 +52,7 @@ $keywords['EV_IVV'] = array("UPDATE: IV&V evidence evaluation");
 if ($step == 1){
 // step 1
 $sql = "SELECT COUNT(*) AS c, `comment_topic` AS topic FROM ".TN_POAM_COMMENTS." 
-        WHERE `comment_type` = 'NONE' OR `comment_type` IS NULL OR `comment_type` = ''
+        WHERE  `comment_type` IS NULL OR `comment_type` = ''
         GROUP BY `comment_topic` ORDER BY c DESC";
 $result = $db->sql_query($sql) or die("Query failed:".$sql."<br>".$db->sql_error());
 $groups = $db->sql_fetchrowset($result);
@@ -92,7 +92,7 @@ foreach ((array)$groups as $group) {
 
 if ($step == 2) {
 	$sql = " FROM ".TN_POAM_COMMENTS." 
-        WHERE `comment_type` = 'NONE' OR `comment_type` = '' OR `comment_type` IS NULL";
+        WHERE `comment_type` = '' OR `comment_type` IS NULL";
 
 $result = $db->sql_query("SELECT COUNT(*) ".$sql) or die("Query failed:".$sql."<br>".$db->sql_error());
 $total = array_pop(array_pop($db->sql_fetchrowset($result)));
@@ -106,7 +106,10 @@ $result = $db->sql_query("SELECT * ".$sql.$page_sql) or die("Query failed:".$sql
 $comments = $db->sql_fetchrowset($result);
 ?>
 <table>
-<thead><h2>One By One</h2> <i>-- We suggest you use "By Group" first.</i></thead>
+<thead><h2>One By One</h2> <i>-- We suggest you use "By Group" first.</i>
+<a href="#" class="change_all" id="NONE">Hide All</a>
+<!--<a href="#" class="change_all" id="SSO">SSO All</a>-->
+</thead>
 <tr>
     <th>We Guess</th>
     <th>ID</th>
@@ -155,7 +158,7 @@ echo $links;
 
 ?>
 <div>
-    <input type="button" value="Yes, update for me now!">
+    <input type="button" id="update" value="Yes, update for me now!">
 </div>
 </body>
 </html>
@@ -171,7 +174,7 @@ function getSelectOptions($guess){
     $g_ = ($guess=='')?'selected="selected"':'';
     $action_select = '
         <select name="guess">
-            <option value="NONE" '.$g_none.'>Drop it</option>
+            <option value="NONE" '.$g_none.'>Hide it</option>
             <option value="SSO" '.$g_sso.'>SSO evaluation</option>
             <option value="EST" '.$g_est.'>EST changed</option>
             <option value="EV_SSO" '.$g_ev_sso.'>Evidence SSO evaluation</option>
