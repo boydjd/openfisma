@@ -258,7 +258,7 @@ class Report {
          if($this->status == "open" && $this->overdue) {
              switch ($this->overdue) {
                  case "30":
-                     $overdue_filter = " AND p.poam_date_modified > SUBDATE(NOW(), 30)";
+                     $overdue_filter = " AND p.poam_date_modified > SUBDATE(NOW(), 30) AND p.poam_date_modified < NOW()";
                      break;
                  case "60":
                      $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),30) AND p.poam_date_modified > SUBDATE(NOW(),60)";
@@ -278,7 +278,7 @@ class Report {
          if($this->status == "en" && $this->overdue) {
              switch ($this->overdue) {
                  case "30":
-                     $overdue_filter = " AND p.poam_action_date_est > SUBDATE(NOW(), 30)";
+                     $overdue_filter = " AND p.poam_action_date_est > SUBDATE(NOW(), 30) AND p.poam_action_date_est < NOW()";
                      break;
                  case "60":
                      $overdue_filter = " AND p.poam_action_date_est < SUBDATE(NOW(),30) AND p.poam_action_date_est > SUBDATE(NOW(),60)";
@@ -337,8 +337,7 @@ class Report {
 		".TN_SYSTEMS." sys,
 		".TN_SYSTEMS." sys_owner,
 		".TN_FINDINGS." fin,
-		".TN_ASSETS." a,
-		".TN_ASSET_ADDRESSES." aadd,
+		".TN_ASSETS." a LEFT JOIN ".TN_ASSET_ADDRESSES." aadd ON aadd.asset_id = a.asset_id,
 		".TN_NETWORKS." net,
 		".TN_FINDING_SOURCES." fins,
 		".TN_SYSTEM_ASSETS." sa
@@ -347,7 +346,6 @@ class Report {
 		sa.asset_id = a.asset_id AND
  		sys.system_id = sa.system_id AND
 		sa.system_is_owner = 1 AND
- 		aadd.asset_id = a.asset_id AND
 		net.network_id = aadd.network_id AND
 		fins.source_id = fin.source_id AND
 		sys_owner.system_id = p.poam_action_owner
