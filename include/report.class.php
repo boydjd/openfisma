@@ -314,8 +314,11 @@ class Report {
 		".TN_SYSTEMS." sys,
 		".TN_SYSTEMS." sys_owner,
 		".TN_FINDINGS." fin,
-		".TN_ASSETS." a LEFT JOIN ".TN_ASSET_ADDRESSES." aadd ON aadd.asset_id = a.asset_id,
-		".TN_NETWORKS." net,
+		".TN_ASSETS." a 
+        LEFT JOIN ".TN_ASSET_ADDRESSES." aadd 
+            ON (aadd.asset_id = a.asset_id) 
+        LEFT JOIN ".TN_NETWORKS." AS net ON 
+            (net.network_id = aadd.network_id),
 		".TN_FINDING_SOURCES." fins,
 		".TN_SYSTEM_ASSETS." sa
 		WHERE fin.finding_id = p.finding_id AND
@@ -323,12 +326,10 @@ class Report {
 		sa.asset_id = a.asset_id AND
  		sys.system_id = sa.system_id AND
 		sa.system_is_owner = 1 AND
-		net.network_id = aadd.network_id AND
 		fins.source_id = fin.source_id AND
 		sys_owner.system_id = p.poam_action_owner
 		$query_filter
 		";
-//		echo $sql;
 		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " .$sql."<br>". $this->dbConn->sql_error());
 		return $this->dbConn->sql_fetchrowset($result);
 				
