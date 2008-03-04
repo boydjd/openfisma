@@ -29,18 +29,18 @@
 
 <table width="95%" align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
 	<tr>
-        <td width="6%"><b>System </b></td>
+        <td width="6%" height="47"><b>System </b></td>
         <td width="21%">
-        <select name="system">
-        <option value="">All System </option>
-        {section name=row loop=$systems}
+            <select name="system">
+            <option value="">All System </option>
+                {section name=row loop=$systems}
             <option value="{$systems[row].name}"{if $systems[row].name eq $system}selected{/if}>{$systems[row].name}</option>
-        {/section}
+            {/section}
         </select>
         </td>
         <td width="6%"><b>Source</b></td>
         <td width="18%"><select name="source">
-        <option value="">All Source </option>
+            <option value="">All Source </option>
             {section name=row loop=$sources}
             <option value="{$sources[row].name}"{if $sources[row].name eq $source}selected{/if}>{$sources[row].name}</option>
             {/section}
@@ -55,23 +55,47 @@
             <option value="{$nowy}"{if $sy eq $nowy}selected{/if}>{$nowy}</option>
             <option value="{$nowy+1}"{if $sy eq $nowy+1}selected{/if}>{$nowy+1}</option>
          </select></td>
-	</tr>
-    <tr>
-        <td height="30"><b>Status</b></td>
-        <td colspan="5"><select name="status" id="status">
-        {foreach from=$report_lang[4] item=v} 
-            <option value="{$v[0]}" {if $v[0] eq $status}selected{/if} has_datepicker="{$v[2]}">{$v[1]}</option>
-        {/foreach}
-        </select></td>
     </tr>
+    {if $t eq 2}
     <tr>
-        <td height="40"><b>Overdue</b></td>
-        <td colspan="5"><select name="overdue" id="overdue">
-        {foreach from=$report_lang[5] item=d}
-        <option value="{$d[0]}" {if $d[0] eq $overdue}selected{/if}>{$d[1]}</option>
-        {/foreach}
-        </select></td>
+        <td height="30"><b>Type</b></td>
+        <td>
+            <select name="poam_type">
+            {foreach from=$report_lang[6] item=v} 
+            <option value="{$v[0]}" {if $v[0] eq $poam_type}selected{/if}>{$v[1]}</option>
+            {/foreach}
+            </select>
+        </td>
+        <td><b>Status</b></td>
+        <td colspan="3">
+            <select name="status">          
+            {foreach from=$report_lang[4] item=v}
+            <option value="{$v[0]}" {if $v[0] eq $status}selected{/if}>{$v[1]}</option>          
+            {/foreach}        
+            </select>
+        </td>
     </tr>
+    {/if}
+    {if $t eq 5}
+    <tr>
+        <td height="26"><b>Status</b></td>
+        <td>
+            <select name="status"> 
+            {foreach from=$report_lang[7] item=v}
+            <option value="{$v[0]}" {if $v[0] eq $status}selected{/if}>{$v[1]}</option>                    
+            {/foreach}                
+            </select>
+        </td>
+        <td><b>Overdue</b></td>
+        <td colspan="3">
+            <select name="overdue">
+            {foreach from=$report_lang[5] item=v}
+            <option value="{$v[0]}" {if $v[0] eq $overdue}selected{/if}>{$v[1]}</option>
+            {/foreach}
+            </select>
+        </td>
+    </tr>
+    {/if}
     <tr>
         <td height="39" colspan="6"><input type="submit" name="search" value="Generate">
         <input type="hidden" name="t" value="{$t}" />

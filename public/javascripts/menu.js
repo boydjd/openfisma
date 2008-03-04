@@ -145,13 +145,3 @@ function swapColor(menu, flag){
         nc.style.color = wh;
     }
 }
-
-$(document).ready(function(){
-   $("#status").change(function select_overdue(){
-       var disable = "";
-       if( 0 == $("#status option:selected").attr("has_datepicker") ) {
-           disable = "disabled";
-       }
-       $("#overdue").attr("disabled",disable);
-   }).trigger('change'); 
-});

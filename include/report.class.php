@@ -11,6 +11,7 @@ class Report {
 	private $system  = NULL;
 	private $source  = NULL;
 	private $sy      = NULL;
+    private $poam_type    = NULL;
 	private $status = NULL;
 	private $poam_id = NULL;
     private $overdue = NULL;
@@ -42,6 +43,9 @@ class Report {
 	function setSy($sy){
 		$this->sy=$sy;
 	}
+    function setType($poam_type){
+        $this->poam_type=$poam_type;
+    }
 	function setStatus($status){
 		$this->status=$status;
 	}
@@ -196,35 +200,9 @@ class Report {
 		  $FY_filter =  " AND p.poam_date_created >= '$begin_date'";
 		  $FY_filter .= " AND p.poam_date_created <= '$end_date'";
 		  }
-
-		//
-		// $this->type is an array like this:
-		//  [0] -> 'AR'
-		//  [1] -> 'FP'
-		// with items only existing if they've been checked on
-		// the HTML form.
-		// Convert this to an IN clause like ('AR', 'FP')
-		//
-		if ($this->type && array_keys($this->type)) {
-
-//			print "ping!";
-
-		  $is_first = true;
-		  $type_list ='';
-		  foreach (array_keys($this->type) as $key) {
-		    $val = $this->type[$key];
-		    if($is_first) {
-		      $type_list .= "'$val'";
-		      }
-		    else {
-		      $type_list .= ", '$val'";
-		      }
-		    $is_first = false;
-		    }
-		  $type_filter = " AND p.poam_type IN ($type_list)";
-
-//		print $type_list;
-		  }
+        if(!is_null($this->poam_type) && strlen($this->poam_type) > 0) {
+            $type_filter = " AND p.poam_type = '$this->poam_type'";
+		}
 
 		//
 		// $this->status is an array like this:
@@ -237,46 +215,44 @@ class Report {
 
         if($this->status) {
             switch ($this->status) {
+                case "":
+                    break;
                 case "closed":
                     $status_filter = " AND p.poam_status = 'closed'";
                     break;
-                case "notclosed":
+                case "open":
                     $status_filter = " AND p.poam_status != 'closed'";
                     break;
-                case "new":
-                    $status_filter = " AND p.poam_status = 'open' AND p.poam_type = 'NONE'";
-                    break;
-                case "open":
-                    $status_filter = " AND p.poam_status = 'open' AND p.poam_type = 'CAP'";
-                    break;
-                case "en":
-                    $status_filter = " AND p.poam_status ='en' AND p.poam_type = 'CAP'";
-                    break;
               }              
-          }
- 
+         }
+          
          if($this->status == "open" && $this->overdue) {
-             switch ($this->overdue) {
+              switch ($this->overdue) {
+                 case "":
+                      break;
                  case "30":
-                     $overdue_filter = " AND p.poam_date_modified > SUBDATE(NOW(), 30) AND p.poam_date_modified < NOW()";
+                     $overdue_filter = " AND p.poam_date_created > SUBDATE(NOW(), 30) AND p.poam_date_created < NOW()";
                      break;
                  case "60":
-                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),30) AND p.poam_date_modified > SUBDATE(NOW(),60)";
+                     $overdue_filter = " AND p.poam_date_created < SUBDATE(NOW(),30) AND p.poam_date_created > SUBDATE(NOW(),60)";
                      break;
                  case "90":
-                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),60) AND p.poam_date_modified > SUBDATE(NOW(),90)";
+                     $overdue_filter = " AND p.poam_date_created < SUBDATE(NOW(),60) AND p.poam_date_created > SUBDATE(NOW(),90)";
                      break;
                  case "120":
-                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),90) AND p.poam_date_modified > SUBDATE(NOW(),120)";
+                     $overdue_filter = " AND p.poam_date_created < SUBDATE(NOW(),90) AND p.poam_date_created > SUBDATE(NOW(),120)";
                      break;
                  case "greater":
-                     $overdue_filter = " AND p.poam_date_modified < SUBDATE(NOW(),120)";
+                     $overdue_filter = " AND p.poam_date_created < SUBDATE(NOW(),120)";
                      break;
 		     }
-		 }
+         }
+         
          
          if($this->status == "en" && $this->overdue) {
-             switch ($this->overdue) {
+              switch ($this->overdue) {
+                 case "":
+                      break;
                  case "30":
                      $overdue_filter = " AND p.poam_action_date_est > SUBDATE(NOW(), 30) AND p.poam_action_date_est < NOW()";
                      break;
@@ -293,7 +269,7 @@ class Report {
                      $overdue_filter = " AND p.poam_action_date_est < SUBDATE(NOW(),120)";
                      break;
 		     }
-        }
+         }
 		/*
 		** Existence of a particular poam_id request overrides
 		** any other filters.
@@ -306,6 +282,7 @@ class Report {
 		  $query_filter = "$system_filter
 				   $source_filter
 				   $FY_filter
+                   $type_filter
                    $status_filter
                    $overdue_filter";
 		  }

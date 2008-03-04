@@ -37,6 +37,7 @@ $REPORT_TYPE_FISMA   = 1; // FISMA report
 $REPORT_TYPE_POAM    = 2; // POAM list
 $REPORT_TYPE_GENERAL = 3; // General reports
 $REPORT_TYPE_RAF     = 4; // General reports
+$REPORT_TYPE_OVERDUE = 5; // Overdue reports
 
 $REPORT_GEN_BLSCR  = 1;   // NIST Baseline Security Controls Report
 $REPORT_GEN_FIPS   = 2;   // FIPS 199 Category Breakdown
@@ -56,7 +57,6 @@ $t = $REPORT_TYPE_GENERAL;
 if(isset($_POST['t'])) { // Get report type if passed in
 	$t = intval($_POST['t']);
 }
-
 /*
 ** Collect general report subtype if passed in
 */
@@ -85,6 +85,7 @@ $function_for = array(
  "$REPORT_TYPE_POAM"                      => 'poam_generate',
  "$REPORT_TYPE_RAF"                       => 'raf_generate',
  "$REPORT_TYPE_GENERAL"                   => 'general_generate',
+ "$REPORT_TYPE_OVERDUE"                  => 'poam_generate',
  "$REPORT_TYPE_GENERAL$REPORT_GEN_BLSCR"  => 'general_generate',
  "$REPORT_TYPE_GENERAL$REPORT_GEN_FIPS"   => 'general_generate',
  "$REPORT_TYPE_GENERAL$REPORT_GEN_PRODS"  => 'general_generate',
@@ -213,19 +214,21 @@ if ($t==$REPORT_TYPE_FISMA){//report No. 1
 
 	$smarty->display('report.tpl');
 }
-if ($t==$REPORT_TYPE_POAM){
+if ($t==$REPORT_TYPE_POAM || $t == $REPORT_TYPE_OVERDUE){
 
 	if ($sub){ //if submitted
 	 //get post vars,type and status is array
 	 $system = isset($_POST['system'])?$_POST['system']:'';
 	 $source = isset($_POST['source'])?$_POST['source']:'';
 	 $sy     = isset($_POST['sy'])?$_POST['sy']:'';
-     $status = isset($_POST['status'])?$_POST['status']:'';     
-     $overdue = isset($_POST['overdue'])?$_POST['overdue']:'';
+     $poam_type   = isset($_POST['poam_type'])?$_POST['poam_type']:'';
+     $status = isset($_POST['status'])?$_POST['status']:'';
+     $overdue = isset($_POST['overdue'])?$_POST['overdue']:'';     
      
      $smarty->assign('system',$_POST['system']);
      $smarty->assign('source',$_POST['source']);
      $smarty->assign('sy',$_POST['sy']);
+     $smarty->assign('poam_type',$_POST['poam_type']);
      $smarty->assign('status',$_POST['status']);
      $smarty->assign('overdue',$_POST['overdue']);
 //print "<pre>";
@@ -236,8 +239,9 @@ if ($t==$REPORT_TYPE_POAM){
 	 $rpObj->setSystem($system);
 	 $rpObj->setSource($source);
 	 $rpObj->setSy($sy);
+     $rpObj->setType($poam_type);
 	 $rpObj->setStatus($status);
-     $rpObj->setOverdue($overdue);
+	 $rpObj->setOverdue($overdue);
 
 	 // check to see if this is a case of a single-POAM report
 	 // (for closure packet)
@@ -409,5 +413,4 @@ else if ($t==$REPORT_TYPE_RAF){
 	}
     $smarty->display('report4.tpl');
 }
-
 ?>
