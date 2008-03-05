@@ -92,7 +92,7 @@ array("0"=>array("","All Type"),
       "3"=>array("ar","AR")),
       
 array("0"=>array("","All Status"),
-      "1"=>array("open","SSO Approved Overdue"),
-      "2"=>array("en","Course Of Action Overdue"))
+      "1"=>array("openOverdue","SSO Approved Overdue"),
+      "2"=>array("enOverdue","Course Of Action Overdue"))
 );
 ?>

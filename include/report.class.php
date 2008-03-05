@@ -223,6 +223,12 @@ class Report {
                 case "open":
                     $status_filter = " AND p.poam_status != 'closed'";
                     break;
+                case "openOverdue":
+                    $status_filter = " AND p.poam_status = 'open'";
+                    break;
+                case "enOverdue":
+                    $status_filter = " AND p.poam_status = 'en'";
+                    break;
               }              
          }
           
