@@ -232,7 +232,7 @@ class Report {
               }              
          }
           
-         if($this->status == "open" && $this->overdue) {
+         if($this->status == "openOverdue" && $this->overdue) {
               switch ($this->overdue) {
                  case "":
                       break;
@@ -255,7 +255,7 @@ class Report {
          }
          
          
-         if($this->status == "en" && $this->overdue) {
+         if($this->status == "enOverdue" && $this->overdue) {
               switch ($this->overdue) {
                  case "":
                       break;
