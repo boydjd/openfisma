@@ -15,13 +15,13 @@ $table_class_index		= array(array(0, 1),
 								array(6, 1),
 								);
 // database.table (table name, include database name)
-$table_arr				= array("" . TN_USERS . "",
-								"" . TN_ROLES . "",
-								"" . TN_SYSTEMS . "",
-								"" . TN_PRODUCTS . "",
-								"" . TN_SYSTEM_GROUPS . "",
-								"" . TN_FUNCTIONS . "",
-								"" . TN_FINDING_SOURCES . "",
+$table_arr				= array("USERS",
+								"ROLES",
+								"SYSTEMS",
+								"PRODUCTS",
+								"SYSTEM_GROUPS",
+								"FUNCTIONS",
+								"FINDING_SOURCE",
 								);
 /************************************************************************************/
 // table name for display
