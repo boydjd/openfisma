@@ -254,7 +254,7 @@ class User {
 		$now = date("Y-m-d H:i:s");
 
 		// set user login datetime
-		$sql = "UPDATE " . TN_USERS . " SET user_date_last_login=NOW() WHERE user_id='$user_id'";
+		$sql = "UPDATE " . TN_USERS . " SET user_date_last_login='$current_time_string' WHERE user_id='$user_id'";
 		$res = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
 
 		$logMsg = "login:";

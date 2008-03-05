@@ -1,6 +1,6 @@
 <?PHP
 // no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, youï¿½re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 //
@@ -18,7 +18,7 @@ require_once("config.php");
 require_once("dblink.php");
 
 // grab today's date
-$today = gmdate("Ymd", time());
+$today = date("Ymd", time());
 
 // session_start() creates a session or resumes the current one based on the current session id that's being passed via a request, such as GET, POST, or a cookie.
 // If you want to use a named session, you must call session_name() before calling session_start().
@@ -44,7 +44,7 @@ if ($_POST['target'] == 'save_poam'){
     $smarty->assign('approved',       $_POST['approved']);
     $smarty->assign('form_action',    'Submit');
     
-    $smarty->assign('now', gmdate ("M d Y H:i:s", time()));
+    $smarty->assign('now', $current_time_string);
     
     // display the page
     $smarty->display('remediation_modify.tpl');
@@ -921,7 +921,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 			  if (!file_exists('evidence/'.$_POST['remediation_id'])) { mkdir('evidence/'.$_POST['remediation_id'] , 0755); }
 
 			  // move the file and make sure it is readable
-			  $dest = 'evidence/'.$_POST['remediation_id'].'/'.gmdate('Ymd-His-', time()).$_FILES['evidence']['name'];
+			  $dest = 'evidence/'.$_POST['remediation_id'].'/'.date('Ymd-His-', time()).$_FILES['evidence']['name'];
 			  move_uploaded_file($_FILES['evidence']['tmp_name'], $dest);
 			  chmod($dest, 0755);
 
@@ -1037,7 +1037,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  $results = $db->sql_query($query);
 
 		  // we now have provided evidence, update the POAM status and completion date
-		  $query = "UPDATE " . TN_POAMS . " SET poam_status = 'EP', poam_action_date_actual = NOW() WHERE (poam_id = '".$_POST['remediation_id']."')";
+		  $query = "UPDATE " . TN_POAMS . " SET poam_status = 'EP', poam_action_date_actual = '$current_time_string' WHERE (poam_id = '".$_POST['remediation_id']."')";
 		  $results = $db->sql_query($query);
 
 		}
@@ -1058,7 +1058,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 			}
 
 			// base update for sso approval
-			$query .= "  pe.ev_sso_evaluation = '".$_POST['new_value']."', pe.ev_date_sso_evaluation = NOW() ";
+			$query .= "  pe.ev_sso_evaluation = '".$_POST['new_value']."', pe.ev_date_sso_evaluation = '$current_time_string' ";
 
 		  }
 
@@ -1069,7 +1069,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 			if ($_POST['new_value'] == 'DENIED') { $query .= "  pe.ev_ivv_evaluation = 'EXCLUDED', "; }
 
 			// base update for fsa approval
-			$query .= "  pe.ev_fsa_evaluation = '".$_POST['new_value']."', pe.ev_date_fsa_evaluation = NOW() ";
+			$query .= "  pe.ev_fsa_evaluation = '".$_POST['new_value']."', pe.ev_date_fsa_evaluation = '$current_time_string' ";
 
 		  }
 
@@ -1077,7 +1077,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  if ($_POST['action'] == 'ivv_evaluate') {
 
 			// base update for ivv approval
-			$query .= "  pe.ev_ivv_evaluation = '".$_POST['new_value']."', pe.ev_date_ivv_evaluation = NOW() ";
+			$query .= "  pe.ev_ivv_evaluation = '".$_POST['new_value']."', pe.ev_date_ivv_evaluation = '$current_time_string' ";
 
 		  }
 
@@ -1097,7 +1097,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  if (($_POST['action'] == 'ivv_evaluate') && ($_POST['new_value'] == 'APPROVED')) {
 
 			// change POAM status
-			$query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = NOW() WHERE p.poam_id = '".$_POST['remediation_id']."' ";
+			$query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = '$current_time_string' WHERE p.poam_id = '".$_POST['remediation_id']."' ";
 			$results = $db->sql_query($query);
 
 			// change FINDING status
@@ -1107,7 +1107,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 			  "  " . TN_POAMS . " AS p ".
 			  "SET ".
 			  "  f.finding_status = 'CLOSED', ".
-			  "  f.finding_date_closed = NOW() ".
+			  "  f.finding_date_closed = '$current_time_string' ".
 			  "WHERE ".
 			  "  f.finding_id = p.finding_id AND ".
 			  "  p.poam_id = '".$_POST['remediation_id']."'";
@@ -1181,7 +1181,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 		  "SET ".
 		  "  p.poam_type               = '".$_POST['new_value']."', ".
 		  "  p.poam_status             = 'OPEN', ".
-		  "  p.poam_date_modified      = NOW(), ";
+		  "  p.poam_date_modified      = '$current_time_string', ";
 //		  "  p.poam_action_suggested   = NULL, ";
 //
 //		// update action planned based on type
@@ -1523,7 +1523,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 	  "UPDATE ".
 	  "  " . TN_POAMS . " AS p ".
 	  "SET ".
-	  "  p.poam_date_modified = NOW(), ".
+	  "  p.poam_date_modified = '$current_time_string', ".
 	  "  p.poam_modified_by = '".$user->getUserId()."' ".
 	  "WHERE ( ".
 	  "  p.poam_id = '".$_POST['remediation_id']."' ".
@@ -1550,7 +1550,7 @@ if (isset($_POST['form_action']) && ($_POST['form_action'] == 'Submit')) {
 	  "  '".$_POST['remediation_id']."', ".
 	  "  '".$user->getUserId()."', ".
 	  "  '".$_POST['root_comment']."', ".
-	  "  '".gmdate('Y-m-d H:i:s', time())."', ".
+	  "  '".$current_time_string."', ".
 	  "  '".$_POST['comment_topic']."', ".
 	  "  '".$_POST['comment_body']."' ".
 	  ")";
@@ -1593,7 +1593,7 @@ $smarty->assign('approved',       $_POST['approved']);
 $smarty->assign('form_action',    $_POST['form_action']);
 
 
-$smarty->assign('now', gmdate ("M d Y H:i:s", time()));
+$smarty->assign('now', $current_time_string);
 
 // display the page
 $smarty->display('remediation_modify.tpl');

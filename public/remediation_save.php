@@ -49,8 +49,8 @@ $i = 0;
 //$comment = array();
 $logArr = array();
 
-$unix_timestamp = time();
-$now = gmdate('Y-m-d H:i:s', $unix_timestamp);
+$unix_timestamp = $current_time_stamp;
+$now = $current_time_string;
 
 $userid = $user->getUserId();
 $username = $user->getUsername();
@@ -65,7 +65,7 @@ foreach ($_POST as $k => $v) {
     }
 }
 
-$sql_update .= " `poam_date_modified`='".$now."', `poam_modified_by`= ".$userid;
+$sql_update .= " `poam_date_modified`='$now', `poam_modified_by`= ".$userid;
 
 if (isset($_POST['poam_action_date_est']) && isset($_POST['poam_action_suggested']) && isset($_POST['poam_action_planned'])) {
 	$sql_update .= ", `poam_action_status`='NONE' ";

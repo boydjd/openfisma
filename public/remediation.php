@@ -1,6 +1,6 @@
 <?PHP
 // no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, youï¿½re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate"); 
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -18,8 +18,8 @@ $smarty->assign('pageName', 'Remediation Summary');
 session_start();
 
 // grab today's date
-$today = gmdate("Ymd", time());
-$sql_today = gmdate("Y-m-d", time());
+$today = date("Ymd", time());
+$sql_today = date("Y-m-d", time());
 
 // creates a new user object from the user class
 $user = new User($db);
@@ -328,19 +328,19 @@ if($view_right)
 
 		case "NOUP-30":
 
-			$query .= " p.poam_status NOT LIKE 'CLOSED' AND p.poam_date_modified < SUBDATE(NOW(), 30) AND ";
+			$query .= " p.poam_status NOT LIKE 'CLOSED' AND p.poam_date_modified < SUBDATE('$current_time_string', 30) AND ";
 			break;
 
 
 		case "NOUP-60":
 
-			$query .= " p.poam_status NOT LIKE 'CLOSED' AND p.poam_date_modified < SUBDATE(NOW(), 60) AND ";
+			$query .= " p.poam_status NOT LIKE 'CLOSED' AND p.poam_date_modified < SUBDATE('$current_time_string', 60) AND ";
 			break;
 
 
 		case "NOUP-90":
 
-			$query .= " p.poam_status NOT LIKE 'CLOSED' AND p.poam_date_modified < SUBDATE(NOW(), 90) AND ";
+			$query .= " p.poam_status NOT LIKE 'CLOSED' AND p.poam_date_modified < SUBDATE('$current_time_string', 90) AND ";
 			break;
 
 		default:

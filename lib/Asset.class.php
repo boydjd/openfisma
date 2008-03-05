@@ -163,7 +163,7 @@ class Asset {
                             ) VALUES (
                             '$this->prod_id', 
                             '$this->asset_name', 
-                            NOW(), 
+                            '$current_time_string', 
                             '$this->asset_source'
                             )";
 	    }
@@ -196,7 +196,7 @@ class Asset {
 	public function createAsset() {
 		
 		// designate our insertion query
-		$query = "INSERT INTO " . TN_ASSETS . " (asset_id, asset_date_created) VALUES (NULL, NOW())";
+		$query = "INSERT INTO " . TN_ASSETS . " (asset_id, asset_date_created) VALUES (NULL, '$current_time_string')";
 		
 		// execute the query
 		$this->db->query($query);

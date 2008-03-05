@@ -1,6 +1,6 @@
 <?PHP
 // no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, youï¿½re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -143,7 +143,7 @@ function csvQueryBuild($row, &$db){
     $sql[] = "INSERT INTO " . TN_SYSTEM_ASSETS . " (system_id, asset_id, system_is_owner) VALUES($row[0], LAST_INSERT_ID(), 1)";
     $sql[] = "INSERT INTO " . TN_ASSET_ADDRESSES . " (asset_id,network_id,address_date_created,address_ip,address_port) VALUES(LAST_INSERT_ID(), $row[1], '$row[2]', '$row[3]', '$row[4]')";
     $sql[] = "INSERT INTO " . TN_FINDINGS . " (source_id,asset_id,finding_status,finding_date_created,finding_date_discovered,finding_data) VALUES(
-              $row[5], LAST_INSERT_ID(), 'OPEN', NOW(), '$row[2]', '$row[6]')";
+              $row[5], LAST_INSERT_ID(), 'OPEN', '$current_time_string', '$row[2]', '$row[6]')";
     return $sql;
 }
 

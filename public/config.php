@@ -14,6 +14,10 @@ require_once("page_utils.php");
 $customer_logo = $CUSTOMER_LOGO;
 $login_warning = $LOGIN_WARNING;
 
+date_default_timezone_set('America/New_York');
+$current_time_string = date('Y-m-d H:i:s');
+$current_time_stamp = time();
+
 // uncomment this line to start smarty debugging
 // $smarty->debugging = TRUE;
 

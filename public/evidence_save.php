@@ -26,7 +26,7 @@ if ($_FILES && ($poam_id > 0)) {
     if (!file_exists('evidence/'.$poam_id)) { mkdir('evidence/'.$poam_id , 0755); }
     
     // move the file and make sure it is readable
-    $dest = 'evidence/'.$poam_id.'/'.gmdate('Ymd-His-', time()).$_FILES['evidence']['name'];
+    $dest = 'evidence/'.$poam_id.'/'.date('Ymd-His-', time()).$_FILES['evidence']['name'];
     $result_move = move_uploaded_file($_FILES['evidence']['tmp_name'], dirname(__FILE__).'/'.$dest);
     if($result_move){
         chmod(dirname(__FILE__).'/'.$dest, 0755);
@@ -53,7 +53,7 @@ if ($_FILES && ($poam_id > 0)) {
     $result_insert = $db->sql_query($query);
     
     // we now have provided evidence, update the POAM status and completion date
-    $query = "UPDATE " . TN_POAMS . " SET poam_status = 'EP', poam_action_date_actual = NOW() WHERE (poam_id = '".$poam_id."')";
+    $query = "UPDATE " . TN_POAMS . " SET poam_status = 'EP', poam_action_date_actual = '$current_time_string' WHERE (poam_id = '".$poam_id."')";
     $result_update = $db->sql_query($query);
     
 //    $reload_page = '<script LANGUAGE="JavaScript" type="text/javascript" src="javascripts/jquery/jquery.js"></script>';
@@ -110,7 +110,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
         }
 
         // base update for sso approval
-        $query .= "  pe.ev_sso_evaluation = '".$_POST['new_value']."', pe.ev_date_sso_evaluation = NOW() ";
+        $query .= "  pe.ev_sso_evaluation = '".$_POST['new_value']."', pe.ev_date_sso_evaluation = '$current_time_string' ";
 
     }
 
@@ -121,7 +121,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
         if ($_POST['new_value'] == 'DENIED') { $query .= "  pe.ev_ivv_evaluation = 'EXCLUDED', "; }
 
         // base update for fsa approval
-        $query .= "  pe.ev_fsa_evaluation = '".$_POST['new_value']."', pe.ev_date_fsa_evaluation = NOW() ";
+        $query .= "  pe.ev_fsa_evaluation = '".$_POST['new_value']."', pe.ev_date_fsa_evaluation = '$current_time_string' ";
 
     }
 
@@ -129,7 +129,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     if ($_POST['action'] == 'ivv_evaluate') {
 
         // base update for ivv approval
-        $query .= "  pe.ev_ivv_evaluation = '".$_POST['new_value']."', pe.ev_date_ivv_evaluation = NOW() ";
+        $query .= "  pe.ev_ivv_evaluation = '".$_POST['new_value']."', pe.ev_date_ivv_evaluation = '$current_time_string' ";
 
     }
 
@@ -149,7 +149,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     if (($_POST['action'] == 'ivv_evaluate') && ($_POST['new_value'] == 'APPROVED')) {
 
         // change POAM status
-        $query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = NOW() WHERE p.poam_id = '".$_POST['remediation_id']."' ";
+        $query   = "UPDATE " . TN_POAMS . " AS p SET p.poam_status = 'CLOSED', p.poam_date_closed = '$current_time_string' WHERE p.poam_id = '".$_POST['remediation_id']."' ";
         $results = $db->sql_query($query);
 
         // change FINDING status
@@ -159,7 +159,7 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
         "  " . TN_POAMS . " AS p ".
         "SET ".
         "  f.finding_status = 'CLOSED', ".
-        "  f.finding_date_closed = NOW() ".
+        "  f.finding_date_closed = '$current_time_string' ".
         "WHERE ".
         "  f.finding_id = p.finding_id AND ".
         "  p.poam_id = '".$_POST['remediation_id']."'";
@@ -181,8 +181,8 @@ elseif (($_POST['action'] == 'sso_evaluate') || ($_POST['action'] == 'fsa_evalua
     $reload_page .= '</form>\').appendTo("body").submit();';
     
 //    die($reload_page);
-    $unix_timestamp = time();
-    $now = gmdate('Y-m-d H:i:s', $unix_timestamp);
+    $unix_timestamp = $current_time_stamp;
+    $now = $current_time_string;
     $userid = $user->getUserId();
     openfisma_log($db, $userid, $old_val['finding_id'], $field, $old_val[$field], $_POST['new_value'], $unix_timestamp);
 

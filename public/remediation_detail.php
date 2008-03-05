@@ -1,6 +1,6 @@
 <?PHP
 // no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, youï¿½re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -15,7 +15,7 @@ $smarty->assign('pageName', 'Remediation Summary');
 session_start();
 
 // grab today's date
-$today = gmdate("Ymd", time());
+$today = date("Ymd", time());
 
 // creates a new user object from the user class
 $user = new User($db);
@@ -125,8 +125,8 @@ if (isset($_POST['finding_id'])) {
 	" '".$finding_id."', ".
 	" '".$user->getUserId()."', ".
 	" '".$user->getUserId()."', ".
-	" NOW(), ".
-	" NOW(), ".
+	" '$current_time_string', ".
+	" '$current_time_string', ".
 	" '0000-00-00', ".
 	" '".$system."' ".
 	")";
@@ -148,7 +148,7 @@ if (isset($_POST['finding_id'])) {
 	"  '".$remediation_id."', ".
 	"  '".$user->getUserId()."', ".
 	"  NULL, ".
-	"  NOW(), ".
+	"  '$current_time_string', ".
 	"  'SYSTEM: NEW REMEDIATION CREATED', ".
 	"  'A new remediation was created from finding ".$_POST['finding_id']."' ".
 	")";
@@ -437,7 +437,7 @@ $smarty->assign('num_evidence', $num_evidence);
 //
 $query = "SELECT ".
          "  u.user_name, ".
-         "  al.*, FROM_UNIXTIME(al.date) AS time ".
+         "  al.*, al.date AS time ".
          "FROM " . TN_AUDIT_LOG . "" .
          " AS al, " . TN_USERS.
          " AS u, ". TN_POAMS.
@@ -453,6 +453,10 @@ $query = "SELECT ".
 
 $results      = $db->sql_query($query);
 $logs     = $db->sql_fetchrowset($results);
+foreach ((array)$logs as $k=>$v) {
+    date_default_timezone_set('America/New_York');
+	$logs[$k]['time'] = date('Y-m-d H:i:s', $logs[$k]['time']);
+}
 $smarty->assign('logs', $logs);
 $smarty->assign('num_logs', count($logs));
 
