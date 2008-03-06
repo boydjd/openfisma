@@ -155,6 +155,7 @@
         <th class="tdc">System
         <!-- <th>{$report_lang[2][3]} -->
         <th class="tdc">ID#
+        <th class="tdc">Description
         <!-- <th>{$report_lang[2][5]} -->
         <th class="tdc">Type
         <th class="tdc">Status
@@ -174,6 +175,7 @@
         <td class="tdc" align="center">{$rpdata[row].system}</td>
         <!-- <td class="tdc">{$rpdata[row].tier}</td> -->
         <td class="tdc" align="center">{$rpdata[row].findingnum}</td>
+        <td class="tdc">{$rpdata[row].finding}</td>
         <!-- <td class="tdc">{$rpdata[row].finding}</td> -->
         <td class="tdc" align="center">{$rpdata[row].ptype}</td>
         <td class="tdc" align="center">{$rpdata[row].pstatus}</td>
