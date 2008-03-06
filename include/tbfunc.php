@@ -224,7 +224,7 @@ function PageScroll($tb_id,$pgno,$of=0,$asc=0)
 	$index = $tb_id - 1;
 	$tbname = $table_arr[$index];
 
-	if($tbname == "" . TN_SYSTEM_GROUPS . "")
+	if($tbname == "SYSTEM_GROUPS")
 		$sql = "SELECT COUNT(*) AS num FROM $_db_name.$tbname WHERE sysgroup_is_identity=0";
 	else
 		$sql = "SELECT COUNT(*) AS num FROM $_db_name.$tbname";
@@ -369,7 +369,7 @@ function DoStat($tb_id, $n_id)
 		else
 			$fn = $field_arr[$fnid];
 
-		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+		if($tbname == "SYSTEM_GROUPS")
 			$sql = "SELECT $fn, COUNT(*) FROM $_db_name.$tbname WHERE sysgroup_is_identity=0 GROUP BY $field_arr[$fnid]";
 		else
 			$sql = "SELECT $fn, COUNT(*) FROM $_db_name.$tbname GROUP BY $field_arr[$fnid]";
@@ -540,7 +540,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 			$startpos = 0;
 
 		$othersql = "";
-		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+		if($tbname == "SYSTEM_GROUPS")
 			$othersql = " and sysgroup_is_identity=0 ";
 
 		if($n_id == 0)
@@ -626,7 +626,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=form&r_id=$id\" title=\"edit this $tbcnname\"><img src=\"images/edit.png\" border=\"0\"></a></td>\n";
 			if($view_right)
 				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=view&r_id=$id\" title=\"display the $tbcnname\"><img src=\"images/view.gif\" border=\"0\"></a></td>\n";
-			if($tbname == "" . TN_ROLES . "") {
+			if($tbname == "ROLES") {
 				if($edit_right && $view_right)
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=rrform&r_id=$id\" title=\"set rights for this $tbcnname\"><img src=\"images/signtick.gif\" border=\"0\"></a></td>\n";
 			}
@@ -652,7 +652,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 		$body .= "<th>Edit</td>\n";
 	if($view_right)
 		$body .= "<th>View</td>\n";
-	if($tbname == "" . TN_ROLES . "") {
+	if($tbname == "ROLES") {
 		if($edit_right && $view_right)
 			$body .= "<th>Right</td>\n";
 	}
@@ -749,16 +749,16 @@ function AddRecord($tb_id)
 
 		$id = $db->sql_nextid();
 		// special funciton for the USERS create date field
-		if($tbname == "" . TN_USERS . "") {
+		if($tbname == "USERS") {
 			user_create_date($tbname, $id);
 			UserSystemRoleDefine($id, $_POST);
 		}
-		if($tbname == "" . TN_SYSTEMS . "") {
+		if($tbname == "SYSTEMS") {
 			SystemDefine($id, $_POST);
 		}
 		// special operation for PRODUCTS - need to generate META field
 		// and ensure that nvd_created is set false. 04-04-2006cfd
-		if($tbname == "" . TN_PRODUCTS . "") {
+		if($tbname == "PRODUCTS") {
 		  $meta_sql = "UPDATE " . TN_PRODUCTS . " SET prod_meta = concat(prod_vendor, ' ', prod_name, ' ', prod_version), prod_nvd_defined = 0 WHERE prod_id = $id";
 		  $db->sql_query($meta_sql);
 		  }
@@ -841,7 +841,7 @@ function UpdateRecord($tb_id, $id)
 
 	if($res)
 	{
-		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+		if($tbname == "SYSTEM_GROUPS")
 			$sql = "UPDATE $_db_name.$tbname SET $field WHERE $tb_fid='$id' AND sysgroup_is_identity=0";
 		else
 			$sql = "UPDATE $_db_name.$tbname SET $field WHERE $tb_fid='$id'";
@@ -849,14 +849,14 @@ function UpdateRecord($tb_id, $id)
 		$res = $db->sql_query($sql);
 
 		// special funciton for the USERS deactive date field
-		if($tbname == "" . TN_USERS . "") {
+		if($tbname == "USERS") {
 			user_deactive_date($tbname, $id);
 			// modify user password, reset change password date to "0000-00-00"
 			if(!empty($temp_password))
 				user_change_password($tbname, $id);
 			UserSystemRoleDefine($id, $_POST);
 		}
-		if($tbname == "" . TN_SYSTEMS . "") {
+		if($tbname == "SYSTEMS") {
 			SystemDefine($id, $_POST);
 		}
 	}
@@ -883,19 +883,19 @@ function DeleteRecord($tb_id, $id)
 		$res = $db->sql_query($sql);
 
 		// delete all role's right
-		if($tbname == "" . TN_ROLES . "") {
+		if($tbname == "ROLES") {
 			$sql = "DELETE FROM $_db_name.ROLE_FUNCTIONS WHERE role_id='$id'";
 			//echo $sql;
 			$res = $db->sql_query($sql);
 		}
 
-		if($tbname == "" . TN_USERS . "") {
+		if($tbname == "USERS") {
 			$sql = "DELETE FROM $_db_name.USER_SYSTEM_ROLES WHERE user_id='$id'";
 			//echo $sql;
 			$res = $db->sql_query($sql);
 		}
 
-		if($tbname == "" . TN_SYSTEMS . "") {
+		if($tbname == "SYSTEMS") {
 			$sql = "DELETE FROM $_db_name.SYSTEM_GROUP_SYSTEMS WHERE system_id='$id'";
 			//echo $sql;
 			$res = $db->sql_query($sql);
@@ -988,7 +988,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 		if($asc == 1)
 			$order .= " DESC ";
 
-		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+		if($tbname == "SYSTEM_GROUPS")
 			$sql = "SELECT $field FROM $_db_name.$tbname WHERE  sysgroup_is_identity=0 ORDER BY $order LIMIT $startpos, $pagesize";
 		else
 			$sql = "SELECT $field FROM $_db_name.$tbname ORDER BY $order LIMIT $startpos, $pagesize";
@@ -1069,7 +1069,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=form&r_id=$id\" title=\"edit the $tbcnname\"><img src=\"images/edit.png\" border=\"0\"></a></td>\n";
 				if($view_right)
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=view&r_id=$id\" title=\"display the $tbcnname\"><img src=\"images/view.gif\" border=\"0\"></a></td>\n";
-				if($tbname == "" . TN_ROLES . "") {
+				if($tbname == "ROLES") {
 					if($edit_right && $view_right)
 						$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=rrform&r_id=$id\" title=\"set right for this $tbcnname\"><img src=\"images/signtick.gif\" border=\"0\"></a></td>\n";
 				}
@@ -1111,7 +1111,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 		$body .= "<th>Edit</td>\n";
 	if($view_right)
 		$body .= "<th>View</td>\n";
-	if($tbname == "" . TN_ROLES . "") {
+	if($tbname == "ROLES") {
 		if($edit_right && $view_right)
 			$body .= "<th>Right</td>\n";
 	}
@@ -1173,7 +1173,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 				$field .= "," . $fn;
 		}
 
-		if($tbname == "" . TN_SYSTEM_GROUPS . "")
+		if($tbname == "SYSTEM_GROUPS")
 			$sql = "SELECT $field FROM $_db_name.$tbname WHERE $tb_fid='$id' AND sysgroup_is_identity=0";
 		else
 			$sql = "SELECT $field FROM $_db_name.$tbname WHERE $tb_fid='$id'";
@@ -1367,9 +1367,9 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 </table>
 <br>
 <?
-	if($tbname == "" . TN_USERS . "")
+	if($tbname == "USERS")
 		echo UserSystemRoleDefineTable($id, true);
-	if($tbname == "" . TN_SYSTEMS."")
+	if($tbname == "SYSTEMS")
 		echo SystemDefineTable($id, true);
 ?>
 <table border="0" width="300">
@@ -1529,10 +1529,10 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 	}
 
 	echo "</table><br>";
-	if($tbname == "" . TN_USERS . "") {
+	if($tbname == "USERS") {
 		echo UserSystemRoleDefineTable($id, false);
 	}
-	if($tbname == "" . TN_SYSTEMS . "") {
+	if($tbname == "SYSTEMS") {
 		echo SystemDefineTable($id, false);
 	}
 }

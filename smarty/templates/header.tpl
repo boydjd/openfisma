@@ -209,7 +209,7 @@
 		<td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="javascript:submit_b(4)" class="n navicon" id="rp4"> Generate System RAFs </a></td>
 	</tr>
 	{/if}
-    {if $report_general_generate eq 1}
+    {if $report_poam_generate eq 1}
     <tr>
         <td class=menurow onMouseover="swapColor(this, 'on');" onMouseout="swapColor(this, 'off');"><a href="javascript:submit_b(5)" class="n navicon" id="rp5"> Overdue Report</a></td>
     </tr>
