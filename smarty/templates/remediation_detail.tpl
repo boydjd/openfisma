@@ -405,7 +405,7 @@ function go(step) {
 							<tr>
 								<th nowrap>Changed On</td>
 								<th nowrap>Changed By</td>
-								<th nowrap>Event</td>
+<!--								<th nowrap>Event</td>-->
 								<th nowrap>Reason for Change</td>
 							</tr>
 
@@ -414,7 +414,7 @@ function go(step) {
 							<tr>
 								<td class="tdc" nowrap>{$comments_est[row].comment_date}</td>
 								<td class="tdc" nowrap>{$comments_est[row].user_name}</td>
-								<td class="tdc">{$comments_est[row].comment_topic}</td>
+<!--								<td class="tdc">{$comments_est[row].comment_topic}</td>-->
 								<td class="tdc">{$comments_est[row].comment_body}</td>
 							</tr>
 				
