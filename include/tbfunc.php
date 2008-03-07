@@ -631,7 +631,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=rrform&r_id=$id\" title=\"set rights for this $tbcnname\"><img src=\"images/signtick.gif\" border=\"0\"></a></td>\n";
 			}
 			if($del_right)
-				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=dele&r_id=$id\" title=\"delete this $tbcnname, can't restore after deleted\" onclick=\"return delok('$tbcnname');\"><img src=\"images/edit.png\" border=\"0\"></a></td>\n";
+				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=dele&r_id=$id\" title=\"delete this $tbcnname, can't restore after deleted\" onclick=\"return delok('$tbcnname');\"><img src=\"images/del.png\" border=\"0\"></a></td>\n";
 			$msg .= "</tr>\n";
 
 			if($num == $pagesize)

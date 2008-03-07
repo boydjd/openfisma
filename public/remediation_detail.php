@@ -80,6 +80,7 @@ if (isset($_POST['sort_by']))       { $smarty->assign('sort_by',    $_POST['sort
 //
 if (isset($_POST['finding_id'])) {
 
+  $current_time_int = time();
   // grab the finding_id for easy use
   $finding_id = $_POST['finding_id'];
 
@@ -142,14 +143,13 @@ if (isset($_POST['finding_id'])) {
 
   // create the root comment for the poam
   $query =
-	"INSERT INTO " . TN_POAM_COMMENTS . " ".
-	"(poam_id, user_id, comment_parent, comment_date, comment_topic, comment_body) ".
+    "INSERT INTO " . TN_AUDIT_LOG . " ".
+    "(finding_id,user_id,date,event,description)".
 	"VALUES ( ".
-	"  '".$remediation_id."', ".
+    "  '".$_POST['finding_id']."', ".
 	"  '".$user->getUserId()."', ".
-	"  NULL, ".
-	"  '$current_time_string', ".
-	"  'SYSTEM: NEW REMEDIATION CREATED', ".
+    "  '$current_time_int', ".
+    "  'CREATE:NEW REMEDIATION CREATED', ".
 	"  'A new remediation was created from finding ".$_POST['finding_id']."' ".
 	")";
   $results = $db->sql_query($query);
