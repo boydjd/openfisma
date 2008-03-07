@@ -91,7 +91,7 @@ function go(step) {
 			<table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
 				<!--<th align="left" colspan="2">Finding Information - #{$finding.finding_id}</th> -->
 				<th align="left" colspan="2">Finding Information</th>
-				<tr><td><b>Finding ID:</b> {$remediation_id}</td></tr>
+				<tr><td><b>Finding ID:</b> {$finding.finding_id}</td></tr>
 				<tr><td><b>Date Opened:</b> {$finding.finding_date_created}</td></tr>
 				<tr><td><b>Finding Source:</b> ({$finding.source_nickname}) {$finding.source_name}</td></tr>
 				<tr><td><b>Finding Status:</b> {$remediation.poam_status}</td></tr>
