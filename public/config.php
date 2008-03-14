@@ -10,6 +10,8 @@ require_once("user.class.php");
 
 // Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
 require_once("page_utils.php");
+require_once('Zend/Config.php');
+require_once("roles_ini.php");
 
 $customer_logo = $CUSTOMER_LOGO;
 $login_warning = $LOGIN_WARNING;
@@ -101,5 +103,24 @@ function displayLoginInfor($smarty, $user) {
 		$smarty->assign("customer_logo", $customer_logo);
 	}
 }
+
+class sConfigure extends Zend_Config 
+{
+    private static $instance = array();
+
+    public  function __construct($array = array() ) {
+        parent::__construct($array, true);
+    }
+
+    public static function &getInstance() {
+        if (empty(self::$instance)) {
+            self::$instance[0] = new sConfigure; 
+        }
+        return self::$instance[0];
+    }
+}
+
+$fismaConfig = sConfigure::getInstance();
+$fismaConfig->merge(new Zend_Config(array('acl'=>acl_initialize() ) ) );
 
 ?>
