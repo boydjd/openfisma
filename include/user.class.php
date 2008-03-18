@@ -688,7 +688,7 @@ Please create a password that adheres to these complexity requirements:<br>
 
 
 	function loginFailed($smarty, $ec = 0) {
-		if($ec > 5 && $this->user_name != "root") {
+        if($ec > 3 && $this->user_name != "root") {
 			// > 5 times error, user will be locked out, except "root" user
 			$uid = $this->user_id;
 			$now = date("Y-m-d H:i:s");
