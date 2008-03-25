@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -24,9 +24,9 @@ verify_login($user, $smarty);
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
 
-$view_right	= $user->checkRightByFunction("asset", "view");
-$edit_right = $user->checkRightByFunction("asset", "edit");
-$add_right  = $user->checkRightByFunction("asset", "add");
+$view_right = $user->checkRightByFunction("asset", "read");
+$edit_right = $user->checkRightByFunction("asset", "update");
+$add_right  = $user->checkRightByFunction("asset", "create");
 $del_right  = $user->checkRightByFunction("asset", "delete");
 
 // let's template know how to display the page

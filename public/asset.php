@@ -28,9 +28,9 @@ $user_id = $user->getUserId();
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
 
-$view_right	= $user->checkRightByFunction("asset", "view");
-$edit_right = $user->checkRightByFunction("asset", "edit");
-$add_right  = $user->checkRightByFunction("asset", "add");
+$view_right	= $user->checkRightByFunction("asset", "read");
+$edit_right = $user->checkRightByFunction("asset", "update");
+$add_right  = $user->checkRightByFunction("asset", "create");
 $del_right  = $user->checkRightByFunction("asset", "delete");
 
 

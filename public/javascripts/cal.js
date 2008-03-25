@@ -24,7 +24,7 @@ function Calendar(p_item, p_WinCal, p_month, p_year, p_format) {
 		this.gWinCal = ggWinCal;
 	else
 		this.gWinCal = p_WinCal;
-	
+
 	if (p_month == null) {
 		this.gMonthName = null;
 		this.gMonth = null;
@@ -54,30 +54,30 @@ function Calendar_get_month(monthNo) {
 }
 
 function Calendar_get_daysofmonth(monthNo, p_year) {
-	/* 
+	/*
 	Check for leap year ..
-	1.Years evenly divisible by four are normally leap years, except for... 
-	2.Years also evenly divisible by 100 are not leap years, except for... 
-	3.Years also evenly divisible by 400 are leap years. 
+	1.Years evenly divisible by four are normally leap years, except for...
+	2.Years also evenly divisible by 100 are not leap years, except for...
+	3.Years also evenly divisible by 400 are leap years.
 	*/
 	if ((p_year % 4) == 0) {
 		if ((p_year % 100) == 0 && (p_year % 400) != 0)
 			return Calendar.DOMonth[monthNo];
-	
+
 		return Calendar.lDOMonth[monthNo];
 	} else
 		return Calendar.DOMonth[monthNo];
 }
 
 function Calendar_calc_month_year(p_Month, p_Year, incr) {
-	/* 
-	Will return an 1-D array with 1st element being the calculated month 
-	and second being the calculated year 
+	/*
+	Will return an 1-D array with 1st element being the calculated month
+	and second being the calculated year
 	after applying the month increment/decrement as specified by 'incr' parameter.
 	'incr' will normally have 1/-1 to navigate thru the months.
 	*/
 	var ret_arr = new Array();
-	
+
 	if (incr == -1) {
 		// B A C K W A R D
 		if (p_Month == 0) {
@@ -99,7 +99,7 @@ function Calendar_calc_month_year(p_Month, p_Year, incr) {
 			ret_arr[1] = parseInt(p_Year);
 		}
 	}
-	
+
 	return ret_arr;
 }
 
@@ -108,14 +108,14 @@ function Calendar_print() {
 }
 
 function Calendar_calc_month_year(p_Month, p_Year, incr) {
-	/* 
-	Will return an 1-D array with 1st element being the calculated month 
-	and second being the calculated year 
+	/*
+	Will return an 1-D array with 1st element being the calculated month
+	and second being the calculated year
 	after applying the month increment/decrement as specified by 'incr' parameter.
 	'incr' will normally have 1/-1 to navigate thru the months.
 	*/
 	var ret_arr = new Array();
-	
+
 	if (incr == -1) {
 		// B A C K W A R D
 		if (p_Month == 0) {
@@ -137,7 +137,7 @@ function Calendar_calc_month_year(p_Month, p_Year, incr) {
 			ret_arr[1] = parseInt(p_Year);
 		}
 	}
-	
+
 	return ret_arr;
 }
 
@@ -148,23 +148,23 @@ Calendar.prototype.getMonthlyCalendarCode = function() {
 	var vCode = "";
 	var vHeader_Code = "";
 	var vData_Code = "";
-	
+
 	// Begin Table Drawing code here..
 	vCode=vCode+"<td>"
 	vCode = vCode + "<TABLE BORDER=0 width=100 align=center>";
-	
+
 	vHeader_Code = this.cal_header();
 	vData_Code = this.cal_data();
 	vCode = vCode + vHeader_Code + vData_Code;
-	
+
 	vCode = vCode + "</TABLE></td></tr></table>";
-	
+
 	return vCode;
 }
 
 Calendar.prototype.show = function() {
 	var vCode = "";
-	
+
 	this.gWinCal.document.open();
 
 	// Setup the page...
@@ -173,8 +173,8 @@ Calendar.prototype.show = function() {
 	this.wwrite("<meta http-equiv='Content-Type' content='text/html; charset=gb2312'>");
 	this.wwrite("</head>");
 
-	this.wwrite("<body " + 
-		"link=\"" + this.gLinkColor + "\" " + 
+	this.wwrite("<body " +
+		"link=\"" + this.gLinkColor + "\" " +
 		"vlink=\"" + this.gLinkColor + "\" " +
 		"alink=\"" + this.gLinkColor + "\" " +
 		"text=\"" + this.gTextColor + "\">");
@@ -190,26 +190,26 @@ Calendar.prototype.show = function() {
 	var nextMMYYYY = Calendar.calc_month_year(this.gMonth, this.gYear, 1);
 	var nextMM = nextMMYYYY[0];
 	var nextYYYY = nextMMYYYY[1];
-	
+
 	this.wwrite("<TABLE CELLPADDING='0' CELLSPACING='1' WIDTH='175' BORDER='0' bgcolor='#336699' align='center'><TR><TD ALIGN=center><table width='100%'><tr><td width='20%' ALIGN=center>");
 	this.wwrite("<A HREF=\"" +
-		"javascript:window.opener.Build(" + 
+		"javascript:window.opener.Build(" +
 		"'" + this.gReturnItem + "', '" + this.gMonth + "', '" + (parseInt(this.gYear)-1) + "', '" + this.gFormat + "'" +
 		");" +
 		"\"><img src='images/arrow_left.gif' border='0'><img src='images/arrow_left.gif' border='0'><\/A></td><td width='20%' ALIGN=center>");
 	this.wwrite("<A HREF=\"" +
-		"javascript:window.opener.Build(" + 
+		"javascript:window.opener.Build(" +
 		"'" + this.gReturnItem + "', '" + prevMM + "', '" + prevYYYY + "', '" + this.gFormat + "'" +
 		");" +
 		"\"><img src='images/arrow_left.gif' border='0'><\/A></td><td width='20%' ALIGN=center>");
 	this.wwrite("<A HREF=\"javascript:window.print();\"><font size='2' color='#ffffff'>Print</font></A></td><td width='20%' ALIGN=center>");
 	this.wwrite("<A HREF=\"" +
-		"javascript:window.opener.Build(" + 
+		"javascript:window.opener.Build(" +
 		"'" + this.gReturnItem + "', '" + nextMM + "', '" + nextYYYY + "', '" + this.gFormat + "'" +
 		");" +
 		"\"><img src='images/arrow_right.gif' border='0'><\/A></td><td width='20%' ALIGN=center>");
 	this.wwrite("<A HREF=\"" +
-		"javascript:window.opener.Build(" + 
+		"javascript:window.opener.Build(" +
 		"'" + this.gReturnItem + "', '" + this.gMonth + "', '" + (parseInt(this.gYear)+1) + "', '" + this.gFormat + "'" +
 		");" +
 		"\"><img src='images/arrow_right.gif' border='0'><img src='images/arrow_right.gif' border='0'><\/A></td><tr></table></TD></TR><tr bgcolor='#ffffff'>");
@@ -232,16 +232,16 @@ Calendar.prototype.showY = function() {
 	var vym;				// Y-margin
 	if (isIE)	vym = 75;
 	else if (isNav)	vym = 25;
-	
+
 	this.gWinCal.document.open();
 
 	this.wwrite("<html>");
 	this.wwrite("<head><title>Calendar</title>");
-	
+
 	this.wwrite("</head>");
 
-	this.wwrite("<body " + 
-		"link=\"" + this.gLinkColor + "\" " + 
+	this.wwrite("<body " +
+		"link=\"" + this.gLinkColor + "\" " +
 		"vlink=\"" + this.gLinkColor + "\" " +
 		"alink=\"" + this.gLinkColor + "\" " +
 		"text=\"" + this.gTextColor + "\">");
@@ -252,16 +252,16 @@ Calendar.prototype.showY = function() {
 	// Show navigation buttons
 	var prevYYYY = parseInt(this.gYear) - 1;
 	var nextYYYY = parseInt(this.gYear) + 1;
-	
+
 	this.wwrite("<TABLE WIDTH='100%' BORDER=0 CELLSPACING=0 CELLPADDING=0 BGCOLOR='#e0e0e0'><TR><TD ALIGN=center>");
 	this.wwrite("<A HREF=\"" +
-		"javascript:window.opener.Build(" + 
+		"javascript:window.opener.Build(" +
 		"'" + this.gReturnItem + "', null, '" + prevYYYY + "', '" + this.gFormat + "'" +
 		");" +
 		"\" alt='Prev Year'><<<\/A>");
 	this.wwrite("<A HREF=\"javascript:window.print();\">Print</A>");
 	this.wwrite("<A HREF=\"" +
-		"javascript:window.opener.Build(" + 
+		"javascript:window.opener.Build(" +
 		"'" + this.gReturnItem + "', null, '" + nextYYYY + "', '" + this.gFormat + "'" +
 		");" +
 		"\">>><\/A></TD></TR></TABLE><BR>");
@@ -300,7 +300,7 @@ Calendar.prototype.wwriteA = function(wtext) {
 
 Calendar.prototype.cal_header = function() {
 	var vCode = "";
-	
+
 	vCode = vCode + "<TR>";
 	vCode = vCode + "<TD WIDTH='15%' align='center'><FONT SIZE='2' FACE='" + fontface + "' COLOR='#ff0000'><B>Sun</B></FONT></TD>";
 	vCode = vCode + "<TD WIDTH='14%' align='center'><FONT SIZE='2' FACE='" + fontface + "' COLOR='" + this.gHeaderColor + "'><B>Mon</B></FONT></TD>";
@@ -310,7 +310,7 @@ Calendar.prototype.cal_header = function() {
 	vCode = vCode + "<TD WIDTH='14%' align='center'><FONT SIZE='2' FACE='" + fontface + "' COLOR='" + this.gHeaderColor + "'><B>&nbsp;Fri&nbsp;</B></FONT></TD>";
 	vCode = vCode + "<TD WIDTH='15'><FONT SIZE='2' FACE='" + fontface + "' COLOR='#ff0000'><B>Sat</B></FONT></TD>";
 	vCode = vCode + "</TR>";
-	
+
 	return vCode;
 }
 
@@ -328,7 +328,7 @@ Calendar.prototype.cal_data = function() {
 
 	/*
 	Get day for the 1st of the requested month/year..
-	Place as many blank cells before the 1st day of the month as necessary. 
+	Place as many blank cells before the 1st day of the month as necessary.
 	*/
 
 	vCode = vCode + "<TR>";
@@ -338,13 +338,13 @@ Calendar.prototype.cal_data = function() {
 
 	// Write rest of the 1st week
 	for (j=vFirstDay; j<7; j++) {
-		vCode = vCode + "<TD align='center'><FONT SIZE='2' FACE='" + fontface + "'>" + 
-			"<A HREF='#' " + 
-				"onClick=\"self.opener.document." + this.gReturnItem + ".value='" + 
-				this.format_data(vDay) + 
-				"';window.close();\">" + 
-				this.format_day(vDay) + 
-			"</A>" + 
+		vCode = vCode + "<TD align='center'><FONT SIZE='2' FACE='" + fontface + "'>" +
+			"<A HREF='#' " +
+				"onClick=\"self.opener.document." + this.gReturnItem + ".value='" +
+				this.format_data(vDay) +
+				"';window.close();\">" +
+				this.format_day(vDay) +
+			"</A>" +
 			"</FONT></TD>";
 		vDay=vDay + 1;
 	}
@@ -355,13 +355,13 @@ Calendar.prototype.cal_data = function() {
 		vCode = vCode + "<TR>";
 
 		for (j=0; j<7; j++) {
-			vCode = vCode + "<TD align='center'><FONT SIZE='2' FACE='" + fontface + "'>" + 
-				"<A HREF='#' " + 
-					"onClick=\"self.opener.document." + this.gReturnItem + ".value='" + 
-					this.format_data(vDay) + 
-					"';window.close();\">" + 
-				this.format_day(vDay) + 
-				"</A>" + 
+			vCode = vCode + "<TD align='center'><FONT SIZE='2' FACE='" + fontface + "'>" +
+				"<A HREF='#' " +
+					"onClick=\"self.opener.document." + this.gReturnItem + ".value='" +
+					this.format_data(vDay) +
+					"';window.close();\">" +
+				this.format_day(vDay) +
+				"</A>" +
 				"</FONT></TD>";
 			vDay=vDay + 1;
 
@@ -376,7 +376,7 @@ Calendar.prototype.cal_data = function() {
 		if (vOnLastDay == 1)
 			break;
 	}
-	
+
 	// Fill up the rest of last week with proper blanks, so that we get proper square blocks
 	for (m=1; m<(7-j); m++) {
 		if (this.gYearly)
@@ -384,7 +384,7 @@ Calendar.prototype.cal_data = function() {
 		else
 			vCode = vCode + "<TD align='center'><FONT SIZE='2' FACE='" + fontface + "' COLOR='gray'>" + m + "</FONT></TD>";
 	}
-	
+
 	return vCode;
 }
 
@@ -491,7 +491,7 @@ function Build(p_item, p_month, p_year, p_format) {
 }
 
 function show_calendar() {
-	/* 
+	/*
 		p_month : 0-11 for Jan-Dec; 12 for All Months.
 		p_year	: 4-digit year
 		p_format: Date format (mm/dd/yyyy, dd/mm/yy, ...)
@@ -512,7 +512,7 @@ function show_calendar() {
 	else
 		p_format = arguments[3];
 
-	vWinCal = window.open("", "SelectDate", 
+	vWinCal = window.open("", "SelectDate",
 		"width=250,height=210,status=no,resizable=yes");
 	vWinCal.opener = self;
 	ggWinCal = vWinCal;
@@ -534,4 +534,102 @@ function show_yearly_calendar(p_item, p_year, p_format) {
 	ggWinCal = vWinCal;
 
 	Build(p_item, null, p_year, p_format);
+}
+
+// assign roles & privileges to users
+function move(fbox,tbox) {
+  for(var i=0; i<fbox.options.length; i++) {
+    if(fbox.options[i].selected && fbox.options[i].value != "") {
+     var no = new Option();
+     no.value = fbox.options[i].value;
+     no.text = fbox.options[i].text;
+     tbox.options[tbox.options.length] = no;
+     fbox.options[i].value = "";
+     fbox.options[i].text = "";
+        }
+   }
+BumpUp(fbox);
+//if (sortitems) SortD(tbox);
+}
+
+function moveall(fbox,tbox) {
+  for(var i=0; i<fbox.options.length; i++) {
+    if(fbox.options[i].value != "") {
+     var no = new Option();
+     no.value = fbox.options[i].value;
+     no.text = fbox.options[i].text;
+     tbox.options[tbox.options.length] = no;
+     fbox.options[i].value = "";
+     fbox.options[i].text = "";
+        }
+   }
+BumpUp(fbox);
+//if (sortitems) SortD(tbox);
+}
+
+function BumpUp(box)   {
+  for(var i=0; i<box.options.length; i++) {
+    if(box.options[i].value == "")   {
+       for(var j=i; j<box.options.length-1; j++)   {
+        box.options[j].value = box.options[j+1].value;
+        box.options[j].text = box.options[j+1].text;
+        }
+     var ln = i;
+    break;
+        }
+   }
+  if(ln < box.options.length)   {
+   box.options.length -= 1;
+   BumpUp(box);
+      }
+}
+
+function SortD(box)   {
+var temp_opts = new Array();
+var temp = new Object();
+for(var i=0; i<box.options.length; i++)   {
+temp_opts[i] = box.options[i];
+}
+
+for(var x=0; x<temp_opts.length-1; x++)   {
+   for(var y=(x+1); y<temp_opts.length; y++)   {
+     if(temp_opts[x].text > temp_opts[y].text)   {
+      temp = temp_opts[x].text;
+      temp_opts[x].text = temp_opts[y].text;
+      temp_opts[y].text = temp;
+      temp = temp_opts[x].value;
+      temp_opts[x].value = temp_opts[y].value;
+      temp_opts[y].value = temp;
+         }
+       }
+}
+
+for(var i=0; i<box.options.length; i++)   {
+box.options[i].value = temp_opts[i].value;
+box.options[i].text = temp_opts[i].text;
+     }
+}
+
+// assign roles & privileges
+function assign() {
+    var formObj_role  = document.getElementById('role_have');
+    var formObj_right = document.getElementById('right_have');
+    var tid=document.getElementById("menu").value;
+    var pgno=document.getElementById("pgno").value;
+    var of=document.getElementById("of").value;
+    var asc=document.getElementById("asc").value;
+    var u_do=document.getElementById("u_do").value;
+    var u_id=document.getElementById("u_id").value;
+    var role_id   = formObj_role.options;
+    var right_id   = formObj_right.options;
+    var paras  = '';
+    for(i=0,j=0;i<formObj_role.length;i++){
+            paras += "&role_id["+ (j++) +"]="+role_id[i].value;
+    }
+    for(i=0,j=0;i<formObj_right.length;i++){
+            paras += "&right_id["+ (j++) +"]="+right_id[i].value;
+    }
+    role = paras.substring(1,paras.length);
+    url = "tbadm.php?"+role+"&tid="+tid+"&pgno="+pgno+"&of="+of+"&asc="+asc+"&u_do="+u_do+"&u_id="+u_id;
+    window.location.href=url;
 }

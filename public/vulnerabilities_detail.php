@@ -19,9 +19,9 @@ $user = new User($db);
 // validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
-$view_right	= $user->checkRightByFunction("vulnerability", "view");
-$edit_right = $user->checkRightByFunction("vulnerability", "edit");
-$add_right  = $user->checkRightByFunction("vulnerability", "add");
+$view_right	= $user->checkRightByFunction("vulnerability", "read");
+$edit_right = $user->checkRightByFunction("vulnerability", "update");
+$add_right  = $user->checkRightByFunction("vulnerability", "create");
 $del_right  = $user->checkRightByFunction("vulnerability", "delete");
 
 // let's template know how to display the page

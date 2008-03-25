@@ -1,4 +1,12 @@
 <?php
+// roles defines
+define('REVIEVER', 'REVIEVER');
+define('SAISO', 'SAISO');
+define('AO', 'AO');
+define('ISSO', 'ISSO');
+define('ISO', 'ISO');
+define('IVV', 'IV&V');
+define('AUDITOR', 'AUDITOR');
 // privilege defines
 
 define("PN_READ",                               "read");
@@ -30,6 +38,7 @@ define("PN_UPDATE_RISK_THIRD",                   "update_risk_third");
 define("PN_GENERATE_POAM_REPORT",                "generate_poam_report");
 define("PN_GENERATE_FISMA_REPORT",               "generate_fisma_report");
 define("PN_GENERATE_GENERAL_REPORT",             "generate_general_report");
-define("PN_GENERATE_POAM_REPORT",                "generate_poam_report");
+define("PN_GENERATE_SYSTEM_RAFS",                "generate_system_rafs");
+define("PN_OVERDUE_REPORT",                      "generate_overdue_report");
 
 ?>

@@ -17,6 +17,8 @@ class User {
 	private $user_password;
 	private $role_id;
 	private $user_is_active;
+    private $acl;
+    private $role_array;
 
 	public $user_title;
 	public $user_name_last;
@@ -131,8 +133,8 @@ class User {
 		if($this->login_status == 1) {
 			if($dologin) {
 				// init user's right
-				$this->_function_init($this->role_id);
-				$this->_system_init($this->user_id);
+                $this->_function_init();
+                $this->_system_init();
 			}
 			else {
 				// do login, set user loged in session's status
@@ -160,93 +162,39 @@ class User {
 	}
 
 
-	private function _function_init($role_id) {
-		if($this->user_name == "root") {
-			// root user have all right
-			$sql = "SELECT f.function_screen,f.function_id,f.function_name,f.function_action
-						FROM " . TN_FUNCTIONS . " AS f
-						ORDER BY f.function_screen";
-		}
-		else {
-			// get user's right via his ROLE
-			$sql = "SELECT f.function_screen,f.function_id,f.function_name,f.function_action
-						FROM " . TN_ROLE_FUNCTIONS . " AS rf," . TN_FUNCTIONS . " AS f
-						WHERE rf.role_id='$role_id' AND
-							rf.function_id=f.function_id AND
-							f.function_open=1
-						ORDER BY f.function_screen";
-		}
-		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
-
-		if($result) {
-			$arr = array();
-			$func_arr = array();
-			$temp_screen = "";
-			while($row = $this->dbConn->sql_fetchrow($result)) {
-				$function_screen	= $row['function_screen'];
-				$function_id		= $row['function_id'];
-				$function_name		= $row['function_name'];
-				$function_action	= $row['function_action'];
-
-				if($temp_screen != $function_screen) {
-					// different screen name
-					if(!empty($temp_screen)) {
-						// insert to array for new screen
-						$arr[$temp_screen] = $func_arr;
-						$func_arr = array();
-					}
-					// replace temp value
-					$temp_screen = $function_screen;
-				}
-
-				//$func_arr[$function_id] = array($function_name, $function_action);
-				$func_arr[$function_id] = $function_action;
-			}
-			// insert the last screen if count > 0
-			if(count($func_arr) > 0)
-				$arr[$function_screen] = $func_arr;
-
-			$this->function_arr = $arr;
-			$this->dbConn->sql_freeresult($result);
-		}
+    private function _function_init() {
+        $this->acl = Zend_Registry::get('acl');
 	}
 
 
-	private function _system_init($user_id) {
-		// user can do system_group entry data with POAM via his ROLE
-		$sql = "SELECT r.role_id,r.role_name,s.system_id,s.system_name
-						FROM " . TN_USER_SYSTEM_ROLES . " AS usr," . TN_SYSTEMS . " AS s, " . TN_ROLES . " AS r
-						WHERE usr.user_id='$user_id' AND
-							usr.system_id=s.system_id AND
-							usr.role_id=r.role_id
-						ORDER BY usr.role_id";
-		//echo $sql;
-		$result  = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
+    private function _system_init() {
+        $uid = $this->user_id;
+        $acl = $this->acl;
 
-		if($result) {
-			$arr = array();
-			$role_arr = array();
-			$temp_id = 0;
-			while($row = $this->dbConn->sql_fetchrow($result)) {
-				$role_id	= $row['role_id'];
-				$role_name = $row['role_name'];
-				$system_id	= $row['system_id'];
-				$system_name = $row['system_name'];
+        //select user's roles
+        $query = "SELECT r.role_nickname FROM " . TN_ROLES . " r, " . TN_USER_ROLES . " ur, " . TN_USERS . "u
+                  WHERE ur.user_id = $uid AND ur.role_id = r.role_id AND r.role_name <> u.extra_role AND u.user_id=$uid";
+        $res = $this->dbConn->sql_query($query) or die("Query failed :" . $this->dbConn->sql_error());
+        while($line_array = $this->dbConn->sql_fetchrow($res)){
+            $role_array[] = $line_array['role_nickname'];
+        }
 
-				if($role_id != $temp_id) {
-					if($temp_id > 0)
-						$role_arr[$temp_id] = $arr;
-					$arr = array();
-					$temp_id = $role_id;
-				}
-				$arr[$system_id] = $system_name;
-			}
-			if($temp_id > 0)
-				$role_arr[$temp_id] = $arr;
+        //select user's extra role
+        $sql = "SELECT r.role_id FROM " . TN_ROLES . "r," . TN_USERS . "u WHERE r.role_name = u.extra_role AND u.user_id= '$uid'";
+        $result = $this->dbConn->sql_query($sql) or die("Query failed: " . $this->dbConn->sql_error());
+        if($row = $this->dbConn->sql_fetchrow($result)) {
+            $rid = $row['role_id'];
+            $acl->addRole(new Zend_Acl_Role($rid));
+            $query = "SELECT f.function_screen,f.function_action FROM " . TN_FUNCTIONS . " f," . TN_ROLE_FUNCTIONS . " rf
+                      WHERE rf.role_id = $rid AND rf.function_id = f.function_id";
+            $res = $this->dbConn->sql_query($query) or die("Query failed:" . $this->dbConn->sql_error());
+            while($line_array = $this->dbConn->sql_fetchrow($res)){
+                $acl->allow($rid,$line_array['function_screen'],$line_array['function_action']);
+            }
+            $role_array[] = $rid;
+	    }
 
-			$this->role_system_arr = $role_arr;
-			$this->dbConn->sql_freeresult($result);
-		}
+        $this->role_array = $role_array;
 	}
 
 
@@ -299,39 +247,23 @@ class User {
 
 
 	// check user's right by screen name & function point
-	function checkRightByFunction($screen, $rightname) {
-		// username root inherets all security functions by default
-		if($this->user_name == "root")
+    function checkRightByFunction($resource,$action){
+	    if($this->user_name == "root")
 			return true;
+        $ret = false;
+        try{
+            foreach ($this->role_array as $role_nickname) {
+                if( $this->acl->isAllowed($role_nickname,$resource,$action) ){
 
-		if(empty($screen))
-			return false;
-
-		if(empty($rightname))
-			return false;
-
-                if(!array_key_exists($screen, $this->function_arr)) {
-                  return false;
-                  }
-
-		$func_arr = $this->function_arr[$screen];
-		if(count($func_arr) == 0)
-			return false;
-
-		if(is_int($rightname)) {
-			// $rightname is integer, so to compare the right_id
-			$arr = array_keys($func_arr);
+                    return true;
+                }
+            }
+        }catch(Zend_Acl_Exception $e){
+            //Should log the information
+		    return false;
 		}
-		else {
-			// else $rightname is string, so to compare the right_name
-			$arr = array_values($func_arr);
-		}
-
-		// check if user have this right or not.
-		return in_array($rightname, $arr);
+        return $ret;
 	}
-
-
 	// get all right of screen name for the user
 	function getRightFromScreen($screen) {
 		if(empty($screen))
@@ -401,7 +333,7 @@ class User {
 		else {
 			$query .= "WHERE (user_id = '".$this->getUserId()."' AND role_id = '".$role_id."')";
 		}
-		
+
 		if ($this->getUsername() == 'root') $query .= ' OR 1=1 ';
 
 		// execute the query
@@ -506,7 +438,7 @@ class User {
 
 	function changePassword($oldpass, $newpass, $cfmpass) {
 		if($this->login_status != 1)
-			return "You must be logged in to change your password."; 
+			return "You must be logged in to change your password.";
 
 		if($this->user_password != md5($oldpass))
 			return "The old password supplied does not match what we have on file, please try again.";
@@ -528,7 +460,7 @@ Please create a password that adheres to these complexity requirements:<br>
 
 		// added by yoyo, 2006-04-07
 		if($this->user_password == $temppass)
-			return "Your new password cannot be the same as your old password."; 
+			return "Your new password cannot be the same as your old password.";
 
 		// alter table USERS add user_history_password varchar(100) not null default '' after user_date_password
 		// check new password if is last three password.

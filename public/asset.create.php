@@ -23,9 +23,9 @@ $user = new User($db);
 // validates that the user is logged in properly, if not redirects to the login page.
 verify_login($user, $smarty);
 
-$view_right	= $user->checkRightByFunction("asset", "view");
-$edit_right = $user->checkRightByFunction("asset", "edit");
-$add_right  = $user->checkRightByFunction("asset", "add");
+$view_right	= $user->checkRightByFunction("asset", "read");
+$edit_right = $user->checkRightByFunction("asset", "update");
+$add_right  = $user->checkRightByFunction("asset", "create");
 $del_right  = $user->checkRightByFunction("asset", "delete");
 
 $smarty->assign('view_right', $view_right);

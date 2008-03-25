@@ -2,6 +2,253 @@
 /****************************************************************************************/
 /******************role right config, setting his function point*************************/
 /****************************************************************************************/
+/**
+ *this function for assign functions to a user
+ *@global $db,$db_name
+ *@param string $uid which user is assigned
+ *@param array $role_array which roles is assigned
+ *@param array $right_array which privileges to be assigned
+ *return string
+ */
+function UserFunctionDefine($uid,$role_array,$right_array) {
+    global $db,$db_name;
+
+    //$sql = "SELECT role_id FROM " . TN_ROLES . " WHERE role_name = '$uid'";
+    $sql = "SELECT r.role_id FROM " . TN_ROLES . "r, " . TN_USERS . "u WHERE r.role_name = u.extra_role AND u.user_id = '$uid'";
+    $res = $db->sql_query($sql);
+    $line_array = $db->sql_fetchrow($res);
+    if ($line_array) {
+        $role_id = $line_array['role_id'];
+        $sql = "DELETE FROM " . TN_USER_ROLES . " WHERE user_id = $uid AND role_id!=$role_id";
+        $result = $db->sql_query($sql);
+        if ($result) {
+            foreach ($role_array as $rid) {
+                $sql = "INSERT INTO " . TN_USER_ROLES . " (user_id,role_id) VALUES ('$uid','$rid')";
+                $res = $db->sql_query($sql) or die("Query failed : " . $this->dbConn->sql_error());
+                if (!$res) {
+                    $errnum++;
+                }
+            }
+        }
+        $sql = "DELETE FROM " . TN_ROLE_FUNCTIONS . " WHERE role_id = $role_id";
+        $result = $db->sql_query($sql);
+        if ($result) {
+            if (!empty($right_array)) {
+                foreach ($right_array as $right_id) {
+                    $sql = "INSERT INTO " . TN_ROLE_FUNCTIONS . " (role_id,function_id) VALUES ($role_id,$right_id)";
+                    $res = $db->sql_query($sql);
+                    if (!$res) {
+                        $errnum++;
+                    }
+                }
+            } else {
+                $sql = "DELETE FROM " . TN_ROLE_FUNCTIONS . " WHERE role_id = $role_id";
+                $result = $db->sql_query($sql);
+                if (!$result) {
+                    $errnum++;
+                }
+            }
+        }
+    } else {
+        if (!empty($right_array)) {
+            $sql = "DELETE FROM " . TN_USER_ROLES . " WHERE user_id = $uid";
+            $result = $db->sql_query($sql);
+            foreach ($role_array as $rid) {
+                $sql = "INSERT INTO " . TN_USER_ROLES . " (user_id,role_id) VALUES ('$uid','$rid')";
+                $res = $db->sql_query($sql);
+                if (!$res) {
+                    $errnum++;
+                }
+            }
+            $sql = "SELECT extra_role FROM " . TN_USERS . " WHERE user_id=$uid";
+            $line_array = $db->sql_fetchrow($db->sql_query($sql));
+            $sql = "INSERT INTO " . TN_ROLES . " (role_name,role_nickname,role_desc)VALUES ('$line_array[extra_role]','none','extra role for users')";
+            $result = $db->sql_query($sql);
+            if ($result) {
+                $role_id = $db->sql_nextid();
+                $sql = "INSERT INTO " . TN_USER_ROLES . "(user_id,role_id)VALUES ($uid,$role_id)";
+                $result = $db->sql_query($sql);
+                if ($result) {
+                    foreach ($right_array as $right_id) {
+                        $sql = "INSERT INTO " . TN_ROLE_FUNCTIONS . " (role_id,function_id) VALUES ($role_id,$right_id)";
+                        $res = $db->sql_query($sql);
+                        if (!$res) {
+                            $errnum++;
+                        }
+                    }
+                }
+            }
+        } else {
+            $sql = "DELETE FROM " . TN_USER_ROLES . " WHERE user_id = $uid";
+            $result = $db->sql_query($sql);
+            foreach ($role_array as $role_id) {
+                $sql = "INSERT INTO " . TN_USER_ROLES . " (user_id,role_id) VALUES ('$uid','$role_id')";
+                $res = $db->sql_query($sql) or die("Query failed : " . $this->dbConn->sql_error());
+                if (!$res) {
+                    $errnum++;
+                }
+            }
+        }
+    }
+
+    if($errnum > 0)
+        $msg = "Error setting rights for User, please try again";
+    else
+        $msg = "Successfully set right for User.";
+
+    return $msg;
+
+}
+
+function UserFunctionDefineForm($tb_id,$pgno,$of,$asc,$uid, $edit_right) {
+    global $db, $pageurl, $page_title;
+
+    $sql = "SELECT user_name FROM " . TN_USERS . " WHERE user_id='$uid'";
+    $result = $db->sql_query($sql);
+    if($result && $line_arr = $db->sql_fetchrow($result)) {
+                $username = $line_arr['user_name'];
+        $db->sql_freeresult($result);
+    }
+
+    $msg = UserFunctionDefineTable($uid, $username, $edit_right);
+?>
+<table border="0" width="100%">
+<form name="backform" method="post" action="<?php echo $pageurl?>">
+<input type="hidden" name="tid"  value="<?php echo $tb_id?>">
+<input type="hidden" name="pgno" value="<?php echo $pgno?>">
+<input type="hidden" name="of"  value="<?php echo $of?>">
+<input type="hidden" name="asc"  value="<?php echo $asc?>">
+<input type="hidden" name="r_do"  value="form">
+<input type="hidden" name="r_id"  value="<?php echo $uid?>">
+<tr>
+    <td><b>User Name:</b> <?php echo $username?></td>
+    <td>&nbsp;&nbsp;</td>
+    <td align="right"><input type="submit" value="Back" name="back"></td>
+</tr>
+</form>
+</table>
+
+<?php     if($edit_right) { ?>
+<script language="javascript" src="javascripts/func.js"></script>
+<form name="rtable" id="rtable" method="post" action="<?php echo $pageurl?>">
+<input type="hidden" name="tid"  id="menu" value="<?php echo $tb_id?>">
+<input type="hidden" name="pgno"  id="pgno" value="<?php echo $pgno?>">
+<input type="hidden" name="of" id="of" value="<?php echo $of?>">
+<input type="hidden" name="asc" id="asc" value="<?php echo $asc?>">
+<input type="hidden" name="u_do" id="u_do" value="uright">
+<input type="hidden" name="u_id" id="u_id" value="<?php echo $uid?>">
+<?php echo $msg?>
+<table border="0" width="300">
+<tr align="center">
+    <td><input type=button value=Update onclick=assign()></td>
+    <td><input type="reset" onclick="document.rtable.reset();" value="Reset"></td>
+</tr>
+</table>
+</form>
+<?php     } else {
+    echo $msg;
+    }
+}
+
+
+function UserFunctionDefineTable($uid, $username, $edit_right) {
+    global $db,$_db_name;
+    $cols = 3;
+    $tdwidth = 250;//ceil(100 / $cols);
+    $msg = "";
+    //select all roles except the extra role
+    $sql = "SELECT role_id,role_nickname FROM " . TN_ROLES . " WHERE role_nickname <>'none' ORDER BY role_id";
+    $result = $db->sql_query($sql);
+    if($result) {
+        while($line_arr = $db->sql_fetchrow($result)) {
+             $role_nickname[$line_arr['role_id']] = $line_arr['role_nickname'];
+        }
+    }
+    //select user's roles except the extra role/*
+    $sql = "SELECT ur.role_id,r.role_nickname FROM " . TN_USER_ROLES . " ur," . TN_ROLES . " r, " . TN_USERS . "u WHERE
+            ur.user_id=$uid AND ur.role_id = r.role_id AND r.role_name <> u.extra_role AND u.user_id=$uid";
+    $result = $db->sql_query($sql);
+    if($result) {
+        while($line_arr = $db->sql_fetchrow($result)) {
+             $role_nickname_have[$line_arr['role_id']] = $line_arr['role_nickname'];
+        }
+    }
+    //get roles which user not have
+    $role_nickname_none = array_diff($role_nickname,$role_nickname_have);
+
+    if(!empty($role_nickname_none)) {
+        foreach ($role_nickname_none as $role_id =>$nickname){
+            $role_none_msg.= '<option value='.$role_id.'>'.$nickname.'</option>';
+        }
+    }
+
+    if (!empty($role_nickname_have)) {
+        foreach ($role_nickname_have as $role_id =>$nickname){
+            $role_have_msg.= '<option value="'.$role_id.'" selected="selected">'.$nickname.'</option>';
+        }
+    }
+
+    //select functions which user have
+    $sql = "SELECT rf.function_id,f.function_name,f.function_desc FROM " . TN_FUNCTIONS . " f," . TN_ROLE_FUNCTIONS . " rf
+            ," . TN_USER_ROLES . " ur WHERE ur.user_id = $uid AND ur.role_id = rf.role_id AND rf.function_id = f.function_id";
+    $result = $db->sql_query($sql);
+    if ($result) {
+        while ($line_arr = $db->sql_fetchrow($result)) {
+            $fid_arr_have[$line_arr['function_id']] = array($line_arr['function_name'],$line_arr['function_desc']);
+        }
+    }
+
+    //select all functions
+    $sql = "SELECT function_id,function_name,function_desc FROM " . TN_FUNCTIONS . " ORDER BY function_id";
+    $result = $db->sql_query($sql);
+    if ($result) {
+        while ($line_arr = $db->sql_fetchrow($result)) {
+            $fid_arr[$line_arr['function_id']] = array('function_name'=>$line_arr['function_name'],'function_desc'=>$line_arr['function_desc']);
+        }
+    }
+    //get functions which user not have
+    $fid_arr_none = array_diff_assoc($fid_arr,$fid_arr_have);
+    if (!empty($fid_arr_none)) {
+        foreach ($fid_arr_none as $fid=>$function){
+            $right_none_msg.='<option value='.$fid.' title="'.$function['function_desc'].'">'.$function['function_name'].'</option>';
+        }
+    }
+
+    $sql = "SELECT rf.function_id,f.function_name,f.function_desc FROM " . TN_FUNCTIONS . " f," . TN_ROLES . " r, " . TN_ROLE_FUNCTIONS . " rf," . TN_USERS . " u
+            WHERE u.user_id =$uid AND r.role_name = u.extra_role AND r.role_id = rf.role_id AND rf.function_id = f.function_id";
+    $result = $db->sql_query($sql);
+    if ($result) {
+        while ($line_arr = $db->sql_fetchrow($result)) {
+            $right_have_msg.='<option value="'.$line_arr['function_id'].'" title="'.$line_arr['function_desc'].'" selected="selected">'.$line_arr['function_name'].'</option>';
+        }
+    }
+        $msg = '<fieldset style="border: 1px solid rgb(68, 99, 122); padding: 3px;"><legend><b></b></legend>
+                <table height="205" border="0" style="margin-left:5">
+                <tr><td><b>Available Roles</b></td><td></td><td><b>Assigned Roles</b></td></tr>
+                <tr>
+                <td width="254">
+                <select multiple size="7" name="role_none" style="width:250px">'.$role_none_msg.'</select>
+                <b>Available Privileges</b><br><br>
+                <select multiple size="24" name="right_none" style="width:250px">'.$right_none_msg.'</select></td>
+                <td width="54" valign="top">
+                <input type="button" value="   ->    " onclick="move(this.form.role_none,this.form.role_have)" name="B1">
+                <br><br>
+                <input type="button" value="   <-    " onclick="move(this.form.role_have,this.form.role_none)" name="B1">
+                <br><br><br><br><br><br><br><br>
+                <input type="button" value="   ->    " onclick="move(this.form.right_none,this.form.right_have)" name="B1">
+                <br><br>
+                <input type="button" value="   <-    " onclick="move(this.form.right_have,this.form.right_none)" name="B1"></td>
+                <td width="302">
+                <select multiple size="7" id="role_have" name="role_have" style="width:250px">'.$role_have_msg.'</select>
+                <b>Assigned Privileges</b><br><br>
+                <select multiple size="24" id="right_have" name="right_have" style="width:250px">'.$right_have_msg.'</select></td>
+                </tr>
+                </table></fieldset>';
+         return $msg;
+}
+
+
+
 function RoleFunctionDefine($rid, $post) {
 	global $db,$_db_name;
 
@@ -42,14 +289,14 @@ function RoleFunctionDefineForm($tb_id,$pgno,$of,$asc,$rid, $edit_right) {
 	$msg = RoleFunctionDefineTable($rid, $edit_right);
 ?>
 <table border="0" width="100%">
-<form name="backform" method="post" action="<?=$pageurl?>">
-<input type="hidden" name="tid" value="<?=$tb_id?>">
-<input type="hidden" name="pgno" value="<?=$pgno?>">
-<input type="hidden" name="of" value="<?=$of?>">
-<input type="hidden" name="asc" value="<?=$asc?>">
+<form name="backform" method="post" action="<?php echo $pageurl?>">
+<input type="hidden" name="tid" value="<?php echo $tb_id?>">
+<input type="hidden" name="pgno" value="<?php echo $pgno?>">
+<input type="hidden" name="of" value="<?php echo $of?>">
+<input type="hidden" name="asc" value="<?php echo $asc?>">
 <input type="hidden" name="r_do" value="list">
 <tr>
-	<td><b>Role Name:</b> <?=$rolename?></td>
+	<td><b>Role Name:</b> <?php echo $rolename?></td>
 	<td>&nbsp;&nbsp;</td>
 	<td><span style="cursor: pointer"><input type="button" value="Select All" onclick="selectall('rtable', 'function_', true);">&nbsp;
 	<span style="cursor: pointer"><input type="button" value="Select None" onclick="selectall('rtable', 'function_', false);"></td>
@@ -60,15 +307,15 @@ function RoleFunctionDefineForm($tb_id,$pgno,$of,$asc,$rid, $edit_right) {
 
 <?php 	if($edit_right) { ?>
 <script language="javascript" src="javascripts/func.js"></script>
-<form name="rtable" method="post" action="<?=$pageurl?>">
-<input type="hidden" name="tid" value="<?=$tb_id?>">
-<input type="hidden" name="pgno" value="<?=$pgno?>">
-<input type="hidden" name="of" value="<?=$of?>">
-<input type="hidden" name="asc" value="<?=$asc?>">
+<form name="rtable" method="post" action="<?php echo $pageurl?>">
+<input type="hidden" name="tid" value="<?php echo $tb_id?>">
+<input type="hidden" name="pgno" value="<?php echo $pgno?>">
+<input type="hidden" name="of" value="<?php echo $of?>">
+<input type="hidden" name="asc" value="<?php echo $asc?>">
 <input type="hidden" name="r_do" value="rright">
 
-<input type="hidden" name="r_id" value="<?=$rid?>">
-<?=$msg?>
+<input type="hidden" name="r_id" value="<?php echo $rid?>">
+<?php echo $msg?>
 <table border="0" width="300">
 <tr align="center">
 	<td><input type="submit" value="Update"></td>

@@ -1,6 +1,6 @@
 <?PHP
-// no-cache — forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
-// must-revalidate — tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
+// no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
+// must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you’re telling the cache that you want it to strictly follow your rules.
 header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
@@ -24,9 +24,9 @@ verify_login($user, $smarty);
 
 // get user right for this screen
 // $user->checkRightByFunction($screen_name, "function_name");
-$view_right	= $user->checkRightByFunction("finding", "view");
-$edit_right = $user->checkRightByFunction("finding", "edit");
-$add_right  = $user->checkRightByFunction("finding", "add");
+$view_right = $user->checkRightByFunction("finding", "read");
+$edit_right = $user->checkRightByFunction("finding", "update");
+$add_right  = $user->checkRightByFunction("finding", "create");
 //$del_right  = $user->checkRightByFunction("finding", "delete");
 
 // let's template know how to display the page
@@ -52,12 +52,12 @@ if(!empty($_POST)){
     if(isset($_POST['sbt']))		$smarty->assign('submit', strtolower($_POST['sbt']));
     if(isset($_POST['startdate']))	$smarty->assign('startdate', $_POST['startdate']);
     if(isset($_POST['enddate']))	$smarty->assign('enddate', $_POST['enddate']);
-    
+
     if(isset($_POST['status']))		$smarty->assign('status', $_POST['status']);
     if(isset($_POST['source']))		$smarty->assign('source', $_POST['source']);
     if(isset($_POST['system']))		$smarty->assign('system', $_POST['system']);
     if(isset($_POST['vulner']))		$smarty->assign('vulner', $_POST['vulner']);
-    
+
     if(isset($_POST['product']))	$smarty->assign('product', $_POST['product']);
     if(isset($_POST['network']))	$smarty->assign('network', $_POST['network']);
     if(isset($_POST['ip']))			$smarty->assign('ip', $_POST['ip']);

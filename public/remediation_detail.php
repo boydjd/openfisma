@@ -24,29 +24,29 @@ $user = new User($db);
 verify_login($user, $smarty);
 
 // let's template know how to display the page
-$smarty->assign('view_right',	 						$user->checkRightByFunction("remediation", "view"));				
-$smarty->assign('modify_type',							$user->checkRightByFunction("remediation", 'modify_type'));
-$smarty->assign('modify_action_owner',					$user->checkRightByFunction("remediation", 'modify_action_owner'));
-$smarty->assign('generate_raf',							$user->checkRightByFunction("remediation", 'generate_raf'));
-$smarty->assign('modify_blscr',							$user->checkRightByFunction("remediation", 'modify_blscr'));
-$smarty->assign('modify_cmeasure',						$user->checkRightByFunction("remediation", 'modify_cmeasure'));
-$smarty->assign('modify_cmeasure_effectiveness',		$user->checkRightByFunction("remediation", 'modify_cmeasure_effectiveness'));
-$smarty->assign('modify_cmeasure_justification',		$user->checkRightByFunction("remediation", 'modify_cmeasure_justification'));
-$smarty->assign('modify_threat_level',					$user->checkRightByFunction("remediation", 'modify_threat_level'));
-$smarty->assign('modify_threat_source',					$user->checkRightByFunction("remediation", 'modify_threat_source'));
-$smarty->assign('modify_threat_justification',			$user->checkRightByFunction("remediation", 'modify_threat_justification'));
-$smarty->assign('modify_mitigation_recommendation',		$user->checkRightByFunction("remediation", 'modify_mitigation_recommendation'));
-$smarty->assign('modify_mitigation_course_of_action',	$user->checkRightByFunction("remediation", 'modify_mitigation_course_of_action'));
-$smarty->assign('modify_mitigation_resources',			$user->checkRightByFunction("remediation", 'modify_mitigation_resources'));
-$smarty->assign('modify_mitigation_completion_date',	$user->checkRightByFunction("remediation", 'modify_mitigation_completion_date'));
-$smarty->assign('modify_mitigation_sso_approval',		$user->checkRightByFunction("remediation", 'modify_mitigation_sso_approval'));
-$smarty->assign('view_evidence',						$user->checkRightByFunction("remediation", 'view_evidence'));
-$smarty->assign('modify_evidence_upload',				$user->checkRightByFunction("remediation", 'modify_evidence_upload'));
-$smarty->assign('modify_evidence_sso_approval',			$user->checkRightByFunction("remediation", 'modify_evidence_sso_approval'));
-$smarty->assign('modify_evidence_fsa_approval',			$user->checkRightByFunction("remediation", 'modify_evidence_fsa_approval'));
-$smarty->assign('modify_evidence_ivv_approval',			$user->checkRightByFunction("remediation", 'modify_evidence_ivv_approval'));
-$smarty->assign('view_comments',						$user->checkRightByFunction("remediation", 'view_comments'));
-$smarty->assign('modify_comments',						$user->checkRightByFunction("remediation", 'modify_comments'));
+$smarty->assign('view_right',                             $user->checkRightByFunction("remediation", "read"));
+$smarty->assign('modify_type',                            $user->checkRightByFunction("remediation", 'update'));
+$smarty->assign('modify_action_owner',                    $user->checkRightByFunction("remediation", 'update_finding_assignment'));
+$smarty->assign('generate_raf',                           $user->checkRightByFunction("remediation", 'generate_raf'));
+$smarty->assign('modify_blscr',                           $user->checkRightByFunction("remediation", 'update_control_assignment'));
+$smarty->assign('modify_cmeasure',                        $user->checkRightByFunction("remediation", 'update_cmeasures'));
+$smarty->assign('modify_cmeasure_effectiveness',          $user->checkRightByFunction("remediation", 'update_cmeasures'));
+$smarty->assign('modify_cmeasure_justification',          $user->checkRightByFunction("remediation", 'update_cmeasures'));
+$smarty->assign('modify_threat_level',                    $user->checkRightByFunction("remediation", 'update_threat'));
+$smarty->assign('modify_threat_source',                   $user->checkRightByFunction("remediation", 'update_threat'));
+$smarty->assign('modify_threat_justification',            $user->checkRightByFunction("remediation", 'update_threat'));
+$smarty->assign('modify_mitigation_recommendation',       $user->checkRightByFunction("remediation", 'update_finding_recommendation'));
+$smarty->assign('modify_mitigation_course_of_action',     $user->checkRightByFunction("remediation", 'update_finding_course_of_action'));
+$smarty->assign('modify_mitigation_resources',            $user->checkRightByFunction("remediation", 'update_finding_resources'));
+$smarty->assign('modify_mitigation_completion_date',      $user->checkRightByFunction("remediation", 'update_est_completion_date'));
+$smarty->assign('modify_mitigation_sso_approval',         $user->checkRightByFunction("remediation", 'update_mitigation_strategy_approval'));
+$smarty->assign('view_evidence',                          $user->checkRightByFunction("remediation", 'read_evidence'));
+$smarty->assign('modify_evidence_upload',                 $user->checkRightByFunction("remediation", 'update_evidence'));
+$smarty->assign('modify_evidence_sso_approval',           $user->checkRightByFunction("remediation", 'update_evidence_approval_first'));
+$smarty->assign('modify_evidence_fsa_approval',           $user->checkRightByFunction("remediation", 'update_evidence_approval_second'));
+$smarty->assign('modify_evidence_ivv_approval',           $user->checkRightByFunction("remediation", 'update_evidence_approval_third'));
+/*$smarty->assign('view_comments',                        $user->checkRightByFunction("remediation", 'view_comments'));
+$smarty->assign('modify_comments',                        $user->checkRightByFunction("remediation", 'modify_comments'));*/
 
 /*******************************************************************************
 * FORM ACTIONS
@@ -479,8 +479,8 @@ $smarty->assign('root_comment', $root_comment['comment_id']);
 // ALL FIELDS OK?
 //
 $r = $remediation;
-$r_fields_null = array($r['poam_threat_source'], $r['poam_threat_justification'], 
-				  $r['poam_cmeasure'], $r['poam_cmeasure_justification'], $r['poam_action_suggested'], 
+$r_fields_null = array($r['poam_threat_source'], $r['poam_threat_justification'],
+				  $r['poam_cmeasure'], $r['poam_cmeasure_justification'], $r['poam_action_suggested'],
 				  $r['poam_action_planned'], $r['poam_action_resources'], $r['poam_blscr']);
 $r_fields_zero = array($r['poam_action_date_est']);
 $r_fields_none = array($r['poam_cmeasure_effectiveness'], $r['poam_threat_level']);

@@ -61,7 +61,7 @@ if($login == 1){
 
     if($logined == 1) {
         session_unregister('ovms_session_error_password');
-        
+
         $ret = $user->checkExpired();
         $user->login(null,null);
 
@@ -89,7 +89,7 @@ if($login == 1){
             elseif($user->checkRightByFunction($header_screen, "vulner_menu")) {
               header("Location: vulnerabilities.php");
               }
-            // default back to dashboard - which will just be rejected with an 
+            // default back to dashboard - which will just be rejected with an
             // error message.
             else {
                 header("Location: dashboard.php");

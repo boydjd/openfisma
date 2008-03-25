@@ -24,7 +24,7 @@ $user = new User($db);
 verify_login($user, $smarty);
 
 // get user right for this screen
-$upload_right = $user->checkRightByFunction("finding", "upload");
+$upload_right = $user->checkRightByFunction("finding", "create");
 
 // assign user right to smarty template
 $smarty->assign('upload_right', $upload_right);

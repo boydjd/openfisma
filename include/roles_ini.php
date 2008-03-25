@@ -7,78 +7,83 @@ require_once('privilege_def.php');
 
 function &acl_initialize(){
     $acl = new Zend_Acl();
-    //echo PN_CREATE;die();
-    //role:reviewer
-    $acl->addRole(new Zend_Acl_Role('reviewer'));
+    //role:REVIEWER
+    $acl->addRole(new Zend_Acl_Role(REVIEWER));
     $acl->add(new Zend_Acl_Resource('dashboard'))
-        ->add(new Zend_Acl_Resource('assets'))
+        ->add(new Zend_Acl_Resource('asset'))
         ->add(new Zend_Acl_Resource('finding'))
         ->add(new Zend_Acl_Resource('remediation'))
         ->add(new Zend_Acl_Resource('report'))
-        ->add(new Zend_Acl_Resource('vulnerabilities'));
-            
-    $acl->allow('reviewer','dashboard',PN_READ )
-        ->allow('reviewer','assets',PN_READ)
-        ->allow('reviewer','finding',PN_READ)
-        ->allow('reviewer','remediation',array(PN_READ,PN_READ_EVIDENCE))
-        ->allow('reviewer','report',array(PN_READ,PN_GENERATE_POAM_REPORT,PN_OVERDUE_REPORT))
-        ->allow('reviewer','vulnerabilities',PN_READ);
-    
+        ->add(new Zend_Acl_Resource('vulnerability'));
+
+    $acl->allow(REVIEWER,'dashboard',PN_READ )
+        ->allow(REVIEWER,'asset',PN_READ)
+        ->allow(REVIEWER,'finding',PN_READ)
+        ->allow(REVIEWER,'remediation',array(PN_READ,PN_READ_EVIDENCE))
+        ->allow(REVIEWER,'report',array(PN_READ,PN_GENERATE_POAM_REPORT,PN_OVERDUE_REPORT))
+        ->allow(REVIEWER,'vulnerability',PN_READ);
+
     //role:public
-    $acl->addRole(new Zend_Acl_Role('public'),'reviewer');
-    $acl->allow('public','assets',array(PN_CREATE,PN_UPDATE))
+    $acl->addRole(new Zend_Acl_Role('public'),REVIEWER);
+    $acl->allow('public','asset',array(PN_CREATE,PN_UPDATE))
         ->allow('public','finding',array(PN_CREATE,PN_UPDATE))
         ->allow('public','remediation',array(PN_CREATE_INJECTION ,PN_UPDATE_FINDING,PN_UPDATE_CONTROL_ASSIGNMENT,PN_UPDATE_COUNTERMEASURES,PN_UPDATE_THREAT))
         ->allow('public','report',PN_GENERATE_SYSTEM_RAFS)
-        ->allow('public','vulnerabilities',array(PN_CREATE,PN_UPDATE));
-        
-    //role:saiso 
-    $acl->addRole(new Zend_Acl_Role('saiso'), 'reviewer');
-    $acl->allow('saiso','remediation',PN_UPDATE_EVIDENCE_APPROVAL_THIRD)
-        ->allow('saiso','report',array(PN_GENERATE_GENERAL_REPORT,PN_GENERATE_FISMA_REPORT,PN_GENERATE_SYSTEM_RAFS));
-    
-    //role:auditor
-    $acl->addRole(new Zend_Acl_Role('auditor'),'public');
-    $acl->allow('auditor','remediation',array(PN_UPDATE_FINDING_ASSIGNMENT,PN_UPDATE_FINDING_RECOMMENDATION))
-        ->deny('auditor','remediation',PN_OVERDUE_REPORT);
-        
-    //role:ao    
-    $acl->addRole(new Zend_Acl_Role('ao'),'reviewer');
-    $acl->deny('ao','finding',PN_READ)
-        ->allow('ao','report',array(PN_GENERATE_GENERAL_REPORT,PN_GENERATE_SYSTEM_RAFS));
-    
-    //role:iso
-    $acl->addRole(new Zend_Acl_Role('iso'),'ao');
-    $acl->allow('iso','remediation',array(PN_UPDATE_COURSE_OF_ACTION,PN_UPDATE_FINDING_RESOURCES,PN_UPDATE_EST_COMPLETION_DATE,PN_UPDATE_RISK_THIRD));
-    
-    //role:isso
-    $acl->addRole(new Zend_Acl_Role('isso'),'public');
-    $acl->allow('isso','remediation',array(PN_UPDATE_COURSE_OF_ACTION,PN_UPDATE_FINDING_COURSE_OF_ACTION,PN_UPDATE_FINDING_RESOURCES,
+        ->allow('public','vulnerability',array(PN_CREATE,PN_UPDATE));
+
+    //role:SAISO
+    $acl->addRole(new Zend_Acl_Role(SAISO), REVIEWER);
+    $acl->allow(SAISO,'remediation',PN_UPDATE_EVIDENCE_APPROVAL_THIRD)
+        ->allow(SAISO,'report',array(PN_GENERATE_GENERAL_REPORT,PN_GENERATE_FISMA_REPORT,PN_GENERATE_SYSTEM_RAFS));
+
+    //role:AUDITOR
+    $acl->addRole(new Zend_Acl_Role(AUDITOR),'public');
+    $acl->allow(AUDITOR,'remediation',array(PN_UPDATE_FINDING_ASSIGNMENT,PN_UPDATE_FINDING_RECOMMENDATION))
+        ->deny(AUDITOR,'report',PN_OVERDUE_REPORT);
+
+    //role:AO
+    $acl->addRole(new Zend_Acl_Role(AO),REVIEWER);
+    $acl->deny(AO,'finding',PN_READ)
+        ->allow(AO,'report',array(PN_GENERATE_GENERAL_REPORT,PN_GENERATE_SYSTEM_RAFS));
+
+    //role:ISO
+    $acl->addRole(new Zend_Acl_Role(ISO),AO);
+    $acl->allow(ISO,'remediation',array(PN_UPDATE_COURSE_OF_ACTION,PN_UPDATE_FINDING_RESOURCES,PN_UPDATE_EST_COMPLETION_DATE,PN_UPDATE_RISK_THIRD));
+
+    //role:ISSO
+    $acl->addRole(new Zend_Acl_Role(ISSO),'public');
+    $acl->allow(ISSO,'remediation',array(PN_UPDATE_COURSE_OF_ACTION,PN_UPDATE_FINDING_COURSE_OF_ACTION,PN_UPDATE_FINDING_RESOURCES,
                 PN_UPDATE_EST_COMPLETION_DATE,PN_UPDATE_MITIGATION_STRATEGY_APPROVAL,PN_UPDATE_EVIDENCE,PN_UPDATE_MITIGATION_STRATEGY_APPROVAL,
                 PN_UPDATE_EVIDENCE_APPROVAL_FIRST,PN_UPDATE_RISK_FIRST))
-        ->allow('isso','report',PN_GENERATE_GENERAL_REPORT);
-        
-    
-    
-    //role:ivv
-    $acl->addRole(new Zend_Acl_Role('ivv'),'reviewer');
-    $acl->allow('ivv','remediation',array(PN_UPDATE_EVIDENCE_APPROVAL_SECOND,PN_UPDATE_RISK_SECOND))
-        ->deny('ivv','finding',PN_READ)
-        ->deny('ivv','report',PN_OVERDUE_REPORT);
-    
-    //role:admin               
-    $acl->addRole(new Zend_Acl_Role('admin'));
+        ->allow(ISSO,'report',PN_GENERATE_GENERAL_REPORT);
+
+
+
+    //role:IVV
+    $acl->addRole(new Zend_Acl_Role(IVV),REVIEWER);
+    $acl->allow(IVV,'remediation',array(PN_UPDATE_EVIDENCE_APPROVAL_SECOND,PN_UPDATE_RISK_SECOND))
+        ->allow(IVV,'report',PN_GENERATE_SYSTEM_RAFS)
+        ->deny(IVV,'finding',PN_READ)
+        ->deny(IVV,'report',PN_OVERDUE_REPORT);
+
+    //role:ADMIN
+    $acl->addRole(new Zend_Acl_Role(ADMIN));
+    $acl->add(new Zend_Acl_Resource('header'));
     $acl->add(new Zend_Acl_Resource('admin_users'));
     $acl->add(new Zend_Acl_Resource('admin_roles'));
     $acl->add(new Zend_Acl_Resource('admin_systems'));
     $acl->add(new Zend_Acl_Resource('admin_products'));
     $acl->add(new Zend_Acl_Resource('admin_system_groups'));
     $acl->add(new Zend_Acl_Resource('admin_functions'));
+    $acl->add(new Zend_Acl_Resource('admin_role_functions'));
     $acl->add(new Zend_Acl_Resource('admin_finding_source'));
-    
-    $acl->allow('admin',array('dashboard','finding','assets','report','vulnerabilities','admin_users','admin_roles',
+    $acl->add(new Zend_Acl_Resource('admin_system_group_systems'));
+
+    $acl->allow(ADMIN,'finding',array('read','delete'))
+        ->allow(ADMIN,'remediation',array('read','delete'))
+        ->allow(ADMIN,array('dashboard','asset','report','vulnerability','header','admin_users','admin_roles',
                'admin_systems','admin_products','admin_system_groups','admin_functions','admin_finding_source'));
-               
+
     return $acl;
 }
 

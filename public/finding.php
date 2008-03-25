@@ -27,9 +27,9 @@ verify_login($user, $smarty);
 $user_id = $user->getUserId();
 
 // get user right for this screen
-$view_right	= $user->checkRightByFunction("finding", "view");
-$edit_right = $user->checkRightByFunction("finding", "edit");
-$add_right  = $user->checkRightByFunction("finding", "add");
+$view_right	= $user->checkRightByFunction("finding", "read");
+$edit_right = $user->checkRightByFunction("finding", "update");
+$add_right  = $user->checkRightByFunction("finding", "create");
 $del_right  = $user->checkRightByFunction("finding", "delete");
 
 // let's template know how to display the page

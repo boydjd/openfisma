@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 /****************************************************************************/
 /************************Function Define Begin*******************************/
@@ -99,7 +99,7 @@ function pagego()
 }
 </script>
 
-<?
+<?php
 }
 
 
@@ -115,13 +115,13 @@ function StatForm($tb_id, $qindex)
 ?>
 
 <table border="0" align="center" cellspacing="1" cellpadding="1">
-<form name="stat" method="post" action="<?=$pageurl?>">
+<form name="stat" method="post" action="<?php echo  $pageurl?>">
 <input type="hidden" name="r_do" value="stat">
-<input type="hidden" name="tid" value="<?=$tb_id?>">
+<input type="hidden" name="tid" value="<?php echo  $tb_id?>">
 <tr>
 	<td><b>Statistic:&nbsp;</b></td>
 	<td><select name="fid">
-<?
+<?php
 	$num = 0;
 	for($i = 0; $i < count($field_arr); $i++)
 	{
@@ -140,18 +140,18 @@ function StatForm($tb_id, $qindex)
 ?>
 	</select></td>
 	<td>
-	<?if($num > 0) { ?>
+	<?php if($num > 0) { ?>
 	<input type="submit" value="Go" title="Submit your request for stat">
-	<? } else { ?>
+	<?php  } else { ?>
 	<input type="button" value="Go" title="Submit your request for stat">
-	<?}?>
+	<?php }?>
 	</td>
 </tr>
 </form>
 </table>
 
 
-<?
+<?php
 }
 
 
@@ -170,15 +170,15 @@ function QueryForm($tb_id, $qindex, $qvalue, $pgno, $flag)
 ?>
 
 <table border="0" align="center" cellspacing="1" cellpadding="1">
-<form name="query" method="post" action="<?=$pageurl?>" onsubmit="return qok(0);">
+<form name="query" method="post" action="<?php  echo  $pageurl?>" onsubmit="return qok(0);">
 <input type="hidden" name="r_do" value="query">
-<input type="hidden" name="tid" value="<?=$tb_id?>">
-<input type="hidden" name="qno" value="<?=$pgno?>">
+<input type="hidden" name="tid" value="<?php  echo  $tb_id?>">
+<input type="hidden" name="qno" value="<?php  echo  $pgno?>">
 <tr>
 	<td><b>Query:&nbsp;</b></td>
 	<td><select name="fid">
 <!--		<option value="0" selected>NO.</option>-->
-<?
+<?php
 	for($i = 0; $i < count($field_arr); $i++)
 	{
 		if($field_type_arr[$i] == "password" || $field_type_arr[$i] == "text")
@@ -192,10 +192,10 @@ function QueryForm($tb_id, $qindex, $qvalue, $pgno, $flag)
 	}
 ?>
 	</select></td>
-	<td><input type="text" name="qv" value="<? if(isset($qvalue)) echo $qvalue; ?>" title="Input your query value" size="10" maxlength="20"></td>
+	<td><input type="text" name="qv" value="<?php if(isset($qvalue)) echo $qvalue; ?>" title="Input your query value" size="10" maxlength="20"></td>
 	<!--<td><input type="submit" name="submit" value="Go" title="submit your request"></td>-->
 	<td><input type="submit" value="Search" title="submit your request" onclick="qok(1);"></td>
-<?
+<?php
 
 	$pre = $pgno - 1;
 	$next = $pgno + 1;
@@ -210,7 +210,7 @@ function QueryForm($tb_id, $qindex, $qvalue, $pgno, $flag)
 </table>
 
 
-<?
+<?php
 }
 
 
@@ -452,6 +452,7 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 	$num = 0;
 	$nid = $n_id - 1;
 	$relationsearch = false;
+	$q_v = trim($q_v);
 
 	if(count($field_arr) > 0)
 	{
@@ -626,10 +627,6 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=form&r_id=$id\" title=\"edit this $tbcnname\"><img src=\"images/edit.png\" border=\"0\"></a></td>\n";
 			if($view_right)
 				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=view&r_id=$id\" title=\"display the $tbcnname\"><img src=\"images/view.gif\" border=\"0\"></a></td>\n";
-			if($tbname == "ROLES") {
-				if($edit_right && $view_right)
-					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=rrform&r_id=$id\" title=\"set rights for this $tbcnname\"><img src=\"images/signtick.gif\" border=\"0\"></a></td>\n";
-			}
 			if($del_right)
 				$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&r_do=dele&r_id=$id\" title=\"delete this $tbcnname, can't restore after deleted\" onclick=\"return delok('$tbcnname');\"><img src=\"images/del.png\" border=\"0\"></a></td>\n";
 			$msg .= "</tr>\n";
@@ -652,10 +649,6 @@ function DoQuery($tb_id, $n_id, $q_v, $pgno, $edit_right, $view_right, $del_righ
 		$body .= "<th>Edit</td>\n";
 	if($view_right)
 		$body .= "<th>View</td>\n";
-	if($tbname == "ROLES") {
-		if($edit_right && $view_right)
-			$body .= "<th>Right</td>\n";
-	}
 	if($del_right)
 		$body .= "<th>Del</td>\n";
 	$body .= "</tr>\n";
@@ -738,8 +731,12 @@ function AddRecord($tb_id)
 		{
 			$field .= "," . $field_arr[$i];
 			$field_v .= ",'" . $$fieldname . "'";
-		}
-	}
+        }
+    }
+    if ($tbname == "USERS") {
+        $field .= ", extra_role";
+        $field_v .= ",'" . $_POST['r_user_name'] . "_r'";
+    }
 
 	if($res)
 	{
@@ -748,6 +745,9 @@ function AddRecord($tb_id)
 		$res = $db->sql_query($sql);
 
 		$id = $db->sql_nextid();
+
+        $sql = "INSERT INTO " . TN_USER_ROLES . "(user_id,role_id) VALUES ($id,$_POST[r_role_id])";
+        $res = $db->sql_query($sql);
 		// special funciton for the USERS create date field
 		if($tbname == "USERS") {
 			user_create_date($tbname, $id);
@@ -828,16 +828,19 @@ function UpdateRecord($tb_id, $id)
 		}
 		if(!$res)
 			break;
-
 		if(empty($field))
 		{
 			$field = $field_arr[$i] . "='" . $$fieldname . "'";
 		}
 		else
 		{
-			$field .= "," . $field_arr[$i] . "='" . $$fieldname . "'";
+            if (empty($$fieldname)) {
+                $field .="";
+            } else {
+			    $field .= "," . $field_arr[$i] . "='" . $$fieldname . "'";
+		    }
 		}
-	}
+    }
 
 	if($res)
 	{
@@ -890,10 +893,13 @@ function DeleteRecord($tb_id, $id)
 		}
 
 		if($tbname == "USERS") {
-			$sql = "DELETE FROM $_db_name.USER_SYSTEM_ROLES WHERE user_id='$id'";
-			//echo $sql;
-			$res = $db->sql_query($sql);
-		}
+            $sql = "DELETE FROM $_db_name.USER_SYSTEM_ROLES WHERE user_id='$id'";
+            //echo $sql;
+            $res = $db->sql_query($sql);
+
+            $sql = "DELETE FROM $_db_name.USER_ROLES WHERE user_id = '$id'";
+            $res = $db->sql_query($sql);
+        }
 
 		if($tbname == "SYSTEMS") {
 			$sql = "DELETE FROM $_db_name.SYSTEM_GROUP_SYSTEMS WHERE system_id='$id'";
@@ -989,7 +995,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 			$order .= " DESC ";
 
 		if($tbname == "SYSTEM_GROUPS")
-			$sql = "SELECT $field FROM $_db_name.$tbname WHERE  sysgroup_is_identity=0 ORDER BY $order LIMIT $startpos, $pagesize";
+            $sql = "SELECT $field FROM $_db_name.$tbname WHERE  sysgroup_is_identity=0 ORDER BY $order LIMIT $startpos, $pagesize";
 		else
 			$sql = "SELECT $field FROM $_db_name.$tbname ORDER BY $order LIMIT $startpos, $pagesize";
 		//echo $sql;
@@ -997,7 +1003,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 
 		if($result) {
 			while($line_arr = $db->sql_fetchrow($result))
-			{
+            {
 				$line = array_values($line_arr);
 				$num++;
 				$msg .= "<tr>\n";
@@ -1028,7 +1034,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 					}
 					else
 					{
-						$rr = 0;
+                        $rr = 0;
 						if($relation_arr[$k][0] > 0)
 						{
 							if($relation_val[$k][0] > 0 && count($relation_val[$k]) == 3)
@@ -1045,7 +1051,7 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 									}
 								}
 							}
-						}
+                        }
 						if($field_type_arr[$k] == "text" || $field_len_arr[$k] > 100)
 						{
 							$v = htmlspecialchars(substring($v, 100, false));
@@ -1069,10 +1075,6 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=form&r_id=$id\" title=\"edit the $tbcnname\"><img src=\"images/edit.png\" border=\"0\"></a></td>\n";
 				if($view_right)
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=view&r_id=$id\" title=\"display the $tbcnname\"><img src=\"images/view.gif\" border=\"0\"></a></td>\n";
-				if($tbname == "ROLES") {
-					if($edit_right && $view_right)
-						$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=rrform&r_id=$id\" title=\"set right for this $tbcnname\"><img src=\"images/signtick.gif\" border=\"0\"></a></td>\n";
-				}
 				if($del_right)
 					$msg .= "	<td class=\"thc\" align=\"center\"><a href=\"$pageurl?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&r_do=dele&r_id=$id\" title=\"delete the $tbcnname, then no restore after deleted\" onclick=\"return delok('$tbcnname');\"><img src=\"images/del.png\" border=\"0\"></a></td>\n";
 				$msg .= "</tr>\n";
@@ -1111,10 +1113,6 @@ function ListRecord($tb_id, $pgno, $of, $asc, $edit_right, $view_right, $del_rig
 		$body .= "<th>Edit</td>\n";
 	if($view_right)
 		$body .= "<th>View</td>\n";
-	if($tbname == "ROLES") {
-		if($edit_right && $view_right)
-			$body .= "<th>Right</td>\n";
-	}
 	if($del_right)
 		$body .= "<th>Del</td>\n";
 	$body .= "</tr>\n";
@@ -1192,11 +1190,11 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 		echo underline("$page_title $tbcnname Edit");
 	?>
 <table border="0" width="95%" align="center">
-<form name="backform" method="post" action="<?=$pageurl?>">
-<input type="hidden" name="tid" value="<?=$tb_id?>">
-<input type="hidden" name="pgno" value="<?=$pgno?>">
-<input type="hidden" name="of" value="<?=$of?>">
-<input type="hidden" name="asc" value="<?=$asc?>">
+<form name="backform" method="post" action="<?php echo  $pageurl?>">
+<input type="hidden" name="tid" value="<?php echo  $tb_id?>">
+<input type="hidden" name="pgno" value="<?php echo  $pgno?>">
+<input type="hidden" name="of" value="<?php echo  $of?>">
+<input type="hidden" name="asc" value="<?php echo  $asc?>">
 <input type="hidden" name="r_do" value="list">
 <tr>
 	<td align="left"><font color="blue">*</font> = Required Field</td>
@@ -1204,7 +1202,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 </tr>
 </form>
 </table>
-	<?
+	<?php
 	}
 	else
 		echo underline("$page_title Add $tbcnname");
@@ -1212,18 +1210,18 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 
 
 <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" clASs="tbframe">
-<form name="tbform" method="post" action="<?=$pageurl?>" onsubmit="return go(document.tbform);">
-<input type="hidden" name="tid" value="<?=$tb_id?>">
-<input type="hidden" name="pgno" value="<?=$pgno?>">
-<input type="hidden" name="of" value="<?=$of?>">
-<input type="hidden" name="asc" value="<?=$asc?>">
+<form name="tbform" method="post" action="<?php echo  $pageurl?>" onsubmit="return go(document.tbform);">
+<input type="hidden" name="tid" value="<?php echo  $tb_id?>">
+<input type="hidden" name="pgno" value="<?php echo  $pgno?>">
+<input type="hidden" name="of" value="<?php echo  $of?>">
+<input type="hidden" name="asc" value="<?php echo  $asc?>">
 
-<?	if($bFlag) { ?>
+<?php 	if($bFlag) { ?>
 <input type="hidden" name="r_do" value="edit">
-<input type="hidden" name="r_id" value="<?=$id?>">
-<?	} else { ?>
+<input type="hidden" name="r_id" value="<?php echo  $id?>">
+<?php 	} else { ?>
 <input type="hidden" name="r_do" value="add">
-<?
+<?php
 	}
 
 	for($i = 0; $i < count($field_arr); $i++)
@@ -1239,12 +1237,15 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 		{
 	?>
 <tr>
-	<td align="right" class="thc" width="200"><?=$field_cn_arr[$i]?>:</td>
+	<td align="right" class="thc" width="200"><?php echo  $field_cn_arr[$i]?>:</td>
 	<td class="tdc">&nbsp;
-	<?
+	<?php
 			if($bFlag && isset($line[$i]))
 				$nowval =  $line[$i];
 			$sql = "SELECT $relation[2],$relation[3] FROM $relation[1]";
+            if ($relation[1] == "ROLES") {
+                $sql .=" WHERE role_nickname <> 'none'";
+            }
 			//echo $sql;
 			$result = $db->sql_query($sql);
 			$num = 0;
@@ -1261,21 +1262,25 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 			}
 			$db->sql_freeresult($result);
 
-			if($num > 0)
+            if($num > 0 && !isset($nowval))
 			{
 				echo "<select name=\"r_$field_arr[$i]\">\n";
 				if(empty($optionlist))
 					echo "<option value=\"0\">no select option</option>\n";
 				echo $optionlist;
 				echo "</select>\n";
+            } elseif (in_array("root",$line)) {
+                echo "User \"root\" has  all privileges.";
+            } else {
+                echo "<a href=?tid=$tb_id&pgno=$pgno&of=$of&asc=$asc&u_do=urform&u_id=$id>click here to edit role and privileges for this user</a>";
 			}
 		}
 		else if($relation[0] == 2 && count($relation) == 2) {
 	?>
 <tr>
-	<td align="right" class="thc" width="200"><?=$field_cn_arr[$i]?>:</td>
+	<td align="right" class="thc" width="200"><?php echo  $field_cn_arr[$i]?>:</td>
 	<td class="tdc">&nbsp;
-		<?
+		<?php
 			$arr = $relation[1];
 			$num = count($arr);
 			$optionlist = "";
@@ -1300,59 +1305,59 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 			{
 		?>
 <tr>
-	<td align="right" class="thc" width="200"><?=$field_cn_arr[$i]?>:</td>
+	<td align="right" class="thc" width="200"><?php echo  $field_cn_arr[$i]?>:</td>
 	<td class="tdc">&nbsp;
 
 	<textarea type="textarea"
-	name="r_<?=$field_arr[$i]?>"
-	title="<?=$field_cn_arr[$i]?>"
-	datatype="<?=$field_type_arr[$i]?>"
-	datalength="<?=$field_len_arr[$i]?>"
-	isnull="<?if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
+	name="r_<?php echo  $field_arr[$i]?>"
+	title="<?php echo  $field_cn_arr[$i]?>"
+	datatype="<?php echo  $field_type_arr[$i]?>"
+	datalength="<?php echo  $field_len_arr[$i]?>"
+	isnull="<?php if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
 	size="30"
-	maxlength="<?=$field_len_arr[$i]?>" cols="80" rows="5"><? if($bFlag && isset($line[$i])) echo $line[$i]; ?></textarea>
-<?			} else if($ftype == "password"){ ?>
+	maxlength="<?php echo $field_len_arr[$i]?>" cols="80" rows="5"><?php  if($bFlag && isset($line[$i])) echo $line[$i]; ?></textarea>
+<?php 			} else if($ftype == "password"){ ?>
 <tr>
-	<td align="right" class="thc" width="200"><?=$field_cn_arr[$i]?>:</td>
+	<td align="right" class="thc" width="200"><?php echo  $field_cn_arr[$i]?>:</td>
 	<td class="tdc">&nbsp;
 	<input type="password"
-	name="r_<?=$field_arr[$i]?>"
-	title="<?=$field_cn_arr[$i]?>"
-	datatype="<?=$field_type_arr[$i]?>"
-	datalength="<?=$field_len_arr[$i]?>"
-	isnull="<?if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
+	name="r_<?php echo  $field_arr[$i]?>"
+	title="<?php echo  $field_cn_arr[$i]?>"
+	datatype="<?php echo  $field_type_arr[$i]?>"
+	datalength="<?php echo  $field_len_arr[$i]?>"
+	isnull="<?php if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
 	value=""
 	size="30"
-	maxlength="<?=$field_len_arr[$i]?>">
+	maxlength="<?php echo  $field_len_arr[$i]?>">
 	</td>
 </tr>
 <tr>
-	<td align="right" class="thc" width="200">Confirm <?=$field_cn_arr[$i]?>:</td>
+	<td align="right" class="thc" width="200">Confirm <?php echo  $field_cn_arr[$i]?>:</td>
 	<td class="tdc">&nbsp;
 	<input type="password"
-	id="r_<?=$field_arr[$i]?>_confirm"
-	name="r_<?=$field_arr[$i]?>_confirm"
-	title="<?=$field_cn_arr[$i]?>"
-	datatype="<?=$field_type_arr[$i]?>"
-	datalength="<?=$field_len_arr[$i]?>"
-	isnull="<?if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
+	id="r_<?php echo  $field_arr[$i]?>_confirm"
+	name="r_<?php echo  $field_arr[$i]?>_confirm"
+	title="<?php echo  $field_cn_arr[$i]?>"
+	datatype="<?php echo  $field_type_arr[$i]?>"
+	datalength="<?php echo  $field_len_arr[$i]?>"
+	isnull="<?php if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
 	value=""
 	size="30"
-	maxlength="<?=$field_len_arr[$i]?>">
-<?			} else { ?>
+	maxlength="<?php echo  $field_len_arr[$i]?>">
+<?php 			} else { ?>
 <tr>
-	<td align="right" class="thc" width="200"><?=$field_cn_arr[$i]?>:</td>
+	<td align="right" class="thc" width="200"><?php echo  $field_cn_arr[$i]?>:</td>
 	<td class="tdc">&nbsp;
 	<input type="text"
-	name="r_<?=$field_arr[$i]?>"
-	title="<?=$field_cn_arr[$i]?>"
-	datatype="<?=$field_type_arr[$i]?>"
-	datalength="<?=$field_len_arr[$i]?>"
-	isnull="<?if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
-	value="<? if($bFlag && isset($line[$i])) echo $line[$i]; ?>"
-	size="<?if($field_len_arr[$i] >=30) echo "90"; else echo $field_len_arr[$i];?>"
-	maxlength="<?=$field_len_arr[$i]?>" <?if($ftype == "email") echo "isemail=\"yes\"";?>>
-<?				if($ftype == "date") {
+	name="r_<?php echo  $field_arr[$i]?>"
+	title="<?php echo  $field_cn_arr[$i]?>"
+	datatype="<?php echo  $field_type_arr[$i]?>"
+	datalength="<?php echo  $field_len_arr[$i]?>"
+	isnull="<?php if($field_key_arr[$i] > 0) echo "no"; else echo "yes"; ?>"
+	value="<?php  if($bFlag && isset($line[$i])) echo $line[$i]; ?>"
+	size="<?php if($field_len_arr[$i] >=30) echo "90"; else echo $field_len_arr[$i];?>"
+	maxlength="<?php echo  $field_len_arr[$i]?>" <?php if($ftype == "email") echo "isemail=\"yes\"";?>>
+<?php 				if($ftype == "date") {
 					echo "<a href=\"#\" onclick=\"javascript:show_calendar('tbform.r_".$field_arr[$i]."');\"><img src=\"images/picker.gif\" width=24 height=22 border=0></a>";
 				}
 			}
@@ -1366,7 +1371,7 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 ?>
 </table>
 <br>
-<?
+<?php
 	if($tbname == "USERS")
 		echo UserSystemRoleDefineTable($id, true);
 	if($tbname == "SYSTEMS")
@@ -1375,18 +1380,18 @@ function EditForm($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 <table border="0" width="300">
 <tr align="center">
 	<!--<td><input type="submit" name="submit" value="Submit"></td>-->
-	<? if($id > 0) { ?>
+	<?php  if($id > 0) { ?>
 	<td><input type="submit" value="Update" title="submit your request"></td>
-	<? } else { ?>
+	<?php  } else { ?>
 	<td><input type="submit" value="Create" title="submit your request"></td>
-	<? } ?>
+	<?php  } ?>
 	<!--<td><input type="reset" name="reset" value="Reset"></td>-->
 	<td><span style="cursor: pointer"><input type="reset" value="Reset" onclick="document.tbform.reset();"></span></td>
 </tr>
 </table>
 </form>
 
-<?
+<?php
 }
 
 function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
@@ -1453,11 +1458,11 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 ?>
 
 <table border="0" width="95%" align="center">
-<form name="backform" method="post" action="<?=$pageurl?>">
-<input type="hidden" name="tid" value="<?=$tb_id?>">
-<input type="hidden" name="pgno" value="<?=$pgno?>">
-<input type="hidden" name="of" value="<?=$of?>">
-<input type="hidden" name="asc" value="<?=$asc?>">
+<form name="backform" method="post" action="<?php echo  $pageurl?>">
+<input type="hidden" name="tid" value="<?php echo  $tb_id?>">
+<input type="hidden" name="pgno" value="<?php echo  $pgno?>">
+<input type="hidden" name="of" value="<?php echo  $of?>">
+<input type="hidden" name="asc" value="<?php echo  $asc?>">
 <input type="hidden" name="r_do" value="list">
 <tr>
 	<td align="right"><input type="submit" value="Back"></td>
@@ -1466,7 +1471,7 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 </table>
 
 <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-<?
+<?php
 	for($i = 0; $i < count($field_arr); $i++)
 	{
 		$ftype = $field_type_arr[$i];
@@ -1477,9 +1482,9 @@ function DisplayItem($tb_id, $id = 0, $pgno = 1, $of = "", $asc = 0)
 			$nowval = null;
 ?>
 <tr>
-	<td align="right" class="thc" width="200"><?=$field_cn_arr[$i]?>:</td>
+	<td align="right" class="thc" width="200"><?php echo  $field_cn_arr[$i]?>:</td>
 	<td class="tdc">&nbsp;
-<?
+<?php
 		if($relation[0] == 1 && count($relation) == 4)
 		{
 			if($bFlag && isset($line[$i]))

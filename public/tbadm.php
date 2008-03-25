@@ -35,6 +35,8 @@ $totalrecords = 0;
 $tid = 0;
 $pagemsg = "";
 
+$u_do = "";
+$u_id = "";
 $r_do = "";
 $r_id = 0;
 $pgno = 1;
@@ -84,6 +86,11 @@ echo underline($msg, $now);
 
 if($tid > 0 && $tid <= $table_count)
 {
+    if(isset($_POST["u_id"]))
+        $u_id = intval($_POST['u_id']);
+    else if(isset($_GET["u_id"]))
+        $u_id = intval($_GET["u_id"]);
+
 	if(isset($_POST["r_id"]))
 		$r_id = intval($_POST["r_id"]);
 	else if(isset($_GET["r_id"]))
@@ -96,6 +103,11 @@ if($tid > 0 && $tid <= $table_count)
 
 	if(isset($_POST["qno"]))
 		$qno = $_POST["qno"];
+
+    if(isset($_POST["u_do"]))
+        $u_do = $_POST["u_do"];
+    else if(isset($_GET["u_do"]))
+        $u_do = $_GET["u_do"];
 
 	if(isset($_POST["r_do"]))
 		$r_do = $_POST["r_do"];
@@ -227,7 +239,35 @@ if($tid > 0 && $tid <= $table_count)
 	}
 	else if($r_do == "query") {
 	}
-	else if($r_do == "rrform" & $r_id > 0) {
+	else if ($u_do == "urform" & $u_id >0) {
+        echo underline("$page_title User Right Config");
+        if ($edit_right) {
+            echo UserFunctionDefineForm($tid,$pgno,$of,$asc,$u_id,$edit_right);
+        }
+        else {
+            $PAGEMSG = "<p><b>Insufficient permissions</b> to perform the request.</p>";
+        }
+    }
+
+    else if($u_do == "uright" && $u_id > 0) {
+        if (empty($_GET['role_id'])) {
+            echo "<b>You can not assign none roles to users</b>";
+            echo UserFunctionDefineForm($tid,$pgno,$of,$asc,$u_id,$edit_right);
+        } else {
+            $role_array = $_GET['role_id'];
+            $right_array = $_GET['right_id'];
+            echo underline("$page_title User Right Config");
+            if($edit_right) {
+                echo UserFunctionDefine($u_id,$role_array,$right_array);
+                echo UserFunctionDefineForm($tid,$pgno,$of,$asc,$u_id,$edit_right);
+            }
+            else {
+                $pagemsg = "<p><b>Insufficient permissions</b> to perform the request.";
+            }
+        }
+    }
+
+    else if($r_do == "rrform" & $r_id > 0) {
 		echo underline("$page_title Role Right Config");
 		if($edit_right) {
 			echo RoleFunctionDefineForm($tid, $pgno, $of, $asc, $r_id, $edit_right);

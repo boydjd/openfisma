@@ -4,14 +4,13 @@ require_once("ovms.ini.php");
 
 // required for all pages, sets smarty directory locations for cache, templates, etc.
 require_once("smarty.inc.php");
-
+require_once('Zend/Registry.php');
+require_once("roles_ini.php");
 // User class which is required by all pages which need to validate authentication and interact with variables of a user (Functions: login, getloginstatus, getusername, getuserid, getpassword, checkactive, etc)
 require_once("user.class.php");
 
 // Functions required by all front-end pages gathered in one place for ease of maintenance. (verify_login, sets global page title, insufficient priveleges error, and get_page_datetime)
 require_once("page_utils.php");
-require_once('Zend/Config.php');
-require_once("roles_ini.php");
 
 $customer_logo = $CUSTOMER_LOGO;
 $login_warning = $LOGIN_WARNING;
@@ -30,37 +29,39 @@ function displayLoginInfor($smarty, $user) {
 	if(isset($smarty)) {
 		if(isset($user)) {
 
-			$dashboard_menu = $user->checkRightByFunction("dashboard", "view");
+            $dashboard_menu = $user->checkRightByFunction("dashboard", "read");
 
-			$finding_menu = $user->checkRightByFunction("finding", "view");
-			$finding_add = $user->checkRightByFunction("finding", "add");
-			$finding_upload = $user->checkRightByFunction("finding", "upload");
+            $finding_menu = $user->checkRightByFunction("finding", "read");
+            $finding_add = $user->checkRightByFunction("finding", "create");
+            $finding_upload = $user->checkRightByFunction("finding", "create");
 
-			$asset_menu = $user->checkRightByFunction("asset", "view");
-			$asset_summary = $user->checkRightByFunction("asset", "view");
-			$asset_new = $user->checkRightByFunction("asset", "add");
-						
-			$remediation_menu = $user->checkRightByFunction("remediation", "view");
+            $asset_menu = $user->checkRightByFunction("asset", "read");
+            $asset_summary = $user->checkRightByFunction("asset", "read");
+            $asset_new = $user->checkRightByFunction("asset", "create");
 
-			$report_menu = $user->checkRightByFunction("report", "view");
+            $remediation_menu = $user->checkRightByFunction("remediation", "read");
 
-			$admin_menu = $user->checkRightByFunction($screen_name, "admin_menu");
+            $report_menu = $user->checkRightByFunction("report", "read");
 
-			$vulner_menu = $user->checkRightByFunction("vulnerability", "view");
+            $admin_menu = $user->checkRightByFunction($screen_name, "admin_menu");
 
-			$report_poam_generate = $user->checkRightByFunction("report", "poam_generate");
-			$report_fisma_generate = $user->checkRightByFunction("report", "fisma_generate");
-			$report_general_generate= $user->checkRightByFunction("report", "general_generate");
+            $vulner_menu = $user->checkRightByFunction("vulnerability", "read");
 
-			$admin_user_view = $user->checkRightByFunction("admin_users", "view");
-			$admin_role_view = $user->checkRightByFunction("admin_roles", "view");
-			$admin_system_view = $user->checkRightByFunction("admin_systems", "view");
-			$admin_products_view = $user->checkRightByFunction("admin_products", "view");
-			$admin_group_view = $user->checkRightByFunction("admin_system_groups", "view");
-			$admin_function_view = $user->checkRightByFunction("admin_functions", "view");
+            $report_poam_generate = $user->checkRightByFunction("report", "generate_poam_report");
+            $report_fisma_generate = $user->checkRightByFunction("report", "generate_fisma_report");
+            $report_general_generate = $user->checkRightByFunction("report", "generate_general_report");
+            $report_system_generate = $user->checkRightByFunction("report", "generate_system_rafs");
+            $report_overdue= $user->checkRightByFunction("report", "generate_overdue_report");
 
-			$vulner_summary = $user->checkRightByFunction("vulnerability", "summary");
-			$vulner_add = $user->checkRightByFunction("vulnerability", "add");
+            $admin_user_view = $user->checkRightByFunction("admin_users", "read");
+            $admin_role_view = $user->checkRightByFunction("admin_roles", "read");
+            $admin_system_view = $user->checkRightByFunction("admin_systems", "read");
+            $admin_products_view = $user->checkRightByFunction("admin_products", "read");
+            $admin_group_view = $user->checkRightByFunction("admin_system_groups", "read");
+            $admin_function_view = $user->checkRightByFunction("admin_functions", "read");
+
+            $vulner_summary = $user->checkRightByFunction("vulnerability", "read");
+            $vulner_add = $user->checkRightByFunction("vulnerability", "create");
 
 			$smarty->assign('dashboard_menu', $dashboard_menu);
 			$smarty->assign('finding_menu', $finding_menu);
@@ -80,6 +81,8 @@ function displayLoginInfor($smarty, $user) {
 			$smarty->assign('report_poam_generate', $report_poam_generate);
 			$smarty->assign('report_fisma_generate', $report_fisma_generate);
 			$smarty->assign('report_general_generate', $report_general_generate);
+            $smarty->assign('report_system_generate', $report_system_generate);
+            $smarty->assign('report_overdue', $report_overdue);
 
 			$smarty->assign('admin_user_view', $admin_user_view);
 			$smarty->assign('admin_role_view', $admin_role_view);
@@ -104,23 +107,6 @@ function displayLoginInfor($smarty, $user) {
 	}
 }
 
-class sConfigure extends Zend_Config 
-{
-    private static $instance = array();
-
-    public  function __construct($array = array() ) {
-        parent::__construct($array, true);
-    }
-
-    public static function &getInstance() {
-        if (empty(self::$instance)) {
-            self::$instance[0] = new sConfigure; 
-        }
-        return self::$instance[0];
-    }
-}
-
-$fismaConfig = sConfigure::getInstance();
-$fismaConfig->merge(new Zend_Config(array('acl'=>acl_initialize() ) ) );
+Zend_Registry::set('acl', acl_initialize());
 
 ?>

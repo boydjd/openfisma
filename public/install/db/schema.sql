@@ -377,8 +377,20 @@ CREATE TABLE `USERS` (
   `user_phone_mobile` varchar(12) default NULL,
   `user_email` varchar(64) NOT NULL default '',
   `role_id` int(10) unsigned default NULL COMMENT 'seems to be redundant with the USER/ROLE/SYSTEMS table - please advise',
+  `extra_role` varchar(20) NOT NULL,
   PRIMARY KEY  (`user_id`),
-  KEY `user_name` (`user_name`)
+  UNIQUE KEY `user_name` (`user_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `USER_ROLES`
+--
+DROP TABLE IF EXISTS `USER_ROLES`;
+CREATE TABLE `USER_ROLES` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) NOT NULL,
+  `role_id` int(10) NOT NULL,
+  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

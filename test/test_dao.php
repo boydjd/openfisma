@@ -1,5 +1,5 @@
 <form action="test_dao.php" method="POST">
-<textarea name="q" id="q" cols="80" rows="5"><?=$_REQUEST['q']?></textarea><br />
+<textarea name="q" id="q" cols="80" rows="5"><?php echo $_REQUEST['q']?></textarea><br />
 <input type="submit" id="do_query" name="do_query">
 </form>
 <?php

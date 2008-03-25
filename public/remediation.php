@@ -1,7 +1,7 @@
 <?PHP
 // no-cache ? forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected.
 // must-revalidate ? tells caches that they must obey any freshness information you give them about a representation. By specifying this header, you�re telling the cache that you want it to strictly follow your rules.
-header("Cache-Control: no-cache, must-revalidate"); 
+header("Cache-Control: no-cache, must-revalidate");
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
@@ -28,9 +28,8 @@ $user = new User($db);
 verify_login($user, $smarty);
 
 if(isset($_GET['unlucky'])) $smarty->assign('poam_id_not_exists', $_GET['unlucky']);
-// get user right for this screen
-// $user->checkRightByFunction($screen_name, "function_name");
-$view_right	= $user->checkRightByFunction("remediation", "view");
+
+$view_right	= $user->checkRightByFunction("remediation", "read");
 
 // let's template know how to display the page
 $smarty->assign('view_right', $view_right);
@@ -38,35 +37,35 @@ $smarty->assign('view_right', $view_right);
 $total_pages = 0 ;
 
 /**************Main Area*****************/
-if($view_right) 
+if($view_right)
 {
 
 	//added by chang  row_no
-	if (!isset($_POST['row_no'])) 
+	if (!isset($_POST['row_no']))
 		$row_no = 100 ;
-	else 
+	else
 		$row_no = $_POST['row_no'] ;
-	$smarty->assign('row_no', $row_no ); 
+	$smarty->assign('row_no', $row_no );
 
 
 	//added by chang  row_no
 	$from_record = 0 ;
-	if (isset($_POST['remediation_page'])) 
-	{ 
-		$smarty->assign('remediation_page', $_POST['remediation_page']); 
+	if (isset($_POST['remediation_page']))
+	{
+		$smarty->assign('remediation_page', $_POST['remediation_page']);
 		$from_record = ( $_POST['remediation_page'] - 1 ) * $row_no;
 		if ( $from_record < 0 )
 			$from_record = 0 ;
-	} 
-	else 
+	}
+	else
 	{
-		$smarty->assign('remediation_page', '1'); 
+		$smarty->assign('remediation_page', '1');
 	}
 
 	/*******************************************************************************
 	* FORM ACTIONS
 	*******************************************************************************/
-	
+
 	// initialize or propagate filter values
 	if (isset($_POST['remediation_ids'])) { $smarty->assign('remediation_ids', $_POST['remediation_ids']); } else { $smarty->assign('remediation_ids', 'any'); }
 	if (isset($_POST['filter_source'])) { $smarty->assign('filter_source', $_POST['filter_source']); } else { $smarty->assign('filter_source', 'any'); }
@@ -76,7 +75,7 @@ if($view_right)
 
 	// initialize or propagate filter date values - updated by chang
 	if (isset($_POST['remediation_ids']))        { $smarty->assign('remediation_ids',        $_POST['remediation_ids']);        } else { $smarty->assign('remediation_ids',     'any'); }
-	
+
 	if (isset($_POST['filter_startdate']))       { $smarty->assign('filter_startdate',       $_POST['filter_startdate']);       } else { $smarty->assign('filter_startdate',       ''); }
 	if (isset($_POST['filter_enddate']))         { $smarty->assign('filter_enddate',         $_POST['filter_enddate']);         } else { $smarty->assign('filter_enddate',         ''); }
 	if (isset($_POST['filter_startcreatedate'])) { $smarty->assign('filter_startcreatedate', $_POST['filter_startcreatedate']); } else { $smarty->assign('filter_startcreatedate', ''); }
@@ -89,8 +88,8 @@ if($view_right)
 	// initialize or propagate sort values
 	if (isset($_POST['sort_order']))    { $smarty->assign('sort_order', $_POST['sort_order']); } else { $smarty->assign('sort_order', 'any'); }
 	if (isset($_POST['sort_by']))       { $smarty->assign('sort_by',    $_POST['sort_by']);    } else { $smarty->assign('sort_by',    'any'); }
-	
-	
+
+
 	/*******************************************************************************
 	* QUERY ACTIONS
 	*******************************************************************************/
@@ -109,10 +108,10 @@ if($view_right)
 
 	else { $system_list = '0'; }
 
-	
-	// 
+
+	//
 	// FINDING_SOURCES FILTER QUERY
-	// 
+	//
 	$query = "SELECT DISTINCT ".
 			 "  fs.source_id, ".
 			 "  fs.source_nickname, ".
@@ -128,16 +127,16 @@ if($view_right)
 			 "ORDER BY ".
 			 "  fs.source_nickname ".
 			 "ASC";
-	
+
 	// execute our built query
 	$results         = $db->sql_query($query);
 	$finding_sources = $db->sql_fetchrowset($results);
 	$smarty->assign('finding_sources', $finding_sources);
 
-	
-	// 
+
+	//
 	// SYSTEMS FILTER QUERY
-	// 
+	//
 	$query = "SELECT DISTINCT ".
 			 "  s.system_id, ".
 			 "  s.system_nickname, ".
@@ -156,11 +155,11 @@ if($view_right)
 	$results = $db->sql_query($query);
 	$systems = $db->sql_fetchrowset($results);
 	$smarty->assign('systems', $systems);
-	
+
 
 	// updated by chang - 03162006
 	// Asset Owners FILTER QUERY
-	// 
+	//
 	$query = "SELECT DISTINCT ".
 			 "  system_id, ".
 			 "  system_nickname, ".
@@ -175,7 +174,7 @@ if($view_right)
 
 	// updated by chang - 03162006
 	// Action Owners FILTER QUERY
-	// 
+	//
 	$query = "SELECT DISTINCT ".
 			 "  system_id, ".
 			 "  system_nickname, ".
@@ -187,7 +186,7 @@ if($view_right)
 	$results = $db->sql_query($query);
 	$action_owners = $db->sql_fetchrowset($results);
 	$smarty->assign('action_owners', $action_owners);
-	
+
 	//
 	// REMEDIATION LIST INFORMATION QUERY
 	//
@@ -210,12 +209,12 @@ if($view_right)
 			   "FROM ".
 			   "  " . TN_FINDINGS . " AS f, ".
 			   "  " . TN_FINDING_SOURCES . " AS fs, ".
-			   "  " . TN_POAMS . " AS p, ".	
+			   "  " . TN_POAMS . " AS p, ".
 			   "  " . TN_SYSTEMS . " AS s1, ".
 			   "  " . TN_SYSTEMS . " AS s2, ".
 	           "  " . TN_SYSTEM_ASSETS . " AS sa ".
 			   "WHERE ( ";
-	
+
 	// only show relevant systems
 	if ($user->getUsername() != 'root') {
 	   $query .= "  p.poam_action_owner IN (".$system_list.") AND ";
@@ -227,34 +226,34 @@ if($view_right)
 
 
 	// date filter - updated by chang
-	if (isset($_POST['filter_startdate']) && ($_POST['filter_enddate'] )) 
+	if (isset($_POST['filter_startdate']) && ($_POST['filter_enddate'] ))
 	{
-		$query .= "  p.poam_action_date_est >= '". convert_date_format( $_POST['filter_startdate'] ) ."' AND   p.poam_action_date_est <= '". convert_date_format( $_POST['filter_enddate'] ) ."' AND   "; 
+		$query .= "  p.poam_action_date_est >= '". convert_date_format( $_POST['filter_startdate'] ) ."' AND   p.poam_action_date_est <= '". convert_date_format( $_POST['filter_enddate'] ) ."' AND   ";
 	}
-	
-	// date filter - updated by chang	
-	if (isset($_POST['filter_startcreatedate']) && ($_POST['filter_endcreatedate'] )) 
+
+	// date filter - updated by chang
+	if (isset($_POST['filter_startcreatedate']) && ($_POST['filter_endcreatedate'] ))
 	{
-		$query .= "  p.poam_date_created >= '". convert_date_format( $_POST['filter_startcreatedate'] ) ."' AND   p.poam_date_created <= '". convert_date_format( $_POST['filter_endcreatedate'] ) ."' AND   "; 
+		$query .= "  p.poam_date_created >= '". convert_date_format( $_POST['filter_startcreatedate'] ) ."' AND   p.poam_date_created <= '". convert_date_format( $_POST['filter_endcreatedate'] ) ."' AND   ";
 	}
 
 	// asset owners filter - updated by chang	 03162006
-	if (isset($_POST['filter_asset_owners'])   && ($_POST['filter_asset_owners']   != 'any')) 
-	{ 
-		$query .= "  s1.system_id  = '".$_POST['filter_asset_owners']."' AND "; 
-		
+	if (isset($_POST['filter_asset_owners'])   && ($_POST['filter_asset_owners']   != 'any'))
+	{
+		$query .= "  s1.system_id  = '".$_POST['filter_asset_owners']."' AND ";
+
 	}
 
 	// Action owners filter - updated by chang	 03162006
-	if (isset($_POST['filter_action_owners'])   && ($_POST['filter_action_owners']   != 'any')) 
-	{ 
-		$query .= "  s2.system_id  = '".$_POST['filter_action_owners']."' AND "; 
+	if (isset($_POST['filter_action_owners'])   && ($_POST['filter_action_owners']   != 'any'))
+	{
+		$query .= "  s2.system_id  = '".$_POST['filter_action_owners']."' AND ";
 	}
 
 	// Action owners filter - updated by chang	 03162006
-	if (isset($_POST['remediation_ids']) && !empty($_POST['remediation_ids']) && (strtolower($_POST['remediation_ids'])   != 'any')) 
-	{ 
-		$query .= "  p.poam_id  IN ( ".$_POST['remediation_ids']." ) AND "; 
+	if (isset($_POST['remediation_ids']) && !empty($_POST['remediation_ids']) && (strtolower($_POST['remediation_ids'])   != 'any'))
+	{
+		$query .= "  p.poam_id  IN ( ".$_POST['remediation_ids']." ) AND ";
 	}
 
 
@@ -349,10 +348,10 @@ if($view_right)
 			break;
 
 		}
-	
-	
+
+
 	}
-	
+
 	// continue building our query
 	$query .=  "  p.finding_id  = f.finding_id AND ".
 			   "  f.source_id   = fs.source_id AND ".
@@ -362,14 +361,14 @@ if($view_right)
 			   "  s2.system_id  = p.poam_action_owner ".
 			   ") ".
 			   "  ORDER BY ";
-	
+
 	// what are we ordering by?
 	$sort_by = isset($_POST['sort_by'])?$_POST['sort_by']:'';
 	switch ($sort_by) {
 	 case 'remediation_id':
 	   $query .= 'p.poam_id ';
 	   break;
-	
+
 	 case 'finding_source':
 	   $query .= 'fs.source_nickname ';
 	   break;
@@ -378,42 +377,42 @@ if($view_right)
 	 case 'asset_owner':
 	   $query .= 'asset_owner_name ';
 	   break;
-	
+
 	 case 'action_owner':
 	   $query .= 'action_owner_nickname ';
 	   break;
-	
+
 	 case 'remediation_type':
 	   $query .= 'p.poam_type ';
 	   break;
-	
+
 	 case 'remediation_status':
 	   $query .= 'p.poam_status, p.poam_action_date_est ';
 	   break;
-	
+
 	 case 'remediation_date_created':
 	   $query .= 'p.poam_date_created ';
 	   break;
-	
+
 	 case 'action_date_est':
 	   $query .= 'p.poam_action_date_est ';
 	   break;
-	
+
 	 default:
 	   $query .= 'action_owner_name, p.poam_date_created, p.poam_type, p.poam_status ';
 	   break;
-	
+
 	}
-	
+
 	// what direction are we listing?
     if (isset($_POST['sort_order'])){
     	$query .= ($_POST['sort_order'] == 'any')?"ASC ":$_POST['sort_order'];
     }
 	// execute our built query
 //		echo $query;
-	
+
 	$results = $db->sql_query($query);
-	
+
 	$list    = $db->sql_fetchrowset($results);
 
 	//updated by chang 03022006
@@ -451,7 +450,7 @@ if($view_right)
 
 	}
 
-	
+
 	/*******************************************************************************
 	* SUMMARY INFORMATION CREATION
 	*******************************************************************************/
@@ -461,13 +460,13 @@ if($view_right)
 	$array_template  = array('NEW'=>'', 'OPEN'=>'', 'EN'=>'', 'ED'=>'', 'EO'=>'', 'EP'=>'', 'ES'=>'', 'EP_SNP'=>'',
 	                                 'EP_SSO'=>'', 'CLOSED'=>'', 'TOTAL'=>'');
 	$totals = $array_template;
-	
+
 	// go through the retrieved list
 	for ($row=0; $row < count($list); $row++) {
-	
+
 	  // capture the system_id and name
 	  $this_system = $list[$row]['action_owner_id'];
-	
+
 	  if(!isset($summary[$this_system])){
 	      // init the summary item with an array template
 	       $summary[$this_system] = $array_template;
@@ -475,31 +474,31 @@ if($view_right)
 	  // capture the system name and nickname
 	  $summary[$this_system]['action_owner_nickname'] = $list[$row]['action_owner_nickname'];
 	  $summary[$this_system]['action_owner_name']     = $list[$row]['action_owner_name'];
-	
+
 	  // count the NEW items
-	  if (($list[$row]['poam_status'] == 'OPEN') && ($list[$row]['poam_type'] == 'NONE')) { 
-		  $summary[$this_system]['NEW'] += 1; 
+	  if (($list[$row]['poam_status'] == 'OPEN') && ($list[$row]['poam_type'] == 'NONE')) {
+		  $summary[$this_system]['NEW'] += 1;
 		  $totals['NEW'] += 1;
 	  }
-	
+
 	  // count the OPEN ITEMS
-	  if (($list[$row]['poam_status'] == 'OPEN') && ($list[$row]['poam_type'] != 'NONE')) { 
-		  $summary[$this_system]['OPEN'] += 1; 
+	  if (($list[$row]['poam_status'] == 'OPEN') && ($list[$row]['poam_type'] != 'NONE')) {
+		  $summary[$this_system]['OPEN'] += 1;
 		  $totals['OPEN'] += 1;
 	  }
-	
+
 	  // count the EN and EO items
-	  if ($list[$row]['poam_status'] == 'EN') { 
-	
+	  if ($list[$row]['poam_status'] == 'EN') {
+
 		// grab the estimated completion date from " . TN_the remediation
 		$est = implode(split('-', $list[$row]['poam_action_date_est']));
-	
+
 		// compare to the current date
 		if ($est < $today ) {
-	
+
 		  // update that the date has passed
 		  $list[$row]['poam_status'] = 'EO';
-	
+
 		  // count the remediation as overdue
 		  $summary[$this_system]['EO'] += 1;
 		  $totals['EO'] += 1;
@@ -508,25 +507,25 @@ if($view_right)
 		  $list[$row]['poam_status'] = 'EO';
 
 		}
-	
+
 		// still on time, just count it
 		else {
-	
+
 		  $summary[$this_system]['EN'] += 1;
 		  $totals['EN'] += 1;
-	
-		}
-	
-	  }
-	
-	  // count the EP items
-	  if ($list[$row]['poam_status'] == 'EP') { 
 
-		$summary[$this_system]['EP'] += 1; 
+		}
+
+	  }
+
+	  // count the EP items
+	  if ($list[$row]['poam_status'] == 'EP') {
+
+		$summary[$this_system]['EP'] += 1;
 		$totals['EP'] += 1;
 
 		// grab the SSO approvals to differentiate the EPs
-		$query = 
+		$query =
 			"SELECT ".
 			"ev_sso_evaluation ".
 			"FROM " . TN_POAM_EVIDENCE . " ".
@@ -551,7 +550,7 @@ if($view_right)
 
 		}
 
-		// else tag it SSO 
+		// else tag it SSO
 		else {
 
 			$summary[$this_system]['EP_SSO'] += 1;
@@ -562,29 +561,29 @@ if($view_right)
 
 	  }
 
-	
+
 	  // count the ES items
-	  if ($list[$row]['poam_status'] == 'ES') { 
+	  if ($list[$row]['poam_status'] == 'ES') {
 		$summary[$this_system]['ES'] += 1;
 		$totals['ES'] += 1;
 	  }
 
 	  // count the CLOSED items
-	  if ($list[$row]['poam_status'] == 'CLOSED') { 
+	  if ($list[$row]['poam_status'] == 'CLOSED') {
 		$summary[$this_system]['CLOSED'] += 1;
 		$totals['CLOSED'] += 1;
 	  }
-	  
-	  
+
+
 	  // count the total number for this system
 	  $summary[$this_system]['TOTAL'] += 1;
 	  $totals['TOTAL'] += 1;
-	  
+
 	  //total pages
 	  $total_pages = ceil( $totals['TOTAL'] /$row_no);
-	
+
 	}
-	
+
 	// finally assign both the list and the summary
 //	$smarty->assign('list', $list);
 	$smarty->assign('list', $current_page_list);

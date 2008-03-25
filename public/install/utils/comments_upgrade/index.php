@@ -51,7 +51,7 @@ $keywords['EV_IVV'] = array("UPDATE: IV&V evidence evaluation");
 
 if ($step == 1){
 // step 1
-$sql = "SELECT COUNT(*) AS c, `comment_topic` AS topic FROM ".TN_POAM_COMMENTS." 
+$sql = "SELECT COUNT(*) AS c, `comment_topic` AS topic FROM ".TN_POAM_COMMENTS."
         WHERE  `comment_type` IS NULL OR `comment_type` = ''
         GROUP BY `comment_topic` ORDER BY c DESC";
 $result = $db->sql_query($sql) or die("Query failed:".$sql."<br>".$db->sql_error());
@@ -77,9 +77,9 @@ foreach ((array)$groups as $group) {
     }
 ?>
 <tr>
-    <td<?=$class?>><?=getSelectOptions($group['guess'])?></td>
-    <td<?=$class?>><?=$group['c']?></td>
-    <td<?=$class?>><?=$group['topic']?></td>
+    <td<?php echo $class?>><?php echo getSelectOptions($group['guess'])?></td>
+    <td<?php echo $class?>><?php echo $group['c']?></td>
+    <td<?php echo $class?>><?php echo $group['topic']?></td>
 </tr>
 <?
 }
@@ -91,7 +91,7 @@ foreach ((array)$groups as $group) {
 }
 
 if ($step == 2) {
-	$sql = " FROM ".TN_POAM_COMMENTS." 
+	$sql = " FROM ".TN_POAM_COMMENTS."
         WHERE `comment_type` = '' OR `comment_type` IS NULL";
 
 $result = $db->sql_query("SELECT COUNT(*) ".$sql) or die("Query failed:".$sql."<br>".$db->sql_error());
@@ -128,15 +128,15 @@ foreach ((array)$comments as $c) {
     $class = ($flag>0)?" class='alt'":"";
 ?>
 <tr>
-    <td<?=$class?>><?=getSelectOptions('')?></td>
-    <td<?=$class?>><?=$c['comment_id']?></td>
-    <td<?=$class?>><?=$c['poam_id']?></td>
-<!--    <td><?=$c['user_id']?></td>-->
-<!--    <td><?=$c['ev_id']?></td>-->
-    <td<?=$class?>><?=$c['comment_date']?></td>
-    <td<?=$class?>><?=$c['comment_topic']?></td>
-    <td<?=$class?>><?=$c['comment_body']?></td>
-<!--    <td><?=$c['comment_type']?></td>-->
+    <td<?php echo $class?>><?php echo getSelectOptions('')?></td>
+    <td<?php echo $class?>><?php echo $c['comment_id']?></td>
+    <td<?php echo $class?>><?php echo $c['poam_id']?></td>
+<!--    <td><?php echo $c['user_id']?></td>-->
+<!--    <td><?php echo $c['ev_id']?></td>-->
+    <td<?php echo $class?>><?php echo $c['comment_date']?></td>
+    <td<?php echo $class?>><?php echo $c['comment_topic']?></td>
+    <td<?php echo $class?>><?php echo $c['comment_body']?></td>
+<!--    <td><?php echo $c['comment_type']?></td>-->
 </tr>
 <?
 }
