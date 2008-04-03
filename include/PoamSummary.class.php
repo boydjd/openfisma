@@ -60,14 +60,14 @@ class PoamSummary {
 
 	  // add in statys
 	  if ($status) { 
-
+        $now = date("Y-m-d H:i:s");
 		switch ($status) {
 		case "EN" :
-		  $query .= " AND poam_status = '$status' AND poam_action_date_est > '$current_time_string'";
+		  $query .= " AND poam_status = '$status' AND poam_action_date_est > '$now'";
 		  break;
 
 		case "EO" :
-		  $query .= " AND poam_status = 'EN' AND (poam_action_date_est <= '$current_time_string' OR poam_action_date_est IS NULL)";
+		  $query .= " AND poam_status = 'EN' AND (poam_action_date_est <= '$now' OR poam_action_date_est IS NULL)";
 		  break;
 
 		default   : 
