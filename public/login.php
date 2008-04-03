@@ -67,19 +67,19 @@ if($login == 1){
         if($ret == 0) {
             // login ok, redirect to first page the user is allowed to view
             $header_screen = 'header';
-            if($user->checkRightByFunction("dashboard", "view")) {
+            if($user->checkRightByFunction("dashboard", "read")) {
               header("Location: dashboard.php");
               }
-            elseif($user->checkRightByFunction("finding", "view")) {
+            elseif($user->checkRightByFunction("finding", "read")) {
               header("Location: finding.php");
               }
-            elseif($user->checkRightByFunction("asset", "view")) {
+            elseif($user->checkRightByFunction("asset", "read")) {
               header("Location: asset.php");
               }
-            elseif($user->checkRightByFunction("remediation", "view")) {
+            elseif($user->checkRightByFunction("remediation", "read")) {
               header("Location: remediation.php");
               }
-            elseif($user->checkRightByFunction("report", "view")) {
+            elseif($user->checkRightByFunction("report", "read")) {
               header("Location: report.php");
               }
             elseif($user->checkRightByFunction($header_screen, "admin_menu")) {

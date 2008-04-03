@@ -62,9 +62,9 @@ $screen_name = "admin_" . strtolower($table_arr[$tid - 1]);
 // $user->checkRightByFunction($screen_name, "function_name");
 
 //echo $screen_name;
-$view_right	= $user->checkRightByFunction($screen_name, "view");
-$edit_right = $user->checkRightByFunction($screen_name, "edit");
-$add_right  = $user->checkRightByFunction($screen_name, "add");
+$view_right	= $user->checkRightByFunction($screen_name, "read");
+$edit_right = $user->checkRightByFunction($screen_name, "update");
+$add_right  = $user->checkRightByFunction($screen_name, "create");
 $del_right  = $user->checkRightByFunction($screen_name, "delete");
 
 // let's template know how to display the page
