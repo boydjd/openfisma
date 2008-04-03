@@ -12,6 +12,7 @@
  */
 function UserFunctionDefine($uid,$role_array,$right_array) {
     global $db,$db_name;
+    $errnum = 0;
 
     //$sql = "SELECT role_id FROM " . TN_ROLES . " WHERE role_name = '$uid'";
     $sql = "SELECT r.role_id FROM " . TN_ROLES . "r, " . TN_USERS . "u WHERE r.role_name = u.extra_role AND u.user_id = '$uid'";
@@ -153,6 +154,11 @@ function UserFunctionDefineForm($tb_id,$pgno,$of,$asc,$uid, $edit_right) {
 
 function UserFunctionDefineTable($uid, $username, $edit_right) {
     global $db,$_db_name;
+    $role_have_msg = "";
+    $role_none_msg = "";
+    $right_have_msg = "";
+    $right_none_msg = "";
+
     $cols = 3;
     $tdwidth = 250;//ceil(100 / $cols);
     $msg = "";

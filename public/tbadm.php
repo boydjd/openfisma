@@ -255,7 +255,7 @@ if($tid > 0 && $tid <= $table_count)
             echo UserFunctionDefineForm($tid,$pgno,$of,$asc,$u_id,$edit_right);
         } else {
             $role_array = $_GET['role_id'];
-            $right_array = $_GET['right_id'];
+            $right_array = isset($_GET['right_id'])?$_GET['right_id']:'';
             echo underline("$page_title User Right Config");
             if($edit_right) {
                 echo UserFunctionDefine($u_id,$role_array,$right_array);

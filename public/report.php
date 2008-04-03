@@ -225,12 +225,12 @@ if ($t==$REPORT_TYPE_POAM || $t == $REPORT_TYPE_OVERDUE){
      $status = isset($_POST['status'])?$_POST['status']:'';
      $overdue = isset($_POST['overdue'])?$_POST['overdue']:'';     
      
-     $smarty->assign('system',$_POST['system']);
-     $smarty->assign('source',$_POST['source']);
-     $smarty->assign('sy',$_POST['sy']);
-     $smarty->assign('poam_type',$_POST['poam_type']);
-     $smarty->assign('status',$_POST['status']);
-     $smarty->assign('overdue',$_POST['overdue']);
+     $smarty->assign('system',$system);
+     $smarty->assign('source',$source);
+     $smarty->assign('sy',$sy);
+     $smarty->assign('poam_type',$poam_type);
+     $smarty->assign('status',$status);
+     $smarty->assign('overdue',$overdue);
 //print "<pre>";
 //print_r($_POST);
 //print "</pre>";

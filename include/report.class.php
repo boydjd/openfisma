@@ -177,6 +177,7 @@ class Report {
 		$FY_filter     = NULL;
 		$type_filter   = NULL;
 		$status_filter = NULL;
+        $overdue_filter = NULL;
 
 		/*
 		** Use system nickname filter if that's passed in, 

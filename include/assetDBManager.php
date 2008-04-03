@@ -273,18 +273,16 @@ class AssetDBManager {
 		$listnum = 15;
 		$rownum = 0;
 		$where = "";
+       
+		$system = isset($post['system'])?$post['system']:"";
+		$vendor = isset($post['vendor'])?trim($post['vendor']):"";
+		$product = isset($post['product'])?$post['product']:"";
+		$version = isset($post['version'])?trim($post['version']):"";
+		$ip = isset($post['ip'])?trim($post['ip']):"";
+		$port = isset($post['port'])?trim($post['port']):"";
+		$order = isset($post['order'])?trim($post['order']):"";
+		$orderbyfield = isset($post['orderbyfield'])?trim($post['orderbyfield']):"";
 
-        extract($post);
-/*        
-		$system = $post['system'];
-		$vendor = trim($post['vendor']);
-		$product = $post['product'];
-		$version = trim($post['version']);
-		$ip = trim($post['ip']);
-		$port = trim($post['port']);
-		$order = trim($post['order']);
-		$orderbyfield = trim($post['orderbyfield']);
-*/
 		if (!get_magic_quotes_gpc()) {
 			$system = addslashes($system);
 			$ip 		= addslashes($ip);
