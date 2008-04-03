@@ -13,7 +13,6 @@ require_once("user.class.php");
 require_once("page_utils.php");
 
 $customer_logo = $CUSTOMER_LOGO;
-$login_warning = $LOGIN_WARNING;
 
 date_default_timezone_set('America/New_York');
 $current_time_string = date('Y-m-d H:i:s');

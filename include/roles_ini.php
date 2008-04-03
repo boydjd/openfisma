@@ -1,9 +1,10 @@
 <?php
 //  Roles privileges
-require_once('Zend/acl.php');
-require_once('Zend/acl/role.php');
-require_once('Zend/acl/resource.php');
+require_once('Zend/Acl.php');
+require_once('Zend/Acl/Role.php');
+require_once('Zend/Acl/Resource.php');
 require_once('privilege_def.php');
+require_once('tablenames_def.php');
 
 function &acl_initialize(){
     $acl = new Zend_Acl();

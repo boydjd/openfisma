@@ -13,7 +13,6 @@ session_start();
 
 $user = new User($db);
 
-$smarty->assign("warning", $login_warning);
 $login = 0;
 
 // Check to see if the user is logged out, if so set status to 1 and display error message.

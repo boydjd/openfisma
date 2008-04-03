@@ -1,12 +1,13 @@
 <?php
 // roles defines
-define('REVIEVER', 'REVIEVER');
+define('REVIEWER', 'REVIEWER');
 define('SAISO', 'SAISO');
 define('AO', 'AO');
 define('ISSO', 'ISSO');
 define('ISO', 'ISO');
 define('IVV', 'IV&V');
 define('AUDITOR', 'AUDITOR');
+define('ADMIN', 'ADMIN');
 // privilege defines
 
 define("PN_READ",                               "read");
