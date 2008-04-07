@@ -3,7 +3,7 @@
 require_once("sql_db.php");
 // loads the mappings of table names to tables in the mysql database, allows different names than the actual database table names
 require_once(OVMS_INCLUDE_PATH . DS . "tablenames_def.php");
-
+require_once('Zend/Db.php');
 //sets the database host, if blank or null set it to localhost
 $dbhost = (isset($DB_HOST)) ? $DB_HOST : "localhost";
 //sets the database user, if blank set it to null
@@ -12,10 +12,14 @@ $dbuser = (isset($DB_USER)) ? $DB_USER :  "";
 $dbpass = (isset($DB_PASS)) ? $DB_PASS :  "";
 //sets the database name, if blank set to null
 $dbname = (isset($DB)) ? $DB :  "";
-
 // create new sql_db object
 $db = new sql_db($dbhost, $dbuser, $dbpass, $dbname, false);
-
+$params = array('host' =>$dbhost,
+                'username' =>$dbuser,
+                'password' =>$dbpass,
+                'dbname' =>$dbname);
+$Zend_db = Zend_Db::factory('PDO_MYSQL',$params);
+Zend_Registry::set('Zend_db',$Zend_db);
 if(!$db->db_connect_id)
 	exit("Could not connect to the database");
 

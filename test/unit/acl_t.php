@@ -1,13 +1,13 @@
 <?php
 
-define('REVIEVER', 'REVIEVER');
+/*define('REVIEWER', 'REVIEWER');
 define('SAISO', 'SAISO');
 define('AO', 'AO');
 define('ISSO', 'ISSO');
 define('ISO', 'ISO');
 define('IVV', 'IV&V');
 define('AUDITOR', 'AUDITOR');
-
+*/
 
 class TestOfACL extends UnitTestCase {
     public $acl;
@@ -25,7 +25,7 @@ class TestOfACL extends UnitTestCase {
                                           PN_UPDATE_EST_COMPLETION_DATE,PN_READ_EVIDENCE,PN_UPDATE_EVIDENCE,PN_UPDATE_MITIGATION_STRATEGY_APPROVAL,
                                           PN_UPDATE_EVIDENCE_APPROVAL_FIRST,PN_UPDATE_EVIDENCE_APPROVAL_SECOND,PN_UPDATE_EVIDENCE_APPROVAL_THIRD,
                                           PN_UPDATE_RISK_FIRST,PN_UPDATE_RISK_SECOND,PN_UPDATE_RISK_THIRD),
-                            "report"    =>array(PN_READ,PN_GENERATE_POAM_REPORT,PN_GENERATE_FISMA_REPORT,PN_GENERATE_GENERAL_REPORT),
+                            "report"    =>array(PN_READ,PN_GENERATE_POAM_REPORT,PN_GENERATE_FISMA_REPORT,PN_GENERATE_GENERAL_REPORT,PN_GENERATE_SYSTEM_RAFS,PN_OVERDUE_REPORT),
                             "vulnerability" =>array(PN_READ,PN_UPDATE,PN_CREATE,PN_DELETE));
         $this->privilege = $privilege;
         $role_privilege = array(REVIEWER =>array(
@@ -103,9 +103,5 @@ class TestOfACL extends UnitTestCase {
         }
     }
     
-    function testUserRoles(){
-        $db_initialize;
-        $user = new user($db);
-    }
 }
 ?>
