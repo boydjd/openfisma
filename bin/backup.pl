@@ -1,226 +1,180 @@
 #!/usr/bin/perl
-
-# ---------------------------------------------------------------------
+######################################################################
 #
-# REQUIRES / USES
+# backup.pl
 #
-# ---------------------------------------------------------------------
-
-require warnings;
-require strict;
-
-
-# ---------------------------------------------------------------------
+# This is a script to take a backup of an OpenFISMA application
+# instance. The script makes a copy of all source code files and also
+# produces a schema dump. The backup is tar'ed and gzip'ed.
+# 
+# Before running this script, make sure to edit the
+# backup-restore.cfg file to specify the proper database access
+# properties.
 #
-# CONSTANTS
+# The script is designed to run in a POSIX environment, but may run
+# under windows if a compatible mysqldump and tar executable exists
+# in the path.
 #
-# ---------------------------------------------------------------------
-
-use constant DB_ADMIN_USER => 'ovms';
-use constant DB_ADMIN_PASS => '1qaz@WSX';
-use constant DB_NAME       => 'ovms';
-
-
-use constant MAX_ARCHIVE_AGE => 7;
-
-
-# ---------------------------------------------------------------------
+# Author: Mark E. Haase
 #
-# LOCAL VARIABLES
-#
-# ---------------------------------------------------------------------
+######################################################################
 
-my $app_root = '/opt/endeavor/';
+use strict;
+use Cwd qw/realpath/;
+use Data::Dumper;
+use File::Basename;
+use File::Copy;
+use File::Glob;
+use File::Path;
+use File::Spec::Functions;
+use File::stat;
 
+######################################################################
+# Main entry point
+######################################################################
 
-# ---------------------------------------------------------------------
-#
-# SUBROUTINES
-#
-# ---------------------------------------------------------------------
+my $timestamp = &timestamp();
 
-sub daystamp {
-# Name     : daystamp()
-# Purpose  : creates the YYYYMMDD stamp for backups
-# Requires : none
-# Input    : none
-# Output   : YYYYMMDD formatted daystamp
-		
-    # grab the local time
-    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime time;
+# Read & parse the configuration file: $config is a hash reference
+my $config = &getConfig();
 
-	# date corrections
-	$year += 1900;
-	$mon  += 1;
+# Create backup directory
+&backupLog('Application directory is '.$config->{'appRoot'});
+&backupError('Application directory does not exist') unless
+  -d $config->{'appRoot'};
+&backupError('backupRoot is not defined in the configuration file') unless
+  defined $config->{'backupRoot'};
+my $backupDir = catfile($config->{'backupRoot'},$timestamp);
+# Create subdirectory for holding the source code
+my $backupAppDir = catfile($backupDir,'app');
+&backupError('The backup directory already exists') if
+  -e $backupDir;
+&backupLog("Creating directory for backup $backupDir");
+mkdir($backupDir);
+mkdir($backupAppDir); 
 
-    # add the year
-    my $date = $year;
+# Backup schema and copy files from the application root into the backup directory
+&backupLog("Backing up schema");
+&copySchema($config, $backupDir);
+&backupLog("Backing up application");
+&copyDir($config->{'appRoot'}, $backupAppDir);
 
-    # add the month
-	$date .= ($mon < 10)  ? '0'.$mon  : $mon;
+# Create tar file and gzip it
+if ($config->{'compress'} eq 'true') {
+  &backupLog("Compressing backup into $timestamp.tgz");
+  chdir($config->{'backupRoot'});
+  qx/tar -czf $timestamp.tgz $timestamp/;
+  rmtree($backupDir);
+}
 
-    # add the day
-    $date .= ($mday < 10) ? '0'.$mday : $mday;
+# Prune any old files
+if ($config->{'retentionPeriod'} != 0) {
+  &backupLog("Checking for expired backup files");
+  &pruneBackups($config);
+}
 
-    # return the conconction
-    return ($date);
+# Done
+&backupLog("Backup complete");
 
-} # daystamp()
+######################################################################
+# Subroutines
+######################################################################
 
+# Print log messages in a standard format, including a timestamp.
+sub backupLog {
+  my ($second, $minute, $hour, $mday, $month, $year, $wday, $yday, $isdst) = localtime();
+  $year -= 100; # 2 digit year format
+  $month  += 1;
+  my $time = sprintf('[%02d:%02d:%02d %02d/%02d/%02d]',$hour,$minute,$second,$month,$mday,$year);
+  print "$time @_\n";
+}
 
-# ---------------------------------------------------------------------
-#
-# ARCHIVE SUBROUTINES
-#
-# ---------------------------------------------------------------------
+# Prints a log message than exits with an error code
+sub backupError {
+  backupLog("ERROR: @_");
+  exit 1;
+}
 
-sub get_archives {
-# Name     : get_archives()
-# Purpose  : retrieves a list of archives that are present
-# Requires : none
-# Input    : $backup_dir   - directory containing archives (string)
-# Output   : @backup_files - array containing file names
+# Loads the configuration from key=value pairs stored in the config file,
+# and returns a hashref
+sub getConfig {
+  my %config;
+  my $line = 0;
+  my $configPath = catfile(dirname(realpath($0)),'backup-restore.cfg');
+  &backupLog("Using config file $configPath");
+  open(CONFIG, $configPath) or &backupError("No configuration file found! (Create \"backup-restore.cfg\" in the same directory as this script.)");
+  while (<CONFIG>) {
+    $line++;
+    next if /^#/; # Ignore comment lines
+    next if /^\s+$/; # Ignore blank lines
+    
+    if (m/^\s*(\S+)\s*=\s*(\S+)\s*/) { # Extract the key=value pair into $1 and $2
+      $config{$1} = $2;
+    } else {
+      my $syntax = chomp;
+      &backupError("Syntax error in configuration file on line $line: $syntax");
+    }
+  }
+  if ($config{'debug'} eq 'true') {
+    &backupLog(Dumper(\%config));
+  }
+  return \%config;
+}
 
-	# shift off the parameters
-	my $archive_dir = shift @_; 
+# Dumps a copy of the specified schema into a file inside the backup directory.
+sub copySchema {
+ (my $config, my $backupDir) = @_;
+  my @schema = qx/mysqldump --user="$config->{'dbUser'}" --password="$config->{'dbPassword'}" --add-drop-database  --compact $config->{'dbSchema'}/;
+  my $schemaFile = catfile($backupDir,'schema.sql');
+  open (SCHEMA_FILE, ">$schemaFile");
+  print SCHEMA_FILE @schema;
+}
 
-	# verify that directory exists
-	if (! -d $archive_dir) { print 'directory does not exist' and exit; }
-	
-	# directory exists, so get file list
-	opendir(DIR, $archive_dir);
-	my @files = readdir(DIR);
-	closedir(DIR);
-	
-	# loop through and grab on the backup files
-	my @archivess;
-	foreach (@files) { 
-	
-		# match the file name against our standard name (YYYYMMDD---ovms---backup.tgz)
-		if (/^[0-9]{8}---ovms---backup.tar.gz$/) { push (@archives, $_); }
-		
-	}
-	
-	# return the file list
-	return @archives;
+# Copies directory recursively from $source to $target
+sub copyDir {
+ (my $source, my $target) = @_;
+  opendir (DIR, $source);
+  my @files = readdir(DIR);
+  foreach (@files) {
+    next if m/^\./; #ignore directories with a "." prefix (includes . and ..)
+    my $sourceFullPath = catfile($source,$_);
+    my $targetFullPath = catfile($target,$_);
+    if (-d $sourceFullPath) {
+      mkdir($targetFullPath);
+      &copyDir($sourceFullPath, $targetFullPath);
+    } else {
+      copy($sourceFullPath, $targetFullPath);
+    }
+  }
+  close DIR; 
+}
 
-} # sub get_archives()
+# Checks for expired backup files and removes them. Currently doesn't do anything
+# for directories.
+sub pruneBackups {
+ (my $config) = @_;
+  opendir (DIR, $config->{'backupRoot'});
+  my $now = time;
+  # Convert retentionPeriod from days to seconds
+  my $offset = $config->{'retentionPeriod'} * 24 * 60 * 60;
+  my @files = readdir(DIR);
+  foreach (@files) {
+    next if m/^\./; #ignore directories with a "." prefix (includes . and ..)
+    my $fullPath = catfile($config->{'backupRoot'},$_);
+    if (stat($fullPath)->mtime < ($now - $offset)) {
+      if (not -d $fullPath) {
+        &backupLog("Removing backup file $_");
+        unlink $fullPath; # TODO doesn't do anything for directories
+      }
+    }
+  }
+  closedir DIR;
+}
 
-
-sub print_archives {
-# Name     : print_archives()
-# Purpose  : prints out the array of archives
-# Requires : none
-# Input    : @archives - list of archive files 
-# Output   : none
-
-	# loop through the archive list and print
-	foreach (@_) { print; print "\n"; }
-
-} # sub print_archives()
-
-
-sub purge_archives {
-# Name     : purge_archives()
-# Purpose  : purges any archive older than $age days old
-# Requires : none
-# Input    : $today    - date from which to work with $age
-#            $age      - number of days old to purge files after
-#            @archives - list of archive files 
-# Output   : array of remaining files
-
-	# grab the archives list
-	my $today       = shift @_;
-	my $age         = shift @_;
-	my $archive_dir = shift @_;
-	my @archives    = @_;
-
-	# loop through each archive and check its age
-	foreach my $archive (@archives) {
-
-		# match against the date
-		$archive =~ /^([0-9]{8})/;
-
-		#
-		$date = $1;
-		
-		# remove our older archives
-		if (($today - $date) > AGE) { system("rm $archive_dir$archive"); }
-	
-	}
-
-	# return the results
-	return @archives;
-
-} # sub purge_archives()
-
-
-sub create_archive {
-# Name     : create_archive()
-# Purpose  : dumps the database and copies the evidence to a temp dir
-#            and archives them
-# Requires : none
-# Input    : $today    - the date for the daystamp
-#            $app_root - our base application installation
-# Output   : nothing
-
-	# grab the parameters
-	my $today          = shift @_;
-	my $db_admin_user  = shift @_;
-	my $db_admin_pass  = shift @_;
-	my $db_name        = shift @_;
-	my $archive_dir    = shift @_;
-	
-	# set the temporary archive name
-	my $archive_name = $today.'---ovms---backup'; 
-
-	# change to the current working directory
-	chdir($archive_dir);
-
-	# delete archive directory if it exists before creating it new
-	if (-d $archive_name) { rmdir($archive_name); }
-	mkdir($archive_name);
-
-	# dump the database 
-	system ("mysqldump -ic --add-drop-database --add-drop-table --skip-lock-tables ".
-			"-u ".$db_admin_user." --password=".$db_admin_pass." $db_name ".
-			"> ".$archive_name.'/'.$today."---ovms---database.sql");
-
-	# copy the evidence
-	system("cp ../www/evidence/* $archive_name/");
-
-	# tar and compress the directory into an archive
-	system("tar cfz $archive_name.tar.gz $archive_name/*");
-
-	# remove the temporary directory
-	system("rm -rf $archive_name");
-
-} # create_archive()
-
-
-# ---------------------------------------------------------------------
-#
-# DEBUG BLOCK
-#
-# ---------------------------------------------------------------------
-
-
-
-# ---------------------------------------------------------------------
-#
-# MAIN LOGIC BLOCK
-#
-# ---------------------------------------------------------------------
-
-# grab the current date, and set the archive directory
-my $today = daystamp();
-my $archive_dir = $app_root.'backup/';
-
-# get list of existing archive
-my @archives = get_archives($archive_dir);
-
-# purge files older than 7 days
-@archives = purge_archives($today, MAX_ARCHIVE_AGE, $archive_dir, @archives);
-
-# create the new archive
-create_archive($today, DB_ADMIN_USER, DB_ADMIN_PASS, DB_NAME, $archive_dir);
+# Produces a YYYYMMDDHHMMSS timestamp to label the backup archive with.
+sub timestamp {
+  my ($second, $minute, $hour, $mday, $month, $year, $wday, $yday, $isdst) = localtime();
+  $year += 1900;
+  $month  += 1;
+  return sprintf('%04d%02d%02d%02d%02d%02d',$year,$month,$mday,$hour,$minute,$second);
+}
