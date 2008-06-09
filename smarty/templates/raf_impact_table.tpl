@@ -8,39 +8,39 @@ Input:
                        e.g.: ('FFFFFF', 'FFFFFF', 'CCCCCC', 'FFFFFF'...)
 *}
 
-{*<TABLE FRAME='box' RULES='all'>*}
-<TABLE class="tbframe" cellspacing="0" cellpadding="5">
- <TR BGCOLOR='AAAAAA'>
-  <TD COLSPAN='4' ALIGN='center' class='tdc'><b>Impact Table</b></TD>
- </TR>
- <TR>
-  <TD ALIGN='center' BGCOLOR='AAAAAA' class='tdc'></TD>
-  <TD COLSPAN='3' ALIGN='center' BGCOLOR='CCCCCC' class='tdc'><b>Mission Criticality</b></TD>
- </TR>
- <TR>
-  <TD ALIGN='center' class='tdc' BGCOLOR='CCCCCC'><b>Data Sensitivity</b></TD>
-  <TD ALIGN='center' class='tdc'><b>Supportive</b></TD>
-  <TD ALIGN='center' class='tdc'><b>Important</b></TD>
-  <TD ALIGN='center' class='tdc'><b>Critical</b></TD>
- </TR>
- <TR>
-  <TD ALIGN='center' class='tdc'><b>High</b></TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[0]}' class='tdc'>Low</TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[1]}' class='tdc'>Moderate</TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[2]}' class='tdc'>High</TD>
- </TR>
- <TR>
-  <TD ALIGN='center' class='tdc'><b>Moderate</b></TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[3]}' class='tdc'>Low</TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[4]}' class='tdc'>Moderate</TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[5]}' class='tdc'>Moderate</TD>
- </TR>
- <TR>
-  <TD ALIGN='center' class='tdc'><b>Low</b></TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[6]}' class='tdc'>Low</TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[7]}' class='tdc'>Low</TD>
-  <TD ALIGN='center' BGCOLOR='{$cell_colors[8]}' class='tdc'>Low</TD>
- </TR>
-</TABLE>
+{*<table frame='box' rules='all'>*}
+<table class="rafImpact">
+ <tr>
+  <td colspan='4' align='center'><b>IMPACT LEVEL TABLE</b></td>
+ </tr>
+ <tr>
+  <td>&nbsp;</td>
+  <td colspan='3' align='center'><b>MISSION CRITICALITY</b></td>
+ </tr>
+ <tr>
+  <td><b>DATA SENSITIVITY</b></td>
+  <td><b>SUPPORTIVE</b></td>
+  <td><b>IMPORTANT</b></td>
+  <td><b>CRITICAL</b></td>
+ </tr>
+ <tr>
+  <td><b>HIGH</b></td>
+  <td bgcolor='{$cell_colors[0]}'>low</td>
+  <td bgcolor='{$cell_colors[1]}'>moderate</td>
+  <td bgcolor='{$cell_colors[2]}'>high</td>
+ </tr>
+ <tr>
+  <td><b>MODERATE</b></td>
+  <td bgcolor='{$cell_colors[3]}'>low</td>
+  <td bgcolor='{$cell_colors[4]}'>moderate</td>
+  <td bgcolor='{$cell_colors[5]}'>moderate</td>
+ </tr>
+ <tr>
+  <td><b>LOW</b></td>
+  <td bgcolor='{$cell_colors[6]}'>low</td>
+  <td bgcolor='{$cell_colors[7]}'>low</td>
+  <td bgcolor='{$cell_colors[8]}'>low</td>
+ </tr>
+</table>
 
 

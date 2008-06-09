@@ -62,6 +62,10 @@ function pdfAddWarningFooter($pdf, $text, $fontsize, $xmargin, $ymargin, $pagewi
   if ($pagewidth==612) $yoffset=750;
   if ($pagewidth==792) $yoffset=580;
   
+  // hack: i'm arbitrarily defining yoffset here, since the original developer
+  // forgot to define it, and this code doesn't make any sense:
+  $yoffset=1;
+  
 	$pdf->line($xmargin,$yoffset,$linelen,$yoffset);
 	
   /*

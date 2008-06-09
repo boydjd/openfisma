@@ -260,9 +260,9 @@ class RiskAssessment {
     $threat_lookup[$this->HIGH][$this->HIGH]         = $this->LOW;
     $threat_lookup[$this->HIGH][$this->MODERATE]     = $this->MODERATE;
     $threat_lookup[$this->HIGH][$this->LOW]          = $this->HIGH;
-    $threat_lookup[$this->MODERATE][$this->HIGH]     = $this->MODERATE;
+    $threat_lookup[$this->MODERATE][$this->HIGH]     = $this->LOW;
     $threat_lookup[$this->MODERATE][$this->MODERATE] = $this->MODERATE;
-    $threat_lookup[$this->MODERATE][$this->LOW]      = $this->LOW;
+    $threat_lookup[$this->MODERATE][$this->LOW]      = $this->MODERATE;
     $threat_lookup[$this->LOW][$this->HIGH]          = $this->LOW;
     $threat_lookup[$this->LOW][$this->MODERATE]      = $this->LOW;
     $threat_lookup[$this->LOW][$this->LOW]           = $this->LOW;

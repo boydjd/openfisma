@@ -27,13 +27,13 @@ if(isset($_POST['poam_id'])) {
 }else{
 	die("needs poam_id");
 }
-//
+
 $rafObj = new Raf($db);
 $rafObj->setPoam_id($poam_id);
 $screen_name = "RAF";
 //$smarty->debugging = true;
 
-$smarty->assign('title', 'Risk Analysis Form(RAF)');
+$smarty->assign('title', 'Risk Analysis Form (RAF)');
 $smarty->assign('name', '');
 $smarty->assign('raf_lang', $raf_lang);
 $smarty->assign('warn_footer', $REPORT_FOOTER_WARNING);
@@ -57,7 +57,11 @@ $today = date("Ymd", time());
 */
 $rpdata = array();
 
-
+if (isset($_GET['pdf']) && $_GET['pdf']=='true') {
+  $smarty->assign('pdf',true);
+} else {
+  $smarty->assign('pdf',false);
+}
 $smarty->assign('poam_id', $rafObj->getPoam_id());
 $smarty->assign('WVTNO', $rafObj->getWeaknessVulnerabilityTrackingNO());
 
@@ -95,6 +99,11 @@ $poam_field_row['impact'] = $impact;
 $threat_likelihood = $riskObj->get_threat_likelihood();
 $poam_field_row['threat_likelihood'] = $threat_likelihood;
 
+// Determine Overall Risk Level
+$impact_table['HIGH']['LOW'] = 'LOW';
+$overall_risk = $riskObj->get_overall_risk();
+$smarty->assign('overall_risk', $overall_risk);
+
 /*
 ** Format text fields
 */
@@ -117,8 +126,6 @@ array_push($rpdata, $rafObj->getVulnDescriptions());
 ** add that to report data
 */
 array_push($rpdata, $rafObj->getAssetNames());
-
-//echo "asset names: "; print_r($rafObj->getAssetNames()); die;
 
 /*
 ** Map LOW/MODERATE/HIGH axes to specific display table cell indices.
@@ -152,7 +159,6 @@ $cellidx_lookup['LOW']['HIGH']          = 8;
 $criticality = $poam_field_row['s_a'];
 $impact_index = $cellidx_lookup[$data_sensitivity][$criticality]; //get impact index
 $cell_colors = cell_background_colors(9, $impact_index);
-//
 
 /*
 ** Determine threat likelihood table highlight cell from countermeasure
@@ -164,7 +170,6 @@ $threat_level  = $poam_field_row['t_level'];
 
 $threat_index = $cellidx_lookup[$threat_level][$effectiveness]; //get threat index
 $cell_colors_tl = cell_background_colors(9, $threat_index);
-//
 
 /*
 ** Determine overall risk level table highlight cell from impact and

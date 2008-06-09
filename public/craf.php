@@ -7,7 +7,7 @@ ini_set('memory_limit', '256M');
 **
 ** Disable Pragma: no-cache
 */
-header('Pragma:');
+header('Pragma:no-cache');
 
 // required for all pages, after user login is verified function displayloginfor checks all user security functions, gets the users first/last name and customer log as well as loads ovms.ini.php
 require_once("config.php");
@@ -98,23 +98,23 @@ if (count($poam_id_array)>1) {
         $flag = 'tgz';
         $files = array();
     }
-	foreach ($poam_id_array as $poam_id){
-	    if (!empty($poam_id) && is_numeric($poam_id) && ($poam_id > 0)){
-    	    $_POST['poam_id'] = $poam_id;
-            require_once('raf.inc.php');
-            $rpdata=$_SESSION['rpdata'];
-            $rafObj = new Raf($db);
-            $rafObj->setPoam_id($poam_id);
-            $pdf = realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING);
-    	    $fileName = 'RAF_'.$poam_id.'.pdf';
-            if($flag == 'zip'){
-                $zip->addFromString($fileName, $pdf->output());
-            }else if($flag =='tgz'){
-                $files[] = $fileName;
-                file_put_contents(OVMS_WEB_TEMP.'/'.$fileName, $pdf->output());
-            }
-	    }
-	}
+  	foreach ($poam_id_array as $poam_id){
+  	    if (!empty($poam_id) && is_numeric($poam_id) && ($poam_id > 0)){
+      	    $_POST['poam_id'] = $poam_id;
+              require_once('raf.inc.php');
+              $rpdata=$_SESSION['rpdata'];
+              $rafObj = new Raf($db);
+              $rafObj->setPoam_id($poam_id);
+              $pdf = realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING);
+      	    $fileName = 'RAF_'.$poam_id.'.pdf';
+              if($flag == 'zip'){
+                  $zip->addFromString($fileName, $pdf->output());
+              }else if($flag =='tgz'){
+                  $files[] = $fileName;
+                  file_put_contents(OVMS_WEB_TEMP.'/'.$fileName, $pdf->output());
+              }
+  	    }
+  	}
     if( $flag == 'zip' ) {
         $zip->close();
     }else if( $flag == 'tgz' ) {
@@ -135,7 +135,7 @@ if (count($poam_id_array)>1) {
     echo file_get_contents($fname);
     @unlink($fname);
     exit();
-}
+  }
 else {
     $_POST['poam_id'] = $poam_id_array[0];
     require_once('raf.inc.php');
@@ -148,268 +148,300 @@ else {
     $rafObj = new Raf($db);
     $rafObj->setPoam_id($poam_id);
     $pdf = realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING);
-//    return $pdf;
     $options['Content-Disposition'] = 'RAF_'.$poam_id.'.pdf';
     $pdf->stream($options);
 }
 
-//$FONT_FOLDER = '/usr/local/apache2/htdocs/RR/cvs/fonts';
-
-
-/*
-** test - add footer
-/
-$all = $pdf->openObject();
-
-$pdf->saveState();
-$pdf->setStrokeColor(0,0,0,1);
-$pdf->line(20,100,570,100);
-//$pdf->line(20,822,578,822);
-$xoffset = 20;
-$yoffset = 90;
-$fontsize = 8;
-$leftover_text = $REPORT_FOOTER_WARNING;
-while($leftover_text = $pdf->addTextWrap($xoffset,$yoffset,550,8,$leftover_text,'center') ) {
-  $yoffset-=$fontsize;
-  }
-$pdf->restoreState();
-$pdf->closeObject();
-// note that object can be told to appear on just odd or even pages by changing 'all' to 'odd'
-// or 'even'.
-$pdf->addObject($all,'all');
-
-
-*
-** end test
-*/
-
-
 function realCreatePdf($rafObj, $rpdata, $REPORT_FOOTER_WARNING){
     global $raf_lang;
     $pdf =& new RAFpdf();
-    $pdf->selectFont(PDF_FONT_FOLDER."/Helvetica.afm");//needs modify to the real font file path
-    pdfAddWarningFooter($pdf, $REPORT_FOOTER_WARNING, 8, 50, 50, 580);
+    $pdf->selectFont(PDF_FONT_FOLDER."/Helvetica.afm");
+    //pdfAddWarningFooter($pdf, $REPORT_FOOTER_WARNING, 8, 50, 50, 580); // TODO fix this
     
-    $pdf->ezSetMargins(50,110,50,50);
-    
-    /*
-    ** Separate out the POAM field row into its own variable for convenience.
-    */
+    $pdf->ezSetMargins(50,50,50,50);
+    $headerOptions = array('showHeadings'=>0,
+                           'width'=>500);
+    $labelOptions = array('showHeadings'=>0,
+                          'shaded'=>0,
+                          'showLines'=>0,
+                          'width'=>500);
+    $tableOptions = array('showHeadings'=>0,
+                          'shaded'=>0,
+                          'showLines'=>2,
+                          'width'=>400
+                          );
+          
+    // Separate out the POAM field row into its own variable for convenience.
     $poam_fields = $rpdata['rpdata'][0];
     
-    
-    /*
-    ** This table lists everything from 'Weakness/Vulnerability Tracking #'
-    ** to the 'Weakness/Vulnerability Description' title
-    */
+    // RAF Title
+    $pdf->ezText('Risk Analysis Form (RAF)',
+                 20,
+                 array('justification'=>'center')
+                );
+
+    // Vertical blank space
+    $pdf->ezText('', 12, array('justification'=>'center'));
+                    
+    // Vulnerability/Weakness Section
+    $data = array(array('<b>Vulnerability/Weakness</b>'));
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $headerOptions
+                 );
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
     $data = array(
-    array('<b>'.$raf_lang[1][0].'</b>',$rafObj->getWeaknessVulnerabilityTrackingNO(),'<b>'.$raf_lang[1][1].'</b>',$poam_fields['dt_discv']),
-    array('<b>'.$raf_lang[1][2].'</b>',$poam_fields['s_po'],'<b>'.$raf_lang[1][4].'</b>',$poam_fields['dt_created']),
-    array('<b>'.$raf_lang[1][3].'</b>',$poam_fields['s_nick'],'<b>'.$raf_lang[1][6].'</b>',$poam_fields['dt_mod']),
-    array('<b>'.$raf_lang[1][7].'</b>',$poam_fields['fs_nick'],'<b>'.$raf_lang[1][8].'</b>',$poam_fields['dt_closed']),
-    array('<b>'.$raf_lang[1][9].'</b>',$poam_fields['is_repeat'],'',''),
-    array('<b>'.$raf_lang[1][10].'</b>',$poam_fields['prev'],'',''),
-    array('<b>'.$raf_lang[1][5].'</b>','','',''),
+      array("<b>Weakness Tracking #:</b>", $rafObj->getWeaknessVulnerabilityTrackingNO(), "<b>Date Opened:</b>", $poam_fields['dt_created']),
+      array("<b>Principle Office:</b>","FSA","<b>System Acronym:</b>", $poam_fields['s_nick']),
+      array("<b>Finding Source:</b>", $poam_fields['source_name'],"<b>Repeat finding?:</b>", $poam_fields['is_repeat']),
+      array("<b>POA&M Type:</b>", $poam_fields['poam_type'],"<b>POA&M Status:</b>", $poam_fields['poam_status']),
+      array("<b>Assets Affected:</b>", $poam_fields['asset_name'],"",""),
+      array("<b>Finding:</b>", $poam_fields['finding_data'],"",""), // TODO this won't flow correctly if the finding data is a long block of text
     );
+
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $labelOptions
+                 );
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
     
-    /*
-    ** Now push any vulnerability descriptions onto the previous table.
-    ** Each 'row' contains one entry of name 'vuln'
-    */
-    $vuln_array = $rpdata['rpdata'][1];
-    foreach ((array)$vuln_array as $vuln_description) {
-      array_push($data, array($vuln_description['vuln']));
-      }
+    // System Impact section
+    $data = array(array('<b>System Impact</b>'));
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $headerOptions
+                 );
+    $pdf->ezText('', 12, array('justification'=>'center'));
     
-    
-    $pdf->ezTable($data,NULL
-    ,'<b>'.$raf_lang[0][0].$rafObj->getPoam_id().'</b>'
-    ,array('showHeadings'=>0,'shaded'=>0,'showLines'=>0,'width'=>550));
-    
-    //
-    $pdf->ezText("");
-    
+    // the spaces are a quick hack to align the labels correctly
     $data = array(
-    array('<b>'.$raf_lang[2][0].'</b>',$poam_fields['s_a']),
-    array('<b>'.$raf_lang[2][1].'</b>',$poam_fields['s_c_just']),
-    array('<b>'.$raf_lang[2][2].'</b>',$poam_fields['data_sensitivity']),
-    array('<b>'.$raf_lang[2][3].'</b>',$poam_fields['s_s_just']),
-    array('<b>'.$raf_lang[2][4].'</b>',$poam_fields['impact']),
-    
+      array("<b>                                                 IMPACT LEVEL TABLE</b>"),
+      array("<b>                                                                            MISSION CRITICALITY</b>")
     );
-    
-    /*
-    ** Insert some space
-    */
-    $pdf->ezTable($data,NULL,"",
-    array('showHeadings'=>0,'shaded'=>0,'showLines'=>0,'width'=>550));
-    
-    
-    /*
-    ** Set up the table column specifications
-    ** - justification, etc.
-    */
-    $column_specs = array(
-    0 => array('justification'=>'center'),
-    1 => array('justification'=>'center'),
-    2 => array('justification'=>'center'),
-    3 => array('justification'=>'center'),
-    );
-    
-    /*
-    ** Set up the data for the impact table
-    */
-    $impactdata = array(
-    array("<b>Data Sensitivity</b>","<b>Supportive</b>","<b>Important</b>","<b>Critical</b>"),
-    array("<b>High</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>High</c:deemphasize>"),
-    array("<b>Moderate</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>"),
-    array("<b>Low</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
-    );
-    
-    highlight_cell_text($impactdata, $rpdata['impact_idx']);
-    
-    $pdf->ezTable($impactdata,NULL,
-    "<b>Impact Table</b>",
-    array('showHeadings'=>0,'width'=>550,'cols'=>$column_specs,'protectRows'=>5));
-    
-    
-    
-    ////
-    //
-    $pdf->ezText("");
-    
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $tableOptions
+                 );
+                                                         
     $data = array(
-    array('<b>'.$raf_lang[3][0].'</b>',$poam_fields['cm']),
-    array('<b>'.$raf_lang[3][1].'</b>',$poam_fields['cm_eff']),
-    array('<b>'.$raf_lang[3][2].'</b>',$poam_fields['cm_just']),
-    array('<b>'.$raf_lang[3][3].'</b>',$poam_fields['t_level']),
-    array('<b>'.$raf_lang[3][4].'</b>',$poam_fields['t_source']),
-    array('<b>'.$raf_lang[3][5].'</b>',$poam_fields['t_just']),
-    array('<b>'.$raf_lang[3][6].'</b>',$poam_fields['threat_likelihood']),
-    array('<b>'.$raf_lang[3][7].'</b>',''),
+      array("<b>DATA SENSITIVITY</b>","<b>SUPPORTIVE</b>","<b>IMPORTANT</b>","<b>CRITICAL</b>"),
+      array("<b>HIGH</b>",     "low", "moderate", "high"),
+      array("<b>MODERATE</b>", "low", "moderate", "moderate"),
+      array("<b>LOW</b>",      "low", "low",      "low"),
+    );    
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $tableOptions
+                 );
+    
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    $data = array(
+      array('<b>Mission Criticality:</b>', $poam_fields['s_a'],'',''),
+      array('<b>Criticality Justification:</b>', $poam_fields['s_c_just'],'',''),
+      array('<b>Data Sensitivity:</b>', $poam_fields['data_sensitivity'],'',''),
+      array('<b>Sensitivity Justification:</b>', $poam_fields['s_s_just'],'',''),
+      array('<b>Overall Impact Level:</b>', $poam_fields['impact'],'','')
     );
-    
-    /*
-    ** Now push any asset names onto the previous table.
-    ** Each 'row' contains one entry of name 'pname'
-    */
-    $asset_array = $rpdata['rpdata'][2];
-    if(isset($asset_array)) {
-      foreach ($asset_array as $asset) {
-        array_push($data, array($asset['pname']));
-        }
-      }
-    
-    
-    $pdf->ezTable($data,NULL
-    ,""
-    ,array('showHeadings'=>0,'shaded'=>0,'showLines'=>0,'width'=>550));
-    
-    
-    /*
-    ** Set up the data for the threat table
-    */
-    $threatdata = array(
-    array("<b>Threat Source</b>","<b>Low</b>","<b>Moderate</b>","<b>High</b>"),
-    array("<b>High</b>","<c:deemphasize>High</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
-    array("<b>Moderate</b>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
-    array("<b>Low</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
-    );
-    
-    highlight_cell_text($threatdata, $rpdata['threat_idx']);
-    
-    $pdf->ezTable($threatdata,NULL,
-    "<b>Threat Likelihood Table</b>",
-    array('showHeadings'=>0,'width'=>550,'cols'=>$column_specs,'protectRows'=>5));
-    ////
-    //
-    $pdf->ezText("");
+
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $labelOptions
+                 );
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    // Threats And Countermeasures section
+    $data = array(array('<b>Threat(s) and Countermeasure(s)</b>'));
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $headerOptions
+                 );
+    $pdf->ezText('', 12, array('justification'=>'center'));
     
     $data = array(
-    
-    array('<b>'.$raf_lang[4][1].'</b>',$raf_lang[4][2]),
-    array('<b>'.$raf_lang[4][3].'</b>',$raf_lang[4][4]),
-    array('<b>'.$raf_lang[4][5].'</b>',$raf_lang[4][6]),
-    
+      array("<b>                                               THREAT LIKELIHOOD TABLE</b>"),
+      array("<b>                                                                              COUNTERMEASURE</b>")
     );
-    $pdf->ezTable($data,NULL
-    ,'<b>'.$raf_lang[4][0].'</b>'
-    ,array('showHeadings'=>0,'shaded'=>0,'showLines'=>0,'width'=>550));
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $tableOptions
+                 );
+                                                         
+    $data = array(
+      array("<b>THREAT SOURCE</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
+      array("<b>HIGH</b>",     "high",     "moderate", "low"),
+      array("<b>MODERATE</b>", "moderate", "moderate", "low"),
+      array("<b>LOW</b>",      "low",      "low",      "low"),
+    );    
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $tableOptions
+                 );
     
-    
-    /*
-    ** Set up the data for the risk table
-    */
-    $riskdata = array(
-    array("<b>Likelihood</b>","<b>Low</b>","<b>Moderate</b>","<b>High</b>"),
-    array("<b>High</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>High</c:deemphasize>"),
-    array("<b>Moderate</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>","<c:deemphasize>Moderate</c:deemphasize>"),
-    array("<b>Low</b>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>","<c:deemphasize>Low</c:deemphasize>"),
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    $data = array(
+      array('<b>Specific Countermeasures:</b>', $poam_fields['cm'],'',''),
+      array('<b>Countermeasure Effectiveness:</b>', $poam_fields['cm_eff'],'',''),
+      array('<b>Effectiveness Justification:</b>', $poam_fields['cm_just'],'',''),
+      array('<b>Threat Source(s):</b>', $poam_fields['t_source'],'',''),
+      array('<b>Threat Impact:</b>', $poam_fields['t_level'],'',''),
+      array('<b>Impact Level Justification:</b>', $poam_fields['t_just'],'',''),
+      array('<b>Overall Threat Likelihood:</b>', $poam_fields['threat_likelihood'],'','')           
     );
-    
-    highlight_cell_text($riskdata, $rpdata['risk_idx']);
-    
-    $pdf->ezTable($riskdata,NULL,
-    "<b>Risk Level Table</b>",
-    array('showHeadings'=>0,'width'=>550,'cols'=>$column_specs,'protectRows'=>5));
-    ////
-    $pdf->ezText("");
+
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $labelOptions
+                 );
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    // Risk Level section
+    $data = array(array('<b>Risk Level</b>'));
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $headerOptions
+                 );
+    $pdf->ezText('', 12, array('justification'=>'center'));
     
     $data = array(
-    array('<b>'.$raf_lang[5][0].'</b>',$poam_fields['act_sug']),
-    array('<b>'.$raf_lang[5][1].'</b>',$poam_fields['act_plan']),
-    
+      array("<b>                                                  RISK LEVEL TABLE</b>"),
+      array("<b>                                                                              IMPACT</b>")
     );
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $tableOptions
+                 );
+                                                         
+    $data = array(
+      array("<b>LIKELIHOOD</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
+      array("<b>HIGH</b>",     "low",  "moderate", "high"),
+      array("<b>MODERATE</b>", "low",  "moderate", "moderate"),
+      array("<b>LOW</b>",      "low",  "low",      "low"),
+    );    
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $tableOptions
+                 );
     
-    /*
-    ** Append security footer warning message
-    $pdf->ezTable($data,NULL
-    ,""
-    ,array('showHeadings'=>0,'shaded'=>0,'showLines'=>0,'width'=>550));
-    $pdf->ezText("");
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    $riskObj = new RiskAssessment($poam_fields['s_c'],
+                      			      $poam_fields['s_a'],
+                      			      $poam_fields['s_i'],
+                      			      $poam_fields['s_a'],
+                      			      $poam_fields['t_level'],
+                      			      $poam_fields['cm_eff']);
+    $overallRisk = $riskObj->get_overall_risk();
+
+    $data = array(
+      array('<b>High:</b>', 'Strong need for corrective action'),
+      array('<b>Moderate:</b>', 'Need for corrective action within a reasonable time period.'),
+      array('<b>Low:</b>', 'Authorizing official may correct or accept the risk'),
+      array('<b>Overall Risk Level:</b>', $overallRisk)       
+    );
+
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $labelOptions
+                 );
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    // Mitigration Strategy section
+    $data = array(array('<b>Mitigation Strategy</b>'));
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $headerOptions
+                 );
+    $pdf->ezText('', 12, array('justification'=>'center'));
     
-    $pdf->ezText($REPORT_FOOTER_WARNING,9,array('justification'=>'center'));
+    $data = array(
+      array('<b>Recommendation(s):</b>', $poam_fields['act_sug']),
+      array('<b>Course of Action:</b>', $poam_fields['act_plan']),
+      array('<b>Est. Completion Date:</b>', $poam_fields['poam_action_date_est']),    
+    );
+
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $labelOptions
+                 );
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    // Accepted Risk section (conditional on poam type)
+    if ($poam_fields['poam_type_code'] == 'AR') {
+      $data = array(array('<b>AR - (Recommend accepting this low risk)</b>'));
+      $pdf->ezTable($data,
+                    null,
+                    null,
+                    $headerOptions
+                   );
+      $pdf->ezText('', 12, array('justification'=>'center'));
+      
+      $pdf->ezText('<b>Vulnerability:</b>', 12, null);
+      $pdf->ezText($poam_fields['finding_data'], 12, null);
+      $pdf->ezText('<b>Business Case Justification for accepted low risk:</b>', 12, null);
+      $pdf->ezText($poam_fields['act_plan'], 12, null);
+      $pdf->ezText('<b>Mitigating Controls:</b>', 12, null);
+      $pdf->ezText($poam_fields['cm'], 12, null);                              
+        
+      $pdf->ezText('', 12, array('justification'=>'center'));
+    }
     
-    */
+    // Endorsement of Risk Level Analysis section
+    $data = array(array('<b>Endorsement of Risk Level Analysis</b>'));
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $headerOptions
+                 );
+    $pdf->ezText('', 12, array('justification'=>'center'));
     
+    $data = array(
+      array('Concur __ ', 'Non-Concur __ ','_____________________________________________','___/___/______'),
+      array('',           '',              'Business Owner/Representative',                'Date')
+    );
+
+    $pdf->ezTable($data,
+                  null,
+                  null,
+                  $labelOptions
+                 );
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
     
+    $warning = 'WARNING: This report is for internal, official use only.  
+                This report contains sensitive computer security related information. 
+                Public disclosure of this information would risk circumvention of the law. 
+                Recipients of this report must not, under any circumstances, show or release 
+                its contents for purposes other than official action. This report must be 
+                safeguarded to prevent improper disclosure. Staff reviewing this document must 
+                hold a minimum of Public Trust Level 5C clearance.';
+    $warning = preg_replace('/\s+/',' ',$warning);
+    $pdf->ezText($warning, 9, array('justification'=>'left'));
+        
     return $pdf;
 }
-/*
-** Highlight the text of a single cell in 3x3 multidimensional array 
-** with column and row headers (a 4x4 array with 3x3 data of interest).
-**
-** The RAF tables can be described like this, where H is a column or 
-** row header cell and 0-8 are table data cells:
-** H H H H
-** H 0 1 2
-** H 3 4 5
-** H 6 7 8
-**
-** We want to highlight the text in cell N.
-** This function takes the 2D array of headers and data and modifies the correct
-** data cell data.
-**
-** Data cells have been presumed de-emphasized via the <c:deemphasize> tags
-*/
-function highlight_cell_text(&$table_array_4x4, $highlight_cell) {
-  // Skip the column headers, but ignore the row headers for this calculation
-  $highlight_row = ($highlight_cell / 3) + 1;
-  // Skip the row header to determine correct column
-  $highlight_col = ($highlight_cell % 3) + 1;
-
-  $cell_data = $table_array_4x4[$highlight_row][$highlight_col];
-
-  $DEEMPHASIS_TAG_1 = '<c:deemphasize>';
-  $DEEMPHASIS_TAG_2 = '</c:deemphasize>';
-  $EMPHASIS_TAG_1   = '<c:emphasize><b>';
-  $EMPHASIS_TAG_2   = '</b></c:emphasize>';
-
-  $table_array_4x4[$highlight_row][$highlight_col] = str_replace($DEEMPHASIS_TAG_1, $EMPHASIS_TAG_1, $cell_data);
-  $cell_data = $table_array_4x4[$highlight_row][$highlight_col];
-  $table_array_4x4[$highlight_row][$highlight_col] = str_replace($DEEMPHASIS_TAG_2, $EMPHASIS_TAG_2, $cell_data);
-
-  }
-
 
 ?>
