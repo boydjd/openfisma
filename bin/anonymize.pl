@@ -27,12 +27,14 @@ use File::Basename;
 use File::Spec::Functions;
 use Switch;
 
+require fisma;
+
 ######################################################################
 # Main entry point
 ######################################################################
 
 # Read & parse the configuration file: $config is a hash reference
-my $config = &getConfig();
+our $config = &getConfig(catfile(dirname(realpath($0)),'anonymize.cfg'));
 
 # Connect to DB and verify that the target schema exists
 &log('Connecting to database '.$config->{'dbHost'}.':'.$config->{'dbSchema'});
@@ -171,57 +173,6 @@ $db->disconnect;
 ######################################################################
 # Subroutines
 ######################################################################
-
-# Print log messages in a standard format, including a timestamp.
-sub log {
-  my ($second, $minute, $hour, $mday, $month, $year, $wday, $yday, $isdst) = localtime();
-  $year -= 100; # 2 digit year format
-  $month  += 1;
-  my $time = sprintf('[%02d:%02d:%02d %02d/%02d/%02d]',$hour,$minute,$second,$month,$mday,$year);
-  print "$time @_\n";
-}
-
-# Conditional logging based on whether the debug parameter is set to 'true'
-sub debugLog {
-  if ($config->{'debug'} eq 'true') {
-    &log(@_);
-  } 
-}
-
-# Prints a log message than exits with an error code
-sub error {
-  &log("ERROR: @_");
-  exit 1;
-}
-
-# Loads the configuration from key=value pairs stored in the config file,
-# and returns a hashref
-sub getConfig {
-  my %config;
-  my $line = 0;
-  my $configPath = catfile(dirname(realpath($0)),'anonymize.cfg');
-  &log("Using config file $configPath");
-  open(CONFIG, $configPath) or &error("No configuration file found! (Create \"anonymize.cfg\" in the same directory as this script.)");
-  while (<CONFIG>) {
-    $line++;
-    next if /^#/; # Ignore comment lines
-    next if /^\s+$/; # Ignore blank lines
-    
-    if (m/^\s*(\S+)\s*=\s*(\S+)\s*/) { # Extract the key=value pair into $1 and $2
-      $config{$1} = $2;
-    } else {
-      my $syntax = chomp;
-      &error("Syntax error in configuration file on line $line: $syntax");
-    }
-  }
-  
-  # Can't use debugLog here because the config isn't initalized yet
-  if ($config{'debug'} eq 'true') {
-    &log('Dumping configuration');
-    &log(Dumper(\%config));
-  }
-  return \%config;
-}
 
 # Randomizes a string by doing the following: replace any number character with a random number character,
 # replace any letter character with a letter character of the same case (upper or lower), and leave all

@@ -29,6 +29,8 @@ use File::Path;
 use File::Spec::Functions;
 use File::stat;
 
+require fisma;
+
 ######################################################################
 # Main entry point
 ######################################################################
@@ -36,32 +38,32 @@ use File::stat;
 my $timestamp = &timestamp();
 
 # Read & parse the configuration file: $config is a hash reference
-my $config = &getConfig();
+our $config = &getConfig(catfile(dirname(realpath($0)),'backup-restore.cfg'));
 
 # Create backup directory
-&backupLog('Application directory is '.$config->{'appRoot'});
-&backupError('Application directory does not exist') unless
+&log('Application directory is '.$config->{'appRoot'});
+&error('Application directory does not exist') unless
   -d $config->{'appRoot'};
-&backupError('backupRoot is not defined in the configuration file') unless
+&error('backupRoot is not defined in the configuration file') unless
   defined $config->{'backupRoot'};
 my $backupDir = catfile($config->{'backupRoot'},$timestamp);
 # Create subdirectory for holding the source code
 my $backupAppDir = catfile($backupDir,'app');
-&backupError('The backup directory already exists') if
+&error('The backup directory already exists') if
   -e $backupDir;
-&backupLog("Creating directory for backup $backupDir");
+&log("Creating directory for backup $backupDir");
 mkdir($backupDir);
 mkdir($backupAppDir); 
 
 # Backup schema and copy files from the application root into the backup directory
-&backupLog("Backing up schema");
+&log("Backing up schema");
 &copySchema($config, $backupDir);
-&backupLog("Backing up application");
+&log("Backing up application");
 &copyDir($config->{'appRoot'}, $backupAppDir);
 
 # Create tar file and gzip it
 if ($config->{'compress'} eq 'true') {
-  &backupLog("Compressing backup into $timestamp.tgz");
+  &log("Compressing backup into $timestamp.tgz");
   chdir($config->{'backupRoot'});
   qx/tar -czf $timestamp.tgz $timestamp/;
   rmtree($backupDir);
@@ -69,57 +71,16 @@ if ($config->{'compress'} eq 'true') {
 
 # Prune any old files
 if ($config->{'retentionPeriod'} != 0) {
-  &backupLog("Checking for expired backup files");
+  &log("Checking for expired backup files");
   &pruneBackups($config);
 }
 
 # Done
-&backupLog("Backup complete");
+&log("Backup complete");
 
 ######################################################################
 # Subroutines
 ######################################################################
-
-# Print log messages in a standard format, including a timestamp.
-sub backupLog {
-  my ($second, $minute, $hour, $mday, $month, $year, $wday, $yday, $isdst) = localtime();
-  $year -= 100; # 2 digit year format
-  $month  += 1;
-  my $time = sprintf('[%02d:%02d:%02d %02d/%02d/%02d]',$hour,$minute,$second,$month,$mday,$year);
-  print "$time @_\n";
-}
-
-# Prints a log message than exits with an error code
-sub backupError {
-  backupLog("ERROR: @_");
-  exit 1;
-}
-
-# Loads the configuration from key=value pairs stored in the config file,
-# and returns a hashref
-sub getConfig {
-  my %config;
-  my $line = 0;
-  my $configPath = catfile(dirname(realpath($0)),'backup-restore.cfg');
-  &backupLog("Using config file $configPath");
-  open(CONFIG, $configPath) or &backupError("No configuration file found! (Create \"backup-restore.cfg\" in the same directory as this script.)");
-  while (<CONFIG>) {
-    $line++;
-    next if /^#/; # Ignore comment lines
-    next if /^\s+$/; # Ignore blank lines
-    
-    if (m/^\s*(\S+)\s*=\s*(\S+)\s*/) { # Extract the key=value pair into $1 and $2
-      $config{$1} = $2;
-    } else {
-      my $syntax = chomp;
-      &backupError("Syntax error in configuration file on line $line: $syntax");
-    }
-  }
-  if ($config{'debug'} eq 'true') {
-    &backupLog(Dumper(\%config));
-  }
-  return \%config;
-}
 
 # Dumps a copy of the specified schema into a file inside the backup directory.
 sub copySchema {
@@ -163,7 +124,7 @@ sub pruneBackups {
     my $fullPath = catfile($config->{'backupRoot'},$_);
     if (stat($fullPath)->mtime < ($now - $offset)) {
       if (not -d $fullPath) {
-        &backupLog("Removing backup file $_");
+        &log("Removing backup file $_");
         unlink $fullPath; # TODO doesn't do anything for directories
       }
     }
