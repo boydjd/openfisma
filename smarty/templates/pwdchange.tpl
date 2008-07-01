@@ -30,7 +30,7 @@
 				<font color="red">{$errmsg}</font>
 			{/if}
 			{if $chgflag eq true && $errmsg eq ""}
-				<font color="green">Password changed successfully.</font>
+				<font color="green">Password Changed Successfully.</font>
 			{/if}
 		</td>
 	</tr>

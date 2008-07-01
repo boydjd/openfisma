@@ -77,9 +77,9 @@ if($act == "edit" && $edit_right) {
 	if($do == "update") {
 		$res = $dbObj->updateFinding($fid, $_POST['status']);
 		if($res)
-			$smarty->assign("msg", "Finding updated successfully");
+			$smarty->assign("msg", "Finding Updated Successfully");
 		else
-			$smarty->assign("msg", "Finding update failed");
+			$smarty->assign("msg", "Finding Update Failed");
 	}
 
 	$findingObj = $dbObj->getFindingByID($fid, true);
@@ -106,9 +106,9 @@ else if($add_right) {
 		//print_r($_POST);
 		$res = $dbObj->createFinding($_POST);
 		if($res)
-			$smarty->assign("msg", "Finding created successfully");
+			$smarty->assign("msg", "Finding Created Successfully");
 		else
-			$smarty->assign("msg", "Finding creation failed");
+			$smarty->assign("msg", "Finding Creation Failed");
 	}
 	$discovered_date = strftime("%m/%d/%Y", (mktime(0, 0, 0, date("m")  , date("d"), date("Y"))));
 

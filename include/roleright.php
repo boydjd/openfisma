@@ -93,9 +93,9 @@ function UserFunctionDefine($uid,$role_array,$right_array) {
     }
 
     if($errnum > 0)
-        $msg = "Error setting rights for User, please try again";
+        $msg = "Error Updating Permissions, Please Try Again";
     else
-        $msg = "Successfully set right for User.";
+        $msg = "Permissions Updated Successfully";
 
     return $msg;
 
@@ -274,9 +274,9 @@ function RoleFunctionDefine($rid, $post) {
 		}
 	}
 	if($errnum > 0)
-		$msg = "Error setting rights for role, please try again";
+		$msg = "Error Updating Role, Please Try Again";
 	else
-		$msg = "Successfully set right for role.";
+		$msg = "Role Successfully Updated";
 
 	return $msg;
 }
@@ -470,9 +470,9 @@ function UserSystemRoleDefine($uid, $post) {
 		}
 	}
 	if($errnum > 0)
-		$msg = "Error setting user's system, please try again";
+		$msg = "Error Updating Permissions, Please Try Again";
 	else
-		$msg = "Successfully set system for user.";
+		$msg = "Permissions Updated Successfully";
 
 	return $msg;
 }
@@ -596,9 +596,9 @@ function SystemDefine($sid, $post) {
 		}
 	}
 	if($errnum > 0)
-		$msg = "Error setting system's system group, please try again";
+		$msg = "Error Updating Information System, Please Try Again";
 	else
-		$msg = "Successfully set system group for System.";
+		$msg = "Information System Successfully Updated";
 
 	return $msg;
 }

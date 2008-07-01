@@ -634,7 +634,7 @@ Please create a password that adheres to these complexity requirements:<br>
 
 			switch($this->login_status) {
 			case 1:
-				$errmsg = "Login successful.";
+				$errmsg = "Login Successful";
 				break;
 			case 2:
 				$errmsg = "Your account is currently locked. Please Contact your System Administrator."; //"User is deactived.";
