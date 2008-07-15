@@ -18,7 +18,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php 8055 2008-02-15 21:42:54Z thomas $
+ * @version    $Id: Abstract.php 8082 2008-02-16 22:57:11Z thomas $
  */
 
 
@@ -128,7 +128,7 @@ abstract class Zend_Db_Adapter_Pdo_Abstract extends Zend_Db_Adapter_Abstract
              * @see Zend_Db_Adapter_Exception
              */
             require_once 'Zend/Db/Adapter/Exception.php';
-            throw new Zend_Db_Adapter_Exception($e->getMessage(), $e);
+            throw new Zend_Db_Adapter_Exception($e->getMessage());
         }
 
     }
@@ -261,6 +261,7 @@ abstract class Zend_Db_Adapter_Pdo_Abstract extends Zend_Db_Adapter_Abstract
      *
      * @param int $mode A PDO fetch mode.
      * @return void
+     * @throws Zend_Db_Adapter_Exception
      */
     public function setFetchMode($mode)
     {

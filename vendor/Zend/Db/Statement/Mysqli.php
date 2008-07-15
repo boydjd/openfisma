@@ -18,7 +18,7 @@
  * @subpackage Statement
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysqli.php 8055 2008-02-15 21:42:54Z thomas $
+ * @version    $Id: Mysqli.php 8064 2008-02-16 10:58:39Z thomas $
  */
 
 
@@ -95,7 +95,7 @@ class Zend_Db_Statement_Mysqli extends Zend_Db_Statement
      * @param mixed $length    OPTIONAL Length of SQL parameter.
      * @param mixed $options   OPTIONAL Other options.
      * @return bool
-     * @throws Zend_Db_Statement_Db2_Exception
+     * @throws Zend_Db_Statement_Mysqli_Exception
      */
     protected function _bindParam($parameter, &$variable, $type = null, $length = null, $options = null)
     {

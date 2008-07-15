@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,26 +17,20 @@
  * @subpackage Table
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Row.php 8064 2008-02-16 10:58:39Z thomas $
  */
 
-
 /**
- * @see Zend_Db_Table_Row_Abstract
+ * Zend_Db_Table_Exception
  */
-require_once 'Zend/Db/Table/Row/Abstract.php';
-
+require_once 'Zend/Db/Table/Exception.php';
 
 /**
- * Reference concrete class that extends Zend_Db_Table_Row_Abstract.
- * Developers may also create their own classes that extend the abstract class.
- *
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Table
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Db_Table_Row extends Zend_Db_Table_Row_Abstract
+class Zend_Db_Table_Rowset_Exception extends Zend_Db_Table_Exception
 {
 }
