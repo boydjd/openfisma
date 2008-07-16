@@ -1,0 +1,72 @@
+/* Body Stylesheet Settings */
+body{
+    font-family: Tahoma, verdana, arial, helvetica, sans-serif;
+    font-weight: normal;
+    font-size: 12px;
+    color: #cccccc;
+    background-color: #44627A;
+    margin:0;
+    padding:0;
+}
+
+/* Top Grey Header */
+div#header{
+    position:relative;
+    height:60px;
+    background-image:url('/images/title_vline.jpg');
+}
+
+/* Diagonal Lines Graphic */
+div#headbar{
+    background-image:url('/images/login_bg.jpg');
+    background-repeat: repeat-x;
+    height:42px;
+    width:100%;
+    text-align:right;
+}
+
+/* Error Messages from Login */
+p.message{
+    margin-top: 3em;
+    margin-right: 4em;
+    color:#FCB907;
+    text-align:right;
+    font-weight: bold;
+}
+
+/* Logon Banner in Center of Page */
+p#warning {
+    font-family: Tahoma,verdana,arial,helvetica,sans-serif;
+    width:40em;
+    font-size: 12px;
+    margin:0 auto;
+    padding:10px 10px 10px 10px;
+    border: 1px solid #738da0;
+    background-color: #55758c;
+}
+
+/* Sets Position of Login Fields and Buttons */
+ul#login{
+    text-align: right;
+    margin-right: 4em;
+    float: right;
+    list-style: none;
+}
+
+/* Sets length of input fields */
+ul#login input {
+    width:8em;
+}
+
+/* Sets properties for submit button */
+ul#login li.submit input {
+    margin-top: 1em;
+    width: auto;
+}
+
+/* Sets properties for bottom section of page */
+div#bottom {
+    margin-top:3em;
+    padding: 0 2em;
+    clear:both;
+}

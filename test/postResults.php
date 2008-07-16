@@ -1,8 +1,8 @@
 <?php
 /*********************************************
-http://www.reyosoft.com/openfisma/test/core/TestRunner.html?test=..%2Ftest%2FTestSuite.html&auto=on&resultsUrl=..%2FpostResults.php
+http://www.reyosoft.com/SWS-v3_1/test/core/TestRunner.html?test=..%2Ftest%2FTestSuite.html&auto=on&resultsUrl=..%2FpostResults.php
 **********************************************/
-define('MAIL_TO', 'dev@reyosoft.com');
+define('MAIL_TO', 'alixl@reyosoft.com;jimc@reyosoft.com');
 define('PROJ_NAME', 'OVMS');
 define('MAIL_FROM', 'NO_REPLY@Selenium.test');
 define('REPORT_DIR', './log');
@@ -14,8 +14,6 @@ foreach($_POST as $k=>$v){
 }
 $s .= '</table>';
 
-if (!ini_get('sendmail_path'))	{
-    echo "No mailer configed, report will log to a html file.<br />";
 	if(!is_dir(REPORT_DIR)) mkdir(REPORT_DIR);
 	$r = file_put_contents(REPORT_DIR.'/'.$title.'.html', $s);
 	if($r>0){
@@ -24,8 +22,8 @@ if (!ini_get('sendmail_path'))	{
 	else {
 	    echo "Log to file fail!";
 	}
-}
-else{
+
+if (ini_get('sendmail_path'))	{
 	$r = sendmail(PROJ_NAME.'_TEST', MAIL_FROM, 'Admin', MAIL_TO, $title, 'TEST REPORT', $s, '');
 	if($r===true){
 	    echo "Mail report OK!";
@@ -37,6 +35,7 @@ else{
 
 function sendmail ($from_name, $from_email, $to_name, $to_email, $subject, $text_message="", $html_message, $attachment="")
 {
+    $message="";
     $from = "$from_name <$from_email>";
     $to   = "$to_name <$to_email>";
     $main_boundary = "----=_NextPart_".md5(rand());

@@ -1,0 +1,27 @@
+#top {
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+}
+
+ul.loginfo {
+    padding-top:2em;
+    float:right;
+}
+
+img#logo {
+    padding: 0em;
+}
+
+/* Sets the margins and padding around the entire page */
+#container {
+    padding-top: 0.5em;
+    padding-right: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 0.5em;
+}
+
+.button_link {
+    display:inline;
+}

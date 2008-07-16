@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>OpenFISMA Custom Installation</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=<?php echo _INSTALL_CHARSET ?>" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <style type="text/css" media="all"><!-- @import url(../xoops.css); --></style>
   <link rel="stylesheet" type="text/css" media="all" href="style.css" />
 </head>

@@ -1,0 +1,124 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>fismazf-3-1</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">fismazf-3-1</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Remediation Summary</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//tr[last()]/td[@class='tdc'][last()]/b/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>2</td>
+	<td>i</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>source_id</td>
+	<td>index=2</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>type</td>
+	<td>label=(NONE) Unclassified</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>type</td>
+	<td>type</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>status</td>
+	<td>index=1</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>status</td>
+	<td>status</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>asset_owner</td>
+	<td>index=${i}</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>asset_owner</td>
+	<td>status</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>system_id</td>
+	<td>index=${i}</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>system_id</td>
+	<td>action_owner</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//table[@class='tbframe']/tbody/tr[2]/td[2]</td>
+	<td>source</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//table[@class='tbframe']/tbody/tr[2]/td[3]</td>
+	<td>system</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//table[@class='tbframe']/tbody/tr[2]/td[4]</td>
+	<td>type</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//table[@class='tbframe']/tbody/tr[2]/td[5]</td>
+	<td>status</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>source_id</td>
+	<td>${source}</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>asset_owner</td>
+	<td>${system}</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>system_id</td>
+	<td>${system}</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>type</td>
+	<td>glob:*${type}*</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>status</td>
+	<td>glob:*${status}*</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

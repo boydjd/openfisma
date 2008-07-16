@@ -1,41 +1,37 @@
-This directory is used for run Selenium test cases.
+OpenFISMA Test Cases
 
-./
-    core/            -- Selenium runtime library
-    cases/ovms/         -- Test cases sort by suites
-    log/                    -- Log the result if cannot send a email
-        ...
-    TestSuite.html        -- Index of all test cases
-    postResults.php        -- Do email or log test result
-    testDao.php          -- Database query interface
-        dbRecover.php           -- Recover Database by sql files from ../testdb/*.sql
-        dbio.php                -- a tool for import, export or empty Database from mysqlDB
-    index.html            -- Provide a directly link to run default test suite
-    README                 -- This file
+Introduction
+============
+The OpenFISMA project has two types of tests built-in: functional tests written 
+in Selenium, and unit tests written to work in PhpUnit. Both types of test are
+designed to be automated and executed frequently, while also providing interactive 
+feedback about the status of test results.
 
-Q: How to install these test?
-A: If you want to do this test, we suggest you backup you database at first. This test program will emtry the database.
-   And then please follow the step.
-   1. Copy ../conf/apache/conf.d/openfisma_test.conf file to your apache configration and according to your condition, modify parms in it. Make sure that you can access your site by root url. eg:http://localhost:8366/
-   2. Download test database bag to local, decompress to ../testdb/. eg: ../testdb/*.sql 
-   3. Open the brower and go to http://localhost:8366/test/index.html . Make sure you can see test page.
-   Click the Hyperlink "Click here to run default test suite." to start it.
+The unit tests are intended to test at a low level, ensuring that class
+implementations provide proper output on a range of possible inputs, handling 
+edge cases and outliers as specified in the design.
 
-Q: How to add a new test case?
-A: 1. Write the new test case through Selenium IDE, see http://wiki.openqa.org/display/SIDE/Recording+a+Test
-   2. Upload it to fit sub directory in cases/ovms/ with a fit name.
-   3. Update TestSuite.html, add a new line like <tr><td><a href="./cases/ovms/new_test.html">new test</a></td></tr> before </tbody> tag.
-   4. Run test with url http://somehost/test/index.html
+Functional tests operate at a higher level, ensuring that the application enables
+users to perform their required functions. Using Selenium for this level of testing
+enables testing at a very high level, simulating button clicks and text entry
+and allowing test cases to quickly verify a very broad range of functionality.
 
-Q: What if I need a prepared test data
-A: 1. A test case 'DataPrepare.html' is avaliable to do the routine work to recover backup data.
-   2. Put the test case before any ones that utilizing these data.
+Put another way, unit tests verify correctness at a development level, while
+functional tests verify correctness at a business level. Both types of test are
+equally important for creating a high-quality product.
 
+Functional Tests
+================
+Selenium test cases are stored under the test/selenium directory. These test cases
+are intended to be run from within a browser that supports JavaScript. To enable 
+these tests, you will need to make the test directory accessibly from a web browser,
+for example:
 
-Q: How to get the test result?
-A: There are two ways. 
-     First, if you have a sendmail configuration in you PHP.ini, it will auto send a email to you (modify the email address in postResults.php).
-     Second, if you don't have a sendmail configuration with your PHP.ini, it will just log the test result under directory 'log' as a html file, so please make sure this directory is writable. 
-    
-Enjoy it!
-:)
+ln -s /site/root/test /site/root/public/test
+
+You will then be able to acccess the test suite at http://yoursite.com/test. 
+
+Unit Tests
+==========
+PhpUnit test cases are stored under the test/unit directory. <TODO complete 
+information about unit tests.>

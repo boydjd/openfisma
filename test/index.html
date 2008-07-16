@@ -1,3 +1,32 @@
-<h1>This directory should be removed in the publish version!!!</h1>
-<h2>Notice: There is a hard code path "/" in each test case, please change it if your OVMS is not under the webroot of your site. Or the test cases cannot runs normally.</h2>
-<a href="core/TestRunner.html?test=..%2FTestSuite.html&auto=on&resultsUrl=..%2FpostResults.php">Click here to run default test suite.</a>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>OpenFISMA Testing</title></head>
+<body>
+
+<h1>OpenFISMA Testing</h1>
+<ul>
+<li>Introduction:
+    <ul>
+    <li>Read the <a href="./README">README</a> document for OpenFISMA testing
+    <li>OpenFISMA <a href="http://www.openfisma.org/mw/index.php?title=Requirements_Documents">requirements</a>
+    </ul>
+<li> Functional Tests:
+    <ul>
+    <li>Notice: functional tests are generally designed to be run <em>in-order</em>, and <em>will delete or modify</em> existing data.
+    <li><a href="core/TestRunner.html?test=../selenium/Install_OpenFISMA/index.html">Install_OpenFISMA</a>
+    (Exercise the installer. Will <em>delete all</em> schema data.)
+    <li><a href="core/TestRunner.html?test=../selenium/Root_Setup/index.html">Root_Setup</a>
+    (Test functionality as the root user. Creates some sample data.)
+    <li><a href="core/TestRunner.html?test=../selenium/Admin_CRUD/index.html">Admin_CRUD</a>
+    (Exercise the admin's ability to create, read, update, and delete administrative metadata. Deletes all the data that it creates.)
+    <li><a href="core/TestRunner.html?test=../selenium/Remediation_CAP_No_Denials/index.html">Remediation_CAP_No_Denials</a>
+    (An end-to-end remediation of a CAP POA&amp;M that has no denials. Deletes all the data that it creates.)
+    <li>...
+    </ul>
+<li>Unit Tests:
+    <ul>
+    <li>TODO: fill in unit tests
+    </ul>
+</ul>
+
+</body>
+</html>

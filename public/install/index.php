@@ -1,5 +1,15 @@
 <?php
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
+/**
+ * /public/install/index.php
+ *
+ * This is the controller for the OpenFISMA installer application.
+ *
+ * @author      Unknown
+ * @todo        Cleanup and assign author
+ * @copyright   (c) 2008 Endeavor Systems, Inc. (http://www.endeavorsystems.com)
+ * @license     http://www.openfisma.org/mw/index.php?title=License
+ */
+
 define("DS", DIRECTORY_SEPARATOR);
 
 define('OVMS_INSTALL', 1);
@@ -44,139 +54,77 @@ if(isset($_POST)) {
     }
 }
 
+/* This language stuff needs to be cleaned up */
 $language = 'english';
-if ( !empty($_POST['lang']) ) {
-    $language = $_POST['lang'];
-} else {
-    if (isset($_COOKIE['install_lang'])) {
-        $language = $_COOKIE['install_lang'];
-    } else {
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $accept_langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-            $language_array = array('en' => 'english', 'ja' => 'japanese', 'fr' => 'french', 'de' => 'german', 'nl' => 'dutch', 'es' => 'spanish', 'tw' => 'tchinese', 'cn' => 'schinese', 'ro' => 'romanian');
-            foreach ($accept_langs as $al) {
-                $al = strtolower($al);
-                $al_len = strlen($al);
-                if ($al_len > 2) {
-                    if (preg_match("/([a-z]{2});q=[0-9.]+$/", $al, $al_match)) {
-                        $al = $al_match[1];
-                    } else {
-                        continue;
-                    }
-                }
-                if (isset($language_array[$al])) {
-                    $language = $language_array[$al];
-                    break;
-                }
-            }
-        }
-    }
-}
-
-if ( file_exists(OVMS_INSTALL_PATH.'/language/'.$language.'/install.php') ) {
-    include_once OVMS_INSTALL_PATH."/language/".$language."/install.php";
-} elseif ( file_exists(OVMS_INSTALL_PATH.'/language/english/install.php') ) {
-    include_once OVMS_INSTALL_PATH.'/language/english/install.php';
-    $language = 'english';
-} else {
-    echo 'no language file.';
-    exit();
-}
-
 setcookie("install_lang", $language);
-if(!empty($_POST['op']))
-$op = $_POST['op'];
-elseif(!empty($_GET['op']))
-$op = $_GET['op'];
-else
-$op = '';
 
-$install_tpl = OVMS_INSTALL_PATH .'/install_frm.php';
+if(!empty($_POST['op']))
+    $op = $_POST['op'];
+elseif(!empty($_GET['op']))
+    $op = $_GET['op'];
+else
+    $op = '';
 
 switch ($op){
     case "":
-        $title = _INST_INIT_L0;
-        if (!defined('_INST_LS_L1')) {
-            define('_INST_LS_L1', 'Choose language to be used for the installation process');
-        }
-        $content = "<p>"._INST_LS_L1."</p>"
-        ."<select name='lang'>"
-        ."<option value='english'>english</option> ";
-        $content .= "</select>";
-        $b_next = array('start', _INST_INIT_L1);
-        break;
+        $title = 'OpenFISMA Introduction';
+        $content = '<table width=\'80%\' style=\'word-break:break-all;\'><tr><td align=\'left\'>
+                    OpenFISMA is an open source application designed to reduce the complexity and
+                    automate the regulatory requirements of the Federal Information Security
+                    Management Act (FISMA) and the National Institute of Science and Technology
+                    (NIST) Risk Management Framework (RMF). While many security managers are eager
+                    to demonstrate their best practices for incident response, patch management,
+                    and configuration management, they are overwhelmed with the reporting and
+                    documentation requirements of FISMA. OpenFISMA automates the following:
+                    <UL>
+                    <LI> FISMA Reporting
+                    <LI> Plan of Action and Milestones (POA&M)
+                    </UL>
 
-    case "start":
-        $title = _INST_INIT_L1;
-        $content = "<table width='80%' style=\"word-break:break-all;\"><tr><td align='left'>\n";
-        include(OVMS_INSTALL_PATH.'/language/'.$language.'/welcome.php');
-        $content .= "</td></tr></table>\n";
-        $b_next = array('settingcheck', _INST_DW_L9);
+                    <b>SOFTWARE REQUIREMENTS</b><br>
+                    <br>
+                    OpenFISMA requires the following software. The installation program will check
+                    to ensure you have the correct versions of the software required installed on
+                    your system.
+                    <UL>
+                    <LI> Apache version 2+
+                    <LI> PHP version 5+
+                    <LI> MySQL version 5+
+                    <LI> Perl 5+
+                    </UL>
+
+                    <b>ADVANCED INSTALLATION INSTRUCTIONS</b><br>
+                    <br>
+                    Refer to INSTALL file in the application directory.
+                    </td></tr></table>';
+        $b_next = array('settingcheck');
         break;
 
     case "settingcheck":
-        $title = _INST_SET_L1;
+        $title = 'Checking software versions&hellip;';
         $signal = true;
         $content = "<div style=\"text-align:left;padding-left:130px;\">";
         if(version_compare(phpversion(),REQUEST_PHP_VERSION)){
-            $content .= sprintf('<p>'._OKIMG._INST_SET_L2,phpversion());
+            $content .= '<p>'._OKIMG.'PHP version is '.phpversion().'</p>';
         }else {
-            $content .= sprintf('<p>'._NGIMG._INST_SET_L2,phpversion());
-            $content .= _INST_SET_L3;
+            $content .= '<p>'._NGIMG.'PHP version is '.phpversion().'</p>';
+            $content .= '<p>Installation of PHP 5 or higher is outside the scope of this installation tutorial.<br>
+                            Please refer to <a href="http://www.php.net">PHP site </a>for more information </p>';
             $signal = false;
         }
-        $version = '';
-        try {
-            if(!@include_once('Smarty.class.php')){
-                @include_once(OVMS_ROOT_PATH.'/vendor/smarty/Smarty.class.php');
-            }
-            $mysmarty = new Smarty();
-            $signalofsmarty = true;
-            $version = $mysmarty->_version;
-            if(version_compare($version,REQUEST_SMARTY_VERSION,"<")){
-                $signalofsmarty = false;
-                throw new Exception($mysmarty->_version);
-            }
-            if($signalofsmarty){
-                $content .= sprintf(_OKIMG._INST_SET_L4.SMARTY_DIR ,$version);
-            }
-        }catch(Exception $e){
-            $content .= sprintf(_NGIMG._INST_SET_L6 , $version);
-            $content .= _INST_SET_L8.$e->getMessage();
-            $signal = false;
-        }
-        ini_set('include_path', OVMS_LOCAL_PEAR.PATH_SEPARATOR.ini_get('include_path'));
-        try {
-            @include_once('Spreadsheet/Excel/Writer.php');
-            $myspread = new Spreadsheet_Excel_Writer();
-            $content .= "<p>"._OKIMG._INST_SET_L12."</p>";
-        }catch(Exception $e){
-            $signal = false;
-            $content .= "<p>"._NGIMG._INST_SET_L13.$e->getMessage()."</p>";
-        }
-        try {
-            @include_once('OLE.php');
-            $myole = new OLE();
-            $content .= "<p>"._OKIMG._INST_SET_L11."</p>";
-        }catch(Exception $e){
-            $signal = false;
-            $content .= "<p>"._NGIMG._INST_SET_L14.$e->getMessage()."</p>";
-        }
-        $content .= "</div>";
         if($signal){
-            $b_next = array('modcheck', _INST_DW_L9);
+            $b_next = array('modcheck');
         }else {
             $b_reload = true;
         }
         break;
 
     case "modcheck":
-        $writeok = array(0=>OVMS_SMARTY_PATH."/templates_c",
-        1=>OVMS_WEB_PATH."/temp",
-        2=>OVMS_ROOT_PATH."/log",
-        3=>OVMS_WEB_PATH."/evidence",
-        4=>OVMS_WEB_PATH."/ovms.ini.php");
-        $title = _INST_DW_L1;
+        $writeok = array( 0=>OVMS_WEB_PATH."/temp",
+        OVMS_ROOT_PATH."/log",
+        OVMS_WEB_PATH."/evidence",
+        OVMS_WEB_PATH."/ovms.ini.php");
+        $title = "Checking file and directory permissions&hellip;";
         $content = "<table align='center'><tr><td align='left'>\n";
         $error = false;
         foreach ($writeok as $wok) {
@@ -184,48 +132,54 @@ switch ($op){
                 if ( file_exists($wok) ) {
                     @chmod("../".$wok, 0666);
                     if (! is_writeable($wok)) {
-                        $content .= _NGIMG.sprintf(_INST_DW_L4,realpath($wok))."<br />";
+                        $content .= _NGIMG.'File '.realpath($wok).' is NOT writable.<br />';
                         $error = true;
                     }else{
-                        $content .= _OKIMG.sprintf(_INST_DW_L3,realpath($wok))."<br />";
+                        $content .= _OKIMG.'File '.realpath($wok).' is writable.<br />';
                     }
                 }
             } else {
                 @chmod($wok, 0777);
                 if (! is_writeable($wok)) {
-                    $content .= _NGIMG.sprintf(_INST_DW_L5,realpath($wok))."<br />";
+                    $content .= _NGIMG.'Directory '.realpath($wok).' is NOT writable.<br />';
                     $error = true;
                 }else{
-                    $content .= _OKIMG.sprintf(_INST_DW_L6, realpath($wok))."<br />";
+                    $content .= _OKIMG.'Directory '.realpath($wok).' is writable.<br />';
                 }
             }
         }
         $content .= "</td></tr></table>\n";
         if(!$error) {
-            $content .= "<p>"._INST_DW_L7."</p>";
-            $content .= "<div style=\"text-align:right;\"><input type='checkbox' name='is_second_inst' value='on' />"._INST_DW_L10."</div>";
-            $b_next = array('dbform', _INST_CI_L1 );
+            $content .= '<p>No errors detected.</p>';
+            $content .= "<div style=\"text-align:right;\"><input type='checkbox' name='is_second_inst' value='on' />Use existing Database</div>";
+            $b_next = array('dbform');
         }else{
-            $content .= "<p>"._INST_DW_L8."</p>";
+            $content .= "<p>In order for the modules included in the package to
+                            work correctly, the following files must be writeable
+                            by the server. Please change the permission setting
+                            for these files. (i.e. 'chmod 666 file_name' and
+                            'chmod 777 dir_name' on a UNIX/LINUX server, or
+                            check the properties of the file and make sure the
+                            read-only flag is not set on a Windows server)</p>";
             $b_reload = true;
         }
         break;
 
     case "dbform":
-        $title = _INST_CI_L1;
-        $b_next = array('dbconfirm',_INST_CD_L1);
+        $title = "Configure Database Settings";
+        $b_next = array('dbconfirm');
         $config = file_get_contents(OVMS_WEB_PATH . DS.'ovms.ini.php');
         $isTheFirstTime = preg_match('/OVMS_INSTALL/', $config);
         unset($config);
         $sm = new setting_manager('false');
-        if(!$isTheFirstTime){
+        if(!$isTheFirstTime) {
             @include(OVMS_WEB_PATH . DS . 'ovms.ini.php');
             $sm->readConstant();
         }
-        if(isset($_POST['is_second_inst'])&& $_POST['is_second_inst']==true ){
+        if(isset($_POST['is_second_inst'])&& $_POST['is_second_inst']==true) {
             $content .= "<input type='hidden' name='is_second' value='true' />";
             $install_times = 'second';
-            $b_next = array('dbconfirm2',_INST_CD_L1);
+            $b_next = array('dbconfirm2');
         }
         $content .= $sm->editform($install_times);
         break;
@@ -236,10 +190,8 @@ switch ($op){
     case "dbconfirm":
         if($install_times == 'second'){
             require_once(OVMS_INCLUDE_PATH . '/sws.adodb.php');
-            $title = _INST_CI_L2;
-        }else{
-            $title = _INST_CI_L1;
         }
+        $title = 'Verify database connection';
         $sm = new setting_manager('post');
         $contentoferr = '';
         $contentoferr = $sm->checkData($install_times);
@@ -248,24 +200,24 @@ switch ($op){
         }
         else{
             $content .= $sm->confirmForm('');
-            $b_next = array('dbsave',_INST_WC_L1 );
+            $b_next = array('dbsave');
         }
         if($install_times == 'second'){
             $content .= try_db_connect($sm);
         }
         if(empty($contentoferr)){
             if( $install_times == 'first') {
-                $b_next = array('dbsave',_INST_WC_L1 );
+                $b_next = array('dbsave');
             }else{
-                $b_next = array('dbsave2',_INST_WC_L1 );
+                $b_next = array('dbsave2');
             }
         }
-        $b_back = array('', _INST_CI_L1);
+        $b_back = array('');
         break;
     case "dbsave2":
         $install_times = 'second';
     case "dbsave":
-        $title = _INST_WC_L2;
+        $title = 'Saving configuration data&hellip;';
         $mm =&new mainfile_manager(OVMS_WEB_PATH.'/ovms.ini.php');
         $ret = $mm->copyDistFile(OVMS_CONF_PATH.'/mainfile.dist.php');
         if($ret){
@@ -283,14 +235,14 @@ switch ($op){
             $content .= $element.'<br />';
         }
         if($ret){
-            $content .= "<p>"._INST_WC_L4."</p>\n";
+            $content .= '<p>Configuration data has been saved successfully to ovms.ini.php.</p>';
             if($install_times == 'second') {
-                $b_next = array('complete', _INST_WC_L5);
+                $b_next = array('complete');
             }else {
-                $b_next = array('initial', _INST_WC_L5);
+                $b_next = array('initial');
             }
         }else{
-            $content .=_INST_WC_L8;
+            $content .= 'Please check the file permission and try again.';
             $b_reload = true;
         }
         break;
@@ -309,16 +261,16 @@ switch ($op){
         }
         $content .= "</table><br />\n";
         $content .= "</td></tr><tr><td align=\"center\">";
-        $content .= _INST_CMD_L2."<br /><br />\n";
+        $content .= "If the above setting is correct, press the button below to continue.<br /><br />\n";
         $content .= "</td></tr></table>\n";
-        $b_next = array('checkDB', _INST_CMD_L4);
-        $b_back = array('dbform', _INST_CMD_L3);
+        $b_next = array('checkDB');
+        $b_back = array('dbform');
         $b_reload = true;
-        $title = _INST_CMD_L1;
+        $title = 'Confirm Database Settings';
         break;
 
     case "checkDB":
-        $title = _INST_ID_L1;
+        $title = 'Initialize Database';
         include_once(OVMS_WEB_PATH. DS. 'ovms.ini.php');
         include_once(OVMS_INCLUDE_PATH. DS. 'sws.adodb.php');
         $content = "<div style=\"text-align:left;padding-left:130px;\">";
@@ -334,15 +286,18 @@ switch ($op){
             $dbname = $sm->getConfigVal('dbname');
             $name_c = $sm->getConfigVal('name_c');
             $passwd_c = $sm->getConfigVal('pass_c');
-            $stage =  sprintf(_INST_ID_L2 . "<br />", $dbname );
-            $db->Connect($sm->getConfigVal('host'),$sm->getConfigVal('uname'),$sm->getConfigVal('upass'),$dbname);
-            $db->SelectDB($sm->getConfigVal('dbname'));
+            $stage =  "Create database $dbname<br />";
+            $uname=$sm->getConfigVal('uname');
+            $upass=$sm->getConfigVal('upass');
+            $db->Connect($sm->getConfigVal('host'),$uname,$upass,$dbname);
+            $db->SelectDB($dbname);
             $content .= _OKIMG . $stage;
-            $stage = sprintf(_INST_ID_L4 . "<br />", $name_c, $dbname) ;
-            $db->query("GRANT ALL PRIVILEGES ON `$dbname` . * TO '$name_c'@'localhost'
-                    IDENTIFIED BY '$passwd_c' WITH GRANT OPTION");
-            $content .= _OKIMG . $stage;
-            $stage = _INST_ID_L5 . "<br />"  ;
+            $stage = "Create account $name_c and grant it all privilege of $dbname<br />";
+            if($uname!=$name_c){
+                $db->query("GRANT ALL PRIVILEGES ON `$dbname` . * TO '$name_c'@'localhost' IDENTIFIED BY '$passwd_c' WITH GRANT OPTION");
+                $content .= _OKIMG . $stage;
+            }
+            $stage = "Create tables.<br />"  ;
             $schema_file = OVMS_INSTALL_PATH . DS. "db". DS. OVMS_DATABASE;
             if(file_exists($schema_file)){
                 $sqlArray = explode(';', file_get_contents($schema_file) );
@@ -354,16 +309,15 @@ switch ($op){
                 }
                 $content .= _OKIMG . $stage;
             }
-            $dataFile = array(OVMS_INSTALL_PATH.DS.'db'.DS.'init_data.sql', 
-                              OVMS_INSTALL_PATH.DS.'db'.DS.'fisma_test.sql');
+            $dataFile = array(OVMS_INSTALL_PATH.DS.'db'.DS.'init_data.sql');
             if(!import_data($db,$dataFile)){
-                throw new Exception('Initializing databaase failed');
+                throw new Exception('Initializing database failed');
             }
             $content .= "</div>";
         }catch(Exception $e) {
             $content .= _NGIMG .$stage;
             $content .= "<font color='red'> ERROR: </font>".$e->getMessage();
-            $b_back=array('dbform',_INST_CI_L1);
+            $b_back=array('dbform');
             break 1;
         }
         $sm = & new setting_manager('const');
@@ -374,18 +328,25 @@ switch ($op){
                 $content .= _INST_OK_CLEAR_ROOT . $mm->report() .'<br/>';
             }
         }
-        $b_next=array('complete',_INST_OK_L2);
+        $b_next=array('complete');
         break;
 
     case "complete": //OK
-    $title =  _INST_OK_L1;
-    $content = "<table width='60%' align='center'><tr><td align='left'>\n";
-    include OVMS_INSTALL_PATH.'/language/'.$language.'/finish.php';
-    $content .= "</td></tr></table>\n";
+    $title =  'Installation is complete';
+    $content = "<table width='60%' align='center'><tr><td align='left'>
+                <u><b>Final steps</b></u>
+                <p>Make sure to remove this installation directory (/public/install) from the root of
+                your application.</p>
+                <u><b>Application site</b></u>
+                <p>Click <a href='/index.php'>HERE</a> to see the home page of your site.</p>
+                <u><b>Support</b></u>
+                <p>Visit <a href='http://www.openfisma.org/' target='_blank'>OpenFISMA.org</a></p>
+                </td></tr></table>\n";
     break;
 
     default:
+        die ('unknown installer action');
         break;
 }
-include $install_tpl;
+include(OVMS_INSTALL_PATH .'/install_frm.php');
 ?>

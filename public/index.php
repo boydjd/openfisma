@@ -1,4 +1,3 @@
-<?PHP 
-include_once('ovms.ini.php');
-require('login.php');
+<?php
+    header('Location: /zfentry.php/panel/index');
 ?>

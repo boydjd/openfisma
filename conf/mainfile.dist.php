@@ -4,7 +4,7 @@
 ** - both PHP (dblink, finding_upload) and Perl (inject_utils).
 */
 
-    define('DEPLOY_MODE', 'DBG'); //DBG, RLS
+    define('DEPLOY_MODE', 'RLS'); //DBG, RLS
     // Database
     // Choose the database to be used
     define('OVMS_DB_TYPE', 'mysql');
@@ -34,8 +34,11 @@
     //this name_c was used to connect database by new user
     define('OVMS_DB_NAME_C', '');
 
-    if(!defined('OVMS_ROOT_PATH')){
+    if(!defined('DS') ){
         define("DS", DIRECTORY_SEPARATOR);
+    }
+
+    if(!defined('OVMS_ROOT_PATH')){
         define('OVMS_ROOT_PATH', '/where/to/put/openfisma');
         define("OVMS_WEB_PATH", OVMS_ROOT_PATH. DS ."public");
         define("OVMS_WEB_TEMP", OVMS_WEB_PATH. DS ."temp");
@@ -59,5 +62,7 @@ $LOGIN_WARNING = "This is a United States Government Computer system. We encoura
 
 define("PS", PATH_SEPARATOR);
 ini_set('include_path',ini_get('include_path'). PS .OVMS_INCLUDE_PATH . PS . OVMS_LOCAL_PEAR . PS . OVMS_VENDOR_PATH);
+
+require_once(OVMS_ROOT_PATH . DS . 'conf' . DS . 'config.'.strtolower(DEPLOY_MODE).'.php');
 
 ?>

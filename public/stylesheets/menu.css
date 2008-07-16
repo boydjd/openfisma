@@ -1,0 +1,21 @@
+div#menu {
+    margin-top:1em;
+    background-color:#42637B;
+    height:2.2em;
+}
+
+#menu ul {
+    margin:0;
+    padding:0;
+    float:left;
+    width:164px;
+}
+div#menu ul ul {
+    display:none;
+    position: absolute;
+    z-index: 500;
+}
+
+div#menu li:hover ul
+{display: block;}
+

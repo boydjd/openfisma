@@ -1,337 +1,200 @@
-var xmlhttp;
+String.prototype.trim = function() {
+        return this.replace(/^\s+|\s+$/g,"");
+}
 
-function initAjax() {
-	xmlhttp = false;
+$(document).ready(function(){
 
-	try {
-		xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-	}
-	catch(e) {
-		try {
-			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		}
-		catch(e) {
-			xmlhttp = false;
-		}
-	}
+   $("a[@name=select_all]").click(function(){
+       $(":checkbox").attr( 'checked','checked' );
+   });
+   $("a[@name=select_none]").click(function(){
+       $(":checkbox").attr( 'checked','' );
+   });
 
-	if(!xmlhttp && typeof XMLHttpRequest != 'undefined') {
-		xmlhttp = new XMLHttpRequest();
-		xmlhttp.overrideMimeType('text/xml');
-	}
+   $('input.date').datepicker({dateFormat:'yymmdd',
+                showOn: 'both', 
+                buttonImageOnly: true,
+                buttonImage: '/images/calendar.gif'
+                });
+        
+
+    $("select[name='system']").change(function(){
+        searchAsset();
+    });
+
+    asset_detail();
+    
+    $("input#search_asset").click(function(){
+        searchAsset();
+    }).trigger('click');
+
+    $("input#search_product").click(function(){
+        searchProduct();
+    });
+
+    getProdId();
+
+    $("input#all_finding").click(function(){
+        $('input[@type=checkbox]').attr('checked','checked');
+    });
+
+    $("input#none_finding").click(function(){
+        $('input[@type=checkbox]').removeAttr('checked');
+    });
+
+    $(".editable").click(function(){
+        var t_name = $(this).attr('target');
+        $(this).removeClass('editable');
+        $(this).removeAttr('target');
+        if( t_name ) {
+            var target = $('#'+t_name);
+            var name = target.attr('name');
+            var type = target.attr('type');
+            var url = target.attr('href');
+            var eclass = target.attr('class');
+            var cur_val = target.text();
+            var cur_span = target;
+            if(type == 'text'){
+                cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />');
+                $('input.date').datepicker({
+                        dateFormat:'yymmdd',
+                        showOn: 'both', 
+                        buttonImageOnly: true,
+                        buttonImage: '/images/calendar.gif',
+                        buttonText: 'Calendar'});
+            }else if( type == 'textarea' ){
+                var row = target.attr('rows');
+                var col = target.attr('cols');
+                cur_span.replaceWith( '<textarea rows="'+row+'" cols="'+col+'" name="'+name+'">'+
+                        cur_val.trim()+ '</textarea>');
+            }else{
+                $.get(url,{value:cur_val.trim()},
+                function(data){
+                    if(type == 'select'){
+                        cur_span.replaceWith('<select name="'+name+'">'+data+'</select>');
+                    }
+                });
+            }
+        }
+    });
+    date = new Date();
+    $("span[name=year]").html( date.getFullYear() );
+    shortcut(0);
+
+});
+
+function shortcut(step){
+    if( !isFinite(step) ){
+        step = 0;
+    }
+    var year = $("span[name=year]").html();
+    year = Number(year) + Number(step);
+    var url = '/zfentry.php/panel/report/sub/fisma/s/search/y/'+year+'/';
+    $("span[name=year]").html( year );
+    $("span[name=year]").parent().attr( 'href', url);
+    $("span[name=q1]").parent().attr( 'href', url+'q/1/' );
+    $("span[name=q2]").parent().attr( 'href', url+'q/2/' );
+    $("span[name=q3]").parent().attr( 'href', url+'q/3/' );
+    $("span[name=q4]").parent().attr( 'href', url+'q/4/' );
+}
+
+function searchAsset( ){
+    var trigger = $("select[name='system']");
+    var sys = trigger.children("option:selected").attr('value');
+    var param =  '';
+    if( null != sys){
+        param +=  '/sid/' + sys;
+    }
+    $("input.assets").each(function(){
+        if( $(this).attr('value') ){
+            param += '/' + $(this).attr('name') + '/' + $(this).attr('value');
+        }
+    });
+    var url = trigger.attr("url") + param ;
+    $("select[name='asset_list']").parent().load(url,null,function(){
+        asset_detail();
+    });
+}
+
+function asset_detail() {
+    $("select[name='asset_list']").change(function(){
+        var url = '/zfentry.php/asset/detail/id/'+ $(this).children("option:selected").attr('value');
+        $("div#asset_info").load(url,null);
+    });
 }
 
 
-function DataSet(xmldoc, tagLabel) {
-	this.xmlObj = xmldoc.getElementsByTagName(tagLabel);
-
-	//3���
-	this.getCount = getCount;
-	this.getData = getData;
-	this.getAttribute = getAttribute;
+function upload_evidence(){
+    //$("#up_evidence").blur();
+    var dw = $(document).width();
+    var dh = $(document).height();
+    $('<div id="full"></div>')
+                .width(dw).height(dh)
+                .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
+                .appendTo("body").fadeTo(1, 0.4);
+    var content = $("#editorDIV").html();
+    $('<div title="Upload Evidence"></div>').append(content).
+        dialog({position:'top', width: 540, height: 200, resizable: true,modal:true,
+            close:function(){
+                $('#full').remove();
+            }
+        });
+    return false;
 }
 
-
-function getCount() {
-	return this.xmlObj.length;
+function comment(formname){
+    var dw = $(document).width();
+    var dh = $(document).height();
+    $('<div id="full"></div>')
+                .width(dw).height(dh)
+                .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
+                .appendTo("body").fadeTo(1, 0.4);
+    var content = $("#comment_dialog").html();
+    $('<div title="Upload Evidence"></div>').append(content).
+        dialog({position:'top', width: 540, height: 240, resizable: true,modal:true,
+            close:function(){
+                $('#full').remove();
+            },
+            buttons:{
+                'Cancel':function(){
+                    $(this).dialog("close");
+                },
+                'Continue':function(){
+                    var form1 = formname;
+                    var topic = $("input[name=topic]",this).val();
+                    var reason = $("textarea[name=reason]",this).val();
+                    form1.elements['topic'].value = topic;
+                    form1.elements['reject'].value = reason;
+                    form1.elements['decision'].value = 'DENY';
+                    form1.submit();
+                }
+            }
+        });
 }
 
-
-function getData(index, tagName) {
-	if(index >= this.count)
-		return "index overflow";
-	var node = this.xmlObj[index];
-	var str = node.getElementsByTagName(tagName)[0].firstChild.data;
-	return str;
+function getProdId(){
+    var trigger= $("select[name='prod_list']");
+    trigger.change(function(){
+        var prod_id= trigger.children("option:selected").attr('value');
+        $("input[name='prod_id']").val(prod_id);
+    });
 }
 
-
-function getAttribute(index, tagName) {
-	if(index >= this.count)
-		return "index overflow";
-	var node = this.xmlObj[index];
-	var str = node.getAttribute(tagName);
-	return str;
+function searchProduct(){
+    var trigger = $("input#search_product");
+    var url = trigger.attr('url')+= '/view/list';
+    $("input.product").each(function(){
+        if($(this).attr('value')){
+            url += '/' + $(this).attr('name') + '/' + $(this).attr('value');
+        }
+    });
+    $("select[name='prod_list']").parent().load(url,null,function(){
+        getProdId();
+    });
 }
 
-
-function showStatus(tip) {
-	document.getElementById("tip").innerHTML = tip;
+function message( msg ,model){
+    $("#msgbar").html(msg).css('font-weight','bold');
+    if( model == 'warning')  $("#msgbar").css('color','red');
+    else $("#msgbar").css('color','green');
 }
-
-
-
-var delta = 1;//0.5;
-var collection;
-
-function floaters() {
-	this.items = [];
-	this.addItem = function(id,x,y,content,flag)
-	{
-		m = '<DIV id="'+id+'" style="font-size:9pt;background-color: #345678; color:#ffffff;Z-INDEX: 10; POSITION: absolute; left:'+(typeof(x)=='string'?eval(x):x)+';top:'+(typeof(y)=='string'?eval(y):y)+'">'+content+'</DIV>';
-		document.write(m);
-		var newItem = {};
-		newItem.object = document.getElementById(id);
-		newItem.x = typeof(x)=='string'? x + " - followObj.clientWidth" : x;
-		newItem.y = y;
-		newItem.x_step = 1;
-		newItem.y_step = 1;
-		newItem.bFloat = flag;
-
-		this.items[this.items.length] = newItem;
-	}
-	
-	this.play = function()
-	{
-		collection = this.items
-		setInterval('play()', 10);
-	}
-}
-
-function play()
-{
-	for(var i = 0; i < collection.length; i++)
-	{
-		var followObj = collection[i].object;
-		var followObj_bFloat = collection[i].bFloat;
-		var followObj_x = (typeof(collection[i].x) == 'string' ? eval(collection[i].x) : collection[i].x);
-		var followObj_y = (typeof(collection[i].y) == 'string' ? eval(collection[i].y) : collection[i].y);
-		
-		if(followObj_bFloat) {
-			// �����ƶ����
-			var c_x = parseInt(followObj.style.left) + collection[i].x_step;;
-			var c_y = parseInt(followObj.style.top) + collection[i].y_step;;
-
-			if(c_x <= 0 || c_x == document.body.clientWidth - 100) {
-				collection[i].x_step = -1 * collection[i].x_step;
-			}
-			else if(c_x > document.body.clientWidth - 100) {
-				c_x = document.body.clientWidth - 101;
-			}
-
-			if(c_y <= 0 || c_y == document.body.clientHeight - 100) {
-				collection[i].y_step = -1 * collection[i].y_step;
-			}
-			else if(c_y > document.body.clientHeight - 100) {
-				c_y = document.body.clientHeight - 101;
-			}
-			//alert(c_x);
-			//alert(c_y);
-			followObj.style.left = c_x;
-			followObj.style.top = c_y;
-		}
-		else {
-			//if(followObj.offsetLeft) {
-				if(followObj.offsetLeft != (document.body.scrollLeft + followObj_x)) {
-					var dx = (document.body.scrollLeft + followObj_x - followObj.offsetLeft) * delta;
-					dx = (dx > 0 ? 1 : -1) * Math.ceil(Math.abs(dx));
-					followObj.style.left = followObj.offsetLeft + dx;
-				}
-				
-
-				if(followObj.offsetTop != (document.body.scrollTop + followObj_y)) {
-					var dy = (document.body.scrollTop + followObj_y - followObj.offsetTop) * delta;
-					dy = (dy > 0 ? 1 : -1) * Math.ceil(Math.abs(dy));
-					followObj.style.top = followObj.offsetTop + dy;
-				}
-			//}
-		}
-
-		followObj.style.display = '';
-	}
-} 
-
-
-/****************************************************************************/
-// load vulerability by key filter
-function loadVulnerList(url) {
-	initAjax();
-
-	// code for Mozilla, etc.
-	document.getElementById('vlist').innerHTML = "Loading...";
-	var needle   = document.finding.vulner_needle.value;
-	var num_rows = document.finding.NUM_VULN_ROWS.value;
-	var offset   = document.finding.vuln_offset.value;
-	if(xmlhttp) {	
-		xmlhttp.onreadystatechange = vulnerSearchChange;
-		xmlhttp.open("POST", url, true);
-		xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		var post_data = "vulner_needle=" + needle + "&NUM_VULN_ROWS=" + num_rows + "&vuln_offset=" + offset;
-		xmlhttp.send(post_data);
-	}	
-}
-
-function vulnerSearchChange() {
-	// if xmlhttp shows "loaded"
-	if(xmlhttp.readyState == 4) {
-		// if "OK"
-		if(xmlhttp.status == 200) {
-			document.getElementById('vlist').innerHTML = displayVulnerSearch(xmlhttp.responseXML);
-			//alert(displayByXML(xmlhttp.responseXML));
-		}
-		else {
-			alert("Server is busy, please try again!");
-		}
-		showStatus("");
-	}
-	else {
-		showStatus("&nbsp;Loading...&nbsp;");
-	}
-}
-
-
-function displayVulnerSearch(xmlDoc) { 
-	var vulner = new DataSet(xmlDoc, "vulner");  // tag name
-	var count = vulner.getCount();
-	
-	var msg = "";
-	
-	msg = msg + "<table border='0' align='center' width='500' cellpadding='1' cellspacing='0' class='tbframe'>";
-	if(count > 0) {
-		msg = msg + "<tr>";
-		msg = msg + "<th>&nbsp;</td>";
-		msg = msg + "<th align='left' width='100'>Vulnerability</td>";
-		msg = msg + "<th align='left' width='60'>Type</td>";
-		msg = msg + "<th align='left'>Description</td>";
-		msg = msg + "</tr>";
-	}
-	for(i=0; i<count; i++) {
-		var vseq = vulner.getAttribute(i, "vuln_seq");
-		var vtype = vulner.getAttribute(i, "vuln_type");
-		var vdesc = vulner.getData(i, "vuln_desc")
-		msg = msg + "<tr>";
-		msg = msg + "<td class='tdc'><input type='checkbox' name='vuln__"+i+"' value='"+vseq+":"+vtype+"'></td>";
-		msg = msg + "<td class='tdc' width='100'>&nbsp;"+vseq+"</td>";
-		msg = msg + "<td class='tdc' width='100'>&nbsp;"+vtype+"</td>";
-		msg = msg + "<td class='tdc'>"+vdesc+"</td>";
-		msg = msg + "</tr>";		
-	}
-	msg = msg + "</table>";
-	
-	// Display previous/next buttons if data conditions permit.
-	// If current offset is zero then no sense in offering a PREV button.
-	// If max number of rows were returned then it's highly likely that
-  // there are more where they came from.
-	if(document.finding.vuln_offset.value != 0) {
-//	  msg = msg + "<span style='cursor: pointer' onclick='return page_vulns(false);'><img src='images/button_prev.gif' border='0'></span>";
-	  msg = msg + "<input type='button' onclick='return page_vulns(false);'>";
-	  }
-	if(count == document.finding.NUM_VULN_ROWS.value) {
-//	  msg = msg + "<span style='cursor: pointer' onclick='return page_vulns(true);'><img src='images/button_next.gif' border='0'></span>";
-	  msg = msg + "<input type='button' onclick='return page_vulns(true);'>";
-	  }
-	
-	//alert(msg);
-	return msg;
-}
-
-
-/****************************************************************************/
-// display asset information
-function loadAsset(url) {
-	initAjax();
-
-	// code for Mozilla, etc.
-	//document.getElementById('vlist').innerHTML = "Loading...";
-	var needle = document.finding.asset_list.options[document.finding.asset_list.selectedIndex].value;
-	if(xmlhttp) {	
-		xmlhttp.onreadystatechange = assetLoadChange;
-		xmlhttp.open("POST", url, true);
-		xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		var post_data = "assetid_needle=" + needle;
-		xmlhttp.send(post_data);
-	}	
-}
-
-function assetLoadChange() {
-	// if xmlhttp shows "loaded"
-	if(xmlhttp.readyState == 4) {
-		// if "OK"
-		if(xmlhttp.status == 200) {
-			document.getElementById('assetarea').innerHTML = xmlhttp.responseText;
-			//fillAssetSelected(xmlhttp.responseXML);
-			//alert(displayByXML(xmlhttp.responseXML));
-		}
-		else {
-			alert("Server is busy, please try again!");
-		}
-		showStatus("");
-	}
-	else {
-		showStatus("&nbsp;Loading...&nbsp;");
-	}
-}
-
-
-
-/****************************************************************************/
-// select asset
-function loadAssetList(url) {
-	initAjax();
-
-	// code for Mozilla, etc.
-	//document.getElementById('vlist').innerHTML = "Loading...";
-	var system_id = document.finding.system.options[document.finding.system.selectedIndex].value;
-	var needle = document.finding.asset_needle.value;
-	//var network_id = document.finding.network.options[document.finding.network.selectedIndex].value;
-	//var ip = document.finding.ip.value;
-	//var port = document.finding.port.value;
-	if(xmlhttp) {	
-		xmlhttp.onreadystatechange = assetSearchChange;
-		xmlhttp.open("POST", url, true);
-		xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		//var post_data = "asset_needle=yes&system_id=" + system_id + "&network_id=" + network_id + "&ip=" + ip + "&port=" + port;
-		var post_data = "asset_needle=" + needle + "&system_id=" + system_id;
-		xmlhttp.send(post_data);
-	}	
-}
-
-function assetSearchChange() {
-	// if xmlhttp shows "loaded"
-	if(xmlhttp.readyState == 4) {
-		// if "OK"
-		if(xmlhttp.status == 200) {
-			//document.getElementById('vlist').innerHTML = displayAssetSelected(xmlhttp.responseXML);
-			fillAssetSelected(xmlhttp.responseXML);
-			//alert(xmlhttp.responseText);
-		}
-		else {
-			alert("Server is busy, please try again!");
-		}
-		showStatus("");
-	}
-	else {
-		showStatus("&nbsp;Loading...&nbsp;");
-	}
-}
-
-
-function fillAssetSelected(xmlDoc) { 
-	var asset = new DataSet(xmlDoc, "asset");  //���ĵı�ǩ��� 
-	var count = asset.getCount();
-
-	for(i=document.finding.asset_list.options.length - 1; i>=0; i--) {
-		document.finding.asset_list.options[i] = null;
-	}
-
-	if(count > 0) {
-		document.finding.asset_list.options[0] = new Option("--None--");
-		document.finding.asset_list.options[0].value = "";
-
-		for(i=0; i<count; i++) {
-			var aid = asset.getAttribute(i,"asset_id");
-			var aname = asset.getAttribute(i,"asset_name");
-
-			document.finding.asset_list.options[i+1] = new Option(aname);
-			document.finding.asset_list.options[i+1].value = aid;
-		}
-		//if(count == 1) {
-		//	loadAsset('ajaxsearch.php');
-		//}
-	}
-	else {
-		document.finding.asset_list.options[0] = new Option("--None--");
-		document.finding.asset_list.options[0].value = "";
-	}
-}
-

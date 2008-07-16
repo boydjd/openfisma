@@ -1,0 +1,10 @@
+How to migrate data from old OpenFISMA
+
+1.Install OpenFISMA on your server and make sure it works well.
+
+2.Open file /public/ovms.ini.php. Search string 'legacy_fisma' and change it to your old OpenFISMA database name. Please check out that your database account can operate old OpenFISMA database.
+
+3.Open a terminal and go to your OpenFISME web root Directory, run:php bin/migration.php.
+
+If everything is OK. Please waiting for it to the end.
+ 

@@ -1,5 +1,15 @@
 <?php
 
+define("_INST_WC_L1","");
+define("_INST_WC_L2","Saving configuration data&hellip;");
+define("_INST_WC_L3","Constant %s is assigned the value \"%s\".");
+define("_INST_WC_L4","Configuration data has been saved successfully to ovms.ini.php.");
+define("_INST_WC_L5",""); // Unnecessary
+define("_INST_WC_L6","File %s overwritten by %s.");
+define("_INST_WC_L7","Could not write to file %s.");
+define("_INST_WC_L8","Please check the file permission and try again.");
+define("_INST_WC_L9","Failed writing constant %s.");
+
 class mainfile_manager {
 
     var $path = '';
@@ -41,14 +51,18 @@ class mainfile_manager {
                 $content = preg_replace("/(define\()([\"'])(".$key.")\\2,\s*([0-9]+)\s*\)/"
                 , "define('".$key."', ".$val.")"
                 , $content);
-
                 $this->report .= _OKIMG.sprintf(_INST_WC_L3, "<b>$key</b>", $val)."<br />\n";
             }
             elseif(preg_match("/(define\()([\"'])(".$key.")\\2,\s*([\"'])(.*?)\\4\s*\)/",$content)){
                 $content = preg_replace("/(define\()([\"'])(".$key.")\\2,\s*([\"'])(.*?)\\4\s*\)/"
                 , "define('".$key."', '". str_replace( '$', '\$', addslashes( $val ) ) ."')"
-                , $content);
-                $this->report .= _OKIMG.sprintf(_INST_WC_L3, "<b>$key</b>", $val)."<br />\n";
+                , $content);        
+                if($key=='OVMS_DB_PASS'||$key=='OVMS_DB_PASS_C')
+                {
+                    $this->report .= _OKIMG.sprintf(_INST_WC_L3, "<b>$key</b>", '******')."<br />\n";
+                }else{
+                    $this->report .= _OKIMG.sprintf(_INST_WC_L3, "<b>$key</b>", $val)."<br />\n";              
+                }
             }else{
                 $this->error = true;
                 $this->report .= _NGIMG.sprintf(_INST_WC_L9, "<b>$val</b>")."<br />\n";

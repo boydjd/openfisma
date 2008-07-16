@@ -1,0 +1,194 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>create_new_asset</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">create_new_asset</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=New Finding</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create Asset</td>
+	<td></td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>1</td>
+	<td>i</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>assetname</td>
+	<td>test${i}</td>
+</tr>
+<tr>
+	<td>storeValue</td>
+	<td>//input[@name="assetname"]</td>
+	<td>asset_name</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>system_list</td>
+	<td>index=${i}</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>//select[@name="system_list"]</td>
+	<td>system</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>network_list</td>
+	<td>index=${i}</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>//select[@name="network_list"]</td>
+	<td>network</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>ip</td>
+	<td>${i}.${i}.${i}.${i}</td>
+</tr>
+<tr>
+	<td>storeValue</td>
+	<td>//input[@name="ip"]</td>
+	<td>ip</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>port</td>
+	<td>${i}</td>
+</tr>
+<tr>
+	<td>storeValue</td>
+	<td>//input[@name="port"]</td>
+	<td>port</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>prod_name</td>
+	<td>inet</td>
+</tr>
+<tr>
+	<td>storeValue</td>
+	<td>//input[@name="prod_name"]</td>
+	<td>prod_name</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>prod_vendor</td>
+	<td>GNU</td>
+</tr>
+<tr>
+	<td>storeValue</td>
+	<td>//input[@name="prod_vendor"]</td>
+	<td>prod_vendor</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>prod_version</td>
+	<td>6.02</td>
+</tr>
+<tr>
+	<td>storeValue</td>
+	<td>//input[@name="prod_version"]</td>
+	<td>prod_version</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>search_product</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForSelectOptions</td>
+	<td>prod_list</td>
+	<td>220 | inet | GNU | 6.02</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>prod_list</td>
+	<td>label=220 | inet | GNU | 6.02</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>//select[@name="prod_list"]</td>
+	<td>glob:*${prod_name}*</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>//select[@name="prod_list"]</td>
+	<td>glob:*${prod_vendor}*</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>//select[@name="prod_list"]</td>
+	<td>glob:*${prod_version}*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Create Asset successfully</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=New Finding</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>system</td>
+	<td>${system}</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name</td>
+	<td>${asset_name}</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>ip</td>
+	<td>${ip}</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>port</td>
+	<td>${port}</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>search_asset</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//select[@name='asset_list']/option[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>asset_list</td>
+	<td>test1</td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>${system}</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

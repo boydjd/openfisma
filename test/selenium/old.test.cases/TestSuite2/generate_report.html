@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>generate_report</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">generate_report</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=POA&M Report</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>system</td>
+	<td>label=(F) SBG</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>system</td>
+	<td>system</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>source</td>
+	<td>label=Bncpjqkmttpel & Wsnuesimnbbrz</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>source</td>
+	<td>source</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>type</td>
+	<td>label=Cap</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>status</td>
+	<td>label=Closed</td>
+</tr>
+<tr>
+	<td>storeSelectedLabel</td>
+	<td>status</td>
+	<td>status</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>fy</td>
+	<td>label=2006</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@class='tbframe']/tbody/tr[2]/td[1]</td>
+	<td>${system}</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

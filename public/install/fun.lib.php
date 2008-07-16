@@ -5,12 +5,10 @@ function b_back($option = null)
     if(!isset($option) || !is_array($option)) return '';
     $content = '';
     if(isset($option[0]) && $option[0] != ''){
-        $content .= "<input type='button' value='"
-            ._INST_WHOLE_2."' onclick=\"location='index.php?op="
+        $content .= "<input type='button' value='Back' onclick=\"location='index.php?op="
             .htmlspecialchars($option[0])."'\" /> ";
     }else{
-        $content .= "<input type='button' value='"
-            ._INST_WHOLE_2."' onclick=\"javascript:history.back();\" /> ";
+        $content .= "<input type='button' value='Back' onclick=\"javascript:history.back();\" /> ";
     }
     if(isset($option[1]) && $option[1] != ''){
         $content .= "<span style='font-size:85%;'><< "
@@ -19,12 +17,11 @@ function b_back($option = null)
     return $content;
 }
 
-function b_reload($option=''){
-    if(empty($option)) return '';
-	if (!defined('_INST_WHOLE_6')) {
-		define('_INST_WHOLE_6', 'Reload');
-	}
-    return  "<input type='button' value='"._INST_WHOLE_6."' onclick=\"location.reload();\" /> ";
+function b_reload($option='') {
+    $content = '';
+    if($option)
+        $content = '<input type=\'button\' value=\'Reload\' onclick=\'location.reload();\'>';
+    return $content;
 }
 
 function b_next($option=null){
@@ -37,7 +34,7 @@ function b_next($option=null){
     }
     $content .= "<input type='hidden' name='op' value='"
                 .htmlspecialchars($option[0])."' />\n";
-    $content .= "<input type='submit' name='submit' value='"._INST_WHOLE_1."' />\n";
+    $content .= "<input type='submit' name='submit' value='Next' />\n";
     return $content;
 }
 

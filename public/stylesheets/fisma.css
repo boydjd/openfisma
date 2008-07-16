@@ -1,0 +1,180 @@
+a.action {
+    text-decoration : none;
+    line-height : 2em;
+}
+
+/* Button links
+ *
+ * These links are styled to look like clickable buttons. Use this style of link
+ * when you are creating links that are not in-line with a body of text. Typically
+ * these should appear in header or footer areas, and not mid-paragraph.
+ */
+a.button {
+    display: block;
+    float: left;
+    text-decoration: none;
+    padding: 2px 5px;
+    color: #000000;
+    background-color: #cccccc;
+    border: 2px outset #cccccc;
+    margin-right: 5px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+a.button:active {
+    border-style: inset;
+}
+
+/* If you have multiple a.buttons next to each other, put them into a
+ * div.button_container and they will float next to each other.
+ */
+div.button_container {
+    /* empty for now, see pseudo class below */
+}
+
+/* This :after pseudo class puts an empty block element at the end of a
+ * div.button_container. This forces the button_container to expand vertically
+ * to enclose all floated divs inside of it.
+ */
+div.button_container:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+/* This is hack to make the div.button_container auto clear in IE.
+ * http://positioniseverything.net/easyclearing.html
+ */
+* html div.button_container {height: 1%;}
+
+ul {
+    margin:0;
+    padding:0;
+    border:0;
+    list-style:none;
+}
+
+ul.linwise li {
+  float:left;
+  margin:3px 4px;
+}
+
+ul.loginfo {
+    font: 0.8em arial, helvetica, sans-serif;
+}
+
+#menu a, #menu h2{
+    display: block;
+    margin: 0px;
+    padding: 0px;
+}
+
+#menu h2 {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #42637B #888 #42637B #bbb;
+}
+
+#menu h2 a {
+    font: bold 12px arial, helvetica, sans-serif;
+    text-align: center;
+    line-height: 1.8em;
+}
+
+#menu a {
+    font: 12px arial, helvetica, sans-serif;
+    color: white;
+    line-height:1.4em;
+    background: #42637B;
+    text-decoration: none;
+    border-bottom:1px solid gray;
+}
+
+#menu ul ul a{
+    background: #42637B url(/images/plus.gif) no-repeat 0.6em ;
+    border-bottom:1px solid gray;
+    padding:1px 1em 0px 1.8em;
+}
+#menu ul ul a:hover {
+    color: #42637B;
+    background: #FFFFB5 url(/images/arrow.gif) no-repeat 0.6em ;
+    padding:1px 1em 0em 1.8em;
+}
+
+ul.stitle li{
+    float:left;
+    background-color:#dfe5ed;
+}
+
+/* Start Division Seperator Property for OpenFISMA */
+div.barleft p {
+    background-color: #dfe5ed;
+    color: #42617B;
+    height: 24px;
+    line-height: 24px;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+div.barleft{
+    background-image: url(/images/left_circle.gif); 
+    background-repeat: no-repeat;
+    background-position: left;
+    padding-left: 12px;
+}
+
+div.barright {
+    background-image: url(/images/right_circle.gif);
+    background-repeat: no-repeat;
+    background-position: right;
+    padding-right: 12px;
+}
+/* End Division Seperator Properties for OpenFISMA */
+
+#bottom table{
+    font-family: 'Verdana','Arial','Helvetica';
+    color: #000000;
+    height: 23px;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+#msgbar {
+    line-height: 2.5em;
+    padding: 0.5em 1em;
+}
+
+div#maskDIV{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #AAAAAA;
+    z-index: 10;
+}
+
+div#editorDIV{
+    position: absolute;
+    top:2100px;
+    left:300px;
+    right:300px;
+    bottom:100px;
+    background-color: #99FFCC;
+    border:1px solid #99FFCC;
+    z-index: 20;
+}
+
+.editable {
+    background:url(/images/button_modify.png) no-repeat center right;
+    padding-right:20px;
+    margin-right:10px;
+    cursor:pointer;
+}
+
+img {
+    border:0;
+}

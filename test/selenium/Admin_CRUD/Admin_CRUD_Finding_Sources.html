@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>Admin_CRUD_Finding_Sources</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Admin_CRUD_Finding_Sources</td></tr>
+</thead><tbody>
+<!--Create-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Finding Sources</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>add_finding_source</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>source_name</td>
+	<td>Test Finding Source</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>source_nickname</td>
+	<td>TFS</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>source_desc</td>
+	<td>Description for Test Finding Source</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!--Read-->
+<tr>
+	<td>clickAndWait</td>
+	<td>finding_source_list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Test Finding Source</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>TFS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Description for Finding Source A</td>
+	<td>Description for Test Finding Source</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='detail']/table[2]/tbody/tr[5]/td[5]/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Test Finding Source</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>TFS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td> Description for Test Finding Source</td>
+	<td></td>
+</tr>
+<!--Update-->
+<tr>
+	<td>clickAndWait</td>
+	<td>finding_source_list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='detail']/table[2]/tbody/tr[5]/td[4]/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>source_name</td>
+	<td>Updated Test Finding Source</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>source_nickname</td>
+	<td>UTFS</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>source_desc</td>
+	<td>Updated Description for Test Finding Source</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Update']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Updated Test Finding Source</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>UTFS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Updated Description for Test Finding Source</td>
+	<td></td>
+</tr>
+<!--Delete-->
+<tr>
+	<td>clickAndWait</td>
+	<td>finding_source_list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='detail']/table[2]/tbody/tr[5]/td[6]/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Are you sure that you want to delete this finding source?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Test Finding Source</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

@@ -6,8 +6,8 @@
 #
 
 PROJECT = OpenFISMA
-CODE = O
-VERSION =1.2
+CODE = S
+VERSION =2.0
 
 TAR = tar
 DOXYGEN = doxygen
@@ -17,14 +17,15 @@ NAME = $(PROJECT)-$(CODE)-$(VERSION)
 ROOT = $(WKDIR)
 
 src = $(NAME)/public     \
-      $(NAME)/include    \
-      $(NAME)/lib        \
       $(NAME)/log        \
       $(NAME)/vendor     \
+      $(NAME)/apps       \
       $(NAME)/conf       \
-      $(NAME)/smarty     \
-      $(NAME)/inject     \
-      $(NAME)/index.html
+      $(NAME)/paths.php  \
+      $(NAME)/bin        \
+      $(NAME)/include    \
+      $(NAME)/index.html \
+      $(NAME)/INSTALL
 
 dev = $(NAME)/test       \
       $(NAME)/DEVELOP    \

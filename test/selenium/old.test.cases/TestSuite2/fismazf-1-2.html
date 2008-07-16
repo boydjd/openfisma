@@ -1,0 +1,99 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>fismazf-1-2</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">fismazf-1-2</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/zfentry.php/panel/dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//ul[@class='loginfo']/li[1]/b</td>
+	<td>user</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//table[@class='tipframe']//ul/li[1]/b[1]</td>
+	<td>count_open</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//table[@class='tipframe']//ul/li[2]/b[1]</td>
+	<td>count_en</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//table[@class='tipframe']//ul/li[3]/b[1]</td>
+	<td>count_od</td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/zfentry.php/test/dosql</td>
+	<td></td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>and system_id IN (select distinct system_id from user_systems)</td>
+	<td>systems</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>sql</td>
+	<td>select count(*) from poams where status ='OPEN' ${systems}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[1]/tbody/tr[2]/td[1]</td>
+	<td>${count_open}</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>sql</td>
+	<td>select count(*) from poams where status ='EN' and action_est_date &gt; NOW() ${systems}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[1]/tbody/tr[2]/td[1]</td>
+	<td>${count_en}</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>sql</td>
+	<td>select count(*) from poams where status ='EN' and action_est_date &lt;= NOW() ${systems}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[1]/tbody/tr[2]/td[1]</td>
+	<td>${count_od}</td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/zfentry.php/panel/dashboard</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
