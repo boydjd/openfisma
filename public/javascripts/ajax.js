@@ -182,7 +182,7 @@ function getProdId(){
 
 function searchProduct(){
     var trigger = $("input#search_product");
-    var url = trigger.attr('url')+= '/view/list';
+    var url = trigger.attr('url') + '/view/list';
     $("input.product").each(function(){
         if($(this).attr('value')){
             url += '/' + $(this).attr('name') + '/' + $(this).attr('value');
