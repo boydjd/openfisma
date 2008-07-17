@@ -31,6 +31,7 @@ class AppDetective implements ScanResult
             if(substr($k,0,21) == 'root_detail_risklevel' && !empty($v)){
                 foreach($v[0]['data'] as $vv){
                     if(!empty($vv)){
+                        $risk[]         = $vv['risk'];
                         $finding_data[] = $vv['details'][0]['vulnDetail'];
                         $vuln_desc[] = $vv['description'].$vv['summary'];
                         $vuln_solution[] = $vv['fix'];
@@ -53,7 +54,7 @@ class AppDetective implements ScanResult
                                         'supplement'=>''),
                          'poam'=>array('discover_ts'=>$discover_ts,'status'=>'NEW',
                                         'finding_data'=>$finding_data),
-                         'vulnerabilities'=>array('description'=>$vuln_desc,'sbv'=>$sbv,
+                         'vulnerabilities'=>array('description'=>$vuln_desc,'sbv'=>$sbv,'severity'=>$risk,
                                                   'solution'=>$vuln_solution,'cve'=>$cve));
         return $unified;
     }
