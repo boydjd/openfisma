@@ -404,16 +404,21 @@ class FindingController extends PoamBaseController
                         }
                     }
                     if('vulnerabilities' == $k && !empty($v)){
+                        $severity_int = array('Low'=>20,'Medium'=>'55','High'=>85,'Default'=>50);
                         foreach($v['description'] as $i=>$row){
                             if(!empty($row)){
                                 $qry = $db->select()->from('vulnerabilities', array('id'=>'seq'));
                                 if(!empty($v['cve'][$i])){
                                     $vuln_data['type'] = 'CVE';
-                                    $qry->where('type = ?','CVE');
+                                    $vuln_data['severity'] = $severity_int[$v['severity'][$i]];
+                                    $qry->where('type = ?','CVE')
+                                        ->where('severity = ?',$severity_int[$v['severity'][$i]]);
                                 }else{
                                     if(!empty($v['sbv'][$i])){
                                         $vuln_data['type'] = 'APP';
-                                        $qry->where('type = ?','APP');
+                                        $vuln_data['severity'] = $severity_int[$v['severity'][$i]];
+                                        $qry->where('type = ?','APP')
+                                            ->where('severity = ?',$severity_int[$v['severity'][$i]]);
                                     }
                                 }
                                 $qry->where('description = ?',$row)
