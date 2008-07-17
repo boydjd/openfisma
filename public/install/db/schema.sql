@@ -21,7 +21,8 @@ CREATE TABLE `assets` (
   `network_id` int(10) unsigned NOT NULL default '0',
   `address_ip` varchar(23) default NULL,
   `address_port` int(10) unsigned default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `network_id` (`network_id`,`address_ip`,`address_port`)
 ); 
 
 CREATE TABLE `audit_logs` (
@@ -93,6 +94,14 @@ CREATE TABLE `networks` (
   `desc` text,
   PRIMARY KEY  (`id`)
 ); 
+
+CREATE TABLE `plugins` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL default '',
+  `classname` varchar(12) NOT NULL default '',
+  `desc` text,
+  PRIMARY KEY  (`id`)
+);
 
 CREATE TABLE `poams` (
   `id` int(10) unsigned NOT NULL auto_increment,

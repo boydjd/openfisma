@@ -23,7 +23,8 @@
         echo '<ul>';
         if(isAllow('finding','create')) {
             echo "\n",'<li><a href="/zfentry.php/panel/finding/sub/create">New Finding</a>
-                <li><a href="/zfentry.php/finding/injection">Spreadsheet Upload</a>';
+                <li><a href="/zfentry.php/finding/injection">Spreadsheet Upload</a>
+                <li><a href="/zfentry.php/finding/import">Upload Scan Results</a>';
         }
         echo '</ul></ul>';
     }

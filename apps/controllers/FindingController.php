@@ -12,9 +12,9 @@
 
 require_once(CONTROLLERS . DS . 'PoamBaseController.php');
 require_once(MODELS . DS . 'finding.php');
-require_once MODELS . DS . 'asset.php';
-require_once MODELS . DS . 'source.php';
-require_once MODELS . DS . 'poam.php';
+require_once(MODELS . DS . 'asset.php');
+require_once(MODELS . DS . 'product.php');
+require_once(MODELS . DS . 'plugin.php');
 require_once('Pager.php');
 define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls"); 
 
@@ -312,6 +312,142 @@ class FindingController extends PoamBaseController
         $this->view->networks = $src->getList('nickname');
         $src = new Source();
         $this->view->sources = $src->getList('nickname');
+        $this->render();
+    }
+
+    public function importAction()
+    {
+        $this->_helper->actionStack('header','Panel');
+        $req = $this->getRequest();
+        $db = $this->_poam->getAdapter();
+        $plugin = new Plugin();
+        $plugin_list = $plugin->getList('name');
+        $this->view->assign('plugin_list',$plugin_list);
+        $this->view->assign('system_list',$this->_system_list);
+        $this->view->assign('network_list',$this->_network_list);
+        $this->view->assign('source_list',$this->_source_list);
+        $msg = '';
+        if(isset($_FILES['upload_file'])){
+            $plugin_id = $req->getParam('plugin');
+            $ret = $plugin->find($plugin_id);
+            if(!empty($ret)){
+                $result = $ret->toArray();
+                $plugin_class = $result[0]['classname'];
+            }else{
+                $this->message('post plugin is not finded',self::M_NOTICE);
+                $this->render();
+                return;
+            }
+            if($_FILES['upload_file']['type'] != 'text/xml'){
+                $this->message('It is not xml file',self::M_NOTICE);
+                $this->render();
+                return;
+            }
+            require_once( CONTROLLERS . DS . 'components' . DS . 'import' . DS . 'interface.php');
+            require_once( CONTROLLERS . DS . 'components' . DS . 'import' . DS . $plugin_class.'.php');
+            require_once('parseXml.class.php');
+            $assets['system_id'] = $req->getParam('system');
+            $assets['source_id'] = $req->getParam('source');
+            $assets['network_id'] = $req->getParam('network');
+            $tmpfile = $_FILES['upload_file']['tmp_name'];
+            $ret = null;
+            $parser = new $plugin_class();
+            if( $parser->isValid($tmpfile) ) {
+                $xmlObj    = new XmlToArray(file_get_contents($tmpfile)); 
+                $xmlData = $xmlObj->createArray();
+                $unified_data = $parser->parse($xmlData);
+                foreach($unified_data as $k=>$v){
+                    if('product' == $k && !empty($v['meta'])){
+                        $product = new product();
+                        $qry = $product->select()->from('products',array('id'=>'id'))
+                                        ->where('meta = ?',$v['meta'])
+                                        ->where('vendor = ?',$v['vendor'])
+                                        ->where('version = ?',$v['version']);
+                        $ret = $db->fetchRow($qry);
+                        if(!empty($ret)){
+                            $prod_id = $ret['id'];
+                        }else{
+                            $prod_id = $product->insert($v);
+                        }
+                    }
+                    if('asset' == $k && !empty($v['name'])){
+                        $asset = new asset();
+                        $v['prod_id'] = isset($prod_id)?$prod_id:'';
+                        $v['system_id'] = $assets['system_id'];
+                        $v['network_id'] = $assets['network_id'];
+                        $v['create_ts'] = self::$now->toString('Y-m-d H:i:s');
+                        $qry = $asset->select()->from('assets',array('id'=>'id'))
+                                      ->where('prod_id = ?',$v['prod_id'])
+                                      ->where('name = ?',$v['name']);
+                        $ret = $db->fetchRow($qry);
+                        if(!empty($ret['id'])){
+                            $asset_id = $ret['id'];
+                        }else{
+                            $asset_id = $asset->insert($v);
+                        }
+                    }
+                    if('blscr' == $k && !empty($v['code'])){
+                        $blscr = new blscr();
+                        $blscr_id = $blscr->insert($v);
+                    }
+                    if('poam' == $k){
+                        foreach($v['finding_data'] as $row){
+                            if(!empty($row)){
+                                $data = array('asset_id'=>$asset_id,'source_id'=>$assets['source_id'],
+                                              'system_id'=>$assets['system_id'],
+                                              'blscr_id'=>isset($blscr_id)?$blscr_id:'',
+                                              'create_ts'=>self::$now->toString('Y-m-d H:i:s'),
+                                              'discover_ts'=>$v['discover_ts'],'created_by'=>$this->me->id,
+                                              'status'=>'NEW','finding_data'=>$row);
+                                $poam_id[] = $this->_poam->insert($data);
+                            }
+                        }
+                    }
+                    if('vulnerabilities' == $k && !empty($v)){
+                        foreach($v['description'] as $i=>$row){
+                            if(!empty($row)){
+                                $qry = $db->select()->from('vulnerabilities', array('id'=>'seq'));
+                                if(!empty($v['cve'][$i])){
+                                    $vuln_data['type'] = 'CVE';
+                                    $qry->where('type = ?','CVE');
+                                }else{
+                                    if(!empty($v['sbv'][$i])){
+                                        $vuln_data['type'] = 'APP';
+                                        $qry->where('type = ?','APP');
+                                    }
+                                }
+                                $qry->where('description = ?',$row)
+                                    ->where('solution = ?',$v['solution'][$i]);
+                                $ret = $db->fetchRow($qry);
+                                if(!empty($ret)){
+                                    $vuln_id[] = $ret['id'];
+                                }else{
+                                    $vuln_data['description'] = $row;
+                                    $vuln_data['solution'] = $v['solution'][$i];
+                                    $db->insert('vulnerabilities',$vuln_data);
+                                    unset($vuln_data);
+                                    $vuln_id[] = $db->LastInsertId();
+                                }
+                            }
+                        }
+                    }
+                }
+                foreach($poam_id as $i=>$id){
+                    $data = array('poam_id'=>$id,'vuln_seq'=>$vuln_id[$i],'vuln_type'=>'APP');
+                    $db->insert('poam_vulns',$data);
+                }
+                foreach($unified_data['vulnerabilities']['cve'] as $i=>$v){
+                    if(!empty($v)){
+                        $poam_vulns = array('poam_id'=>$poam_id[$i],'vuln_seq'=>$v,'vuln_type'=>'CVE');
+                        $db->insert('poam_vulns',$poam_vulns);
+                    }
+                }
+                $msg = "Injection complete.";
+            }else{
+                $msg = 'Upload file is not valid';
+            }
+        }
+        $this->message($msg,self::M_NOTICE);
         $this->render();
     }
 }

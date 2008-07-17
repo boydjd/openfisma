@@ -546,6 +546,4 @@ class poam extends Zend_Db_Table
         $result = $db->fetchRow($query);
         return $result['num_poams'];
     }
-
 }
-?>
