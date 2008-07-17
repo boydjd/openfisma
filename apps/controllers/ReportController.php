@@ -415,7 +415,6 @@ class ReportController extends PoamBaseController
         $sid = $this->_req->getParam('system_id');
         $this->view->assign('system_list',$this->_system_list);
         if( !empty($sid) ) {
-            $this->_helper->layout->setLayout('rafs');
             $query = $this->_poam->select()->from($this->_poam,array('id') )
                            ->where('system_id=?',$sid)
                            ->where('threat_level IS NOT NULL AND threat_level != \'NONE\'')
