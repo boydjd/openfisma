@@ -241,7 +241,6 @@ INSERT INTO `role_functions` (`role_id`, `function_id`) VALUES
 (15,10),
 (15,12),
 (15,14),
-(15,15),
 (15,16),
 (15,17),
 (15,18),
