@@ -23,13 +23,13 @@ function delok(entryname)
     <th>Availability</th>
     <th>Type</th>
     <?php if(isAllow('admin_systems','update')){
-              echo'<th>Edit</td>';
+              echo'<th>Edit</th>';
           } 
           if(isAllow('admin_systems','read')){
-              echo'<th>View</td>';
+              echo'<th>View</th>';
           }
           if(isAllow('admin_systems','delete')){
-              echo'<th>Del</td>';
+              echo'<th>Del</th>';
           }
     ?>
 </tr>
@@ -43,17 +43,17 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $system['availability'];?></td>
     <td class="tdc">&nbsp;<?php echo $system['type'];?></td>
     <?php if(isAllow('admin_systems','update')){ ?>
-    <td class="thc" align="center">
+    <td class="tdc" align="center">
         <a href="/zfentry.php/panel/system/sub/view/v/edit/id/<?php echo $system['id'];?>" title="edit the Systems">
         <img src="/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_systems','read')){ ?>
-    <td class="thc" align="center">
+    <td class="tdc" align="center">
         <a href="/zfentry.php/panel/system/sub/view/id/<?php echo $system['id'];?>" title="display the Systems">
         <img src="/images/view.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_systems','delete')){ ?>
-    <td class="thc" align="center">
+    <td class="tdc" align="center">
         <a href="/zfentry.php/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('Systems');">
         <img src="/images/del.png" border="0"></a>
     </td>

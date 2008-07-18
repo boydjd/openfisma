@@ -19,13 +19,13 @@ function delok(entryname)
     <th>Vendor</th>
     <th>Version</th>
     <?php if(isAllow('admin_products','update')){
-              echo'<th>Edit</td>';
+              echo'<th>Edit</th>';
           } 
           if(isAllow('admin_products','read')){
-              echo'<th>View</td>';
+              echo'<th>View</th>';
           }
           if(isAllow('admin_products','delete')){
-              echo'<th>Del</td>';
+              echo'<th>Del</th>';
           }
     ?>
 </tr>
@@ -35,17 +35,17 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $product['vendor'];?></td>
     <td class="tdc">&nbsp;<?php echo $product['version'];?></td>
     <?php if(isAllow('admin_products','update')){ ?>
-    <td class="thc" align="center">
+    <td class="tdc" align="center">
         <a href="/zfentry.php/panel/product/sub/view/v/edit/id/<?php echo $product['id'];?>" title="edit the Products">
         <img src="/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_products','read')){ ?>
-    <td class="thc" align="center">
+    <td class="tdc" align="center">
         <a href="/zfentry.php/panel/product/sub/view/id/<?php echo $product['id'];?>" title="display the Products">
         <img src="/images/view.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_products','delete')){ ?>
-    <td class="thc" align="center">
+    <td class="tdc" align="center">
         <a href="/zfentry.php/panel/product/sub/delete/id/<?php echo $product['id'];?>" title="delete the Products, then no restore after deleted" onclick="return delok('Products');">
         <img src="/images/del.png" border="0"></a>
     </td>

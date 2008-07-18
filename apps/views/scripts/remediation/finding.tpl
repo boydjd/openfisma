@@ -6,12 +6,12 @@
 </div>
 
 <!-- FINDING DETAIL TABLE -->
-<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%">
+<table align="center" class="tipframe">
     <!-- finding and asset row -->
     <tr>
         <!-- finding information -->
         <td width="50%" valign="top"><!-- FINDING TABLE -->
-            <table border="0" cellpadding="5" cellspacing="1" class="tipframe" >
+            <table cellpadding="5" width="100%" class="tbframe">
                 <th align="left" colspan="2">Finding Information</th>
                 <tr>
                     <td><b>POAM ID:&nbsp;</b><?php echo $this->poam['id'];?></td>
@@ -52,7 +52,7 @@
         </td>
         <!-- asset information -->
         <td width="50%" valign="top"><!-- ASSET TABLE -->
-            <table border="0" cellpadding="5" cellspacing="1" class="tipframe" width="100%">
+            <table cellpadding="5" width="100%" class="tbframe">
                 <th align="left" colspan="2">Asset Information</th>
                 <tr>
                     <td><b>Asset Owner:&nbsp;</b> <?php echo $this->system_list[$this->poam['asset_owner']];?></td>
