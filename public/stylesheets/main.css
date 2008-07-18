@@ -93,3 +93,14 @@ td {
 .tipframe th {
 	height: auto;
 }
+
+.thc {
+    font-family: 'Verdana', 'Arial', 'Helvetica';
+    color: #44637A;
+    height: 23px;
+    font-weight: bold;
+    font-size: 12px;
+    background-color: #E3E3E3;
+    border-left: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+}
