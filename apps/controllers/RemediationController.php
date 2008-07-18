@@ -293,6 +293,10 @@ class RemediationController extends PoamBaseController
                 }
                 if( $k == 'action_status' && $v == 'APPROVED'){
                     $poam['status'] = 'EN';
+                } elseif ($k == 'action_status' && $v == 'DENIED') {
+                    // If the SSO denies, then put back into OPEN status to make the POAM
+                    // editable again.
+                    $poam['status'] = 'OPEN';
                 }
                 ///@todo SSO can only approve the action after all the required info provided
                 $log_content .= "\n$k:$v";

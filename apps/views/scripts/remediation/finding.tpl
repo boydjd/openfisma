@@ -39,7 +39,8 @@
                 <tr>
                     <td>
                         <b target="action_owner" <?php
-        if(isAllow('remediation','update_finding_assignment')){
+        if(in_array( $this->poam['status'],array('NEW','OPEN'))
+            && isAllow('remediation','update_finding_assignment')){
             echo ' class="editable"';
      }?> >Responsible System:&nbsp;</b>
                         <span name="poam[system_id]" id="action_owner" type="select" 
@@ -108,7 +109,8 @@
 <?php } ?>
 <table cellpadding="5" width="100%" class="tipframe">
     <th align='left' ><span target='recommendation' <?php 
-                if(isAllow('remediation','update_finding_recommendation')) {
+                if (in_array( $this->poam['status'],array('NEW','OPEN'))
+                  && isAllow('remediation','update_finding_recommendation')) {
                     echo 'class="editable"';
                 }
             ?> colspan='2'>Recommendation</span></th>

@@ -38,7 +38,8 @@
             <table width="100%" cellpadding="5" class="tipframe">
                 <th align="left">
                 <span target="action_resources" <?php
-        if(isAllow('remediation','update_finding_resources')){
+        if(in_array($this->poam['status'],array('NEW','OPEN'))
+           && isAllow('remediation','update_finding_resources')){
             echo 'class="editable"';
         } ?> >Resources Required for Course of Action</span></th>
                 <tr>

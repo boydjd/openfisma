@@ -65,20 +65,26 @@
 <p><b>Risk Analysis</b><span></span></p>
 </div>
 </div>
+<?
+if (isAllow('report','generate_system_rafs')) {
+?>
             <table class="tipframe">
                 <tr>
                 <th align="left" > Risk Analysis Form </th>
                 </tr>
                 <tr>
                     <td >
-                        Based on the guidance provided by NIST Special Publication 800-37, to derive an overall likelihood rating that indicates the probability that a potential vulnerability may be exercised, we must first define the threat-source motivation and capability while considering the nature of the vulnerability and the existence and effectiveness of current controls or countermeasures. The following two sections on Threat Information and Countermeasure Information will help us define the iformation required to generate a threat likelihood risk level which will be used to generate the overall risk level of this vulnerability as it pertains to your information system.
+                        Based on the guidance provided by NIST Special Publication 800-37, to derive an overall likelihood rating that indicates the probability that a potential vulnerability may be exercised, we must first define the threat-source motivation and capability while considering the nature of the vulnerability and the existence and effectiveness of current controls or countermeasures. The following two sections on Threat Information and Countermeasure Information will help us define the information required to generate a threat likelihood risk level which will be used to generate the overall risk level of this vulnerability as it pertains to your information system.
                     </td>
                 </tr>
                 <tr><td>
         <?php 
-            if( isAllow('remediation','generate_raf') &&
-                $this->poam['threat_level'] != 'NONE' && 
-                $this->poam['cmeasure_effectiveness'] != 'NONE' ){ 
+            if( $this->poam['threat_source'] != '' &&
+                $this->poam['threat_level'] != 'NONE' &&
+                $this->poam['threat_justification'] != '' &&
+                $this->poam['cmeasure'] != '' &&
+                $this->poam['cmeasure_effectiveness'] != 'NONE' &&
+                $this->poam['cmeasure_justification'] != '' ){
         ?>
                 <ul class='linwise' >
                     <li> 
@@ -98,6 +104,9 @@
             </td>
                 </tr>
             </table>
+<?
+}
+?>
 
             <!-- THREATS TABLE -->
             <table cellpadding="5" cellspacing="1" class="tipframe" >
@@ -113,7 +122,7 @@
                              && isAllow('remediation','update_threat')){ 
                             echo ' class="editable"';
                         } ?> >Level:&nbsp;</b>
-                    <span id ="threat" type="select" name="poam[threat_level]" 
+                    <br><span id ="threat" type="select" name="poam[threat_level]"
                             href="/zfentry.php/metainfo/list/o/threat_level/format/html/">
                         <?php echo $this->poam['threat_level']; ?>
                      </span>
@@ -126,7 +135,7 @@
                              && isAllow('remediation','update_threat')){ 
                             echo 'class="editable"';
                         } ?> >Source:&nbsp;</b>
-                     <span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160"> 
+                     <br><span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
                      <?php echo nl2br($this->poam['threat_source']); ?>
                      </span>
                      </td>
@@ -138,7 +147,7 @@
                             && isAllow('remediation','update_threat')){ 
                            echo 'class="editable"';
                        }?> >Justification:&nbsp;</b>
-                    <span type="textarea" id="justification" name="poam[threat_justification]" rows="5" cols="160">
+                    <br><span type="textarea" id="justification" name="poam[threat_justification]" rows="5" cols="160">
                     <?php echo nl2br($this->poam['threat_justification']); ?>
                     </span>
                     </td>
@@ -160,7 +169,7 @@
                                     && isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 }?> >Effectiveness:&nbsp;</b>
-                            <span type="select" name="poam[cmeasure_effectiveness]"
+                            <br><span type="select" name="poam[cmeasure_effectiveness]"
                             id="effectiveness" href="/zfentry.php/metainfo/list/o/cmeasure_effectiveness/format/html/">
                             <?php echo $this->poam['cmeasure_effectiveness']; ?>
                             </span>
@@ -173,7 +182,7 @@
                                  && isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 } ?> >Countermeasure:&nbsp;</b>
-                            <span type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
+                            <br><span type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
                             <?php echo nl2br($this->poam['cmeasure']); ?>
                             </span>
                         </td>
@@ -186,7 +195,7 @@
                                     echo 'class="editable"';
                                 }
                             ?> >Justification:&nbsp;</b>
-                            <span id="cm_justification" type="textarea" name="poam[cmeasure_justification]" rows="5" cols="160">
+                            <br><span id="cm_justification" type="textarea" name="poam[cmeasure_justification]" rows="5" cols="160">
                             <?php echo nl2br($this->poam['cmeasure_justification']); ?>
                             </span>
                         </td>
