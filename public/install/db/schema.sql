@@ -286,4 +286,4 @@ CREATE TABLE `configurations` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
-)
+);
