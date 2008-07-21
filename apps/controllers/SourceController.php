@@ -90,10 +90,12 @@ class SourceController extends SecurityController
             $res = $this->_source->insert($data);
             if(!$res){
                 $msg = "Error Create Source";
+                $model = self::M_WARNING;
             } else {
                 $msg = "Successfully Create a Source.";
+                $model = self::M_NOTICE;
             }
-            $this->message($msg,self::M_NOTICE);
+            $this->message($msg,$model);
         }
         $this->render();
     }
@@ -111,11 +113,13 @@ class SourceController extends SecurityController
             $res = $this->_source->delete('id = '.$id);
             if(!$res){
                 $msg = "Error for Delete Source";
+                $model = self::M_WARNING;
             } else {
                 $msg = "Successfully Delete a Source.";
+                $model = self::M_NOTICE;
             }
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('list');
     }
 
@@ -150,10 +154,12 @@ class SourceController extends SecurityController
         $res = $this->_source->update($data,'id = '.$id);
         if(!$res){
             $msg = "Edit Source Failed";
+            $model = self::M_WARNING;
         } else {
             $msg = "Successfully Edit Source.";
+            $model = self::M_NOTICE;
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('view',null,'id = '.$id);
     }
 

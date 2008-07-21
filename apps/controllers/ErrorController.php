@@ -42,6 +42,7 @@ class ErrorController extends Zend_Controller_Action
         }
         $this->getResponse()->clearBody();
         $this->view->content = $content . '<p>' . $errors->exception->getMessage().'</p>';
+        $this->_helper->actionStack('header','panel');
         $this->render();
     }
 }

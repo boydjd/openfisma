@@ -119,26 +119,31 @@ class UserController extends SecurityController
             $history_pass = $res[0]['history_password'];
             if($pwds['new'] != $pwds['confirm']){
                 $msg = 'the new password does not match the confirm password, please try again.';
+                $model = self::M_WARNING;
             }else{
                 if($oldpass != $password){
                     $msg = 'The old password supplied does not match what we have on file, please try again.';
+                    $model = self::M_WARNING;
                 }else{
                     if(!$this->checkPassword($pwds['new'],2)){
-                        /*$msg = 'This password does not meet the password complexity requirements.<br>
+                        $msg = 'This password does not meet the password complexity requirements.<br>
 Please create a password that adheres to these complexity requirements:<br>
 --The password must be at least 8 character long<br>
 --The password must contain at least 1 lower case letter (a-z), 1 upper case letter (A-Z), and 1 digit (0-9)<br>
 --The password can also contain National Characters if desired (Non-Alphanumeric, !,@,#,$,% etc.)<br>
 --The password cannot be the same as your last 3 passwords<br>
---The password cannot contain your first name or last name<br>";';*/
-                        $msg = "The password doesn\'t meet the required complexity!";
+--The password cannot contain your first name or last name<br>";';
+                        throw new fisma_Exception($msg);
+                        //$msg = "The password doesn\'t meet the required complexity!";
 
                     }else{
                         if($newpass == $password){
                             $msg = 'Your new password cannot be the same as your old password.';
+                            $model = self::M_WARNING;
                         }else{
                             if(strpos($history_pass,$newpass) > 0 ){
                                 $msg = 'Your password must be different from the last three passwords you have used. Please pick a different password.';
+                                $model = self::M_WARNING;
                             }else{
                                 if(strpos($history_pass,$password) > 0){
                                     $history_pass = ':'.$newpass.$history_pass;
@@ -153,15 +158,17 @@ Please create a password that adheres to these complexity requirements:<br>
                                 $result = $this->_user->update($data,'id = '.$id);
                                 if(!$result){
                                     $msg = 'Password Changed Failed';
+                                    $model = self::M_WARNING;
                                 }else{
                                     $msg = 'Password Changed Successfully';
+                                    $model = self::M_NOTICE;
                                 }
                             }
                         }
                     }   
                 }
             }
-            $this->message($msg,self::M_NOTICE);
+            $this->message($msg,$model);
         }
         $this->_helper->actionStack('header','Panel');
         $this->render();

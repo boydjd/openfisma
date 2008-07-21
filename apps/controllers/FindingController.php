@@ -110,20 +110,20 @@ class FindingController extends PoamBaseController
             if(!empty($csvFile)){
                 if($csvFile['size'] < 1 ){
                     $err_msg = 'Error: Empty file.';
+                }else{
+                    if($csvFile['size'] > 1048576 ){
+                        $err_msg = 'Error: File is too big.';
+                    }
+                    if(preg_match('/\x00|\xFF/',file_get_contents($csvFile['tmp_name']))){
+                        $err_msg = 'Error: Binary file.';
+                    }
+                    if($csvFile['error']){
+                        $err_msg = 'Please Upload a correct csv file';
+                    }
                 }
-                if($csvFile['size'] > 1048576 ){
-                    $err_msg = 'Error: File is too big.';
-                }
-                if(preg_match('/\x00|\xFF/',file_get_contents($csvFile['tmp_name']))){
-                    $err_msg = 'Error: Binary file.';
-                }
-            }
-            if(empty($csvFile) || $csvFile['error']){
-                $this->render();
-                return;
             }
             if(!empty($err_msg)){
-                $this->view->assign('error_msg',$err_msg);
+                $this->message($err_msg,self::M_WARNING);
                 $this->render();
                 return;
             }
@@ -329,17 +329,16 @@ class FindingController extends PoamBaseController
         $msg = '';
         if(isset($_FILES['upload_file'])){
             $plugin_id = $req->getParam('plugin');
-            $ret = $plugin->find($plugin_id);
+            $ret = $plugin->find($plugin_id)->toArray();
             if(!empty($ret)){
-                $result = $ret->toArray();
-                $plugin_class = $result[0]['classname'];
+                $plugin_class = $ret[0]['classname'];
             }else{
-                $this->message('post plugin is not finded',self::M_NOTICE);
+                $this->message('post plugin is not found',self::M_WARNING);
                 $this->render();
                 return;
             }
             if($_FILES['upload_file']['type'] != 'text/xml'){
-                $this->message('It is not xml file',self::M_NOTICE);
+                $this->message('It is not xml file',self::M_WARNING);
                 $this->render();
                 return;
             }
@@ -448,11 +447,12 @@ class FindingController extends PoamBaseController
                     }
                 }
                 $msg = "Injection complete.";
+                $this->message($msg,self::M_NOTICE);
             }else{
                 $msg = 'Upload file is not valid';
+                $this->message($msg,self::M_WARNING);
             }
         }
-        $this->message($msg,self::M_NOTICE);
         $this->render();
     }
 }

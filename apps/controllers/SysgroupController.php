@@ -92,10 +92,12 @@ class SysgroupController extends SecurityController
             $res = $this->_sysgroup->insert($data);
             if(!$res){
                 $msg = "Error Create System Group";
+                $model = self::M_WARNING;
             } else {
                 $msg = "Successfully Create a System Group.";
+                $model = self::M_NOTICE;
             }
-            $this->message($msg,self::M_NOTICE);
+            $this->message($msg,$model);
         }
         $this->render();
     }
@@ -113,11 +115,13 @@ class SysgroupController extends SecurityController
             //$res = $this->_sysgroup->delete('id = '.$id);
             if(!$res){
                 $msg = "Error for Delete System Group";
+                $model = self::M_WARNING;
             } else {
                 $msg = "Successfully Delete a System Group.";
+                $model = self::M_NOTICE;
             }
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('list');
     }
 
@@ -152,10 +156,12 @@ class SysgroupController extends SecurityController
         $res = $this->_sysgroup->update($data,'id = '.$id);
         if(!$res){
             $msg = "Edit System Group Failed";
+            $model = self::M_WARNING;
         } else {
             $msg = "Successfully Edit System Group.";
+            $model = self::M_NOTICE;
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('view',null,'id = '.$id);
     }
 

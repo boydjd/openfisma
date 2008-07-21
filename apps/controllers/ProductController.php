@@ -146,11 +146,13 @@ class ProductController extends SecurityController
             $res = $this->_product->delete('id = '.$id);
             if(!$res){
                 $msg = "Error for Delete Product";
+                $model = self::M_WARNING;
             }else {
                 $msg = "Successfully Delete a Product.";
+                $model = self::M_NOTICE;
             }
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('list');
     }
 
@@ -186,10 +188,12 @@ class ProductController extends SecurityController
         $res = $this->_product->update($data,'id = '.$id);
         if(!$res){
             $msg = "Edit Product Failed";
+            $model = self::M_WARNING;
         } else {
             $msg = "Successfully Edit Product.";
+            $model = self::M_NOTICE;
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('view',null,'id = '.$id);
     }
 

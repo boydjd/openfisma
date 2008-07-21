@@ -174,8 +174,10 @@ class AccountController extends PoamBaseController
         if( isset($u_data['password']) ) {
             /// @todo validate the password complexity
             if( $u_data['password'] != $confirm_pwd){
-                throw new fisma_Exception(
-                "Password dosen't match confirmation.Please submit password and confirmation");
+                $msg = "Password dose not match confirmation.";
+                $this->message($msg,self::M_WARNING);
+                $this->_forward('view',null,null,array('v'=>'edit'));
+                return;                
             }
             $u_data['password'] = md5($u_data['password']);
         }
@@ -290,7 +292,7 @@ class AccountController extends PoamBaseController
             $this->_user->log(User::CREATION ,$this->me->id,'create user('.$data['account'].')');
             $this->message("User({$data['account']}) added", self::M_NOTICE);
         }else{
-            $this->message("Please input the blank which mark * denotation",self::M_NOTICE);
+            $this->message("Please input the blank which mark * denotation",self::M_WARNING);
         }
         $this->_forward('create');
     }

@@ -124,10 +124,12 @@ class SystemController extends SecurityController
             }
             if($errno > 0){
                 $msg = "Systems added Failed";
+                $model = self::M_WARNING;
             } else {
                 $msg = "Systems added Successfully.";
+                $model = self::M_NOTICE;
             }
-            $this->message($msg,self::M_NOTICE);
+            $this->message($msg,$model);
         }
         $this->render();
     }
@@ -158,11 +160,13 @@ class SystemController extends SecurityController
             }
             if($errno > 0){
                 $msg = "System delete Error";
+                $model = self::M_WARNING;
             } else {
                 $msg = "System delete Successfully";
+                $model = self::M_NOTICE;
             }
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('list');
     }
 
@@ -231,10 +235,12 @@ class SystemController extends SecurityController
         }
         if($errno > 0){
             $msg = "System update Error";
+            $model = self::M_WARNING;
         } else {
             $msg = "System update Successfully";
+            $model = self::M_NOTICE;
         }
-        $this->message($msg,self::M_NOTICE);
+        $this->message($msg,$model);
         $this->_forward('view',null,'id='.$id);
 
     }

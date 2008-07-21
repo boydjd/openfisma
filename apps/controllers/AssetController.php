@@ -273,10 +273,12 @@ class AssetController extends PoamBaseController
         $res = $this->_asset->update($data,'id = '.$id);
         if($res){
             $msg = 'Edit Asset Successfully!';
+            $this->message($msg,self::M_NOTICE);
         }else{
             $msg = 'Edit Asset Failed!';
+            $this->message($msg,self::M_WARNING); 
         }
-        $this->message($msg,self::M_NOTICE);
+        
         $this->_forward('view',null,null,array('id'=>$id,'s'=>'edit'));
     }
 
@@ -294,11 +296,12 @@ class AssetController extends PoamBaseController
             }
         }
         if($errno > 0){
-            $msg = "Delete Assets Failed!";
+            $msg = $errno."Assets Delete Failed!";
+            $this->message($msg,self::M_WARNING);    
         }else{
             $msg = "Delete Assets Successfully!";
+            $this->message($msg,self::M_NOTICE);
         }
-        $this->message($msg,self::M_NOTICE);
         $this->_forward('asset','Panel',null,array('sub'=>'searchbox','s'=>'search'));
     }
 }
