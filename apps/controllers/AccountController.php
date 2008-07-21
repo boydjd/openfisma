@@ -166,7 +166,7 @@ class AccountController extends PoamBaseController
         $confirm_pwd = $req->getPost('confirm_password');
         if(empty($u_data['account']))
         {
-            $msg = "Account could not be null.";
+            $msg = "Account can not be null.";
             $this->message($msg,self::M_WARNING);
             $this->_forward('view',null,null,array('v'=>'edit'));
             return ;
@@ -174,7 +174,7 @@ class AccountController extends PoamBaseController
         if( isset($u_data['password']) ) {
             /// @todo validate the password complexity
             if( $u_data['password'] != $confirm_pwd){
-                $msg = "Password dose not match confirmation.";
+                $msg = "Password does not match confirmation.";
                 $this->message($msg,self::M_WARNING);
                 $this->_forward('view',null,null,array('v'=>'edit'));
                 return;                
@@ -218,11 +218,11 @@ class AccountController extends PoamBaseController
         $res = $this->_user->getAdapter()->delete('user_systems','user_id = '.$id);
         $res = $this->_user->getAdapter()->delete('user_roles','user_id = '.$id);
         if($res){
-            $msg ="<p><b>User Deleted successfully</b></p>";
+            $msg ="<p><b>User deleted successfully</b></p>";
             $this->_user->log(USER::TERMINATION,$this->me->id,'delete user '.$user_name); 
         }
         else {
-            $msg ="<p><b>User Deleted failed</b></p>";
+            $msg ="<p><b>Failed to delete user</b></p>";
         }
         $this->view->assign('msg',$msg);
         $this->_forward('list');
@@ -290,9 +290,9 @@ class AccountController extends PoamBaseController
             }
 
             $this->_user->log(User::CREATION ,$this->me->id,'create user('.$data['account'].')');
-            $this->message("User({$data['account']}) added", self::M_NOTICE);
+            $this->message("User ({$data['account']}) added", self::M_NOTICE);
         }else{
-            $this->message("Please input the blank which mark * denotation",self::M_WARNING);
+            $this->message("Please complete all required fields",self::M_WARNING);
         }
         $this->_forward('create');
     }

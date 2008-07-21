@@ -93,7 +93,7 @@ class FindingController extends PoamBaseController
                $this->view->assign('msg',"Finding updated successfully");
            }
            else {
-               $this->view->assign('msg',"Finding update failed");
+               $this->view->assign('msg',"Failed to update the finding");
            }
         }
         $this->view->assign('act','edit');
@@ -118,7 +118,7 @@ class FindingController extends PoamBaseController
                         $err_msg = 'Error: Binary file.';
                     }
                     if($csvFile['error']){
-                        $err_msg = 'Please Upload a correct csv file';
+                        $err_msg = 'Encountered an unknown error while processing the file';
                     }
                 }
             }
@@ -200,7 +200,7 @@ class FindingController extends PoamBaseController
                 $message="Finding created successfully";
                 $model=self::M_NOTICE;
             }catch(Zend_Exception $e){
-                $message= "Error in creating";//htmlspecialchars($e->getMessage());
+                $message= "Failed to create the finding";
                 $model=self::M_WARNING;
             }
             $this->message($message,$model);

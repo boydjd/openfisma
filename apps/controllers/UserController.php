@@ -63,8 +63,7 @@ class UserController extends SecurityController
 
                 if( !$last_login->equals(new Zend_Date('0000-00-00 00:00:00')) 
                     && $last_login->isEarlier($deactive_time) ){
-                    $error = "your account was locked because of your last login date from now is aleady past
-                             ".$period." days";
+                    $error = "Your account has been locked because you have not logged in for $period or more days. Please contact an administrator.";
                     $this->view->assign('error',$error);
                 } else {
                     $this->_user->log(User::LOGIN, $me->id, "Success");
@@ -118,11 +117,11 @@ class UserController extends SecurityController
             $password = $res[0]['password'];
             $history_pass = $res[0]['history_password'];
             if($pwds['new'] != $pwds['confirm']){
-                $msg = 'the new password does not match the confirm password, please try again.';
+                $msg = 'The new password does not match the confirm password, please try again.';
                 $model = self::M_WARNING;
             }else{
                 if($oldpass != $password){
-                    $msg = 'The old password supplied does not match what we have on file, please try again.';
+                    $msg = 'The old password supplied is incorrect, please try again.';
                     $model = self::M_WARNING;
                 }else{
                     if(!$this->checkPassword($pwds['new'],2)){
@@ -157,10 +156,10 @@ Please create a password that adheres to these complexity requirements:<br>
                                               'password_ts'=>$now);
                                 $result = $this->_user->update($data,'id = '.$id);
                                 if(!$result){
-                                    $msg = 'Password Changed Failed';
+                                    $msg = 'Failed to change the password';
                                     $model = self::M_WARNING;
                                 }else{
-                                    $msg = 'Password Changed Successfully';
+                                    $msg = 'Password changed successfully';
                                     $model = self::M_NOTICE;
                                 }
                             }

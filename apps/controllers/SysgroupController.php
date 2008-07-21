@@ -91,10 +91,10 @@ class SysgroupController extends SecurityController
             $data['is_identity'] = 0;
             $res = $this->_sysgroup->insert($data);
             if(!$res){
-                $msg = "Error Create System Group";
+                $msg = "Failed to create the system group";
                 $model = self::M_WARNING;
             } else {
-                $msg = "Successfully Create a System Group.";
+                $msg = "System group created successfully";
                 $model = self::M_NOTICE;
             }
             $this->message($msg,$model);
@@ -110,14 +110,14 @@ class SysgroupController extends SecurityController
         $qry = $db->select()->from('systemgroup_systems')->where('sysgroup_id = '.$id);
         $result = $db->fetchCol($qry);
         if(!empty($result)){
-            $msg = 'This System Group have been used, You could not delete it';
+            $msg = 'This system group cannot be deleted because it is already associated with one or more systems';
         }else{
             //$res = $this->_sysgroup->delete('id = '.$id);
             if(!$res){
-                $msg = "Error for Delete System Group";
+                $msg = "Failed to delete the system group";
                 $model = self::M_WARNING;
             } else {
-                $msg = "Successfully Delete a System Group.";
+                $msg = "System group deleted successfully";
                 $model = self::M_NOTICE;
             }
         }
@@ -155,10 +155,10 @@ class SysgroupController extends SecurityController
         }
         $res = $this->_sysgroup->update($data,'id = '.$id);
         if(!$res){
-            $msg = "Edit System Group Failed";
+            $msg = "Failed to edit the system group";
             $model = self::M_WARNING;
         } else {
-            $msg = "Successfully Edit System Group.";
+            $msg = "System group edited successfully";
             $model = self::M_NOTICE;
         }
         $this->message($msg,$model);

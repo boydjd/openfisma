@@ -123,10 +123,10 @@ class SystemController extends SecurityController
                 }
             }
             if($errno > 0){
-                $msg = "Systems added Failed";
+                $msg = "Failed to create the system";
                 $model = self::M_WARNING;
             } else {
-                $msg = "Systems added Successfully.";
+                $msg = "System created successfully";
                 $model = self::M_NOTICE;
             }
             $this->message($msg,$model);
@@ -146,7 +146,7 @@ class SystemController extends SecurityController
         $qry = $db->select()->from('assets')->where('system_id = '.$id);
         $result2 = $db->fetchAll($qry);
         if(!empty($result1) || !empty($result2)){
-            $msg = "This system have been used,You could not to delete it";
+            $msg = "This system cannot be deleted because it is already associated with one or more POAMS or assets";
         }else{
             $res = $this->_system->delete('id = '.$id);
             if(!$res){
@@ -159,10 +159,10 @@ class SystemController extends SecurityController
                 $errno++;
             }
             if($errno > 0){
-                $msg = "System delete Error";
+                $msg = "Failed to delete the system";
                 $model = self::M_WARNING;
             } else {
-                $msg = "System delete Successfully";
+                $msg = "System deleted successfully";
                 $model = self::M_NOTICE;
             }
         }
@@ -234,10 +234,10 @@ class SystemController extends SecurityController
             }
         }
         if($errno > 0){
-            $msg = "System update Error";
+            $msg = "Failed to edit the system";
             $model = self::M_WARNING;
         } else {
-            $msg = "System update Successfully";
+            $msg = "System edited successfully";
             $model = self::M_NOTICE;
         }
         $this->message($msg,$model);

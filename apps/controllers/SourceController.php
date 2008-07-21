@@ -89,10 +89,10 @@ class SourceController extends SecurityController
             }
             $res = $this->_source->insert($data);
             if(!$res){
-                $msg = "Error Create Source";
+                $msg = "Failed to create the finding source";
                 $model = self::M_WARNING;
             } else {
-                $msg = "Successfully Create a Source.";
+                $msg = "Finding source successfully created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg,$model);
@@ -108,14 +108,14 @@ class SourceController extends SecurityController
         $qry = $db->select()->from('poams')->where('source_id = '.$id);
         $result = $db->fetchCol($qry);
         if(!empty($result)){
-            $msg = 'This source have been used, You could not to delete it';
+            $msg = 'This finding source can not be deleted because it is already associated with one or more POAMS';
         }else{
             $res = $this->_source->delete('id = '.$id);
             if(!$res){
-                $msg = "Error for Delete Source";
+                $msg = "Failed to delete the finding source";
                 $model = self::M_WARNING;
             } else {
-                $msg = "Successfully Delete a Source.";
+                $msg = "Finding source deleted successfully";
                 $model = self::M_NOTICE;
             }
         }
@@ -153,10 +153,10 @@ class SourceController extends SecurityController
         }
         $res = $this->_source->update($data,'id = '.$id);
         if(!$res){
-            $msg = "Edit Source Failed";
+            $msg = "Failed to edit the finding source";
             $model = self::M_WARNING;
         } else {
-            $msg = "Successfully Edit Source.";
+            $msg = "Finding source edited successfully";
             $model = self::M_NOTICE;
         }
         $this->message($msg,$model);

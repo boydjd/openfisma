@@ -119,7 +119,7 @@ class AssetController extends PoamBaseController
                               'address_ip'=>$asset_ip,
                               'address_port'=>$asset_port);
             $asset_last_insert_id=$this->_asset->insert($asset_row);
-            $this->message( "Create Asset successfully", self::M_NOTICE);
+            $this->message( "Asset created successfully", self::M_NOTICE);
         }
         $this->view->system_list=$system_list;
         $this->view->network_list=$network_list;
@@ -272,10 +272,10 @@ class AssetController extends PoamBaseController
         }
         $res = $this->_asset->update($data,'id = '.$id);
         if($res){
-            $msg = 'Edit Asset Successfully!';
+            $msg = 'Asset edited successfully';
             $this->message($msg,self::M_NOTICE);
         }else{
-            $msg = 'Edit Asset Failed!';
+            $msg = 'Failed to edit the asset';
             $this->message($msg,self::M_WARNING); 
         }
         
@@ -296,10 +296,10 @@ class AssetController extends PoamBaseController
             }
         }
         if($errno > 0){
-            $msg = $errno."Assets Delete Failed!";
+            $msg = $errno."Failed to delete the asset";
             $this->message($msg,self::M_WARNING);    
         }else{
-            $msg = "Delete Assets Successfully!";
+            $msg = "Asset deleted successfully";
             $this->message($msg,self::M_NOTICE);
         }
         $this->_forward('asset','Panel',null,array('sub'=>'searchbox','s'=>'search'));

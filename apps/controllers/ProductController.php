@@ -124,9 +124,9 @@ class ProductController extends SecurityController
             $data['meta'] = $data['vendor'].' '.$data['name'].' '.$data['version'];
             $res = $this->_product->insert($data);
             if(!$res){
-                $msg = "Error Create Product";
+                $msg = "Failed to create the product";
             } else {
-                $msg = "Successfully Create a Product.";
+                $msg = "Product successfully created";
             }
             $this->message($msg,self::M_NOTICE);
         }
@@ -141,14 +141,14 @@ class ProductController extends SecurityController
         $qry = $db->select()->from('vuln_products')->where('prod_id = '.$id);
         $result = $db->fetchCol($qry);
         if(!empty($result)){
-            $msg = 'This product have been used, You could not to delete';
+            $msg = 'This product cannot be deleted because it is already associated with one or more vulnerabilities.';
         }else{
             $res = $this->_product->delete('id = '.$id);
             if(!$res){
-                $msg = "Error for Delete Product";
+                $msg = "Failed to delete the product";
                 $model = self::M_WARNING;
             }else {
-                $msg = "Successfully Delete a Product.";
+                $msg = "Product created successfully";
                 $model = self::M_NOTICE;
             }
         }
@@ -187,10 +187,10 @@ class ProductController extends SecurityController
         $data['meta'] = $data['vendor'].' '.$data['name'].' '.$data['version'];
         $res = $this->_product->update($data,'id = '.$id);
         if(!$res){
-            $msg = "Edit Product Failed";
+            $msg = "Failed to edit the product";
             $model = self::M_WARNING;
         } else {
-            $msg = "Successfully Edit Product.";
+            $msg = "Product edited successfully";
             $model = self::M_NOTICE;
         }
         $this->message($msg,$model);

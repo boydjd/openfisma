@@ -36,7 +36,7 @@ class ConfigController extends SecurityController
             $config->update(array('value'=>$v),$where);
         }
 
-        $msg = 'modify disable period successfully!';
+        $msg = 'Configuration updated successfully';
         $this->_forward('config','panel');
     }
 

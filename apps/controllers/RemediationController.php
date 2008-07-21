@@ -334,10 +334,10 @@ class RemediationController extends PoamBaseController
                 if($result_move){
                     chmod($abs_file,0755);
                 } else{
-                    throw new fisma_Exception('Move upload file fail.'.$abs_file.$_FILES['evidence']['error']);
+                    throw new fisma_Exception('Failed in move_uploaded_file(). '.$abs_file.$_FILES['evidence']['error']);
                 }
             }else{
-                throw new fisma_Exception('The filename should be valid');
+                throw new fisma_Exception('The filename is not valid');
             }
             $today = substr($now_str,0,10);
             $data = array('poam_id'          =>$id,
@@ -429,7 +429,7 @@ class RemediationController extends PoamBaseController
              ->initContext();
         $poam_detail = $this->_poam->getDetail($id);
         if( empty($poam_detail) ){
-            throw new fisma_Exception('Raf can be generated according to valid poam');
+            throw new fisma_Exception("Not able to get details for this POAM ID ($id)");
         }
         $this->view->assign('poam',$poam_detail);
         $this->view->assign('system_list',$this->_system_list);
