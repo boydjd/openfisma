@@ -20,9 +20,14 @@ div#header{
 div#headbar{
     background-image:url('/images/login_bg.jpg');
     background-repeat: repeat-x;
-    height:42px;
+    height:50px;
     width:100%;
     text-align:right;
+}
+
+/* Diagonal Lines Graphic */
+div#headbar img {
+    margin: 25px 50px;
 }
 
 /* Error Messages from Login */
@@ -39,7 +44,7 @@ p#warning {
     font-family: Tahoma,verdana,arial,helvetica,sans-serif;
     width:40em;
     font-size: 12px;
-    margin:0 auto;
+    margin: 0px auto;
     padding:10px 10px 10px 10px;
     border: 1px solid #738da0;
     background-color: #55758c;
@@ -56,6 +61,7 @@ ul#login{
 /* Sets length of input fields */
 ul#login input {
     width:8em;
+    margin: 5px;
 }
 
 /* Sets properties for submit button */
@@ -68,5 +74,5 @@ ul#login li.submit input {
 div#bottom {
     margin-top:3em;
     padding: 0 2em;
-    clear:both;
+    clear: both;
 }
