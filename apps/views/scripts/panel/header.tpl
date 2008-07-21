@@ -1,6 +1,5 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 	<tr><td><img id="logo" src="/images/customer_logo.jpg" /></td>
-		<td><span id="msgbar"></span></td>
 		<td align="right"><ul class="loginfo">
                 <li><form class="button_link" action="/zfentry.php/panel/user/sub/pwdchange">
                 <input type="submit" value="Change Password" /></form>&nbsp;
@@ -95,3 +94,4 @@
 ?>
 &nbsp;
 </div>
+<div id="msgbar"></div>

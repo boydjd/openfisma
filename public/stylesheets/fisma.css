@@ -142,9 +142,14 @@ div.barright {
     font-size: 12px;
 }
 
-#msgbar {
-    line-height: 2.5em;
-    padding: 0.5em 1em;
+div#msgbar {
+    /*line-height: 2.5em;
+    padding: 0.5em 1em;*/
+    border: 1px solid red;
+    background-color: pink;
+    margin: 20px 0px;
+    text-align: center;
+    padding: 3px;
 }
 
 div#maskDIV{
