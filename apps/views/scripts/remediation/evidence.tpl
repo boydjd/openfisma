@@ -1,9 +1,9 @@
-    <?php 
+<?php 
     require_once( MODELS . DS . 'comments.php');
     $evidence = $this->ev;
     $evaluation = $this->eval;
     $comment = new Comments();
-    ?>
+?>
 <form action="/zfentry.php/remediation/evidence/id/<?php echo $evidence['id'];?>" method="post"
  name='eval_ev<?php echo $evidence['id'];?>' >
     <table cellpadding='3' cellspacing='1' class='tipframe' >
@@ -52,14 +52,18 @@
             }
         }
         echo  "<tr><td><b>$name:&nbsp;</b>";
-        if($value=='NONE' && $editable ){
-            echo '<input type="hidden" name="evaluation" value="'.$k.'"/>';
-            echo '<input type="hidden" name="topic" value="" />';
-            echo '<input type="hidden" name="reject" value="" />';
-            echo '<input type="hidden" name="decision" value="APPROVE" />';
-            echo '<input type="submit" value="APPROVE" />';
-            echo '<input type="button" value="DENY" '.
+        if($value=='NONE' && $editable){
+            if(isAllow('remediation',$v['function'])){
+                echo '<input type="hidden" name="evaluation" value="'.$k.'"/>';
+                echo '<input type="hidden" name="topic" value="" />';
+                echo '<input type="hidden" name="reject" value="" />';
+                echo '<input type="hidden" name="decision" value="APPROVE" />';
+                echo '<input type="submit" value="APPROVE" />';
+                echo '<input type="button" value="DENY" '.
                     'onclick="comment(document.eval_ev'.$evidence['id'].');" />';
+            }else{
+                echo "$value </td>";
+            }
             $editable=false;
         }else{
             echo "$value </td>";
