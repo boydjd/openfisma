@@ -195,6 +195,12 @@ function searchProduct(){
 
 function message( msg ,model){
     $("#msgbar").html(msg).css('font-weight','bold');
-    if( model == 'warning')  $("#msgbar").css('color','red');
-    else $("#msgbar").css('color','green');
+    if( model == 'warning')  {
+        $("#msgbar").css('color','red');
+    } else {
+        $("#msgbar").css('color','green');
+        $("#msgbar").css('border-color','green');
+        $("#msgbar").css('background-color','lightgreen');
+    }
+    $("#msgbar").css('display','block');
 }
