@@ -207,4 +207,9 @@ $pdf->ezTable($data,
 $pdf->ezText('', 12, array('justification'=>'center'));
 $footer = 'WARNING: This report is for internal, official use only.  This report contains sensitive computer security related information. Public disclosure of this information would risk circumvention of the law. Recipients of this report must not, under any circumstances, show or release its contents for purposes other than official action. This report must be safeguarded to prevent improper disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.';
 $pdf->ezText($footer, 9, array('justification'=>'left'));
+
+// IE has a bug where it can't display certain mimetypes if a no-cache header is sent,
+// so we need to switch the header right before we stream the PDF.
+header('Pragma: private');
+header('Cache-Control: private');
 echo $pdf->ezOutput();
