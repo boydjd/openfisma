@@ -49,18 +49,15 @@
     </tr>
     <tr>
         <td align="right" class="thc" width="200">Description:</td>
-        <td class="tdc">&nbsp;<textarea name="system_desc" size="30" cols="80" rows="5">
-            <?php echo $this->system['desc'];?></textarea></td>
+        <td class="tdc">&nbsp;<textarea name="system_desc" size="30" cols="80" rows="5"><?php echo $this->system['desc'];?></textarea></td>
     </tr>
     <tr>
         <td align="right" class="thc" width="200">Criticality Justification:</td>
-        <td class="tdc">&nbsp;<textarea name="system_criticality_justification" cols="80" rows="5">
-            <?php echo $this->system['criticality_justification'];?></textarea></td>
+        <td class="tdc">&nbsp;<textarea name="system_criticality_justification" cols="80" rows="5"><?php echo $this->system['criticality_justification'];?></textarea></td>
     </tr>
     <tr>
         <td align="right" class="thc" width="200">Sensitivity Justification:</td>
-        <td class="tdc">&nbsp;<textarea name="system_sensitivity_justification" cols="80" rows="5">
-            <?php echo $this->system['sensitivity_justification'];?></textarea></td>
+        <td class="tdc">&nbsp;<textarea name="system_sensitivity_justification" cols="80" rows="5"><?php echo $this->system['sensitivity_justification'];?></textarea></td>
     </tr>
 </table>
 <br>
