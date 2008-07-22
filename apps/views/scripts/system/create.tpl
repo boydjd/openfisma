@@ -19,11 +19,6 @@
         <td class="tdc">&nbsp;<input type="text" name="system_nickname" size="8"><font color="blue"> *</font></td>
     </tr>
     <tr>
-        <td align="right" class="thc">Organization:</td>
-        <td class="tdc">&nbsp;<select name="system_primary_office"><option value="0">FSA</option></select>
-            <font color="blue"> *</font> </td>
-    </tr>
-    <tr>
         <td align="right" class="thc">Confidentiality:</td>
         <td class="tdc">&nbsp;<select name="system_confidentiality">
             <option value="HIGH">High</option>
@@ -45,6 +40,15 @@
             <option value="HIGH">High</option>
             <option value="MODERATE">Moderate</option>
             <option value="LOW">Low</option></select><font color="blue">*</font>
+        </td>
+    </tr>
+    <tr>
+        <td align="right" class="thc">Criticality:</td>
+        <td class="tdc">&nbsp;<select name="system_criticality">
+            <option value="NONE">NONE</option>
+            <option value="SUPPORTIVE">SUPPORTIVE</option>
+            <option value="IMPORTANT">IMPORTANT</option>
+            <option value="CRITICAL">CRITICAL</option></select><font color="blue">*</font>
         </td>
     </tr>
     <tr>
