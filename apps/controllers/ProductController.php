@@ -14,6 +14,9 @@ require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'product.php';
 require_once 'Pager.php';
 
+/**
+ *  Product Controller
+ */
 class ProductController extends SecurityController
 {
     private $_paging = array(

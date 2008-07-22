@@ -4,7 +4,7 @@
  *
  * Security Controller
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -21,7 +21,11 @@ require_once 'Zend/Acl/Role.php';
 require_once 'Zend/Acl/Resource.php';
 
 
-
+/**
+ * Accompany with the Authentication and ACL initialization
+ *
+ * Every controller that needs to be authenticated or has acl issue should be extended from it.
+ */
 class SecurityController extends Zend_Controller_Action
 {
     /**
@@ -52,7 +56,6 @@ class SecurityController extends Zend_Controller_Action
             $this->view->identity = $this->me->account;
         }
     }
-
     public function preDispatch()
     {
         if( empty($this->me ) ) {
@@ -99,7 +102,7 @@ class SecurityController extends Zend_Controller_Action
     }
 
     /**
-     * Show messages to Users
+     *  Routine to show messages to UI by ajax
      */
     public function message( $msg , $model ){
         assert(in_array($model, array(self::M_NOTICE, self::M_WARNING) ));
@@ -109,6 +112,9 @@ class SecurityController extends Zend_Controller_Action
     }
 
 
+    /**
+     *  utility to retrieve parameters in batch.
+     */
     public function & retrieveParam($req, $params,$default=null)
     {
         assert($req instanceof Zend_Controller_Request_Abstract);

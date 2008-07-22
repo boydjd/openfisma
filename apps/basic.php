@@ -2,9 +2,9 @@
 /**
  * @file basic.php
  *
- * @description System Supporting Functions
+ * @description System wide utility functions
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -12,6 +12,11 @@
 
     require_once(APPS . DS .'Exception.php');
 
+    /** 
+     * include library files
+     *
+     * @param ... filenames
+    */
     function uses() {
         $args = func_get_args();
         foreach ($args as $file) {
@@ -19,6 +24,11 @@
         }
     }
 
+    /**
+     * add path(es) into the including path variable
+     *
+     * @param ... pathes
+     */
     function import() {
         $args = func_get_args();
         $target_path = null;
@@ -36,8 +46,8 @@
     }
  
     /** 
-        Exam the Acl to decide permission or denial.
-        @param $user array of User's roles
+        Exam the Acl of the existing logon user to decide permission or denial.
+
         @param $resource resources
         @param $action actions
         @return bool permit or not
@@ -57,12 +67,14 @@
                 }
             }
         } catch(Zend_Acl_Exception $e){
-            //log information
+            /// @todo acl log information
         }
         return false;
     }
 
-
+    /**
+     The section name of system wide configuration
+     */ 
     define('SYSCONFIG','sysconf');
     /** 
         Read configurations of any sections.
@@ -90,18 +102,30 @@
         }
         return Zend_Registry::get(SYSCONFIG)->$key;
     }
-
+    
+    /**
+        To make a partial statement from an array of value where IN is used.
+    */
     function makeSqlInStmt($array)
     {
         assert( is_array($array) );
         return "'" . implode("','", $array). "'"; 
     }
 
+    /**
+        @deprecated 
+        @link nullGet
+    */
     function echoDefault(&$value, $default='')
     {
         echo nullGet($value, $default);
     }
+    
+    /**
+        get the value of an variable. Return assigned value if it's empty. 
 
+        The function is useful in template when getting some uncertain value from model.
+    */
     function nullGet(&$value, $default='')
     {
         if( !empty($value) ) {

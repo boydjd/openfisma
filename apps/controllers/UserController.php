@@ -4,7 +4,7 @@
  *
  * @description User Controller
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -18,17 +18,18 @@ require_once( MODELS . DS .'user.php');
 require_once( MODELS . DS .'system.php');
 require_once 'Zend/Date.php';
 
-class UserController extends SecurityController
+/**
+ *  UserController 
+ *
+ *  This controller is not required of authentication and ACLs
+ */
+class UserController extends Zend_Controller_Action
 {
     private $_user = null;
 
     public function init()
     {
         $this->_user = new User();
-    }
-
-    public function preDispatch()
-    {
     }
 
     public function loginAction()

@@ -2,9 +2,9 @@
 /**
  * @file ConfigController.php
  *
- * @description Config Controller
+ * Config Controller for the system
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -15,7 +15,9 @@ require_once MODELS . DS . 'config.php';
 
 class ConfigController extends SecurityController
 {
-    //config the time period for disabling inactive accounts
+    /**
+     * Display and edit the settings 
+    */
     public function viewAction(){
         $req = $this->getRequest();
         $config = new Config();
@@ -26,6 +28,9 @@ class ConfigController extends SecurityController
         $this->render();
     }
 
+    /** 
+     * Save the configuration setting
+    */
     public function saveAction(){
         $req = $this->getRequest();
         $keys = $req->getPost('keys');

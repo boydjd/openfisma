@@ -409,6 +409,11 @@ class ReportController extends PoamBaseController
         $this->render();
     }
 
+    /**
+     *  Batch generate RAFS report per system and all those PDF files would be packed in tgz
+     *
+     *  It reuses the PDF generation part of RemediationController::rafAction()
+     */
     public function rafsAction()
     {
         require_once 'Archive/Tar.php';

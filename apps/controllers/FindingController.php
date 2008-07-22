@@ -26,8 +26,6 @@ class FindingController extends PoamBaseController
      */
     protected function _search($criteria)
     {
-        //$req = $this->getRequest();
-        //$criteria = $req->getParam('criteria');
         $fields = array('id',
                        'legacy_finding_id',
                        'ip',
@@ -101,7 +99,10 @@ class FindingController extends PoamBaseController
     }
 
     /**
-     spreadsheet Upload
+     *  Spreadsheet upload
+     *
+     *  The spreadsheet should be a CSV file in fact. It parse the valid data and leave the
+     *  remaining to the user.
     */
     public function injectionAction(){
         $this->_helper->actionStack('header','Panel');
@@ -172,7 +173,7 @@ class FindingController extends PoamBaseController
     }
 
     /**
-        Create finding
+     *  Create a finding manually
     */
     public function createAction()
     {
@@ -212,8 +213,8 @@ class FindingController extends PoamBaseController
     }
     
     /**
-    delete findings
-    **/
+     *  Delete findings
+    */
     public function deleteAction(){
         $req = $this->getRequest();
         $post = $req->getPost();
@@ -236,7 +237,10 @@ class FindingController extends PoamBaseController
 
     }
 
-    public function insertCsvRow($row){
+    /** 
+     *  Insert a row of data into database. 
+     */
+    protected function insertCsvRow($row){
         $asset = new asset();
         $poam = new poam();
         if (!is_array($row) || (count($row)<7)){
@@ -315,6 +319,9 @@ class FindingController extends PoamBaseController
         $this->render();
     }
 
+    /** 
+     *  Scan result import
+     */
     public function importAction()
     {
         $this->_helper->actionStack('header','Panel');

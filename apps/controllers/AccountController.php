@@ -16,6 +16,9 @@ require_once( MODELS . DS .'system.php');
 require_once('Pager.php');
 require_once 'Zend/Date.php';
 
+/**
+ * Maintaining the user account
+*/
 class AccountController extends PoamBaseController
 {
     private $role_array;
@@ -36,7 +39,9 @@ class AccountController extends PoamBaseController
     }
 
     /**
-    Search user
+     *  render the searching boxes and keep the searching criteria
+     *
+     *  @todo do the real search
     */
     public function searchboxAction()
     {
@@ -72,8 +77,10 @@ class AccountController extends PoamBaseController
     }
 
     /**
-      Get User acount infomation
-    */
+     * List all the users
+     *
+     * @todo list users according to searching criteria
+     */
     public function listAction()
     {
         $user = new user();
@@ -116,7 +123,7 @@ class AccountController extends PoamBaseController
     }
 
     /**
-     User detail
+     *  view the user's detail information
     */
     public function viewAction()
     {
@@ -155,7 +162,7 @@ class AccountController extends PoamBaseController
     }
 
     /**
-      update user 
+     *  update user's information
     */
     public function updateAction(){
         $req = $this->getRequest();
@@ -205,7 +212,7 @@ class AccountController extends PoamBaseController
     }
 
     /**
-     Delete user
+     * Delete an account
     */
     public function deleteAction(){
         $req = $this->getRequest();
@@ -228,8 +235,8 @@ class AccountController extends PoamBaseController
         $this->_forward('list');
     }
     /**
-       Create user
-    **/
+     *  only render the account creation page
+    */
     public function createAction()
     {
         require_once(MODELS . DS . 'role.php');
@@ -242,8 +249,8 @@ class AccountController extends PoamBaseController
     }
 
     /**
-       Save new user
-    **/
+     *  create a new account
+    */
     public function saveAction()
     {
         require_once(MODELS . DS . 'role.php');

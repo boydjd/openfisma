@@ -2,9 +2,9 @@
 /**
  * @file metainfoController.php
  *
- * @description metainfo Controller
+ * metainfo Controller
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -13,6 +13,11 @@
 require_once CONTROLLERS . DS . 'PoamBaseController.php';
 require_once MODELS . DS . 'blscr.php';
 
+/**
+ *  Provide yellow book inquery for meta information such as types, decisions. 
+ *
+ *  Usually it render a select element.
+ */
 class metainfoController extends PoamBaseController
 {
     public function init()

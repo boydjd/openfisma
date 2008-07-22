@@ -4,7 +4,7 @@
  *
  * Asset Controller 
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -17,6 +17,9 @@ require_once MODELS . DS . 'source.php';
 require_once MODELS . DS . 'product.php';
 require_once 'Pager.php';
 
+/**
+ *  Asset CURD
+ */
 class AssetController extends PoamBaseController
 {
     protected $_asset = null;
@@ -46,7 +49,10 @@ class AssetController extends PoamBaseController
     }
 
     /**
-      Get Asset List
+     *  Searching the asset and list them.
+     *
+     *  it is the ajax version of searchbox action
+     *  @todo merge the two actions into one
     */
     public function searchAction(){
         $req = $this->getRequest();
@@ -79,8 +85,8 @@ class AssetController extends PoamBaseController
     }
 
     /**
-     Create Asset
-   */
+     *  Create an asset
+     */
     public function createAction(){
         $systems= new System();
         $user=new User();
@@ -129,7 +135,7 @@ class AssetController extends PoamBaseController
     }
 
    /**
-     Get Asset Information
+    * View detail information of an asset
    */
     public function detailAction(){
         $req = $this->getRequest();
@@ -156,6 +162,9 @@ class AssetController extends PoamBaseController
         $this->render('detail');
     }
 
+    /**
+     * Search assets and list them
+     */
     public function searchboxAction()
     {
         $req = $this->getRequest();
@@ -224,6 +233,9 @@ class AssetController extends PoamBaseController
         $this->render();
     }
 
+    /** 
+     *  View an asset in detail
+     */
     public function viewAction()
     {
         $req = $this->getRequest();
@@ -259,6 +271,9 @@ class AssetController extends PoamBaseController
         }
     }
 
+    /**
+     *  update information of an asset
+     */
     public function updateAction()
     {
         $req = $this->getRequest();
@@ -282,6 +297,9 @@ class AssetController extends PoamBaseController
         $this->_forward('view',null,null,array('id'=>$id,'s'=>'edit'));
     }
 
+    /**
+     *  Delete an asset
+     */
     public function deleteAction()
     {
         $req = $this->getRequest();
@@ -305,4 +323,3 @@ class AssetController extends PoamBaseController
         $this->_forward('asset','Panel',null,array('sub'=>'searchbox','s'=>'search'));
     }
 }
-?>

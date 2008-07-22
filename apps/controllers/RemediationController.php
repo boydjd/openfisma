@@ -2,9 +2,9 @@
 /**
  * @file RemediationController.php
  *
- * @description Remediation Controller
+ * Remediation Controller
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -24,6 +24,9 @@ class RemediationController extends PoamBaseController
         $this->_helper->actionStack('summary','Remediation');
     }
 
+    /**
+     *  Display the summary page of remediation, per systems.
+     */
     public function summaryAction(){
         require_once MODELS . DS . 'system.php';
         $req = $this->getRequest();
@@ -102,6 +105,9 @@ class RemediationController extends PoamBaseController
         $this->render('summary');
     }
 
+    /**
+     *  Do the real searching work. It's a thin wrapper of poam model's search method.
+     */
     protected function _search($criteria){
         //refer to searchbox.tpl for a complete status list
         $internal_crit = &$criteria;
@@ -357,6 +363,9 @@ class RemediationController extends PoamBaseController
         $this->_redirect('/panel/remediation/sub/view/id/'.$id);
     }
 
+    /**
+     *  Handle the evidence evaluations
+     */
     public function evidenceAction()
     {
         require_once MODELS . DS . 'evidence.php';
@@ -414,6 +423,11 @@ class RemediationController extends PoamBaseController
         $this->_redirect('/panel/remediation/sub/view/id/'.$poam_id, array('exit'));
     }
 
+    /**
+     *  Generate RAF report
+     *
+     *  It can handle different format of RAF report.
+     */
     public function rafAction()
     {
         $id = $this->_req->getParam('id');

@@ -2,9 +2,9 @@
 /**
  * @file PoamBaseController.php
  *
- * @description PoamBase Controller
+ * PoamBase Controller
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -16,6 +16,12 @@ require_once MODELS . DS . 'source.php';
 require_once MODELS . DS . 'network.php';
 require_once CONTROLLERS . DS . 'SecurityController.php';
 
+/**
+ *  A basic business unit for poam centeric controllers
+ *
+ *  It hold some common works for those controllers, such as paging initialization, 
+ *  regular modules initialization.
+ */
 class PoamBaseController extends SecurityController 
 {
     protected $_system_list =null;

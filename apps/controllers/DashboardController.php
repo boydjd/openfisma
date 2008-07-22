@@ -2,9 +2,9 @@
 /**
  * @file DashboardController.php
  *
- * @description Dashboard Controller
+ * Dashboard Controller
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -16,7 +16,11 @@ require_once MODELS . DS . 'poam.php';
 require_once MODELS . DS . 'system.php';
 
 /**
- * DashboardController responsible for all dashboard creation
+ * DashboardController is responsible for all dashboard creation
+ *
+ * The dashboard works in this way:
+ *      The view displays the flash chart plugins, which request individual XML data files
+ *      from the server and in the end display pie, bars chart.
  */
 class DashboardController extends SecurityController
 {

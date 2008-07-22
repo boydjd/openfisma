@@ -4,7 +4,7 @@
  *
  * @description Error Controller
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -12,6 +12,11 @@
 
 require_once 'Zend/Controller/Action.php' ;
 
+/**
+ *  Error handler for exceptions
+ *
+ *  @todo display less and log more, which is configurable.
+ */
 class ErrorController extends Zend_Controller_Action 
 {
     /**
