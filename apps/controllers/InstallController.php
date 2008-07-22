@@ -10,23 +10,21 @@
  * @version $Id$
 */
 
+require_once 'Zend/Filter/Input.php';
+require_once 'Zend/Validate/Hostname.php';
+require_once 'Zend/Validate/Between.php';
+
+
+
 class InstallController extends Zend_Controller_Action
 {
     public function preDispatch()
     {
-        session_start();
         $this->_helper->layout->setLayout('install');
         //Judge if there is necessary to install
     }
-
-    public function indexAction()
-    {
-        $this->view->back = '';
-        $this->view->next = '/zfentry.php/install/intro';
-        $this->render();
-    }
     
-    public function introAction()
+    public function indexAction()
     {
         $this->view->back = '';
         $this->view->next = '/zfentry.php/install/envcheck';
@@ -35,9 +33,8 @@ class InstallController extends Zend_Controller_Action
 
     public function envcheckAction()
     {
-        define(REQUEST_PHP_VERSION, 5);
-        $this->view->back = 'install/intro';
-
+        define('REQUEST_PHP_VERSION', 5);
+        $this->view->back = '/zfentry.php/install';
         if(version_compare(phpversion(),REQUEST_PHP_VERSION)){
             $this->view->next = '/zfentry.php/install/checking';
             $this->view->checklist = array('version' => 'ok');
@@ -52,7 +49,7 @@ class InstallController extends Zend_Controller_Action
         $w_directories = array( WEB_ROOT . DS . 'temp',
                                 ROOT . DS . 'log',
                                 WEB_ROOT . DS . 'evidence',
-                                WEB_ROOT . DS . 'ovms.ini.php');
+                                CONFIGS . DS . CONFIGFILE_NAME);
         $notwritables = array();
         foreach ($w_directories as $k => $wok) {
             if ( !  is_writeable($wok) ) {
@@ -62,6 +59,7 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->notwritables = $notwritables;
         $this->view->writables = $w_directories;
+        $this->view->back = '/zfentry.php/install/envcheck';
         if( empty($notwritables) ) { 
             $this->view->next = '/zfentry.php/install/dbsetting';
         }else{
@@ -74,7 +72,7 @@ class InstallController extends Zend_Controller_Action
     {
         $this->view->installpath=dirname(dirname(dirname(__FILE__)));
         $this->view->title = 'General settings';
-        $this->view->back = 'install/intro';
+        $this->view->back = '/zfentry.php/install/checking';
         $this->view->next = '/zfentry.php/install/dbreview';
         $this->render();
     }
@@ -82,83 +80,109 @@ class InstallController extends Zend_Controller_Action
     public function dbreviewAction()
     {
         $dsn = $this->_getParam('dsn');
-        ///@Todo sanity check
+        if(empty($dsn['name_c']) && empty($dsn['pass_c']) && empty($dsn['pass_c_ag']))
+        {
+            $dsn['name_c']=$dsn['uname'];
+            $dsn['pass_c']=$dsn['upass'];
+            $dsn['pass_c_ag']=$dsn['upass'];
+        }
+        $filter=array('*'=>array('StringTrim','stripTags'));
+        $validator= array('type'=>'Alnum',
+                          'host'=>array('NotEmpty',new Zend_Validate_Hostname(
+                          Zend_Validate_Hostname::ALLOW_LOCAL | Zend_Validate_Hostname::ALLOW_IP)),
+                          'port'=>array('Int', new Zend_Validate_Between(0,65535)),
+                          'uname'=>'NotEmpty',
+                          'upass'=>'NotEmpty',
+                          'dbname'=>'NotEmpty',
+                          'name_c'=>'NotEmpty',
+                          'pass_c'=>'NotEmpty',
+                          'pass_c_ag'=>'NotEmpty',
+                         // 'password_c'=>array('StringEquals',
+                          //                    'fields'=>array('pass_c','pass_c_ag'))
+);
+        $fv=new Zend_Filter_Input($filter,$validator);
+        $input = $fv->setData($dsn);
         $this->view->title = 'General settings';
-        $this->view->back = 'install/intro';
-        $this->view->next = '/zfentry.php/install/initial';
         $this->view->dsn = $dsn;
-        $this->render();
+        if($input->hasInvalid() || $input->hasMissing())
+        {
+            $message=$input->getMessages();
+            $this->view->back = '/zfentry.php/install/checking';
+            $this->view->next = '/zfentry.php/install/dbreview';
+            $this->view->message=$message;
+            $this->render('dbsetting'); 
+        } else {
+            $this->view->back = '/zfentry.php/install/dbsetting';
+            $this->view->next = '/zfentry.php/install/initial';
+            $this->render();  
+        }
     }
     
     public function initialAction()
     {
         $dsn = $this->_getParam('dsn');
-        $checklist=array('is_connect'=>'','is_grant'=>'','is_create_table'=>'', 'is_write_config'=>'');
-        $qry="CREATE DATABASE IF NOT EXISTS `{$dsn['dbname']}`;" ;
-        $checklist['is_connect']= mysql_connect($dsn['host'].':'.$dsn['port'], $dsn['uname'], $dsn['upass']) && mysql_query($qry); 
-        if($checklist['is_connect'])
-        {
-            $qry="GRANT ALL PRIVILEGES ON `{$dsn['dbname']}` . * TO '{$dsn['name_c']}'@'{$dsn['host']}' IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION;";
-            $checklist['is_grant']=mysql_query($qry); 
-            if($checklist['is_grant'])
-            {
+        $checklist=array('is_select_db'=>'','is_create_db'=>'','is_grant'=>'','is_create_table'=>'', 'is_write_config'=>'');
+        if(mysql_connect($dsn['host'].':'.$dsn['port'], $dsn['uname'], $dsn['upass'])){
+            if(mysql_select_db($dsn['dbname'])){
+                $checklist['is_select_db']=TRUE;
+            } else {
+                $qry="CREATE DATABASE `{$dsn['dbname']}`;" ;
+                $checklist['is_create_db']= mysql_query($qry); 
+            }
+            if($checklist['is_select_db'] || $checklist['is_create_db']){
+                $qry="GRANT ALL PRIVILEGES ON `{$dsn['dbname']}` . * TO '{$dsn['name_c']}'@'{$dsn['host']}' IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION;";
+                $checklist['is_grant']=mysql_query($qry); 
+            }   
+            if($checklist['is_grant']){
                 require_once( CONTROLLERS . DS . 'components' . DS . 'sqlimport.php');
                 $zend_dsn = array(
                     'adapter' => 'mysqli',
                     'params' => array(
-                    'host' => $dsn['host'],
-                    'port' => $dsn['port'],
-                    'username' => $dsn['uname'],
-                    'password' => $dsn['upass'],
-                    'dbname' => $dsn['dbname'],
-                    'profiler' => false));
+                        'host' => $dsn['host'],
+                        'port' => $dsn['port'],
+                        'username' => $dsn['uname'],
+                        'password' => $dsn['upass'],
+                        'dbname' => $dsn['dbname'],
+                        'profiler' => false
+                        ) );
                 $db = Zend_DB::factory(new Zend_Config($zend_dsn));
                 $init_db_path=WEB_ROOT . DS . 'install' . DS . 'db';
                 $init_files=array(
                     $init_db_path . DS . 'schema.sql',
                     $init_db_path . DS . 'init_data.sql'
-                );
-                $ret = import_data($db,$init_files);
-                $checklist['is_create_table']=$ret; 
+                    );
+                $checklist['is_create_table'] = import_data($db,$init_files);
+                $this->view->dsn = $dsn;
+            } 
+        }
+        if($checklist['is_create_table']){
+            if( file_exists(CONFIGS . DS . CONFIGFILE_NAME) ) {
+                $conf_tpl = $this->_helper->viewRenderer->getViewScript('config');
+                $dbconfig = $this->view->render($conf_tpl);
+                $checklist['is_write_config']=file_put_contents(CONFIGS . DS . CONFIGFILE_NAME ,$dbconfig);
+            }else{
+                throw new Zend_Exception("initial table error.");
+                //$this->render('config','configration');
             }
         }
-        
-        if($checklist['is_create_table'] && is_writable(CONFIGS) )
-        {
-            $dbconfig="<? 
-             Zend_Registry::set('datasource', new Zend_Config(
-                array(
-                'default' => array(
-                    'adapter' => 'mysqli',
-                    'params' => array(
-                        'host' => '{$dsn['host']}',
-                        'port' => '{$dsn['port']}',
-                        'username' => '{$dsn['name_c']}',
-                    'password' => '{$dsn['pass_c']}',
-                    'dbname' => '{$dsn['dbname']}',
-                    'profiler' => false
-                    )
-                ))
-            ));
-            ?>";
-            $checklist['is_write_config']=file_put_contents(CONFIGS . DS . 'database2.php',$dbconfig);
-        }
         $this->view->title = 'Initial Database';
-        $this->view->dbname=$dsn['dbname'];
-        $this->view->uname=$dsn['name_c'];
         foreach ($checklist as &$check)
         {
-            $check=$check?"ok":"failure";
+            $check=$check?"ok":'';
         }
         $this->view->checklist=$checklist;
         $this->view->back = '/zfentry.php/install/dbsetting';
-        $this->view->next = '/zfentry.php/install/complete';
-        $this->render();
+        if($checklist['is_write_config']){
+            $this->view->next = '/zfentry.php/install/complete';
+        } else {
+            $this->view->next = '';
+        }
+        $this->render('initial');
     }
     
     public function completeAction()
     {
-        $this->view->title = 'install complete';
+        $this->view->title = 'Install complete';
         $this->view->next = '/zfentry.php/user/login';
         $this->render();
     }

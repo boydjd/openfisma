@@ -1,32 +1,42 @@
-
-<form name="form1" method="post" action="<?php echo $this->next; ?>">
-<table  cellspacing="0" cellpadding="0" background="img/bg_table.gif">
+<table  cellspacing="0" cellpadding="0" background="/images/install/bg_table.gif">
     <tr>
-    <td width='5%'>&nbsp;</td>
-    <td align="center" colspan="3">
-        <h4 style="margin-top: 10px; margin-bottom: 5px; padding: 10px;">Welcome to the Install Wizard for OpenFISMA</h4>
-        <div style="padding: 40px;text-align:center;">
-            <p>
-            Choose language to be used for the installation process
-          </p>
-            <select name='lang'>
-            <option value='english'>english</option>
-            </select>
-        </div></td>
-    <td width='5%'>&nbsp;</td>
+        <td colspan="2"><div class="installer">
+                <h4> OpenFISMA Introduction </h4>
+                OpenFISMA is an open source application designed to reduce the complexity
+                and automate the regulatory requirements of the Federal Information
+                Security Management Act (FISMA) and the National Institute of Science
+                and Technology (NIST) Risk Management Framework (RMF). While many
+                security managers are eager to demonstrate their best practices for
+                incident response, patch management, and configuration management,
+                they are overwhelmed with the reporting and documentation requirements
+                of FISMA. Below is a brief listing of some of the documents that
+                OpenFISMA automates:
+                <UL>
+                    <LI> System Security Plan
+                    <LI> Privacy Impact Assessment
+                    <LI> Annual Self Assessments
+                    <LI> System Test and Evaluation Plan (ST&E)
+                    <LI> System Test and Evaluation Plan Results
+                    <LI> Plan of Action and Milestones (POAM)
+                </UL>
+                <b>SOFTWARE REQUIREMENTS</b><br>
+                <br>
+                OpenFISMA requires the following software, all of the following software
+                should be installed prior to installing OpenFISMA. The installation
+                program will check to ensure you have the correct versions of the
+                software required installed on your system.
+                <UL>
+                    <LI> Apache version 2+
+                    <LI> PHP version 5+
+                    <LI> MySQL version 5+
+                    <LI> Perl
+                </UL>
+                <b>ADVANCED INSTALLATION INSTRUCTIONS</b><br>
+                <br>
+                Refer to INSTALL file under the distributed directory. </div></td>
     </tr>
     <tr>
-    <td width='5%'>&nbsp;</td>
-    <td width='35%' align='left'></td>
-    <td width='20%' align='center'></td>
-    <td width='35%' align='right'><span style='font-size:85%;'>OpenFISMA Introduction >></span>
-        <input type='hidden' name='op' value='start' />
-        <input type='submit' name='submit' value='Next'  />
-    </td>
-    <td width='5%'>&nbsp;</td>
-    </tr>
-    <tr>
-    <td colspan="5">&nbsp;</td>
+        <td width="50%">&nbsp;</td>
+        <td width='50%'><div class="next"><a class="button" href="<?php echo $this->next; ?>" >Next</a></div></td>
     </tr>
 </table>
-</form>

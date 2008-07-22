@@ -1,55 +1,27 @@
-<table  width="778" align="center" cellspacing="0" cellpadding="0" background="img/bg_table.gif">
-  <tr>
-    <td width='5%'>
-       &nbsp; 
-    </td>
-    <td colspan="3">
-      <h4 style="margin-top: 10px; margin-bottom: 5px; padding: 10px;">
-         Initial Database 
-      </h4>
-      <ul class="nolist">
-        <li class="<?php echo $this->checklist['is_connect']?>">
-           Create(Connect) database <?php echo $this->dbname 
-          ?>
-        </li>
-        <li class="<?php echo $this->checklist['is_grant']?>">
-           Create account <?php echo $this->uname 
-          ?>
-           and grant all privilege of <?php echo $this->dbname 
-          ?>
-           to it 
-        </li>
-        <li class="<?php echo $this->checklist['is_create_table']?>">
-           Create tables and init
-        </li>
-        <li class="<?php echo $this->checklist['is_write_config']?>">
-           Create config file
-        </li>
-      </ul>
-    </td>
-    <td width='5%'>
-       &nbsp; 
-    </td>
-  </tr>
-  <tr>
-    <td width='5%'>
-       &nbsp; 
-    </td>
-    <td width='35%' align='left'>
-      <a class="button" href="<?php echo $this->back ; ?>">Back</a>
-    </td>
-    <td width='20%' align='center'>
-    </td>
-    <td width='35%' align='right'>
-      <span style='font-size:85%;'>Now,please directly go to index page! >></span><input type='hidden' name='op' value='complete' /><a class="button" href="<?php echo $this->next ; ?>">Next</a>
-    </td>
-    <td width='5%'>
-       &nbsp; 
-    </td>
-  </tr>
-  <tr>
-    <td colspan="5">
-       &nbsp; 
-    </td>
-  </tr>
+<table width="100%" align="center" cellspacing="0" cellpadding="0" background="img/bg_table.gif">
+    <tr>
+        <td colspan="2"><div class="installer">
+                <h4> Initial Database </h4>
+                <ul class="nolist">
+                <?php if($this->checklist['is_create_db']) { ?>
+                    <li class="<?php echo $this->checklist['is_create_db']?>"> Create
+                        database <?php echo $this->dbname; ?> </li><?php }?>
+                <?php if($this->checklist['is_select_db']) { ?>
+                    <li class="<?php echo $this->checklist['is_select_db']?>"> Connect
+                        database <?php echo $this->dbname; ?> </li> <?php }?> 
+                    <li class="<?php echo $this->checklist['is_grant']?>"> Create
+                        account <?php echo $this->uname; ?> and grant all privilege
+                        of <?php echo $this->dbname;?> to it </li>
+                    <li class="<?php echo $this->checklist['is_create_table'];?>"> Creating
+                        tables and populating initial data</li> 
+                    <li class="<?php echo $this->checklist['is_write_config'];?>"> Creating
+                        config file </li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td width='50%' ><div class="back"><a class="button" href="<?php echo $this->back ; ?>">Back</a></div></td>
+        <td width='50%' ><div class="next"><a class="button" href="<?php echo $this->next ; ?>">Next</a></div></td>
+    </tr>
 </table>
