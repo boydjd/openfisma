@@ -2,16 +2,18 @@
 ============================================================================
     OpenFISMA INSTALLATION INSTRUCTIONS
 ============================================================================
-/*  Software Pre-Requisites  */
-------------------------------
+
+1.0 Software Pre-Requisites
+
+You must have the following software installed before proceeding with
+the installation of OpenFISMA.
+
 * Apache 2 or greater
 * PHP 5.2.0 or greator
 * MySQL 5 or greator
 
-NOTE: Example Apache configuration files is included in the conf directory.
+2.0 OpenFISMA Setup
 
-/* OpenFISMA Setup */
---------------------
   a: Download the latest version of OpenFISMA
      $ wget https://openfisma.svn.sourceforge.net/svnroot/openfisma/tags/openfisma-x.x.x.tar.gz
   b: Install to the directory of choice (/opt/openfisma)
@@ -24,6 +26,6 @@ NOTE: Example Apache configuration files is included in the conf directory.
   e: During the installation /opt/openfisma/apps/config/install.conf must be writable by the webserver.
   f: To empty the install.conf triggers the reinstallation. 
 
-/* Security Hardening */
-------------------------------
+3.0 Security Hardening
+
   a: REMOVE the /public/install directory after successfully installation.
