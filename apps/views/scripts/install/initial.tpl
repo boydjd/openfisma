@@ -3,14 +3,17 @@
         <td colspan="2"><div class="installer">
                 <h4> Initial Database </h4>
                 <ul class="nolist">
-                    <li class="<?php echo $this->checklist['is_cc']?>"> <?php echo $this->method; ?>
-                        database <?php echo $this->dbname; ?> </li>
-                    <li class="<?php echo $this->checklist['is_grant']?>"> Create
-                        account <?php echo $this->uname; ?> and grant all privilege
-                        of <?php echo $this->dbname;?> to it </li>
-                    <li class="<?php echo $this->checklist['is_create_table'];?>"> Creating
+                    <li class="<?php echo $this->checklist["$this->method"]; ?>"> 
+                        Database <?php echo $this->dbname; ?>'s <?php echo $this->method; ?> 
+                    </li>
+                    <?php if( $this->dsn['name_c'] != $this->dsn['uname'] ) { ?>
+                    <li class="<?php echo $this->checklist['grant']?>"> 
+                        Create account <?php echo $this->dsn['name_c']; ?> and grant all privilege
+                        of <?php echo $this->dsn['dbname'];?> to it </li>
+                    <?php } ?>
+                    <li class="<?php echo $this->checklist['schema'];?>"> Creating
                         tables and populating initial data</li> 
-                    <li class="<?php echo $this->checklist['is_write_config'];?>"> Creating
+                    <li class="<?php echo $this->checklist['savingconfig'];?>"> Creating
                         config file </li>
                 </ul>
             </div>

@@ -19,8 +19,10 @@ NOTE: Example Apache configuration files
   c: Symlink the apache root directory to the public directory for OpenFISMA
 	 $ ln -s /opt/openfisma/public /var/www/html 
   d: Run the web installation script
-     > Browse to http://<host_address>/install/index.php
+     > Browse to http://<host_address>/
      > Follow the wizard through the installation steps
+  e: During the installation /opt/openfisma/apps/config/install.conf must be writable by the webserver.
+  f: To empty the install.conf triggers the reinstallation. 
 
 /* Security Hardening */
 ------------------------------
