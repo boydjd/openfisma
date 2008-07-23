@@ -13,9 +13,9 @@
 
 Zend_Registry::set('installed', false);
 if(is_file(CONFIGS . DS . CONFIGFILE_NAME)) {
-    $config=new Zend_Config_Ini(CONFIGS . DS . CONFIGFILE_NAME); 
+    $config=new Zend_Config_Ini(CONFIGS . DS . CONFIGFILE_NAME ); 
     if( !empty($config->database) ) {
-        Zend_Registry::set('dbconf',$config->database);
+        Zend_Registry::set('datasource',$config->database);
         Zend_Registry::set('installed', true);
     }
 }

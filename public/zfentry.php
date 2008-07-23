@@ -54,7 +54,7 @@
                 'controller'=>'Install',
                 'action'=>'error') ) );
     }else{
-        $db = Zend_DB::factory( Zend_Registry::get('dbconf') );
+        $db = Zend_DB::factory( Zend_Registry::get('datasource') );
         Zend_Db_Table::setDefaultAdapter($db);
         Zend_Registry::set('db', $db);
         $route['install_end'] = new Zend_Controller_Router_Route_Static(

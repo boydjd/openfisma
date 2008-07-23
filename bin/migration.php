@@ -20,11 +20,15 @@
     require_once 'Zend/Layout.php';
     require_once 'Zend/Registry.php';
     require_once 'Zend/Config.php';
+    require_once 'Zend/Config/Ini.php';
     require_once 'Zend/Db.php';
     require_once 'Zend/Db/Table.php';
     require_once MODELS . DS . 'Abstract.php';
     require_once 'Zend/Controller/Plugin/ErrorHandler.php';
-    require_once ( CONFIGS . DS . 'database.php');
+    require_once ( CONFIGS . DS . 'setting.php');
+    $srcconfig = new Zend_Config($config->database);//from setting.php
+    $srcconfig->params->dbname='legacy_fisma';
+    Zend_Registry::set('legacy_datasource', $srcconfig); 
 
     $table_name=  array(
          //     'BLSCR', 
@@ -49,8 +53,8 @@
               'AUDIT_LOG'
               );
 
-    $db_target = Zend_DB::factory(Zend_Registry::get('datasource')->default);
-    $db_src    = Zend_DB::factory(Zend_Registry::get('legacy_datasource')->default);
+    $db_target = Zend_DB::factory(Zend_Registry::get('datasource'));
+    $db_src    = Zend_DB::factory(Zend_Registry::get('legacy_datasource'));
 
     $clean_table_name=array('roles','functions','role_functions');
     foreach($clean_table_name as $table)
