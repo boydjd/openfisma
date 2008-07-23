@@ -3,3 +3,17 @@ The OpenFISMA project is an open source application designed to reduce the compl
 OpenFISMA is built on the Zend Framework which is an open source, object oriented, web application framework with a flexible architecture. ZF is often referred to as a 'component library' because it has many loosely coupled components that you can use more or less independently. However, Zend Framework also provides a core model-view-controller (MVC) implementation that you can use to provide basic 'best practices' structure to web applications.
 
 You may also visit the OpenFISMA website for more information at http://www.openfisma.org.
+
+The contents typically include one or more of the following:
+
+    * configuration instructions
+    * installation instructions
+    * operating instructions
+    * a file manifest
+    * copyright and licensing information
+    * contact information for the distributor or programmer
+    * known bugs
+    * troubleshooting
+    * credits and acknowledgments
+    * a changelog
+
