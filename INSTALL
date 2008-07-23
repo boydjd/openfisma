@@ -5,10 +5,10 @@
 /*  Software Pre-Requisites  */
 ------------------------------
 * Apache 2 or greater
-* PHP 5 or greator
+* PHP 5.2.0 or greator
 * MySQL 5 or greator
-NOTE: Example Apache configuration files 
-      is included in the conf directory.
+
+NOTE: Example Apache configuration files is included in the conf directory.
 
 /* OpenFISMA Setup */
 --------------------
@@ -27,5 +27,3 @@ NOTE: Example Apache configuration files
 /* Security Hardening */
 ------------------------------
   a: REMOVE the /public/install directory after successfully installation.
-  b: MAKE /public/mainfile.php only readable by Apache daemon.
-     $ chmod 440 /public/mainfile.php
