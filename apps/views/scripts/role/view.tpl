@@ -14,8 +14,7 @@
     </tr>
     <tr>
         <td align="right" class="thc" width="200">Description:</td>
-        <td class="tdc">&nbsp;<textarea name="role_desc" size="30" cols="110" rows="5">
-            <?php echo $this->role['desc'];?></textarea></td>
+        <td class="tdc"><?php echo nl2br($this->role['desc']);?></td>
     </tr>
    </table>
 <br>
