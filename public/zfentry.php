@@ -47,7 +47,7 @@
 
     if( ! isInstall() ) {
         $route['install'] = new Zend_Controller_Router_Route_Regex(
-        '([^/]*)/?(.*)$',array('controller'=>'install'),array('action'=>2));
+        '([^/]*)/?(.*)$',array('controller'=>'install'),array('action'=>2),'install/%2$s');
         $router->addRoute('default',$route['install']);
         $front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler( array(
                 'model'=>null,

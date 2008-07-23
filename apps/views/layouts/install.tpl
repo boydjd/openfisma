@@ -17,7 +17,9 @@
     <td width="150"><img src="/images/install/hbar_right.gif" width="100%" height="23" alt="" /></td>
   </tr>
   <tr height=80>
-    <td width="180" bgcolor="#FFFFFF" align=right><a href="index"><img src="/images/install/OpenFISMA.gif" alt="OpenFISMA Logo" /></a></td>
+    <td width="180" bgcolor="#FFFFFF" align=right>
+    <a href="<?php echo $this->url(array(2=>'index'),'default'); ?>">
+                <img src="/images/install/OpenFISMA.gif" alt="OpenFISMA Logo" /></a></td>
     <td width="448" bgcolor="#FFFFFF" >&nbsp;</td>
     <td width="150" bgcolor="#FFFFFF" >&nbsp;</td>
   </tr>
