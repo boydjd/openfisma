@@ -63,6 +63,9 @@
         if(isAllow('admin_users','read')) {
             echo'<li><a href="/zfentry.php/panel/account/sub/list">Users</a>';
         }
+        if(isAllow('admin_roles','read')){
+            echo'<li><a href="/zfentry.php/panel/role/sub/list">Roles</a>';
+        }
         if(isAllow('admin_systems','read')) {
             echo'<li><a href="/zfentry.php/panel/system/sub/list">Systems</a>';
         }

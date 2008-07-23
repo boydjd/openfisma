@@ -141,6 +141,15 @@ class PanelController extends SecurityController
         $this->_helper->actionStack('header');
     }
 
+    public function roleAction()
+    {
+        $req = $this->getRequest();
+        $sub = $req->getParam('sub');
+        $this->_helper->actionStack($sub,'Role');
+        $this->_helper->actionStack('searchbox','Role');
+        $this->_helper->actionStack('header');
+    }
+
 }
 
 

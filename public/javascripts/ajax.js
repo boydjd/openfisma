@@ -22,6 +22,23 @@ $(document).ready(function(){
         searchAsset();
     });
 
+    $("select[name='function_screen']").change(function(){
+        search_function();
+    }).trigger('change');
+        
+    $('#add_function').click(function() {
+        return !$('#available_functions option:selected').remove().appendTo('#exist_functions');  
+    });  
+    $('#remove_function').click(function() {  
+        return !$('#exist_functions option:selected').remove().appendTo('#available_functions');  
+    }); 
+
+    $("form[name='assign_right']").submit(function() {  
+        $('#exist_functions option').each(function(i) {  
+            $(this).attr("selected", "selected");  
+        });
+    }); 
+
     asset_detail();
     
     $("input#search_asset").click(function(){
@@ -123,6 +140,16 @@ function asset_detail() {
     });
 }
 
+function search_function() {
+    var trigger = $("select[name='function_screen']");
+    var param = '';
+    var name = trigger.children("option:selected").attr('value');
+    if( null != name){
+        param += '/screen_name/'+name;
+    }
+    var url = trigger.attr("url") + '/do/search_function' + param;
+    $("select[name='available_functions']").load(url,null);
+}
 
 function upload_evidence(){
     //$("#up_evidence").blur();
