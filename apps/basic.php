@@ -9,7 +9,7 @@
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
 */
-
+    define( 'CONFIGFILE_NAME', 'install.conf');
     require_once(APPS . DS .'Exception.php');
 
     /** 
@@ -133,5 +133,15 @@
         }else{
             return $default;
         }
+    }
+
+    function isInstall()
+    {
+        $reg = Zend_Registry::getInstance();
+        $ret = false;           
+        if( $reg->isRegistered('installed') ) {
+	        $ret = $reg->get('installed');
+        }
+        return $ret;
     }
  

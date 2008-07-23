@@ -1,6 +1,4 @@
 
-installed=true
-
 [database]
 adapter=mysqli 
 params.host=<?php echo $this->dsn['host']; ?> 

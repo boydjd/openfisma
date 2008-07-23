@@ -194,5 +194,22 @@ class InstallController extends Zend_Controller_Action
         $this->view->next = '/zfentry.php/user/login';
         $this->render();
     }
+
+    public function errorAction()
+    {
+        $content = null;
+        $errors = $this->_getParam ('error_handler') ;
+        //$this->_helper->layout->setLayout('error');
+        switch ($errors->type) {
+            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER :
+            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION :
+            default :
+                // 404 error -- controller or action not found
+                $this->getResponse ()->setRawHeader ( 'HTTP/1.1 404 Not Found' ) ;
+                break;
+        }
+        $this->getResponse()->clearBody();
+        $this->render();
+    }
 }
 ?>
