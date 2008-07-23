@@ -55,13 +55,13 @@
                             <td class='head'><b>Password</b><br />
                                 <span style='font-size:85%;'></span> </td>
                             <td class='even'><input type='password' name='dsn[pass_c]' id='pass_c' size='30' maxlength='100'  value="<?php echo $this->dsn['pass_c']?>"/>
-                                <?php if(isset($this->message['host'])) {echo " <span class='notice'>*</span>";}?>                            </td>
+                                <?php if(isset($this->message['pass_c'])) {echo " <span class='notice'>*</span>";}?>                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Confirm password</b><br />
                                 <span style='font-size:85%;'></span> </td>
                             <td class='even'><input type='password' name='dsn[pass_c_ag]' id='pass_c_ag' size='30' maxlength='100' value="<?php echo $this->dsn['pass_c_ag']?>"/>
-                                <?php if(isset($this->message['host'])) {echo " <span class='notice'>*</span>";}?>                            </td>
+                                <?php if(isset($this->message['pass_c_ag'])) {echo " <span class='notice'>*</span>";}?>                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Installation physical path</b><br />
