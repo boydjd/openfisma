@@ -6,6 +6,10 @@
 <link rel="stylesheet" type="text/css" href="/stylesheets/layout.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/fisma.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
+<link rel="icon"
+      type="image/ico"
+      href="/images/favicon.ico" />
+
 </head>
 <body>
 <div id='container'>

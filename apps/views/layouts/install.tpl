@@ -6,6 +6,9 @@
   <style type="text/css" media="all">
   <!-- @import url(/stylesheets/install.css); -->
   </style>
+  <link rel="icon"
+        type="image/ico"
+        href="/images/favicon.ico" />
 </head>
 <body> 
 
