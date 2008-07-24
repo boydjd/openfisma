@@ -105,3 +105,8 @@ div.panel {
     font-weight:bold;
     color:red;
 }
+
+.errorbox {
+    border:1px red solid;
+	padding:10px;
+}

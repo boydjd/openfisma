@@ -128,22 +128,28 @@ class InstallController extends Zend_Controller_Action
                          'grant'=>'failure',
                          'schema'=>'failure', 
                          'savingconfig'=>'failure');
-        $method='connection';
+        $method='connection / creation';
+        $err_message='';
         $ret = false;
         if(mysql_connect($dsn['host'].':'.$dsn['port'], $dsn['uname'], $dsn['upass'])){
-            $checklist['connection'] = 'ok';
             if(mysql_select_db($dsn['dbname'])){
+                $method='connection';
+                $checklist['connection'] = 'ok';
                 $ret = true;
-            } else {
-                $qry="CREATE DATABASE `{$dsn['dbname']}`;" ;
-                $ret = mysql_query($qry); 
+            } elseif (mysql_query("CREATE DATABASE `{$dsn['dbname']}`;")) {
                 $method='creation';
                 $checklist['creation'] = 'ok';
+                $ret = true;
+            } else {
+                $err_message .= mysql_error();
             }
             if($ret && ($dsn['uname'] != $dsn['name_c']) ){
-                $qry="GRANT ALL PRIVILEGES ON `{$dsn['dbname']}` . * TO '{$dsn['name_c']}'@'{$dsn['host']}' IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION;";
+                $host = ('localhost'==strtolower($dsn['host']))? 'localhost' : '%';
+                $qry="GRANT ALL PRIVILEGES ON `{$dsn['dbname']}` . * TO '{$dsn['name_c']}'@'{$host}' IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION;";
                 if( TRUE == ($ret = mysql_query($qry)) ){
                     $checklist['grant'] = 'ok';
+                } else {
+                    $err_message .= mysql_error();
                 }
             }   
             if($ret) {
@@ -158,41 +164,48 @@ class InstallController extends Zend_Controller_Action
                         'dbname' => $dsn['dbname'],
                         'profiler' => false
                         ) );
-                $db = Zend_DB::factory(new Zend_Config($zend_dsn));
-                $init_db_path=WEB_ROOT . DS . 'install' . DS . 'db';
-                $init_files=array(
-                    $init_db_path . DS . 'schema.sql',
-                    $init_db_path . DS . 'init_data.sql'
-                    );
-                try {
+                try {    
+                    $db = Zend_DB::factory(new Zend_Config($zend_dsn));
+                    $init_db_path=WEB_ROOT . DS . 'install' . DS . 'db';
+                    $init_files=array(
+                        $init_db_path . DS . 'schema.sql',
+                        $init_db_path . DS . 'init_data.sql'
+                        );
                     if( $ret = import_data($db,$init_files) ) {
                         $checklist['schema'] = 'ok';
-                    }
+                    } 
                 } catch (Zend_Exception $e){
-                    $err = $e->getMessage();
+                    $err_message .= $e->getMessage();
                     $ret = false;
                 }
             } 
+        } else {
+            $err_message .= mysql_error();
         }
         $this->view->dsn = $dsn;
         if($ret){
-            if( file_exists(CONFIGS . DS . CONFIGFILE_NAME) ) {
+            if( is_writable(CONFIGS . DS . CONFIGFILE_NAME) ) {
                 $conf_tpl = $this->_helper->viewRenderer->getViewScript('config');
                 $dbconfig = $this->view->render($conf_tpl);
-                if( $ret = file_put_contents(CONFIGS . DS . CONFIGFILE_NAME ,$dbconfig) ) {
+                if( 0 < file_put_contents(CONFIGS . DS . CONFIGFILE_NAME ,$dbconfig) ) {
                     $checklist['savingconfig'] = 'ok';
+                } else {
+                    $ret = false;
+                    $err_message .= 'Write no content to the file.';
                 }
             }else{
-                //throw new Zend_Exception("initial table error.");
-                //$this->render('config','configration');
+                $err_message .= 'Write config file error. ';
+                $ret =false;
             }
         }
+
         $this->view->title = 'Initial Database';
         $this->view->method = $method;
-        if($checklist['savingconfig']=='ok'){
+        if($ret){
             $this->view->next = '/zfentry.php/install/complete';
         } else {
             $this->view->next = '/zfentry.php/install/dbsetting';
+            $this->view->message = $err_message;
         }
         $this->view->checklist=$checklist;
         $this->view->back = '/zfentry.php/install/dbsetting';

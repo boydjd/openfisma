@@ -3,7 +3,7 @@
         <td colspan="2"><div class="installer">
                 <h4> Initial Database </h4>
                 <ul class="nolist">
-                    <li class="<?php echo $this->checklist["$this->method"]; ?>"> 
+                    <li class="<?php echo ($this->checklist['connection']=='ok' || $this->checklist['creation']=='ok') ? 'ok' : 'failure'; ?>"> 
                         Database <?php echo $this->dbname; ?>'s <?php echo $this->method; ?> 
                     </li>
                     <?php if( $this->dsn['name_c'] != $this->dsn['uname'] ) { ?>
@@ -16,6 +16,9 @@
                     <li class="<?php echo $this->checklist['savingconfig'];?>"> Creating
                         config file </li>
                 </ul>
+                <?php if (!empty($this->message)) { ?>
+                <div class="errorbox"><?php echo $this->message ; ?></div>
+                <?php } ?>
             </div>
         </td>
     </tr>
