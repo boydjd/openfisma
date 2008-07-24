@@ -61,9 +61,7 @@ class AccountController extends PoamBaseController
         $this->_paging['currentPage'] = $req->getParam('p',1);
         $fid = $req->getParam('fid');
         $qv = $req->getParam('qv');
-        $query = $db->select()->from(array('u'=>'users'),array('count'=>'COUNT(u.id)'))
-                              ->join(array('ur'=>'user_roles'),'u.id = ur.user_id',array())
-                              ->join(array('r'=>'roles'),'ur.role_id = r.id',array());
+        $query = $db->select()->from(array('u'=>'users'),array('count'=>'COUNT(u.id)'));
         $res = $db->fetchRow($query);
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;
@@ -95,9 +93,7 @@ class AccountController extends PoamBaseController
                                                      'firstname'=>'name_first',
                                                      'officephone'=>'phone_office',
                                                      'mobile'=>'phone_mobile',
-                                                     'email'=>'email'))
-                    ->join(array('ur'=>'user_roles'),'u.id = ur.user_id',array())
-                    ->join(array('r'=>'roles'),'ur.role_id = r.id',array('rolename'=>'r.name'));
+                                                     'email'=>'email'));
         if(!empty($qv)){
             $fid_array = array('name_last'=>'lastname',
                                'name_first'=>'firstname',
@@ -118,6 +114,14 @@ class AccountController extends PoamBaseController
         $qry->limitPage($this->_paging['currentPage'],$this->_paging['perPage']);
         $data = $user->fetchAll($qry);
         $user_list = $data->toArray();
+        foreach($user_list as $row){
+            $ret = $user->getRoles($row['id'],array('nickname'=>'nickname','id'=>'id'));
+            foreach($ret as $v){
+                $role_list[$row['id']] .= $v['nickname'].', ';
+            }
+            $role_list[$row['id']] = substr($role_list[$row['id']],0,-2);
+        }
+        $this->view->assign('role_list',$role_list);
         $this->view->assign('user_list',$user_list);
         $this->render();
     }
@@ -148,12 +152,26 @@ class AccountController extends PoamBaseController
             ->where("u.id = $id");
         $user_detail = $user->fetchRow($qry)->toArray();
 
-        $roles = $user->getRoles($id, array('name'=>'name','id'=>'id'));
-        $query = $user->getAdapter()->select()->from('roles',array('id','name'))->order('name ASC');
+        $ret = $user->getRoles($id,array('role_name'=>'name','role_id'=>'id'));
+        $count = count($ret);
+        if($count > 1){
+            foreach($ret as $row){
+                $roles .= ' '.$row['role_name'].', ';
+            }
+            $roles = substr($roles,0,-2);
+        }elseif($count == 1){
+            $roles = $ret[0]['role_id'];
+        }else{
+            $roles = null;
+        }
+        $query = $user->getAdapter()->select()->from('roles',array('id','name'))
+                                              ->where('nickname != ?','auto_role')
+                                              ->order('name ASC');
         $role_list = $user->getAdapter()->fetchPairs($query);
 
         $this->view->assign('id',$id);
         $this->view->assign('user',$user_detail);
+        $this->view->assign('role_count',$count);
         $this->view->assign('roles',$roles);
         $this->view->assign('role_list',$role_list);
         $this->view->assign('my_systems',$user->getMySystems($id));
@@ -171,6 +189,7 @@ class AccountController extends PoamBaseController
         $u_role = $req->getPost('user_role');
         $sys_data = $req->getPost('system');
         $confirm_pwd = $req->getPost('confirm_password');
+        $db = $this->_user->getAdapter();
         if(empty($u_data['account']))
         {
             $msg = "Account can not be null.";
@@ -206,7 +225,19 @@ class AccountController extends PoamBaseController
             }
         }
         if(!empty($u_role)){
-            $this->_user->getAdapter()->update('user_roles',array('role_id'=>$u_role),'user_id = '.$id);
+            $qry = $db->select()->from(array('ur'=>'user_roles'),'ur.*')
+                                ->join(array('r'=>'roles'),'ur.role_id = r.id',array())
+                                ->where('user_id = ?',$id)
+                                ->where('r.nickname != ?','auto_role');
+            $ret = $db->fetchAll($qry);
+            $count = count($ret);
+            if(1 == $count){
+                $db->update('user_roles',array('role_id'=>$u_role),'user_id ='.$id);
+            }elseif(0 == $count){
+                $db->insert('user_roles',array('role_id'=>$u_role,'user_id'=>$id));
+            }else{
+                throw new fisma_Exception('You can not evade browser to access.');
+            }
         }
         $this->_forward('view');
     }
@@ -225,13 +256,15 @@ class AccountController extends PoamBaseController
         $res = $this->_user->getAdapter()->delete('user_systems','user_id = '.$id);
         $res = $this->_user->getAdapter()->delete('user_roles','user_id = '.$id);
         if($res){
-            $msg ="<p><b>User deleted successfully</b></p>";
+            $msg ="User deleted successfully.";
+            $model = self::M_NOTICE;
             $this->_user->log(USER::TERMINATION,$this->me->id,'delete user '.$user_name); 
         }
         else {
-            $msg ="<p><b>Failed to delete user</b></p>";
+            $msg ="Failed to delete user.";
+            $model = self::M_WARNING;
         }
-        $this->view->assign('msg',$msg);
+        $this->message($msg,$model);
         $this->_forward('list');
     }
     /**
@@ -239,11 +272,14 @@ class AccountController extends PoamBaseController
     */
     public function createAction()
     {
-        require_once(MODELS . DS . 'role.php');
-        $r = new Role();
         $system = new system();
-
-        $this->view->roles = $r->getList('name');
+        $db = $system->getAdapter();
+        $qry = $db->select()->from('roles',array('id','name'))->where('nickname != ?','auto_role');
+        $ret = $db->fetchAll($qry);
+        foreach($ret as $row){
+            $roles[$row['id']] = $row['name'];
+        }
+        $this->view->roles = $roles;
         $this->view->systems = $system->getList();
         $this->render();
     }
@@ -304,5 +340,108 @@ class AccountController extends PoamBaseController
         $this->_forward('create');
     }
 
+    public function assignroleAction()
+    {
+        $req = $this->getRequest();
+        $user_id = $req->getParam('id');
+        $db = $this->_user->getAdapter();
+        $ret = $this->_user->find($user_id)->toArray();
+        $user_name = $ret[0]['account'];
+        $qry = $db->select()->from(array('r'=>'roles'),array('role_id'=>'r.id','role_name'=>'r.name'))
+                            ->join(array('ur'=>'user_roles'),'ur.role_id = r.id',array())
+                            ->where('ur.user_id = ?',$user_id)
+                            ->where('r.nickname !=?','auto_role');
+        $assign_roles = $db->fetchAll($qry);
+        $qry->reset();
+        $ret = $this->_user->find($user_id)->toArray();
+        $auto_role = $ret[0]['auto_role'];
+        $qry->from('roles',array('role_id'=>'id','role_name'=>'name'))->where('nickname != ?','auto_role');
+        $all_roles = $db->fetchAll($qry);
+        foreach($all_roles as $v){
+            if(!in_array($v,$assign_roles)){
+                $available_roles[] = $v;
+            }
+        }
+        $qry->reset();
+        $qry->from(array('f'=>'functions'),array('function_id'=>'f.id','function_name'=>'f.name'))
+            ->join(array('rf'=>'role_functions'),'rf.function_id = f.id',array())
+            ->join(array('ur'=>'user_roles'),'ur.role_id = rf.role_id',array())
+            ->join(array('r'=>'roles'),'r.id = ur.role_id',array())
+            ->where('r.name = ?',$auto_role);
+        $assign_privileges = $db->fetchAll($qry);
+        $this->view->assign('user_id',$user_id);
+        $this->view->assign('user_name',$user_name);
+        $this->view->assign('assign_roles',$assign_roles);
+        $this->view->assign('available_roles',$available_roles);
+        $this->view->assign('assign_privileges',$assign_privileges);
+        if('assign' == $req->getParam('do')){
+            $assign_roles = $req->getParam('assign_roles');
+            $assign_privileges = $req->getParam('assign_privileges');
+            $db->delete('user_roles','user_id = '.$user_id);
+            foreach($assign_roles as $v){
+                $db->insert('user_roles',array('user_id'=>$user_id,'role_id'=>$v));
+            }
+            if(!empty($assign_privileges)){
+                $qry = $db->select()->from(array('r'=>'roles'),array('role_id'=>'r.id'))
+                                    ->where('r.name = ?',$auto_role);
+                $ret = $db->fetchRow($qry);
+                if(!empty($ret)){
+                    $role_id = $ret['role_id'];
+                    $db->insert('user_roles',array('user_id'=>$user_id,'role_id'=>$role_id));
+                    $db->delete('role_functions','role_id = '.$role_id);
+                    foreach($assign_privileges as $v){
+                        $db->insert('role_functions',array('role_id'=>$role_id,'function_id'=>$v));
+                    }
+                }else{
+                    $db->insert('roles',array('name'=>$auto_role,'desc'=>'extra role for user'));
+                    $role_id = $db->LastInsertId();
+                    $db->insert('user_roles',array('user_id'=>$user_id,'role_id'=>$role_id));
+                    foreach($assign_privileges as $v){
+                        $db->insert('role_functions',array('role_id'=>$role_id,'function_id'=>$v));
+                    }
+                }
+            }
+            $this->message('assign role and privileges successfully.',self::M_NOTICE);
+            $this->_redirect('panel/account/sub/assignrole/id/'.$user_id);
+        }else{
+            $this->render();
+        }
+    }
 
+    public function searchprivilegeAction()
+    {
+        $req = $this->getRequest();
+        $db = $this->_user->getAdapter();
+        $user_id = $req->getParam('id');
+        $ret = $this->_user->find($user_id)->toArray();
+        $auto_role = $ret[0]['auto_role'];
+        $qry = $db->select()->from(array('f'=>'functions'),array('function_id'=>'f.id','function_name'=>'f.name'))
+                            ->join(array('rf'=>'role_functions'),'rf.function_id = f.id',array())
+                            ->join(array('ur'=>'user_roles'),'ur.role_id = rf.role_id',array())
+                            ->join(array('r'=>'roles'),'r.id = ur.role_id',array())
+                            ->where('r.name = ?',$auto_role);
+        $assign_privileges = $db->fetchAll($qry);
+
+        $roles = substr(str_replace('-',',',$req->getParam('assign_roles')),0,-1);
+        $qry->reset();
+        $qry->from('functions',array('function_id'=>'id','function_name'=>'name'));
+        $all_privileges = $db->fetchAll($qry);
+        if(!empty($roles)){
+            $qry->reset();
+            $qry->from(array('f'=>'functions'),array('function_id'=>'f.id','function_name'=>'f.name'))
+                ->join(array('rf'=>'role_functions'),'rf.function_id = f.id',array())
+                ->where('rf.role_id in ('.$roles.')');
+            $exist_privileges = array_merge($db->fetchAll($qry),$assign_privileges);
+        }else{
+            $exist_privileges = $assign_privileges;
+        }
+        foreach($all_privileges as $v){
+            if(!in_array($v,$exist_privileges)){
+                $available_privileges[] = $v;
+            }
+        }
+        $this->view->assign('available_privileges',$available_privileges);
+        $this->_helper->layout->setLayout('ajax');
+        $this->render('availableprivi');
+    }
 }

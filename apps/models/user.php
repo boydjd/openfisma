@@ -61,7 +61,7 @@ class User extends Fisma_Model
                   ->from(array('u'=>'users'),array())
                   ->join(array('ur'=>'user_roles'),'u.id = ur.user_id',array())
                   ->join(array('r'=>'roles'),'r.id = ur.role_id',$fields)
-                  ->where("u.id = $id and r.name != 'none'");
+                  ->where("u.id = $id and r.nickname != 'auto_role'");
 
         return  $db->fetchAll($qry);
     }

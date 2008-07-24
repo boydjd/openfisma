@@ -67,7 +67,8 @@ class SecurityController extends Zend_Controller_Action
         if( !Zend_Registry::isRegistered('acl') )  {
             $acl = new Zend_Acl();
             $db = Zend_Registry::get('db');
-            $query = $db->select()->from(array('r'=>'roles'),array('nickname'=>'r.nickname'));
+            $query = $db->select()->from(array('r'=>'roles'),array('nickname'=>'r.nickname'))
+                                  ->where('nickname != ?','auto_role');
             $role_array = $db->fetchAll($query);
             foreach($role_array as $row){
                 $acl->addRole(new Zend_Acl_Role($row['nickname']));
@@ -84,15 +85,27 @@ class SecurityController extends Zend_Controller_Action
             $query = $db->select()->from(array('u'=>'users'),array('account'))
                                   ->join(array('ur'=>'user_roles'),'u.id = ur.user_id',array())
                                   ->join(array('r'=>'roles'),'ur.role_id = r.id',
-                                            array('nickname'=>'r.nickname'))
+                                            array('nickname'=>'r.nickname','role_name'=>'r.name'))
                                   ->join(array('rf'=>'role_functions'),'r.id = rf.role_id',
                                             array())
                                   ->join(array('f'=>'functions'),'rf.function_id = f.id',
                                             array('screen'=>'f.screen', 'action'=>'f.action'))
-                                  ->where('u.id=?',$uid);
+                                  ->where('u.id=?',$uid)
+                                  ->where('r.nickname != ?','auto_role');
             $res = $db->fetchAll($query);
             foreach($res as $row){
                 $acl->allow($row['nickname'],$row['screen'],$row['action']);
+            }
+            $query->reset(Zend_Db_Select::WHERE);
+            $query->where('u.id = ?',$uid)
+                  ->where('r.nickname = ?','auto_role');
+            $res = $db->fetchAll($query);
+            if(!empty($res)){
+                $auto_role = $res[0]['role_name'];
+                $acl->addRole(new Zend_Acl_Role($auto_role));
+                foreach($res as $row){
+                    $acl->allow($auto_role,$row['screen'],$row['action']);
+                }
             }
             Zend_Registry::set('acl',$acl);
         }else{

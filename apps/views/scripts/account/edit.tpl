@@ -8,7 +8,7 @@
         });
     })
 </script>
-
+<?php $this->role_list[0] = '';?>
 <div class="barleft">
 <div class="barright">
 <p><b>User Account Information</b>
@@ -50,7 +50,15 @@
     </tr>
     <tr>
         <td align="right" class="thc">Role:</td>
-        <td class="tdc">&nbsp;<?php echo $this->formSelect('user_role',$this->roles[0]['id'],null,$this->role_list);?></td>
+        <td class="tdc">&nbsp;
+        <?php
+             if($this->role_count > 1){
+                 echo $this->roles;
+             }else{
+                 echo $this->formSelect('user_role',nullGet($this->roles,0),null,$this->role_list);
+             }
+        ?>
+        &nbsp;<a href="/zfentry.php/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
     </tr>
     <tr>
         <td align="right" class="thc">Title:</td>

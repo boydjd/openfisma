@@ -25,7 +25,7 @@ $(document).ready(function(){
     $("select[name='function_screen']").change(function(){
         search_function();
     }).trigger('change');
-        
+
     $('#add_function').click(function() {
         return !$('#available_functions option:selected').remove().appendTo('#exist_functions');  
     });  
@@ -33,11 +33,46 @@ $(document).ready(function(){
         return !$('#exist_functions option:selected').remove().appendTo('#available_functions');  
     }); 
 
+    $('#add_role').click(function() {
+        return !$('#available_roles option:selected').remove().appendTo('#assign_roles');
+    });
+
+    $('#add_role').click(function() {
+        search_privilege();
+    }).trigger('click');
+
+    $('#remove_role').click(function() {
+        return !$('#assign_roles option:selected').remove().appendTo('#available_roles');
+    });
+
+    $('#remove_role').click(function() {
+        search_privilege();
+    });
+
+
+    $('#add_privilege').click(function() {
+        return !$('#available_privileges option:selected').remove().appendTo('#assign_privileges');
+    });
+
+    $('#remove_privilege').click(function() {
+        return !$('#assign_privileges option:selected').remove().appendTo('#available_privileges');
+    });
+
     $("form[name='assign_right']").submit(function() {  
         $('#exist_functions option').each(function(i) {  
             $(this).attr("selected", "selected");  
         });
     }); 
+
+    $("form[name='assign_role']").submit(function() {
+        $('#assign_roles option').each(function(i) {  
+            $(this).attr("selected", "selected");  
+        });
+        $('#assign_privileges option').each(function(i) {
+            $(this).attr("selected", "selected");
+        });
+    }); 
+
 
     asset_detail();
     
@@ -149,6 +184,20 @@ function search_function() {
     }
     var url = trigger.attr("url") + '/do/search_function' + param;
     $("select[name='available_functions']").load(url,null);
+}
+
+function search_privilege() {
+    var trigger = $('#assign_roles');
+    var param = '';
+    var fid ='';
+    $('#assign_roles option').each(function(i) {
+        fid += $(this).attr('value') + '-';
+    });
+    if( null != fid){
+        param = '/assign_roles/'+fid;
+    }
+    var url = trigger.attr("url") + param;
+    $("select[name='available_privileges']").load(url,null);
 }
 
 function upload_evidence(){

@@ -1,3 +1,4 @@
+<?php $this->role_list[0] = ''; ?>
 <div class="barleft">
 <div class="barright">
 <p><b>User Account Information</b>
@@ -24,10 +25,12 @@
     <tr>
         <td align="right" class="thc">Role:</td>
         <td class="tdc">&nbsp;
-        <?php 
-            foreach($this->roles as $r) {
-                echo $r['name'],',';
-            }
+        <?php
+             if($this->role_count > 1){
+                echo $this->roles;
+             }else{
+                 echo $this->role_list[nullGet($this->roles)];
+             }
         ?>
         </td>
     </tr>

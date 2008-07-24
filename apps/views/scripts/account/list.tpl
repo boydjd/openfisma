@@ -41,7 +41,7 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $user['officephone'];?></td>
     <td class="tdc">&nbsp;<?php echo $user['mobile'];?></td>
     <td class="tdc">&nbsp;<?php echo $user['email'];?></td>
-    <td class="tdc">&nbsp;<?php echo $user['rolename'];?></td>
+    <td class="tdc">&nbsp;<?php echo $this->role_list[$user['id']];?></td>
     <td class="tdc">&nbsp;<?php echo $user['username'];?></td>
     <?php if(isAllow('admin_users','update')){ ?>
     <td class="tdc" align="center">

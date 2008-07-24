@@ -63,7 +63,7 @@ class RoleController extends SecurityController
         $req = $this->getRequest();
         $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
-        $query = $this->_role->select()->from('roles','*');
+        $query = $this->_role->select()->from('roles','*')->where('nickname != "auto_role"');
         if(!empty($value)){
             $query->where("$field = ?",$value);
         }
