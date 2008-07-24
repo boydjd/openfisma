@@ -28,4 +28,4 @@ the installation of OpenFISMA.
 
 3.0 Security Hardening
 
-  a: REMOVE the /public/install directory after successfully installation.
+  a: REMOVE the apps/controller/InstallController.php after successfully installation.
