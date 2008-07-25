@@ -185,6 +185,7 @@ class RoleController extends SecurityController
                 $qry->where('screen = ?',$screen_name);
             }
             $all_functions = $db->fetchAll($qry);
+            $available_functions = array();
             foreach($all_functions as $v){
                 if(!in_array($v,$exist_functions)){
                     $available_functions[] = $v;
