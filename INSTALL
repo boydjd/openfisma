@@ -62,8 +62,8 @@ to run.
 To accomplish this we will run the following commands.
 
    $ chmod 777 /opt/openfisma/public/temp
-   $ chmod 777 /opt/openfisma/log
    $ chmod 777 /opt/openfisma/public/evidence
+   $ chmod 777 /opt/openfisma/log
    $ chmod 777 /opt/openfisma/apps/config/install.conf
   
 If all has gone well, you will be able to run the installation script
