@@ -1,10 +1,11 @@
 <?php
 /**
- * @file ReportController.php
+ * ReportController.php
  *
  * Report Controller
  *
- * @author     Ryan<ryan.yang@reyosoft.com>
+ * @package Controller
+ * @author     Rayn ryan at sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -14,6 +15,13 @@ require_once CONTROLLERS . DS . 'PoamBaseController.php';
 require_once CONTROLLERS . DS . 'RiskAssessment.class.php';
 require_once 'Pager.php';
 
+/**
+ * Poams Report
+ * @package Controller
+ * @author     Rayn ryan at sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class ReportController extends PoamBaseController
 {
 

@@ -1,9 +1,10 @@
 <?php
 /**
- * @file AssetController.php
+ * AssetController.php
  *
  * Asset Controller 
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -19,6 +20,10 @@ require_once 'Pager.php';
 
 /**
  *  Asset CURD
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class AssetController extends PoamBaseController
 {

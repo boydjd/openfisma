@@ -1,9 +1,10 @@
 <?php
 /**
- * @file product.php
+ * product.php
  *
- * @description product model
+ * product model
  *
+ * @package Model
  * @author     Ryan<ryan.yang@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -12,6 +13,12 @@
 
 require_once 'Zend/Db/Table.php';
 
+/**
+ * @package Model
+ * @author     Ryan<ryan.yang@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class Product extends Zend_Db_Table
 {
     protected $_name = 'products';

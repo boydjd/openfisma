@@ -1,10 +1,11 @@
 <?php
 /**
- * @file user.php
+ * user.php
  *
- * @description user model
+ * user model
  *
- * @author     Jim<jimc@reyosoft.com>
+ * @package Model
+ * @author     Xhorse xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -15,6 +16,12 @@ require_once  MODELS . DS . 'Abstract.php';
 require_once('Zend/Log/Writer/Db.php');
 require_once('Zend/Log.php');
 
+/**
+ * @package Model
+ * @author     Xhorse xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class User extends Fisma_Model
 {
     protected $_name = 'users';

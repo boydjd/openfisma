@@ -1,9 +1,10 @@
 <?php
 /**
- * @file ProductController.php
+ * ProductController.php
  *
  * Product Controller
  *
+ * @package Controller
  * @author     Ryan <ryan.yang@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -15,7 +16,11 @@ require_once MODELS . DS . 'product.php';
 require_once 'Pager.php';
 
 /**
- *  Product Controller
+ * Product Controller
+ * @package Controller
+ * @author     Ryan <ryan.yang@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class ProductController extends SecurityController
 {

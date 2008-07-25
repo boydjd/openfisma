@@ -1,9 +1,10 @@
 <?php
 /**
- * @file InstallController.php
+ * InstallController.php
  *
  * Install Controller
  *
+ * @package Controller
  * @author     Jim <jimc@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -15,7 +16,13 @@ require_once 'Zend/Validate/Hostname.php';
 require_once 'Zend/Validate/Between.php';
 require_once 'Zend/Validate/InArray.php';
 
-
+/**
+ * System Installer
+ * @package Controller
+ * @author     Jim <jimc@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class InstallController extends Zend_Controller_Action
 {
     public function preDispatch()

@@ -1,10 +1,11 @@
 <?php
 /**
- * @file finding.php
+ * finding.php
  *
- * @description finding model
+ * finding model
  *
- * @author     Ryan<ryan.yang@reyosoft.com>
+ * @package Model
+ * @author     Ryan ryan at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -12,6 +13,12 @@
 
 require_once MODELS . DS . 'poam.php';
 
+/**
+ * @package Model
+ * @author     Ryan ryan at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class Finding extends Poam
 {
     /**

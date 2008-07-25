@@ -1,9 +1,10 @@
 <?php
 /**
- * @file RoleController.php
+ * RoleController.php
  *
  * Role Controller
  *
+ * @package Controller
  * @author     Ryan <ryan.yang@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -14,6 +15,13 @@ require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'role.php';
 require_once 'Pager.php';
 
+/**
+ * Role Controller
+ * @package Controller
+ * @author     Ryan <ryan.yang@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class RoleController extends SecurityController
 {
     private $_paging = array(

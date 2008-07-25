@@ -1,9 +1,10 @@
 <?php
 /**
- * @file SecurityController.php
+ * SecurityController.php
  *
  * Security Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -25,6 +26,10 @@ require_once 'Zend/Acl/Resource.php';
  * Accompany with the Authentication and ACL initialization
  *
  * Every controller that needs to be authenticated or has acl issue should be extended from it.
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class SecurityController extends Zend_Controller_Action
 {

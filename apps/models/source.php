@@ -1,9 +1,10 @@
 <?php
 /**
- * @file source.php
+ * source.php
  *
- * @description source model
+ * source model
  *
+ * @package Model
  * @author     Ryan<ryan.yang@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -11,6 +12,13 @@
 */
 
 require_once 'Abstract.php';
+
+/**
+ * @package Model
+ * @author     Ryan<ryan.yang@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class Source extends Fisma_Model
 {
     protected $_name = 'sources';

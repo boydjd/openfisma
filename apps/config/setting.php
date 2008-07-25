@@ -1,15 +1,15 @@
 <?php
 /**
- * @file setting.php
+ * setting.php
  *
  * Setting for the whole sysetm
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @package Config
+ * @author     Xhorse xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
 */
-
 
 Zend_Registry::set('installed', false);
 if(is_file(CONFIGS . DS . CONFIGFILE_NAME)) {

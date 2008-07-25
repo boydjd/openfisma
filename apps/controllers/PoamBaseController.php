@@ -1,9 +1,10 @@
 <?php
 /**
- * @file PoamBaseController.php
+ * PoamBaseController.php
  *
  * PoamBase Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -21,6 +22,10 @@ require_once CONTROLLERS . DS . 'SecurityController.php';
  *
  *  It hold some common works for those controllers, such as paging initialization, 
  *  regular modules initialization.
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class PoamBaseController extends SecurityController 
 {

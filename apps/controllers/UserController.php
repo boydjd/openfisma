@@ -1,14 +1,15 @@
 <?php 
 /**
- * @file UserController.php
+ * fileName UserController.php
  *
- * @description User Controller
+ * description User Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
-*/
+ */
 
 require_once 'Zend/Controller/Action.php';
 require_once 'Zend/Auth.php';
@@ -19,9 +20,13 @@ require_once( MODELS . DS .'system.php');
 require_once 'Zend/Date.php';
 
 /**
- *  UserController 
+ * UserController 
  *
- *  This controller is not required of authentication and ACLs
+ * This controller is not required of authentication and ACLs
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class UserController extends Zend_Controller_Action
 {

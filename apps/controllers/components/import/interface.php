@@ -1,10 +1,11 @@
 <?php 
 /**
- * @file:scanreport_interface.php
+ * scanreport_interface.php
  *
  * Plugin Interface
  *
- * @author     Jim Chen<jimc@reyosoft.com>
+ * @package Controller_components_import
+ * @author     Xhorse xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$

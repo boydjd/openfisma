@@ -1,10 +1,11 @@
 <?php
 /**
- * @file SourceController.php
+ * SourceController.php
  *
  * Source Controller
  *
- * @author     Ryan <ryan.yang@reyosoft.com>
+ * @package Controller
+ * @author     Ryan ryan at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -14,6 +15,13 @@ require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'source.php';
 require_once 'Pager.php';
 
+/**
+ * Source Controller
+ * @package Controller
+ * @author     Ryan ryan at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class SourceController extends SecurityController
 {
     private $_paging = array(

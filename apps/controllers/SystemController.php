@@ -1,10 +1,11 @@
 <?php
 /**
- * @file SystemController.php
+ * SystemController.php
  *
  * System Controller
  *
- * @author     Ryan <ryan.yang@reyosoft.com>
+ * @package Controller
+ * @author     Ryan ryan at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -17,6 +18,13 @@ require_once( MODELS . DS .'system.php');
 require_once('Pager.php');
 require_once 'Zend/Date.php';
 
+/**
+ * System Controller
+ * @package Controller
+ * @author     Ryan ryan at sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class SystemController extends SecurityController
 {
     private $_paging = array(

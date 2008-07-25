@@ -1,9 +1,10 @@
 <?PHP
 /**
- * @file RemediationController.php
+ * RemediationController.php
  *
  * Remediation Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -16,6 +17,14 @@ require_once MODELS . DS . 'evaluation.php';
 require_once APPS . DS . 'Exception.php';
 require_once 'Pager.php';
 
+/**
+ * Remediation Controller
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
+ 
 class RemediationController extends PoamBaseController
 {
 

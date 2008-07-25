@@ -1,10 +1,11 @@
 <?php
 /**
- * @fileName:debug.php
+ * debug.php
  *
- * @description Debug Configuration Info
+ * Debug Configuration Info
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @package Config
+ * @author     Xhorse xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$

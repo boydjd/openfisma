@@ -1,9 +1,10 @@
 <?PHP
 /**
- * @file ErrorController.php
+ * ErrorController.php
  *
- * @description Error Controller
+ * Error Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -13,9 +14,13 @@
 require_once 'Zend/Controller/Action.php' ;
 
 /**
- *  Error handler for exceptions
+ * Error handler for exceptions
  *
- *  @todo display less and log more, which is configurable.
+ * @todo display less and log more, which is configurable.
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class ErrorController extends Zend_Controller_Action 
 {

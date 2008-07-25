@@ -1,9 +1,10 @@
 <?php
 /**
- * @file PanelController.php
+ * PanelController.php
  *
  * Panel Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -13,7 +14,11 @@
 require_once CONTROLLERS . DS . 'SecurityController.php';
 
 /**
- *  Manipulate the menus 
+ * Manipulate the menus 
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class PanelController extends SecurityController
 {

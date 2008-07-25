@@ -1,19 +1,27 @@
 <?php
 /**
- * @file blscr.php
+ * blscr.php
  *
  * BLSCR means baseline security control requirements. NIST 800-53 specifies
  * which security controls apply to each level of system: LOW, MODERATE, and HIGH.
  * The baseline requirments specify a greater level of security for systems
  * with a higher impact rating.
  *
- * @author     Jim <jimc@reyosoft.com>
+ * @package Model
+ * @author     Xhorse xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version    $Id$
 */
 
 require_once 'Abstract.php';
+
+/**
+ * @package Model
+ * @author     Xhorse xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=Licensea
+ */
 class Blscr extends Fisma_Model
 {
     protected $_name = 'blscrs';

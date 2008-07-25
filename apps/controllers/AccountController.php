@@ -1,10 +1,11 @@
 <?php 
 /**
- * @file:AccountController.php
+ * AccountController.php
  *
  * Account Controller
  *
- * @author     Ryan <ryan.yang@reyosoft.com>
+ * @package Controller
+ * @author     Ryan  ryan at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
@@ -18,6 +19,10 @@ require_once 'Zend/Date.php';
 
 /**
  * Maintaining the user account
+ * @package Controller
+ * @author     Ryan  ryan at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
 */
 class AccountController extends PoamBaseController
 {

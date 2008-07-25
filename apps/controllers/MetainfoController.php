@@ -1,9 +1,10 @@
 <?PHP
 /**
- * @file metainfoController.php
+ * metainfoController.php
  *
  * metainfo Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -17,6 +18,10 @@ require_once MODELS . DS . 'blscr.php';
  *  Provide yellow book inquery for meta information such as types, decisions. 
  *
  *  Usually it render a select element.
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class metainfoController extends PoamBaseController
 {

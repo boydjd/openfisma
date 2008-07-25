@@ -1,14 +1,15 @@
 <?PHP
 /**
- * @file FindingController.php
+ * FindingController.php
  *
  * Finding Controller
  *
- * @author     Ryan <ryan.yang@reyosoft.com>
+ * @package Controller
+ * @author     Ryan rayn at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
-*/
+ */
 
 require_once(CONTROLLERS . DS . 'PoamBaseController.php');
 require_once(MODELS . DS . 'finding.php');
@@ -17,6 +18,15 @@ require_once(MODELS . DS . 'product.php');
 require_once(MODELS . DS . 'plugin.php');
 require_once('Pager.php');
 define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls"); 
+
+/**
+ * Finding Controller
+ * Create new Finding 
+ * @package Controller
+ * @author     Ryan rayn at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 
 class FindingController extends PoamBaseController
 {

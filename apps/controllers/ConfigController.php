@@ -1,9 +1,10 @@
 <?PHP
 /**
- * @file ConfigController.php
+ * ConfigController.php
  *
  * Config Controller for the system
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -13,6 +14,14 @@
 require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'config.php';
 
+/**
+ * Config Controller for the system
+ *
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=Licensea
+ */
 class ConfigController extends SecurityController
 {
     /**

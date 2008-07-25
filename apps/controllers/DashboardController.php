@@ -1,9 +1,10 @@
 <?PHP
 /**
- * @file DashboardController.php
+ * DashboardController.php
  *
  * Dashboard Controller
  *
+ * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
@@ -21,6 +22,10 @@ require_once MODELS . DS . 'system.php';
  * The dashboard works in this way:
  *      The view displays the flash chart plugins, which request individual XML data files
  *      from the server and in the end display pie, bars chart.
+ * @package Controller
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class DashboardController extends SecurityController
 {
