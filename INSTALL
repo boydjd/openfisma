@@ -14,18 +14,71 @@ the installation of OpenFISMA.
 
 2.0 OpenFISMA Setup
 
-  a: Download the latest version of OpenFISMA
-     $ wget https://openfisma.svn.sourceforge.net/svnroot/openfisma/tags/openfisma-x.x.x.tar.gz
-  b: Install to the directory of choice (/opt/openfisma)
-     $ tar -zxvf openfisma-x.x.x.tar.gz
-  c: Symlink the apache root directory to the public directory for OpenFISMA
-	 $ ln -s /opt/openfisma/public /var/www/html 
-  d: Run the web installation script
-     > Browse to http://<host_address>/
-     > Follow the wizard through the installation steps
-  e: During the installation /opt/openfisma/apps/config/install.conf must be writable by the webserver.
-  f: To empty the install.conf triggers the reinstallation. 
+Create a directory for OpenFISMA
+ $ mkdir /opt/openfisma
+
+Change into the new directory
+ $cd /opt/openfisma
+
+Download the latest copy of OpenFISMA
+ $ wget http://downloads.sourceforge.net/openfisma/openfisma-x.x.x.x.zip
+
+Unzip the files you just downloaded
+ $ unzip openfisma-x.x.x.zip
+
+You should now have a directory structure which looks like the following
+  > apps - folder that holds OpenFISMA application 
+  > public - public folder or document root for webserver
+  > vendor - third party modules used by OpenFISMA
+
+Next you will need to tell Apache where the public directory of OpenFISMA
+resides. Apache configuration is different on almost all flavors of unix
+but the configuration file below should only require minimal changes to 
+get you up and running. You will need to customize the server name to 
+the appropriate name and validate that the path for the error logs is 
+correct. 
+  
+    # Virtual Host for Reyosoft Development and Testing
+    <VirtualHost *:80>
+      Servername www.openfisma.org
+      DocumentRoot "/opt/openfisma/public"
+      ErrorLog /var/log/apache2/reyosoft-error.log
+      CustomLog /var/log/apache2/reyosoft-access.log common
+      <Directory "/opt/openfisma/public">
+          AllowOverride None
+          Options FollowSymLinks
+          Allow from all
+      </Directory>
+    </VirtualHost>
+  
+The following files need to be writeable for the installation script 
+to run. 
+	
+	/public/temp
+    /log
+    /public/evidence
+    /apps/config/install.conf
+
+To accomplish this we will run the following commands.
+
+   $ chmod 777 /opt/openfisma/public/temp
+   $ chmod 777 /opt/openfisma/log
+   $ chmod 777 /opt/openfisma/public/evidence
+   $ chmod 777 /opt/openfisma/apps/config/install.conf
+  
+If all has gone well, you will be able to run the installation script
+from your browser at http://<server_name>/. Follow the wizard through
+the installation steps. During the installation the wizard creates
+the /opt/openfisma/apps/config/install.conf file. If the install.conf
+contents are deleted, the wizard will run through the installation process
+again.  
 
 3.0 Security Hardening
 
-  a: REMOVE the apps/controller/InstallController.php after successfully installation.
+After the installation you will want to remove the ability to run the
+installation wizard and protect the install.conf file. This can be done
+by deleting the InstallController.php file and changing the permissions
+for the install.conf file.
+
+  $ rm /opt/openfisma/apps/controller/InstallController.php
+  $ chmod 755 /opt/openfisma/apps/config/install.conf
