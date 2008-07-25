@@ -1,9 +1,10 @@
 <?php
 /**
- * @file paths.php
+ * paths.php
  *
- * @description Define the paths that would be used in the system.
+ * Define the paths that would be used in the system.
  *
+ * @package Root
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License

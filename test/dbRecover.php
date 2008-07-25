@@ -1,10 +1,11 @@
 <?php
 /**
- * @file dbRecover.php
+ * dbRecover.php
  * recover fisma's database;
- *
- * MIT License
- *
+ * @package Test
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  * $Id$
 */
 

@@ -1,16 +1,16 @@
 <?php
 /**
-* OpenFISMA
-*
-* MIT LICENSE
-*
-* @version $Id:$
+ * migration_t.php
+ *
+ * Test function check migrate function
+ *
+ * @package Test_Unit
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @version $Id$
 */
 
-/**
-* Test function check migrate function
-*/
-//require_once MODELS . DS . 'system.php';
 class  TestFismaModel extends UnitTestCase{
         function setUp(){
             $db_target = Zend_DB::factory(Zend_Registry::get('datasource')->default);

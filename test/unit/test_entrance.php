@@ -1,4 +1,13 @@
 <?php
+/**
+* test_entrance.php
+*
+* @package Test_Unit
+* @author     Xhorse   xhorse at users.sourceforge.net
+* @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+* @license    http://www.openfisma.org/mw/index.php?title=License
+* @version $Id$
+*/
 
 define('TEST_ROOT', dirname(__FILE__));
 define('ROOT', realpath(TEST_ROOT . '/../..') );

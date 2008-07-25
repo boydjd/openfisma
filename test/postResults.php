@@ -1,7 +1,14 @@
 <?php
-/*********************************************
-http://www.reyosoft.com/SWS-v3_1/test/core/TestRunner.html?test=..%2Ftest%2FTestSuite.html&auto=on&resultsUrl=..%2FpostResults.php
-**********************************************/
+/**
+ * postResults.php
+ *http://www.reyosoft.com/SWS-v3_1/test/core/TestRunner.html?test=..%2Ftest%2FTestSuite.html&auto=on&resultsUrl=..%2FpostResults.php
+ * @package Test
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ * $Id$
+ */
+
 define('MAIL_TO', 'alixl@reyosoft.com;jimc@reyosoft.com');
 define('PROJ_NAME', 'OVMS');
 define('MAIL_FROM', 'NO_REPLY@Selenium.test');

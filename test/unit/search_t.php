@@ -1,12 +1,29 @@
 <?php 
 /**
-* Test function search in poam model
-*/
+ * search_t.php
+ *
+ * Test Searching
+ *
+ * @package Test_Unit
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @version $Id$
+ */
 
 require_once MODELS . DS . 'system.php';
 require_once MODELS . DS . 'source.php';
 require_once MODELS . DS . 'network.php';
 require_once MODELS . DS . 'poam.php';
+/**
+ * Test function search in poam model
+ *
+ * @package Test_Unit
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
+
 class TestRemediationOfSearch extends UnitTestCase{
 
     public $systems = null;

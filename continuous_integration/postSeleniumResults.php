@@ -1,18 +1,25 @@
 <?
+/**
+ *result 	the word "passed" or "failed" depending on whether the whole suite passed or at least one test failed.
+ *totalTime 	the time in seconds for the whole suite to run
+ *numTestPasses 	the number of tests that passed
+ *numTestFailures 	the number of tests that failed.
+ *numCommandPasses 	the number of commands that passed.
+ *numCommandFailures 	the number of assertions that failed.
+ *numCommandErrors 	the number of commands that had an error.
+ *suite 	the suite table, including the hidden column of test results
+ *log the text of all logs captured in the background. Set the logging level with the setBrowserLogLevel command o        r with the defaultLogLevel parameter. Any messages printed to the log window will not be posted to the server.
+ *testTable.1 	the first test table
+ *testTable.2 	the second test table
+ *... 	...
+ *testTable.N 	The Nth test table
+ * @package  continuous_integration
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @version $Id$
+ */
 
-// result 	the word "passed" or "failed" depending on whether the whole suite passed or at least one test failed.
-// totalTime 	the time in seconds for the whole suite to run
-// numTestPasses 	the number of tests that passed
-// numTestFailures 	the number of tests that failed.
-// numCommandPasses 	the number of commands that passed.
-// numCommandFailures 	the number of assertions that failed.
-// numCommandErrors 	the number of commands that had an error.
-// suite 	the suite table, including the hidden column of test results
-// log 	the text of all logs captured in the background. Set the logging level with the setBrowserLogLevel command or with the defaultLogLevel parameter. Any messages printed to the log window will not be posted to the server.
-// testTable.1 	the first test table
-// testTable.2 	the second test table
-// ... 	...
-// testTable.N 	The Nth test table
 
 $result = "Result: ".$_POST['result']."\n".
 "Selenium Version: ".$_POST['selenium_version']."\n".

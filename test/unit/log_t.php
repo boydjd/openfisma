@@ -1,16 +1,25 @@
 <?php
 /**
-* OpenFISMA
-*
-* MIT LICENSE
-*
-* @version $Id$
-*/
+ * log_t.php
+ *
+ * Test logging
+ *
+ * @package Test_Unit
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @version $Id$
+ */
 
-/**
-* Test logging 
-*/
 require_once MODELS . DS . 'user.php';
+/**
+ * Test logging
+ *
+ * @package Test_Unit
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ */
 class  TestLogging extends UnitTestCase
 {
     function setUp(){

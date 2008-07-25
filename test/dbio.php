@@ -1,13 +1,14 @@
 <?php
 /**
- * @file dbio.php
+ * dbio.php
  * Import/Export/Truncate tables from a database, one file per table
  * import/im    tb://user:passwd@localhost/database path [-n]
  * export/ex    tb://user:passwd@localhost/database path
  * truncate/tr  tb://user:passwd@localhost/database path
- *
- * MIT License
- *
+ * @package Test
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
  * $Id$
 */
 

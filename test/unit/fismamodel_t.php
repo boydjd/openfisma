@@ -1,16 +1,23 @@
 <?php
 /**
-* OpenFISMA
-*
-* MIT LICENSE
-*
-* @version $Id$
+ * fismamodel_t.php
+ *
+ * @package Test_Unit
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @version $Id$
 */
 
-/**
-* Test function search in poam model
-*/
 require_once MODELS . DS . 'system.php';
+/**
+ * Test function search in poam model
+ * @package Test_Unit
+ * @author     Xhorse   xhorse at users.sourceforge.net
+ * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/mw/index.php?title=License
+*/
+
 class  TestFismaModel extends UnitTestCase{
         function setUp(){
             $db = Zend_Registry::get('db');

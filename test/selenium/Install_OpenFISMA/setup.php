@@ -6,9 +6,11 @@
  * it. Return the database credentials to the browser in a form that
  * the Selenium script will recognize.
  *
+ * @package Test_Selenium_InstallOpenFISMA
  * @author     Mark Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @version $Id$
  */
  
 require_once('../../../paths.php');
