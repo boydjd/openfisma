@@ -29,7 +29,7 @@
              if($this->role_count > 1){
                 echo $this->roles;
              }else{
-                 echo $this->role_list[nullGet($this->roles)];
+                 echo $this->role_list[nullGet($this->roles,0)];
              }
         ?>
         </td>

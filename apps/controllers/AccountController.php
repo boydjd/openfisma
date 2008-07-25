@@ -116,6 +116,7 @@ class AccountController extends PoamBaseController
         $user_list = $data->toArray();
         foreach($user_list as $row){
             $ret = $user->getRoles($row['id'],array('nickname'=>'nickname','id'=>'id'));
+            $role_list[$row['id']] = '';
             foreach($ret as $v){
                 $role_list[$row['id']] .= $v['nickname'].', ';
             }
@@ -155,6 +156,7 @@ class AccountController extends PoamBaseController
         $ret = $user->getRoles($id,array('role_name'=>'name','role_id'=>'id'));
         $count = count($ret);
         if($count > 1){
+            $roles = '';
             foreach($ret as $row){
                 $roles .= ' '.$row['role_name'].', ';
             }
