@@ -400,7 +400,8 @@ class AccountController extends PoamBaseController
                         $db->insert('role_functions',array('role_id'=>$role_id,'function_id'=>$v));
                     }
                 }else{
-                    $db->insert('roles',array('name'=>$auto_role,'desc'=>'extra role for user'));
+                    $db->insert('roles',array('name'=>$auto_role,'nickname'=>'auto_role',
+                                                                 'desc'=>'extra role for user'));
                     $role_id = $db->LastInsertId();
                     $db->insert('user_roles',array('user_id'=>$user_id,'role_id'=>$role_id));
                     foreach($assign_privileges as $v){
