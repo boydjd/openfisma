@@ -1,0 +1,14 @@
+2.0 OpenFISMA
+==========================================================
+	- Added Zend Framework Library and Components
+	- Updated Dashbord to allow direct links on numeric
+		totals provided in summary.
+
+1.3.6 OpenFISMA
+==========================================================
+	- Removed many comment requirements from workflow.
+	- Implemented automated audit log generation and
+		reporting feature.
+	- Consolidated remediation workflow.
+	- Added manual spreadsheet upload of findings from an
+		excel spreadsheet.
