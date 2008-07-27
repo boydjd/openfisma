@@ -1,7 +1,7 @@
 <table  width="100%" align="center" cellspacing="0" cellpadding="0" background="/images/install/bg_table.gif">
     <tr>
         <td colspan="2"><div class="installer">
-                <h4>Setting Check</h4>
+                <h4>Software Requirement Check</h4>
                 <ul class="nolist">
                     <li class="<?php echo $this->checklist['version'];?>"> Currently
                         PHP version is <?php echo phpversion(); ?></li>

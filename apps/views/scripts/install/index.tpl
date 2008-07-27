@@ -26,14 +26,11 @@
                 program will check to ensure you have the correct versions of the
                 software required installed on your system.
                 <UL>
-                    <LI> Apache version 2+
-                    <LI> PHP version 5+
-                    <LI> MySQL version 5+
-                    <LI> Perl
+                    <LI> Apache version 2 or Higher
+                    <LI> PHP version 5.2.0 or Higher
+                    <LI> MySQL version 5 or Higher
                 </UL>
-                <b>ADVANCED INSTALLATION INSTRUCTIONS</b><br>
-                <br>
-                Refer to INSTALL file under the distributed directory. </div></td>
+                </div></td>
     </tr>
     <tr>
         <td width="50%">&nbsp;</td>
