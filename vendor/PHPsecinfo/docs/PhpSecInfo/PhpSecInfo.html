@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos -->
+			<title>Docs For Class PhpSecInfo</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+			<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/>
+		</head>
+		<body>
+			<div class="page-body">			
+<h2 class="class-name">Class PhpSecInfo</h2>
+
+<a name="sec-description"></a>
+<div class="info-box">
+	<div class="info-box-title">Description</div>
+	<div class="nav-bar">
+					<span class="disabled">Description</span> |
+													<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+						|											<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+						
+					</div>
+	<div class="info-box-body">
+        		<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This is the main class for the phpsecinfo system.  It's responsible for  dynamically loading tests, running those tests, and generating the results  output</p>
+<p class="description"><p>Example:  <pre><ol><code><pre><li> &lt;?<span class="src-id">php </span><span class="src-inc">require_once</span><span class="src-sym">(</span><span class="src-str">'PhpSecInfo/PhpSecInfo.php'</span><span class="src-sym">)</span><span class="src-sym">; </span><span class="src-php">?&gt;</span></li>
+<li> <span class="src-php">&lt;?php </span><a href="../PhpSecInfo/_PhpSecInfo_PhpSecInfo_php.html#functionphpsecinfo">phpsecinfo</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">; </span><span class="src-php">?&gt;</span></li>
+</pre></code></ol></pre></p><p>If you want to capture the output, or just grab the test results and display them  in your own way, you'll need to do slightly more work.</p><p>Example:  <pre><ol><code><pre><li> <span class="src-inc">require_once</span><span class="src-sym">(</span><span class="src-str">'PhpSecInfo/PhpSecInfo.php'</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li> <span class="src-comm">// instantiate the class</span></li>
+<li> <span class="src-var">$psi </span>= <span class="src-key">new </span><a href="../PhpSecInfo/PhpSecInfo.html#methodPhpSecInfo">PhpSecInfo</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li>&nbsp;</li>
+<li> <span class="src-comm">// load and run all tests</span></li>
+<li> <span class="src-var">$psi</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo.html#methodloadAndRun">loadAndRun</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li>&nbsp;</li>
+<li> <span class="src-comm">// grab the results as a multidimensional array</span></li>
+<li> <span class="src-var">$results </span>= <span class="src-var">$psi</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo.html#methodgetResultsAsArray">getResultsAsArray</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li> echo <span class="src-str">&quot;&lt;pre&gt;&quot;</span><span class="src-sym">; </span>echo <a href="http://www.php.net/print_r">print_r</a><span class="src-sym">(</span><span class="src-var">$results</span><span class="src-sym">, </span><span class="src-id">true</span><span class="src-sym">)</span><span class="src-sym">; </span>echo <span class="src-str">&quot;&lt;/pre&gt;&quot;</span><span class="src-sym">;</span></li>
+<li>&nbsp;</li>
+<li> <span class="src-comm">// grab the standard results output as a string</span></li>
+<li> <span class="src-var">$html </span>= <span class="src-var">$psi</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo.html#methodgetOutput">getOutput</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li>&nbsp;</li>
+<li> <span class="src-comm">// send it to the browser</span></li>
+<li> echo <span class="src-var">$html</span><span class="src-sym">;</span></li>
+</pre></code></ol></pre></p><p>The procedural function &quot;phpsecinfo&quot; is defined below this class.</p></p>
+	<ul class="tags">
+				<li><span class="field">author:</span> <p>Ed Finkler &lt;<a href="mailto:coj@funkatron.com">coj@funkatron.com</a>&gt;</p><p>see CHANGELOG for changes</p></li>
+				<li><span class="field">see:</span> <a href="../PhpSecInfo/_PhpSecInfo_PhpSecInfo_php.html#functionphpsecinfo">phpsecinfo()</a></li>
+			</ul>
+		<p class="notes">
+			Located in <a class="field" href="_PhpSecInfo_PhpSecInfo_php.html">/PhpSecInfo/PhpSecInfo.php</a> (line <span class="field"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a77">77</a></span>)
+		</p>
+		
+				
+		<pre></pre>
+	
+			</div>
+</div>
+
+
+
+	<a name="sec-var-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variable Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+						<span class="disabled">Vars</span> (<a href="#sec-vars">details</a>)
+							| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+								</div>
+		<div class="info-box-body">
+			<div class="var-summary">
+								<div class="var-title">
+					<span class="var-type">string</span>
+					<a href="#$language" title="details" class="var-name">$language</a>
+				</div>
+								<div class="var-title">
+					<span class="var-type">integer</span>
+					<a href="#$num_tests_run" title="details" class="var-name">$num_tests_run</a>
+				</div>
+								<div class="var-title">
+					<span class="var-type">array</span>
+					<a href="#$result_counts" title="details" class="var-name">$result_counts</a>
+				</div>
+								<div class="var-title">
+					<span class="var-type">array</span>
+					<a href="#$tests_not_run" title="details" class="var-name">$tests_not_run</a>
+				</div>
+								<div class="var-title">
+					<span class="var-type">array</span>
+					<a href="#$tests_to_run" title="details" class="var-name">$tests_to_run</a>
+				</div>
+								<div class="var-title">
+					<span class="var-type">array</span>
+					<a href="#$test_results" title="details" class="var-name">$test_results</a>
+				</div>
+							</div>
+		</div>
+	</div>
+
+	<a name="sec-method-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Method Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+																		<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+				 
+				|
+						<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
+		</div>
+		<div class="info-box-body">			
+			<div class="method-summary">
+								
+				<div class="method-definition">
+											<span class="method-result"><a href="../PhpSecInfo/PhpSecInfo.html">PhpSecInfo</a></span>
+										<a href="#PhpSecInfo" title="details" class="method-name">PhpSecInfo</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">string</span>
+										<a href="#getOutput" title="details" class="method-name">getOutput</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">array</span>
+										<a href="#getResultsAsArray" title="details" class="method-name">getResultsAsArray</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#loadAndRun" title="details" class="method-name">loadAndRun</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#loadTests" title="details" class="method-name">loadTests</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#renderOutput" title="details" class="method-name">renderOutput</a>
+											([<span class="var-type">mixed</span>&nbsp;<span class="var-name">$page_title</span> = <span class="var-default">"Security Information About PHP"</span>])
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#runTests" title="details" class="method-name">runTests</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">string</span>
+										<a href="#_outputGetCssClassFromResult" title="details" class="method-name">_outputGetCssClassFromResult</a>
+											(<span class="var-type">integer</span>&nbsp;<span class="var-name">$code</span>)
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">string</span>
+										<a href="#_outputGetResultTypeFromCode" title="details" class="method-name">_outputGetResultTypeFromCode</a>
+											(<span class="var-type">integer</span>&nbsp;<span class="var-name">$code</span>)
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#_outputRenderNotRunTable" title="details" class="method-name">_outputRenderNotRunTable</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#_outputRenderStatsTable" title="details" class="method-name">_outputRenderStatsTable</a>
+										()
+									</div>
+								
+				<div class="method-definition">
+											<span class="method-result">void</span>
+										<a href="#_outputRenderTable" title="details" class="method-name">_outputRenderTable</a>
+											(<span class="var-type">string</span>&nbsp;<span class="var-name">$group_name</span>, <span class="var-type">array</span>&nbsp;<span class="var-name">$group_results</span>)
+									</div>
+							</div>
+		</div>
+	</div>		
+
+	<a name="sec-vars"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variables</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+										<a href="#sec-var-summary">Vars</a> (<span class="disabled">details</span>)
+						
+			
+										| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+					</div>
+		<div class="info-box-body">
+			<a name="var$language" id="$language"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">string</span>
+			<span class="var-name">$language</span>
+			 = <span class="var-default"> PHPSECINFO_LANG_DEFAULT</span>			(line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a119">119</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">The language code used.  Defaults to PHPSECINFO_LANG_DEFAULT, which  is 'en'</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../PhpSecInfo/_PhpSecInfo_PhpSecInfo_php.html#definePHPSECINFO_LANG_DEFAULT">PHPSECINFO_LANG_DEFAULT</a></li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$num_tests_run" id="$num_tests_run"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">integer</span>
+			<span class="var-name">$num_tests_run</span>
+			 = <span class="var-default"> 0</span>			(line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a136">136</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">The number of tests that have been run</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$result_counts" id="$result_counts"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">array</span>
+			<span class="var-name">$result_counts</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a128">128</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">An array of integers recording the number of test results in each category.  Categories can include  some or all of the PHPSECINFO_TEST_* constants.  Constants are the keys, # of results are the values.</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$tests_not_run" id="$tests_not_run"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">array</span>
+			<span class="var-name">$tests_not_run</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a109">109</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">An array of tests that were not run</p>
+<p class="description"><p><pre><ol><code><pre><li> <span class="src-var">$result</span><span class="src-sym">[</span><span class="src-str">'result'</span><span class="src-sym">] </span>= <span class="src-id"><a href="../PhpSecInfo/_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_NOTRUN">PHPSECINFO_TEST_RESULT_NOTRUN</a></span><span class="src-sym">;</span></li>
+<li> <span class="src-var">$result</span><span class="src-sym">[</span><span class="src-str">'message'</span><span class="src-sym">] </span>= <span class="src-str">&quot;a string explaining why the test was not run&quot;</span><span class="src-sym">;</span></li>
+</pre></code></ol></pre></p></p>
+	
+	
+		
+		
+
+</div>
+<a name="var$tests_to_run" id="$tests_to_run"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">array</span>
+			<span class="var-name">$tests_to_run</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a85">85</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">An array of tests to run</p>
+	<ul class="tags">
+				<li><span class="field">var:</span> PhpSecInfo_Test</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$test_results" id="$test_results"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			<span class="var-type">array</span>
+			<span class="var-name">$test_results</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a96">96</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">An array of results.  Each result is an associative array:</p>
+<p class="description"><p><pre><ol><code><pre><li> <span class="src-var">$result</span><span class="src-sym">[</span><span class="src-str">'result'</span><span class="src-sym">] </span>= <span class="src-id"><a href="../PhpSecInfo/_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_NOTICE">PHPSECINFO_TEST_RESULT_NOTICE</a></span><span class="src-sym">;</span></li>
+<li> <span class="src-var">$result</span><span class="src-sym">[</span><span class="src-str">'message'</span><span class="src-sym">] </span>= <span class="src-str">&quot;a string describing the test results and what they mean&quot;</span><span class="src-sym">;</span></li>
+</pre></code></ol></pre></p></p>
+	
+	
+		
+		
+
+</div>
+						
+		</div>
+	</div>
+	
+	<a name="sec-methods"></a>
+	<div class="info-box">
+		<div class="info-box-title">Methods</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+															<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+																	<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
+						
+		</div>
+		<div class="info-box-body">
+			<A NAME='method_detail'></A>
+<a name="methodPhpSecInfo" id="PhpSecInfo"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">Constructor PhpSecInfo</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a144">144</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Constructor</p>
+	
+	<div class="method-signature">
+		<span class="method-result"><a href="../PhpSecInfo/PhpSecInfo.html">PhpSecInfo</a></span>
+		<span class="method-name">
+			PhpSecInfo
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="methodgetOutput" id="getOutput"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">getOutput</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a674">674</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">returns the standard output as a string instead of echoing it to the browser</p>
+<p class="description"><p>note that this must be called after tests are loaded and run</p></p>
+	<ul class="tags">
+				<li><span class="field">since:</span> 0.1.1</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			getOutput
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="methodgetResultsAsArray" id="getResultsAsArray"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">getResultsAsArray</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a652">652</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">returns an associative array of test data.  Four keys are set:</p>
+<p class="description"><p><ul><li>test_results  (array)</li><li>tests_not_run (array)</li><li>result_counts (array)</li><li>num_tests_run (integer)</li></ul>  note that this must be called after tests are loaded and run</p></p>
+	<ul class="tags">
+				<li><span class="field">since:</span> 0.1.1</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">array</span>
+		<span class="method-name">
+			getResultsAsArray
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="methodloadAndRun" id="loadAndRun"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">loadAndRun</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a634">634</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Loads and runs all the tests</p>
+<p class="description"><p>As loading, then running, is a pretty common process, this saves a extra method call</p></p>
+	<ul class="tags">
+				<li><span class="field">since:</span> 0.1.1</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			loadAndRun
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="methodloadTests" id="loadTests"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">loadTests</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a154">154</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">recurses through the Test subdir and includes classes in each test group subdir,</p>
+<p class="description"><p>then builds an array of classnames for the tests that will be run</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			loadTests
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="methodrenderOutput" id="renderOutput"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">renderOutput</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a243">243</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This is the main output method.  The look and feel mimics phpinfo()</p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			renderOutput
+		</span>
+					([<span class="var-type">mixed</span>&nbsp;<span class="var-name">$page_title</span> = <span class="var-default">"Security Information About PHP"</span>])
+			</div>
+	
+		
+		
+	</div>
+<a name="methodrunTests" id="runTests"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">runTests</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a194">194</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This runs the tests in the tests_to_run array and</p>
+<p class="description"><p>places returned data in the following arrays/scalars: <ul><li>$this-&gt;test_results</li><li>$this-&gt;result_counts</li><li>$this-&gt;num_tests_run</li><li>$this-&gt;tests_not_run;</li></ul></p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			runTests
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="method_outputGetCssClassFromResult" id="_outputGetCssClassFromResult"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">_outputGetCssClassFromResult</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a554">554</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This is a helper function that returns a CSS class corresponding to  the result code the test returned.  This allows us to color-code  results</p>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			_outputGetCssClassFromResult
+		</span>
+					(<span class="var-type">integer</span>&nbsp;<span class="var-name">$code</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">integer</span>
+				<span class="var-name">$code</span>			</li>
+				</ul>
+		
+		
+	</div>
+<a name="method_outputGetResultTypeFromCode" id="_outputGetResultTypeFromCode"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">_outputGetResultTypeFromCode</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a595">595</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This is a helper function that returns a label string corresponding to  the result code the test returned.  This is mainly used for the Test  Results Summary table.</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> PHPSecInfo::_outputRenderStatsTable()</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			_outputGetResultTypeFromCode
+		</span>
+					(<span class="var-type">integer</span>&nbsp;<span class="var-name">$code</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">integer</span>
+				<span class="var-name">$code</span>			</li>
+				</ul>
+		
+		
+	</div>
+<a name="method_outputRenderNotRunTable" id="_outputRenderNotRunTable"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">_outputRenderNotRunTable</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a537">537</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This outputs a table containing a summary or test that were not executed, and the reasons why they were skipped</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> PHPSecInfo::_outputRenderTable()</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_outputRenderNotRunTable
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="method_outputRenderStatsTable" id="_outputRenderStatsTable"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<span class="method-title">_outputRenderStatsTable</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a514">514</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This outputs a table containing a summary of the test results (counts and % in each result type)</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> PHPSecInfo::_outputGetResultTypeFromCode()</li>
+				<li><span class="field">see:</span> PHPSecInfo::_outputRenderTable()</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_outputRenderStatsTable
+		</span>
+				()
+			</div>
+	
+		
+		
+	</div>
+<a name="method_outputRenderTable" id="_outputRenderTable"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<span class="method-title">_outputRenderTable</span> (line <span class="line-number"><a href="..//__filesource/fsource_PhpSecInfo__PhpSecInfoPhpSecInfo.php.html#a449">449</a></span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">This is a helper method that makes it easy to output tables of test results  for a given test group</p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_outputRenderTable
+		</span>
+					(<span class="var-type">string</span>&nbsp;<span class="var-name">$group_name</span>, <span class="var-type">array</span>&nbsp;<span class="var-name">$group_results</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">string</span>
+				<span class="var-name">$group_name</span>			</li>
+					<li>
+				<span class="var-type">array</span>
+				<span class="var-name">$group_results</span>			</li>
+				</ul>
+		
+		
+	</div>
+						
+		</div>
+	</div>
+
+
+	<p class="notes" id="credit">
+		Documentation generated on Fri, 06 Apr 2007 13:32:17 -0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.3.0RC3</a>
+	</p>
+	</div></body>
+</html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos -->
+			<title>File Source for post_max_size.php</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+			<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/>
+		</head>
+		<body>
+						<h1>Source for file post_max_size.php</h1>
+<p>Documentation is available at <a href="../PhpSecInfo/_PhpSecInfo_Test_Core_post_max_size_php.html">post_max_size.php</a></p>
+<div class="src-code">
+<pre><ol><li><a name="a1"></a><span class="src-php">&lt;?php</span></li>
+<li><a name="a2"></a><span class="src-doc">/**</span></li>
+<li><a name="a3"></a><span class="src-doc"> * Test Class for post_max_size</span></li>
+<li><a name="a4"></a><span class="src-doc"> *</span></li>
+<li><a name="a5"></a><span class="src-doc"> * </span><span class="src-doc-coretag">@package</span><span class="src-doc"> PhpSecInfo</span></li>
+<li><a name="a6"></a><span class="src-doc"> * </span><span class="src-doc-coretag">@author</span><span class="src-doc"> Ed Finkler &lt;coj@funkatron.com&gt;</span></li>
+<li><a name="a7"></a><span class="src-doc"> */</span></li>
+<li><a name="a8"></a>&nbsp;</li>
+<li><a name="a9"></a>&nbsp;</li>
+<li><a name="a10"></a><span class="src-doc">/**</span></li>
+<li><a name="a11"></a><span class="src-doc"> * require the PhpSecInfo_Test_Core class</span></li>
+<li><a name="a12"></a><span class="src-doc"> */</span></li>
+<li><a name="a13"></a><span class="src-inc">require_once</span><span class="src-sym">(</span><span class="src-str">'PhpSecInfo/Test/Test_Core.php'</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a14"></a>&nbsp;</li>
+<li><a name="a15"></a><span class="src-doc">/**</span></li>
+<li><a name="a16"></a><span class="src-doc"> * The max recommended size for the post_max_size setting, in bytes</span></li>
+<li><a name="a17"></a><span class="src-doc"> *</span></li>
+<li><a name="a18"></a><span class="src-doc"> */</span></li>
+<li><a name="a19"></a><a href="http://www.php.net/define">define</a> <span class="src-sym">(</span><span class="src-str">'PHPSECINFO_POST_MAXLIMIT'</span><span class="src-sym">, </span><span class="src-num">1024</span>*<span class="src-num">256</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a20"></a>&nbsp;</li>
+<li><a name="a21"></a><span class="src-doc">/**</span></li>
+<li><a name="a22"></a><span class="src-doc"> * Test Class for post_max_size</span></li>
+<li><a name="a23"></a><span class="src-doc"> *</span></li>
+<li><a name="a24"></a><span class="src-doc"> * </span><span class="src-doc-coretag">@package</span><span class="src-doc"> PhpSecInfo</span></li>
+<li><a name="a25"></a><span class="src-doc"> */</span></li>
+<li><a name="a26"></a><span class="src-key">class </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Post_Max_Size.html">PhpSecInfo_Test_Core_Post_Max_Size</a> <span class="src-key">extends </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core.html">PhpSecInfo_Test_Core</a></li>
+<li><a name="a27"></a><span class="src-sym">{</span></li>
+<li><a name="a28"></a>&nbsp;</li>
+<li><a name="a29"></a>    <span class="src-doc">/**</span></li>
+<li><a name="a30"></a><span class="src-doc">     * This should be a &lt;b&gt;unique&lt;/b&gt;, human-readable identifier for this test</span></li>
+<li><a name="a31"></a><span class="src-doc">     *</span></li>
+<li><a name="a32"></a><span class="src-doc">     * </span><span class="src-doc-coretag">@var </span><span class="src-doc-type">string </span></li>
+<li><a name="a33"></a><span class="src-doc">     */</span></li>
+<li><a name="a34"></a>    <span class="src-key">var </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Post_Max_Size.html#var$test_name">$test_name</a> = <span class="src-str">&quot;post_max_size&quot;</span><span class="src-sym">;</span></li>
+<li><a name="a35"></a>&nbsp;</li>
+<li><a name="a36"></a>    <span class="src-key">var </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Post_Max_Size.html#var$recommended_value">$recommended_value</a> = <span class="src-id">PHPSECINFO_POST_MAXLIMIT</span><span class="src-sym">;</span></li>
+<li><a name="a37"></a>&nbsp;</li>
+<li><a name="a38"></a>    <span class="src-key">function </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Post_Max_Size.html#method_retrieveCurrentValue">_retrieveCurrentValue</a><span class="src-sym">(</span><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a39"></a>        <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#var$current_value">current_value</a> =  <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#methodreturnBytes">returnBytes</a><span class="src-sym">(</span><a href="http://www.php.net/ini_get">ini_get</a><span class="src-sym">(</span><span class="src-str">'post_max_size'</span><span class="src-sym">))</span><span class="src-sym">;</span></li>
+<li><a name="a40"></a>    <span class="src-sym">}</span></li>
+<li><a name="a41"></a>&nbsp;</li>
+<li><a name="a42"></a>    <span class="src-doc">/**</span></li>
+<li><a name="a43"></a><span class="src-doc">     * Check to see if the post_max_size setting is enabled.</span></li>
+<li><a name="a44"></a><span class="src-doc">     */</span></li>
+<li><a name="a45"></a>    <span class="src-key">function </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Post_Max_Size.html#method_execTest">_execTest</a><span class="src-sym">(</span><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a46"></a>&nbsp;</li>
+<li><a name="a47"></a>        <span class="src-key">if </span><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#var$current_value">current_value</a></li>
+<li><a name="a48"></a>            &amp;&amp; <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#var$current_value">current_value</a> &lt;= <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Post_Max_Size.html#var$recommended_value">recommended_value</a></li>
+<li><a name="a49"></a>            &amp;&amp; <span class="src-var">$post_max_size </span>!= -<span class="src-num">1</span><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a50"></a>            <span class="src-key">return </span><span class="src-id"><a href="../PhpSecInfo/_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_OK">PHPSECINFO_TEST_RESULT_OK</a></span><span class="src-sym">;</span></li>
+<li><a name="a51"></a>        <span class="src-sym">}</span></li>
+<li><a name="a52"></a>&nbsp;</li>
+<li><a name="a53"></a>        <span class="src-key">return </span><span class="src-id"><a href="../PhpSecInfo/_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_NOTICE">PHPSECINFO_TEST_RESULT_NOTICE</a></span><span class="src-sym">;</span></li>
+<li><a name="a54"></a>    <span class="src-sym">}</span></li>
+<li><a name="a55"></a>&nbsp;</li>
+<li><a name="a56"></a>&nbsp;</li>
+<li><a name="a57"></a>    <span class="src-doc">/**</span></li>
+<li><a name="a58"></a><span class="src-doc">     * Set the messages specific to this test</span></li>
+<li><a name="a59"></a><span class="src-doc">     *</span></li>
+<li><a name="a60"></a><span class="src-doc">     */</span></li>
+<li><a name="a61"></a>    <span class="src-key">function </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Post_Max_Size.html#method_setMessages">_setMessages</a><span class="src-sym">(</span><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a62"></a>        <span class="src-id">parent</span><span class="src-sym">::</span><span class="src-id">_setMessages</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a63"></a>&nbsp;</li>
+<li><a name="a64"></a>        <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#methodsetMessageForResult">setMessageForResult</a><span class="src-sym">(</span><span class="src-id"><a href="../PhpSecInfo/_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_OK">PHPSECINFO_TEST_RESULT_OK</a></span><span class="src-sym">, </span><span class="src-str">'en'</span><span class="src-sym">, </span><span class="src-str">'post_max_size is enabled, and appears to</span></li>
+<li><a name="a65"></a><span class="src-str">                be a relatively low value'</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a66"></a>        <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#methodsetMessageForResult">setMessageForResult</a><span class="src-sym">(</span><span class="src-id"><a href="../PhpSecInfo/_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_NOTICE">PHPSECINFO_TEST_RESULT_NOTICE</a></span><span class="src-sym">, </span><span class="src-str">'en'</span><span class="src-sym">, </span><span class="src-str">'post_max_size is not enabled, or is set to</span></li>
+<li><a name="a67"></a><span class="src-str">                a high value.  Allowing a large value may open up your server to denial-of-service attacks'</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a68"></a>    <span class="src-sym">}</span></li>
+<li><a name="a69"></a>&nbsp;</li>
+<li><a name="a70"></a>&nbsp;</li>
+<li><a name="a71"></a><span class="src-sym">}</span></li>
+</ol></pre>
+</div>
+	<p class="notes" id="credit">
+		Documentation generated on Fri, 06 Apr 2007 13:32:18 -0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.3.0RC3</a>
+	</p>
+	</body>
+</html>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos -->
+			<title>File Source for uid.php</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+			<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/>
+		</head>
+		<body>
+						<h1>Source for file uid.php</h1>
+<p>Documentation is available at <a href="../PhpSecInfo/_trunk_PhpSecInfo_Test_Core_uid_php.html">uid.php</a></p>
+<div class="src-code">
+<pre><ol><li><a name="a1"></a><span class="src-php">&lt;?php</span></li>
+<li><a name="a2"></a><span class="src-doc">/**</span></li>
+<li><a name="a3"></a><span class="src-doc"> * Test class for UID</span></li>
+<li><a name="a4"></a><span class="src-doc"> * </span></li>
+<li><a name="a5"></a><span class="src-doc"> * </span><span class="src-doc-coretag">@package</span><span class="src-doc"> PhpSecInfo</span></li>
+<li><a name="a6"></a><span class="src-doc"> * </span><span class="src-doc-coretag">@author</span><span class="src-doc"> Ed Finkler &lt;coj@funkatron.com&gt;</span></li>
+<li><a name="a7"></a><span class="src-doc"> */</span></li>
+<li><a name="a8"></a>&nbsp;</li>
+<li><a name="a9"></a>&nbsp;</li>
+<li><a name="a10"></a><span class="src-doc">/**</span></li>
+<li><a name="a11"></a><span class="src-doc"> * require the PhpSecInfo_Test_Core class</span></li>
+<li><a name="a12"></a><span class="src-doc"> */</span></li>
+<li><a name="a13"></a><span class="src-inc">require_once</span><span class="src-sym">(</span><span class="src-str">'PhpSecInfo/Test/Test_Core.php'</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a14"></a>&nbsp;</li>
+<li><a name="a15"></a>&nbsp;</li>
+<li><a name="a16"></a><span class="src-doc">/**</span></li>
+<li><a name="a17"></a><span class="src-doc"> * the minimum &quot;safe&quot; UID that php should be executing as.  This can vary,</span></li>
+<li><a name="a18"></a><span class="src-doc"> * but in general 100 seems like a good min.</span></li>
+<li><a name="a19"></a><span class="src-doc"> *</span></li>
+<li><a name="a20"></a><span class="src-doc"> */</span></li>
+<li><a name="a21"></a><a href="http://www.php.net/define">define</a> <span class="src-sym">(</span><span class="src-str">'PHPSECINFO_MIN_SAFE_UID'</span><span class="src-sym">, </span><span class="src-num">100</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a22"></a>&nbsp;</li>
+<li><a name="a23"></a><span class="src-doc">/**</span></li>
+<li><a name="a24"></a><span class="src-doc"> * Test class for UID</span></li>
+<li><a name="a25"></a><span class="src-doc"> * </span></li>
+<li><a name="a26"></a><span class="src-doc"> * </span><span class="src-doc-coretag">@package</span><span class="src-doc"> PhpSecInfo</span></li>
+<li><a name="a27"></a><span class="src-doc"> */</span></li>
+<li><a name="a28"></a><span class="src-key">class </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Uid.html">PhpSecInfo_Test_Core_Uid</a> <span class="src-key">extends </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core.html">PhpSecInfo_Test_Core</a></li>
+<li><a name="a29"></a><span class="src-sym">{</span></li>
+<li><a name="a30"></a>&nbsp;</li>
+<li><a name="a31"></a>    <span class="src-doc">/**</span></li>
+<li><a name="a32"></a><span class="src-doc">     * This should be a &lt;b&gt;unique&lt;/b&gt;, human-readable identifier for this test</span></li>
+<li><a name="a33"></a><span class="src-doc">     *</span></li>
+<li><a name="a34"></a><span class="src-doc">     * </span><span class="src-doc-coretag">@var </span><span class="src-doc-type">string </span></li>
+<li><a name="a35"></a><span class="src-doc">     */</span></li>
+<li><a name="a36"></a>    <span class="src-key">var </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Uid.html#var$test_name">$test_name</a> = <span class="src-str">&quot;user_id&quot;</span><span class="src-sym">;</span></li>
+<li><a name="a37"></a>                    </li>
+<li><a name="a38"></a>    <span class="src-key">var </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Uid.html#var$recommended_value">$recommended_value</a> = <span class="src-id">PHPSECINFO_MIN_SAFE_UID</span><span class="src-sym">;</span></li>
+<li><a name="a39"></a>    </li>
+<li><a name="a40"></a>    <span class="src-key">function </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Uid.html#method_retrieveCurrentValue">_retrieveCurrentValue</a><span class="src-sym">(</span><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a41"></a>        <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#var$current_value">current_value</a> =  <a href="http://www.php.net/getmyuid">getmyuid</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a42"></a>    <span class="src-sym">}</span></li>
+<li><a name="a43"></a>                    </li>
+<li><a name="a44"></a>    <span class="src-doc">/**</span></li>
+<li><a name="a45"></a><span class="src-doc">     * Checks the GID of the PHP process to make sure it is above PHPSECINFO_MIN_SAFE_UID</span></li>
+<li><a name="a46"></a><span class="src-doc">     *</span></li>
+<li><a name="a47"></a><span class="src-doc">     * </span><span class="src-doc-coretag">@see</span><span class="src-doc"> PHPSECINFO_MIN_SAFE_UID</span></li>
+<li><a name="a48"></a><span class="src-doc">     */</span></li>
+<li><a name="a49"></a>    <span class="src-key">function </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Uid.html#method_execTest">_execTest</a><span class="src-sym">(</span><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a50"></a>        </li>
+<li><a name="a51"></a>        <span class="src-key">if </span><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#var$current_value">current_value</a> &gt;= <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Uid.html#var$recommended_value">recommended_value</a><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a52"></a>            <span class="src-key">return </span><span class="src-id"><a href="../PhpSecInfo/_trunk_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_OK">PHPSECINFO_TEST_RESULT_OK</a></span><span class="src-sym">;</span></li>
+<li><a name="a53"></a>        <span class="src-sym">}</span></li>
+<li><a name="a54"></a>        </li>
+<li><a name="a55"></a>        <span class="src-key">return </span><span class="src-id"><a href="../PhpSecInfo/_trunk_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_WARN">PHPSECINFO_TEST_RESULT_WARN</a></span><span class="src-sym">;</span></li>
+<li><a name="a56"></a>    <span class="src-sym">}</span></li>
+<li><a name="a57"></a>        </li>
+<li><a name="a58"></a>    </li>
+<li><a name="a59"></a>    <span class="src-doc">/**</span></li>
+<li><a name="a60"></a><span class="src-doc">     * Set the messages specific to this test</span></li>
+<li><a name="a61"></a><span class="src-doc">     *</span></li>
+<li><a name="a62"></a><span class="src-doc">     */</span></li>
+<li><a name="a63"></a>    <span class="src-key">function </span><a href="../PhpSecInfo/PhpSecInfo_Test_Core_Uid.html#method_setMessages">_setMessages</a><span class="src-sym">(</span><span class="src-sym">) </span><span class="src-sym">{</span></li>
+<li><a name="a64"></a>        <span class="src-id">parent</span><span class="src-sym">::</span><span class="src-id">_setMessages</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a65"></a>        </li>
+<li><a name="a66"></a>        <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#methodsetMessageForResult">setMessageForResult</a><span class="src-sym">(</span><span class="src-id"><a href="../PhpSecInfo/_trunk_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_OK">PHPSECINFO_TEST_RESULT_OK</a></span><span class="src-sym">, </span><span class="src-str">'en'</span><span class="src-sym">, </span><span class="src-str">'PHP is executing as what is probably a non-privileged user'</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a67"></a>        <span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../PhpSecInfo/PhpSecInfo_Test.html#methodsetMessageForResult">setMessageForResult</a><span class="src-sym">(</span><span class="src-id"><a href="../PhpSecInfo/_trunk_PhpSecInfo_Test_Test_php.html#definePHPSECINFO_TEST_RESULT_WARN">PHPSECINFO_TEST_RESULT_WARN</a></span><span class="src-sym">, </span><span class="src-str">'en'</span><span class="src-sym">, </span><span class="src-str">'PHP may be executing as a &quot;privileged&quot; user,</span></li>
+<li><a name="a68"></a><span class="src-str">                which could be a serious security vulnerability.'</span><span class="src-sym">)</span><span class="src-sym">;</span></li>
+<li><a name="a69"></a>    <span class="src-sym">}</span></li>
+<li><a name="a70"></a>    </li>
+<li><a name="a71"></a>&nbsp;</li>
+<li><a name="a72"></a><span class="src-sym">}</span></li>
+</ol></pre>
+</div>
+	<p class="notes" id="credit">
+		Documentation generated on Mon, 26 Feb 2007 10:50:09 -0500 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.3.0RC3</a>
+	</p>
+	</body>
+</html>
