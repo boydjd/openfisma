@@ -28,3 +28,42 @@ Please reference the INSTALL guide for instructions on installing OpenFISMA
 3.0 Directory Layout
 ===============================
 
+apps/
+	config/
+	models/
+	views/
+		layouts/
+		scripts/
+	controllers/
+	upgrade/
+public/
+	images/
+	stylesheets/
+	javascripts/
+	flash/
+	temp/
+	evidence/
+vendor/
+log/
+test/
+
+apps: General application directory for OpenFISMA.
+	config: Contains application specific config
+		db: Folder to store sql files. 
+	models: Contains database table model classes 
+	views: Master folder that contains view templates and all view related code
+		layouts:
+		scripts:
+	controllers: Contains controllers for default application 
+		ErrorController.php: Catches 500 and 404 errors and handles them 
+		IndexController.php: Default controller that gets invoked, site index
+	upgrade:
+public: This is the document root for the project, this is the only folder visible to the client browser 
+	images:Image assets 
+	javascripts: Javascript assets 
+	stylesheets: CSS assets
+	flash: Flash or SWF assets
+	evidence: Folder to handle uploaded evidence
+vendor: Contains third party libraries and standalone libraries 
+log: Log files get generated here
+test: Contains testing framework for regression testing
