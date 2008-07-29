@@ -141,7 +141,7 @@ function shortcut(step){
     }
     var year = $("span[name=year]").html();
     year = Number(year) + Number(step);
-    var url = '/zfentry.php/panel/report/sub/fisma/s/search/y/'+year+'/';
+    var url = '/panel/report/sub/fisma/s/search/y/'+year+'/';
     $("span[name=year]").html( year );
     $("span[name=year]").parent().attr( 'href', url);
     $("span[name=q1]").parent().attr( 'href', url+'q/1/' );
@@ -170,7 +170,7 @@ function searchAsset( ){
 
 function asset_detail() {
     $("select[name='asset_list']").change(function(){
-        var url = '/zfentry.php/asset/detail/id/'+ $(this).children("option:selected").attr('value');
+        var url = '/asset/detail/id/'+ $(this).children("option:selected").attr('value');
         $("div#asset_info").load(url,null);
     });
 }
