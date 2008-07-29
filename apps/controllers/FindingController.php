@@ -362,7 +362,7 @@ class FindingController extends PoamBaseController
             require_once( CONTROLLERS . DS . 'components' . DS . 'import' . DS . 'interface.php');
             require_once( CONTROLLERS . DS . 'components' . DS . 'import' . DS . $plugin_class.'.php');
             require_once('parseXml.class.php');
-            $assets['system_id'] = $req->getParam('system');
+            $assets['system_id'] = $req->getParam('system_id');
             $assets['source_id'] = $req->getParam('source');
             $assets['network_id'] = $req->getParam('network');
             $tmpfile = $_FILES['upload_file']['tmp_name'];

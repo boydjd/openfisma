@@ -30,7 +30,7 @@
                 <tr>
                     <td align="right"><b>System:<b></td>
                     <td align="left">
-                        <?php echo $this->formSelect('system',0,null,$this->system_list);?>
+                        <?php echo $this->formSelect('system_id',0,null,$this->system_list);?>
                     </td>
                 </tr>
                 <tr>
