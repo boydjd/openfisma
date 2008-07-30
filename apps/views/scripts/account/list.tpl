@@ -8,7 +8,6 @@ function delok(entryname)
     return false;
 }
 </script>
-<?php if(!empty($this->msg)){echo $this->msg;};?>
 <div class="barleft">
 <div class="barright">
 <p><b>User Account List</b>

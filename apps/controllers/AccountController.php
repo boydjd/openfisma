@@ -257,13 +257,13 @@ class AccountController extends PoamBaseController
         $id = $req->getParam('id');
         assert($id);
         $msg ="";
-        $rows = $this->_user->getList('account',$id);
-        $user_name = $rows[$id];
+        $ret = $this->_user->find($id)->toArray();
+        $user_name = $ret[0]['account'];
         $res = $this->_user->delete('id = '.$id);
         $res = $this->_user->getAdapter()->delete('user_systems','user_id = '.$id);
         $res = $this->_user->getAdapter()->delete('user_roles','user_id = '.$id);
         if($res){
-            $msg ="User deleted successfully.";
+            $msg ="User ".$user_name." deleted successfully.";
             $model = self::M_NOTICE;
             $this->_user->log(USER::TERMINATION,$this->me->id,'delete user '.$user_name); 
         }

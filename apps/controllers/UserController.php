@@ -11,10 +11,9 @@
  * @version $Id$
  */
 
-require_once 'Zend/Controller/Action.php';
 require_once 'Zend/Auth.php';
 require_once 'Zend/Auth/Adapter/DbTable.php';
-require_once( CONTROLLERS . DS . 'SecurityController.php');
+require_once( CONTROLLERS . DS . 'MessageController.php');
 require_once( MODELS . DS .'user.php');
 require_once( MODELS . DS .'system.php');
 require_once 'Zend/Date.php';
@@ -28,7 +27,7 @@ require_once 'Zend/Date.php';
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  */
-class UserController extends Zend_Controller_Action
+class UserController extends MessageController
 {
     private $_user = null;
 

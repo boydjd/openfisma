@@ -11,16 +11,15 @@
  * @version $Id$
 */
 
-require_once 'Zend/Controller/Action.php';
 require_once 'Zend/Date.php';
 require_once 'Zend/Auth.php';
 require_once 'Zend/Db.php';
 require_once MODELS . DS . 'user.php';
+require_once CONTROLLERS . DS . 'MessageController.php';
 
 require_once 'Zend/Acl.php';
 require_once 'Zend/Acl/Role.php';
 require_once 'Zend/Acl/Resource.php';
-
 
 /**
  * Accompany with the Authentication and ACL initialization
@@ -31,14 +30,12 @@ require_once 'Zend/Acl/Resource.php';
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  */
-class SecurityController extends Zend_Controller_Action
+class SecurityController extends MessageController
 {
     /**
        authenticated user instance
     */
 	protected $me = null;
-    const M_NOTICE = 'notice';
-    const M_WARNING= 'warning';
 
     public static $now = null;
     protected $_auth = null;
@@ -118,17 +115,6 @@ class SecurityController extends Zend_Controller_Action
         }
         return $acl;
     }
-
-    /**
-     *  Routine to show messages to UI by ajax
-     */
-    public function message( $msg , $model ){
-        assert(in_array($model, array(self::M_NOTICE, self::M_WARNING) ));
-        $this->view->msg = $msg;
-        $this->view->model= $model;
-        $this->_helper->viewRenderer->renderScript('message.tpl');
-    }
-
 
     /**
      *  utility to retrieve parameters in batch.
