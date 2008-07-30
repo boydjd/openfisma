@@ -29,6 +29,7 @@
                     <LI> Apache version 2 or Higher
                     <LI> PHP version 5.2.0 or Higher
                     <LI> MySQL version 5 or Higher
+					<LI> MySQL module for PHP 
                 </UL>
                 </div></td>
     </tr>
