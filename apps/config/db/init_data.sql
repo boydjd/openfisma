@@ -255,7 +255,7 @@ INSERT INTO `role_functions` (`role_id`, `function_id`) VALUES
 
 
 INSERT INTO `users` (`id`, `account`, `password`, `title`, `name_last`, `name_middle`, `name_first`, `created_ts`, `password_ts`, `history_password`, `last_login_ts`, `termination_ts`, `is_active`, `failure_count`, `phone_office`, `phone_mobile`, `email`, `auto_role`) VALUES 
-(1, 'root', md5('root'), 'admin', 'Application', NULL, 'Admin', '', '', '', '', '', 1, 0, '', NULL, '', 'root_r');
+(1, 'root', md5('0p3nfism@'), 'admin', 'Application', NULL, 'Admin', '', '', '', '', '', 1, 0, '', NULL, '', 'root_r');
 
 INSERT INTO `blscrs` (`code`, `class`, `subclass`, `family`, `control`, `guidance`, `control_level`, `enhancements`, `supplement`) VALUES 
 ('AC-01', 'TECHNICAL', 'ACCESS CONTROL POLICY AND PROCEDURES', 'Access Control', 'The organization develops, disseminates, and periodically reviews/updates: (i) a formal, documented, access control policy that addresses purpose, scope, roles, responsibilities, and compliance; and (ii) formal, documented procedures to facilitate the implementation of the access control policy and associated access controls.', 'The access control policy and procedures are consistent with applicable federal laws, directives, policies, regulations, standards, and guidance.  The access control policy can be included as part of the general information security policy for the organization.  Access control procedures can be developed for the security program in general, and for a particular information system, when required.  NIST Special Publication 800-12 provides guidance on security policies and procedures.', 'LOW', 'N/A', 'N/A'),

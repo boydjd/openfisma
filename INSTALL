@@ -74,6 +74,10 @@ the /opt/openfisma/apps/config/install.conf file. If the install.conf
 contents are deleted, the wizard will run through the installation process
 again.  
 
+Once the wizard has completed you may log in with the username
+"root" and password "0p3nfism@", please note the 0 is a zero. This
+password should be changed immediately after logging in.
+
 3.0 Security Hardening
 
 After the installation you will want to remove the ability to run the
