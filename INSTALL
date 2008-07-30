@@ -11,6 +11,7 @@ the installation of OpenFISMA.
 * Apache 2 or greater
 * PHP 5.2.0 or greator
 * MySQL 5 or greator
+* MySQL module for php5
 
 2.0 OpenFISMA Setup
 
