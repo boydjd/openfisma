@@ -120,7 +120,7 @@ class SysgroupController extends SecurityController
         if(!empty($result)){
             $msg = 'This system group cannot be deleted because it is already associated with one or more systems';
         }else{
-            //$res = $this->_sysgroup->delete('id = '.$id);
+            $res = $this->_sysgroup->delete('id = '.$id);
             if(!$res){
                 $msg = "Failed to delete the system group";
                 $model = self::M_WARNING;
