@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://ci.openfisma.org/" />
+<link rel="selenium.base" href="" />
 <title>Install_OpenFISMA</title>
 </head>
 <body>
@@ -11,105 +11,44 @@
 <thead>
 <tr><td rowspan="1" colspan="3">Install_OpenFISMA</td></tr>
 </thead><tbody>
-<!--Install OpenFISMA-->
 <tr>
 	<td>open</td>
-	<td>/test/selenium/Install_OpenFISMA/setup.php</td>
-	<td></td>
-</tr>
-<tr>
-	<td>storeText</td>
-	<td>//div[@id='dbuser']</td>
-	<td>dbuser</td>
-</tr>
-<tr>
-	<td>storeText</td>
-	<td>//div[@id='dbpass']</td>
-	<td>dbpass</td>
-</tr>
-<tr>
-	<td>storeText</td>
-	<td>//div[@id='dbname']</td>
-	<td>dbname</td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>/install</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>OpenFISMA Introduction</td>
+	<td>http://dev0.openfisma.org/zfentry.php/panel/index</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Checking software versions…</td>
+	<td>link=Next</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Checking file and directory permissions…</td>
+	<td>link=Next</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>submit</td>
+	<td>link=Next</td>
 	<td></td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>database</td>
-	<td>mysql</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>host</td>
-	<td>localhost</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>port</td>
-	<td>3306</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>uname</td>
-	<td>${dbuser}</td>
+	<td>root</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>upass</td>
-	<td>${dbpass}</td>
+	<td>3nd3@v0r</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>dbname</td>
-	<td>${dbname}</td>
+	<td>endeavor</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>name_c</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>pass_c</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>pass_c_ag</td>
+	<td>clickAndWait</td>
+	<td>submit</td>
 	<td></td>
 </tr>
 <tr>
@@ -118,58 +57,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Verify database connection</td>
+	<td>clickAndWait</td>
+	<td>link=Next</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Saving configuration data…</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Confirm Database Settings</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Initialize Database</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Installation is complete</td>
-	<td></td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>/index.php</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTitle</td>
-	<td>Login</td>
+	<td>link=HERE</td>
 	<td></td>
 </tr>
 
