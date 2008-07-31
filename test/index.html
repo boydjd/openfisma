@@ -13,9 +13,9 @@
     <ul>
     <li>Notice: functional tests are generally designed to be run <em>in-order</em>, and <em>will delete or modify</em> existing data.
     <li><a href="selenium-core-0.8.3/core/TestRunner.html?test=../../selenium-tests/Install_OpenFISMA/index.html">Install_OpenFISMA</a>
-    (Exercise the installer. Will <em>delete all</em> schema data.)
+    (Automate the install wizard on a fresh install, will only work on a fresh install, default username is root and password is 0p3nfism@, note the 0 is a zero.)
     <li><a href="selenium-core-0.8.3/core/TestRunner.html?test=../../selenium-tests/Root_Setup/index.html">Root_Setup</a>
-    (Test functionality as the root user. Creates some sample data.)
+    (Test functionality as the root user. Creates a test user account for each default user role. The username is the name of the role and the password is P@ssw0rd. Creates some sample data.)
     <li><a href="selenium-core-0.8.3/core/TestRunner.html?test=../../selenium-tests/Admin_CRUD/index.html">Admin_CRUD</a>
     (Exercise the admin's ability to create, read, update, and delete administrative metadata. Deletes all the data that it creates.)
     <li><a href="selenium-core-0.8.3/core/TestRunner.html?test=../../selenium-tests/Remediation_CAP_No_Denials/index.html">Remediation_CAP_No_Denials</a>
