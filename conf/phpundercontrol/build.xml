@@ -32,7 +32,7 @@
 	5. 'phpunit' Execute unit tests, generate metrics, coverage etc. 
 	-->
 	<target name="build" 
-			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,compatibility,package,deploy-phpdocs" />
+			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,compatibility,package,deploy-phpdocs,deploy-dev0" />
 
 	<!-- Files to be included in application package -->
     <fileset dir="${basedir}/source" id="package.files">
