@@ -9,7 +9,6 @@ The conf directory is where apache loads the default configuration file, on RHEL
 The conf.d directory is where apache loads additional conf include files after the default configuration is loaded. For RHEL users you will want to copy the contents of this directory to "/etc/httpd/conf.d/". Be sure to remove openfisma_test.conf.
 /conf.d
   openfisma.conf		-	OpenFISMA configuration file for apache
-  openfisma_test.conf	-	Test configuration file for apache
   php.conf				- 	PHP configuration file for apache
   ports.conf			- 	Tells apache which ports to listen on
   ssl.conf				-	SSL configuration file for apache
