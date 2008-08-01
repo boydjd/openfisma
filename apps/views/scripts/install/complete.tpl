@@ -6,10 +6,11 @@
                     <li><u><b>Your site</b></u></li>
                     <li>
                         <p> Click <a href='<?php echo $this->next; ?>'>HERE</a> to
-                            see the home page of your site. You may log in with the
-                            username "root" and the default password is "0p3nfism@",
-                            please not the 0 is a zero. Please change this password
-                            immediately.</p>
+                            see the home page of your site. </p>
+			<p>You may log in with the
+							username "root" and the default password is "0p3nfism@",
+							please note the 0 is a zero. Please change this password
+							immediately.</p>
                     </li>
                     <li> <u><b>Support</b></u></li>
                     <li>
