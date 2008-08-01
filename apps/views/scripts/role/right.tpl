@@ -1,6 +1,6 @@
 <div class="barleft">
 <div class="barright">
-<p><b>Administration: Rigths Assignment</b>
+<p><b>Administration: Rights Assignment</b>
 </div>
 </div>
 <form method="post" action="/zfentry.php/role/right/id/<?php echo $this->role['id'];?>/do/update" 

@@ -24,7 +24,7 @@ function delok(entryname)
               echo'<th>View</th>';
           }
           if(isAllow('admin_role_functions','read')){
-              echo'<th>Right</th>';
+              echo'<th>Rights</th>';
           }
           if(isAllow('admin_roles','delete')){
               echo'<th>Del</th>';
