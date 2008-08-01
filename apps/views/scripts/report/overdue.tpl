@@ -86,8 +86,8 @@
 <p><b>Poam Search Results</b>
     <span>
     <?php echo $this->links['all']; ?>
-    <a target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="/images/pdf.gif" border="0"></a>
-    <a href="<?php echo $this->url.'/format/xls'; ?>"><img src="/images/xls.gif" border="0"></a>
+    <a target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="<?php echo burl()?>/images/pdf.gif" border="0"></a>
+    <a href="<?php echo $this->url.'/format/xls'; ?>"><img src="<?php echo burl()?>/images/xls.gif" border="0"></a>
     </span>
 </div>
 </div>
