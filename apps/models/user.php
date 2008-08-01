@@ -121,7 +121,9 @@ class User extends Fisma_Model
         $row = $rows->current();
 
         if( $type == self::LOGINFAILURE ) {
-            $row->failure_count++;
+            if( ++$row->failure_count >= readSysConfig('failure_threshold') ) {
+                $row->is_active = false;
+            }
             $row->save();
         }
         if( $type == self::LOGIN ) {
