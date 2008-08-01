@@ -13,7 +13,7 @@
             echo 'class="editable"';
         }?> >Type:&nbsp;</b>
                     <span name="poam[type]" id="type" type="select" 
-                       href="/zfentry.php/metainfo/list/o/type/format/html/">
+                       href="<?php echo burl()?>/metainfo/list/o/type/format/html/">
                         <?php echo $this->poam['type']; ?>
                     </span>
                     </td>
@@ -52,13 +52,13 @@
             </table>
             <!-- End Resources Required for Course of Action Table -->
 
-            <div style="width:95%;margin:0 5px"> 
+            <div style="width:95%;margin:0 5px" class="selectdate" url="<?php echo burl(); ?>">
             <b target="est_date" <?php
         if(in_array($this->poam['status'],array('OPEN','NEW')) && 
             isAllow('remediation','update_est_completion_date')){
             echo ' class="editable" ';
         }?> >Estimated Completion Date:&nbsp;</b>
-            <span name="poam[action_est_date]" id="est_date" class="date" type="text" >
+            <span name="poam[action_est_date]" id="est_date" class="date" type="text">
             <?php echo nullGet($this->poam['action_est_date'],'0000-00-00'); ?>
             </span>&nbsp;&nbsp;&nbsp;
             <b>Actual Completion Date:&nbsp;</b>

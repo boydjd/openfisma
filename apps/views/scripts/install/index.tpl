@@ -1,4 +1,4 @@
-<table  cellspacing="0" cellpadding="0" background="/images/install/bg_table.gif">
+<table  cellspacing="0" cellpadding="0">
     <tr>
         <td colspan="2"><div class="installer">
                 <h4> OpenFISMA Introduction </h4>
@@ -29,7 +29,7 @@
                     <LI> Apache version 2 or Higher
                     <LI> PHP version 5.2.0 or Higher
                     <LI> MySQL version 5 or Higher
-					<LI> MySQL module for PHP 
+                    <LI> MySQL module for PHP 
                 </UL>
                 </div></td>
     </tr>

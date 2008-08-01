@@ -145,4 +145,9 @@
         }
         return $ret;
     }
+    
+    function burl()
+    {
+        return Zend_Controller_Front::getInstance()->getRequest()->getBaseUrl();
+    }
  

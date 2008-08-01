@@ -1,6 +1,6 @@
 
 <form method="post" action="<?php echo $this->next;?>">
-    <table align="center" cellspacing="0" cellpadding="0" background="img/bg_table.gif">
+    <table align="center" cellspacing="0" cellpadding="0">
         <tr>
             <td colspan="2"><div class="installer">
                     <h4>General Settings</h4>
@@ -9,8 +9,7 @@
                             <td class='head'><b>Database Product</b></td>
                             <td class='even'><select  size='1' name='dsn[type]' id='database'>
                                     <option value='mysql' selected='selected'>mysql</option>
-                                </select>
-                            </td>
+                                </select>                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b> Host Address/Name</b><br />
@@ -40,12 +39,6 @@
                                 attempt to create the database if it does not exist</span> </td>
                             <td class='even'><input type='text' name='dsn[dbname]' id='dbname' size='30' maxlength='100'  value="<?php echo nullGet($this->dsn['dbname'],'');?>" />
                                 <?php if(isset($this->message['dbname'])) {echo " <span class='notice'>*</span>";}?>                            </td>
-                        </tr>
-                        <tr valign='top' align='left'>
-                            <td class='head'><b>Installation physical path</b><br />
-                                <span style='font-size:85%;'></span> </td>
-                            <td class='even'><input type='text' name='dsn[rpath]' id='rpath' size='30' maxlength='100' value="<?php echo ROOT; ?>" />
-                         </td>
                         </tr>
                     </table>
                 </div>

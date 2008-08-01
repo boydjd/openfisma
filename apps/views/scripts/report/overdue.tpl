@@ -14,14 +14,14 @@
                             '5' => '120 and greater days');
     $this->system_list[0] ='--Any--';
     $this->source_list[0] ='--Any--';
-    $url = "/zfentry.php/panel/report/sub/overdue/s/search";
+    $url = burl()."/panel/report/sub/overdue/s/search";
 ?>
 <div class="barleft">
 <div class="barright">
 <p><b>Overdue Reports</b>
 </div>
 </div>
-<form name="overdue_report" method="post" action="/zfentry.php/panel/report/sub/overdue/s/search">
+<form name="overdue_report" method="post" action="<?php echo burl()?>/panel/report/sub/overdue/s/search">
 <table width="95%" align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
     <tr>
         <td width="6%" height="47"><b>System </b></td>

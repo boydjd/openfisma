@@ -5,7 +5,7 @@
     }
 ?>
 </p>
-<form method="post" action="/zfentry.php/user/login">
+<form method="post" action="<?php echo burl(); ?>/user/login">
     <ul id="login">
 	<li>Username: <input type="text" name="username" value="" ></li>
 	<li>Password: <input type="password" name="userpass" value=""></li>

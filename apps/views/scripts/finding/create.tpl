@@ -1,4 +1,4 @@
-<script LANGUAGE="JavaScript" type="test/javascript" src="/javascripts/ajax.js"></script>
+<script LANGUAGE="JavaScript" type="test/javascript" src="<?php echo burl(); ?>/javascripts/ajax.js"></script>
 
 <div class="barleft">
   <div class="barright">
@@ -6,7 +6,7 @@
   </div>
 </div>
 
-<form name="finding" method="post" action="/zfentry.php/panel/finding/sub/create/is/new" >
+<form name="finding" method="post" action="<?php echo burl()?>/panel/finding/sub/create/is/new" >
 <table width="810" border="0" align="center" cellpadding="0">
     <tr><td>
         <input name="button" type="submit" id="button" value="Create Finding" >
@@ -22,7 +22,7 @@
                             <td>
                                 <table border="0" cellpadding="0" cellspacing="0">
                                     <tr>
-                                        <td><input type="text" class="date" name="discovereddate" size="12" maxlength="10" value="<?php echo date('Ymd');?>"></td>
+                                        <td><input type="text" class="date" name="discovereddate" size="12" maxlength="10" value="<?php echo date('Ymd');?>" url="<?php echo burl()?>"></td>
                                     </tr>
                                 </table>
                             </td>
@@ -54,7 +54,7 @@
                     <table border="0" width="100%" cellpadding="5" class="tipframe">
                         <tr><th align="left">Asset Information
                         </th>
-                        <th align="right"><a id="add_asset" href="/zfentry.php/asset/create" title="Create New Asset">Create New Asset</a>
+                        <th align="right"><a id="add_asset" href="<?php echo burl()?>/asset/create" title="Create New Asset">Create New Asset</a>
                         </th>
                         <tr>
                             <td colspan="2">
@@ -65,7 +65,7 @@
                             <?php 
                                 $this->system[0] = '--Any--';
                                 echo $this->formSelect('system', 0, 
-                                array('url'=>"/zfentry.php/asset/search"), 
+                                array('url'=>burl()."/asset/search"), 
                                 $this->system); 
                             ?>
                                         </td>
@@ -73,14 +73,14 @@
                                         <td><input class='assets' type="text" name="name" value="<?php echo $this->param['port']; ?>" size="10" />                                          &nbsp;                                        </td>
                                       </tr>
                                     <tr>
-                                    				<td><b>IP Address:</b></td>
-                                    				<td><input class='assets' type="text" name="ip" value="<?php echo $this->param['ip']; ?>" maxlength="23" /></td>
-                                    				<td><b>Port:<b></b></b></td>
-                                    				<td><input class='assets' type="text" name="port" value="<?php echo $this->param['port']; ?>" size="10" /></td>
-                                    				</tr>
+                                                    <td><b>IP Address:</b></td>
+                                                    <td><input class='assets' type="text" name="ip" value="<?php echo $this->param['ip']; ?>" maxlength="23" /></td>
+                                                    <td><b>Port:<b></b></b></td>
+                                                    <td><input class='assets' type="text" name="port" value="<?php echo $this->param['port']; ?>" size="10" /></td>
+                                                    </tr>
                                     <tr>
                                       <td>&nbsp;</td>
-                                      <td><input id="search_asset" type="button" value="Search Assets" url='/zfentry.php/asset/search' /></td>
+                                      <td><input id="search_asset" type="button" value="Search Assets" url='<?php echo burl()?>/asset/search' /></td>
                                       <td colspan=2 ><input type="reset" name="button2" id="button2" value="Reset" /></td>
                                       </tr>
                                 </table><hr/>
@@ -88,14 +88,14 @@
                         </tr>
                         <tr>
                             <td width="200" align="center"><b>Asset Name:</b><div>
-                                <select id="asset_list" name="asset_list" size="8" style="width: 190px;">
+                                <select id="asset_list" name="asset_list" size="8" style="width: 190px;" >
                                 </select></div>                            </td>
                             <td width="600" align="center" valign="top">
                                 <fieldset style="height:115; border:1px solid #44637A; padding:5">
                                 <legend><b>Asset Information</b></legend>
                                 <div id="asset_info"></div>
                                 </fieldset>
-						    </td>
+                            </td>
                         </tr>
                     </table>
                 </td>

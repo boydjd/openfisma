@@ -12,7 +12,7 @@ $action_list = array(1=>'blscr',2=>'fips',3=>'prods',4=>'swdisc',5=>'total');
 <p><b>General Reports</b></p>
 </div>
 </div>
-<form name="filter" method="post" action="/zfentry.php/panel/report/sub/general/s/search">
+<form name="filter" method="post" action="<?php echo burl()?>/panel/report/sub/general/s/search">
 <table width="95%" align="center" border="0">
     <tr>
         <td>
@@ -33,14 +33,14 @@ $action_list = array(1=>'blscr',2=>'fips',3=>'prods',4=>'swdisc',5=>'total');
 </form>
 <?php
     if(!empty($this->type)){
-        $url = "/zfentry.php/report/".$action_list[$this->type];
+        $url = burl()."/report/".$action_list[$this->type];
 ?>
 <div class="barleft">
 <div class="barright">
 <p><b>Report: <?php echo $type_list[$this->type];?></b>
     <span>
-    <a target='_blank' href="<?php echo $url.'/format/pdf'; ?>"><img src="/images/pdf.gif" border="0"></a>
-    <a href="<?php echo $url.'/format/xls'; ?>"><img src="/images/xls.gif" border="0"></a>
+    <a target='_blank' href="<?php echo $url.'/format/pdf'; ?>"><img src="<?php echo burl()?>/images/pdf.gif" border="0"></a>
+    <a href="<?php echo $url.'/format/xls'; ?>"><img src="<?php echo burl()?>/images/xls.gif" border="0"></a>
     </span>
 </div>
 </div>

@@ -44,18 +44,18 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $system['type'];?></td>
     <?php if(isAllow('admin_systems','update')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/system/sub/view/v/edit/id/<?php echo $system['id'];?>" title="edit the Systems">
-        <img src="/images/edit.png" border="0"></a>
+        <a href="<?php echo burl()?>/panel/system/sub/view/v/edit/id/<?php echo $system['id'];?>" title="edit the Systems">
+        <img src="<?php echo burl()?>/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_systems','read')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/system/sub/view/id/<?php echo $system['id'];?>" title="display the Systems">
-        <img src="/images/view.gif" border="0"></a>
+        <a href="<?php echo burl()?>/panel/system/sub/view/id/<?php echo $system['id'];?>" title="display the Systems">
+        <img src="<?php echo burl()?>/images/view.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_systems','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('Systems');">
-        <img src="/images/del.png" border="0"></a>
+        <a href="<?php echo burl()?>/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('Systems');">
+        <img src="<?php echo burl()?>/images/del.png" border="0"></a>
     </td>
     <?php }?>
 </tr>

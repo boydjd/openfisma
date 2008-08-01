@@ -9,7 +9,7 @@
 </tr>
 </table>
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-<form name="edit" method="post" action="/zfentry.php/panel/sysgroup/sub/update/id/<?php echo $this->id;?>">
+<form name="edit" method="post" action="<?php echo burl()?>/panel/sysgroup/sub/update/id/<?php echo $this->id;?>">
     <tr>
         <td align="right" class="thc" width="200">System Group Name:</td>
         <td class="tdc">&nbsp;<input type="text" name="sysgroup_name" size="90" 

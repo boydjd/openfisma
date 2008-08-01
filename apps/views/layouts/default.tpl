@@ -3,12 +3,12 @@
 <head>
 <title></title>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.js"></script>
-<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.ui.js"></script>
-<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/ajax.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="<?php echo burl(); ?>/javascripts/jquery/jquery.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="<?php echo burl(); ?>/javascripts/jquery/jquery.ui.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="<?php echo burl(); ?>/javascripts/ajax.js"></script>
 <link rel="icon"
       type="image/ico"
-      href="/images/favicon.ico" />
+      href="images/favicon.ico" />
 
 
 <!--[If lte IE 6]>
@@ -19,11 +19,11 @@
 
 <style type="text/css">
 <!--
-@import url("/stylesheets/layout.css");
-@import url("/stylesheets/fisma.css");
-@import url("/stylesheets/datepicker.css");
-@import url("/stylesheets/main.css");
-@import url("/stylesheets/jquery-ui-themeroller.css");
+@import url("<?php echo burl(); ?>/stylesheets/layout.css");
+@import url("<?php echo burl(); ?>/stylesheets/fisma.css");
+@import url("<?php echo burl(); ?>/stylesheets/datepicker.css");
+@import url("<?php echo burl(); ?>/stylesheets/main.css");
+@import url("<?php echo burl(); ?>/stylesheets/jquery-ui-themeroller.css");
 -->
 </style>
 

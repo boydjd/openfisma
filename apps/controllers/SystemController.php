@@ -220,7 +220,7 @@ class SystemController extends SecurityController
         $res = $this->_system->update($data,'id = '.$id);
         if(!$res){
             $errno++;
-        }
+        }        die("zzz");
         $sysgroup_data['name'] = $data['name'];
         $sysgroup_data['nickname'] = $data['nickname'];
         $query = $db->select()->from(array('sgs'=>'systemgroup_systems'),array())
@@ -241,6 +241,7 @@ class SystemController extends SecurityController
                 }
             }
         }
+
         if($errno > 0){
             $msg = "Failed to edit the system";
             $model = self::M_WARNING;

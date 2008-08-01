@@ -5,7 +5,7 @@
         <th colspan="2" align="left">Product Search</th>
         <th width="183" align="left">Product Select</th>
         <?php if(isAllow('admin_products','create')){ ?>
-        <th width="249" align="left">[<a id="add_product" href="/zfentry.php/panel/product/sub/create" title="Create New Product">Create New Product</a>]
+        <th width="249" align="left">[<a id="add_product" href="<?php echo burl()?>/panel/product/sub/create" title="Create New Product">Create New Product</a>]
 </th>
         <?php } ?>
     </tr>
@@ -13,11 +13,11 @@
         <td width="161"><b> Product:</b></td>
         <td width="167"><input type="text" class="product" name="prod_name" value="<?php echo $this->prod_name?>" size="20" /></td>
         <td colspan="2" rowspan="4"><div style="width:400px">
-        				<select name="prod_list" size="8" style="width: 100%;">
-										<?php  foreach( $this->prod_list as $key ) {
+                        <select name="prod_list" size="8" style="width: 100%;">
+                                        <?php  foreach( $this->prod_list as $key ) {
                   echo'<option value='.$key['id'].'>'.$key['id'].' | '.$key['name'].' | '.$key['vendor'].' | '.$key['version'].'</option>';
                  } ?>
-						</select>
+                        </select>
         </div>            </td>
         </tr>
     <tr>
@@ -29,8 +29,8 @@
         <td><input type="text" class="product" name="prod_version" value="<?php echo $this->prod_version?>" size="20" /></td>
     </tr>
     <tr>
-        			<td><input id="search_product" type="button" value="Search Product" url='/zfentry.php/product/search' /></td>
-        			<td><input type="reset" name="button2" id="button" value="Reset" /></td>
+                    <td><input id="search_product" type="button" value="Search Product" url="<?php echo burl()?>/product/search" /></td>
+                    <td><input type="reset" name="button2" id="button" value="Reset" /></td>
     </tr>
 </table>
 </form></td></tr></table>

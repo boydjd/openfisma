@@ -6,8 +6,8 @@
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a id="user_list" href="/zfentry.php/panel/account/sub/list">User List</a>] (total: <?php echo $this->total;?>)</th>
-            <th>[<a id="add_user" href="/zfentry.php/panel/account/sub/create" title="add new Users">Add User</a>]</th>
+            <th>[<a id="user_list" href="<?php echo burl()?>/panel/account/sub/list">User List</a>] (total: <?php echo $this->total;?>)</th>
+            <th>[<a id="add_user" href="<?php echo burl()?>/panel/account/sub/create" title="add new Users">Add User</a>]</th>
             <th>
                 <table align="center">
                     <tbody>
@@ -21,7 +21,7 @@
             </th>
             <th>
                 <table align="center">
-                <form name="query" method="post" action="/zfentry.php/panel/account/sub/list">
+                <form name="query" method="post" action="<?php echo burl()?>/panel/account/sub/list">
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

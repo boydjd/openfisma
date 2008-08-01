@@ -28,7 +28,7 @@
 <p><b>Remediation Search</b><span></p>
 </div>
 </div>
-<form name="filters" method="post" action="/zfentry.php/panel/remediation/sub/searchbox/s/search">
+<form name="filters" method="post" action="<?php echo burl()?>/panel/remediation/sub/searchbox/s/search">
 <input type='hidden' name='sort_order' value='{$sort_order}'>
 <input type='hidden' name='sort_by'    value='{$sort_by}'>
 
@@ -79,7 +79,7 @@
             <table border="0" cellpadding="3" cellspacing="1" width="98%">
                 <tr>
                     <td ><b>Estimated Completion Date:</b></td>
-                    <td > From: <input type="text" class="date" name="est_date_begin" size="12" maxlength="10" 
+                    <td > From: <input type="text" class="date" name="est_date_begin" size="12" maxlength="10" url="<?php echo burl()?>" 
                     value="<?php $ts = nullGet($this->criteria['est_date_begin'],'');
                                  if($ts instanceof Zend_Date){
                                      $ts = $ts->toString('Ymd');

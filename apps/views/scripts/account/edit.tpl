@@ -20,7 +20,7 @@
 </tr>
 </table>
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-<form name="edit" method="post" action="/zfentry.php/panel/account/sub/update/id/<?php echo $this->id;?>">
+<form name="edit" method="post" action="<?php echo burl()?>/panel/account/sub/update/id/<?php echo $this->id;?>">
     <tr>
         <td align="right" class="thc" width="200">First Name:</td>
         <td class="tdc">&nbsp;<input type="text" name="user[name_first]" 
@@ -58,7 +58,7 @@
                  echo $this->formSelect('user_role',nullGet($this->roles,0),null,$this->role_list);
              }
         ?>
-        &nbsp;<a href="/zfentry.php/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
+        &nbsp;<a href="<?php echo burl()?>/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
     </tr>
     <tr>
         <td align="right" class="thc">Title:</td>

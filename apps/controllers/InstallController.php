@@ -34,16 +34,16 @@ class InstallController extends Zend_Controller_Action
     public function indexAction()
     {
         $this->view->back = '';
-        $this->view->next = '/zfentry.php/install/envcheck';
+        $this->view->next = burl().'/install/envcheck';
         $this->render();
     }
 
     public function envcheckAction()
     {
         define('REQUEST_PHP_VERSION','5');
-        $this->view->back = '/zfentry.php/install';
+        $this->view->back = burl().'/install';
         if(version_compare(phpversion(),REQUEST_PHP_VERSION,'>')){
-            $this->view->next = '/zfentry.php/install/checking';
+            $this->view->next = burl() . '/install/checking';
             $this->view->checklist = array('version' => 'ok');
         }else{
             $this->view->checklist = array('version' => 'failure');
@@ -67,9 +67,9 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->notwritables = $notwritables;
         $this->view->writables = $w_directories;
-        $this->view->back = '/zfentry.php/install/envcheck';
+        $this->view->back = burl() . '/install/envcheck';
         if( empty($notwritables) ) { 
-            $this->view->next = '/zfentry.php/install/dbsetting';
+            $this->view->next = burl() . '/install/dbsetting';
         }else{
             $this->view->next = '';
         }
@@ -82,8 +82,8 @@ class InstallController extends Zend_Controller_Action
         $this->view->dsn = array('host'=>'localhost',
                                  'port'=>'3306');
         $this->view->title = 'General settings';
-        $this->view->back = '/zfentry.php/install/checking';
-        $this->view->next = '/zfentry.php/install/dbreview';
+        $this->view->back = burl() . '/install/checking';
+        $this->view->next = burl() . '/install/dbreview';
         $this->render();
     }
     
@@ -116,13 +116,13 @@ class InstallController extends Zend_Controller_Action
         if($input->hasInvalid() || $input->hasMissing())
         {
             $message=$input->getMessages();
-            $this->view->back = '/zfentry.php/install/checking';
-            $this->view->next = '/zfentry.php/install/dbreview';
+            $this->view->back = burl() . '/install/checking';
+            $this->view->next = burl() . '/install/dbreview';
             $this->view->message=$message;
             $this->render('dbsetting'); 
         } else {
-            $this->view->back = '/zfentry.php/install/dbsetting';
-            $this->view->next = '/zfentry.php/install/initial';
+            $this->view->back = burl() . '/install/dbsetting';
+            $this->view->next = burl() . '/install/initial';
             $this->render();  
         }
     }
@@ -209,20 +209,20 @@ class InstallController extends Zend_Controller_Action
         $this->view->title = 'Initial Database';
         $this->view->method = $method;
         if($ret){
-            $this->view->next = '/zfentry.php/install/complete';
+            $this->view->next = burl() . '/install/complete';
         } else {
-            $this->view->next = '/zfentry.php/install/dbsetting';
+            $this->view->next = burl() . '/install/dbsetting';
             $this->view->message = $err_message;
         }
         $this->view->checklist=$checklist;
-        $this->view->back = '/zfentry.php/install/dbsetting';
+        $this->view->back = burl() . '/install/dbsetting';
         $this->render('initial');
     }
     
     public function completeAction()
     {
         $this->view->title = 'Install complete';
-        $this->view->next = '/zfentry.php/user/login';
+        $this->view->next = burl() . '/user/login';
         $this->render();
     }
 

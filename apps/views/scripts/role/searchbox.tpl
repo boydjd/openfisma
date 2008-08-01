@@ -10,9 +10,9 @@ $fid_array = array('name'=>'Role Name',
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a href="/zfentry.php/panel/role/sub/list">Roles List</a>] (total: <?php echo 
+            <th>[<a href="<?php echo burl()?>/panel/role/sub/list">Roles List</a>] (total: <?php echo 
 $this->total;?>)</th>
-            <th>[<a href="/zfentry.php/panel/role/sub/create" title="Add New Role">Add 
+            <th>[<a href="<?php echo burl()?>/panel/role/sub/create" title="Add New Role">Add 
 Role</a>]</th>
             <th>
                 <table align="center">
@@ -27,7 +27,7 @@ Role</a>]</th>
             </th>
             <th>
                 <table align="center">
-                <form name="query" method="post" action="/zfentry.php/panel/role/sub/list">
+                <form name="query" method="post" action="<?php echo burl()?>/panel/role/sub/list">
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

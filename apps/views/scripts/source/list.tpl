@@ -36,18 +36,18 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $source['desc'];?></td>
     <?php if(isAllow('admin_sources','update')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/source/sub/view/v/edit/id/<?php echo $source['id'];?>" title="edit the Sources">
-        <img src="/images/edit.png" border="0"></a>
+        <a href="<?php echo burl()?>/panel/source/sub/view/v/edit/id/<?php echo $source['id'];?>" title="edit the Sources">
+        <img src="<?php echo burl()?>/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_sources','read')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/source/sub/view/id/<?php echo $source['id'];?>" title="display the Sources">
-        <img src="/images/view.gif" border="0"></a>
+        <a href="<?php echo burl()?>/panel/source/sub/view/id/<?php echo $source['id'];?>" title="display the Sources">
+        <img src="<?php echo burl()?>/images/view.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_sources','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/source/sub/delete/id/<?php echo $source['id'];?>" title="delete the Sources, then no restore after deleted" onclick="return delok('Sources');">
-        <img src="/images/del.png" border="0"></a>
+        <a href="<?php echo burl()?>/panel/source/sub/delete/id/<?php echo $source['id'];?>" title="delete the Sources, then no restore after deleted" onclick="return delok('Sources');">
+        <img src="<?php echo burl()?>/images/del.png" border="0"></a>
     </td>
     <?php }?>
 </tr>

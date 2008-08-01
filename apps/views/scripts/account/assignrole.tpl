@@ -3,7 +3,7 @@
 <p><b>Administration: Role and privileges Assignment</b>
 </div>
 </div>
-<form method="post" action="/zfentry.php/panel/account/sub/assignrole/do/assign/id/<?php echo $this->user_id;?>" 
+<form method="post" action="<?php echo burl()?>/panel/account/sub/assignrole/do/assign/id/<?php echo $this->user_id;?>" 
     name="assign_role">
 <fieldset style="border: 1px solid rgb(68, 99, 122); padding: 3px;"><legend><b><font size="3px"><?php echo $this->user_name;?></font></b></legend>
     <table height="200" style="margin-left:100px">
@@ -31,7 +31,7 @@
                 <input type="button" value="   <-    " id="remove_privilege">
             </td>
             <td width="302">
-                <select multiple size="10" id="assign_roles" name="assign_roles[]" style="width:250px" url="/zfentry.php/account/searchprivilege/id/<?php echo $this->user_id;?>">
+                <select multiple size="10" id="assign_roles" name="assign_roles[]" style="width:250px" url="<?php echo burl()?>/account/searchprivilege/id/<?php echo $this->user_id;?>">
                     <?php foreach($this->assign_roles as $row){
                         echo '<option value="'.$row['role_id'].'" title="'.$row['role_name'].'">'.$row['role_name'].'</option>';
                     } ?>

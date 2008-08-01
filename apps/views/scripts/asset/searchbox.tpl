@@ -1,6 +1,6 @@
 <?php
     $this->system_list[0] = '--Any--';
-    $url = '/zfentry.php/panel/asset/sub/searchbox/s/search';
+    $url = burl() . '/panel/asset/sub/searchbox/s/search';
     if(!empty($this->criteria['system_id'])){
        $url .='/system_id/'.$this->criteria['system_id'];
     }
@@ -28,7 +28,7 @@
 <p><b>Asset Search</b>
 </div>
 </div>
-<form action="/zfentry.php/panel/asset/sub/searchbox/s/search" method="post">
+<form action="<?php echo burl()?>/panel/asset/sub/searchbox/s/search" method="post">
 <table width="95%" align="center" cellpadding="3" cellspacing="1" border="0" class="tipframe">
     <tr>
         <td align="left"><b>System:</b></td>

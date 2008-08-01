@@ -9,8 +9,8 @@
 </div>
     <table width="100%" class="tbframe">
         <th nowrap>ID 
-            <a href="<?php echo $this->url;?>/sortby/id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-            <a href="<?php echo $this->url;?>/sortby/id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            <a href="<?php echo $this->url;?>/sortby/id/order/ASC"><img src="<?php echo burl()?>/images/up_arrow.gif" border="0"></a>
+            <a href="<?php echo $this->url;?>/sortby/id/order/DESC"><img src="<?php echo burl()?>/images/down_arrow.gif" border="0"></a>
         </th>
         <th nowrap>Source </th>
         <th nowrap>System </th>
@@ -18,8 +18,8 @@
         <th nowrap>Status </th>
         <th nowrap>Finding </th>
         <th nowrap>ECD 
-           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/ASC"><img src="<?php echo burl()?>/images/up_arrow.gif" border="0"></a>
+           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/DESC"><img src="<?php echo burl()?>/images/down_arrow.gif" border="0"></a>
         </th>
         <th nowrap>View</th>
         </tr>
@@ -40,7 +40,7 @@
             <td align='center' class='tdc' nowrap><?php echo $row['status']=='EN' && $row['action_est_date']<$today?'EO':$row['status'];?></td>
             <td align='left'   class='tdc'><?php echo $finding_data;?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['action_est_date'];?></td> 
-            <td align="center" valign='middle' class='tdc'><a href='/zfentry.php/panel/remediation/sub/view/id/<?php echo $row['id'];?>'><img src='/images/view.gif' border="0"></a></td>
+            <td align="center" valign='middle' class='tdc'><a href="<?php echo burl()?>/panel/remediation/sub/view/id/<?php echo $row['id'];?>"><img src="<?php echo burl()?>/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
     </table>

@@ -69,16 +69,16 @@ select {
 div.panel {
     width:778px;
     margin:0 auto;
-    background:url("/images/install/bg_table.gif") repeat-y;
+    background:url("../images/install/bg_table.gif") repeat-y;
 }
 
 .ok {
-    background:url("/images/install/yes.gif") center left no-repeat;
+    background:url("../images/install/yes.gif") center left no-repeat;
     padding-left:10px;
 }
 
 .failure {
-    background:url("/images/install/no.gif") center left no-repeat;
+    background:url("../images/install/no.gif") center left no-repeat;
     padding-left:10px;
 }
 

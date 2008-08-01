@@ -4,7 +4,7 @@
 </div>
 </div>
 <b><?php echo $this->msg;?></b>
-<form name="config" method="post" action="/zfentry.php/config/save/">
+<form name="config" method="post" action="<?php echo burl()?>/config/save/">
 <table align="center" cellpadding="5" cellspacing="1" class="tipframe">
 <?php foreach($this->configs as $c) { ?>
     <tr >

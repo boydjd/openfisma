@@ -3,17 +3,17 @@
 <p><b>Asset Search Results</b>
 </div>
 </div>
-<form id="assetresult" method="post" action="/zfentry.php/asset/delete">
+<form id="assetresult" method="post" action="<?php echo burl()?>/asset/delete">
 <table width="98%" align="center" border="0"><tr><td>
             <div id="asset_buttons" class="button_container">
-            <a class="button" target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="/images/pdf.gif" height="16" width="16" align="top" border="0"></a>
-            <a class="button" href="<?php echo $this->url.'/format/xls'; ?>"><img src="/images/xls.gif" height="16" width="16" border="0" align="top"></a>
+            <a class="button" target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="<?php echo burl()?>/images/pdf.gif" height="16" width="16" align="top" border="0"></a>
+            <a class="button" href="<?php echo $this->url.'/format/xls'; ?>"><img src="<?php echo burl()?>/images/xls.gif" height="16" width="16" border="0" align="top"></a>
             <?php if(isAllow('asset','delete')){ ?>
                 <a class="button" href="#" name="select_all">Select All</a>
                 <a class="button" href="#" name="select_none">Select None</a>
                 <a class="button" href="#" name="delete_selected" onclick="document.forms.assetresult.submit();">Delete</a>
             <?php } if(isAllow('asset','create')){ ?>
-                <a class="button" href="/zfentry.php/asset/create" name="create_asset" >Create an Asset</a>
+                <a class="button" href="<?php echo burl()?>/asset/create" name="create_asset" >Create an Asset</a>
             <?php } ?>
             </div>
         </td><td align="right">
@@ -52,8 +52,8 @@
         <td class="tdc">&nbsp;<?php echo $row['prod_name'];?></td>
         <td class="tdc">&nbsp;<?php echo $row['prod_vendor'];?></td>
         <?php if(isAllow('asset','edit')){ ?>
-        <td class="tdc" align="center"><a href="/zfentry.php/panel/asset/sub/view/s/edit/id/<?php echo $row['aid'];?>"><img src="/images/edit.png" border="0"></a></td>
-        <td class="tdc" align="center"><a href="/zfentry.php/panel/asset/sub/view/id/<?php echo $row['aid'];?>"><img src="/images/view.gif" border="0"></a></td>
+        <td class="tdc" align="center"><a href="<?php echo burl()?>/panel/asset/sub/view/s/edit/id/<?php echo $row['aid'];?>"><img src="<?php echo burl()?>/images/edit.png" border="0"></a></td>
+        <td class="tdc" align="center"><a href="<?php echo burl()?>/panel/asset/sub/view/id/<?php echo $row['aid'];?>"><img src="<?php echo burl()?>/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
     <?php } ?>

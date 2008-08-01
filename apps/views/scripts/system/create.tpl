@@ -9,7 +9,7 @@
 </tr>
 </table>
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-<form name="edit" method="post" action="/zfentry.php/panel/system/sub/create/s/save">
+<form name="edit" method="post" action="<?php echo burl()?>/panel/system/sub/create/s/save">
     <tr>
         <td align="right" class="thc" width="200">System Name:</td>
         <td class="tdc">&nbsp;<input type="text" name="system_name" size="90"><font color="blue"> *</font></td>

@@ -37,23 +37,23 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $role['nickname'];?></td>
     <?php if(isAllow('admin_roles','update')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/role/sub/view/v/edit/id/<?php echo $role['id'];?>" title="edit the Roles">
-        <img src="/images/edit.png" border="0"></a>
+        <a href="<?php echo burl()?>/panel/role/sub/view/v/edit/id/<?php echo $role['id'];?>" title="edit the Roles">
+        <img src="<?php echo burl()?>/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_roles','read')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/role/sub/view/id/<?php echo $role['id'];?>" title="display the Roles">
-        <img src="/images/view.gif" border="0"></a>
+        <a href="<?php echo burl()?>/panel/role/sub/view/id/<?php echo $role['id'];?>" title="display the Roles">
+        <img src="<?php echo burl()?>/images/view.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_roles','definition')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/role/sub/right/id/<?php echo $role['id'];?>" title="set Right for this role">
-        <img src="/images/signtick.gif" border="0"></a>
+        <a href="<?php echo burl()?>/panel/role/sub/right/id/<?php echo $role['id'];?>" title="set Right for this role">
+        <img src="<?php echo burl()?>/images/signtick.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_roles','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/zfentry.php/panel/role/sub/delete/id/<?php echo $role['id'];?>" title="delete the Roles, then no restore after deleted" onclick="return delok('Roles');">
-        <img src="/images/del.png" border="0"></a>
+        <a href="<?php echo burl()?>/panel/role/sub/delete/id/<?php echo $role['id'];?>" title="delete the Roles, then no restore after deleted" onclick="return delok('Roles');">
+        <img src="<?php echo burl()?>/images/del.png" border="0"></a>
     </td>
     <?php }?>
 </tr>

@@ -46,11 +46,31 @@ correct.
       ErrorLog /var/log/apache2/reyosoft-error.log
       CustomLog /var/log/apache2/reyosoft-access.log common
       <Directory "/opt/openfisma/public">
-          AllowOverride None
+          AllowOverride All
           Options FollowSymLinks
           Allow from all
       </Directory>
     </VirtualHost>
+
+If you don't want to install the OpenFISMA at the DocumentRoot, here is the 
+alternative way to configure the Apache.
+
+      # DocumentRoot "/var/www/html"
+      ErrorLog /var/log/apache2/reyosoft-error.log
+      CustomLog /var/log/apache2/reyosoft-access.log common
+      alias /openfisma/  /opt/openfisma/public/
+      <Directory "/opt/openfisma/public">
+          AllowOverride All
+          Options FollowSymLinks
+          Allow from all
+      </Directory>
+
+In such (alias) situation, .htaccess under public directory should be modified
+to reflect the correct RewriteBase, such as in this case 
+
+      RewriteBase /openfisma
+
+
   
 The following files need to be writeable for the installation script 
 to run. 

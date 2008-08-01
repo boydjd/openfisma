@@ -94,13 +94,13 @@ ul.loginfo {
 }
 
 #menu ul ul a{
-    background: #42637B url(/images/plus.gif) no-repeat 0.6em ;
+    background: #42637B url(../images/plus.gif) no-repeat 0.6em ;
     border-bottom:1px solid gray;
     padding:1px 1em 0px 1.8em;
 }
 #menu ul ul a:hover {
     color: #42637B;
-    background: #FFFFB5 url(/images/arrow.gif) no-repeat 0.6em ;
+    background: #FFFFB5 url(../images/arrow.gif) no-repeat 0.6em ;
     padding:1px 1em 0em 1.8em;
 }
 
@@ -120,14 +120,14 @@ div.barleft p {
 }
 
 div.barleft{
-    background-image: url(/images/left_circle.gif); 
+    background-image: url(../images/left_circle.gif); 
     background-repeat: no-repeat;
     background-position: left;
     padding-left: 12px;
 }
 
 div.barright {
-    background-image: url(/images/right_circle.gif);
+    background-image: url(../images/right_circle.gif);
     background-repeat: no-repeat;
     background-position: right;
     padding-right: 12px;
@@ -173,7 +173,7 @@ div#editorDIV{
 }
 
 .editable {
-    background:url(/images/button_modify.png) no-repeat center right;
+    background:url(../images/button_modify.png) no-repeat center right;
     padding-right:20px;
     margin-right:10px;
     cursor:pointer;

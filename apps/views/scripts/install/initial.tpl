@@ -1,4 +1,4 @@
-<table width="100%" align="center" cellspacing="0" cellpadding="0" background="img/bg_table.gif">
+<table width="100%" align="center" cellspacing="0" cellpadding="0">
     <tr>
         <td colspan="2"><div class="installer">
                 <h4> Initial Database </h4>

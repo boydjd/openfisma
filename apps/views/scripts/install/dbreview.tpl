@@ -7,8 +7,7 @@
     <input type='hidden' name='dsn[dbname]' value="<?php echo $this->dsn['dbname'];?>" />
     <input type='hidden' name='dsn[name_c]' value="<?php echo $this->dsn['name_c'];?>" />
     <input type='hidden' name='dsn[pass_c]' value="<?php echo $this->dsn['pass_c'];?>" />
-    <input type='hidden' name='dsn[rpath]' value="<?php echo $this->dsn['rpath'];?>" />
-    <table width="100%" align="center" cellspacing="0" cellpadding="0" background="img/bg_table.gif">
+    <table width="100%" align="center" cellspacing="0" cellpadding="0">
         <tr>
             <td colspan="2"><div class="installer">
                     <h4>General settings</h4>
@@ -21,34 +20,23 @@
                                     </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Hostname</b></td>
-                                        <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['host']; ?> 
-                                    </tr>
+                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['host']; ?>                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Service Port</b></td>
-                                        <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['port']; ?> 
-                                    </tr>
+                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['port']; ?>                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Username</b></td>
-                                        <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['uname']; ?> 
-                                    </tr>
+                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['uname']; ?>                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Password</b></td>
-                                        <td class='bg1' style="word-break:break-all;"> ****** 
-                                    </tr>
+                                    <td class='bg1' style="word-break:break-all;"> ******                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Name</b></td>
-                                        <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['dbname']; ?> 
-                                    </tr>
+                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['dbname']; ?>                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Create User for new Database</b></td>
-                                        <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['name_c']; ?> 
-                                    </tr>
-                                    <tr>
-                                        <td class='bg3'><b>Installation physical
-                                                path</b></td>
-                                        <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['rpath']; ?></td>
-                                    </tr>
-                                </table></td>
+                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['name_c']; ?>                                    </tr>
+                            </table></td>
                         </tr>
                     </table>
                 </div></td>

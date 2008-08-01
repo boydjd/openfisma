@@ -10,7 +10,7 @@
             <table>
                 <tr>
                     <?php if($this->act == 'edit' && $this->finding['status'] == 'NEW') { ?>
-                    <td><a style="text-decoration:none" href="/zfentry.php/finding/edit/do/update/fid/<?php echo $this->finding['id'];?>">
+                    <td><a style="text-decoration:none" href="<?php echo burl()?>/finding/edit/do/update/fid/<?php echo $this->finding['id'];?>">
                         <button>Delete</button>
                         </a> </td>
                     <?php  } else { ?>

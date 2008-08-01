@@ -14,7 +14,7 @@ $(document).ready(function(){
    $('input.date').datepicker({dateFormat:'yymmdd',
                 showOn: 'both', 
                 buttonImageOnly: true,
-                buttonImage: '/images/calendar.gif'
+                buttonImage: $('input.date').attr('url')+'/images/calendar.gif'
                 });
         
 
@@ -112,7 +112,7 @@ $(document).ready(function(){
                         dateFormat:'yymmdd',
                         showOn: 'both', 
                         buttonImageOnly: true,
-                        buttonImage: '/images/calendar.gif',
+                        buttonImage: $('div.selectdate').attr('url')+'/images/calendar.gif',
                         buttonText: 'Calendar'});
             }else if( type == 'textarea' ){
                 var row = target.attr('rows');
@@ -141,7 +141,7 @@ function shortcut(step){
     }
     var year = $("span[name=year]").html();
     year = Number(year) + Number(step);
-    var url = '/panel/report/sub/fisma/s/search/y/'+year+'/';
+    var url = $("span[name=gen_shortcut]").attr('url')+year+'/';
     $("span[name=year]").html( year );
     $("span[name=year]").parent().attr( 'href', url);
     $("span[name=q1]").parent().attr( 'href', url+'q/1/' );
@@ -170,7 +170,7 @@ function searchAsset( ){
 
 function asset_detail() {
     $("select[name='asset_list']").change(function(){
-        var url = '/asset/detail/id/'+ $(this).children("option:selected").attr('value');
+        var url = $(this).attr('url')+ $(this).children("option:selected").attr('value');
         $("div#asset_info").load(url,null);
     });
 }
