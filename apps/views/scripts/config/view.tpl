@@ -10,7 +10,7 @@
     <tr >
         <td class="conf_key" ><?php echo $c['description']; ?></td>
         <td class="conf_value" >
-            <input type="text" name="keys[<?php echo $c['key'];?>]" value="<?php echo $c['value'];?>" size="30"> days
+            <input type="text" name="keys[<?php echo $c['key'];?>]" value="<?php echo $c['value'];?>" size="30">
         </td>
     </tr>
 <?php } ?>
