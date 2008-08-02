@@ -1,3 +1,8 @@
+# You will need "AllowOverride Options" or "AllowOverride All" 
+# privileges for this htaccess file to work, this is set in the
+# apache httpd.conf file.
+
+# Rewrite rules for Zend Framework
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -5,3 +10,29 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(.*)$ index.php/$1 [L]
 </IfModule>
+
+# Overrides current PHP server settings to harden the server by
+# turning off unwanted options which may be harmful. There are 
+# several Apache directives that allow you to change the PHP 
+# configuration from within the Apache configuration files. 
+# This can only be used with PHP_INI_ALL and PHP_INI_PERDIR 
+# type directives.  
+# Examples:
+# php_value name value 
+# php_flag name on|off 
+
+# Sets the maximum upload filesize, this size will determine the 
+# maximum size of files OpenFISMA will accept when uploaded.
+php_value	upload_max_filesize	10M
+php_value	post_max_size		10M
+
+# Turns off all errors, useful setting in production environments.
+# php_flag	display_errors		Off
+
+# Sets the magic_quotes state for GPC (Get/Post/Cookie) operations
+# It is recommended that magic_quotes_gpc be disabled, and input 
+# filtering be handled by your PHP scripts
+php_flag	magic_quotes_gpc	Off
+
+# Turns off register globals
+php_flag	register_globals	Off
