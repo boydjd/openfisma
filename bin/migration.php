@@ -26,8 +26,9 @@
     require_once MODELS . DS . 'Abstract.php';
     require_once 'Zend/Controller/Plugin/ErrorHandler.php';
     require_once ( CONFIGS . DS . 'setting.php');
-    $srcconfig = new Zend_Config($config->database);//from setting.php
-    $srcconfig->params->dbname='legacy_fisma';
+    $target = $config->database->toArray();
+    $target['params']['dbname'] = 'legacy_fisma';
+    $srcconfig = new Zend_Config($target);//from setting.php
     Zend_Registry::set('legacy_datasource', $srcconfig); 
 
     $table_name=  array(
