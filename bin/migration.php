@@ -26,8 +26,9 @@
     require_once MODELS . DS . 'Abstract.php';
     require_once 'Zend/Controller/Plugin/ErrorHandler.php';
     require_once ( CONFIGS . DS . 'setting.php');
-    $srcconfig = new Zend_Config($config->database);//from setting.php
-    $srcconfig->params->dbname='legacy_fisma';
+    $target = $config->database->toArray();
+    $target['params']['dbname'] = 'legacy_fisma';
+    $srcconfig = new Zend_Config($target);//from setting.php
     Zend_Registry::set('legacy_datasource', $srcconfig); 
 
     $table_name=  array(
@@ -77,7 +78,7 @@
     $db_target->query($sql);
     foreach( $table_name as $table ) 
     {
-        echo "$table ";
+        echo "$table\n";
 
         try{
 
@@ -468,7 +469,11 @@ function assets_conv($db_src, $db_target,$data)
             'network_id'=>$network_id,
             'address_ip'=>$address_ip,
           'address_port'=>$address_port);
-    $db_target->insert('assets',$tmparray);
+    try {
+        $db_target->insert('assets',$tmparray);
+    } catch(Zend_Exception $e) {
+        echo "error in assets_conv() for asset_id {$data['asset_id']}: ", $e->getMessage() . "\n";
+    }
     unset($tmparray);
 }
 
@@ -739,7 +744,7 @@ function poam_vulns_conv($db_src, $db_target, $data)
                       'vuln_type'=>$data['vuln_type'] );
         $db_target->insert('poam_vulns',$tmparray);
     }else{
-        echo "INSERT INTO poam_vulns( `poam_id` , `vuln_seq` , `vuln_type` ) SELECT p.id, v.seq, v.type FROM poams p, vulnerabilities v WHERE p.legacy_finding_id = '{$data['finding_id']}' AND v.seq = '{$data['vuln_seq']}' AND v.type = '{$data['vuln_type']}' \n" ; 
+        echo "INSERT INTO poam_vulns( `poam_id` , `vuln_seq` , `vuln_type` ) SELECT p.id, v.seq, v.type FROM poams p, vulnerabilities v WHERE p.legacy_finding_id = '{$data['finding_id']}' AND v.seq = '{$data['vuln_seq']}' AND v.type = '{$data['vuln_type']}';\n" ; 
     }
 }
 
