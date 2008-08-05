@@ -157,3 +157,9 @@ div#editorDIV{
 img {
     border:0;
 }
+
+label.error {
+    display: none;
+    color:red;
+    padding:0 10px;
+}

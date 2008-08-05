@@ -16,6 +16,8 @@ require_once( MODELS . DS .'user.php');
 require_once( MODELS . DS .'system.php');
 require_once('Pager.php');
 require_once 'Zend/Date.php';
+require_once 'Zend/Filter/Input.php';
+require_once 'Zend/Validate/Between.php';
 
 /**
  * Maintaining the user account
@@ -33,14 +35,35 @@ class AccountController extends PoamBaseController
     {
         parent::init();
         $this->_user = new User();
+        
+        $filter=array('*'=>array('StringTrim','StripTags'));
+        $validator= array(
+            'name_first'=>'Alnum',
+            'name_last'=>'Alnum',
+            'phone_office'=>'Alnum',
+            'phone_mobile'=>array('allowEmpty'=>TRUE,'Digits'),
+            'email'=>'EmailAddress',
+        
+            'title'=>'Alnum',
+            'is_active'=>array('Int',new Zend_Validate_Between(0,1)),
+            'account'=>'Alnum',
+            'password'=>array('allowEmpty'=>TRUE));
+        $this->_validator = new Zend_Filter_Input($filter,$validator);
     }
-
+    
+    public function validate()
+    {
+        $data = $this->_req->getParam('user');
+        if (!empty($data ) ) {
+            return $this->_validator->setData($data);
+        }
+        return null;
+    }
+    
     public function preDispatch()
     {
         parent::preDispatch();
-        $req = $this->getRequest();
-        $this->_paging_base_path = $req->getBaseUrl() .'/panel/account/sub/list';
-        $this->_paging['currentPage'] = $req->getParam('p',1);
+        $this->_paging_base_path .= '/panel/account/sub/list';
     }
 
     /**
@@ -195,7 +218,7 @@ class AccountController extends PoamBaseController
         $u_data = $req->getPost('user');
         $u_role = $req->getPost('user_role');
         $sys_data = $req->getPost('system');
-        $confirm_pwd = $req->getPost('confirm_password');
+        $confirm_pwd = $req->getPost('password_confirm');
         $db = $this->_user->getAdapter();
         if(empty($u_data['account']))
         {
@@ -298,52 +321,22 @@ class AccountController extends PoamBaseController
     {
         require_once(MODELS . DS . 'role.php');
         $req = $this->getRequest();
-        $account = $req->getParam('user_account');
-        $first_name = $req->getParam('user_name_first');
-        $last_name = $req->getParam('user_name_last');
-        $office_phone = $req->getParam('user_phone_office');
-        $user_email = $req->getParam('user_email');
-        $password = $req->getParam('user_password');
-        $confirm_password = $req->getParam('user_password_confirm');
-        $system_num = 0;
-        foreach($req->getPost() as $k=>$v){
-            if(substr($k,0,6) == 'system'){
-                $system_num++;
-            }
-        }
-        if(!empty($account) && !empty($first_name) && !empty($last_name) && !empty($office_phone)
-            && !empty($user_email) && !empty($password) && !empty($confirm_password) && $system_num != 0){
-            foreach($req->getPost() as $k=>$v){
-                if(substr($k,0,6) != 'system' ){
-                    if( !in_array($k,array('user_role_id','user_password','user_password_confirm','p_checkhead','p_checktip'))){
-                        $key = substr($k,5);
-                        $data[$key] = $v;
-                    }else{
-                        ///< @todo compare the password
-                        if($k == 'user_password'){
-                            $data['password'] = md5($v);
-                        }
-                    }
-                }else{
-                    $systems[] = $v;
-                }
-            }
-            $data['created_ts'] = date('Y-m-d H:i:s');
-            $data['auto_role'] = $req->getParam('user_account').'_r';
-       
-            $user_id = $this->_user->insert($data);
-            $role_id = $req->getParam('user_role_id');
-            $this->_user->associate($user_id, User::ROLE, $role_id);
-         
-            if(!empty($systems)){
-                $this->_user->associate($user_id, User::SYS, $systems);
-            }
+        $new_account=$req->getParam('user');
+        $systems=$req->getParam('system');
+        $new_account['password'] = md5($new_account['password']);
+        $new_account['created_ts'] = $this->now->toString('Y-m-d H:i:s');
+        $new_account['auto_role'] = $new_account['account'].'_r';
 
-            $this->_user->log(User::CREATION ,$this->me->id,'create user('.$data['account'].')');
-            $this->message("User ({$data['account']}) added", self::M_NOTICE);
-        }else{
-            $this->message("Please complete all required fields",self::M_WARNING);
+        $user_id = $this->_user->insert($new_account);
+        $role_id = $req->getParam('user_role_id');
+        $this->_user->associate($user_id, User::ROLE, $role_id);
+     
+        if(!empty($systems)){
+            $this->_user->associate($user_id, User::SYS, $systems);
         }
+
+        $this->_user->log(User::CREATION ,$this->me->id,'create user('.$new_account['account'].')');
+        $this->message("User ({$new_account['account']}) added", self::M_NOTICE);
         $this->_forward('create');
     }
 

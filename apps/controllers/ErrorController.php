@@ -55,8 +55,22 @@ class ErrorController extends Zend_Controller_Action
         $this->_helper->actionStack('header','panel');
         $this->render();
     }
+
+    public function inputerrorAction ()
+    {
+        $content = null;
+        $errors = $this->_getParam ('inputerror') ;
+        $this->_helper->layout->setLayout('error');
+        $content = "<h1>Input Error!</h1>" . PHP_EOL;
+        $content.="Error input fields:";
+        foreach($errors as $fieldname=>$erroritem){
+            $content.=" $fieldname  ";
+        }
+        $this->getResponse()->clearBody();
+        $this->view->content = $content . '<p>' ;
+        $this->_helper->actionStack('header','panel');
+        $this->render('error');
+    }
 }
-
-
 
 ?>

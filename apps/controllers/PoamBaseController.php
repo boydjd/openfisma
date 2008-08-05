@@ -33,6 +33,21 @@ class PoamBaseController extends SecurityController
     protected $_source_list =null;
     protected $_network_list =null;
     protected $_poam =null;
+    
+    /**
+     * The requestor object. 
+     * To save the labor to initialize it every time.
+     */
+    protected $_req = null;
+    
+    /**
+     * Param names that need to be sanitized
+     */
+    protected $_rawData = null;
+    /**
+     * rules to sanity check the data
+     */
+    protected $_validator = null;
     protected $_paging = array('mode'        =>'Sliding',
                              'append'      =>false,
                              'urlVar'      =>'p',
@@ -56,6 +71,18 @@ class PoamBaseController extends SecurityController
         }
     }
 
+    /**
+     * To validate input(post, get) data and pass them to error handler when voilation ocurrs.
+     * 
+     * Override this function to get different behavior
+     * 
+     * @return Zend_Validator validate result
+     */
+    public function validate()
+    {
+        return null;
+    }
+    
     public function preDispatch()
     {
         parent::preDispatch();
@@ -63,6 +90,10 @@ class PoamBaseController extends SecurityController
         $req = $this->_req;
         $this->_paging_base_path = $req->getBaseUrl();
         $this->_paging['currentPage'] = $req->getParam('p',1);
+        $input = $this->validate();
+        if(isset($input) && ($input->hasInvalid()||$input->hasMissing())  ) {
+            $this->_forward('inputerror','error',null,array('inputerror'=>$input->getMessages()));
+        }
     }
 
     public function makeUrl($criteria)
