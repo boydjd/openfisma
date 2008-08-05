@@ -19,10 +19,8 @@
 
 <style type="text/css">
 <!--
-@import url("<?php echo burl(); ?>/stylesheets/layout.css");
-@import url("<?php echo burl(); ?>/stylesheets/fisma.css");
-@import url("<?php echo burl(); ?>/stylesheets/datepicker.css");
 @import url("<?php echo burl(); ?>/stylesheets/main.css");
+@import url("<?php echo burl(); ?>/stylesheets/datepicker.css");
 @import url("<?php echo burl(); ?>/stylesheets/jquery-ui-themeroller.css");
 -->
 </style>
