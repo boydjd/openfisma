@@ -10,7 +10,6 @@
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
 */
-    define( 'CONFIGFILE_NAME', 'install.conf');
     require_once(APPS . DS .'Exception.php');
 
     /** 
