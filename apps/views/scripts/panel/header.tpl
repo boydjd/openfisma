@@ -11,10 +11,12 @@
 </table>
 <div id="menu">
 <?php 
+    echo '<img src="/images/menu_line.gif" border="0">';
     if(isAllow('dashboard','read')) {
         echo "<ul><li>
              <h2><a href='" . burl() . "/panel/dashboard'>Dashboard</a></h2>
              </ul>";
+        echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('finding','read')) {
         echo '<ul ><li > 
@@ -26,6 +28,7 @@
                 <li><a href="'.burl().'/finding/import">Upload Scan Results</a>';
         }
         echo '</ul></ul>';
+        echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('remediation','read')) {
         echo '<ul><li>
@@ -35,6 +38,7 @@
               <li><a href="'.burl().'/panel/remediation/sub/searchbox">Remediation Search</a>
               </ul>
               </ul>';
+        echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('report','read')) { 
         echo "\n",'<ul><li><h2><a>Reports</a></h2>
@@ -56,6 +60,7 @@
         }            
         echo'</ul>
              </ul>';
+        echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('admin','read')) {
         echo'<ul><li><h2><a>Administration</a></h2>';
@@ -84,6 +89,7 @@
         echo'<li><a href="'.burl().'/panel/config">Configuration</a>';
         echo'</ul>
             </ul>';
+        echo '<img src="/images/menu_line.gif" border="0">';
     }
     /*
     if(isAllow('vulnerability','read')) {
@@ -93,6 +99,7 @@
             echo'<li><a href="#">Create an Asset</a>';
         }
         echo'</ul></ul>';
+        echo '<img src="/images/menu_line.gif" border="0">';
     }*/
 ?>
 &nbsp;
