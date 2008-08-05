@@ -10,7 +10,7 @@ if(typeof dojo == "undefined"){
 * TODOC: should the copyright be changed to Dojo Foundation?
 * @license Licensed under the Academic Free License 2.1 http://www.opensource.org/licenses/afl-2.1.php
 *
-* $Id: bootstrap1.js 6258 2006-10-20 03:12:36Z jburke $
+* $Id$
 */
 
 // TODOC: HOW TO DOC THE BELOW?
