@@ -51,17 +51,21 @@ class SecurityController extends MessageController
         }
         $this->_auth = Zend_Auth::getInstance();
         if($this->_auth->hasIdentity()){
-            if( empty($this->me) ){
-                $this->me = $this->_auth->getIdentity();
-                $this->initializeAcl($this->me->id);
-            }
-            $this->view->identity = $this->me->account;
+            $this->me = $this->_auth->getIdentity();
+            $store = $this->_auth->getStorage();
+            // refresh the expiring timer
+            $exps = new Zend_Session_Namespace($store->getNamespace());
+            $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
+            $this->initializeAcl($this->me->id);
         }
     }
+
     public function preDispatch()
     {
         if( empty($this->me ) ) {
             $this->_forward('login','User');
+        }else{
+            $this->view->identity = $this->me->account;
         }
     }
 
