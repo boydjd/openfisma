@@ -44,7 +44,7 @@
 <div id='bottom'>
         <table width="100%">
         <tr><td colspan=2><hr style="color: #44637A;" size="1"></td></tr>
-        <tr> <td > Found a Bug? or Have a Suggestion? <a href="https://sourceforge.net/tracker/?group_id=208522" target="_blank">Report it Here</a> </td>
+        <tr> <td>If you find bugs or wish to provide feedback, please <a href="mailto:mark.haase@ed.gov?Subject=OVMS%20Feedback%2FBugs">contact us</a>.</td>
              <td align="right"> <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i> </td>
         </tr>
         </table>
