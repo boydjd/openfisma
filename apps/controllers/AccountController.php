@@ -324,7 +324,7 @@ class AccountController extends PoamBaseController
         $new_account=$req->getParam('user');
         $systems=$req->getParam('system');
         $new_account['password'] = md5($new_account['password']);
-        $new_account['created_ts'] = $this->now->toString('Y-m-d H:i:s');
+        $new_account['created_ts'] = self::$now->toString('Y-m-d H:i:s');
         $new_account['auto_role'] = $new_account['account'].'_r';
 
         $user_id = $this->_user->insert($new_account);
