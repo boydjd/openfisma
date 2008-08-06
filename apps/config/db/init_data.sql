@@ -1,7 +1,7 @@
 
 INSERT INTO `configurations` VALUES
 (1,'max_absent_time','90','Maximum Days An Account Can Be Inactive'),
-(2,'failure_threshold','3','Maximum Login Attempts Before Server Locks Account');
+(2,'failure_threshold','3','Maximum Login Attempts Before Server Locks Account'),
 (3,'expiring_seconds','1800','Seconds that the authentication session expiring');
 
 INSERT INTO `evaluations` (`id`, `name`, `precedence_id`, `function_id`, `group`) VALUES
