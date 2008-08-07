@@ -128,7 +128,7 @@
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
   </Style>
  </Styles>
- <Worksheet ss:Name="Sheet1">
+ <Worksheet ss:Name="Findings">
   <Table ss:ExpandedColumnCount="10" ss:ExpandedRowCount="1034" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s21">
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="49.5"/>
@@ -144,7 +144,7 @@
    <Row ss:AutoFitHeight="0" ss:Height="44.25">
     <Cell ss:MergeAcross="9" ss:StyleID="m25448952"><ss:Data ss:Type="String"
       xmlns="http://www.w3.org/TR/REC-html40"><B>OpenFISMA Injection Template&#10;<Font
-        html:Size="10">Fill the work sheet with your fingding data and save it as CSV format.</Font></B></ss:Data></Cell>
+        html:Size="10">Fill the work sheet with your finding data and save it as CSV format.</Font></B></ss:Data></Cell>
    </Row>
    <Row>
     <Cell ss:StyleID="s28"><Data ss:Type="String">System</Data><Comment
@@ -3329,25 +3329,5 @@
    <CellRangeList/>
    <Value>&quot;<?php echo implode(',',array_values($this->sources));?>&quot;</Value>
   </DataValidation>
- </Worksheet>
- <Worksheet ss:Name="Sheet2">
-  <Table ss:ExpandedColumnCount="0" ss:ExpandedRowCount="0" x:FullColumns="1"
-   x:FullRows="1" ss:StyleID="s34"/>
-  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-   <Panes>
-    <Pane>
-     <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
-    </Pane>
-   </Panes>
-   <ProtectObjects>False</ProtectObjects>
-   <ProtectScenarios>False</ProtectScenarios>
-  </WorksheetOptions>
- </Worksheet>
- <Worksheet ss:Name="Sheet3">
-  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-   <ProtectObjects>False</ProtectObjects>
-   <ProtectScenarios>False</ProtectScenarios>
-  </WorksheetOptions>
  </Worksheet>
 </Workbook>

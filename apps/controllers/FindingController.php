@@ -316,17 +316,37 @@ class FindingController extends PoamBaseController
                     'headers'=>array('Content-type'=>'application/vnd.ms-excel',
                                      'Content-Disposition'=>'filename='.TEMPLATE_NAME)
                 ));
-        $contextSwitch->addActionContext('template', 'xls')->initContext('xls');
+        $contextSwitch->addActionContext('template', 'xls');
 
-        $resp = $this->getResponse();
+        /* The spreadsheet won't open in Excel if any of these tables are empty. So we explicitly
+           check for that condition, and if it exists then we show the user an error message
+           explaining why the spreadsheet isn't available.
+        */
+        try {
+            $src = new System();
+            $this->view->systems = $src->getList('nickname') ;
+            if (count($this->view->systems) == 0)
+                throw new fisma_Exception("The spreadsheet template can not be prepared because there are no systems defined.");
 
-        $src = new System();
-        $this->view->systems = $src->getList('nickname') ;
-        $src = new Network();
-        $this->view->networks = $src->getList('nickname');
-        $src = new Source();
-        $this->view->sources = $src->getList('nickname');
-        $this->render();
+            $src = new Network();
+            $this->view->networks = $src->getList('nickname');
+            if (count($this->view->networks) == 0)
+                throw new fisma_Exception("The spreadsheet template can not be prepared because there are no networks defined.");
+
+            $src = new Source();
+            $this->view->sources = $src->getList('nickname');
+            if (count($this->view->networks) == 0)
+                throw new fisma_Exception("The spreadsheet template can not be prepared because there are no finding sources defined.");
+
+            // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
+            // the error handler will be confused by context switch and will look for error.xls.tpl instead of error.tpl
+            $contextSwitch->initContext('xls');
+            $this->render();
+        } catch (fisma_Exception $fe) {
+            Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->setViewSuffix('tpl');
+            $this->message($fe->getMessage(),self::M_WARNING);
+            $this->_forward('injection','Finding');
+        }
     }
 
     /** 
