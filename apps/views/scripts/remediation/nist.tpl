@@ -7,8 +7,7 @@
         <table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
             <tr>
                 <th align="left" ><span target="blscr" <?php
-                    if(in_array($this->poam['status'],array('NEW','OPEN'))
-                         && isAllow('remediation','update_control_assignment')){ 
+                    if(isAllow('remediation','update_control_assignment')){
                         echo ' class="editable"';
                     }
                 ?> >Security Control:&nbsp;</span>
@@ -118,8 +117,7 @@ if (isAllow('report','generate_system_rafs')) {
                 <tr>
                     <td>
                     <b target="threat" <?php 
-                        if(in_array($this->poam['status'], array('NEW','OPEN'))
-                             && isAllow('remediation','update_threat')){ 
+                        if(isAllow('remediation','update_threat')){ 
                             echo ' class="editable"';
                         } ?> >Level:&nbsp;</b>
                     <br><span id ="threat" type="select" name="poam[threat_level]"
@@ -131,8 +129,7 @@ if (isAllow('report','generate_system_rafs')) {
                  <tr>
                      <td>
                      <b target="threat_source" <?php 
-                        if(in_array($this->poam['status'],array('NEW','OPEN'))
-                             && isAllow('remediation','update_threat')){ 
+                        if(isAllow('remediation','update_threat')){ 
                             echo 'class="editable"';
                         } ?> >Source:&nbsp;</b>
                      <br><span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
@@ -143,8 +140,7 @@ if (isAllow('report','generate_system_rafs')) {
                  <tr>
                     <td>
                     <b target="justification" <?php 
-                       if(in_array( $this->poam['status'],array('NEW','OPEN'))
-                            && isAllow('remediation','update_threat')){ 
+                       if(isAllow('remediation','update_threat')){ 
                            echo 'class="editable"';
                        }?> >Justification:&nbsp;</b>
                     <br><span type="textarea" id="justification" name="poam[threat_justification]" rows="5" cols="160">
@@ -165,8 +161,7 @@ if (isAllow('report','generate_system_rafs')) {
                     <tr>
                         <td>
                             <b target="effectiveness" <?php 
-                                if(in_array( $this->poam['status'],array('NEW','OPEN'))
-                                    && isAllow('remediation','update_countermeasures')){
+                                if(isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 }?> >Effectiveness:&nbsp;</b>
                             <br><span type="select" name="poam[cmeasure_effectiveness]"
@@ -178,8 +173,7 @@ if (isAllow('report','generate_system_rafs')) {
                     <tr>
                         <td>
                             <b target="cmeasure" <?php 
-                                if(in_array( $this->poam['status'],array('NEW','OPEN'))
-                                 && isAllow('remediation','update_countermeasures')){
+                                if(isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 } ?> >Countermeasure:&nbsp;</b>
                             <br><span type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
@@ -190,8 +184,7 @@ if (isAllow('report','generate_system_rafs')) {
                      <tr>
                         <td>
                             <b target="cm_justification" <?php 
-                                if(in_array( $this->poam['status'],array('NEW','OPEN'))
-                                 && isAllow('remediation','update_countermeasures')){
+                                if(isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 }
                             ?> >Justification:&nbsp;</b>
