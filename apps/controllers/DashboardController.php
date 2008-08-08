@@ -98,6 +98,9 @@ class DashboardController extends SecurityController
         }
         $this->view->summary["EO"] = $eo_count;
         $this->view->chart_type = $type;
+        # Headers Required for IE+SSL (see bug #2039290) to stream XML 
+        header('Pragma:private');
+        header('Cache-Control:private');
         $this->render($type);
     }
 
@@ -108,6 +111,9 @@ class DashboardController extends SecurityController
         foreach($ret as $s){
             $this->view->summary["{$s['type']}"] = $s['count'];
         }
+        # Headers Required for IE+SSL (see bug #2039290) to stream XML
+        header('Pragma:private');
+        header('Cache-Control:private');
         $this->render();
     }
 

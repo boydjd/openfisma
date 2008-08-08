@@ -68,56 +68,40 @@
                  echo $this->formSelect('user_role',nullGet($this->roles,0),null,$this->role_list);
              }
         ?>
-                &nbsp;<a href="<?php echo burl()?>/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
-        </tr>
-        <tr>
-            <td align="right" class="thc">Title:</td>
-            <td class="tdc">&nbsp;
-                <input type="text" name="user[title]" 
-            value="<?php echo $this->user['title'];?>" size="50"></td>
-        </tr>
-        <tr>
-            <td align="right" class="thc">Status:</td>
-            <td class="tdc">&nbsp;
-                <select name="user[is_active]">
-                    <option value="1" <?php echo 1 == $this->user['status']?'selected':'';?>>Active</option>
-                    <option value="0" <?php echo 0 == $this->user['status']?'selected':'';?>>Suspend</option>
-                </select></td>
-        </tr>
-        <tr>
-            <td align="right" class="thc">Account:</td>
-            <td class="tdc">&nbsp;
-                <input type="text" name="user[account]"
-            value="<?php echo $this->user['username'];?>" size="50">
-                <font color="blue"> *</font></td>
-        </tr>
-        <tr>
-            <td align="right" class="thc">Password:</td>
-            <td class="tdc">&nbsp;
-                <input type="password" id="user_password" name="user[password]" value="" size="50">
-                <font color="blue">*</font></td>
-        </tr>
-        <tr>
-            <td align="right" class="thc">Confirm Password:</td>
-            <td class="tdc">&nbsp;
-                <input type="password" id="password_confirm" name="password_confirm" value="" size="50">
-                <font color="blue">*</font></td>
-        </tr>
-    </table>
-    <br>
-    <br>
-    <fieldset style="border:1px solid #BEBEBE; padding:3">
-    <legend><b>Systems</b></legend>
-    <div style="text-align:right"><span style="margin-right:80px;">
-        <label for="system[]" class="error">Please select at least one system for
-        your account.</label>
-        <input type="button" name="select_all" value="All" />
-        &nbsp;
-        <input type="button" name="select_none" value="None" />
-        </span></div>
-    <table border="0" width="100%">
-        <tr>
-            <?php /*
+        &nbsp;<a href="<?php echo burl()?>/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
+    </tr>
+    <tr>
+        <td align="right" class="thc">Title:</td>
+        <td class="tdc">&nbsp;<input type="text" name="user[title]" 
+            value="<?php echo $this->user['title'];?>" size="90"></td>
+    </tr>
+    <tr>
+        <td align="right" class="thc">Status:</td>
+        <td class="tdc">&nbsp;<select name="user[is_active]">
+            <option value="1" <?php echo 1 == $this->user['status']?'selected':'';?>>Active</option>
+            <option value="0" <?php echo 0 == $this->user['status']?'selected':'';?>>Suspend</option>
+        </select></td>
+    </tr>
+    <tr>
+        <td align="right" class="thc">Account:</td>
+        <td class="tdc">&nbsp;<input type="text" name="user[account]"
+            value="<?php echo $this->user['username'];?>" size="90"><font color="blue"> *</font></td>
+    </tr>
+    <tr>
+        <td align="right" class="thc">Password:</td>
+        <td class="tdc">&nbsp;<input type="password" name="user[password]" value="" size="30"></td>
+    </tr>
+    <tr>
+        <td align="right" class="thc">Confirm Password:</td>
+        <td class="tdc">&nbsp;<input type="password" name="confirm_password" value="" size="30"></td>
+    </tr>
+</table>
+<br><br>
+<fieldset style="border:1px solid #BEBEBE; padding:3"><legend><b>Systems</b></legend>
+<div style="text-align:right"><span style="margin-right:80px;"><input type="button" name="select_all" value="All" />&nbsp;<input type="button" name="select_none" value="None" /></span></div>
+<table border="0" width="100%">
+<tr>
+<?php /*
     $row = 4;
     $num = 0;
     foreach($this->all_sys as $sid=>$system ){

@@ -13,7 +13,6 @@
     
     require_once( ROOT . DS . 'paths.php');
     require_once( APPS . DS . 'basic.php');
-    include_once( CONFIGS . DS . 'debug.php');
     import(LIBS, VENDORS, VENDORS.DS.'Pear');
 
     require_once 'Zend/Controller/Front.php';
@@ -78,7 +77,7 @@
     $db_target->query($sql);
     foreach( $table_name as $table ) 
     {
-        echo "$table ";
+        echo "$table\n";
 
         try{
 
@@ -469,7 +468,11 @@ function assets_conv($db_src, $db_target,$data)
             'network_id'=>$network_id,
             'address_ip'=>$address_ip,
           'address_port'=>$address_port);
-    $db_target->insert('assets',$tmparray);
+    try {
+        $db_target->insert('assets',$tmparray);
+    } catch(Zend_Exception $e) {
+        echo "error in assets_conv() for asset_id {$data['asset_id']}: ", $e->getMessage() . "\n";
+    }
     unset($tmparray);
 }
 
@@ -740,7 +743,7 @@ function poam_vulns_conv($db_src, $db_target, $data)
                       'vuln_type'=>$data['vuln_type'] );
         $db_target->insert('poam_vulns',$tmparray);
     }else{
-        echo "INSERT INTO poam_vulns( `poam_id` , `vuln_seq` , `vuln_type` ) SELECT p.id, v.seq, v.type FROM poams p, vulnerabilities v WHERE p.legacy_finding_id = '{$data['finding_id']}' AND v.seq = '{$data['vuln_seq']}' AND v.type = '{$data['vuln_type']}' \n" ; 
+        echo "INSERT INTO poam_vulns( `poam_id` , `vuln_seq` , `vuln_type` ) SELECT p.id, v.seq, v.type FROM poams p, vulnerabilities v WHERE p.legacy_finding_id = '{$data['finding_id']}' AND v.seq = '{$data['vuln_seq']}' AND v.type = '{$data['vuln_type']}';\n" ; 
     }
 }
 

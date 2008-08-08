@@ -62,7 +62,7 @@
                     <td><b>Asset Name:&nbsp;</b> <?php echo nullGet($this->poam['asset_name'],'(none given)');?> </td>
                 </tr>
                 <tr>
-                    <td><b>Known Address(es):&nbsp;</b> <i><?php echo $this->network_list[$this->poam['network_id']],$this->poam['ip'],':',$this->poam['port']?> </i> </td>
+                    <td><b>Known Address(es):&nbsp;</b><?php echo $this->network_list[$this->poam['network_id']],$this->poam['ip'],':',$this->poam['port']?></td>
                 </tr>
                 <tr>
                     <td><b>Product Information:&nbsp;</b> <i>
@@ -83,7 +83,7 @@
 <table border="0" cellpadding="5" cellspacing="1" class="tipframe" >
     <th align="left">Finding Description</th>
     <tr>
-        <td><i> <?php echo nullGet($this->poam['finding_data'],'(none given)'); ?></i> </td>
+        <td><?php echo nullGet($this->poam['finding_data'],'(none given)'); ?></td>
     </tr>
 </table>
 <?php if( !empty($this->poam['vuln']) ) { ?>
@@ -109,8 +109,7 @@
 <?php } ?>
 <table cellpadding="5" width="100%" class="tipframe">
     <th align='left' ><span target='recommendation' <?php 
-                if (in_array( $this->poam['status'],array('NEW','OPEN'))
-                  && isAllow('remediation','update_finding_recommendation')) {
+                if (isAllow('remediation','update_finding_recommendation')) {
                     echo 'class="editable"';
                 }
             ?> colspan='2'>Recommendation</span></th>
