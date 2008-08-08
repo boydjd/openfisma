@@ -123,6 +123,14 @@ class PanelController extends SecurityController
         $this->_helper->actionStack('header');
     }
 
+    public function networkAction()
+    {
+        $sub = $this->_request->getParam('sub');
+        $this->_helper->actionStack($sub,'Network');
+        $this->_helper->actionStack('searchbox','Network');
+        $this->_helper->actionStack('header');
+    }
+
     public function configAction()
     {
         $req = $this->getRequest();

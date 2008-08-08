@@ -51,6 +51,7 @@ class ConfigController extends SecurityController
         }
 
         $msg = 'Configuration updated successfully';
+        $this->message($msg,self::M_NOTICE);
         $this->_forward('config','panel');
     }
 

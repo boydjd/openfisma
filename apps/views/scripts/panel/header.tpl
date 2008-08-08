@@ -86,6 +86,9 @@
         if(isAllow('admin_sources','read')) {
             echo'<li><a href="'.burl().'/panel/source/sub/list">Finding Sources</a>';
         }
+        if(isAllow('admin_networks','read')){
+            echo'<li><a href="'.burl().'/panel/network/sub/list">Networks</a>';
+        }
         echo'<li><a href="'.burl().'/panel/config">Configuration</a>';
         echo'</ul>
             </ul>';

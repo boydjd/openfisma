@@ -117,6 +117,7 @@ class SourceController extends SecurityController
         $result = $db->fetchCol($qry);
         if(!empty($result)){
             $msg = 'This finding source can not be deleted because it is already associated with one or more POAMS';
+            $model = self::M_WARNING;
         }else{
             $res = $this->_source->delete('id = '.$id);
             if(!$res){
