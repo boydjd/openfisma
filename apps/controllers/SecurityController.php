@@ -36,7 +36,20 @@ class SecurityController extends MessageController
        authenticated user instance
     */
 	protected $me = null;
-
+    /**
+     * rules to sanity check the data
+     */
+    protected $_validator = null;
+    /**
+     * Sanity check set
+     * 
+     * data  name the parameters
+     * filter rules for filter
+     * validator rules for validation
+     * flag jump to error handling or not
+     */
+    protected $_sanity = array('data'=>null,'filter'=>null, 'validator'=>null,'flag'=>TRUE);
+    
     public static $now = null;
     protected $_auth = null;
     
@@ -57,15 +70,25 @@ class SecurityController extends MessageController
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
             $this->initializeAcl($this->me->id);
+            if( isset($this->_sanity['data']) ) {
+                $this->_validator = new Zend_Filter_Input($this->_sanity['filter'],
+                    $this->_sanity['validator'],$this->_request->getParam($this->_sanity['data']) );
+            }
         }
     }
 
+    
     public function preDispatch()
     {
         if( empty($this->me ) ) {
             $this->_forward('login','User');
         }else{
             $this->view->identity = $this->me->account;
+            $input = $this->_validator;
+            if(isset($input) && $this->_sanity['flag'] && 
+                ($input->hasInvalid()||$input->hasMissing())  ) {
+                $this->_forward('inputerror','error',null,array('inputerror'=>$input->getMessages()));
+            }
         }
     }
 

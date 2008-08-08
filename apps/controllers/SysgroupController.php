@@ -14,6 +14,7 @@
 require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'sysgroup.php';
 require_once 'Pager.php';
+require_once 'Zend/Filter/Input.php';
 
 /**
  * Sysgroup Controller
@@ -32,12 +33,21 @@ class SysgroupController extends SecurityController
             'currentPage' => 1,
             'perPage'=>20);
     
+    protected $_sanity = array(
+        'data' => 'sysgroup',
+        'filter' => array('*'=>array('StringTrim','StripTags')),
+        'validator' => array(
+            'name'=>'Alnum',
+            'nickname'=>'Alnum'),
+        'flag'=>TRUE
+         );
+    
     public function init()
     {
         parent::init();
         $this->_sysgroup = new Sysgroup();
     }
-
+    
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -89,15 +99,9 @@ class SysgroupController extends SecurityController
     {
         $req = $this->getRequest();
         if('save' == $req->getParam('s')){
-            $post = $req->getPost();
-            foreach($post as $k=>$v){
-                if('sysgroup_' == substr($k,0,9)){
-                    $k = substr($k,9);
-                    $data[$k] = $v;
-                }
-            }
-            $data['is_identity'] = 0;
-            $res = $this->_sysgroup->insert($data);
+            $sysgroup = $req->getParam('sysgroup');
+            $sysgroup['is_identity'] = 0;
+            $res = $this->_sysgroup->insert($sysgroup);
             if(!$res){
                 $msg = "Failed to create the system group";
                 $model = self::M_WARNING;
@@ -117,13 +121,13 @@ class SysgroupController extends SecurityController
         $db = $this->_sysgroup->getAdapter();
         $qry = $db->select()->from('systemgroup_systems')->where('sysgroup_id = '.$id);
         $result = $db->fetchCol($qry);
+        $model = self::M_WARNING;
         if(!empty($result)){
             $msg = 'This system group cannot be deleted because it is already associated with one or more systems';
         }else{
             $res = $this->_sysgroup->delete('id = '.$id);
             if(!$res){
                 $msg = "Failed to delete the system group";
-                $model = self::M_WARNING;
             } else {
                 $msg = "System group deleted successfully";
                 $model = self::M_NOTICE;
@@ -154,14 +158,8 @@ class SysgroupController extends SecurityController
     {
         $req = $this->getRequest();
         $id  = $req->getParam('id');
-        $post = $req->getPost();
-        foreach($post as $k=>$v){
-            if('sysgroup_' == substr($k,0,9)){
-                $k = substr($k,9);
-                $data[$k] = $v;
-            }
-        }
-        $res = $this->_sysgroup->update($data,'id = '.$id);
+        $sysgroup = $req->getParam('sysgroup');
+        $res = $this->_sysgroup->update($sysgroup,'id = '.$id);
         if(!$res){
             $msg = "Failed to edit the system group";
             $model = self::M_WARNING;

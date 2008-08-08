@@ -17,6 +17,7 @@ require_once( MODELS . DS .'user.php');
 require_once( MODELS . DS .'system.php');
 require_once('Pager.php');
 require_once 'Zend/Date.php';
+require_once 'Zend/Filter/Input.php';
 
 /**
  * System Controller
@@ -35,13 +36,31 @@ class SystemController extends SecurityController
             'currentPage' => 1,
             'perPage'=>20);
     private $_user = null;
+    
+    protected $_sanity = array(
+        'data' => 'system',
+        'filter' => array('*'=>array('StringTrim','StripTags')),
+        'validator' => array(
+            'name'=>'Alnum',
+            'nickname'=>'Alnum',
+            'primary_office'=>'Digits',
+            'confidentiality'=>'NotEmpty',
+            'integrity'=>'NotEmpty',
+        
+            'availability'=>'NotEmpty',
+            'type'=>'NotEmpty',
+            'desc'=>array('allowEmpty'=>TRUE),
+            'criticality_justification'=>array('allowEmpty'=>TRUE),
+            'sensitivity_justification'=>array('allowEmpty'=>TRUE)),
+        'flag' => TRUE
+    );
 
     public function init()
     {
         parent::init();
         $this->_system = new System();
     }
-
+    
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -64,7 +83,7 @@ class SystemController extends SecurityController
         }
         $query->order('name ASC')
               ->limitPage($this->_paging['currentPage'],$this->_paging['perPage']);
-        $system_list = $this->_system->fetchAll($query)->toArray();                                    
+        $system_list = $this->_system->fetchAll($query)->toArray();
         $this->view->assign('system_list',$system_list);
         $this->render();
     }
@@ -97,20 +116,16 @@ class SystemController extends SecurityController
         $this->view->assign('sg_list',$sg_list);
         if('save' == $req->getParam('s')){
             $errno = 0;
-            $post = $req->getPost();
-            foreach($post as $key=>$value){
-                if('system_' == substr($key,0,7)){
-                    $data[substr($key,7)] = $value;
-                }
-            }
-            $id = $this->_system->insert($data);
+            $system = $req->getParam('system');
+            $id = $this->_system->insert($system);
+            
             $this->_user = new user();
             $this->me->systems = $this->_user->getMySystems($this->me->id);
 
-            $data = array('name'=>$post['system_name'],
-                          'nickname'=>$post['system_nickname'],
-                          'is_identity'=>1);
-            $res = $db->insert('system_groups',$data);
+            $system_groups = array('name'=>$system['name'],
+                               'nickname'=>$system['nickname'],
+                            'is_identity'=>1);
+            $res = $db->insert('system_groups',$system_groups);
             if(!$res){
                 $errno++;
             }
@@ -121,13 +136,12 @@ class SystemController extends SecurityController
             if(!$res){
                 $errno++;
             }
-            foreach($post as $key=>$value){
-                if('sysgroup_' == substr($key,0,9)){
-                    $data = array('system_id'=>$id,'sysgroup_id'=>$value);
-                    $res = $db->insert('systemgroup_systems',$data);
-                    if(!$res){
-                        $errno++;
-                    }
+            $system_groups = $this->_request->getParam('sysgroup');
+            foreach($system_groups as $systemgroup_id){
+                $data = array('system_id'=>$id,'sysgroup_id'=>$systemgroup_id);
+                $res = $db->insert('systemgroup_systems',$data);
+                if(!$res){
+                    $errno++;
                 }
             }
             if($errno > 0){
@@ -210,40 +224,27 @@ class SystemController extends SecurityController
         $req = $this->getRequest();
         $db  = $this->_system->getAdapter();
         $id  = $req->getParam('id');
-        $errno = 0;$res = 0;
-        $post = $req->getPost();
-        foreach($post as $key=>$value){
-            if('system_' == substr($key,0,7)){
-                $data[substr($key,7)] = $value;
-            }
-        }
-        $res = $this->_system->update($data,'id = '.$id);
-        if(!$res){
-            $errno++;
-        }        die("zzz");
-        $sysgroup_data['name'] = $data['name'];
-        $sysgroup_data['nickname'] = $data['nickname'];
+        $res = 0;
+        $system = $this->_request->getParam('system');
+        $res += $this->_system->update($system,'id = '.$id);
+
+        $sysgroup_data['name'] = $system['name'];
+        $sysgroup_data['nickname'] = $system['nickname'];
         $query = $db->select()->from(array('sgs'=>'systemgroup_systems'),array())
                               ->join(array('sg'=>'system_groups'),'sgs.sysgroup_id = sg.id','id')
                               ->where('sgs.system_id = ?',$id)
                               ->where('sg.is_identity = 1');
         $result = $db->fetchRow($query);
-        $res = $db->update('system_groups',$sysgroup_data,'id = '.$result['id']);
-        if(!$res){
-            $errno++;
+        $res += $db->update('system_groups',$sysgroup_data,'id = '.$result['id']);
+        
+        $db->delete('systemgroup_systems',"system_id = $id and sysgroup_id <> {$result['id']} ");
+        $system_groups=$this->_request->getParam('sysgroup');
+        foreach($system_groups as $systemgroup_id){
+            $data = array('system_id'=>$id,'sysgroup_id'=>$systemgroup_id);
+            $db->insert('systemgroup_systems',$data);
         }
-        foreach($post as $key=>$value){
-            if('sysgroup_' == substr($key,0,9)){
-                $data = array('sysgroup_id'=>$value);
-                $res = $db->update('systemgroup_systems',$data,'system_id = '.$id);
-                if(!$res){
-                    $errno++;
-                }
-            }
-        }
-
-        if($errno > 0){
-            $msg = "Failed to edit the system";
+        if($res == 0){
+            $msg = "Nothing changed in system information (except system groups)";
             $model = self::M_WARNING;
         } else {
             $msg = "System edited successfully";
@@ -251,7 +252,6 @@ class SystemController extends SecurityController
         }
         $this->message($msg,$model);
         $this->_forward('view',null,'id='.$id);
-
     }
 
 }

@@ -24,15 +24,13 @@
         <td class="tdc">&nbsp;<?php echo $this->user['email'];?></td></tr>
     <tr>
         <td align="right" class="thc">Role:</td>
-        <td class="tdc">&nbsp;
-        <?php
+        <td class="tdc">&nbsp;<?php
              if($this->role_count > 1){
                 echo $this->roles;
              }else{
                  echo $this->role_list[nullGet($this->roles,0)];
              }
-        ?>
-        </td>
+        ?>        </td>
     </tr>
     <tr>
         <td align="right" class="thc">Title:</td>

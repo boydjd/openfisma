@@ -30,14 +30,11 @@ class AccountController extends PoamBaseController
 {
     private $role_array;
     private $_user = null;
-
-    public function init()
-    {
-        parent::init();
-        $this->_user = new User();
-        
-        $filter=array('*'=>array('StringTrim','StripTags'));
-        $validator= array(
+    
+    protected $_sanity = array(
+        'data' => 'user',
+        'filter' => array('*'=>array('StringTrim','StripTags')),
+        'validator' => array(
             'name_first'=>'Alnum',
             'name_last'=>'Alnum',
             'phone_office'=>'Alnum',
@@ -45,19 +42,16 @@ class AccountController extends PoamBaseController
             'email'=>'EmailAddress',
         
             'title'=>'Alnum',
-            'is_active'=>array('Int',new Zend_Validate_Between(0,1)),
+            'is_active'=>array('Int'),
             'account'=>'Alnum',
-            'password'=>array('allowEmpty'=>TRUE));
-        $this->_validator = new Zend_Filter_Input($filter,$validator);
-    }
-    
-    public function validate()
+            'password'=>array('allowEmpty'=>TRUE)),
+        'flag' => TRUE
+    );
+
+    public function init()
     {
-        $data = $this->_req->getParam('user');
-        if (!empty($data ) ) {
-            return $this->_validator->setData($data);
-        }
-        return null;
+        parent::init();
+        $this->_user = new User();
     }
     
     public function preDispatch()

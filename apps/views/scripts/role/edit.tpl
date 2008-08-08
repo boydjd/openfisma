@@ -1,3 +1,5 @@
+<script language="javascript" src="<?php echo burl(); ?>/javascripts/jquery/jquery.validate.js"></script>
+<script language="javascript" src="<?php echo burl(); ?>/javascripts/role.validate.js"></script>
 <div class="barleft">
 <div class="barright">
 <p><b>Administration: Roles Edit</b>
@@ -8,26 +10,28 @@
     <td align="left"><font color="blue">*</font> = Required Field</td>
 </tr>
 </table>
+<form id="roleform" name="edit" method="post" action="<?php echo burl()?>/panel/role/sub/update/id/<?php echo $this->id;?>">
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-<form name="edit" method="post" action="<?php echo burl()?>/panel/role/sub/update/id/<?php echo $this->id;?>">
     <tr>
         <td align="right" class="thc" width="200">Role Name:</td>
-        <td class="tdc">&nbsp;<input type="text" name="role_name" size="90"
-            value="<?php echo $this->role['name'];?>"><font color="blue"> *</font></td>
+        <td class="tdc"><input type="text" name="role[name]" size="50"
+            value="<?php echo $this->role['name'];?>">
+        <font color="blue"> *</font></td>
     </tr>
     <tr>
         <td align="right" class="thc">Nickname:</td>
-        <td class="tdc">&nbsp;<input type="text" name="role_nickname" size="90"
-            value="<?php echo $this->role['nickname'];?>"><font color="blue"> *</font></td>
+        <td class="tdc"><input type="text" name="role[nickname]" size="50"
+            value="<?php echo $this->role['nickname'];?>">
+        <font color="blue"> *</font></td>
     </tr>
     <tr>
         <td align="right" class="thc" width="200">Description:</td>
-        <td class="tdc">&nbsp;<textarea name="role_desc" size="30" cols="110" rows="15"><?php echo $this->role['desc'];?></textarea></td>
+        <td class="tdc"><textarea name="role[desc]" cols="80" rows="10"><?php echo $this->role['desc'];?></textarea></td>
     </tr>
    </table>
 <br>
 <br>
-<table border="0" width="300">
+<table width="300" border="0" align="center">
 <tr align="center">
     <td><input type="submit" value="Update" title="submit your request"></td>
     <td><span style="cursor: pointer"><input type="reset" value="Reset"></span></td>

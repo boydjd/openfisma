@@ -17,7 +17,7 @@ $fid_array = array('name'=>'System Name',
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a id="system_list" href="<?php echo burl()?>/system/sub/list">System List</a>] (total: <?php echo $this->total;?>)</th>
+            <th>[<a id="system_list" href="<?php echo burl()?>/panel/system/sub/list">System List</a>] (total: <?php echo $this->total;?>)</th>
             <th>[<a id="add_system" href="<?php echo burl()?>/panel/system/sub/create" title="add new Systems">Add System</a>]</th>
             <th>
                 <table align="center">

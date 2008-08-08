@@ -14,6 +14,7 @@
 require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'role.php';
 require_once 'Pager.php';
+require_once 'Zend/Filter/Input.php';
 
 /**
  * Role Controller
@@ -32,6 +33,16 @@ class RoleController extends SecurityController
             'currentPage' => 1,
             'perPage'=>20);
     
+    protected $_sanity = array(
+        'data' => 'role',
+        'filter' => array('*'=>array('StringTrim','StripTags')),
+        'validator' => array(
+            'name'=>'Alnum',
+            'nickname'=>'Alnum',
+            'desc'=>array('allowEmpty'=>TRUE)),
+        'flag'=>TRUE
+         );
+
     public function init()
     {
         parent::init();
@@ -40,14 +51,12 @@ class RoleController extends SecurityController
 
     public function preDispatch()
     {
+        parent::preDispatch();
         $req = $this->getRequest();
         $this->_paging_base_path = $req->getBaseUrl() .'/panel/role/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p',1);
-        if(!in_array($req->getActionName(),array('login','logout') )){
-            parent::preDispatch();
-        }
-    }   
-     
+    }
+
     public function searchboxAction()
     {
         $req = $this->getRequest();
@@ -77,7 +86,7 @@ class RoleController extends SecurityController
         }
         $query->order('name ASC')
               ->limitPage($this->_paging['currentPage'],$this->_paging['perPage']);
-        $role_list = $this->_role->fetchAll($query)->toArray();                                    
+        $role_list = $this->_role->fetchAll($query)->toArray();
         $this->view->assign('role_list',$role_list);
         $this->render();
     }
@@ -86,14 +95,8 @@ class RoleController extends SecurityController
     {
         $req = $this->getRequest();
         if('save' == $req->getParam('s')){
-            $post = $req->getPost();
-            foreach($post as $k=>$v){
-                if('role_' == substr($k,0,5)){
-                    $k = substr($k,5);
-                    $data[$k] = $v;
-                }
-            }
-            $res = $this->_role->insert($data);
+            $role = $req->getPost('role');
+            $res = $this->_role->insert($role);
             if(!$res){
                 $msg = "Error Create Role";
                 $model = self::M_WARNING;
@@ -148,14 +151,8 @@ class RoleController extends SecurityController
     {
         $req = $this->getRequest();
         $id  = $req->getParam('id');
-        $post = $req->getPost();
-        foreach($post as $k=>$v){
-            if('role_' == substr($k,0,5)){
-                $k = substr($k,5);
-                $data[$k] = $v;
-            }
-        }
-        $res = $this->_role->update($data,'id = '.$id);
+        $role = $req->getPost('role');
+        $res = $this->_role->update($role,'id = '.$id);
         if(!$res){
             $msg = "Edit Role Failed";
             $model = self::M_WARNING;
