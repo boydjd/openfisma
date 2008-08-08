@@ -204,7 +204,7 @@ class AccountController extends PoamBaseController
             $this->_forward('view',null,null,array('v'=>'edit'));
             return ;
         }
-        if( isset($u_data['password']) ) {
+        if( !empty($u_data['password']) ) {
             /// @todo validate the password complexity
             if( $u_data['password'] != $confirm_pwd){
                 $msg = "Password does not match confirmation.";
@@ -213,6 +213,8 @@ class AccountController extends PoamBaseController
                 return;                
             }
             $u_data['password'] = md5($u_data['password']);
+        } else {
+            unset($u_data['password']);
         }
         if(!empty($u_data)){
             if($u_data['is_active'] == 0){

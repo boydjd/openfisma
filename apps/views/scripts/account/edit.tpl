@@ -83,8 +83,7 @@
     </tr>
     <tr>
         <td align="right" class="thc">Confirm Password:</td>
-        <td class="tdc">&nbsp;<input type="password" name="confirm_password" value="" size="30">
-        <font color="blue">*</font></td>
+        <td class="tdc">&nbsp;<input type="password" name="confirm_password" value="" size="30"></td>
     </tr>
 </table>
 <br><br>
