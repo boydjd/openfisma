@@ -39,10 +39,10 @@
                 <tr>
                     <td>
                         <b target="action_owner" <?php
-        if(in_array( $this->poam['status'],array('NEW','OPEN'))
-            && isAllow('remediation','update_finding_assignment')){
-            echo ' class="editable"';
-     }?> >Responsible System:&nbsp;</b>
+        if(isAllow('remediation','update_finding_assignment')){
+            echo ' class="editable"'; 
+        }
+        ?> >Responsible System:&nbsp;</b>
                         <span name="poam[system_id]" id="action_owner" type="select" 
                    href="<?php echo burl()?>/metainfo/list/o/system/format/html/">
     <?php echo $this->system_list[$this->poam['system_id']]; ?>
