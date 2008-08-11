@@ -86,7 +86,9 @@
         if(isAllow('admin_sources','read')) {
             echo'<li><a href="'.burl().'/panel/source/sub/list">Finding Sources</a>';
         }
-        echo'<li><a href="'.burl().'/panel/config">Configuration</a>';
+        if(isAllow('app_configuration','update')) {
+            echo'<li><a href="'.burl().'/panel/config">Configuration</a>';
+        }
         echo'</ul>
             </ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
