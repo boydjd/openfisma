@@ -91,5 +91,7 @@ $pdf->ezText('Plans of Actions And Milestones Report Administration',16,array('j
 $pdf->ezTable($this->poam_list,$cols,$title,
     array('fontSize'=>8,'maxWidth'=>690, 'titleFontSize'=>'12' ));
 
+header('Pragma: private');
+header('Cache-control: private');
 echo $pdf->ezOutput();
 ?>

@@ -67,5 +67,7 @@ for($i=0; $i<count($table); $i++)
     array('fontSize'=>8,'maxWidth'=>$content_width,'titleFontSize'=>16));
 }
 
+header('Pragma: private');
+header('Cache-control: private');
 echo $pdf->ezOutput();
 ?>

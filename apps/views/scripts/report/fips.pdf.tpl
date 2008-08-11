@@ -59,5 +59,7 @@ $pdf->ezTable($table_count, $fields_count,' ',
 $pdf->ezTable($table, $fields,' ',
     array('fontSize'=>8,'maxWidth'=>$content_width,'titleFontSize'=>16));
 
+header('Pragma: private');
+header('Cache-control: private');
 echo $pdf->ezOutput();
 ?>

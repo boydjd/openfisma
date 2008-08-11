@@ -71,5 +71,7 @@ $pdf->ezText('Asset Search Results',16,array('justification'=>'centre'));
 $pdf->ezTable($table, $fields,$title,
     array('fontSize'=>8,'width'=>$content_width,'titleFontSize'=>12));
 
+header('Pragma: private');
+header('Cache-control: private');
 echo $pdf->ezOutput();
 ?>
