@@ -1,5 +1,5 @@
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/jquery/jquery.validate.js"></script>
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/system.validate.js"></script>
+<script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
+<script language="javascript" src="/javascripts/system.validate.js"></script>
 <div class="barleft">
 <div class="barright">
 <p><b>System Information</b>
@@ -10,7 +10,7 @@
     <td align="left"><font color="blue">*</font> = Required Field</td>
 </tr>
 </table>
-<form id="systemform" name="edit" method="post" action="<?php echo burl()?>/panel/system/sub/create/s/save">
+<form id="systemform" name="edit" method="post" action="/panel/system/sub/create/s/save">
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
     <tr>
         <td align="right" class="thc" width="200">System Name:</td>

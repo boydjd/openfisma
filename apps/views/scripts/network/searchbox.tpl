@@ -9,8 +9,8 @@ $fid_array = array('name'=>'Network Name','nickname'=>'Nickname');
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a id="network_list" href="<?php echo burl()?>/panel/network/sub/list"> Network List</a>] (total: <?php echo $this->total;?>)</th>
-            <th>[<a id="add_network" href="<?php echo burl()?>/panel/network/sub/create" title="Add  Network">Add 
+            <th>[<a id="network_list" href="/panel/network/sub/list"> Network List</a>] (total: <?php echo $this->total;?>)</th>
+            <th>[<a id="add_network" href="/panel/network/sub/create" title="Add  Network">Add 
  Network</a>]</th>
             <th>
                 <table align="center">
@@ -25,7 +25,7 @@ $fid_array = array('name'=>'Network Name','nickname'=>'Nickname');
             </th>
             <th>
                 <table align="center">
-                <form name="query" method="post" action="<?php echo burl()?>/panel/network/sub/list">
+                <form name="query" method="post" action="/panel/network/sub/list">
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

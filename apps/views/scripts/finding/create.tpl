@@ -1,4 +1,4 @@
-<script LANGUAGE="JavaScript" type="test/javascript" src="<?php echo burl(); ?>/javascripts/ajax.js"></script>
+<script LANGUAGE="JavaScript" type="test/javascript" src="/javascripts/ajax.js"></script>
 
 <div class="barleft">
   <div class="barright">
@@ -6,7 +6,7 @@
   </div>
 </div>
 
-<form name="finding" method="post" action="<?php echo burl()?>/panel/finding/sub/create/is/new" >
+<form name="finding" method="post" action="/panel/finding/sub/create/is/new" >
 <table width="810" border="0" align="center" cellpadding="0">
     <tr><td>
         <input name="button" type="submit" id="button" value="Create Finding" >
@@ -22,7 +22,7 @@
                             <td>
                                 <table border="0" cellpadding="0" cellspacing="0">
                                     <tr>
-                                        <td><input type="text" class="date" name="discovereddate" size="12" maxlength="10" value="<?php echo date('Ymd');?>" url="<?php echo burl()?>"></td>
+                                        <td><input type="text" class="date" name="discovereddate" size="12" maxlength="10" value="<?php echo date('Ymd');?>" url=""></td>
                                     </tr>
                                 </table>
                             </td>
@@ -54,7 +54,7 @@
                     <table border="0" width="100%" cellpadding="5" class="tipframe">
                         <tr><th align="left">Asset Information
                         </th>
-                        <th align="right"><a id="add_asset" href="<?php echo burl()?>/asset/create" title="Create New Asset">Create New Asset</a>
+                        <th align="right"><a id="add_asset" href="/asset/create" title="Create New Asset">Create New Asset</a>
                         </th>
                         <tr>
                             <td colspan="2">
@@ -65,7 +65,7 @@
                             <?php 
                                 $this->system[0] = '--Any--';
                                 echo $this->formSelect('system', 0, 
-                                array('url'=>burl()."/asset/search"), 
+                                array('url'=>"/asset/search"), 
                                 $this->system); 
                             ?>
                                         </td>
@@ -80,7 +80,7 @@
                                                     </tr>
                                     <tr>
                                       <td>&nbsp;</td>
-                                      <td><input id="search_asset" type="button" value="Search Assets" url='<?php echo burl()?>/asset/search' /></td>
+                                      <td><input id="search_asset" type="button" value="Search Assets" url='/asset/search' /></td>
                                       <td colspan=2 ><input type="reset" name="button2" id="button2" value="Reset" /></td>
                                       </tr>
                                 </table><hr/>

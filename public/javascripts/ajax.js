@@ -14,7 +14,7 @@ $(document).ready(function(){
    $('input.date').datepicker({dateFormat:'yymmdd',
                 showOn: 'both', 
                 buttonImageOnly: true,
-                buttonImage: $('input.date').attr('url')+'/images/calendar.gif'
+                buttonImage: '/images/calendar.gif'
                 });
         
 
@@ -112,7 +112,7 @@ $(document).ready(function(){
                         dateFormat:'yymmdd',
                         showOn: 'both', 
                         buttonImageOnly: true,
-                        buttonImage: $('div.selectdate').attr('url')+'/images/calendar.gif',
+                        buttonImage: '/images/calendar.gif',
                         buttonText: 'Calendar'});
             }else if( type == 'textarea' ){
                 var row = target.attr('rows');

@@ -17,8 +17,8 @@ $fid_array = array('name'=>'System Name',
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a id="system_list" href="<?php echo burl()?>/panel/system/sub/list">System List</a>] (total: <?php echo $this->total;?>)</th>
-            <th>[<a id="add_system" href="<?php echo burl()?>/panel/system/sub/create" title="add new Systems">Add System</a>]</th>
+            <th>[<a id="system_list" href="/panel/system/sub/list">System List</a>] (total: <?php echo $this->total;?>)</th>
+            <th>[<a id="add_system" href="/panel/system/sub/create" title="add new Systems">Add System</a>]</th>
             <th>
                 <table align="center">
                     <tbody>
@@ -32,7 +32,7 @@ $fid_array = array('name'=>'System Name',
             </th>
             <th>
                 <table align="center">
-                <form name="query" method="post" action="<?php echo burl()?>/panel/system/sub/list">
+                <form name="query" method="post" action="/panel/system/sub/list">
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

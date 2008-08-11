@@ -4,16 +4,16 @@
 <head>
     <title>Login</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <link rel="stylesheet" type="text/css" href="<?php echo burl(); ?>/stylesheets/login.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
     <link rel="icon"
           type="image/ico"
-          href="<?php echo burl()?>/images/favicon.ico" />
+          href="/images/favicon.ico" />
 </head>
 
 <body>
     <div id="container">
     <div id="header"></div>
-    <div id="headbar"><img src="<?php echo burl(); ?>/images/login_title.gif" ></div>
+    <div id="headbar"><img src="/images/login_title.gif" ></div>
             <?php echo $this->layout()->CONTENT; ?>
     <div id='bottom'>
         <table width="100%">

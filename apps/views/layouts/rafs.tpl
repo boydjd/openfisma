@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="icon"
       type="image/ico"
-      href="<?php echo burl()?>/images/favicon.ico" />
+      href="/images/favicon.ico" />
 <style>
 p.pageHeader {
   font-size: 20pt;

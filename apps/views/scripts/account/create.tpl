@@ -8,9 +8,9 @@
         });
     })
 </script>
-<!--<script language="javascript" src="<?php echo burl(); ?>/javascripts/form.js"></script>-->
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/jquery/jquery.validate.js"></script>
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/account.validate.js"></script>
+<!--<script language="javascript" src="/javascripts/form.js"></script>-->
+<script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
+<script language="javascript" src="/javascripts/account.validate.js"></script>
 
 <div class="barleft">
     <div class="barright">
@@ -22,7 +22,7 @@
         <td align="left"><font color="blue">*</font> = Required Field</td>
     </tr>
 </table>
-<form id="accountform" name="create" method="post" action="<?php echo burl()?>/panel/account/sub/save" >
+<form id="accountform" name="create" method="post" action="/panel/account/sub/save" >
     <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
         <tr>
             <td align="right" class="thc" width="200">First Name:</td>

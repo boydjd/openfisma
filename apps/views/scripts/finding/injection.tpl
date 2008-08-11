@@ -20,7 +20,7 @@
                     <td align="center" NOWRAP><strong>Step 1.</strong></td>
                     <td align="left">
                         Download EXCEL template file from  
-                        <a href="<?php echo burl()?>/finding/template">here</a>.
+                        <a href="/finding/template">here</a>.
                     </td>
                 </tr>
 
@@ -34,7 +34,7 @@
                 <tr>
                     <td align="center" NOWRAP><strong>Step 3.</strong></td>
                     <td>Upload the CSV file here.
-                    <form action="<?php echo burl()?>/finding/injection" method="POST" enctype="multipart/form-data">
+                    <form action="/finding/injection" method="POST" enctype="multipart/form-data">
                         <input type="file" name="csv">
                         <input type="submit"></form>
                     </td>

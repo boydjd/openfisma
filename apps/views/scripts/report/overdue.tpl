@@ -14,14 +14,14 @@
                             '5' => '120 and greater days');
     $this->system_list[0] ='--Any--';
     $this->source_list[0] ='--Any--';
-    $url = burl()."/panel/report/sub/overdue/s/search";
+    $url = "/panel/report/sub/overdue/s/search";
 ?>
 <div class="barleft">
 <div class="barright">
 <p><b>Overdue Reports</b>
 </div>
 </div>
-<form name="overdue_report" method="post" action="<?php echo burl()?>/panel/report/sub/overdue/s/search">
+<form name="overdue_report" method="post" action="/panel/report/sub/overdue/s/search">
 <table width="95%" align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
     <tr>
         <td width="6%" height="47"><b>System </b></td>
@@ -86,8 +86,8 @@
 <p><b>Poam Search Results</b>
     <span>
     <?php echo $this->links['all']; ?>
-    <a target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="<?php echo burl()?>/images/pdf.gif" border="0"></a>
-    <a href="<?php echo $this->url.'/format/xls'; ?>"><img src="<?php echo burl()?>/images/xls.gif" border="0"></a>
+    <a target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="/images/pdf.gif" border="0"></a>
+    <a href="<?php echo $this->url.'/format/xls'; ?>"><img src="/images/xls.gif" border="0"></a>
     </span>
 </div>
 </div>

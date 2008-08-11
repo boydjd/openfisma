@@ -4,7 +4,7 @@
     $evaluation = $this->eval;
     $comment = new Comments();
 ?>
-<form action="<?php echo burl()?>/remediation/evidence/id/<?php echo $evidence['id'];?>" method="post"
+<form action="/remediation/evidence/id/<?php echo $evidence['id'];?>" method="post"
  name='eval_ev<?php echo $evidence['id'];?>' >
     <table cellpadding='3' cellspacing='1' class='tipframe' >
     <tr><th colspan=2 align='left'>Evidence Submitted by 

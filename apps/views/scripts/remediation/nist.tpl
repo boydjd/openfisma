@@ -11,7 +11,7 @@
                         echo ' class="editable"';
                     }
                 ?> >Security Control:&nbsp;</span>
-                <span id="blscr" type="select" name="poam[blscr_id]" href="<?php echo burl()?>/metainfo/list/o/blscr/format/html/"> 
+                <span id="blscr" type="select" name="poam[blscr_id]" href="/metainfo/list/o/blscr/format/html/"> 
                 <?php echo $this->poam['blscr_id']; ?>
                 </span>
                 </th>
@@ -88,13 +88,13 @@ if (isAllow('report','generate_system_rafs')) {
                 <ul class='linwise' >
                     <li> 
                     <a class="button" target="_blank" 
-                    href="<?php echo burl()?>/remediation/raf/id/<?php echo $this->poam['id'];?>">
+                    href="/remediation/raf/id/<?php echo $this->poam['id'];?>">
                     View RAF
                     </a>
                     </li>
                     <li>
                     <a class='button' target='_blank' 
-                    href="<?php echo burl()?>/remediation/raf/format/pdf/id/<?php echo $this->poam['id'];?>")>Export to PDF</a>
+                    href="/remediation/raf/format/pdf/id/<?php echo $this->poam['id'];?>")>Export to PDF</a>
                     </li>
                 </ul>
         <?php } else { ?>
@@ -121,7 +121,7 @@ if (isAllow('report','generate_system_rafs')) {
                             echo ' class="editable"';
                         } ?> >Level:&nbsp;</b>
                     <br><span id ="threat" type="select" name="poam[threat_level]"
-                            href="<?php echo burl()?>/metainfo/list/o/threat_level/format/html/">
+                            href="/metainfo/list/o/threat_level/format/html/">
                         <?php echo $this->poam['threat_level']; ?>
                      </span>
                     </td>
@@ -165,7 +165,7 @@ if (isAllow('report','generate_system_rafs')) {
                                     echo 'class="editable"';
                                 }?> >Effectiveness:&nbsp;</b>
                             <br><span type="select" name="poam[cmeasure_effectiveness]"
-                            id="effectiveness" href="<?php echo burl()?>/metainfo/list/o/cmeasure_effectiveness/format/html/">
+                            id="effectiveness" href="/metainfo/list/o/cmeasure_effectiveness/format/html/">
                             <?php echo $this->poam['cmeasure_effectiveness']; ?>
                             </span>
                         </td>
@@ -227,7 +227,7 @@ if (isAllow('report','generate_system_rafs')) {
                     echo 'class="editable"';
                 }?> >SSO Approval: </b><!-- Action Approval-->
             <span type="select" id="sso_approval" name="poam[action_status]"
-                    href="<?php echo burl()?>/metainfo/list/o/decision/format/html/">
+                    href="/metainfo/list/o/decision/format/html/">
             <?php echo $this->poam['action_status']; ?> </span>
         </td>
     </tr>

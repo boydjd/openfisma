@@ -9,9 +9,9 @@ $fid_array = array('name'=>'System Group Name','nickname'=>'System Group Nicknam
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a href="<?php echo burl()?>/panel/sysgroup/sub/list">System Group List</a>] (total: <?php echo 
+            <th>[<a href="/panel/sysgroup/sub/list">System Group List</a>] (total: <?php echo 
 $this->total;?>)</th>
-            <th>[<a href="<?php echo burl()?>/panel/sysgroup/sub/create" title="add new System Groups">Add 
+            <th>[<a href="/panel/sysgroup/sub/create" title="add new System Groups">Add 
 System Group</a>]</th>
             <th>
                 <table align="center">
@@ -26,7 +26,7 @@ System Group</a>]</th>
             </th>
             <th>
                 <table align="center">
-                <form name="query" method="post" action="<?php echo burl()?>/panel/sysgroup/sub/list">
+                <form name="query" method="post" action="/panel/sysgroup/sub/list">
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

@@ -36,18 +36,18 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $product['version'];?></td>
     <?php if(isAllow('admin_products','update')){ ?>
     <td class="tdc" align="center">
-        <a href="<?php echo burl()?>/panel/product/sub/view/v/edit/id/<?php echo $product['id'];?>" title="edit the Products">
-        <img src="<?php echo burl()?>/images/edit.png" border="0"></a>
+        <a href="/panel/product/sub/view/v/edit/id/<?php echo $product['id'];?>" title="edit the Products">
+        <img src="/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_products','read')){ ?>
     <td class="tdc" align="center">
-        <a href="<?php echo burl()?>/panel/product/sub/view/id/<?php echo $product['id'];?>" title="display the Products">
-        <img src="<?php echo burl()?>/images/view.gif" border="0"></a>
+        <a href="/panel/product/sub/view/id/<?php echo $product['id'];?>" title="display the Products">
+        <img src="/images/view.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_products','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="<?php echo burl()?>/panel/product/sub/delete/id/<?php echo $product['id'];?>" title="delete the Products, then no restore after deleted" onclick="return delok('Products');">
-        <img src="<?php echo burl()?>/images/del.png" border="0"></a>
+        <a href="/panel/product/sub/delete/id/<?php echo $product['id'];?>" title="delete the Products, then no restore after deleted" onclick="return delok('Products');">
+        <img src="/images/del.png" border="0"></a>
     </td>
     <?php }?>
 </tr>

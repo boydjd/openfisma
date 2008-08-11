@@ -3,7 +3,7 @@
 <p><b>Administration: Rights Assignment</b>
 </div>
 </div>
-<form method="post" action="<?php echo burl()?>/role/right/id/<?php echo $this->role['id'];?>/do/update" 
+<form method="post" action="/role/right/id/<?php echo $this->role['id'];?>/do/update" 
     name="assign_right">
 <fieldset style="border: 1px solid rgb(68, 99, 122);">
     <legend><b><font size="3px"><?php echo $this->role['name'];?></font></b></legend>
@@ -16,7 +16,7 @@
         </tr>
         <tr>
             <td width="254">
-                <select multiple size="20" id="function_screen" name="function_screen" style="width:200px" url="<?php echo burl()?>/role/right/id/<?php echo $this->role['id'];?>">
+                <select multiple size="20" id="function_screen" name="function_screen" style="width:200px" url="/role/right/id/<?php echo $this->role['id'];?>">
                 <?php foreach($this->screen_list as $row){ ?>
                     <option value="<?php echo $row['screen_name'];?>" title="<?php echo $row['screen_name'];?>">
                         <?php echo $row['screen_name'];?>

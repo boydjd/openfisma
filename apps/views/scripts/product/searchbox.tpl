@@ -11,9 +11,9 @@ $fid_array = array('name'=>'Product Name',
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a href="<?php echo burl()?>/panel/product/sub/list">Products List</a>] (total: <?php echo 
+            <th>[<a href="/panel/product/sub/list">Products List</a>] (total: <?php echo 
 $this->total;?>)</th>
-            <th>[<a href="<?php echo burl()?>/panel/product/sub/create" title="Add New Product">Add 
+            <th>[<a href="/panel/product/sub/create" title="Add New Product">Add 
 Product</a>]</th>
             <th>
                 <table align="center">
@@ -28,7 +28,7 @@ Product</a>]</th>
             </th>
             <th>
                 <table align="center">
-                <form name="query" method="post" action="<?php echo burl()?>/panel/product/sub/list">
+                <form name="query" method="post" action="/panel/product/sub/list">
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

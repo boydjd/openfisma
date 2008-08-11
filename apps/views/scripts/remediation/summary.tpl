@@ -20,7 +20,7 @@
 
     <!-- SUMMARY LOOP -->
     <?php 
-    define('BASE', burl()."/panel/remediation/sub/searchbox/s/search/system_id/");
+    define('BASE', "/panel/remediation/sub/searchbox/s/search/system_id/");
     foreach($this->summary as $sid=>$row){
         $base_url = BASE . $sid;
     ?>
@@ -41,23 +41,23 @@
     <tr>
         <td width='45%' align='center' class='tdc'><b>TOTALS</b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['NEW']==''?'0':'<a 
-href="' . burl() . '/panel/remediation/sub/searchbox/s/search/status/NEW">'.$this->total['NEW'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search/status/NEW">'.$this->total['NEW'].'</a>';?></b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['OPEN']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search/status/OPEN">'.$this->total['OPEN'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search/status/OPEN">'.$this->total['OPEN'].'</a>';?></b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['EN']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search/status/EN">'.$this->total['EN'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search/status/EN">'.$this->total['EN'].'</a>';?></b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['EO']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search/status/EO">'.$this->total['EO'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search/status/EO">'.$this->total['EO'].'</a>';?></b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['EP_SSO']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search/status/EP-SSO">'.$this->total['EP_SSO'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search/status/EP-SSO">'.$this->total['EP_SSO'].'</a>';?></b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['EP_SNP']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search/status/EP-SNP">'.$this->total['EP_SNP'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search/status/EP-SNP">'.$this->total['EP_SNP'].'</a>';?></b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['ES']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search/status/ES">'.$this->total['ES'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search/status/ES">'.$this->total['ES'].'</a>';?></b></td>
         <td class='tdc'align='center'><b><?php echo $this->total['CLOSED']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search/status/CLOSED">'.$this->total['CLOSED'].'</a>';?></b></td>     
+href="/panel/remediation/sub/searchbox/s/search/status/CLOSED">'.$this->total['CLOSED'].'</a>';?></b></td>     
         <td class='tdc'align='center'><b><?php echo $this->total['TOTAL']==''?'0':'<a 
-href="'.burl().'/panel/remediation/sub/searchbox/s/search">'.$this->total['TOTAL'].'</a>';?></b></td>
+href="/panel/remediation/sub/searchbox/s/search">'.$this->total['TOTAL'].'</a>';?></b></td>
     </tr>
 </table>
 <br>

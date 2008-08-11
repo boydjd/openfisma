@@ -9,7 +9,7 @@
     <p><b>Upload Scan Results</b></p>
   </div>
 </div>
-<form name="finding_upload" action="<?php echo burl()?>/finding/import" enctype="multipart/form-data" method="POST">
+<form name="finding_upload" action="/finding/import" enctype="multipart/form-data" method="POST">
 <table width="90%" align="center">
     <tr>
         <td>

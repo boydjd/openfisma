@@ -9,7 +9,7 @@
 </tr>
 </table>
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-<form name="edit" method="post" action="<?php echo burl()?>/panel/source/sub/create/s/save">
+<form name="edit" method="post" action="/panel/source/sub/create/s/save">
     <tr>
         <td align="right" class="thc" width="200">Source Name:</td>
         <td class="tdc">&nbsp;<input type="text" name="source_name" size="90"><font color="blue"> *</font></td>

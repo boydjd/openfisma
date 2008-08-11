@@ -70,7 +70,7 @@ class DashboardController extends SecurityController
         $alert['OPEN'] = $open_count;
         $alert['EN'] = $en_count;
         $alert['EO'] = $eo_count;
-        $url=burl().'/panel/remediation/sub/searchbox/s/search/status/';
+        $url='/panel/remediation/sub/searchbox/s/search/status/';
         $this->view->url=$url;
         $this->view->alert = $alert;
         $this->render();

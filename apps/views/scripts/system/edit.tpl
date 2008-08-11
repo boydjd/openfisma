@@ -1,5 +1,5 @@
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/jquery/jquery.validate.js"></script>
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/system.validate.js"></script>
+<script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
+<script language="javascript" src="/javascripts/system.validate.js"></script>
 <?php
     $primary_array = array('0'=>'FSA');
     $states_array = array('HIGH'=>'High','MODERATE'=>'Moderate','LOW'=>'Low');
@@ -17,7 +17,7 @@
     <td align="left"><font color="blue">*</font> = Required Field</td>
 </tr>
 </table>
-<form id="systemform" name="edit" method="post" action="<?php echo burl()?>/panel/system/sub/update/id/<?php echo $this->id;?>">
+<form id="systemform" name="edit" method="post" action="/panel/system/sub/update/id/<?php echo $this->id;?>">
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 
     <tr>

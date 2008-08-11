@@ -36,18 +36,18 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $network['desc'];?></td>
     <?php if(isAllow('admin_networks','update')){ ?>
     <td class="tdc" align="center">
-        <a href="<?php echo burl()?>/panel/network/sub/view/v/edit/id/<?php echo $network['id'];?>" title="edit the Networks">
-        <img src="<?php echo burl()?>/images/edit.png" border="0"></a>
+        <a href="/panel/network/sub/view/v/edit/id/<?php echo $network['id'];?>" title="edit the Networks">
+        <img src="/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_networks','read')){ ?>
     <td class="tdc" align="center">
-        <a href="<?php echo burl()?>/panel/network/sub/view/id/<?php echo $network['id'];?>" title="display the Networks">
-        <img src="<?php echo burl()?>/images/view.gif" border="0"></a>
+        <a href="/panel/network/sub/view/id/<?php echo $network['id'];?>" title="display the Networks">
+        <img src="/images/view.gif" border="0"></a>
     </td>
     <?php } if(isAllow('admin_networks','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="<?php echo burl()?>/panel/network/sub/delete/id/<?php echo $network['id'];?>" title="delete the Networks, then no restore after deleted" onclick="return delok('Networks');">
-        <img src="<?php echo burl()?>/images/del.png" border="0"></a>
+        <a href="/panel/network/sub/delete/id/<?php echo $network['id'];?>" title="delete the Networks, then no restore after deleted" onclick="return delok('Networks');">
+        <img src="/images/del.png" border="0"></a>
     </td>
     <?php }?>
 </tr>

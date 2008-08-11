@@ -24,14 +24,14 @@
     <tr>
       <td width="33%"  align="center">
         <?php echo $this->partial('/dashboard/chart.tpl', array(
-                    'source_url'=> burl() . '/dashboard/totalstatus/format/xml/type/pie',
+                    'source_url'=> '/dashboard/totalstatus/format/xml/type/pie',
                     'width'=>380,
                     'height'=>220 ) );
         ?>
       </td>
       <td width="34%"  align="center">
         <?php echo $this->partial('/dashboard/chart.tpl', array(
-                    'source_url'=> burl() . urlencode(
+                    'source_url'=> urlencode(
                         '/dashboard/totalstatus/format/xml/type/3d column'),
                     'width'=>200,
                     'height'=>220 ) );
@@ -39,7 +39,7 @@
       </td>
       <td width="33%"  align="center">
         <?php echo $this->partial('/dashboard/chart.tpl', array(
-                    'source_url'=>burl() . '/dashboard/totaltype/format/xml',
+                    'source_url'=> '/dashboard/totaltype/format/xml',
                     'width'=>380,
                     'height'=>220 ));
         ?>

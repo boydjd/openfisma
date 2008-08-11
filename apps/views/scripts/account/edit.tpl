@@ -8,8 +8,8 @@
         });
     })
 </script>
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/jquery/jquery.validate.js"></script>
-<script language="javascript" src="<?php echo burl(); ?>/javascripts/account.validate.js"></script>
+<script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
+<script language="javascript" src="/javascripts/account.validate.js"></script>
 <?php $this->role_list[0] = '';?>
 
 <div class="barleft">
@@ -22,7 +22,7 @@
         <td align="left"><font color="blue">*</font> = Required Field</td>
     </tr>
 </table>
-<form id="accountform" name="edit" method="post" action="<?php echo burl()?>/panel/account/sub/update/id/<?php echo $this->id;?>">
+<form id="accountform" name="edit" method="post" action="/panel/account/sub/update/id/<?php echo $this->id;?>">
     <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
         <tr>
             <td align="right" class="thc" width="200">First Name:</td>
@@ -68,7 +68,7 @@
                  echo $this->formSelect('user_role',nullGet($this->roles,0),null,$this->role_list);
              }
         ?>
-        &nbsp;<a href="<?php echo burl()?>/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
+        &nbsp;<a href="/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
     </tr>
     <tr>
         <td align="right" class="thc">Title:</td>

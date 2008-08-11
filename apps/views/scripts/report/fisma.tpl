@@ -1,5 +1,5 @@
 <?php 
-    $url = burl()."/panel/report/sub/fisma/s/search";
+    $url ="/panel/report/sub/fisma/s/search";
     if(! empty($this->criteria['system_id'])) {
         $url .='/system/'.$this->criteria['system_id'];
     }
@@ -21,7 +21,7 @@
 <p><b>FISMA Report to OMB</b></p>
 </div>
 </div>
-<form name="filter" method="post" action="<?php echo burl()?>/panel/report/sub/fisma/s/search">
+<form name="filter" method="post" action="/panel/report/sub/fisma/s/search">
 <table width="850"  align="center" border="0" cellpadding="3" cellspacing="1" class="tipframe">
     <tr>
         <td >
@@ -30,10 +30,10 @@
                 echo $this->formSelect('system',nullGet($this->criteria['system_id'],0),null,$this->system_list);
             ?>
         </td>
-        <td>From:<input type="text" class="date" name="startdate" value="<?php echo nullGet($this->criteria['startdate'],'');?>" size="10" maxlength="10" url="<?php echo burl()?>">
+        <td>From:<input type="text" class="date" name="startdate" value="<?php echo nullGet($this->criteria['startdate'],'');?>" size="10" maxlength="10" url="">
         </td>
         <td>To:
-        <input type="text" class="date" name="enddate" value="<?php echo nullGet($this->criteria['enddate'],'');?>" size="10" maxlength="10" url="<?php echo burl()?>"></td>
+        <input type="text" class="date" name="enddate" value="<?php echo nullGet($this->criteria['enddate'],'');?>" size="10" maxlength="10" url=""></td>
         <td >
             <input type="submit" value="Generate Report">
         </td>
@@ -42,7 +42,7 @@
 </form>
 <div>
     <div style="margin-left:30px;">Generate Report shortcut:&nbsp; 
-        <span name="gen_shortcut" url="<?php echo burl()?>/panel/report/sub/fisma/s/search/y/" >
+        <span name="gen_shortcut" url="/panel/report/sub/fisma/s/search/y/" >
             <a href="javascript:shortcut(-1);" style="text-decoration: none;" ><<</a>&nbsp
             <a href="" style="text-decoration: none;" ><span name="year"></span></a>&nbsp;
             <a href="" style="text-decoration: none;" ><span name="q1">Q1</span></a>&nbsp;

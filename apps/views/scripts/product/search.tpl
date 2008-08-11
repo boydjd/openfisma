@@ -5,7 +5,7 @@
         <th colspan="2" align="left">Product Search</th>
         <th width="183" align="left">Product Select</th>
         <?php if(isAllow('admin_products','create')){ ?>
-        <th width="249" align="left">[<a id="add_product" href="<?php echo burl()?>/panel/product/sub/create" title="Create New Product">Create New Product</a>]
+        <th width="249" align="left">[<a id="add_product" href="/panel/product/sub/create" title="Create New Product">Create New Product</a>]
 </th>
         <?php } ?>
     </tr>
@@ -29,7 +29,7 @@
         <td><input type="text" class="product" name="prod_version" value="<?php echo $this->prod_version?>" size="20" /></td>
     </tr>
     <tr>
-                    <td><input id="search_product" type="button" value="Search Product" url="<?php echo burl()?>/product/search" /></td>
+                    <td><input id="search_product" type="button" value="Search Product" url="/product/search" /></td>
                     <td><input type="reset" name="button2" id="button" value="Reset" /></td>
     </tr>
 </table>

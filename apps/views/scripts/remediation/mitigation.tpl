@@ -13,7 +13,7 @@
             echo 'class="editable"';
         }?> >Type:&nbsp;</b>
                     <span name="poam[type]" id="type" type="select" 
-                       href="<?php echo burl()?>/metainfo/list/o/type/format/html/">
+                       href="/metainfo/list/o/type/format/html/">
                         <?php echo $this->poam['type']; ?>
                     </span>
                     </td>
@@ -52,7 +52,7 @@
             </table>
             <!-- End Resources Required for Course of Action Table -->
 
-            <div style="width:95%;margin:0 5px" class="selectdate" url="<?php echo burl(); ?>">
+            <div style="width:95%;margin:0 5px" class="selectdate" >
             <b target="est_date" <?php
         if(in_array($this->poam['status'],array('OPEN','NEW')) && 
             isAllow('remediation','update_est_completion_date')){

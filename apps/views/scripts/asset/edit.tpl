@@ -3,7 +3,7 @@
 <p><b>Asset Edit</b></p>
 </div>
 </div>
-<form name="assetedit" method="post" action="<?php echo burl()?>/asset/update/id/<?php echo $this->id;?>">
+<form name="assetedit" method="post" action="/asset/update/id/<?php echo $this->id;?>">
 <table width="810" border="0" align="center">
 <tr>
     <td><input type="hidden" name="prod_id" />
