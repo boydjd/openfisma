@@ -56,13 +56,18 @@
             <table cellpadding="5" width="100%" class="tbframe">
                 <th align="left" colspan="2">Asset Information</th>
                 <tr>
-                    <td><b>Asset Owner:&nbsp;</b> <?php echo $this->system_list[$this->poam['asset_owner']];?></td>
+<?php
+    if (isset($this->system_list[$this->poam['asset_owner']]))
+        echo "<td><b>Asset Owner:&nbsp;</b> {$this->system_list[$this->poam['asset_owner']]}</td>";
+    else
+        echo "<td><b>Asset Owner:&nbsp;</b> <i>None</i></td>";
+?>
                 </tr>
                 <tr>
                     <td><b>Asset Name:&nbsp;</b> <?php echo nullGet($this->poam['asset_name'],'(none given)');?> </td>
                 </tr>
                 <tr>
-                    <td><b>Known Address(es):&nbsp;</b><?php echo $this->network_list[$this->poam['network_id']],$this->poam['ip'],':',$this->poam['port']?></td>
+                    <td><b>Known Address(es):&nbsp;</b>(<?php echo $this->network_list[$this->poam['network_id']].") ".$this->poam['ip'],':',$this->poam['port']?></td>
                 </tr>
                 <tr>
                     <td><b>Product Information:&nbsp;</b> <i>

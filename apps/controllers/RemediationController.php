@@ -282,6 +282,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('logs',$this->_poam->getLogs($id));
         $this->view->assign('ev_evals',$evs);
         $this->view->assign('system_list',$this->_system_list);
+        $this->view->assign('network_list',$this->_network_list);
         $this->render();
     }
 
