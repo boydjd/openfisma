@@ -90,7 +90,10 @@ class UserController extends MessageController
                 $me->role_array[] = $me->account . '_r';
             }
             $me->systems = $this->_user->getMySystems($me->id);
-            $auth->getStorage()->write($me);
+            $store = $auth->getStorage();
+            $exps = new Zend_Session_Namespace($store->getNamespace());
+            $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
+            $store->write($me);
             return $this->_forward('index','Panel');
 
         }catch(Zend_Auth_Exception $e) {
