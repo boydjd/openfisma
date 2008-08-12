@@ -31,6 +31,7 @@ You should now have a directory structure which looks like the following
   > apps - folder that holds OpenFISMA application 
   > public - public folder or document root for webserver
   > vendor - third party modules used by OpenFISMA
+  > log - log files created by OpenFISMA
 
 Next you will need to tell Apache where the public directory of OpenFISMA
 resides. Apache configuration is different on almost all flavors of unix
@@ -41,51 +42,43 @@ correct.
   
     # Virtual Host for Reyosoft Development and Testing
     <VirtualHost *:80>
-      Servername www.openfisma.org
-      DocumentRoot "/opt/openfisma/public"
-      ErrorLog /var/log/apache2/reyosoft-error.log
-      CustomLog /var/log/apache2/reyosoft-access.log common
-      <Directory "/opt/openfisma/public">
-          AllowOverride All
-          Options FollowSymLinks
-          Allow from all
-      </Directory>
-    </VirtualHost>
+		# sets the hostname of the server
+		Servername www.openfisma.org
+		# sets the directory from which apache will serve files
+		DocumentRoot "/opt/openfisma/public"
+		# sets the name of the file to which the server will log any errors it encounters
+		ErrorLog /var/log/apache2/openfisma-error.log
+		# sets the name of the file to which the server will log information to
+		CustomLog /var/log/apache2/openfisma-access.log common
+		<IfModule mod_php5.c>
+			# Disables allow_url_fopen
+			php_admin_flag allow_url_fopen Off
+			# Disables allow_url_include
+			php_admin_flag allow_url_include Off
+			# Enable PHP stealth mode
+			php_admin_flag expose_php Off
+		</IfModule>
+		<Directory "/opt/openfisma/public">
+			AllowOverride All
+			Options FollowSymLinks
+			Allow from all
+		</Directory>
+	</VirtualHost>
 
-If you don't want to install the OpenFISMA at the DocumentRoot, here is the 
-alternative way to configure the Apache.
-
-      # DocumentRoot "/var/www/html"
-      ErrorLog /var/log/apache2/reyosoft-error.log
-      CustomLog /var/log/apache2/reyosoft-access.log common
-      alias /openfisma/  /opt/openfisma/public/
-      <Directory "/opt/openfisma/public">
-          AllowOverride All
-          Options FollowSymLinks
-          Allow from all
-      </Directory>
-
-In such (alias) situation, .htaccess under public directory should be modified
-to reflect the correct RewriteBase, such as in this case 
-
-      RewriteBase /openfisma
-
-
-  
 The following files need to be writeable for the installation script 
 to run. 
 	
+    /apps/config/install.conf
+    /public/evidence
 	/public/temp
     /log
-    /public/evidence
-    /apps/config/install.conf
 
 To accomplish this we will run the following commands.
 
-   $ chmod 777 /opt/openfisma/public/temp
-   $ chmod 777 /opt/openfisma/public/evidence
-   $ chmod 777 /opt/openfisma/log
    $ chmod 777 /opt/openfisma/apps/config/install.conf
+   $ chmod 777 /opt/openfisma/public/evidence
+   $ chmod 777 /opt/openfisma/public/temp
+   $ chmod 777 /opt/openfisma/log
   
 If all has gone well, you will be able to run the installation script
 from your browser at http://<server_name>/. Follow the wizard through
