@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * fileName UserController.php
  *
@@ -10,18 +10,16 @@
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
  */
-
 require_once 'Zend/Auth.php';
 require_once 'Zend/Auth/Adapter/DbTable.php';
 require_once 'Zend/Auth/Adapter/Ldap.php';
 require_once 'Zend/Auth/Exception.php';
-require_once( CONTROLLERS . DS . 'MessageController.php');
-require_once( MODELS . DS .'user.php');
-require_once( MODELS . DS .'system.php');
+require_once (CONTROLLERS . DS . 'MessageController.php');
+require_once (MODELS . DS . 'user.php');
+require_once (MODELS . DS . 'system.php');
 require_once 'Zend/Date.php';
-
 /**
- * UserController 
+ * UserController
  *
  * This controller is not required of authentication and ACLs
  * @package Controller
@@ -32,7 +30,6 @@ require_once 'Zend/Date.php';
 class UserController extends MessageController
 {
     private $_user = null;
-
     public function init()
     {
         $this->_user = new User();
@@ -51,7 +48,7 @@ class UserController extends MessageController
             return $this->render();
         }
         $now = new Zend_Date();
-        try { 
+        try {
             $whologin = $this->_user->fetchRow("account = '$username'");
             if ( empty($whologin) ) {
                 //to cover the fact
@@ -88,7 +85,6 @@ class UserController extends MessageController
                     because you have not logged in for $period or more days.
                     Please contact an administrator.");
             }
-            
             $this->_user->log(User::LOGIN, $me->id, "Success");
             $nickname = $this->_user->getRoles($me->id);
             foreach ($nickname as $n) {
@@ -108,53 +104,49 @@ class UserController extends MessageController
             $this->view->assign('error', $e->getMessage());
             $this->render();
         }
-    } 
-    
-
-     /**
-        Exam the Acl to decide permission or denial.
-        @param $user array of User's roles
-        @param $resource resources
-        @param $action actions
-        @return bool permit or not
-    */
-    
+    }
+    /**
+     Exam the Acl to decide permission or denial.
+     @param $user array of User's roles
+     @param $resource resources
+     @param $action actions
+     @return bool permit or not
+     */
     public function logoutAction()
     {
         $auth = Zend_Auth::getInstance();
         $me = $auth->getIdentity();
-        if( !empty($me) ) {
-            $this->_user->log(User::LOGOUT, $me->id,$me->account.' logout');
+        if (!empty($me)) {
+            $this->_user->log(User::LOGOUT, $me->id, $me->account . ' logout');
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');
     }
-
     /**
      * Change user's password
      */
     public function pwdchangeAction()
     {
         $req = $this->getRequest();
-        if('save' == $req->getParam('s')){
+        if ('save' == $req->getParam('s')) {
             $auth = Zend_Auth::getInstance();
             $me = $auth->getIdentity();
-            $id   = $me->id;
+            $id = $me->id;
             $pwds = $req->getPost('pwd');
             $oldpass = md5($pwds['old']);
             $newpass = md5($pwds['new']);
             $res = $this->_user->find($id)->toArray();
             $password = $res[0]['password'];
             $history_pass = $res[0]['history_password'];
-            if($pwds['new'] != $pwds['confirm']){
+            if ($pwds['new'] != $pwds['confirm']) {
                 $msg = 'The new password does not match the confirm password, please try again.';
                 $model = self::M_WARNING;
-            }else{
-                if($oldpass != $password){
+            } else {
+                if ($oldpass != $password) {
                     $msg = 'The old password supplied is incorrect, please try again.';
                     $model = self::M_WARNING;
-                }else{
-                    if(!$this->checkPassword($pwds['new'],2)){
+                } else {
+                    if (!$this->checkPassword($pwds['new'], 2)) {
                         $msg = 'This password does not meet the password complexity requirements.<br>
 Please create a password that adheres to these complexity requirements:<br>
 --The password must be at least 8 character long<br>
@@ -164,42 +156,44 @@ Please create a password that adheres to these complexity requirements:<br>
 --The password cannot contain your first name or last name<br>";';
                         throw new fisma_Exception($msg);
                         //$msg = "The password doesn\'t meet the required complexity!";
-
-                    }else{
-                        if($newpass == $password){
+                        
+                    } else {
+                        if ($newpass == $password) {
                             $msg = 'Your new password cannot be the same as your old password.';
                             $model = self::M_WARNING;
-                        }else{
-                            if(strpos($history_pass,$newpass) > 0 ){
+                        } else {
+                            if (strpos($history_pass, $newpass) > 0) {
                                 $msg = 'Your password must be different from the last three passwords you have used. Please pick a different password.';
                                 $model = self::M_WARNING;
-                            }else{
-                                if(strpos($history_pass,$password) > 0){
-                                    $history_pass = ':'.$newpass.$history_pass;
-                                }else{
-                                    $history_pass = ':'.$newpass.':'.$password.$history_pass;
+                            } else {
+                                if (strpos($history_pass, $password) > 0) {
+                                    $history_pass = ':' . $newpass . $history_pass;
+                                } else {
+                                    $history_pass = ':' . $newpass . ':' . $password . $history_pass;
                                 }
-                                $history_pass = substr($history_pass,0,99);
+                                $history_pass = substr($history_pass, 0, 99);
                                 $now = date('Y-m-d H:i:s');
-                                $data = array('password'=>$newpass,
-                                              'history_password'=>$history_pass,
-                                              'password_ts'=>$now);
-                                $result = $this->_user->update($data,'id = '.$id);
-                                if(!$result){
+                                $data = array(
+                                    'password' => $newpass,
+                                    'history_password' => $history_pass,
+                                    'password_ts' => $now
+                                );
+                                $result = $this->_user->update($data, 'id = ' . $id);
+                                if (!$result) {
                                     $msg = 'Failed to change the password';
                                     $model = self::M_WARNING;
-                                }else{
+                                } else {
                                     $msg = 'Password changed successfully';
                                     $model = self::M_NOTICE;
                                 }
                             }
                         }
-                    }   
+                    }
                 }
             }
-            $this->message($msg,$model);
+            $this->message($msg, $model);
         }
-        $this->_helper->actionStack('header','Panel');
+        $this->_helper->actionStack('header', 'Panel');
         $this->render();
     }
     
@@ -214,56 +208,43 @@ Please create a password that adheres to these complexity requirements:<br>
 
             $nameincluded = true;
             // check last name
-            if(empty($this->user_name_last) || strpos($pass, $this->user_name_last) === false) {
+            if (empty($this->user_name_last) || strpos($pass, $this->user_name_last) === false) {
                 $nameincluded = false;
             }
-            if(!$nameincluded) {
+            if (!$nameincluded) {
                 // check first name
-                if(empty($this->user_name_first) || strpos($pass, $this->user_name_first) === false)
-                    $nameincluded = false;
-                else
-                    $nameincluded = true;
+                if (empty($this->user_name_first) || strpos($pass, $this->user_name_first) === false) $nameincluded = false;
+                else $nameincluded = true;
             }
-            if($nameincluded)
-                return false; // include first name or last name
-
+            if ($nameincluded) return false; // include first name or last name
             // high level
-            if(strlen($pass) < 8)
-                return false;
+            if (strlen($pass) < 8) return false;
             // must be include three style among upper case letter, lower case letter, symbol, digit.
             // following rule: at least three type in four type, or symbol and any of other three types
             $num = 0;
-            if(preg_match("/[0-9]+/", $pass)) // all are digit
-                $num++;
-            if(preg_match("/[a-z]+/", $pass)) // all are digit
-                $num++;
-            if(preg_match("/[A-Z]+/", $pass)) // all are digit
-                $num++;
-            if(preg_match("/[^0-9a-zA-Z]+/", $pass)) // all are digit
-                $num += 2;
-
-            if($num < 3)
-                return false;
-        }
-        else if($level == 1) {
+            if (preg_match("/[0-9]+/", $pass)) // all are digit
+            $num++;
+            if (preg_match("/[a-z]+/", $pass)) // all are digit
+            $num++;
+            if (preg_match("/[A-Z]+/", $pass)) // all are digit
+            $num++;
+            if (preg_match("/[^0-9a-zA-Z]+/", $pass)) // all are digit
+            $num+= 2;
+            if ($num < 3) return false;
+        } else if ($level == 1) {
             // low level
-            if(strlen($pass) < 3)
-                return false;
+            if (strlen($pass) < 3) return false;
             // must include three style among upper case letter, lower case letter, symbol, digit.
             // following rule: at least two type in four type
-            if(preg_match("/^[0-9]+$/", $pass)) // all are digit
-                return false;
-
-            if(preg_match("/^[a-z]+$/", $pass)) // all are lower case letter
-                return false;
-
-            if(preg_match("/^[A-Z]+$/", $pass)) // all are upper case letter
-                return false;
+            if (preg_match("/^[0-9]+$/", $pass)) // all are digit
+            return false;
+            if (preg_match("/^[a-z]+$/", $pass)) // all are lower case letter
+            return false;
+            if (preg_match("/^[A-Z]+$/", $pass)) // all are upper case letter
+            return false;
         }
-
         return true;
     }
-
     /**
      * Authenticate the user according to the auth setting 
      *

@@ -12,10 +12,8 @@
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version    $Id$
-*/
-
+ */
 require_once 'Abstract.php';
-
 /**
  * @package Model
  * @author     Xhorse xhorse at users.sourceforge.net
@@ -26,7 +24,6 @@ class Blscr extends Fisma_Model
 {
     protected $_name = 'blscrs';
     protected $_primary = 'code';
-    
     /**
      * getList
      *
@@ -43,7 +40,8 @@ class Blscr extends Fisma_Model
      *
      * @return array An array of arrays where the primary_key is the outer key and the column names are the inner keys
      */
-    public function getList($fields = '*', $primary_key = null, $order=null) {
+    public function getList ($fields = '*', $primary_key = null, $order = null)
+    {
         if ($order == null) {
             return parent::getList($fields, $primary_key, 'code');
         } else {
@@ -51,5 +49,3 @@ class Blscr extends Fisma_Model
         }
     }
 }
-
-?>
