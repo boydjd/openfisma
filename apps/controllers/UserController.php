@@ -13,6 +13,7 @@
 
 require_once 'Zend/Auth.php';
 require_once 'Zend/Auth/Adapter/DbTable.php';
+require_once 'Zend/Auth/Exception.php';
 require_once( CONTROLLERS . DS . 'MessageController.php');
 require_once( MODELS . DS .'user.php');
 require_once( MODELS . DS .'system.php');
@@ -38,54 +39,64 @@ class UserController extends MessageController
 
     public function loginAction()
     {
-        //We may need to findout user auth configuration and using properly method
-        $now = new Zend_Date();
-        $db = Zend_Registry::get('db'); 
-        $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
-        $auth = Zend_Auth::getInstance();
         $req = $this->getRequest();
         $username = $req->getPost('username');
         $password = md5($req->getPost('userpass'));
         $this->_helper->layout->setLayout('login');
-        if( !empty($username) && !empty($password) ) {
+        if( empty($username) ) {
+            return $this->render();
+        }
+        $now = new Zend_Date();
+        try{ 
+            $whologin = $this->_user->fetchRow("account = '$username'");
+            if( empty($whologin) ){
+                //to cover the fact
+                throw new Zend_Auth_Exception("Incorrect username or password");
+            }
+            if( $whologin->is_active == false ){
+                throw new Zend_Auth_Exception('The account has been locked');
+            }
+
+            $db = Zend_Registry::get('db'); 
+            $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
+            $auth = Zend_Auth::getInstance();
             $authAdapter->setIdentity($username)->setCredential($password);
             $result = $auth->authenticate($authAdapter);
+
             if (!$result->isValid()) {
                 if(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID == $result->getCode()){
-                    $whologin = $this->_user->fetchRow("account = '$username'");
-                    if( !empty($whologin) ){
-                        $this->_user->log(User::LOGINFAILURE, $whologin->id,'Password Error');
-                    }
+                    $this->_user->log(User::LOGINFAILURE, $whologin->id,'Password Error');
                 }
-                $error = "Incorrect username or password";
-                $this->view->assign('error', $error);
-            } else {
-                $me = $authAdapter->getResultRowObject(null,'password');
-                $period = readSysConfig('max_absent_time');
-                $deactive_time = clone $now;
-                $deactive_time->sub($period,Zend_Date::DAY);
-                $last_login = new Zend_Date($me->last_login_ts,'YYYY-MM-DD HH-MI-SS');
-
-                if( !$last_login->equals(new Zend_Date('0000-00-00 00:00:00')) 
-                    && $last_login->isEarlier($deactive_time) ){
-                    $error = "Your account has been locked because you have not logged in for $period or more days. Please contact an administrator.";
-                    $this->view->assign('error',$error);
-                } else {
-                    $this->_user->log(User::LOGIN, $me->id, "Success");
-                    $nickname = $this->_user->getRoles($me->id);
-                    foreach($nickname as $n ) {
-                        $me->role_array[] = $n['nickname'];
-                    }
-                    if( empty( $me->role_array ) ) {
-                        $me->role_array[] = $me->account . '_r';
-                    }
-                    $me->systems = $this->_user->getMySystems($me->id);
-                    $auth->getStorage()->write($me);
-                    return $this->_forward('index','Panel');
-                }
+                throw new Zend_Auth_Exception("Incorrect username or password");
             }
+            $me = $authAdapter->getResultRowObject(null,'password');
+            $period = readSysConfig('max_absent_time');
+            $deactive_time = clone $now;
+            $deactive_time->sub($period,Zend_Date::DAY);
+            $last_login = new Zend_Date($me->last_login_ts,'YYYY-MM-DD HH-MI-SS');
+
+            if( !$last_login->equals(new Zend_Date('0000-00-00 00:00:00')) 
+                && $last_login->isEarlier($deactive_time) ){
+                throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period or more days. Please contact an administrator.");
+
+            }
+            
+            $this->_user->log(User::LOGIN, $me->id, "Success");
+            $nickname = $this->_user->getRoles($me->id);
+            foreach($nickname as $n ) {
+                $me->role_array[] = $n['nickname'];
+            }
+            if( empty( $me->role_array ) ) {
+                $me->role_array[] = $me->account . '_r';
+            }
+            $me->systems = $this->_user->getMySystems($me->id);
+            $auth->getStorage()->write($me);
+            return $this->_forward('index','Panel');
+
+        }catch(Zend_Auth_Exception $e) {
+            $this->view->assign('error', $e->getMessage());
+            $this->render();
         }
-        $this->render();
     } 
     
 
