@@ -67,6 +67,15 @@ CREATE TABLE `evaluations` (
   PRIMARY KEY  (`id`)
 );
 
+CREATE TABLE `ldap_config` (
+  `id` int(10) NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL,
+  `key` varchar(64) NOT NULL,
+  `value` varchar(64) NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY  (`id`)
+);
+
 CREATE TABLE `poam_evaluations` (
   `id` int(10) NOT NULL auto_increment,
   `group_id` int(10) NOT NULL,
@@ -264,6 +273,7 @@ CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `account` varchar(32) NOT NULL,
   `password` varchar(32) NOT NULL default '',
+  `ldap_dn` varchar(64) NOT NULL,
   `title` varchar(64) default NULL,
   `name_last` varchar(32) NOT NULL default '',
   `name_middle` char(1) default NULL,

@@ -98,8 +98,8 @@ class SecurityController extends MessageController
             $db = Zend_Registry::get('db');
             $query = $db->select()->from(array('r'=>'roles'),array('nickname'=>'r.nickname'))
                                   ->where('nickname != ?','auto_role');
-            $role_array = $db->fetchAll($query);
-            foreach($role_array as $row){
+            $roleArray = $db->fetchAll($query);
+            foreach($roleArray as $row){
                 $acl->addRole(new Zend_Acl_Role($row['nickname']));
             }
 

@@ -11,7 +11,6 @@
 <!--<script language="javascript" src="/javascripts/form.js"></script>-->
 <script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
 <script language="javascript" src="/javascripts/account.validate.js"></script>
-
 <div class="barleft">
     <div class="barright">
         <p><b>User Account Information</b> 
@@ -75,6 +74,7 @@
                     <option value="0">Suspend</option>
                 </select></td>
         </tr>
+        <?php if ( 'ldap' != readSysConfig('auth_type') ) { ?>
         <tr>
             <td align="right" class="thc">Account:</td>
             <td class="tdc">&nbsp;
@@ -96,6 +96,19 @@
             title="Password" datatype="password">
                 <font color="blue">*</font></td>
         </tr>
+        <?php
+            }
+            if('ldap' == readSysConfig('auth_type')){
+        ?>
+        <tr>
+            <td align="right" class="thc">Account Dn:</td>
+            <td class="tdc">&nbsp;
+                <input type="text" id="user[ldap_dn]" name="user[ldap_dn]" value="" size="50" isnull="no"
+                    title="AccoutnDn" datatype="char"><font color="blue"> *</font>
+                <input type="button" id="checkdn" value="Check Dn">
+                <div id="checkResult"></div></td>
+        </tr>
+        <?php } ?>                    
     </table>
     <br>
     <br>

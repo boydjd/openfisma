@@ -44,6 +44,14 @@
         <td align="right" class="thc">Username:</td>
         <td class="tdc">&nbsp;<?php echo $this->user['username'];?></td>
     </tr>
+    <?php
+        if('ldap' == readSysConfig('auth_type')){
+    ?>
+    <tr>
+        <td align="right" class="thc">Account Dn:</td>
+        <td class="tdc">&nbsp;<?php echo $this->user['ldap_dn'];?></td>
+    </tr>
+    <?php } ?>                    
 </table>
 <br><br>
 <fieldset style="border:1px solid #BEBEBE; padding:3"><legend><b>Systems</b></legend>

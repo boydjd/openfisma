@@ -171,7 +171,8 @@ class AccountController extends PoamBaseController
                                            'title'=>'title',
                                            'status'=>'is_active',
                                            'username'=>'account',
-                                           'password'=>'password'))
+                                           'password'=>'password',
+                                           'ldap_dn'=>'ldap_dn'))
             ->where("u.id = $id");
         $user_detail = $user->fetchRow($qry)->toArray();
 
@@ -214,12 +215,15 @@ class AccountController extends PoamBaseController
         $sys_data = $req->getPost('system');
         $confirm_pwd = $req->getPost('password_confirm');
         $db = $this->_user->getAdapter();
-        if(empty($u_data['account']))
-        {
+        if ( 'database' == readSysConfig('auth_type') && 
+            empty($u_data['account']) ) {
             $msg = "Account can not be null.";
             $this->message($msg,self::M_WARNING);
             $this->_forward('view',null,null,array('v'=>'edit'));
             return ;
+        }
+        if ( 'ldap' == readSysConfig('auth_type') ) {
+            $u_data['account'] = $u_data['ldap_dn'];
         }
         if( !empty($u_data['password']) ) {
             /// @todo validate the password complexity
@@ -311,29 +315,68 @@ class AccountController extends PoamBaseController
     }
 
     /**
-     *  create a new account
-    */
+     *  create a new account 
+     */
     public function saveAction()
     {
-        require_once(MODELS . DS . 'role.php');
-        $req = $this->getRequest();
-        $new_account=$req->getParam('user');
-        $systems=$req->getParam('system');
-        $new_account['password'] = md5($new_account['password']);
-        $new_account['created_ts'] = self::$now->toString('Y-m-d H:i:s');
-        $new_account['auto_role'] = $new_account['account'].'_r';
+        $newAccount=$this->_request->getParam('user');
+        $systems=$this->_request->getParam('system');
+        if ( 'ldap' == readSysConfig('auth_type') ) {
+            $newAccount['account'] = $newAccount['ldap_dn'];
+        }
+        if ( 'database' == readSysConfig('auth_type') ) {
+            $newAccount['password'] = md5($newAccount['password']);
+        }
+        $newAccount['created_ts'] = self::$now->toString('Y-m-d H:i:s');
+        $newAccount['auto_role'] = $newAccount['account'].'_r';
 
-        $user_id = $this->_user->insert($new_account);
-        $role_id = $req->getParam('user_role_id');
-        $this->_user->associate($user_id, User::ROLE, $role_id);
+        $userId = $this->_user->insert($newAccount);
+        $roleId = $this->_request->getParam('user_role_id');
+        $this->_user->associate($userId, User::ROLE, $roleId);
      
-        if(!empty($systems)){
-            $this->_user->associate($user_id, User::SYS, $systems);
+        if ( !empty($systems) ) {
+            $this->_user->associate($userId, User::SYS, $systems);
         }
 
-        $this->_user->log(User::CREATION ,$this->me->id,'create user('.$new_account['account'].')');
-        $this->message("User ({$new_account['account']}) added", self::M_NOTICE);
+        $this->_user->log(User::CREATION, $this->me->id,
+                         'create user('.$newAccount['account'].')');
+        $this->message("User ({$newAccount['account']}) added",
+                       self::M_NOTICE);
         $this->_forward('create');
+    }
+
+    /**
+     * Make sure if the dn provided by operator does exist on 
+     * the configured LDAP service.
+     *
+     * @todo language check
+     */
+    public function checkdnAction()
+    {
+        $dn = $this->_request->getParam('dn');
+        $this->_helper->layout->setLayout('ajax');
+        if ( empty($dn) ) {
+            echo '<font color="red">Dn is missing</font>';
+        } else {
+            $multiOptions = readLdapConfig();
+            foreach ($multiOptions as $name=>$options) {
+                @$ds = ldap_connect($options['host'], $options['port']);
+                ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+                ldap_bind($ds, $options['username'], $options['password']);
+                $ret = ldap_explode_dn($dn, 3);
+                $result = @ldap_search($ds, $options['baseDn'],
+                          'uid='.$ret[0]);
+                $entries = @ldap_get_entries($ds, $result);
+                if ( $entries['count'] != 0 && $dn == $entries[0]['dn'] ) {
+                    $flag = true;
+                    echo'<font color="green">The Dn exists</font>';
+                    return;
+                }
+            }
+            if ( empty($flag) ) {
+                echo'<font color="red">The Dn does not exist</font>';
+            }
+        }
     }
 
     public function assignroleAction()

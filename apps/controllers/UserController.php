@@ -13,6 +13,7 @@
 
 require_once 'Zend/Auth.php';
 require_once 'Zend/Auth/Adapter/DbTable.php';
+require_once 'Zend/Auth/Adapter/Ldap.php';
 require_once 'Zend/Auth/Exception.php';
 require_once( CONTROLLERS . DS . 'MessageController.php');
 require_once( MODELS . DS .'user.php');
@@ -36,65 +37,72 @@ class UserController extends MessageController
     {
         $this->_user = new User();
     }
-
+    
+    /**
+     * User login
+     */
     public function loginAction()
     {
         $req = $this->getRequest();
         $username = $req->getPost('username');
-        $password = md5($req->getPost('userpass'));
+        $password = $req->getPost('userpass');
         $this->_helper->layout->setLayout('login');
-        if( empty($username) ) {
+        if ( empty($username) ) {
             return $this->render();
         }
         $now = new Zend_Date();
-        try{ 
+        try { 
             $whologin = $this->_user->fetchRow("account = '$username'");
-            if( empty($whologin) ){
+            if ( empty($whologin) ) {
                 //to cover the fact
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
-            if( $whologin->is_active == false ){
+            if ( $whologin->is_active == false ) {
                 throw new Zend_Auth_Exception('The account has been locked');
             }
 
-            $db = Zend_Registry::get('db'); 
-            $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
             $auth = Zend_Auth::getInstance();
-            $authAdapter->setIdentity($username)->setCredential($password);
+            $authType = readSysConfig('auth_type');
+            $authAdapter = $this->authenticate($authType,
+                                             $username, $password);
             $result = $auth->authenticate($authAdapter);
-
-            if (!$result->isValid()) {
-                if(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID == $result->getCode()){
-                    $this->_user->log(User::LOGINFAILURE, $whologin->id,'Password Error');
+            if ( !$result->isValid() ) {
+                if ( Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID == 
+                     $result->getCode() ) {
+                    $this->_user->log(User::LOGINFAILURE, $whologin->id, 
+                                      'Password Error');
+                    throw new Zend_Auth_Exception("Password Error");
                 }
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
-            $me = $authAdapter->getResultRowObject(null,'password');
+            $me = (object)($whologin->toArray());
             $period = readSysConfig('max_absent_time');
-            $deactive_time = clone $now;
-            $deactive_time->sub($period,Zend_Date::DAY);
-            $last_login = new Zend_Date($me->last_login_ts,'YYYY-MM-DD HH-MI-SS');
+            $deactiveTime = clone $now;
+            $deactiveTime->sub($period, Zend_Date::DAY);
+            $lastLogin = new Zend_Date($me->last_login_ts,
+                                       'YYYY-MM-DD HH-MI-SS');
 
-            if( !$last_login->equals(new Zend_Date('0000-00-00 00:00:00')) 
-                && $last_login->isEarlier($deactive_time) ){
-                throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period or more days. Please contact an administrator.");
-
+            if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) 
+                && $lastLogin->isEarlier($deactiveTime) ) {
+                throw new Zend_Auth_Exception("Your account has been locked
+                    because you have not logged in for $period or more days.
+                    Please contact an administrator.");
             }
             
             $this->_user->log(User::LOGIN, $me->id, "Success");
             $nickname = $this->_user->getRoles($me->id);
-            foreach($nickname as $n ) {
-                $me->role_array[] = $n['nickname'];
+            foreach ($nickname as $n) {
+                $me->roleArray[] = $n['nickname'];
             }
-            if( empty( $me->role_array ) ) {
-                $me->role_array[] = $me->account . '_r';
+            if ( empty( $me->roleArray ) ) {
+                $me->roleArray[] = $me->account . '_r';
             }
             $me->systems = $this->_user->getMySystems($me->id);
             $store = $auth->getStorage();
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
             $store->write($me);
-            return $this->_forward('index','Panel');
+            return $this->_forward('index', 'Panel');
 
         }catch(Zend_Auth_Exception $e) {
             $this->view->assign('error', $e->getMessage());
@@ -122,6 +130,9 @@ class UserController extends MessageController
         $this->_forward('login');
     }
 
+    /**
+     * Change user's password
+     */
     public function pwdchangeAction()
     {
         $req = $this->getRequest();
@@ -191,7 +202,13 @@ Please create a password that adheres to these complexity requirements:<br>
         $this->_helper->actionStack('header','Panel');
         $this->render();
     }
-
+    
+    /**
+     * Check User's password
+     * @param $pass the new password for changed
+     * @param $level check level
+     * @return true or false
+     */
     function checkPassword($pass, $level = 1) {
         if($level > 1) {
 
@@ -245,6 +262,37 @@ Please create a password that adheres to these complexity requirements:<br>
         }
 
         return true;
+    }
+
+    /**
+     * Authenticate the user according to the auth setting 
+     *
+     * @param string $type auth_type
+     * @param string $username post username for login
+     * @param string $password post password for login
+     * @return Zend_Auth_Adapter 
+     */
+    protected function authenticate($type, $username, $password)
+    {
+        $db = Zend_Registry::get('db');
+        if ( 'ldap' == $type ) {
+            $multiOptions = readLdapConfig();
+            $auth = Zend_Auth::getInstance();
+            foreach ($multiOptions as $name=>$options) {
+                $authAdapter = new Zend_Auth_Adapter_Ldap(
+                              array($name=>$options), $username, $password);
+                $result = $auth->authenticate($authAdapter);
+                if ( true == $result->isValid() ) {
+                    return $authAdapter;
+                }
+            }
+        }
+        if ( 'database' == $type ) {
+            $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users',
+                                                        'account', 'password');
+            $authAdapter->setIdentity($username)->setCredential(md5($password));
+        }
+        return $authAdapter;
     }
 
 }

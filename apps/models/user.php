@@ -61,7 +61,7 @@ class User extends Fisma_Model
         @return array of role nickname
     */
     public function getRoles($id, $fields=array('nickname'=>'nickname')) {
-        $role_array = array();
+        $roleArray = array();
         $db = $this->_db;
 
         $qry = $db->select()

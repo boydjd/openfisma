@@ -1,8 +1,10 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 	<tr><td><img id="logo" src="/images/customer_logo.jpg" /></td>
 		<td align="right"><ul class="loginfo">
+            <?php if ( 'ldap' != readSysConfig('auth_type') ) { ?>
                 <li><form class="button_link" action="/panel/user/sub/pwdchange">
                 <input type="submit" value="Change Password" /></form>&nbsp;
+            <?php } ?>
                 <form class="button_link" action="/user/logout">
                 <input type="submit" value="Logout" /></form><br>
 				<li><b><?php echo $this->identity;  ?></b> is currently logged in 
