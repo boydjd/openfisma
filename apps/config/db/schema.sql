@@ -92,7 +92,9 @@ CREATE TABLE `networks` (
   `name` varchar(64) NOT NULL default '',
   `nickname` varchar(8) NOT NULL default '',
   `desc` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name`(`name`),
+  UNIQUE KEY `nickname`(`nickname`)
 ); 
 
 CREATE TABLE `plugins` (
@@ -154,7 +156,8 @@ CREATE TABLE `products` (
   `name` varchar(64) NOT NULL default '',
   `version` varchar(32) NOT NULL default '',
   `desc` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `vendor` (`vendor`,`name`,`version`)
 ); 
 
 CREATE TABLE `sources` (
@@ -162,7 +165,9 @@ CREATE TABLE `sources` (
   `name` varchar(64) NOT NULL,
   `nickname` varchar(16) NOT NULL,
   `desc` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `nickname` (`nickname`)
 ); 
 
 CREATE TABLE `systemgroup_systems` (
@@ -186,7 +191,9 @@ CREATE TABLE `systems` (
   `criticality_justification` text NOT NULL,
   `sensitivity_justification` text NOT NULL,
   `criticality` enum('NONE','SUPPORTIVE','IMPORTANT','CRITICAL') NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `nickname` (`nickname`)
 ); 
 
 CREATE TABLE `system_groups` (
@@ -194,7 +201,9 @@ CREATE TABLE `system_groups` (
   `name` varchar(64) NOT NULL default '',
   `nickname` varchar(8) NOT NULL default '',
   `is_identity` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `nickname` (`nickname`)
 ); 
 
 
@@ -234,7 +243,8 @@ CREATE TABLE `roles` (
   `name` varchar(64) NOT NULL default '',
   `nickname` varchar(16) default NULL,
   `desc` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`)
 );
 
 
