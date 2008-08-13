@@ -36,13 +36,18 @@
                     <td class="tdc"><?php echo $blscr['family'];?></td>
                     <td class="tdc"><?php echo $blscr['subclass'];?></td>
                     <td class="tdc" align="center">
-                        <?php echo 'low' == $blscr['control_level']?'Control Required':'Control Not Required';?>
+                        <?php echo 'LOW' == $blscr['control_level']? 'Control Required' : 'Control Not Required';?>
                     </td>
                     <td class="tdc" align="center">
-                        <?php echo 'moderate' == $blscr['control_level']?'Control Required':'Control Not Required';?>
+                        <?php echo 'LOW' == $blscr['control_level'] ||
+                                   'MODERATE' == $blscr['control_level'] ? 'Control Required' : 'Control Not Required';?>
+
                     </td>
                     <td class="tdc" align="center">
-                        <?php echo 'high' == $blscr['control_level']?'Control Required':'Control Not Required';?>
+                        <?php echo 'LOW' == $blscr['control_level'] ||
+                                   'MODERATE' == $blscr['control_level'] ||
+                                   'HIGH' == $blscr['control_level'] ? 'Control Required' : 'Control Not Required';?>
+
                     </td>
                 </tr>
                 </table>
