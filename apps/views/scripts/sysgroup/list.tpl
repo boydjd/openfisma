@@ -34,7 +34,7 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $sysgroup['nickname'];?></td>
     <?php if(isAllow('admin_sysgroups','update')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/sysgroup/sub/view/v/edit/id/<?php echo $sysgroup['id'];?>" title="edit the System Groups">
+        <a href="/panel/sysgroup/sub/edit/id/<?php echo $sysgroup['id'];?>" title="edit the System Groups">
         <img src="/images/edit.png" border="0"></a>
     </td>
     <?php } if(isAllow('admin_sysgroups','read')){ ?>

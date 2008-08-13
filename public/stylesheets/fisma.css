@@ -163,3 +163,8 @@ label.error {
     color:red;
     padding:0 10px;
 }
+
+.block {
+    width:95%;
+    margin:0 auto;
+}

@@ -14,6 +14,12 @@ require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'sysgroup.php';
 require_once 'Pager.php';
 require_once 'Zend/Filter/Input.php';
+require_once 'Zend/Filter/StringTrim.php';
+require_once 'Zend/Form.php';
+require_once 'Zend/Form/Element/Text.php';
+require_once 'Zend/Form/Element/Submit.php';
+require_once 'Zend/Form/Element/Reset.php';
+require_once 'Zend/Form/Element/Button.php';
 /**
  * Sysgroup Controller
  * @package Controller
@@ -31,20 +37,7 @@ class SysgroupController extends SecurityController
         'currentPage' => 1,
         'perPage' => 20
     );
-    protected $_sanity = array(
-        'data' => 'sysgroup',
-        'filter' => array(
-            '*' => array(
-                'StringTrim',
-                'StripTags'
-            )
-        ) ,
-        'validator' => array(
-            'name' => 'Alnum',
-            'nickname' => 'Alnum'
-        ) ,
-        'flag' => TRUE
-    );
+
     public function init()
     {
         parent::init();
@@ -53,7 +46,8 @@ class SysgroupController extends SecurityController
     public function preDispatch()
     {
         $req = $this->getRequest();
-        $this->_paging_base_path = $req->getBaseUrl() . '/panel/sysgroup/sub/list';
+        $this->_paging_base_path = $req->getBaseUrl()
+                                   . '/panel/sysgroup/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
         if (!in_array($req->getActionName() , array(
             'login',
@@ -62,6 +56,37 @@ class SysgroupController extends SecurityController
             // by pass the authentication when login
             parent::preDispatch();
         }
+    }
+    /*
+     * Get system group form object for system group creation and modification
+     * 
+     * @param string $method: show submit button name , create or edit
+     * @return  Zend_Form
+     */
+    public function getForm ($method)
+    {
+        $form = new Zend_Form();
+        $sysgroupName = new Zend_Form_Element_Text('name');
+        $sysgroupName->setLabel('* System Group Name:')
+            ->setRequired(TRUE)
+            ->addValidators(array(array('NotEmpty' , true)));
+        $sysgroupNickname = new Zend_Form_Element_Text('nickname');
+        $sysgroupNickname->setLabel('* System Group Nickname:')
+            ->setRequired(TRUE)
+            ->addValidators(array(array('NotEmpty' , true)));
+        $submit = new Zend_Form_Element_Submit($method);
+        $submit->setDecorators(array(
+            array('ViewHelper' , array('helper' => 'formSubmit')) ,
+            array('HtmlTag' , array('tag' => 'span'))));
+        $reset = new Zend_Form_Element_Reset('reset');
+        $reset->setDecorators(array(array('ViewHelper' ,
+            array('helper' => 'formReset')) ,
+            array('HtmlTag' , array('tag' => 'dd'))));
+        $form->addElements(array($sysgroupName , $sysgroupNickname ,
+            $submit , $reset));
+        $form->setElementFilters(array('StringTrim' , 'StripTags'));
+        $form->setMethod('post');
+        return $form;
     }
     public function searchboxAction()
     {
@@ -89,49 +114,63 @@ class SysgroupController extends SecurityController
         $req = $this->getRequest();
         $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
-        $query = $this->_sysgroup->select()->from('system_groups', '*')->where('is_identity = 0');
+        $query = $this->_sysgroup->select()->from('system_groups', '*')
+                                           ->where('is_identity = 0');
         if (!empty($value)) {
             $query->where("$field = ?", $value);
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+                                             $this->_paging['perPage']);
         $sysgroup_list = $this->_sysgroup->fetchAll($query)->toArray();
         $this->view->assign('sysgroup_list', $sysgroup_list);
         $this->render();
     }
     public function createAction()
     {
-        $req = $this->getRequest();
-        if ('save' == $req->getParam('s')) {
-            $sysgroup = $req->getParam('sysgroup');
-            $sysgroup['is_identity'] = 0;
-            $res = $this->_sysgroup->insert($sysgroup);
-            if (!$res) {
-                $msg = "Failed to create the system group";
-                $model = self::M_WARNING;
+        $form = $this->getForm('create');
+        $sysGroup = $this->_request->getPost();
+        if ($sysGroup) {
+            if ($form->isValid($sysGroup)) {
+                $sysGroup = $form->getValues();
+                unset($sysGroup['create']);
+                unset($sysGroup['reset']);
+                $sysGroup['is_identity'] = 0;
+                $res = $this->_sysgroup->insert($sysGroup);
+                if (! $res) {
+                    //@REVIEW 2 lines
+                    $msg = "Failure in creation";
+                    $model = self::M_WARNING;
+                } else {
+                    $msg = "The system group is created";
+                    $model = self::M_NOTICE;
+                }
+                $this->message($msg, $model);
+                $form = $this->getForm('create');
             } else {
-                $msg = "System group created successfully";
-                $model = self::M_NOTICE;
+                $form->populate($sysGroup);
             }
-            $this->message($msg, $model);
         }
-        $this->render();
+        $this->view->form = $form;
+        $this->render('sysgroupform');
     }
     public function deleteAction()
     {
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $db = $this->_sysgroup->getAdapter();
-        $qry = $db->select()->from('systemgroup_systems')->where('sysgroup_id = ' . $id);
+        $qry = $db->select()->from('systemgroup_systems')
+            ->where('sysgroup_id = ' . $id);
         $result = $db->fetchCol($qry);
         $model = self::M_WARNING;
         if (!empty($result)) {
-            $msg = 'This system group cannot be deleted because it is already associated with one or more systems';
+            //@REVIEW 3 lines
+            $msg = 'Deletion aborted! One or more systems exist within it.';
         } else {
             $res = $this->_sysgroup->delete('id = ' . $id);
             if (!$res) {
-                $msg = "Failed to delete the system group";
+                $msg = "Failure during deletion";
             } else {
-                $msg = "System group deleted successfully";
+                $msg = "The system group is deleted";
                 $model = self::M_NOTICE;
             }
         }
@@ -140,34 +179,42 @@ class SysgroupController extends SecurityController
     }
     public function viewAction()
     {
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $result = $this->_sysgroup->find($id)->toArray();
-        foreach($result as $v) {
-            $sysgroup_list = $v;
-        }
+        $id = $this->_request->getParam('id');
+        $res = $this->_sysgroup->find($id)->toArray();
+        $sysgroup = $res[0];
         $this->view->assign('id', $id);
-        $this->view->assign('sysgroup', $sysgroup_list);
-        if ('edit' == $req->getParam('v')) {
-            $this->render('edit');
-        } else {
-            $this->render();
-        }
+        $this->view->assign('sysgroup', $sysgroup);
+        $this->render();
     }
-    public function updateAction()
+    public function editAction ()
     {
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $sysgroup = $req->getParam('sysgroup');
-        $res = $this->_sysgroup->update($sysgroup, 'id = ' . $id);
-        if (!$res) {
-            $msg = "Failed to edit the system group";
-            $model = self::M_WARNING;
+        $form = $this->getForm('save');
+        $id = $this->_request->getParam('id');
+        $sysgroup = $this->_request->getPost();
+        if ($sysgroup) {
+            if ($form->isValid($sysgroup)) {
+                $sysgroup = $form->getValues();
+                unset($sysgroup['save']);
+                unset($sysgroup['reset']);
+                $res = $this->_sysgroup->update($sysgroup, 'id = ' . $id);
+                if ($res) {
+                    //@REVIEW 2 lines
+                    $msg = "The system group is saved";
+                    $model = self::M_NOTICE;
+                } else {
+                    $msg = "Nothing changes";
+                    $model = self::M_WARNING;
+                }
+                $this->message($msg, $model);
+            } else {
+                $form->populate($sysgroup);
+            }
         } else {
-            $msg = "System group edited successfully";
-            $model = self::M_NOTICE;
+            $res = $this->_sysgroup->find($id)->toArray();
+            $sysgroup = $res[0];
+            $form->setDefaults($sysgroup);
         }
-        $this->message($msg, $model);
-        $this->_forward('view', null, 'id = ' . $id);
+        $this->view->form = $form;
+        $this->render('sysgroupform');
     }
 }
