@@ -75,7 +75,6 @@ to run.
 
 To accomplish this we will run the following commands.
 
-   $ echo > /opt/openfisma/apps/config/install.conf
    $ chmod 777 /opt/openfisma/apps/config/install.conf
    $ chmod 777 /opt/openfisma/public/evidence
    $ chmod 777 /opt/openfisma/public/temp
