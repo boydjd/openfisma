@@ -56,7 +56,7 @@ class DashboardController extends SecurityController
     {
         $open_count = $this->_poam->search($this->_all_systems,
                         array('count'=>'count(*)'),
-                        array('status'=>array('OPEN')));
+                        array('status'=>array('NEW','OPEN')));
         $en_count = $this->_poam->search($this->_all_systems,
                         array('count'=>'count(*)'),
                         array('status'=>'EN','est_date_begin'=> parent::$now ));
