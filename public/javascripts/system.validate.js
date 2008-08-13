@@ -20,8 +20,8 @@ $().ready(function() {
                 }
         },
         messages: {
-            "system[name]": "Please enter your firstname",
-            "system[nickname]": "Please enter your lastname",
+            "system[name]": "Please enter system name",
+            "system[nickname]": "Please enter system nickname",
             "system[primary_office]": "Please choice one option",
             "system[confidentiality]": "Please choice one option",
             "system[integrity]": "Please choice one option",
