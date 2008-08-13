@@ -2,11 +2,6 @@
     if (!defined('DS')) {
         define('DS', DIRECTORY_SEPARATOR);
     }
-
-    if (!defined('URL_BASE') ){
-        define('URL_BASE', 'http://192.168.0.115/of/zfentry.php/');
-    }
-
     if (!defined('ROOT')) {
         define('ROOT', dirname(dirname(__FILE__)));
     }
@@ -25,33 +20,35 @@
     require_once MODELS . DS . 'Abstract.php';
     require_once 'Zend/Controller/Plugin/ErrorHandler.php';
     require_once ( CONFIGS . DS . 'setting.php');
+    
+    $startTime = time();
+    echo('starting at '.date('H:i:s'));
+    
     $target = $config->database->toArray();
     $target['params']['dbname'] = 'legacy_fisma';
     $srcconfig = new Zend_Config($target);//from setting.php
     Zend_Registry::set('legacy_datasource', $srcconfig); 
 
     $table_name=  array(
-         //     'BLSCR', 
-              'NETWORKS', 
-              'PRODUCTS',
-              'FINDING_SOURCES', 
-              'SYSTEM_GROUP_SYSTEMS','SYSTEMS',
-              'SYSTEM_GROUPS',
-              'ROLES',
-              'FUNCTIONS','ROLE_FUNCTIONS',
-              'ASSETS',
-              'USER_ROLES',
-              'USERS',
-              'USER_SYSTEM_ROLES',
-              'FINDINGS',
-              'POAMS',
-              'VULN_PRODUCTS',
-              'VULNERABILITIES',
-              'FINDING_VULNS',
-              'POAM_EVIDENCE', 
-              'POAM_COMMENTS',
-              'AUDIT_LOG'
-              );
+                        'NETWORKS',
+                        'PRODUCTS',
+                        'FINDING_SOURCES',
+                        'SYSTEM_GROUP_SYSTEMS','SYSTEMS',
+                        'SYSTEM_GROUPS',
+                        'ROLES',
+                        'FUNCTIONS','ROLE_FUNCTIONS',
+                         'ASSETS',
+                        'USERS',
+                        'USER_SYSTEM_ROLES',
+                          'FINDINGS',
+                         'POAMS',
+                        'VULN_PRODUCTS',
+                        'VULNERABILITIES',
+                        'FINDING_VULNS',
+                        'POAM_EVIDENCE',
+                        'POAM_COMMENTS',
+                        'AUDIT_LOG'
+                        );
 
     $db_target = Zend_DB::factory(Zend_Registry::get('datasource'));
     $db_src    = Zend_DB::factory(Zend_Registry::get('legacy_datasource'));
@@ -61,60 +58,67 @@
     {
         $db_target->delete($table);
     }
-    
+
     $delta = 1000;
     echo "start to migrate \n";
-    $sql = "CREATE TABLE IF NOT EXISTS poam_tmp (
-`legacy_finding_id` int(10) unsigned NOT NULL default '0',
-`asset_id` int(10) unsigned NOT NULL default '0',
-`source_id` int(10) unsigned NOT NULL default '0',
-`system_id` int(10) unsigned NOT NULL default '0',
-`blscr_id` varchar(5) default NULL,
-`create_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-`discover_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-`status` enum('NEW','OPEN','EN','EP','ES','CLOSED','DELETED') NOT NULL default 'NEW',
-`finding_data` text NOT NULL) ";
-    $db_target->query($sql);
+//     $sql = "CREATE TABLE IF NOT EXISTS poam_tmp (
+//             `legacy_finding_id` int(10) unsigned NOT NULL default '0',
+//             `asset_id` int(10) unsigned NOT NULL default '0',
+//             `source_id` int(10) unsigned NOT NULL default '0',
+//             `system_id` int(10) unsigned NOT NULL default '0',
+//             `blscr_id` varchar(5) default NULL,
+//             `create_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+//             `discover_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+//             `status` enum('NEW','OPEN','EN','EP','ES','CLOSED','DELETED') NOT NULL default 'NEW',
+//             `finding_data` text NOT NULL) ";
+//     $db_target->query($sql);
+//
     foreach( $table_name as $table ) 
     {
         echo "$table\n";
 
         try{
-
-        if($table == 'POAMS'){
-            poam_conv($db_src, $db_target);
-            continue;
-        }
-        $qry = $db_src->select()->from($table,'count(*)');
-        //Get count
-        $count = $db_src->fetchRow($qry);
-        $count=$count['count(*)'] ;
-        $qry = $db_src->select()->from($table)->limit(0,$delta);
-        $rc = 0;
-        for($i=0;$i<$count+$delta ; $i+=$delta )
-        {
-            $qry->reset(Zend_Db_Select::LIMIT_COUNT)
-               ->reset(Zend_Db_Select::LIMIT_OFFSET);
-            $qry->limit($delta,$i);
-            $rows = $db_src->fetchAll($qry);
-            $rc += count($rows);
-            foreach($rows as &$data) {
-                convert($db_src, $db_target, $table,$data);
+            if($table == 'POAMS'){
+                poam_conv($db_src, $db_target);
+                continue;
             }
-        }
-        echo " ( $rc ) successfully\n";
+            $qry = $db_src->select()->from($table,'count(*)');
+
+            $count = $db_src->fetchRow($qry);
+            $count=$count['count(*)'] ;
+            $qry = $db_src->select()->from($table)->limit(0,$delta);
+            $rc = 0;
+            for($i=0;$i<$count+$delta ; $i+=$delta )
+            {
+                $qry->reset(Zend_Db_Select::LIMIT_COUNT)
+                    ->reset(Zend_Db_Select::LIMIT_OFFSET)
+                    ->limit($delta,$i);
+                $rows = $db_src->fetchAll($qry);
+                $rc += count($rows);
+                foreach($rows as &$data) {
+                    convert($db_src, $db_target, $table,$data);
+                }
+            }
+            echo " ( $rc ) successfully\n";
         }catch(Zend_Exception $e){
             echo "skip \n\t", $e->getMessage() . "\n";
             continue;
         }
     }
 
-    $db_target->query(' INSERT INTO `poams` 
-        (`legacy_finding_id`, `asset_id`, `source_id`, 
-        `system_id`, `blscr_id`, `create_ts`, `discover_ts`, 
-        `status`, `finding_data`) SELECT * from poam_tmp');
+//     $db_target->query(' INSERT INTO `poams`
+//         (`legacy_finding_id`, `asset_id`, `source_id`,
+//         `system_id`, `blscr_id`, `create_ts`, `discover_ts`,
+//         `status`, `finding_data`) SELECT * from poam_tmp');
 
-
+    $endTime = time();
+    echo('finished at '.date('H:i:s'));
+    
+    $diff = $endTime - $startTime;
+    $hours = $diff % 3600;
+    $minutes = ($diff - ($hours * 3600)) % 60;
+    $seconds = ($diff - ($hours * 3600) - ($hours * 60));
+    echo ("elapsed time is $hours hours, $minutes minutes, $seconds seconds");
 
 
 
@@ -199,6 +203,14 @@ function convert($db_src, $db_target, $table,&$data)
          break;
 
     case 'FINDINGS':
+    // reset the autoincrement on poams so converted FINDINGS won't create
+    // duplicate keys
+        $qry = $db_src->query("SELECT MAX(poam_id) m from POAMS");
+        $result = $qry->fetchAll();
+        $max = $result[0]['m'] + 1;
+        $qry = $db_target->query("ALTER TABLE poams AUTO_INCREMENT = $max");
+        $qry->execute();
+        
          finding_conv($db_src, $db_target, $data);
          break;
 
@@ -406,7 +418,7 @@ function users_conv($db_src, $db_target, $data)
     try{
         user_roles_conv($db_src, $db_target, $data);
     }catch(Zend_Exception $e){
-        return;
+        echo "error in users_conv() for user_name {$data['user_name']}: ", $e->getMessage() . "\n";
     }
     
 }
@@ -421,8 +433,10 @@ function vuln_products_conv($db_src, $db_target, $data)
 
 /////////////////////////////////////
 
+$assetsLookup = array();
 function assets_conv($db_src, $db_target,$data)
 {    
+    global $assetsLookup;
     $qry=$db_src->select()->from('SYSTEM_ASSETS' ,array('system_id'=>'system_id'))->where('asset_id=?',$data['asset_id']);
     $system_id=$db_src->fetchRow($qry);
     if(empty($system_id)) 
@@ -470,23 +484,48 @@ function assets_conv($db_src, $db_target,$data)
           'address_port'=>$address_port);
     try {
         $db_target->insert('assets',$tmparray);
-    } catch(Zend_Exception $e) {
-        echo "error in assets_conv() for asset_id {$data['asset_id']}: ", $e->getMessage() . "\n";
+    } catch(Zend_Db_Exception $e) {
+        $code = mysqli_errno($db_target->getConnection());
+        if ($code == 1062) { // duplicate key error
+            $qry = $db_src->select()
+                          ->from('ASSET_ADDRESSES')
+                          ->where('network_id=?',   $network_id)
+                          ->where('address_ip=?',   $address_ip)
+                          ->where('address_port=?', $address_port);
+            $asset = $db_src->fetchRow($qry);
+            $asset_id = $asset['asset_id'];
+            // echo "duplicate key for asset_id {$data['asset_id']}; will consolidate into existing asset $asset_id\n";
+            // the array stores the old asset id as the key, and the new asset id as the lookup value
+            $assetsLookup[$data['asset_id']] = $asset_id;
+        } else {
+            // for other mysqli exceptions, log an error to screen
+            echo "error in assets_conv() for asset_id {$data['asset_id']} code:$code message:".$e->getMessage() . "\n";
+        }
     }
     unset($tmparray);
 }
 
+$findingsLookup = array();
 function finding_conv($db_src, $db_target, $data)
 {
+    global $findingsLookup;
     $qry = $db_src->select();
     $poam_data = $db_src->fetchAll($qry->from('POAMS')->where('finding_id=?',$data['finding_id']));
     $qry->reset();
- 
+
+    // convert consolidated assets
+    if (isset($assetsLookup[$data['asset_id']]))
+        $data['asset_id'] = $assetsLookup[$data['asset_id']];
+
     $asset_data = $db_src->fetchAll(
                   $qry->from(array('as'=>'ASSETS'))->where('as.asset_id=?',$data['asset_id'])
                       ->join(array('sys'=>'SYSTEM_ASSETS'),'sys.asset_id = as.asset_id') );
     if(empty($asset_data)) {
-        echo "asset {$data['asset_id']} missing for finding[{$data['finding_id']}] \n";
+        $poamId = 'n/a';
+        if (isset($poam_data[0]))
+            $poamId = $poam_data[0]['poam_id'];
+        //  echo "asset {$data['asset_id']} missing for finding[{$data['finding_id']}], poam[$poamId] setting asset_id to 0 \n";
+        $data['asset_id'] = 0;
     }
     if(empty($poam_data)){
         $tmp = array(
@@ -499,7 +538,11 @@ function finding_conv($db_src, $db_target, $data)
                      'discover_ts'=>$data['finding_date_discovered'],
                      'status'=>'NEW'
                      );
-        $db_target->insert('poam_tmp',$tmp);
+        //$db_target->insert('poam_tmp',$tmp);
+        //echo "creating poam from finding\n";
+        $db_target->insert('poams',$tmp);
+        $poamId = mysqli_insert_id($db_target->getConnection());
+        $findingsLookup[$data['finding_id']] = $poamId;
         return;
     }else{
         $poam_data = $poam_data[0];
@@ -753,7 +796,7 @@ function insert_ev_eval($db_target,$ev_id,$eval_id,$decision,$date)
             $date='0000-00-00';
         }
         if(in_array($decision, array('EXCLUDED','NONE'))){
-            echo "evidence($ev_id) $decision is discarded by design\n";
+            //echo "evidence($ev_id) $decision is discarded by design\n";
             return;
         }
         $tmparray=array('group_id'=>$ev_id,
@@ -839,7 +882,7 @@ function poam_comments_conv($db_src, $db_target, $data)
         $ev_evaluation_id = insert_poam_eval($db_target, $data['poam_id'],$eval_id,'DENIED',$data['comment_date']);
 
     }else if($eval_id < 4 && $eval_id > 0){
-        assert( $data['ev_id']);
+        //assert( $data['ev_id']);
         $qry=$db_target->select()->from('poam_evaluations',array('id'))
                                  ->where('group_id=?',$data['ev_id'])
                                  ->where('eval_id=?',$eval_id);
@@ -878,21 +921,28 @@ function poam_comments_conv($db_src, $db_target, $data)
 
 function audit_log_conv($db_src, $db_target, $data)
 {
+    global $findingsLookup;
     $qry=$db_target->select()->from('poams','id')
                         ->where('legacy_finding_id=?',$data['finding_id']);
     $poam_id=$db_target->fetchRow($qry);
     if(empty($poam_id))
     {
-        echo "Missing poam_id from finding_id: ".$data['finding_id']."\n";
-    }else{
-        $poam_id=$poam_id['id'];    
-        $tmparray=array('poam_id'=>$poam_id,
-                        'user_id'=>$data['user_id'],
-                      'timestamp'=>date('Y-m-d H:i:s',$data['date']),
-                          'event'=>'MODIFICATION',
-                    'description'=>$data['description']);
-        $db_target->insert('audit_logs',$tmparray);
+        if (isset($findingsLookup[$data['finding_id']])) {
+            $poam_id = $findingsLookup[$data['finding_id']];
+        } else {
+            echo "audit log record for finding[{$data['finding_id']}] has no matching poam\n";
+            return;
+        }
+    } else {
+        $poam_id=$poam_id['id'];
     }
+    $tmparray=array('poam_id'=>$poam_id,
+                    'user_id'=>$data['user_id'],
+                  'timestamp'=>date('Y-m-d H:i:s',$data['date']),
+                      'event'=>'MODIFICATION',
+                'description'=>$data['event']."\n".$data['description']);
+    $db_target->insert('audit_logs',$tmparray);
 }
+
 
 ?>
