@@ -25,7 +25,7 @@
         echo 
         "<ul>
              <li>
-             <h2><a href='" . burl() . "/panel/asset/sub/searchbox/s/search'>Assets</a></h2>;
+             <h2><a href='" . burl() . "/panel/asset/sub/searchbox/s/search'>Assets</a></h2>
              </li>
          </ul>";
         echo '<img src="/images/menu_line.gif" border="0">';
