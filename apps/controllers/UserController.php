@@ -256,12 +256,15 @@ Please create a password that adheres to these complexity requirements:<br>
     protected function authenticate($type, $username, $password)
     {
         $db = Zend_Registry::get('db');
+        if ( 'root' == $username ) {
+            $type = 'database';
+        }
         if ( 'ldap' == $type ) {
             $multiOptions = readLdapConfig();
             $auth = Zend_Auth::getInstance();
-            foreach ($multiOptions as $name=>$options) {
+            foreach ($multiOptions as $group=>$options) {
                 $authAdapter = new Zend_Auth_Adapter_Ldap(
-                              array($name=>$options), $username, $password);
+                               array($group=>$options), $username, $password);
                 $result = $auth->authenticate($authAdapter);
                 if ( true == $result->isValid() ) {
                     return $authAdapter;

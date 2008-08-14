@@ -69,7 +69,7 @@ CREATE TABLE `evaluations` (
 
 CREATE TABLE `ldap_config` (
   `id` int(10) NOT NULL auto_increment,
-  `name` varchar(64) NOT NULL,
+  `group` varchar(64) NOT NULL,
   `key` varchar(64) NOT NULL,
   `value` varchar(64) NOT NULL,
   `description` text NOT NULL,

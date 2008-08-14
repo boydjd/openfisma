@@ -121,7 +121,9 @@
             $query = $db->select()->from('ldap_config', '*');
             $result = $db->fetchAll($query);
             foreach ($result as $row) {
-                $multiOptions[$row['name']][$row['key']] = $row['value'];
+                if ( 'name' != $row['key'] ) {
+                    $multiOptions[$row['group']][$row['key']] = $row['value'];
+                }
             }
             Zend_Registry::set(LDAPCONFIG, $multiOptions);
         }

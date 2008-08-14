@@ -94,6 +94,21 @@ $(document).ready(function(){
         $('input[@type=checkbox]').removeAttr('checked');
     });
 
+    $("input#checkdn").click(function(){
+        var dn = $("input[name='user[ldap_dn]']").val();
+        var dn = encodeURIComponent(dn);
+        var url = "/account/checkdn/dn/"+dn;
+        $("div#checkResult").load(url,null);
+    });
+
+    $("input#addLdapServer").click(function() {
+        if ($("div#addLdapServer_dialog:first").is(":hidden")) {
+            $("div#addLdapServer_dialog").slideDown("slow");
+        } else {
+            $("div#addLdapServer_dialog").hide();
+        }
+    });
+
     $(".editable").click(function(){
         var t_name = $(this).attr('target');
         $(this).removeClass('editable');

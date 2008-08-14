@@ -189,7 +189,8 @@ class AccountController extends PoamBaseController
             'title' => 'title',
             'status' => 'is_active',
             'username' => 'account',
-            'password' => 'password'
+            'password' => 'password',
+            'ldap_dn'  => 'ldap_dn'
         ))->where("u.id = $id");
         $user_detail = $user->fetchRow($qry)->toArray();
         $ret = $user->getRoles($id, array(
