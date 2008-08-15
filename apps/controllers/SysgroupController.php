@@ -13,13 +13,6 @@
 require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'sysgroup.php';
 require_once 'Pager.php';
-require_once 'Zend/Filter/Input.php';
-require_once 'Zend/Filter/StringTrim.php';
-require_once 'Zend/Form.php';
-require_once 'Zend/Form/Element/Text.php';
-require_once 'Zend/Form/Element/Submit.php';
-require_once 'Zend/Form/Element/Reset.php';
-require_once 'Zend/Form/Element/Button.php';
 /**
  * Sysgroup Controller
  * @package Controller
@@ -49,44 +42,13 @@ class SysgroupController extends SecurityController
         $this->_paging_base_path = $req->getBaseUrl()
                                    . '/panel/sysgroup/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
-        if (!in_array($req->getActionName() , array(
+        if (!in_array($req->getActionName(), array(
             'login',
             'logout'
         ))) {
             // by pass the authentication when login
             parent::preDispatch();
         }
-    }
-    /*
-     * Get system group form object for system group creation and modification
-     * 
-     * @param string $method: show submit button name , create or edit
-     * @return  Zend_Form
-     */
-    public function getForm ($method)
-    {
-        $form = new Zend_Form();
-        $sysgroupName = new Zend_Form_Element_Text('name');
-        $sysgroupName->setLabel('* System Group Name:')
-            ->setRequired(TRUE)
-            ->addValidators(array(array('NotEmpty' , true)));
-        $sysgroupNickname = new Zend_Form_Element_Text('nickname');
-        $sysgroupNickname->setLabel('* System Group Nickname:')
-            ->setRequired(TRUE)
-            ->addValidators(array(array('NotEmpty' , true)));
-        $submit = new Zend_Form_Element_Submit($method);
-        $submit->setDecorators(array(
-            array('ViewHelper' , array('helper' => 'formSubmit')) ,
-            array('HtmlTag' , array('tag' => 'span'))));
-        $reset = new Zend_Form_Element_Reset('reset');
-        $reset->setDecorators(array(array('ViewHelper' ,
-            array('helper' => 'formReset')) ,
-            array('HtmlTag' , array('tag' => 'dd'))));
-        $form->addElements(array($sysgroupName , $sysgroupNickname ,
-            $submit , $reset));
-        $form->setElementFilters(array('StringTrim' , 'StripTags'));
-        $form->setMethod('post');
-        return $form;
     }
     public function searchboxAction()
     {
@@ -95,7 +57,7 @@ class SysgroupController extends SecurityController
         $qv = $req->getParam('qv');
         $query = $this->_sysgroup->select()->from(array(
             'sg' => 'system_groups'
-        ) , array(
+        ), array(
             'count' => 'COUNT(sg.id)'
         ))->where('sg.is_identity = 0');
         $res = $this->_sysgroup->fetchRow($query)->toArray();
@@ -127,12 +89,12 @@ class SysgroupController extends SecurityController
     }
     public function createAction()
     {
-        $form = $this->getForm('create');
+        $form = $this->getForm('sysgroup');
         $sysGroup = $this->_request->getPost();
         if ($sysGroup) {
             if ($form->isValid($sysGroup)) {
                 $sysGroup = $form->getValues();
-                unset($sysGroup['create']);
+                unset($sysGroup['submit']);
                 unset($sysGroup['reset']);
                 $sysGroup['is_identity'] = 0;
                 $res = $this->_sysgroup->insert($sysGroup);
@@ -145,11 +107,12 @@ class SysgroupController extends SecurityController
                     $model = self::M_NOTICE;
                 }
                 $this->message($msg, $model);
-                $form = $this->getForm('create');
+                $form = $this->getForm('sysgroup');
             } else {
                 $form->populate($sysGroup);
             }
         }
+        $this->view->title = "Create ";
         $this->view->form = $form;
         $this->render('sysgroupform');
     }
@@ -188,13 +151,13 @@ class SysgroupController extends SecurityController
     }
     public function editAction ()
     {
-        $form = $this->getForm('save');
+        $form = $this->getForm('sysgroup');
         $id = $this->_request->getParam('id');
         $sysgroup = $this->_request->getPost();
         if ($sysgroup) {
             if ($form->isValid($sysgroup)) {
                 $sysgroup = $form->getValues();
-                unset($sysgroup['save']);
+                unset($sysgroup['submit']);
                 unset($sysgroup['reset']);
                 $res = $this->_sysgroup->update($sysgroup, 'id = ' . $id);
                 if ($res) {
@@ -214,6 +177,7 @@ class SysgroupController extends SecurityController
             $sysgroup = $res[0];
             $form->setDefaults($sysgroup);
         }
+        $this->view->title = "Modify ";
         $this->view->form = $form;
         $this->render('sysgroupform');
     }

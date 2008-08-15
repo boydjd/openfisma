@@ -1,6 +1,6 @@
 <style type="text/css">
 #sysgroupform dl {
-    width:100%;
+    border:1px #44637A solid;
     padding:10px;
 }
 #sysgroupform dt {
@@ -16,7 +16,7 @@
 }
 #sysgroupform span {
     float:left;
-    padding-left:60px;
+    padding-right:10px;
 }
 .errors {
     color:red;
@@ -24,7 +24,7 @@
 </style>
 <div class="barleft">
     <div class="barright">
-        <p><b>System Group Information</b> 
+    <p><b><?php echo $this->title;?> System Group Information</b>
     </div>
 </div>
 <div class="block">

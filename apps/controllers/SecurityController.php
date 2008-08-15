@@ -18,10 +18,16 @@ require_once CONTROLLERS . DS . 'MessageController.php';
 require_once 'Zend/Acl.php';
 require_once 'Zend/Acl/Role.php';
 require_once 'Zend/Acl/Resource.php';
+require_once 'Zend/Form.php';
+require_once 'Zend/Form/Element/Text.php';
+require_once 'Zend/Form/Element/Submit.php';
+require_once 'Zend/Form/Element/Reset.php';
+require_once 'Zend/Form/Element/Button.php';
 /**
  * Accompany with the Authentication and ACL initialization
  *
- * Every controller that needs to be authenticated or has acl issue should be extended from it.
+ * Every controller that needs to be authenticated 
+ * or has acl issue should be extended from it.
  * @package Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
@@ -71,7 +77,9 @@ class SecurityController extends MessageController
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
             $this->initializeAcl($this->me->id);
             if (isset($this->_sanity['data'])) {
-                $this->_validator = new Zend_Filter_Input($this->_sanity['filter'], $this->_sanity['validator'], $this->_request->getParam($this->_sanity['data']));
+                $this->_validator = new Zend_Filter_Input(
+                    $this->_sanity['filter'], $this->_sanity['validator'],
+                    $this->_request->getParam($this->_sanity['data']));
             }
         }
     }
@@ -82,10 +90,10 @@ class SecurityController extends MessageController
         } else {
             $this->view->identity = $this->me->account;
             $input = $this->_validator;
-            if (isset($input) && $this->_sanity['flag'] && ($input->hasInvalid() || $input->hasMissing())) {
-                $this->_forward('inputerror', 'error', null, array(
-                    'inputerror' => $input->getMessages()
-                ));
+            if (isset($input) && $this->_sanity['flag'] &&
+                    ($input->hasInvalid() || $input->hasMissing())) {
+                $this->_forward('inputerror', 'error', null,
+                    array('inputerror' => $input->getMessages()));
             }
         }
     }
@@ -96,54 +104,55 @@ class SecurityController extends MessageController
             $db = Zend_Registry::get('db');
             $query = $db->select()->from(array(
                 'r' => 'roles'
-            ) , array(
+            ), array(
                 'nickname' => 'r.nickname'
             ))->where('nickname != ?', 'auto_role');
             $roleArray = $db->fetchAll($query);
-            foreach($roleArray as $row){
+            foreach ($roleArray as $row) {
                 $acl->addRole(new Zend_Acl_Role($row['nickname']));
             }
             $query->reset();
             $query = $db->select()->distinct()->from(array(
                 'f' => 'functions'
-            ) , array(
+            ), array(
                 'screen' => 'screen'
             ));
             $resource = $db->fetchAll($query);
-            foreach($resource as $row) {
+            foreach ($resource as $row) {
                 $acl->add(new Zend_Acl_Resource($row['screen']));
             }
             $query->reset();
             $query = $db->select()->from(array(
                 'u' => 'users'
-            ) , array(
+            ), array(
                 'account'
             ))->join(array(
                 'ur' => 'user_roles'
-            ) , 'u.id = ur.user_id', array())->join(array(
+            ), 'u.id = ur.user_id', array())->join(array(
                 'r' => 'roles'
-            ) , 'ur.role_id = r.id', array(
+            ), 'ur.role_id = r.id', array(
                 'nickname' => 'r.nickname',
                 'role_name' => 'r.name'
             ))->join(array(
                 'rf' => 'role_functions'
-            ) , 'r.id = rf.role_id', array())->join(array(
+            ), 'r.id = rf.role_id', array())->join(array(
                 'f' => 'functions'
-            ) , 'rf.function_id = f.id', array(
+            ), 'rf.function_id = f.id', array(
                 'screen' => 'f.screen',
                 'action' => 'f.action'
             ))->where('u.id=?', $uid)->where('r.nickname != ?', 'auto_role');
             $res = $db->fetchAll($query);
-            foreach($res as $row) {
+            foreach ($res as $row) {
                 $acl->allow($row['nickname'], $row['screen'], $row['action']);
             }
             $query->reset(Zend_Db_Select::WHERE);
-            $query->where('u.id = ?', $uid)->where('r.nickname = ?', 'auto_role');
+            $query->where('u.id = ?', $uid)
+                ->where('r.nickname = ?', 'auto_role');
             $res = $db->fetchAll($query);
             if (!empty($res)) {
                 $auto_role = $res[0]['role_name'];
                 $acl->addRole(new Zend_Acl_Role($auto_role));
-                foreach($res as $row) {
+                foreach ($res as $row) {
                     $acl->allow($auto_role, $row['screen'], $row['action']);
                 }
             }
@@ -160,9 +169,21 @@ class SecurityController extends MessageController
     {
         assert($req instanceof Zend_Controller_Request_Abstract);
         $crit = array();
-        foreach($params as $k => & $v) {
+        foreach ($params as $k => & $v) {
             $crit[$k] = $req->getParam($v);
         }
         return $crit;
+    }
+    /*
+     * Get form object from form config file section 
+     * 
+     * @return  Zend_Form
+     */
+    public function getForm ($formConfigSection)
+    {
+        $formIni = new Zend_Config_Ini(CONFIGS . DS . FORMCONFIGFILE,
+            $formConfigSection);
+        $form = new Zend_Form($formIni);
+        return $form;
     }
 }
