@@ -10,10 +10,12 @@
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
 */
+
     /**
          Form config file name.
      */
     define('FORMCONFIGFILE', 'form.conf');
+
 
     require_once(APPS . DS .'Exception.php');
 

@@ -116,6 +116,7 @@ class PanelController extends SecurityController
         $this->_helper->actionStack('searchbox', 'Network');
         $this->_helper->actionStack('header');
     }
+
     public function configAction()
     {
         $req = $this->getRequest();

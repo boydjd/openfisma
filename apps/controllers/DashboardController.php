@@ -57,7 +57,7 @@ class DashboardController extends SecurityController
             'count' => 'count(*)'
         ), array(
             'status' => array(
-                'OPEN'
+                'NEW', 'OPEN'
             )
         ));
         $en_count = $this->_poam->search($this->_all_systems, array(

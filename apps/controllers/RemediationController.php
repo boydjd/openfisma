@@ -4,11 +4,11 @@
  *
  * Remediation Controller
  *
- * @package Controller
+ * @package    Controller
  * @author     Xhorse   xhorse at users.sourceforge.net
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * @version    $Id$
  */
 require_once CONTROLLERS . DS . 'PoamBaseController.php';
 require_once MODELS . DS . 'user.php';
@@ -332,6 +332,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('logs', $this->_poam->getLogs($id));
         $this->view->assign('ev_evals', $evs);
         $this->view->assign('system_list', $this->_system_list);
+        $this->view->assign('network_list',$this->_network_list);
         $this->render();
     }
     public function modifyAction()
@@ -348,7 +349,8 @@ class RemediationController extends PoamBaseController
             }
             $where = $this->_poam->getAdapter()->quoteInto('id = ?', $id);
             $log_content = "Changed:";
-            ///@todo sanity check
+            //@todo sanity check
+            //@todo this should be encapsulated in a single transaction
             foreach($poam as $k => $v) {
                 if ($k == 'type' && $oldpoam['status'] == 'NEW') {
                     assert(empty($poam['status']));
@@ -363,11 +365,15 @@ class RemediationController extends PoamBaseController
                     $poam['status'] = 'OPEN';
                 }
                 ///@todo SSO can only approve the action after all the required info provided
-                $log_content.= "\n$k:$v";
             }
             $result = $this->_poam->update($poam, $where);
-            if ($result > 0) {
-                $this->_poam->writeLogs($id, $this->me->id, self::$now->toString('Y-m-d H:i:s') , 'MODIFICATION', $log_content);
+            
+            // Generate audit log records if the update is successful
+            if( $result > 0 ) {
+                foreach($poam as $k => $v) {
+                    $log_content = "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
+            	    $this->_poam->writeLogs($id, $this->me->id, self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION', $log_content);
+                }
             }
         }
         //throw new fisma_Excpection('POAM not updated for some reason');

@@ -2,11 +2,6 @@
     if (!defined('DS')) {
         define('DS', DIRECTORY_SEPARATOR);
     }
-
-    if (!defined('URL_BASE') ){
-        define('URL_BASE', 'http://192.168.0.115/of/zfentry.php/');
-    }
-
     if (!defined('ROOT')) {
         define('ROOT', dirname(dirname(__FILE__)));
     }
@@ -25,33 +20,35 @@
     require_once MODELS . DS . 'Abstract.php';
     require_once 'Zend/Controller/Plugin/ErrorHandler.php';
     require_once ( CONFIGS . DS . 'setting.php');
+    
+    $startTime = time();
+    echo('starting at '.date('H:i:s')."\n");
+    
     $target = $config->database->toArray();
     $target['params']['dbname'] = 'legacy_fisma';
     $srcconfig = new Zend_Config($target);//from setting.php
     Zend_Registry::set('legacy_datasource', $srcconfig); 
 
     $table_name=  array(
-         //     'BLSCR', 
-              'NETWORKS', 
-              'PRODUCTS',
-              'FINDING_SOURCES', 
-              'SYSTEM_GROUP_SYSTEMS','SYSTEMS',
-              'SYSTEM_GROUPS',
-              'ROLES',
-              'FUNCTIONS','ROLE_FUNCTIONS',
-              'ASSETS',
-              'USER_ROLES',
-              'USERS',
-              'USER_SYSTEM_ROLES',
-              'FINDINGS',
-              'POAMS',
-              'VULN_PRODUCTS',
-              'VULNERABILITIES',
-              'FINDING_VULNS',
-              'POAM_EVIDENCE', 
-              'POAM_COMMENTS',
-              'AUDIT_LOG'
-              );
+                        'NETWORKS',
+                        'PRODUCTS',
+                        'FINDING_SOURCES',
+                        'SYSTEM_GROUP_SYSTEMS','SYSTEMS',
+                        'SYSTEM_GROUPS',
+                        'ROLES',
+                        'FUNCTIONS','ROLE_FUNCTIONS',
+                         'ASSETS',
+                        'USERS',
+                        'USER_SYSTEM_ROLES',
+                        'POAMS',
+                        'FINDINGS',
+                        'VULN_PRODUCTS',
+                        'VULNERABILITIES',
+                        'FINDING_VULNS',
+                        'POAM_EVIDENCE',
+                        'POAM_COMMENTS',
+                        'AUDIT_LOG'
+                        );
 
     $db_target = Zend_DB::factory(Zend_Registry::get('datasource'));
     $db_src    = Zend_DB::factory(Zend_Registry::get('legacy_datasource'));
@@ -61,65 +58,77 @@
     {
         $db_target->delete($table);
     }
-    
+
     $delta = 1000;
     echo "start to migrate \n";
-    $sql = "CREATE TABLE IF NOT EXISTS poam_tmp (
-`legacy_finding_id` int(10) unsigned NOT NULL default '0',
-`asset_id` int(10) unsigned NOT NULL default '0',
-`source_id` int(10) unsigned NOT NULL default '0',
-`system_id` int(10) unsigned NOT NULL default '0',
-`blscr_id` varchar(5) default NULL,
-`create_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-`discover_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-`status` enum('NEW','OPEN','EN','EP','ES','CLOSED','DELETED') NOT NULL default 'NEW',
-`finding_data` text NOT NULL) ";
-    $db_target->query($sql);
+//     $sql = "CREATE TABLE IF NOT EXISTS poam_tmp (
+//             `legacy_finding_id` int(10) unsigned NOT NULL default '0',
+//             `asset_id` int(10) unsigned NOT NULL default '0',
+//             `source_id` int(10) unsigned NOT NULL default '0',
+//             `system_id` int(10) unsigned NOT NULL default '0',
+//             `blscr_id` varchar(5) default NULL,
+//             `create_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+//             `discover_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+//             `status` enum('NEW','OPEN','EN','EP','ES','CLOSED','DELETED') NOT NULL default 'NEW',
+//             `finding_data` text NOT NULL) ";
+//     $db_target->query($sql);
+//
     foreach( $table_name as $table ) 
     {
         echo "$table\n";
 
         try{
-
-        if($table == 'POAMS'){
-            poam_conv($db_src, $db_target);
-            continue;
-        }
-        $qry = $db_src->select()->from($table,'count(*)');
-        //Get count
-        $count = $db_src->fetchRow($qry);
-        $count=$count['count(*)'] ;
-        $qry = $db_src->select()->from($table)->limit(0,$delta);
-        $rc = 0;
-        for($i=0;$i<$count+$delta ; $i+=$delta )
-        {
-            $qry->reset(Zend_Db_Select::LIMIT_COUNT)
-               ->reset(Zend_Db_Select::LIMIT_OFFSET);
-            $qry->limit($delta,$i);
-            $rows = $db_src->fetchAll($qry);
-            $rc += count($rows);
-            foreach($rows as &$data) {
-                convert($db_src, $db_target, $table,$data);
+            if($table == 'POAMS'){
+                poam_conv($db_src, $db_target);
+                continue;
             }
-        }
-        echo " ( $rc ) successfully\n";
+            if($table == 'FINDINGS'){
+                finding_conv($db_src, $db_target);
+                continue;
+            }
+            $qry = $db_src->select()->from($table,'count(*)');
+
+            $count = $db_src->fetchRow($qry);
+            $count=$count['count(*)'] ;
+            $qry = $db_src->select()->from($table)->limit(0,$delta);
+            $rc = 0;
+            for($i=0;$i<$count+$delta ; $i+=$delta )
+            {
+                $qry->reset(Zend_Db_Select::LIMIT_COUNT)
+                    ->reset(Zend_Db_Select::LIMIT_OFFSET)
+                    ->limit($delta,$i);
+                $rows = $db_src->fetchAll($qry);
+                $rc += count($rows);
+                foreach($rows as &$data) {
+                    convert($db_src, $db_target, $table,$data);
+                }
+            }
+            echo " ( $rc ) successfully\n";
         }catch(Zend_Exception $e){
-            echo "skip \n\t", $e->getMessage() . "\n";
+            print( "skip \n\t". $e->getMessage() . "\n");
             continue;
         }
     }
 
-    $db_target->query(' INSERT INTO `poams` 
-        (`legacy_finding_id`, `asset_id`, `source_id`, 
-        `system_id`, `blscr_id`, `create_ts`, `discover_ts`, 
-        `status`, `finding_data`) SELECT * from poam_tmp');
+//     $db_target->query(' INSERT INTO `poams`
+//         (`legacy_finding_id`, `asset_id`, `source_id`,
+//         `system_id`, `blscr_id`, `create_ts`, `discover_ts`,
+//         `status`, `finding_data`) SELECT * from poam_tmp');
 
-
+    $endTime = time();
+    echo('finished at '.date('H:i:s')."\n");
+    
+    $diff = $endTime - $startTime;
+    $hours = floor($diff / 3600);
+    $minutes = floor(($diff - ($hours * 3600)) / 60);
+    $seconds = floor(($diff - ($hours * 3600) - ($minutes * 60)));
+    echo ("elapsed time is $hours hours, $minutes minutes, $seconds seconds\n");
 
 
 
 function convert($db_src, $db_target, $table,&$data)
 {
+    static $flag = 0;
     switch($table)
     {
     case 'BLSCR':
@@ -196,9 +205,21 @@ function convert($db_src, $db_target, $table,&$data)
 
     case 'ASSETS':
          assets_conv($db_src, $db_target, $data);
+         
          break;
 
     case 'FINDINGS':
+    // reset the autoincrement on poams so converted FINDINGS won't create
+    // duplicate keys
+    if ($flag == 0) {
+        $qry = $db_src->query("SELECT MAX(poam_id) m from POAMS");
+        $result = $qry->fetchAll();
+        $max = $result[0]['m'] + 1;
+        $qry = $db_target->query("ALTER TABLE poams AUTO_INCREMENT = $max");
+        $qry->execute();
+        $flag = 1;
+    }
+        
          finding_conv($db_src, $db_target, $data);
          break;
 
@@ -406,7 +427,7 @@ function users_conv($db_src, $db_target, $data)
     try{
         user_roles_conv($db_src, $db_target, $data);
     }catch(Zend_Exception $e){
-        return;
+        echo "error in users_conv() for user_name {$data['user_name']}: ", $e->getMessage() . "\n";
     }
     
 }
@@ -421,8 +442,10 @@ function vuln_products_conv($db_src, $db_target, $data)
 
 /////////////////////////////////////
 
+$assetsLookup = array();
 function assets_conv($db_src, $db_target,$data)
 {    
+    global $assetsLookup;
     $qry=$db_src->select()->from('SYSTEM_ASSETS' ,array('system_id'=>'system_id'))->where('asset_id=?',$data['asset_id']);
     $system_id=$db_src->fetchRow($qry);
     if(empty($system_id)) 
@@ -470,131 +493,133 @@ function assets_conv($db_src, $db_target,$data)
           'address_port'=>$address_port);
     try {
         $db_target->insert('assets',$tmparray);
-    } catch(Zend_Exception $e) {
-        echo "error in assets_conv() for asset_id {$data['asset_id']}: ", $e->getMessage() . "\n";
+    } catch(Zend_Db_Exception $e) {
+        $code = mysqli_errno($db_target->getConnection());
+        if ($code == 1062) { // duplicate key error
+            $qry = $db_src->select()
+                          ->from('ASSET_ADDRESSES')
+                          ->where('network_id=?',   $network_id)
+                          ->where('address_ip=?',   $address_ip)
+                          ->where('address_port=?', $address_port);
+            $asset = $db_src->fetchRow($qry);
+            $asset_id = $asset['asset_id'];
+            // echo "duplicate key for asset_id {$data['asset_id']}; will consolidate into existing asset $asset_id\n";
+            // the array stores the old asset id as the key, and the new asset id as the lookup value
+            $assetsLookup[$data['asset_id']] = $asset_id;
+        } else {
+            // for other mysqli exceptions, log an error to screen
+            echo "error in assets_conv() for asset_id {$data['asset_id']} code:$code message:".$e->getMessage() . "\n";
+        }
     }
     unset($tmparray);
 }
 
-function finding_conv($db_src, $db_target, $data)
+$findingsLookup = array();
+// this function only converts unassociated findings (findings without poams, aka unconverted findings)
+//function finding_conv($db_src, $db_target, $data)
+function finding_conv($db_src, $db_target)
 {
-    $qry = $db_src->select();
-    $poam_data = $db_src->fetchAll($qry->from('POAMS')->where('finding_id=?',$data['finding_id']));
-    $qry->reset();
- 
-    $asset_data = $db_src->fetchAll(
-                  $qry->from(array('as'=>'ASSETS'))->where('as.asset_id=?',$data['asset_id'])
-                      ->join(array('sys'=>'SYSTEM_ASSETS'),'sys.asset_id = as.asset_id') );
-    if(empty($asset_data)) {
-        echo "asset {$data['asset_id']} missing for finding[{$data['finding_id']}] \n";
-    }
-    if(empty($poam_data)){
+    global $findingsLookup;
+    global $assetsLookup;
+
+    $qry = $db_src->query("
+        SELECT
+        f.finding_id,
+        a.asset_id,
+        f.source_id,
+        a.system_id,
+        f.finding_date_created,
+        f.finding_data,
+        f.finding_date_discovered
+        FROM `FINDINGS` AS f,
+        `SYSTEM_ASSETS` AS a,
+        `SYSTEMS` AS s
+        WHERE f.asset_id=a.asset_id
+        AND s.system_id=a.system_id
+        AND f.finding_status='OPEN'
+    ");
+    $poam_data = $qry->fetchAll();
+    
+    foreach($poam_data as $data) {
+        // convert consolidated assets
+        if (isset($assetsLookup[$data['asset_id']])) {
+            //print("convert {$data['asset_id']} to {$assetsLookup[$data['asset_id']]}\n");
+            $data['asset_id'] = $assetsLookup[$data['asset_id']];
+        }
+
         $tmp = array(
                      'legacy_finding_id'=> $data['finding_id'],
                      'asset_id'=>$data['asset_id'],
                      'source_id'=>$data['source_id'],
-                     'system_id'=> isset($asset_data[0]['system_id'])?$asset_data[0]['system_id']:0,
+                     'system_id'=> $data['system_id'],
                      'create_ts'=>$data['finding_date_created'],
                      'finding_data'=>$data['finding_data'],
                      'discover_ts'=>$data['finding_date_discovered'],
                      'status'=>'NEW'
                      );
-        $db_target->insert('poam_tmp',$tmp);
-        return;
-    }else{
-        $poam_data = $poam_data[0];
-    }
+        //$db_target->insert('poam_tmp',$tmp);
+        //echo "creating poam from finding\n";
+        $db_target->insert('poams',$tmp);
+        $poamId = mysqli_insert_id($db_target->getConnection());
+        $findingsLookup[$data['finding_id']] = $poamId;
+        print("new finding converted to poam: {$data['finding_id']} -> $poamId\n");
 
-    if($data['finding_id'] != $poam_data['finding_id']){
-        echo "{$data['finding_id']} is inconsistent between finding_id and poam.finding_id \n";
     }
-
-    if($poam_data['poam_status']=='OPEN' && $poam_data['poam_type']=='NONE')
-    {
-        $poam_data['poam_status']='NEW';
-    }
-
-    $tmp = array('id'=> $poam_data['poam_id'],
-                 'legacy_finding_id'=> $data['finding_id'],
-                 'asset_id'=>$data['asset_id'],
-                 'source_id'=>$data['source_id'],
-                 'system_id'=>$poam_data['poam_action_owner'],
-                 'blscr_id'=>$poam_data['poam_blscr'],
-                 'create_ts'=>$data['finding_date_created'],
-                 'finding_data'=>$data['finding_data'],
-                 'discover_ts'=>$data['finding_date_discovered'],
-                 'modify_ts'=>$poam_data['poam_date_modified'],
-                 'close_ts'=>$poam_data['poam_date_closed'],
-                 'type'=>$poam_data['poam_type'],
-                 'status'=>$poam_data['poam_status'],
-                 'is_repeat'=>$poam_data['poam_is_repeat'],
-                 'previous_audits'=>$poam_data['poam_previous_audits'],
-                 'created_by'=>$poam_data['poam_created_by'],
-                 'modified_by'=>$poam_data['poam_modified_by'],
-                 'closed_by'=>$poam_data['poam_closed_by'],
-                 'action_suggested'=>$poam_data['poam_action_suggested'],
-                 'action_planned'=>$poam_data['poam_action_planned'],
-                 'action_status'=>$poam_data['poam_action_status'],
-                 'action_approved_by'=>$poam_data['poam_action_approved_by'],
-                 'action_resources'=>$poam_data['poam_action_resources'],
-                 'action_est_date'=>$poam_data['poam_action_date_est'],
-                 'action_actual_date'=>$poam_data['poam_action_date_actual'],
-                 'cmeasure'=>$poam_data['poam_cmeasure'],
-                 'cmeasure_effectiveness'=>$poam_data['poam_cmeasure_effectiveness'],
-                 'cmeasure_justification'=>$poam_data['poam_cmeasure_justification'],
-                 'threat_source'=>$poam_data['poam_threat_source'],
-                 'threat_level'=>$poam_data['poam_threat_level'],
-                 'threat_justification'=>$poam_data['poam_threat_justification']);
-     $db_target->insert('poams',$tmp);
 }
 
 
 function poam_conv( $db_src, $db_target)
 {
-    $qry = $db_src->select();
-    $data = $db_src->fetchAll(
-            "SELECT *
-            FROM POAMS p
-            WHERE NOT
-            EXISTS (
-
-            SELECT finding_id
-            FROM FINDINGS f
-            WHERE f.finding_id = p.finding_id
-            )");
-    foreach($data as $poam_data){
-
-    $tmp = array('id'=> $poam_data['poam_id'],
-                 'legacy_finding_id'=> 0,
-                 'asset_id'=>0,
-                 'source_id'=>0,
-                 'system_id'=>$poam_data['poam_action_owner'],
-                 'blscr_id'=>$poam_data['poam_blscr'],
-                 'create_ts'=>$poam_data['poam_date_created'],
-                 'modify_ts'=>$poam_data['poam_date_modified'],
-                 'close_ts'=>$poam_data['poam_date_closed'],
-                 'type'=>$poam_data['poam_type'],
-                 'status'=>$poam_data['poam_status'],
-                 'is_repeat'=>$poam_data['poam_is_repeat'],
-                 'previous_audits'=>$poam_data['poam_previous_audits'],
-                 'created_by'=>$poam_data['poam_created_by'],
-                 'modified_by'=>$poam_data['poam_modified_by'],
-                 'closed_by'=>$poam_data['poam_closed_by'],
-                 'action_suggested'=>$poam_data['poam_action_suggested'],
-                 'action_planned'=>$poam_data['poam_action_planned'],
-                 'action_status'=>$poam_data['poam_action_status'],
-                 'action_approved_by'=>$poam_data['poam_action_approved_by'],
-                 'action_resources'=>$poam_data['poam_action_resources'],
-                 'action_est_date'=>$poam_data['poam_action_date_est'],
-                 'action_actual_date'=>$poam_data['poam_action_date_actual'],
-                 'cmeasure'=>$poam_data['poam_cmeasure'],
-                 'cmeasure_effectiveness'=>$poam_data['poam_cmeasure_effectiveness'],
-                 'cmeasure_justification'=>$poam_data['poam_cmeasure_justification'],
-                 'threat_source'=>$poam_data['poam_threat_source'],
-                 'threat_level'=>$poam_data['poam_threat_level'],
-                 'threat_justification'=>$poam_data['poam_threat_justification']);
-     $db_target->insert('poams',$tmp);
-    }
+    print("top of poam_conv");
+    $qry = $db_target->query("
+ INSERT INTO ovms_v2.poams
+        SELECT  p.poam_id,
+                coalesce(convert(p.legacy_poam_id, signed integer),0),
+                f.asset_id,
+                f.source_id,
+                p.poam_action_owner,
+                p.poam_blscr,
+                p.poam_date_created,
+                f.finding_date_discovered,
+                p.poam_date_modified,
+                p.poam_date_closed,
+                p.poam_type,
+                p.poam_status,
+                p.poam_is_repeat,
+                f.finding_data,
+                p.poam_previous_audits,
+                p.poam_created_by,
+                p.poam_modified_by,
+                p.poam_closed_by,
+                p.poam_action_suggested,
+                p.poam_action_planned,
+                p.poam_action_status,
+                p.poam_action_approved_by,
+                p.poam_action_resources,
+                p.poam_action_date_est,
+                p.poam_action_date_actual,
+                p.poam_cmeasure,
+                p.poam_cmeasure_effectiveness,
+                p.poam_cmeasure_justification,
+                p.poam_threat_source,
+                p.poam_threat_level,
+                p.poam_threat_justification
+        FROM   legacy_fisma.FINDINGS AS f,
+               legacy_fisma.FINDING_SOURCES AS fs,
+               legacy_fisma.POAMS AS p,
+               legacy_fisma.SYSTEMS AS s1,
+               legacy_fisma.SYSTEMS AS s2,
+               legacy_fisma.SYSTEM_ASSETS AS sa
+        WHERE (   p.poam_action_owner IN (18, 19, 21, 22, 24, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65)
+        AND   p.finding_id  = f.finding_id
+        AND   f.source_id   = fs.source_id
+        AND   f.asset_id    = sa.asset_id
+        AND   sa.system_is_owner = 1
+        AND   s1.system_id  = sa.system_id
+        AND   s2.system_id  = p.poam_action_owner )
+    ");
+    $qry->execute();
+    //die('giving up\n');
 }
 
 
@@ -664,73 +689,6 @@ function  vulnerabilities_conv($db_src, $db_target, $data)
     unset($tmparray);
 }
 
-/* need to edit
-
-function  vulnerabilities_conv($db_src, $db_target, $data)
-{   
-    $description="Primary:".$data['vuln_desc_primary'].
-                  "Secondary:".$data['vuln_desc_secondary'];
-    
-    $QRY=$DB_SRC->SELECT()->FROM('VULNERABILITIES',
-                                 array('imp_desc'=>'vi.imp_desc',
-                                     'imp_source'=>'vi.imp_source',
-                                       'ref_name'=>>'vr.ref_name',
-                                     'ref_source'=>'vr.ref_source',
-                                        'ref_url'=>'vr.ref_url',
-                                'ref_is_advisory'=>'vr.ref_is_advisory',
-                               'ref_has_tool_sig'=>'vr.ref_has_tool_sig',
-                                  'ref_has_patch'=>'vr.ref_has_patch',   
-                                       'sol_desc'=>'vs.sol_desc',
-                                     'sol_source'=>'vs.sol_source'))
-                          ->where('vuln_seq=?',$data['vuln_seq'])
-                          ->where('vuln_type=?',$data['vuln_type']);
-                          echo $qry;die("xxxxxx");
-    $impact=$db_src->fetchRow($qry);
-    $impact="Description:".$impact['imp_desc']."Source:".$impact['imp_source'];
-    $qry=null;
-
-    $qry=$db_src->select()->from('VULN_REFERENCES',
-                           array('ref_name'=>'ref_name',
-                               'ref_source'=>'ref_source',
-                                  'ref_url'=>'ref_url',
-                          'ref_is_advisory'=>'ref_is_advisory',
-                         'ref_has_tool_sig'=>'ref_has_tool_sig',
-                            'ref_has_patch'=>'ref_has_patch'))
-                          ->where('vuln_seq=?',$data['vuln_seq'])
-                          ->where('vuln_type=?',$data['vuln_type']);
-    $references=$db_src->fetchRow($qry);
-    $references="Name:".$references['ref_name'].
-              "Source:".$references['ref_source'].
-                 "Url:".$references['ref_url'].
-          "Is_advisory".$references['ref_is_advisory'].
-         "Has_tool_sig".$references['ref_has_tool_sig'].
-            "Has_patch".$references['ref_has_patch'];
-    $qry=null;
-
-    $qry=$db_src->select()->from('VULN_SOLUTIONS',
-                           array('sol_desc'=>'sol_desc',
-                               'sol_source'=>'sol_source'))
-                          ->where('vuln_seq=?',$data['vuln_seq'])
-                          ->where('vuln_type=?',$data['vuln_type']);
-    $solutions=$db_src->fetchRow($qry);
-    $solutions="Description:".$solutions['sol_desc']."Source:".$solutions['sol_source'];
-
-    $tmparray=array('seq'=>$data['vuln_seq'],
-                   'type'=>$data['vuln_type'],
-            'description'=>$description,
-              'modify_ts'=>$data['vuln_date_modified'],
-             'publish_ts'=>$data['vuln_date_published'],
-               'severity'=>$data['vuln_severity'],
-                 'impact'=>$impact,
-              'reference'=>$references,
-               'solution'=>$solutions
-     );
-    $db_target->insert('vulnerabilities',$tmparray); 
-    unset($tmparray);
-    
-}
-*/
-
 function poam_vulns_conv($db_src, $db_target, $data)
 {
     $qry=$db_src->select()->from('POAMS',array('poam_id'=>'poam_id'))
@@ -753,7 +711,7 @@ function insert_ev_eval($db_target,$ev_id,$eval_id,$decision,$date)
             $date='0000-00-00';
         }
         if(in_array($decision, array('EXCLUDED','NONE'))){
-            echo "evidence($ev_id) $decision is discarded by design\n";
+            //echo "evidence($ev_id) $decision is discarded by design\n";
             return;
         }
         $tmparray=array('group_id'=>$ev_id,
@@ -839,7 +797,7 @@ function poam_comments_conv($db_src, $db_target, $data)
         $ev_evaluation_id = insert_poam_eval($db_target, $data['poam_id'],$eval_id,'DENIED',$data['comment_date']);
 
     }else if($eval_id < 4 && $eval_id > 0){
-        assert( $data['ev_id']);
+        //assert( $data['ev_id']);
         $qry=$db_target->select()->from('poam_evaluations',array('id'))
                                  ->where('group_id=?',$data['ev_id'])
                                  ->where('eval_id=?',$eval_id);
@@ -878,21 +836,28 @@ function poam_comments_conv($db_src, $db_target, $data)
 
 function audit_log_conv($db_src, $db_target, $data)
 {
+    global $findingsLookup;
     $qry=$db_target->select()->from('poams','id')
                         ->where('legacy_finding_id=?',$data['finding_id']);
     $poam_id=$db_target->fetchRow($qry);
     if(empty($poam_id))
     {
-        echo "Missing poam_id from finding_id: ".$data['finding_id']."\n";
-    }else{
-        $poam_id=$poam_id['id'];    
-        $tmparray=array('poam_id'=>$poam_id,
-                        'user_id'=>$data['user_id'],
-                      'timestamp'=>date('Y-m-d H:i:s',$data['date']),
-                          'event'=>'MODIFICATION',
-                    'description'=>$data['description']);
-        $db_target->insert('audit_logs',$tmparray);
+        if (isset($findingsLookup[$data['finding_id']])) {
+            $poam_id = $findingsLookup[$data['finding_id']];
+        } else {
+            //echo "audit log record for finding[{$data['finding_id']}] has no matching poam\n";
+            return;
+        }
+    } else {
+        $poam_id=$poam_id['id'];
     }
+    $tmparray=array('poam_id'=>$poam_id,
+                    'user_id'=>$data['user_id'],
+                  'timestamp'=>date('Y-m-d H:i:s',$data['date']),
+                      'event'=>'MODIFICATION',
+                'description'=>$data['event']."\n".$data['description']);
+    $db_target->insert('audit_logs',$tmparray);
 }
+
 
 ?>

@@ -83,6 +83,7 @@ class SecurityController extends MessageController
             }
         }
     }
+
     public function preDispatch()
     {
         if (empty($this->me)) {

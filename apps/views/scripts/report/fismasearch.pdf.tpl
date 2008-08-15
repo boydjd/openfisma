@@ -58,5 +58,7 @@ if($this->enddate)
 $pdf->ezTable($table, $fields,$title,
     array('fontSize'=>8,'maxWidth'=>$content_width,'titleFontSize'=>12));
 
+header('Pragma: private');
+header('Cache-control: private');
 echo $pdf->ezOutput();
 ?>

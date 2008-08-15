@@ -165,8 +165,7 @@ CREATE TABLE `products` (
   `name` varchar(64) NOT NULL default '',
   `version` varchar(32) NOT NULL default '',
   `desc` text,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `vendor` (`vendor`,`name`,`version`)
+  PRIMARY KEY  (`id`)
 ); 
 
 CREATE TABLE `sources` (
@@ -210,9 +209,7 @@ CREATE TABLE `system_groups` (
   `name` varchar(64) NOT NULL default '',
   `nickname` varchar(8) NOT NULL default '',
   `is_identity` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`),
-  UNIQUE KEY `nickname` (`nickname`)
+  PRIMARY KEY  (`id`)
 ); 
 
 

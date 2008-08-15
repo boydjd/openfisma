@@ -15,21 +15,36 @@
 <?php 
     echo '<img src="/images/menu_line.gif" border="0">';
     if(isAllow('dashboard','read')) {
-        echo "<ul><li>
+        echo 
+        "<ul>
+             <li>
              <h2><a href='/panel/dashboard'>Dashboard</a></h2>
-             </ul>";
+             </li>
+         </ul>";
+        echo '<img src="/images/menu_line.gif" border="0">';
+    }
+    if(isAllow('asset','read')) {
+        echo 
+        "<ul>
+             <li>
+             <h2><a href='/panel/asset/sub/searchbox/s/search'>Assets</a></h2>
+             </li>
+         </ul>";
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('finding','read')) {
-        echo '<ul ><li > 
-             <h2><a>Finding</a></h2>';
-        echo '<ul>';
+        echo 
+        '<ul>
+            <li> 
+            <h2><a>Finding</a></h2>
+            <ul>';
         if(isAllow('finding','create')) {
             echo "\n",'<li><a href="/panel/finding/sub/create">New Finding</a>
                 <li><a href="/finding/injection">Spreadsheet Upload</a>
                 <li><a href="/finding/import">Upload Scan Results</a>';
         }
-        echo '</ul></ul>';
+        echo '</ul>
+             </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('remediation','read')) {
@@ -39,7 +54,7 @@
               <li><a href="/panel/remediation/sub/summary">Remediation Summary</a>
               <li><a href="/panel/remediation/sub/searchbox">Remediation Search</a>
               </ul>
-              </ul>';
+              </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('report','read')) { 
@@ -61,7 +76,7 @@
             echo "\n",'<li><a href="/panel/report/sub/overdue">Overdue Report</a>';
         }            
         echo'</ul>
-             </ul>';
+             </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('admin','read')) {
@@ -91,19 +106,22 @@
         if(isAllow('admin_networks','read')){
             echo'<li><a href="/panel/network/sub/list">Networks</a>';
         }
-        echo'<li><a href="/panel/config">Configuration</a>';
+        if(isAllow('app_configuration','update')) {
+            echo'<li><a href="/panel/config">Configuration</a></li>';
+        }
         echo'</ul>
-            </ul>';
+            </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     /*
     if(isAllow('vulnerability','read')) {
         echo'<ul><li><h2><a href="/mainPanel.php?panel=association" >Vulnerability</a></h2>';
-        echo'<ul><li><a href="#">Asset Dashboard</a>';
+        echo'<ul><li><a href="#">Asset Dashboard</a></li>';
         if(isAllow('vulnerability','create')) {
-            echo'<li><a href="#">Create an Asset</a>';
+            echo'<li><a href="#">Create an Asset</a></li>';
         }
-        echo'</ul></ul>';
+        echo'</ul>
+        </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }*/
 ?>

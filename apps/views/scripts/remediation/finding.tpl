@@ -39,10 +39,10 @@
                 <tr>
                     <td>
                         <b target="action_owner" <?php
-        if(in_array( $this->poam['status'],array('NEW','OPEN'))
-            && isAllow('remediation','update_finding_assignment')){
-            echo ' class="editable"';
-     }?> >Responsible System:&nbsp;</b>
+        if(isAllow('remediation','update_finding_assignment')){
+            echo ' class="editable"'; 
+        }
+        ?> >Responsible System:&nbsp;</b>
                         <span name="poam[system_id]" id="action_owner" type="select" 
                    href="/metainfo/list/o/system/format/html/">
     <?php echo $this->system_list[$this->poam['system_id']]; ?>
@@ -56,13 +56,18 @@
             <table cellpadding="5" width="100%" class="tbframe">
                 <th align="left" colspan="2">Asset Information</th>
                 <tr>
-                    <td><b>Asset Owner:&nbsp;</b> <?php echo $this->system_list[$this->poam['asset_owner']];?></td>
+<?php
+    if (isset($this->system_list[$this->poam['asset_owner']]))
+        echo "<td><b>Asset Owner:&nbsp;</b> {$this->system_list[$this->poam['asset_owner']]}</td>";
+    else
+        echo "<td><b>Asset Owner:&nbsp;</b> <i>None</i></td>";
+?>
                 </tr>
                 <tr>
                     <td><b>Asset Name:&nbsp;</b> <?php echo nullGet($this->poam['asset_name'],'(none given)');?> </td>
                 </tr>
                 <tr>
-                    <td><b>Known Address(es):&nbsp;</b><?php echo $this->network_list[$this->poam['network_id']],$this->poam['ip'],':',$this->poam['port']?></td>
+                    <td><b>Known Address(es):&nbsp;</b>(<?php echo $this->network_list[$this->poam['network_id']].") ".$this->poam['ip'],':',$this->poam['port']?></td>
                 </tr>
                 <tr>
                     <td><b>Product Information:&nbsp;</b> <i>

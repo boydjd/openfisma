@@ -53,5 +53,7 @@ $title='Software Discovered Through Vulnerability Assessments';
 $pdf->ezTable($table, $fields,$title,
     array('fontSize'=>8,'width'=>$content_width,'titleFontSize'=>16));
 
+header('Pragma: private');
+header('Cache-control: private');
 echo $pdf->ezOutput();
 ?>

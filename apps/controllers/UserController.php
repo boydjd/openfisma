@@ -105,6 +105,7 @@ class UserController extends MessageController
             $this->render();
         }
     }
+    
     /**
      Exam the Acl to decide permission or denial.
      @param $user array of User's roles

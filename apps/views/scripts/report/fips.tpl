@@ -25,9 +25,6 @@
                 </tr>
             </table>
         </td>
-        <td width="40%">
-            <img src=piechart.php?data[]={$rpdata[1].LOW}&data[]={$rpdata[1].MODERATE}&data[]={$rpdata[1].HIGH}>
-        </td>
     </tr>    
 </table>
 
