@@ -125,13 +125,15 @@
         <th class="tdc">Corrective Action</th>
         <th class="tdc">ECD</th>
     </tr>
-    <?php foreach($this->poam_list as  $row){ ?>
+    <?php 
+        $today = date('Y-m-d',time());
+        foreach($this->poam_list as  $row){ ?>
     <tr>
         <td class="tdc" align="center"><?php echo $this->system_list[$row['system_id']];?></td>
         <td class="tdc" align="center"><?php echo $row['id'];?></td>
         <td class="tdc"><?php echo $row['finding_data'];?></td>
         <td class="tdc" ><?php echo $row['type'];?></td>
-        <td class="tdc" align="center"><?php echo $row['status'];?></td>
+        <td align='center' class='tdc'><?php echo $row['status']=='EN' && $row['action_est_date']<$today?'EO':$row['status'];?></td>
         <td class="tdc" align="center">
         <?php $id = &$row['source_id'];
             if( empty($id) ){
