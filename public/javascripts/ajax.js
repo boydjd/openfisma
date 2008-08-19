@@ -109,6 +109,35 @@ $(document).ready(function(){
         }
     });
 
+    $("input#addLdapAdvanced").click(function() {
+        if ($("div#addLdapAdvanced_dialog:first").is(":hidden")) {
+            $("div#addLdapAdvanced_dialog").slideDown("slow");
+        } else {
+            $("div#addLdapAdvanced_dialog").hide();
+        }
+    });
+
+    $("input[name='serverType']").change(function() {
+        var type = $("input[@name=serverType][@checked]").val();
+        if ( 'ad' == type ) {
+            if (!$("div#addLdapAdvanced_dialog:first").is(":hidden")) {
+                $("input#addLdapAdvanced").trigger('click');
+            }
+        } else {
+            if ($("div#addLdapAdvanced_dialog:first").is(":hidden")) {
+                $("input#addLdapAdvanced").trigger('click');
+            }
+        }
+    });
+
+    $(".confirm").click(function(){
+        var str = "Are you sure that you want to delete this ldap server?";
+        if(confirm(str) == true){
+            return true;
+        }
+        return false;
+    });
+
     $(".editable").click(function(){
         var t_name = $(this).attr('target');
         $(this).removeClass('editable');
