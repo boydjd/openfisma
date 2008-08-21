@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<cruisecontrol>
+	<project name="openfisma-development" buildafterfailed="false">
+		<property file="projects/${project.name}/build.properties" /> 
+		<plugin name="svnbootstrapper" classname="net.sourceforge.cruisecontrol.bootstrappers.SVNBootstrapper"/>
+		<plugin name="svn" classname="net.sourceforge.cruisecontrol.sourcecontrols.SVN"/>
+		<listeners>
+			<currentbuildstatuslistener file="logs/${project.name}/status.txt"/>
+		</listeners>
+		<modificationset quietperiod="30">
+			<svn localWorkingCopy="projects/${project.name}/source/"/>
+		</modificationset>
+<!--				
+		<modificationset>
+			<filesystem folder="projects/${project.name}/source" />
+		</modificationset>
+-->		
+		<bootstrappers>
+			<svnbootstrapper localWorkingCopy="projects/${project.name}/source/"/>
+		</bootstrappers>
+		
+		<schedule interval="30">
+			<ant anthome="apache-ant-1.7.0" buildfile="projects/${project.name}/build.xml"/>
+		</schedule>
+		
+		<log dir="logs/${project.name}">
+			<merge dir="projects/${project.name}/build/logs/"/>
+		</log>
+		
+		<publishers>
+			<currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt"/>
+
+			<!-- Publishes everything under the build/artifacts folder such as the tar/zip files and other reports-->
+			<artifactspublisher dir="projects/${project.name}/build/artifacts" dest="artifacts/${project.name}"/>
+
+			<!-- Publishes the phpdoc information under the build artifacts -->
+			<artifactspublisher dir="projects/${project.name}/build/api" 
+								dest="artifacts/${project.name}" 
+								subdirectory="PHPdocs"/>
+
+			<!-- Publishes the graph images used for metric reporting under the build artifacts -->
+			<execute command="phpuc graph logs/${project.name} artifacts/${project.name}"/>
+			
+			<!-- Sends an email if the build fails to the openfisma-commits email list -->
+			<htmlemail 	mailhost="localhost"
+						returnaddress="cruisecontrol@localhost"
+						buildresultsurl="http://ci.openfisma.org:8080/buildresults/${project.name}"
+						skipusers="true">
+				<failure address="openfisma-commits@lists.sourceforge.net"/>
+			</htmlemail>
+			
+		</publishers>
+	</project>
+
+	
+	
+	<project name="openfisma-release-2.0" buildafterfailed="false">
+
+		<property file="projects/${project.name}/build.properties" /> 
+		
+		<plugin name="svnbootstrapper" classname="net.sourceforge.cruisecontrol.bootstrappers.SVNBootstrapper"/>
+		<plugin name="svn" classname="net.sourceforge.cruisecontrol.sourcecontrols.SVN"/>
+		
+		<listeners>
+			<currentbuildstatuslistener file="logs/${project.name}/status.txt"/>
+		</listeners>
+		
+		<modificationset quietperiod="30">
+			<svn localWorkingCopy="projects/${project.name}/source/"/>
+		</modificationset>
+			
+		<!--
+		<modificationset>
+			<filesystem folder="projects/${project.name}/source" />
+		</modificationset>
+		-->
+		
+		<bootstrappers>
+			<svnbootstrapper localWorkingCopy="projects/${project.name}/source/"/>
+		</bootstrappers>
+		
+		<schedule interval="30">
+			<ant anthome="apache-ant-1.7.0" buildfile="projects/${project.name}/build.xml"/>
+		</schedule>
+		
+		<log dir="logs/${project.name}">
+			<merge dir="projects/${project.name}/build/logs/"/>
+		</log>
+		
+		<publishers>
+
+			<currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt"/>
+
+			<!-- Publishes everything under the build/artifacts folder such as the tar/zip files and other reports-->
+			<artifactspublisher dir="projects/${project.name}/build/artifacts" dest="artifacts/${project.name}"/>
+
+			<!-- Publishes the phpdoc information under the build artifacts -->
+			<artifactspublisher dir="projects/${project.name}/build/api" 
+								dest="artifacts/${project.name}" 
+								subdirectory="PHPdocs"/>
+
+			<!-- Publishes the graph images used for metric reporting under the build artifacts -->
+			<execute command="phpuc graph logs/${project.name} artifacts/${project.name}"/>
+			
+			<!-- Sends an email if the build fails to the openfisma-commits email list -->
+			<htmlemail 	mailhost="localhost"
+						returnaddress="cruisecontrol@localhost"
+						buildresultsurl="http://ci.openfisma.org:8080/buildresults/${project.name}"
+						skipusers="true">
+				<failure address="openfisma-commits@lists.sourceforge.net"/>
+			</htmlemail>
+			
+		</publishers>
+	</project>
+</cruisecontrol>
