@@ -503,7 +503,8 @@ template. Please update your CSV file and try again.<br />";
                             'Low' => 20,
                             'Medium' => '55',
                             'High' => 85,
-                            'Default' => 50
+                            'Default' => 50,
+                            'Informational' => 0
                         );
                         foreach ($v['description'] as $i => $row) {
                             if (!empty($row)) {
