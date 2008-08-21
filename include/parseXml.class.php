@@ -11,9 +11,8 @@
  * @version $Id$
 */
 
-class XmlToArray 
-{ 
-    
+class XmlToArray
+{
     var $xml=''; 
     
     /** 
@@ -30,7 +29,8 @@ class XmlToArray
     /** 
     * _struct_to_array($values, &$i) 
     * 
-    * This is adds the contents of the return xml into the array for easier processing. 
+    * This is adds the contents of the return xml into the array 
+    * for easier processing. 
     * Recursive, Static 
     * 
     * @access    private 
@@ -42,39 +42,42 @@ class XmlToArray
     function _struct_to_array($values, &$i) 
     { 
         $child = array(); 
-        if (isset($values[$i]['value'])) array_push($child, $values[$i]['value']); 
+        if (isset($values[$i]['value'])) {
+            array_push($child, $values[$i]['value']);
+        }
         
         while ($i++ < count($values)) {
-            switch ($values[$i]['type']) { 
-                case 'cdata': 
-                array_push($child, $values[$i]['value']); 
-                break; 
+            switch ($values[$i]['type']) {
+                case 'cdata':
+                    array_push($child, $values[$i]['value']);
+                    break;
                 
-                case 'complete': 
+                case 'complete':
                     $name = $values[$i]['tag'];
-                    if(!empty($name)){
-                    $child[$name]= ($values[$i]['value'])?($values[$i]['value']):'';
-                    if(isset($values[$i]['attributes'])) {
-                        $child[$name] = $values[$i]['attributes']; 
-                    } 
-                }   
-              break; 
+                    if (!empty($name)) {
+                        $child[$name] = nullGet($values[$i]['value'], '');
+                        if (isset($values[$i]['attributes'])) {
+                            $child[$name] = $values[$i]['attributes'];
+                        }
+                    }
+                    break;
                 
                 case 'open':
                     $name = $values[$i]['tag'];
                     $size = isset($child[$name]) ? sizeof($child[$name]) : 0;
-                    if( array_key_exists($name,$child) ){
+                    if ( array_key_exists($name, $child) ) {
                         $child[$name][] = $child[$name];
-                        $child[$name][] = $this->_struct_to_array($values,$i);
+                        $child[$name][] = $this->_struct_to_array($values, $i);
 
-                    }else{
-                        $child[$name][$size] = $this->_struct_to_array($values, $i); 
+                    } else {
+                        $child[$name][$size] = 
+                            $this->_struct_to_array($values, $i);
                     }
-                break; 
+                    break; 
                 
                 case 'close': 
-                return $child; 
-                break; 
+                    return $child; 
+                    break; 
             } 
         }
         return $child; 
@@ -83,7 +86,8 @@ class XmlToArray
     /** 
     * createArray($data) 
     * 
-    * This is adds the contents of the return xml into the array for easier processing. 
+    * This is adds the contents of the return xml into the array
+    * for easier processing. 
     * 
     * @access    public 
     * @param    string    $data this is the string of the xml data 
@@ -102,7 +106,7 @@ class XmlToArray
         xml_parser_free($parser); 
         $i = 0; 
         $name = $values[$i]['tag']; 
-        $array[$name] = isset($values[$i]['attributes']) ? $values[$i]['attributes'] : '';
+        $array[$name] = nullGet($values[$i]['attributes'], '');
         $array[$name] = $this->_struct_to_array($values, $i);
         return $array; 
     }

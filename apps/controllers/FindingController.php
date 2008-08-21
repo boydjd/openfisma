@@ -52,7 +52,8 @@ class FindingController extends PoamBaseController
                 'ES'
             );
         }
-        $result = $this->_poam->search($this->me->systems, $fields, $criteria, $this->_paging['currentPage'], $this->_paging['perPage']);
+        $result = $this->_poam->search($this->me->systems, $fields, $criteria,
+                     $this->_paging['currentPage'], $this->_paging['perPage']);
         $total = array_pop($result);
         $this->_paging['totalItems'] = $total;
         $pager = & Pager::factory($this->_paging);
@@ -74,7 +75,8 @@ class FindingController extends PoamBaseController
             $poam = new Poam();
             $detail = $poam->find($id)->current();
             $this->view->finding = $poam->getDetail($id);
-            $this->view->finding['system_name'] = $this->_system_list[$this->view->finding['system_id']];
+            $this->view->finding['system_name'] = 
+                    $this->_system_list[$this->view->finding['system_id']];
             $this->render();
         } else {
             /// @todo Add a new Excption page to indicate Access denial
@@ -94,7 +96,8 @@ class FindingController extends PoamBaseController
         if ($do == 'update') {
             $status = $req->getParam('status');
             $db = Zend_Registry::get('db');
-            $result = $db->query("UPDATE FINDINGS SET finding_status = '$status' WHERE finding_id = $id");
+            $result = $db->query("UPDATE FINDINGS SET finding_status = '$status'
+                                  WHERE finding_id = $id");
             if ($result) {
                 $this->view->assign('msg', "Finding updated successfully");
             } else {
@@ -107,7 +110,8 @@ class FindingController extends PoamBaseController
     /**
      *  Spreadsheet upload
      *
-     *  The spreadsheet should be a CSV file in fact. It parse the valid data and leave the
+     *  The spreadsheet should be a CSV file in fact. It parse the valid data
+     *  and leave the
      *  remaining to the user.
      */
     public function injectionAction()
@@ -117,21 +121,23 @@ class FindingController extends PoamBaseController
             $csvFile = isset($_FILES['csv']) ? $_FILES['csv'] : array();
             if (!empty($csvFile)) {
                 if ($csvFile['size'] < 1) {
-                    $err_msg = 'Error: Empty file.';
+                    $errMsg = 'Error: Empty file.';
                 } else {
                     if ($csvFile['size'] > 1048576) {
-                        $err_msg = 'Error: File is too big.';
+                        $errMsg = 'Error: File is too big.';
                     }
-                    if (preg_match('/\x00|\xFF/', file_get_contents($csvFile['tmp_name']))) {
-                        $err_msg = 'Error: Binary file.';
+                    if (preg_match('/\x00|\xFF/',
+                        file_get_contents($csvFile['tmp_name']))) {
+                        $errMsg = 'Error: Binary file.';
                     }
                     if ($csvFile['error']) {
-                        $err_msg = 'Encountered an unknown error while processing the file';
+                        $errMsg = 'Encountered an unknown error while
+                                   processing the file';
                     }
                 }
             }
-            if (!empty($err_msg)) {
-                $this->message($err_msg, self::M_WARNING);
+            if (!empty($errMsg)) {
+                $this->message($errMsg, self::M_WARNING);
                 $this->render();
                 return;
             }
@@ -156,23 +162,31 @@ class FindingController extends PoamBaseController
                     }
                 }
                 fclose($handle);
-                $summary_msg = "You have uploaded a CSV file which contains $row line(s) of data.<br />";
+                $summaryMsg = "You have uploaded a CSV file which contains
+                               $row line(s) of data.<br />";
                 if (count($failedArray) > 0) {
-                    $temp_file = 'temp/csv_' . date('YmdHis') . '_' . rand(10, 99) . '.csv';
-                    $fp = fopen($temp_file, 'w');
-                    foreach($failedArray as $fail) {
+                    $tempFile = 'temp/csv_' . date('YmdHis') . '_' .
+                                 rand(10, 99) . '.csv';
+                    $fp = fopen($tempFile, 'w');
+                    foreach ($failedArray as $fail) {
                         fputcsv($fp, $fail);
                     }
                     fclose($fp);
-                    $summary_msg.= count($failedArray) . " line(s) cannot be parsed successfully. This is likely due to an unexpected datatype or the use of a datafield which is not currently in the database. Please ensure your csv file matches the data rows contained <a href='/$temp_file'>here</a> in the spreadsheet template. Please update your CSV file and try again.<br />";
+                    $summaryMsg.= count($failedArray) . " line(s) cannot be 
+parsed successfully. This is likely due to an unexpected datatype or the use of
+a datafield which is not currently in the database. Please ensure your csv file
+matches the data rows contained <a href='/$tempFile'>here</a> in the spreadsheet
+template. Please update your CSV file and try again.<br />";
                 }
                 if (count($succeedArray) > 0) {
-                    $summary_msg.= count($succeedArray) . " line(s) parsed and injected successfully. <br />";
+                    $summaryMsg.= count($succeedArray) . " line(s) parsed and
+                         injected successfully. <br />";
                 }
                 if (count($succeedArray) == $row) {
-                    $summary_msg.= " Congratulations! All of the lines contained in the CSV were parsed and injected successfully.";
+                    $summaryMsg.= " Congratulations! All of the linesa contained
+                        in the CSV were parsed and injected successfully.";
                 }
-                $this->view->assign('error_msg', $summary_msg);
+                $this->view->assign('error_msg', $summaryMsg);
             }
             $this->render();
         }
@@ -195,8 +209,9 @@ class FindingController extends PoamBaseController
                     $data['system_id'] = $ret[0]['system_id'];
                 }
                 $data['status'] = 'NEW';
-                $discover_ts = new Zend_Date($req->getParam('discovereddate') , Zend_Date::DATES);
-                $data['discover_ts'] = $discover_ts->toString("Y-m-d");
+                $discoverTs = new Zend_Date($req->getParam('discovereddate'),
+                                            Zend_Date::DATES);
+                $data['discover_ts'] = $discoverTs->toString("Y-m-d");
                 $data['finding_data'] = $req->getParam('finding_data');
                 $data['create_ts'] = self::$now->toString("Y-m-d H:i:s");
                 $data['created_by'] = $this->me->id;
@@ -224,11 +239,11 @@ class FindingController extends PoamBaseController
         $errno = 0;
         $successno = 0;
         $poam = new poam();
-        foreach($post as $key => $id) {
+        foreach ($post as $key => $id) {
             if (substr($key, 0, 3) == 'id_') {
                 $res = $poam->update(array(
                     'status' => 'DELETED'
-                ) , 'id = ' . $id);
+                ), 'id = ' . $id);
                 if ($res) {
                     $successno++;
                 } else {
@@ -236,7 +251,8 @@ class FindingController extends PoamBaseController
                 }
             }
         }
-        $msg = 'Delete ' . $successno . ' Findings Successfully,' . $errno . ' Failed!';
+        $msg = 'Delete ' . $successno . ' Findings Successfully,'
+                . $errno . ' Failed!';
         $this->message($msg, self::M_NOTICE);
         $this->_forward('searchbox', 'finding', null, array(
             's' => 'search'
@@ -269,29 +285,39 @@ class FindingController extends PoamBaseController
             return false;
         }
         $db = Zend_Registry::get('db');
-        $query = $db->select()->from('systems', 'id')->where('nickname = ?', $row[0]);
+        $query = $db->select()->from('systems', 'id')
+                    ->where('nickname = ?', $row[0]);
         $result = $db->fetchRow($query);
         $row[0] = !empty($result) ? $result['id'] : false;
+
         $query->reset();
-        $query = $db->select()->from('networks', 'id')->where('nickname = ?', $row[1]);
+        $query = $db->select()->from('networks', 'id')
+                    ->where('nickname = ?', $row[1]);
         $result = $db->fetchRow($query);
         $row[1] = !empty($result) ? $result['id'] : false;
+
         $query->reset();
-        $query = $db->select()->from('sources', 'id')->where('nickname = ?', $row[5]);
+        $query = $db->select()->from('sources', 'id')
+                    ->where('nickname = ?', $row[5]);
         $result = $db->fetchRow($query);
         $row[5] = !empty($result) ? $result['id'] : false;
+
         if (!$row[0] || !$row[1] || !$row[5]) {
             return false;
         }
-        $asset_name = ':' . $row[3] . ':' . $row[4];
-        $query = $asset->select()->from($asset, 'id')->where('system_id = ?', $row[0])->where('network_id = ?', $row[1])->where('address_ip = ?', $row[3])->where('address_port = ?', $row[4]);
+        $assetName = ':' . $row[3] . ':' . $row[4];
+        $query = $asset->select()->from($asset, 'id')
+                       ->where('system_id = ?', $row[0])
+                       ->where('network_id = ?', $row[1])
+                       ->where('address_ip = ?', $row[3])
+                       ->where('address_port = ?', $row[4]);
         $result = $asset->fetchRow($query);
         if (!empty($result)) {
             $data = $result->toArray();
-            $asset_id = $data['id'];
+            $assetId = $data['id'];
         } else {
-            $asset_data = array(
-                'name' => $asset_name,
+            $assetData = array(
+                'name' => $assetName,
                 'create_ts' => $row[2],
                 'source' => 'SCAN',
                 'system_id' => $row[0],
@@ -299,10 +325,10 @@ class FindingController extends PoamBaseController
                 'address_ip' => $row[3],
                 'address_port' => $row[4]
             );
-            $asset_id = $asset->insert($asset_data);
+            $assetId = $asset->insert($assetData);
         }
-        $poam_data = array(
-            'asset_id' => $asset_id,
+        $poamData = array(
+            'asset_id' => $assetId,
             'source_id' => $row[5],
             'system_id' => $row[0],
             'status' => 'NEW',
@@ -310,12 +336,14 @@ class FindingController extends PoamBaseController
             'discover_ts' => $row[2],
             'finding_data' => $row[6]
         );
-        $ret = $poam->insert($poam_data);
+        $ret = $poam->insert($poamData);
         return $ret;
     }
     /** 
-     * Downloading a excel file which is used as a template for uploading findings.
-     * systems, networks and sources are extracted from the database dynamically.
+     * Downloading a excel file which is used as a template 
+     * for uploading findings.
+     * systems, networks and sources are extracted from the
+     * database dynamically.
      */
     public function templateAction()
     {
@@ -344,12 +372,15 @@ class FindingController extends PoamBaseController
             $src = new Network();
             $this->view->networks = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new fisma_Exception("The spreadsheet template can not be prepared because there are no networks defined.");
+                 throw new fisma_Exception("The spreadsheet template can not be
+                     prepared because there are no networks defined.");
             }
             $src = new Source();
             $this->view->sources = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new fisma_Exception("The spreadsheet template can not be prepared because there are no finding sources defined.");
+                 throw new fisma_Exception("The spreadsheet template can
+                     not be prepared because there are no finding sources
+                     defined.");
             }
             // Context switch is called only after the above code executes 
             // successfully. Otherwise if there is an error,
@@ -360,7 +391,7 @@ class FindingController extends PoamBaseController
         } catch(fisma_Exception $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')
                 ->setViewSuffix('tpl');
-            $this->message($fe->getMessage() , self::M_WARNING);
+            $this->message($fe->getMessage(), self::M_WARNING);
             $this->_forward('injection', 'Finding');
         }
     }
@@ -373,17 +404,17 @@ class FindingController extends PoamBaseController
         $req = $this->getRequest();
         $db = $this->_poam->getAdapter();
         $plugin = new Plugin();
-        $plugin_list = $plugin->getList('name');
-        $this->view->assign('plugin_list', $plugin_list);
+        $pluginList = $plugin->getList('name');
+        $this->view->assign('plugin_list', $pluginList);
         $this->view->assign('system_list', $this->_system_list);
         $this->view->assign('network_list', $this->_network_list);
         $this->view->assign('source_list', $this->_source_list);
         $msg = '';
         if (isset($_FILES['upload_file'])) {
-            $plugin_id = $req->getParam('plugin');
-            $ret = $plugin->find($plugin_id)->toArray();
+            $pluginId = $req->getParam('plugin');
+            $ret = $plugin->find($pluginId)->toArray();
             if (!empty($ret)) {
-                $plugin_class = $ret[0]['classname'];
+                $pluginClass = $ret[0]['classname'];
             } else {
                 $this->message('post plugin is not found', self::M_WARNING);
                 $this->render();
@@ -397,19 +428,19 @@ class FindingController extends PoamBaseController
             require_once (CONTROLLERS . DS . 'components' . DS . 
                            'import' . DS . 'interface.php');
             require_once (CONTROLLERS . DS . 'components' . DS . 
-                           'import' . DS . $plugin_class . '.php');
+                           'import' . DS . $pluginClass . '.php');
             require_once ('parseXml.class.php');
             $assets['system_id'] = $req->getParam('system_id');
             $assets['source_id'] = $req->getParam('source');
             $assets['network_id'] = $req->getParam('network');
             $tmpfile = $_FILES['upload_file']['tmp_name'];
             $ret = null;
-            $parser = new $plugin_class();
+            $parser = new $pluginClass();
             if ($parser->isValid($tmpfile)) {
                 $xmlObj = new XmlToArray(file_get_contents($tmpfile));
                 $xmlData = $xmlObj->createArray();
-                $unified_data = $parser->parse($xmlData);
-                foreach ($unified_data as $k => $v) {
+                $unifiedData = $parser->parse($xmlData);
+                foreach ($unifiedData as $k => $v) {
                     if ('product' == $k && !empty($v['meta'])) {
                         $product = new product();
                         $qry = $product->select()->from('products', array(
@@ -420,14 +451,14 @@ class FindingController extends PoamBaseController
                         ->where('version = ?', $v['version']);
                         $ret = $db->fetchRow($qry);
                         if (!empty($ret)) {
-                            $prod_id = $ret['id'];
+                            $prodId = $ret['id'];
                         } else {
-                            $prod_id = $product->insert($v);
+                            $prodId = $product->insert($v);
                         }
                     }
                     if ('asset' == $k && !empty($v['name'])) {
                         $asset = new asset();
-                        $v['prod_id'] = isset($prod_id) ? $prod_id : '';
+                        $v['prod_id'] = isset($prodId) ? $prodId : '';
                         $v['system_id'] = $assets['system_id'];
                         $v['network_id'] = $assets['network_id'];
                         $v['create_ts'] = self::$now->toString('Y-m-d H:i:s');
@@ -438,24 +469,24 @@ class FindingController extends PoamBaseController
                         ->where('name = ?', $v['name']);
                         $ret = $db->fetchRow($qry);
                         if (!empty($ret['id'])) {
-                            $asset_id = $ret['id'];
+                            $assetId = $ret['id'];
                         } else {
-                            $asset_id = $asset->insert($v);
+                            $assetId = $asset->insert($v);
                         }
                     }
                     if ('blscr' == $k && !empty($v['code'])) {
                         $blscr = new blscr();
-                        $blscr_id = $blscr->insert($v);
+                        $blscrId = $blscr->insert($v);
                     }
                     if ('poam' == $k) {
                         foreach ($v['finding_data'] as $row) {
                             if (!empty($row)) {
                                 $data = array(
-                                    'asset_id' => $asset_id,
+                                    'asset_id' => $assetId,
                                     'source_id' => $assets['source_id'],
                                     'system_id' => $assets['system_id'],
                                     'blscr_id' => 
-                                        isset($blscr_id) ? $blscr_id : '',
+                                        isset($blscrId) ? $blscrId : '',
                                     'create_ts' => 
                                         self::$now->toString('Y-m-d H:i:s'),
                                     'discover_ts' => $v['discover_ts'],
@@ -463,75 +494,70 @@ class FindingController extends PoamBaseController
                                     'status' => 'NEW',
                                     'finding_data' => $row
                                 );
-                                $poam_id[] = $this->_poam->insert($data);
+                                $poamId[] = $this->_poam->insert($data);
                             }
                         }
                     }
                     if ('vulnerabilities' == $k && !empty($v)) {
-                        $severity_int = array(
+                        $severityInt = array(
                             'Low' => 20,
                             'Medium' => '55',
                             'High' => 85,
                             'Default' => 50
                         );
-                        foreach($v['description'] as $i => $row) {
+                        foreach ($v['description'] as $i => $row) {
                             if (!empty($row)) {
-                                $qry = $db->select()->from('vulnerabilities', array(
-                                    'id' => 'seq'
-                                ));
+                                $qry = $db->select()->from('vulnerabilities',
+                                        array('id' => 'seq'));
                                 if (!empty($v['cve'][$i])) {
-                                    $vuln_data['type'] = 'CVE';
-                                    $vuln_data['severity'] = 
-                                        $severity_int[$v['severity'][$i]];
+                                    $vulnData['type'] = 'CVE';
+                                    $vulnData['severity'] = 
+                                        $severityInt[$v['severity'][$i]];
                                     $qry->where('type = ?', 'CVE')
-                                        ->where(
-                                            'severity = ?', 
-                                            $severity_int[$v['severity'][$i]]
-                                          );
+                                        ->where('severity = ?',
+                                            $severityInt[$v['severity'][$i]]);
                                 } else {
                                     if (!empty($v['sbv'][$i])) {
-                                        $vuln_data['type'] = 'APP';
-                                        $vuln_data['severity'] = 
-                                            $severity_int[$v['severity'][$i]];
+                                        $vulnData['type'] = 'APP';
+                                        $vulnData['severity'] = 
+                                            $severityInt[$v['severity'][$i]];
                                         $qry->where('type = ?', 'APP')
-                                            ->where(
-                                                'severity = ?', 
-                                                $severity_int[$v['severity'][$i]]
-                                              );
+                                            ->where('severity = ?',
+                                              $severityInt[$v['severity'][$i]]);
                                     }
                                 }
                                 $qry->where('description = ?', $row)
                                     ->where('solution = ?', $v['solution'][$i]);
                                 $ret = $db->fetchRow($qry);
                                 if (!empty($ret)) {
-                                    $vuln_id[] = $ret['id'];
+                                    $vulnId[] = $ret['id'];
                                 } else {
-                                    $vuln_data['description'] = $row;
-                                    $vuln_data['solution'] = $v['solution'][$i];
-                                    $db->insert('vulnerabilities', $vuln_data);
-                                    unset($vuln_data);
-                                    $vuln_id[] = $db->LastInsertId();
+                                    $vulnData['description'] = $row;
+                                    $vulnData['solution'] = $v['solution'][$i];
+                                    $db->insert('vulnerabilities', $vulnData);
+                                    unset($vulnData);
+                                    $vulnId[] = $db->LastInsertId();
                                 }
                             }
                         }
                     }
                 }
-                foreach($poam_id as $i => $id) {
+                foreach ($poamId as $i => $id) {
                     $data = array(
                         'poam_id' => $id,
-                        'vuln_seq' => $vuln_id[$i],
+                        'vuln_seq' => $vulnId[$i],
                         'vuln_type' => 'APP'
                     );
                     $db->insert('poam_vulns', $data);
                 }
-                foreach($unified_data['vulnerabilities']['cve'] as $i => $v) {
+                foreach ($unifiedData['vulnerabilities']['cve'] as $i => $v) {
                     if (!empty($v)) {
-                        $poam_vulns = array(
-                            'poam_id' => $poam_id[$i],
+                        $poamVulns = array(
+                            'poam_id' => $poamId[$i],
                             'vuln_seq' => $v,
                             'vuln_type' => 'CVE'
                         );
-                        $db->insert('poam_vulns', $poam_vulns);
+                        $db->insert('poam_vulns', $poamVulns);
                     }
                 }
                 $msg = "Injection complete.";
