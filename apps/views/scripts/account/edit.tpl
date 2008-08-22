@@ -10,7 +10,7 @@
 </script>
 <script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
 <script language="javascript" src="/javascripts/account.validate.js"></script>
-<?php   $this->role_list[0] = '';?>
+<?php   $this->roleList[0] = '';?>
 <div class="barleft">
     <div class="barright">
         <p><b>User Account Information</b> 
@@ -27,28 +27,28 @@
             <td align="right" class="thc" width="200">First Name:</td>
             <td class="tdc">&nbsp;
                 <input type="text" name="user[name_first]" 
-            value="<?php echo $this->user['firstname'];?>" size="50">
+            value="<?php echo $this->user['name_first'];?>" size="50">
                 <font color="blue"> *</font></td>
         </tr>
         <tr>
             <td align="right" class="thc">Last Name:</td>
             <td class="tdc">&nbsp;
                 <input type="text" name="user[name_last]" 
-            value="<?php echo $this->user['lastname'];?>" size="50">
+            value="<?php echo $this->user['name_last'];?>" size="50">
                 <font color="blue"> *</font></td>
         </tr>
         <tr>
             <td align="right" class="thc">Office Phone:</td>
             <td class="tdc">&nbsp;
                 <input type="text" name="user[phone_office]"
-            value="<?php echo $this->user['officephone'];?>" size="50">
+            value="<?php echo $this->user['phone_office'];?>" size="50">
                 <font color="blue"> *</font> </td>
         </tr>
         <tr>
             <td align="right" class="thc">Mobile Phone:</td>
             <td class="tdc">&nbsp;
                 <input type="text" name="user[phone_mobile]"
-            value="<?php echo $this->user['mobilephone'];?>" size="50"></td>
+            value="<?php echo $this->user['phone_mobile'];?>" size="50"></td>
         </tr>
         <tr>
             <td align="right" class="thc">Email:</td>
@@ -79,8 +79,8 @@
             <td align="right" class="thc">Status:</td>
             <td class="tdc">&nbsp;
                 <select name="user[is_active]">
-                    <option value="1" <?php echo 1 == $this->user['status']?'selected':'';?>>Active</option>
-                    <option value="0" <?php echo 0 == $this->user['status']?'selected':'';?>>Suspend</option>
+                    <option value="1" <?php echo 1 == $this->user['is_active']?'selected':'';?>>Active</option>
+                    <option value="0" <?php echo 0 == $this->user['is_active']?'selected':'';?>>Suspend</option>
                 </select></td>
         </tr>
         <?php if ( 'ldap' != readSysConfig('auth_type') ) { ?>
@@ -88,7 +88,7 @@
             <td align="right" class="thc">Account:</td>
             <td class="tdc">&nbsp;
                 <input type="text" name="user[account]"
-            value="<?php echo $this->user['username'];?>" size="50">
+            value="<?php echo $this->user['account'];?>" size="50">
                 <font color="blue"> *</font></td>
         </tr>
         <tr>
@@ -129,44 +129,19 @@
         <input type="button" name="select_none" value="None" />
         </span></div>
     <table border="0" width="100%">
-        <tr>
-            <?php /*
-    $row = 4;
-    $num = 0;
-    foreach($this->all_sys as $sid=>$system ){
-        $num++;
-        if($num % $row == 0){
-            $flag = "</tr><tr>";
-        } else {
-            $flag = "";
-        }
-        if(in_array($sid, $this->my_systems)){
-            $checked = " checked";
-        } else {
-            $checked ="";
-        }
-?>
-    <td>
-       <input type="checkbox" name="system[]" value="<?php echo $sid;?>" <?php echo $checked;?>>&nbsp;<?php echo $system['name']; ?>
-    </td>
-<?php echo $flag;
-    } */
-?>
-    </table>
-    <table border="0" width="100%">
         <?php
     /* Convert the associative array of systems into a linear array */
     $system_array = array();
-    foreach ($this->all_sys as $id => $system) {
+    foreach ($this->allSystems as $id => $system) {
         $system_array[] = array('id'=>$id, 'name'=>$system['name']);
     }
-//print('<pre>'.print_r($system_array,true).'</pre>');
+
     /* Now display the system list in 4 columns. This is tricky since tables are
      * laid out left to right but we want to list systems top to bottom.
      * Look at the "create user" page to see this in effect.
      */
     $column_count = 4;
-    $system_count = count($this->all_sys);
+    $system_count = count($this->allSystems);
     $row_count = ceil($system_count / $column_count);
 
     for ($current_row = 0; $current_row < $row_count; $current_row++) {
@@ -176,7 +151,7 @@
             $current_system_index = $current_column * $row_count + $current_row;
             if ($current_system_index < $system_count) {
                 $system = $system_array[$current_system_index];
-                if(in_array($system['id'], $this->my_systems)){
+                if(in_array($system['id'], $this->mySystems)){
                     $checked = 'checked="checked"';
                 } else {
                     $checked = '';

@@ -1,32 +1,52 @@
 <?php
 /**
- * AccountController.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * Account Controller
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package   Controller
- * @author     Ryan  ryan at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @author    Ryan <ryan@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
-require_once (CONTROLLERS . DS . 'PoamBaseController.php');
-require_once (MODELS . DS . 'user.php');
-require_once (MODELS . DS . 'system.php');
+ 
+require_once (CONTROLLERS . '/PoamBaseController.php');
+require_once (MODELS . '/user.php');
+require_once (MODELS . '/system.php');
 require_once ('Pager.php');
 require_once 'Zend/Date.php';
 require_once 'Zend/Filter/Input.php';
 require_once 'Zend/Validate/Between.php';
+require_once 'Zend/Config/Ini.php';
+require_once 'Zend/Form.php';
+
 /**
- * Maintaining the user account
- * @package Controller
- * @author     Ryan  ryan at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
+ * The account controller deals with creating, updating, and managing user
+ * accounts on the system.
+ *
+ * @package   Controller
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class AccountController extends PoamBaseController
 {
-    private $_user = null;
+    private $_user;
     protected $_sanity = array(
         'data' => 'user',
         'filter' => array(
@@ -55,188 +75,174 @@ class AccountController extends PoamBaseController
         ) ,
         'flag' => TRUE
     );
+    
+    /**
+     * init() - Initialize internal members.
+     */
     public function init()
     {
         parent::init();
         $this->_user = new User();
     }
-    public function preDispatch()
-    {
-        parent::preDispatch();
-        $this->_paging_base_path.= '/panel/account/sub/list';
-    }
+
     /**
-     *  render the searching boxes and keep the searching criteria
+     * searchboxAction() - Render the form for searching the user accounts.
      */
     public function searchboxAction()
     {
-        $db = Zend_Registry::get('db');
-        $fid_array = array(
-            'lastname' => 'Last Name',
-            'firstname' => 'First Name',
-            'officephone' => 'Office Phone',
-            'mobile' => 'Mobile Phone',
+        // These are the fields which can be searched, the key is the physical
+        // name and the value is the logical name which is displayed in the
+        // interface.
+        $criteria = array(
+            'name_last' => 'Last Name',
+            'name_first' => 'First Name',
+            'account' => 'Username',
             'email' => 'Email',
-            'role' => 'Role',
             'title' => 'Title',
-            'status' => 'Status',
-            'account' => 'Username'
+            'phone_office' => 'Office Phone',
+            'phone_mobile' => 'Mobile Phone'
         );
-        $this->view->assign('fid_array', $fid_array);
-        $req = $this->_request;
-        $this->_paging_base_path = $req->getBaseUrl() . 
-                '/panel/account/sub/list';
-        $this->_paging['currentPage'] = $req->getParam('p', 1);
-        $fid = $req->getParam('fid');
-        $qv = $req->getParam('qv');
-        $query = $db->select()->from(array(
-                'u' => 'users'
-            ), array(
-                'count' => 'COUNT(u.id)'
-            ));
-        $res = $db->fetchRow($query);
-        $count = $res['count'];
-        $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $count);
+        $this->view->assign('criteria', $criteria);
+        
+        // Count the total number of users and configure the pager
+        $user = new User();
+        $userCount = $user->count();
+        $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
+        $this->_paging['totalItems'] = $userCount;
+        $this->_paging['fileName'] = "/panel/account/sub/list/p/%d";
+        $pager = &Pager::factory($this->_paging);
+        
+        // Assign view outputs
+        $this->view->assign('fid', $this->_request->getParam('fid'));
+        $this->view->assign('qv', $this->_request->getParam('qv'));
+        $this->view->assign('total', $userCount);
         $this->view->assign('links', $pager->getLinks());
         $this->render();
     }
+    
     /**
-     * List all the users
+     * listAction() - List all the users.
      */
     public function listAction()
     {
-        $user = new user();
-        $db = Zend_Registry::get('db');
-        $req = $this->getRequest();
-        $qv = $req->getParam('qv');
-        $fid = $req->getParam('fid');
-        $qry = $user->select()->setIntegrityCheck(false)->from(array(
-            'u' => 'users'
-        ), array(
-            'id' => 'id',
-            'username' => 'account',
-            'lastname' => 'name_last',
-            'firstname' => 'name_first',
-            'officephone' => 'phone_office',
-            'mobile' => 'phone_mobile',
-            'email' => 'email'
-        ));
-        if (!empty($qv)) {
-            $fid_array = array(
-                'name_last' => 'lastname',
-                'name_first' => 'firstname',
-                'phone_office' => 'officephone',
-                'phone_mobile' => 'mobile',
-                'email' => 'email',
-                'r.role_name' => 'role',
-                'title' => 'title',
-                'is_active' => 'status',
-                'account' => 'account'
-            );
-            foreach ($fid_array as $k => $v) {
-                if ($v == $fid) {
-                    $qry->where("$k = '$qv'");
-                }
-            }
-        }
+        // Set up the query to get the full list of users
+        $user = new User();
+        $qry = $user->select()
+                    ->setIntegrityCheck(false)
+                    ->from(array('u' => 'users'),
+                           array('id',
+                                 'account',
+                                 'name_last',
+                                 'name_first',
+                                 'phone_office',
+                                 'phone_mobile',
+                                 'email'));
+
+        // $fid is the name of the field
+        $fid = $user->getAdapter()->quote($this->getRequest()->getParam('fid'));
+        // $qv is the value to search for in the field
+        $qv = $user->getAdapter()->quote($this->getRequest()->getParam('qv'));
+        $qry->where("$fid = $qv");
+
         $qry->order("name_last ASC");
         $qry->limitPage($this->_paging['currentPage'], 
                         $this->_paging['perPage']);
         $data = $user->fetchAll($qry);
-        $user_list = $data->toArray();
-        foreach ($user_list as $row) {
-            $ret = $user->getRoles($row['id'], array(
-                'nickname' => 'nickname',
-                'id' => 'id'
-            ));
-            $role_list[$row['id']] = '';
+        
+        // Format the query results appropriately for passing to the view script
+        $userList = $data->toArray();
+        foreach ($userList as $row) {
+            $ret = $user->getRoles($row['id'],
+                                   array('nickname', 'id'));
+            $roleList[$row['id']] = '';
             foreach ($ret as $v) {
-                $role_list[$row['id']].= $v['nickname'] . ', ';
+                $roleList[$row['id']].= $v['nickname'] . ', ';
             }
-            $role_list[$row['id']] = substr($role_list[$row['id']], 0, -2);
+            $roleList[$row['id']] = substr($roleList[$row['id']], 0, -2);
         }
-        $this->view->assign('role_list', $role_list);
-        $this->view->assign('user_list', $user_list);
+        
+        // Assign view outputs
+        $this->view->assign('roleList', $roleList);
+        $this->view->assign('userList', $userList);
         $this->render();
     }
+    
     /**
-     *  view the user's detail information
+     *  viewAction() - Display a single user record with all details.
      */
     public function viewAction()
     {
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $v = $req->getParam('v');
-        assert($id);
+        // $id is the user id of the record that should be displayed
+        $id = $this->getRequest()->getParam('id');
+        // $v is ???
+        $v = $this->getRequest()->getParam('v');
+
         $user = new User();
         $sys = new System();
-        $db = $user->getAdapter();
-        $qry = $user->select()->setIntegrityCheck(false);
-        /** get user detail */
-        $qry->from(array(
-            'u' => 'users'
-        ), array(
-            'lastname' => 'name_last',
-            'firstname' => 'name_first',
-            'officephone' => 'phone_office',
-            'mobilephone' => 'phone_mobile',
-            'email' => 'email',
-            'title' => 'title',
-            'status' => 'is_active',
-            'username' => 'account',
-            'password' => 'password',
-            'ldap_dn'  => 'ldap_dn'
-        ))->where("u.id = $id");
-        $user_detail = $user->fetchRow($qry)->toArray();
-        $ret = $user->getRoles($id, array(
-            'role_name' => 'name',
-            'role_id' => 'id'
-        ));
+        
+        // Set up the query to get this user's information
+        $qry = $user->select()
+                    ->setIntegrityCheck(false)
+                    ->from('users',
+                           array('name_last',
+                                 'name_first',
+                                 'phone_office',
+                                 'phone_mobile',
+                                 'email',
+                                 'title',
+                                 'is_active',
+                                 'account',
+                                 'password',
+                                 'ldap_dn'))
+                    ->where("id = ?", $id);
+        $userDetail = $user->fetchRow($qry)->toArray();
+
+        // Get the user's roles
+        $ret = $user->getRoles($id,
+                               array('role_name' => 'name',
+                                     'role_id' => 'id'));
         $count = count($ret);
         if ($count > 1) {
-            $roles = '';
-            foreach ($ret as $row) {
-                $roles.= ' ' . $row['role_name'] . ', ';
-            }
-            $roles = substr($roles, 0, -2);
+            $roles = implode(', ', $ret);
         } elseif ($count == 1) {
             $roles = $ret[0]['role_id'];
         } else {
             $roles = null;
         }
-        $query = $user->getAdapter()->select()->from('roles', array(
-            'id',
-            'name'
-        ))->where('nickname != ?', 'auto_role')->order('name ASC');
-        $role_list = $user->getAdapter()->fetchPairs($query);
+        $query = $user->getAdapter()
+                      ->select()
+                      ->from('roles', array('id', 'name'))
+                      ->where('nickname != \'auto_role\'')
+                      ->order('name ASC');
+        $roleList = $user->getAdapter()->fetchPairs($query);
+        
+        // Assign view outputs
         $this->view->assign('id', $id);
-        $this->view->assign('user', $user_detail);
-        $this->view->assign('role_count', $count);
+        $this->view->assign('user', $userDetail);
+        $this->view->assign('roleCount', $count);
         $this->view->assign('roles', $roles);
-        $this->view->assign('role_list', $role_list);
-        $this->view->assign('my_systems', $user->getMySystems($id));
-        $this->view->assign('all_sys', $sys->getList());
+        $this->view->assign('roleList', $roleList);
+        $this->view->assign('mySystems', $user->getMySystems($id));
+        $this->view->assign('allSystems', $sys->getList());
         $this->render($v);
     }
+    
     /**
-     *  update user's information
+     * updateAction() - Displays the form for updating a user's information.
+     *
+     * @todo cleanup this function
      */
     public function updateAction()
     {
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        $u_data = $req->getPost('user');
-        $u_role = $req->getPost('user_role');
-        $sys_data = $req->getPost('system');
-        $confirm_pwd = $req->getPost('password_confirm');
-        $db = $this->_user->getAdapter();
-        if ( 'database' == readSysConfig('auth_type') && 
-            empty($u_data['account']) ) {
+        $userData = $req->getPost('user');
+        $userRole = $req->getPost('user_role');
+        $systemData = $req->getPost('system');
+        $confirmPassword = $req->getPost('password_confirm');
+        
+        if ( readSysConfig('auth_type') == 'database'
+             && empty($userData['account']) ) {
             $msg = "Account can not be null.";
             $this->message($msg, self::M_WARNING);
             $this->_forward('view', null, null, array(
@@ -244,12 +250,12 @@ class AccountController extends PoamBaseController
             ));
             return;
         }
-        if ( 'ldap' == readSysConfig('auth_type') ) {
-            $u_data['account'] = $u_data['ldap_dn'];
+        if ( readSysConfig('auth_type') == 'ldap' ) {
+            $userData['account'] = $userData['ldap_dn'];
         }
-        if ( !empty($u_data['password']) ) {
+        if ( !empty($userData['password']) ) {
             /// @todo validate the password complexity
-            if ($u_data['password'] != $confirm_pwd) {
+            if ($userData['password'] != $confirmPassword) {
                 $msg = "Password does not match confirmation.";
                 $this->message($msg, self::M_WARNING);
                 $this->_forward('view', null, null, array(
@@ -257,32 +263,32 @@ class AccountController extends PoamBaseController
                 ));
                 return;
             }
-            $u_data['password'] = md5($u_data['password']);
+            $userData['password'] = md5($userData['password']);
         } else {
-            unset($u_data['password']);
+            unset($userData['password']);
         }
-        if (!empty($u_data)) {
-            if ($u_data['is_active'] == 0) {
-                $u_data['termination_ts'] = self::$now->toString("Y-m-d H:i:s");
-            } elseif (1 == $u_data['is_active']) {
-                $u_data['failure_count'] = 0;
+        if (!empty($userData)) {
+            if ($userData['is_active'] == 0) {
+                $userData['termination_ts'] = self::$now->toString("Y-m-d H:i:s");
+            } elseif (1 == $userData['is_active']) {
+                $userData['failure_count'] = 0;
             }
-            $n = $this->_user->update($u_data, "id=$id");
+            $n = $this->_user->update($userData, "id=$id");
             if ($n > 0) {
                 $this->_user->log(User::MODIFICATION, 
                                    $this->me->id,
-                                   $u_data['account']);
+                                   $userData['account']);
             }
-            if (!empty($sys_data)) {
+            if (!empty($systemData)) {
                 $my_sys = $this->_user->getMySystems($id);
-                $new_sys = array_diff($sys_data, $my_sys);
-                $remove_sys = array_diff($my_sys, $sys_data);
+                $new_sys = array_diff($systemData, $my_sys);
+                $remove_sys = array_diff($my_sys, $systemData);
                 $n = $this->_user->associate($id, User::SYS, $new_sys);
                 $n = $this->_user->associate($id, User::SYS, $remove_sys,
                                               true);
             }
         }
-        if (!empty($u_role)) {
+        if (!empty($userRole)) {
             $qry = $db->select()->from(array(
                 'ur' => 'user_roles'
             ), 'ur.*')->join(array(
@@ -294,11 +300,11 @@ class AccountController extends PoamBaseController
             $count = count($ret);
             if (1 == $count) {
                 $db->update('user_roles', array(
-                    'role_id' => $u_role
+                    'role_id' => $userRole
                 ), 'user_id =' . $id);
             } elseif (0 == $count) {
                 $db->insert('user_roles', array(
-                    'role_id' => $u_role,
+                    'role_id' => $userRole,
                     'user_id' => $id
                 ));
             } else {
@@ -308,8 +314,11 @@ class AccountController extends PoamBaseController
         }
         $this->_forward('view');
     }
+    
     /**
-     * Delete an account
+     * deleteAction() - Delete a specified user.
+     *
+     * @todo cleanup this function
      */
     public function deleteAction()
     {
@@ -337,11 +346,19 @@ class AccountController extends PoamBaseController
         $this->message($msg, $model);
         $this->_forward('list');
     }
+    
     /**
-     *  only render the account creation page
+     * createAction() - Display the form for creating a new user account.
+     *
+     * @todo cleanup this function
      */
     public function createAction()
     {
+        $config = new Zend_Config_Ini(FORMS . '/account.ini', 'account');
+
+            $form = new Zend_Form($config);
+
+
         $system = new system();
         $db = $system->getAdapter();
         $qry = $db->select()->from('roles', array(
@@ -352,12 +369,16 @@ class AccountController extends PoamBaseController
         foreach ($ret as $row) {
             $roles[$row['id']] = $row['name'];
         }
+        $this->view->form = $form;
         $this->view->roles = $roles;
         $this->view->systems = $system->getList();
         $this->render();
     }
+    
     /**
-     *  create a new account
+     * saveAction() - Saves information for a newly created user.
+     *
+     * @todo cleanup this function
      */
     public function saveAction()
     {
@@ -386,16 +407,14 @@ class AccountController extends PoamBaseController
                        self::M_NOTICE);
         $this->_forward('create');
     }
+
     /**
-     * Assign role to an account 
-     */
-    /**
-     * Make sure if the dn provided by operator does exist on 
-     * the configured LDAP service.
+     * checkDnAction() - Check to see if the specified LDAP
+     * distinguished name (DN) exists in the system's specified LDAP directory.
      *
      * @todo language check
      */
-    public function checkdnAction()
+    public function checkDnAction()
     {
         $dn = $this->_request->getParam('dn');
         $this->_helper->layout->setLayout('ajax');

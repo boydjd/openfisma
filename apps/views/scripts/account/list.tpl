@@ -33,15 +33,15 @@ function delok(entryname)
           }
     ?>
 </tr>
-<?php foreach($this->user_list as $user){ ?>
+<?php foreach($this->userList as $user){ ?>
 <tr>
-    <td class="tdc">&nbsp;<?php echo $user['firstname'];?></td>
-    <td class="tdc">&nbsp;<?php echo $user['lastname'];?></td>
-    <td class="tdc">&nbsp;<?php echo $user['officephone'];?></td>
-    <td class="tdc">&nbsp;<?php echo $user['mobile'];?></td>
+    <td class="tdc">&nbsp;<?php echo $user['name_first'];?></td>
+    <td class="tdc">&nbsp;<?php echo $user['name_last'];?></td>
+    <td class="tdc">&nbsp;<?php echo $user['phone_office'];?></td>
+    <td class="tdc">&nbsp;<?php echo $user['phone_mobile'];?></td>
     <td class="tdc">&nbsp;<?php echo $user['email'];?></td>
     <td class="tdc">&nbsp;<?php echo $this->role_list[$user['id']];?></td>
-    <td class="tdc">&nbsp;<?php echo $user['username'];?></td>
+    <td class="tdc">&nbsp;<?php echo $user['account'];?></td>
     <?php if(isAllow('admin_users','update')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/account/sub/view/v/edit/id/<?php echo $user['id'];?>" title="edit the Users">

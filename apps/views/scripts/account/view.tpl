@@ -1,4 +1,4 @@
-<?php $this->role_list[0] = ''; ?>
+<?php $this->roleList[0] = ''; ?>
 <div class="barleft">
 <div class="barright">
 <p><b>User Account Information</b>
@@ -7,17 +7,17 @@
 <table width="98%" align="center" >
     <tr>
         <td align="right" class="thc" width="200">First Name:</td>
-        <td class="tdc">&nbsp;<?php echo $this->user['firstname'];?></td>
+        <td class="tdc">&nbsp;<?php echo $this->user['name_first'];?></td>
     </tr>
     <tr>
         <td align="right" class="thc">Last Name:</td>
-        <td class="tdc">&nbsp;<?php echo $this->user['lastname'];?></td></tr>
+        <td class="tdc">&nbsp;<?php echo $this->user['name_last'];?></td></tr>
     <tr>
         <td align="right" class="thc">Office Phone:</td>
-        <td class="tdc">&nbsp;<?php echo $this->user['officephone'];?></td></tr>
+        <td class="tdc">&nbsp;<?php echo $this->user['phone_office'];?></td></tr>
     <tr>
         <td align="right" class="thc">Mobile Phone:</td>
-        <td class="tdc">&nbsp;<?php echo $this->user['mobilephone'];?></td>
+        <td class="tdc">&nbsp;<?php echo $this->user['phone_mobile'];?></td>
     </tr>
     <tr>
         <td align="right" class="thc">Email:</td>
@@ -25,10 +25,10 @@
     <tr>
         <td align="right" class="thc">Role:</td>
         <td class="tdc">&nbsp;<?php
-             if($this->role_count > 1){
+             if($this->roleCount > 1){
                 echo $this->roles;
              }else{
-                 echo $this->role_list[nullGet($this->roles,0)];
+                 echo $this->roleList[nullGet($this->roles,0)];
              }
         ?>        </td>
     </tr>
@@ -38,11 +38,11 @@
     </tr>
     <tr>
         <td align="right" class="thc">Status:</td>
-        <td class="tdc">&nbsp;<?php echo 1 == $this->user['status']?'Active':'Suspend';?></td>
+        <td class="tdc">&nbsp;<?php echo 1 == $this->user['is_active']?'Active':'Suspend';?></td>
     </tr>
     <tr>
         <td align="right" class="thc">Username:</td>
-        <td class="tdc">&nbsp;<?php echo $this->user['username'];?></td>
+        <td class="tdc">&nbsp;<?php echo $this->user['account'];?></td>
     </tr>
     <?php
         if('ldap' == readSysConfig('auth_type')){
@@ -59,7 +59,7 @@
 <?php
     /* Convert the associative array of systems into a linear array */
     $system_array = array();
-    foreach ($this->my_systems as $id) {
+    foreach ($this->mySystems as $id) {
         $system_array[] = $id;
     }
 
@@ -68,7 +68,7 @@
      * Look at the "create user" page to see this in effect.
      */
     $column_count = 4;
-    $system_count = count($this->my_systems);
+    $system_count = count($this->mySystems);
     $row_count = ceil($system_count / $column_count);
 
     for ($current_row = 0; $current_row < $row_count; $current_row++) {
@@ -78,7 +78,7 @@
             $current_system_index = $current_column * $row_count + $current_row;
             if ($current_system_index < $system_count) {
                 $sid = $system_array[$current_system_index];
-                print "{$this->all_sys[$sid]['name']}\n";
+                print "{$this->allSystems[$sid]['name']}\n";
             }
             print "&nbsp;</td>";
         }

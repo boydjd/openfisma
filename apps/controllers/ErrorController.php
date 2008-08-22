@@ -39,18 +39,19 @@ class ErrorController extends Zend_Controller_Action
             // 404 error -- controller or action not found
             $this->getResponse()->setRawHeader('HTTP/1.1 404 Not Found');
             // ... get some output to display...
-            $content.= "<h1>404 Page not found!</h1>" . PHP_EOL;
-            $content.= "<p>The page you requested was not found.</p>";
+            $content .= "<h1>404 Page not found!</h1>" . PHP_EOL;
+            $content .= "<p>The page you requested was not found.</p>";
             break;
 
         default:
-            $content.= "<h1>Error!</h1>" . PHP_EOL;
-            $content.= "<p>An unexpected error occurred with your request. Please try again later.</p>";
-            // Log the exception
+            $content .= "<h1>Error!</h1>" . PHP_EOL;
+            $content .= "<p>An unexpected error occurred with your request. Please try again later.</p>";
+            // @todo Log the exception
             break;
         }
         $this->getResponse()->clearBody();
-        $this->view->content = $content . '<p>' . $errors->exception->getMessage() . '</p>';
+        $this->view->content = $content . '<p>' . $errors->exception->getMessage() . '</p>'
+                                        . '<pre>' . $errors->exception->getTraceAsString() . '</pre>';
         $this->_helper->actionStack('header', 'panel');
         $this->render();
     }

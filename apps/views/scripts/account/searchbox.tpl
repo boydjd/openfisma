@@ -14,7 +14,6 @@
                         <tr height="22">
                             <td><b>Page:&nbsp;</b></td>
                             <td><?php echo $this->links['all'];?></td>
-                            <td>|</td>
                         </tr>
                     </tbody>
                 </table>
@@ -26,7 +25,7 @@
                         <tr>
                             <td><b>Query:&nbsp;</b></td>
                             <td><select name="fid">
-                            <?php foreach($this->fid_array as $k=>$v){
+                            <?php foreach($this->criteria as $k=>$v){
                                 if($k == $this->fid){
                                     $selected = " selected";
                                 }
@@ -37,9 +36,9 @@
                             }
                             ?>
                             </select></td>
-                            <td><input name="qv" value="<?php echo $this->qv;?>" title="Input your query value" size="10" maxlength="40" type="text"></td>
+                            <td><input name="qv" value="<?php echo $this->qv;?>" size="10" maxlength="40" type="text"></td>
 
-                             <td><input value="Search" title="submit your request" type="submit"></td>
+                             <td><input value="Search" type="submit"></td>
                         </tr>
                     </tbody>
                 </form>

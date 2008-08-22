@@ -13,6 +13,16 @@
 <script language="javascript" src="/javascripts/account.validate.js"></script>
 <div class="barleft">
     <div class="barright">
+        <p><b>User Account Information</b>
+    </div>
+</div>
+
+<div class="form_box">
+<?= $this->form ?>
+</div>
+
+<div class="barleft">
+    <div class="barright">
         <p><b>User Account Information</b> 
     </div>
 </div>
@@ -105,7 +115,7 @@
             <td class="tdc">&nbsp;
                 <input type="text" id="user[ldap_dn]" name="user[ldap_dn]" value="" size="50" isnull="no"
                     title="AccoutnDn" datatype="char"><font color="blue"> *</font>
-                <input type="button" id="checkdn" value="Check Dn">
+                <input type="button" id="checkDn" value="Check Dn">
                 <div id="checkResult"></div></td>
         </tr>
         <?php } ?>                    

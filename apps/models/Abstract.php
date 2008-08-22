@@ -67,4 +67,20 @@ abstract class Fisma_Model extends Zend_Db_Table
         }
         return $list;
     }
+    
+    /**
+     * count() - Count the total number of rows in this table
+     *
+     * This function should really be static, but Zend_Db_Table blows up when
+     * you call static functions on it.
+     *
+     * @return int
+     */
+    function count() {
+        $countQuery = $this->select()
+                           ->from($this->_name,
+                                  'count(*) count');
+        $row = $this->fetchRow($countQuery);
+        return $row->count;
+    }
 }

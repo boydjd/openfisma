@@ -2,18 +2,6 @@
 @import url('layout.css');
 @import url('menu.css');
 
-/* Color
-===================================*/
-
-/* Typography
-===================================*/
-
-/* Positioning
-===================================*/
-
-/* Tables
-===================================*/
-
 /* Body Stylesheet */
 body {
 	margin: 0px;
@@ -103,4 +91,25 @@ td {
     background-color: #E3E3E3;
     border-left: 1px solid #FFFFFF;
     border-bottom: 1px solid #FFFFFF;
+}
+
+/* This is the standard style for the basic CRUD forms such as users, systems,
+   finding sources, etc.
+*/
+form.fisma_crud table {
+    margin: 0px 15px;
+    background-color: #e3e3e3;
+    border: 1px solid #bebebe;
+}
+
+form.fisma_crud table tr td {
+    font-family: 'Verdana', 'Arial', 'Helvetica';
+    color: #44637a;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 3px 5px;
+}
+
+form.fisma_crud td:first-child {
+    text-align: right;
 }

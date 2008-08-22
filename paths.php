@@ -1,37 +1,40 @@
 <?php
 /**
- * paths.php
+ * Define common paths used for locating specific types of files.
  *
- * Define the paths that would be used in the system.
- *
- * @package Root
- * @author     Xhorse   xhorse at users.sourceforge.net
+ * @package    Root
+ * @author     Xhorse <xhorse@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * @version    $Id$
+ */
+
+/**
+ * @todo remove DS from all files
  */
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-// ROOT is where the software installed.
+/**
+ * The root directory for the application
+ */
 if (!defined('ROOT')) {
     define ('ROOT', dirname(__FILE__));
 }
-// name of the directory which should be 
-// the place where HTTP Server pointed at.
-if (!defined('WEBROOT_DIR')) {
-    define('WEBROOT_DIR', 'public');
-}
-// absolute path of WEBROOT_DIR directory
+
+/**
+ * The root directory for the web site
+ */
 if (!defined('WEB_ROOT')) {
-    define('WEB_ROOT', ROOT .DS . WEBROOT_DIR);
+    define('WEB_ROOT', ROOT . '/public');
 }
 
-define('APPS', ROOT . DS . 'apps');
-define('CONFIGS', APPS . DS . 'config');
-define('MODELS', APPS . DS . 'models');
-define('VIEWS', APPS . DS . 'views');
-define('CONTROLLERS', APPS . DS . 'controllers');
-define('VENDORS', ROOT . DS . 'vendor');
-define('LIBS', ROOT . DS . 'include');
+define('APPS', ROOT . '/apps');
+define('CONFIGS', APPS . '/config');
+define('FORMS', APPS . '/forms');
+define('MODELS', APPS . '/models');
+define('VIEWS', APPS . '/views');
+define('CONTROLLERS', APPS . '/controllers');
+define('VENDORS', ROOT . '/vendor');
+define('LIBS', ROOT . '/include');
