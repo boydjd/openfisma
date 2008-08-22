@@ -82,23 +82,8 @@
     if(isAllow('admin','read')) {
         echo'<ul><li><h2><a>Administration</a></h2>';
         echo'<ul>';
-        if(isAllow('admin_users','read')) {
-            echo'<li><a href="/panel/account/sub/list">Users</a>';
-        }
-        if(isAllow('admin_roles','read')){
-            echo'<li><a href="/panel/role/sub/list">Roles</a>';
-        }
-        if(isAllow('admin_systems','read')) {
-            echo'<li><a href="/panel/system/sub/list">Systems</a>';
-        }
-        if(isAllow('admin_products','read')) {
-            echo'<li><a href="/panel/product/sub/list">Products</a>';
-        }
-        if(isAllow('asset','read')) {
-            echo'<li><a href="/panel/asset/sub/searchbox/s/search">Assets</a>';
-        }
-        if(isAllow('admin_system_groups','read')) {
-            echo'<li><a href="/panel/sysGroup/sub/list">System Group</a>';
+        if(isAllow('app_configuration','update')) {
+            echo'<li><a href="/panel/config">Configuration</a></li>';
         }
         if(isAllow('admin_sources','read')) {
             echo'<li><a href="/panel/source/sub/list">Finding Sources</a>';
@@ -106,8 +91,20 @@
         if(isAllow('admin_networks','read')){
             echo'<li><a href="/panel/network/sub/list">Networks</a>';
         }
-        if(isAllow('app_configuration','update')) {
-            echo'<li><a href="/panel/config">Configuration</a></li>';
+        if(isAllow('admin_products','read')) {
+            echo'<li><a href="/panel/product/sub/list">Products</a>';
+        }
+        if(isAllow('admin_roles','read')){
+            echo'<li><a href="/panel/role/sub/list">Roles</a>';
+        }
+        if(isAllow('admin_system_groups','read')) {
+            echo'<li><a href="/panel/sysGroup/sub/list">System Group</a>';
+        }
+        if(isAllow('admin_systems','read')) {
+            echo'<li><a href="/panel/system/sub/list">Systems</a>';
+        }
+        if(isAllow('admin_users','read')) {
+            echo'<li><a href="/panel/account/sub/list">Users</a>';
         }
         echo'</ul>
             </li></ul>';
