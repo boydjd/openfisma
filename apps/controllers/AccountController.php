@@ -36,19 +36,19 @@ class AccountController extends PoamBaseController
             )
         ) ,
         'validator' => array(
-            'name_first' => 'Alnum',
-            'name_last' => 'Alnum',
-            'phone_office' => 'Alnum',
+            'name_first' => array('Alnum' => true),
+            'name_last' => array('Alnum' => true),
+            'phone_office' => array('Alnum' => true),
             'phone_mobile' => array(
                 'allowEmpty' => TRUE,
                 'Digits'
             ) ,
             'email' => 'EmailAddress',
-            'title' => 'Alnum',
+            'title' => array('Alnum' => true, 'allowEmpty' => TRUE),
             'is_active' => array(
                 'Int'
             ) ,
-            'account' => 'Alnum',
+            'account' => array('Alnum' => true),
             'password' => array(
                 'allowEmpty' => TRUE
             )

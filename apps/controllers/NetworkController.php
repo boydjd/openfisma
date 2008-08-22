@@ -42,8 +42,8 @@ class NetworkController extends SecurityController
             )
         ) ,
         'validator' => array(
-            'name' => 'Alnum',
-            'nickname' => 'Alnum',
+            'name' => array('Alnum' => true),
+            'nickname' => array('Alnum' => true),
             'desc' => array(
                 'allowEmpty' => TRUE
             )

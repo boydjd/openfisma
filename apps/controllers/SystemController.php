@@ -44,8 +44,8 @@ class SystemController extends SecurityController
             )
         ) ,
         'validator' => array(
-            'name' => 'Alnum',
-            'nickname' => 'Alnum',
+            'name' => array('Alnum' => true),
+            'nickname' => array('Alnum' => true),
             'primary_office' => 'Digits',
             'confidentiality' => 'NotEmpty',
             'integrity' => 'NotEmpty',
