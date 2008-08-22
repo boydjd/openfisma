@@ -42,6 +42,8 @@
     </div>
 </div>
 <div class="block"> <?php echo $this->form['general']->setAttrib('class','configform'); ?> </div>
+
+<?php  if('ldap' == readSysConfig('auth_type')){ ?>
 <div class="barleft">
 <div class="barright">
 <p><b>Ldap Config</b>&nbsp;<input type="button" id="addLdapServer" name="addLdapServer" value="Toggle">
@@ -184,3 +186,4 @@
     </form>
 <?php } ?>
 </div>
+<?php } ?>
