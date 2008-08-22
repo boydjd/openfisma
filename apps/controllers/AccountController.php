@@ -48,7 +48,7 @@ class AccountController extends PoamBaseController
             'is_active' => array(
                 'Int'
             ) ,
-            'account' => array('Alnum' => true),
+            'account' => 'Alnum',
             'password' => array(
                 'allowEmpty' => TRUE
             )
