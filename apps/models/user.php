@@ -92,21 +92,26 @@ class User extends Fisma_Model
      */
     public function log ($type, $uid, $msg = null)
     {
-        assert(in_array($type, array(self::CREATION , self::MODIFICATION , self::DISABLING , self::TERMINATION , self::LOGINFAILURE , self::LOGIN , self::LOGOUT)));
+        assert(in_array($type, array(self::CREATION, self::MODIFICATION,
+             self::DISABLING, self::TERMINATION, self::LOGINFAILURE,
+             self::LOGIN, self::LOGOUT)));
         assert(is_string($msg));
         assert($this->_logger);
-        $rows = $this->find($uid);
-        $row = $rows->current();
-        if ($type == self::LOGINFAILURE) {
-            if (++ $row->failure_count >= readSysConfig('failure_threshold')) {
-                $row->is_active = false;
+        if ( !empty($uid) ) {
+            $rows = $this->find($uid);
+            $row = $rows->current();
+            if ($type == self::LOGINFAILURE) {
+                if (++ $row->failure_count >=
+                    readSysConfig('failure_threshold')) {
+                    $row->is_active = false;
+                }
+                $row->save();
             }
-            $row->save();
-        }
-        if ($type == self::LOGIN) {
-            $row->failure_count = 0;
-            $row->last_login_ts = date("YmdHis");
-            $row->save();
+            if ($type == self::LOGIN) {
+                $row->failure_count = 0;
+                $row->last_login_ts = date("YmdHis");
+                $row->save();
+            }
         }
         $this->_logger->setEventItem('uid', $uid);
         $this->_logger->setEventItem('type', $type);

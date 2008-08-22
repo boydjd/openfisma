@@ -215,7 +215,10 @@ template. Please update your CSV file and try again.<br />";
                 $data['finding_data'] = $req->getParam('finding_data');
                 $data['create_ts'] = self::$now->toString("Y-m-d H:i:s");
                 $data['created_by'] = $this->me->id;
-                $this->_poam->insert($data);
+                $poamId = $this->_poam->insert($data);
+                $logContent = "a new finding was created";
+                $this->_poam->writeLogs($poamId, $this->me->id,
+                     self::$now->toString('Y-m-d H:i:s'), 'CREATION', $logContent);
                 $message = "Finding created successfully";
                 $model = self::M_NOTICE;
             }

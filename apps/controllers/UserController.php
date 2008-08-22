@@ -51,6 +51,8 @@ class UserController extends MessageController
         try {
             $whologin = $this->_user->fetchRow("account = '$username'");
             if ( empty($whologin) ) {
+                $this->_user->log(User::LOGINFAILURE, '',
+                    "none exist username: ".$username);
                 //to cover the fact
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
@@ -68,6 +70,11 @@ class UserController extends MessageController
                      $result->getCode() ) {
                     $this->_user->log(User::LOGINFAILURE, $whologin->id, 
                                       'Password Error');
+                    if ($whologin->failure_count >= 
+                        readSysConfig('failure_threshold') - 1 ) {
+                        $this->_user->log(User::TERMINATION, $whologin->id,
+                            'account locked');
+                    }
                     throw new Zend_Auth_Exception("Password Error");
                 }
                 throw new Zend_Auth_Exception("Incorrect username or password");
