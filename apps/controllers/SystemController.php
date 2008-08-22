@@ -71,9 +71,10 @@ class SystemController extends SecurityController
     public function preDispatch()
     {
         $req = $this->getRequest();
-        $this->_paging_base_path = $req->getBaseUrl() . '/panel/system/sub/list';
+        $this->_paging_base_path = $req->getBaseUrl() .
+            '/panel/system/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
-        if (!in_array($req->getActionName() , array(
+        if (!in_array($req->getActionName(), array(
             'login',
             'logout'
         ))) {
@@ -90,7 +91,8 @@ class SystemController extends SecurityController
         if (!empty($value)) {
             $query->where("$field = ?", $value);
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
         $system_list = $this->_system->fetchAll($query)->toArray();
         $this->view->assign('system_list', $system_list);
         $this->render();
@@ -102,7 +104,7 @@ class SystemController extends SecurityController
         $qv = $req->getParam('qv');
         $query = $this->_system->select()->from(array(
             's' => 'systems'
-        ) , array(
+        ), array(
             'count' => 'COUNT(s.id)'
         ));
         $res = $this->_system->fetchRow($query)->toArray();
@@ -122,7 +124,7 @@ class SystemController extends SecurityController
         $db = $this->_system->getAdapter();
         $query = $db->select()->from(array(
             'sg' => 'system_groups'
-        ) , '*')->where('is_identity = ?', 0);
+        ), '*')->where('is_identity = ?', 0);
         $sg_list = $db->fetchAll($query);
         $this->view->assign('sg_list', $sg_list);
         if ('save' == $req->getParam('s')) {
@@ -151,7 +153,7 @@ class SystemController extends SecurityController
                 $errno++;
             }
             $system_groups = $this->_request->getParam('sysgroup');
-            foreach($system_groups as $systemgroup_id) {
+            foreach ($system_groups as $systemgroup_id) {
                 $data = array(
                     'system_id' => $id,
                     'sysgroup_id' => $systemgroup_id
@@ -178,13 +180,16 @@ class SystemController extends SecurityController
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $db = $this->_system->getAdapter();
-        $qry = $db->select()->from('poams')->where('system_id = ' . $id);
+        $qry = $db->select()->from('poams')
+             ->where('system_id = ' . $id);
         $result1 = $db->fetchAll($qry);
         $qry->reset();
-        $qry = $db->select()->from('assets')->where('system_id = ' . $id);
+        $qry = $db->select()->from('assets')
+            ->where('system_id = ' . $id);
         $result2 = $db->fetchAll($qry);
         if (!empty($result1) || !empty($result2)) {
-            $msg = "This system cannot be deleted because it is already associated with one or more POAMS or assets";
+            $msg = "This system cannot be deleted because it is already".
+                   " associated with one or more POAMS or assets";
         } else {
             $res = $this->_system->delete('id = ' . $id);
             if (!$res) {
@@ -192,7 +197,8 @@ class SystemController extends SecurityController
             }
             $this->_user = new user();
             $this->me->systems = $this->_user->getMySystems($this->me->id);
-            $res = $this->_system->getAdapter()->delete('systemgroup_systems', 'system_id = ' . $id);
+            $res = $this->_system->getAdapter()
+                ->delete('systemgroup_systems', 'system_id = ' . $id);
             if (!$res) {
                 $errno++;
             }
@@ -212,21 +218,23 @@ class SystemController extends SecurityController
         $req = $this->getRequest();
         $db = $this->_system->getAdapter();
         $id = $req->getParam('id');
-        $query = $this->_system->select()->from('systems', '*')->where('id = ' . $id);
+        $query = $this->_system->select()->from('systems', '*')
+            ->where('id = ' . $id);
         $system = $this->_system->getAdapter()->fetchRow($query);
         $query->reset();
         $query = $db->select()->from(array(
             'sgs' => 'systemgroup_systems'
-        ) , array())->join(array(
+        ), array())->join(array(
             'sg' => 'system_groups'
-        ) , 'sg.id = sgs.sysgroup_id', '*')->where('sgs.system_id = ?', $id)->where('sg.is_identity = 0');
+        ), 'sg.id = sgs.sysgroup_id', '*')
+            ->where('sgs.system_id = ?', $id)->where('sg.is_identity = 0');
         $user_sysgroup_list = $db->fetchAll($query);
         $this->view->assign('user_sysgroup_list', $user_sysgroup_list);
         $this->view->assign('system', $system);
         if ('edit' == $req->getParam('v')) {
             $query = $db->select()->from(array(
                 'sg' => 'system_groups'
-            ) , '*')->where('is_identity = ?', 0);
+            ), '*')->where('is_identity = ?', 0);
             $sg_list = $db->fetchAll($query);
             $this->view->assign('id', $id);
             $this->view->assign('sg_list', $sg_list);
@@ -247,14 +255,18 @@ class SystemController extends SecurityController
         $sysgroup_data['nickname'] = $system['nickname'];
         $query = $db->select()->from(array(
             'sgs' => 'systemgroup_systems'
-        ) , array())->join(array(
+        ), array())->join(array(
             'sg' => 'system_groups'
-        ) , 'sgs.sysgroup_id = sg.id', 'id')->where('sgs.system_id = ?', $id)->where('sg.is_identity = 1');
+        ), 'sgs.sysgroup_id = sg.id', 'id')
+            ->where('sgs.system_id = ?', $id)
+            ->where('sg.is_identity = 1');
         $result = $db->fetchRow($query);
-        $res+= $db->update('system_groups', $sysgroup_data, 'id = ' . $result['id']);
-        $db->delete('systemgroup_systems', "system_id = $id and sysgroup_id <> {$result['id']} ");
+        $res+= $db->update('system_groups',
+            $sysgroup_data, 'id = ' . $result['id']);
+        $db->delete('systemgroup_systems',
+            "system_id = $id and sysgroup_id <> {$result['id']} ");
         $system_groups = $this->_request->getParam('sysgroup');
-        foreach($system_groups as $systemgroup_id) {
+        foreach ($system_groups as $systemgroup_id) {
             $data = array(
                 'system_id' => $id,
                 'sysgroup_id' => $systemgroup_id
@@ -262,7 +274,8 @@ class SystemController extends SecurityController
             $db->insert('systemgroup_systems', $data);
         }
         if ($res == 0) {
-            $msg = "Nothing changed in system information (except system groups)";
+            $msg = "Nothing changed in system information".
+                   " (except system groups)";
             $model = self::M_WARNING;
         } else {
             $msg = "System edited successfully";

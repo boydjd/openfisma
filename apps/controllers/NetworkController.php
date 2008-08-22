@@ -57,9 +57,10 @@ class NetworkController extends SecurityController
     }
     public function preDispatch()
     {
-        $this->_paging_base_path = $this->_request->getBaseUrl() . '/panel/network/sub/list';
+        $this->_paging_base_path = $this->_request->getBaseUrl() .
+            '/panel/network/sub/list';
         $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
-        if (!in_array($this->_request->getActionName() , array(
+        if (!in_array($this->_request->getActionName(), array(
             'login',
             'logout'
         ))) {
@@ -76,7 +77,7 @@ class NetworkController extends SecurityController
         $qv = $this->_request->getParam('qv');
         $query = $this->_network->select()->from(array(
             'n' => 'networks'
-        ) , array(
+        ), array(
             'count' => 'COUNT(n.id)'
         ))->order('n.name ASC');
         $res = $this->_network->fetchRow($query)->toArray();
@@ -102,7 +103,8 @@ class NetworkController extends SecurityController
         if (!empty($value)) {
             $query->where("$field = ?", $value);
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
         $network_list = $this->_network->fetchAll($query)->toArray();
         $this->view->assign('network_list', $network_list);
         $this->render();
@@ -136,7 +138,8 @@ class NetworkController extends SecurityController
         $qry = $db->select()->from('assets')->where('network_id = ' . $id);
         $result = $db->fetchCol($qry);
         if (!empty($result)) {
-            $msg = 'This network can not be deleted because it is already associated with one or more ASSETS';
+            $msg = 'This network can not be deleted because it is'.
+                   ' already associated with one or more ASSETS';
             $model = self::M_WARNING;
         } else {
             $res = $this->_network->delete('id = ' . $id);
@@ -158,7 +161,7 @@ class NetworkController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $result = $this->_network->find($id)->toArray();
-        foreach($result as $v) {
+        foreach ($result as $v) {
             $network_list = $v;
         }
         $this->view->assign('id', $id);

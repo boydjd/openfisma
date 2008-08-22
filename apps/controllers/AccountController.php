@@ -117,7 +117,7 @@ class AccountController extends PoamBaseController
         $fid = $req->getParam('fid');
         $qry = $user->select()->setIntegrityCheck(false)->from(array(
             'u' => 'users'
-        ) , array(
+        ), array(
             'id' => 'id',
             'username' => 'account',
             'lastname' => 'name_last',
@@ -247,7 +247,7 @@ class AccountController extends PoamBaseController
         if ( 'ldap' == readSysConfig('auth_type') ) {
             $u_data['account'] = $u_data['ldap_dn'];
         }
-        if( !empty($u_data['password']) ) {
+        if ( !empty($u_data['password']) ) {
             /// @todo validate the password complexity
             if ($u_data['password'] != $confirm_pwd) {
                 $msg = "Password does not match confirmation.";
@@ -285,9 +285,9 @@ class AccountController extends PoamBaseController
         if (!empty($u_role)) {
             $qry = $db->select()->from(array(
                 'ur' => 'user_roles'
-            ) , 'ur.*')->join(array(
+            ), 'ur.*')->join(array(
                 'r' => 'roles'
-            ) , 'ur.role_id = r.id', array())
+            ), 'ur.role_id = r.id', array())
             ->where('user_id = ?', $id)
             ->where('r.nickname != ?', 'auto_role');
             $ret = $db->fetchAll($qry);
@@ -295,7 +295,7 @@ class AccountController extends PoamBaseController
             if (1 == $count) {
                 $db->update('user_roles', array(
                     'role_id' => $u_role
-                ) , 'user_id =' . $id);
+                ), 'user_id =' . $id);
             } elseif (0 == $count) {
                 $db->insert('user_roles', array(
                     'role_id' => $u_role,
@@ -432,13 +432,13 @@ class AccountController extends PoamBaseController
         $user_name = $ret[0]['account'];
         $qry = $db->select()->from(array(
             'r' => 'roles'
-        ) , array(
+        ), array(
             'role_id' => 'r.id',
             'role_name' => 'r.name'
         ))
         ->join(array(
             'ur' => 'user_roles'
-        ) , 'ur.role_id = r.id', array())
+        ), 'ur.role_id = r.id', array())
         ->where('ur.user_id = ?', $user_id)
         ->where('r.nickname !=?', 'auto_role');
         $assign_roles = $db->fetchAll($qry);
@@ -546,19 +546,19 @@ class AccountController extends PoamBaseController
         $auto_role = $ret[0]['auto_role'];
         $qry = $db->select()->from(array(
             'f' => 'functions'
-        ) , array(
+        ), array(
             'function_id' => 'f.id',
             'function_name' => 'f.name'
         ))
         ->join(array(
             'rf' => 'role_functions'
-        ) , 'rf.function_id = f.id', array())
+        ), 'rf.function_id = f.id', array())
         ->join(array(
             'ur' => 'user_roles'
-        ) , 'ur.role_id = rf.role_id', array())
+        ), 'ur.role_id = rf.role_id', array())
         ->join(array(
             'r' => 'roles'
-        ) , 'r.id = ur.role_id', array())
+        ), 'r.id = ur.role_id', array())
         ->where('r.name = ?', $auto_role);
         $assign_privileges = $db->fetchAll($qry);
         $roles = substr(str_replace('-', ',', $req->getParam('assign_roles')),
@@ -573,17 +573,16 @@ class AccountController extends PoamBaseController
             $qry->reset();
             $qry->from(array(
                 'f' => 'functions'
-            ) , array(
+            ), array(
                 'function_id' => 'f.id',
                 'function_name' => 'f.name'
             ))
             ->join(array(
                 'rf' => 'role_functions'
-            ) , 'rf.function_id = f.id', array())
+            ), 'rf.function_id = f.id', array())
             ->where('rf.role_id in (' . $roles . ')');
-            $exist_privileges = array_merge(
-                                 $db->fetchAll($qry) , $assign_privileges
-                                );
+            $exist_privileges = array_merge($db->fetchAll($qry),
+                $assign_privileges);
         } else {
             $exist_privileges = $assign_privileges;
         }
