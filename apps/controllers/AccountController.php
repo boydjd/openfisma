@@ -264,6 +264,8 @@ class AccountController extends PoamBaseController
         if (!empty($u_data)) {
             if ($u_data['is_active'] == 0) {
                 $u_data['termination_ts'] = self::$now->toString("Y-m-d H:i:s");
+            } elseif (1 == $u_data['is_active']) {
+                $u_data['failure_count'] = 0;
             }
             $n = $this->_user->update($u_data, "id=$id");
             if ($n > 0) {
