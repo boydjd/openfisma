@@ -32,7 +32,7 @@
             <table width='100%'>
                 <tr>
                     <td width='50%'><b>Network: </b>(<?php echo $this->asset['net_nickname'];?>)
-                        <?php echo $this->asset['network_name'];?></td>
+                        <?php echo $this->asset['net_name'];?></td>
                     <td width='50%'><b>IP Address: </b><?php echo $this->asset['ip'];?></td>
                 </tr>
                 <tr>

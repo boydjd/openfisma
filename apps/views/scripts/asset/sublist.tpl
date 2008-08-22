@@ -32,7 +32,7 @@
         <?php if(isAllow('asset','update')){
                  echo'<th nowrap>Edit</th>';
               }
-              if(isAllow('asset','view')){
+              if(isAllow('asset','read')){
                  echo'<th nowrap>View</th>';
               }
         ?>
@@ -51,13 +51,12 @@
         <td class="tdc">&nbsp;<?php echo $row['address_port'];?></td>
         <td class="tdc">&nbsp;<?php echo $row['prod_name'];?></td>
         <td class="tdc">&nbsp;<?php echo $row['prod_vendor'];?></td>
-        <?php if(isAllow('asset','edit')){ ?>
+        <?php if(isAllow('asset','update')){ ?>
         <td class="tdc" align="center"><a href="/panel/asset/sub/view/s/edit/id/<?php echo $row['aid'];?>"><img src="/images/edit.png" border="0"></a></td>
+        <?php } if(isAllow('asset','read')){ ?>
         <td class="tdc" align="center"><a href="/panel/asset/sub/view/id/<?php echo $row['aid'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
     <?php } ?>
 </table>
 </form>
-            
-            

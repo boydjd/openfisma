@@ -9,6 +9,7 @@
     <td><input type="hidden" name="prod_id" />
 	    <input name="input" type="submit" value="Create Asset"/>
         <input type="reset" name="button" id="button" value="Reset" />
+        <a id="list_assets" href="/panel/asset/sub/searchbox/s/search">Assets List</a>
         <?php echo $this->result;?></td>
 </tr>
 	<tr>
