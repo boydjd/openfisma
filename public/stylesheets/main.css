@@ -96,13 +96,13 @@ td {
 /* This is the standard style for the basic CRUD forms such as users, systems,
    finding sources, etc.
 */
-form.fisma_crud table {
+table.fisma_crud {
     margin: 0px 15px;
     background-color: #e3e3e3;
     border: 1px solid #bebebe;
 }
 
-form.fisma_crud table tr td {
+table.fisma_crud tr td {
     font-family: 'Verdana', 'Arial', 'Helvetica';
     color: #44637a;
     font-weight: bold;
@@ -110,6 +110,11 @@ form.fisma_crud table tr td {
     padding: 3px 5px;
 }
 
-form.fisma_crud td:first-child {
+table.fisma_crud tr td:first-child {
     text-align: right;
+}
+
+
+table.fisma_crud tr.fisma_checkboxes td {
+    text-align: left;
 }

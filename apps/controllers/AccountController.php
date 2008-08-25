@@ -32,9 +32,10 @@ require_once (MODELS . '/system.php');
 require_once ('Pager.php');
 require_once 'Zend/Date.php';
 require_once 'Zend/Filter/Input.php';
+require_once 'Zend/Form/Element/Checkbox.php';
 require_once 'Zend/Validate/Between.php';
-require_once 'Zend/Config/Ini.php';
-require_once 'Zend/Form.php';
+require_once (FORMS . '/Manager.php');
+require_once (FORMS . '/CheckboxMatrix.php');
 
 /**
  * The account controller deals with creating, updating, and managing user
@@ -347,6 +348,45 @@ class AccountController extends PoamBaseController
         $this->_forward('list');
     }
     
+    public function getAccountForm() {
+        // Get system and roles information
+        $system = new System();
+        $db = $system->getAdapter();
+        $qry = $db->select()
+                  ->from('roles', array('id',
+                                        'name'))
+                  ->where('nickname != ?', 'auto_role')
+                  ->order('name');
+        $ret = $db->fetchAll($qry);
+
+        // Load the form and populate the dynamic pull downs
+        $form = Form_Manager::loadForm('account');
+        foreach ($ret as $row) {
+            $form->getElement('role')
+                 ->addMultiOptions(array($row['id'] => $row['name']));
+        }
+
+        $checkboxMatrix = new Form_CheckboxMatrix('systemsMatrix');
+        foreach ($system->getList() as $id => $systemData) {
+            $checkboxMatrix->addCheckbox($id, $systemData['name']);
+        }
+
+        // Add the checkbox matrix to a separate display group
+        $form->addElement($checkboxMatrix);
+        $form->addDisplayGroup(array('systemsMatrix'), 'systems');
+
+        // I don't think it's possible to load the status menu correctly in
+        // the .ini file.
+        $form->getElement('is_active')
+             ->setMultiOptions(array(1 => 'Active', 0 => 'Locked'));
+
+        // If there are any parameters in the _POST variable, then use that
+        // to prepopulate the form.
+        $form->setDefaults($_POST);
+             
+        return $form;
+    }
+    
     /**
      * createAction() - Display the form for creating a new user account.
      *
@@ -354,24 +394,11 @@ class AccountController extends PoamBaseController
      */
     public function createAction()
     {
-        $config = new Zend_Config_Ini(FORMS . '/account.ini', 'account');
+        // Get the account form
+        $form = $this->getAccountForm();
 
-            $form = new Zend_Form($config);
-
-
-        $system = new system();
-        $db = $system->getAdapter();
-        $qry = $db->select()->from('roles', array(
-            'id',
-            'name'
-        ))->where('nickname != ?', 'auto_role');
-        $ret = $db->fetchAll($qry);
-        foreach ($ret as $row) {
-            $roles[$row['id']] = $row['name'];
-        }
-        $this->view->form = $form;
-        $this->view->roles = $roles;
-        $this->view->systems = $system->getList();
+        // Assign view outputs.
+        $this->view->form = Form_Manager::prepareForm($form);
         $this->render();
     }
     
@@ -382,29 +409,62 @@ class AccountController extends PoamBaseController
      */
     public function saveAction()
     {
-        $newAccount=$this->_request->getParam('user');
-        $systems=$this->_request->getParam('system');
-        if ( 'ldap' == readSysConfig('auth_type') ) {
-            $newAccount['account'] = $newAccount['ldap_dn'];
-        }
-        if ( 'database' == readSysConfig('auth_type') ) {
-            $newAccount['password'] = md5($newAccount['password']);
-        }
-        $newAccount['created_ts'] = self::$now->toString('Y-m-d H:i:s');
-        $newAccount['auto_role'] = $newAccount['account'].'_r';
+        // Load the account form in order to perform validations.
+        $form = $this->getAccountForm();
+        $accountData = $form->getValues();
+        print_r($accountData);
+        if ($accountData['password'] != $accountData['confirm_password']) {
+            $this->message("The two passwords do not match",
+                           self::M_WARNING);
+        } else if ($form->isValid($_POST)) {
+            unset($accountData['confirm_password']);
+            $roleId = $accountData['role'];
+            unset($accountData['role']);
+            unset($accountData['submit']);
+            unset($accountData['systemsMatrix']);
+            
+            // Create the user's main record.
+            if ( 'ldap' == readSysConfig('auth_type') ) {
+                $accountData['account'] = $accountData['ldap_dn'];
+            } else if ( 'database' == readSysConfig('auth_type') ) {
+                $accountData['password'] = md5($accountData['password']);
+            }
+            $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');
+            $accountData['auto_role'] = $accountData['account'].'_r';
 
-        $userId = $this->_user->insert($newAccount);
-        $roleId = $this->_request->getParam('user_role_id');
-        $this->_user->associate($userId, User::ROLE, $roleId);
-     
-        if ( !empty($systems) ) {
-            $this->_user->associate($userId, User::SYS, $systems);
-        }
+            $userId = $this->_user->insert($accountData);
+            
+            // Create the user's role associations.
+            $this->_user->associate($userId, User::ROLE, $roleId);
 
-        $this->_user->log(User::CREATION, $this->me->id,
-                         'create user('.$newAccount['account'].')');
-        $this->message("User ({$newAccount['account']}) added",
-                       self::M_NOTICE);
+            // Create the user's system associations.
+            if ( !empty($systems) ) {
+                $this->_user->associate($userId, User::SYS, $systems);
+            }
+
+            // Log the new account creation and display a success message to the
+            // user.
+            $this->_user->log(User::CREATION, $this->me->id,
+                             'create user('.$accountData['account'].')');
+            $this->message("User ({$accountData['account']}) added",
+                           self::M_NOTICE);
+        } else {
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach($form->getErrors() as $field => $fieldErrors) {
+                if (count($fieldErrors>0)) {
+                	foreach ($fieldErrors as $error) {
+                        $errorString .= "$field failed because \"$error\"<br>";
+                	}
+                }
+            }
+            $this->message("Unable to create account: $errorString",
+                           self::M_WARNING);
+        }
         $this->_forward('create');
     }
 

@@ -19,9 +19,9 @@
                 </table>
             </th>
             <th>
-                <table align="center">
+                
                 <form name="query" method="post" action="/panel/account/sub/list">
-                    <tbody>
+                    <table align="center">
                         <tr>
                             <td><b>Query:&nbsp;</b></td>
                             <td><select name="fid">
@@ -40,9 +40,8 @@
 
                              <td><input value="Search" type="submit"></td>
                         </tr>
-                    </tbody>
+                    </table>
                 </form>
-                </table>
             </th>
         </tr>
     </tbody>
