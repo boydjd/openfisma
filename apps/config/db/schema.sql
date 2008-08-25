@@ -67,18 +67,9 @@ CREATE TABLE `evaluations` (
   PRIMARY KEY  (`id`)
 );
 
-CREATE TABLE `ldap_config` (
-  `id` int(10) NOT NULL auto_increment,
-  `group` varchar(64) NOT NULL,
-  `key` varchar(64) NOT NULL,
-  `value` varchar(64) NOT NULL,
-  `description` text NOT NULL,
-  PRIMARY KEY  (`id`)
-);
-
 CREATE TABLE `poam_evaluations` (
   `id` int(10) NOT NULL auto_increment,
-  `group_id` int(10) NOT NULL,
+  `group_id` int(10) NOT NULL COMMENT 'poam_id or ev_id, which is evaluated. name after evaluations.group',
   `eval_id` int(10) NOT NULL,
   `user_id` int(10) NOT NULL,
   `decision` enum('APPROVED','DENIED','EST_CHANGED'),
@@ -304,3 +295,20 @@ CREATE TABLE `configurations` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
 );
+
+CREATE TABLE `ldap_config` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `host` varchar(64) NOT NULL,
+  `port` int(16),
+  `domain_name` varchar(64) NOT NULL,
+  `domain_short` varchar(64),
+  `username` varchar(64),
+  `password` varchar(64),
+  `basedn` varchar(64),
+  `account_filter` varchar(64),
+  `account_canonical` varchar(64) ,
+  `bind_requires_dn` varchar(64) ,
+  `use_ssl` boolean,
+  PRIMARY KEY (`id`)
+);
+

@@ -12,6 +12,7 @@
  */
 require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'config.php';
+require_once 'Zend/Form/Element/Hidden.php';
 /**
  * Config Controller for the system
  *
@@ -22,152 +23,108 @@ require_once MODELS . DS . 'config.php';
  */
 class ConfigController extends SecurityController
 {
+    /**
+     * The Config module 
+     */
+    private $_config = null;
+
+    public function init()
+    {
+        parent::init();
+        $this->_config = new Config();
+    }
 
     /**
-     * Display and edit the settings 
+     * Display and update the persistent configurations
      */
     public function viewAction()
     {
-        $config = new Config();
-        $configItems = $config->getList(array('key' , 'value'));
-        $configArray = NULL;
-        foreach ($configItems as $item) {
-            $configArray[$item['key']] = $item['value'];
-        }
-        $configPost = $this->_request->getPost();
-
+        // Fill up with data
         $general = $this->getForm('config');
-        if ( isset($configPost['max_absent_time']) ) {
-            // save the general configuration setting
+        $ret = $this->_config->getList(array('key' , 'value'));
+        $configs = NULL;
+        foreach ($ret as $item) {
+            if ($item['key'] == Config::EXPIRING_TS) {
+                $item['value'] /= 3600; //convert to hour from second
+            }
+            $configs[$item['key']] = $item['value'];
+        }
+
+        // Update the change
+        $general->setDefaults($configs);
+        if ($this->_request->isPost()) {
+            $configPost = $this->_request->getPost();
             if ($general->isValid($configPost)) {
-                $configPost = $general->getValues();
-                unset($configPost['save']);
-                unset($configPost['reset']);
-                foreach ($configPost as $k => $v) {
-                    $where = $config->getAdapter()->quoteInto('`key` = ?', $k);
-                    $config->update(array('value' => $v), $where);
+                $values = $general->getValues();
+                //array_intersect_key requires PHP > 5.1.0
+                $validVals = array(
+                    Config::MAX_ABSENT  =>0,
+                    Config::AUTH_TYPE   =>0,
+                    Config::F_THRESHOLD =>0,
+                    Config::EXPIRING_TS =>0 
+                 );
+                $values = array_intersect_key($values, $validVals);
+                foreach ($values as $k => $v) {
+                    $where = $this->_config->getAdapter()->quoteInto('`key` = ?', $k);
+                    if ($k == Config::EXPIRING_TS) {
+                        $v *= 3600; //convert to second
+                    }
+                    $this->_config->update(array('value' => $v), $where);
                 }
                 $msg = 'Configuration updated successfully';
                 $this->message($msg, self::M_NOTICE);
             } else {
                 $general->populate($configPost);
             }
-        } else {
-            $general->setDefaults($configArray);
         }
 
         //get ldap configuration
-        $query = $config->getAdapter()->select()->from('ldap_config', '*')
-                                                ->order('id ASC');
-        $result = $config->getAdapter()->fetchAll($query);
-        if ( !empty($result) ) {
-            foreach ($result as $row) {
-                $multiOptions[$row['group']][] = $row;
-            }
-            $this->view->assign('ldap_configs', $multiOptions);
-        }
-        $ldap = $this->getForm('ldap');
-
-        $this->view->form = array('general' => $general,
-                                  'ldap'    => $ldap);
+        $ldaps = $this->_config->getLdap();
+        $this->view->assign('ldaps', $ldaps);
+        $this->view->generalform = $general;
         $this->render();
     }
 
-
     /**
-     * Save the Ldap configuration setting
+     *  Add/Update LDAP configurations
      */
-    public function saveldapAction()
+    public function ldapupdateAction()
     {
-        $keys = $this->_request->getPost('keys');
-        $db = Zend_Registry::get('db');
-        foreach ($keys as $group => $row) {
-            foreach ($row as $k => $v) {
-                $where = $db->quoteInto('`group` = ?', $group);
-                $where .= ' AND ' . $db->quoteInto('`key` = ?', $k);
-                $db->update('ldap_config', array('value'=>$v), $where);
-            }
-        }
-        // @REVIEW
-        $msg = 'Configuration updated successfully';
-        $this->message($msg, self::M_NOTICE);
-        $this->_forward('config', 'panel');
-    }
-
-    /**
-     * Add Ldap Server
-     *
-     * @todo check filter
-     */
-    public function addldapAction()
-    {
-        $ldap = $this->_request->getPost();
-        if ( empty($ldap['accountCanonicalForm']) ) {
-            $ldap['accountCanonicalForm'] = 4;
-        }
-        if ( 'openldap' == $ldap['serverType'] ) {
-            $ldap['bindRequiresDn'] = 1;
-        }
         $form = $this->getForm('ldap');
-        if ($form->isValid($ldap)) {
-            $ldap = $form->getValues();
-            $db = Zend_Registry::get('db');
-            $query = $db->select()->from('ldap_config', '*')
-                                  ->where('`key` = ?', 'host')
-                                  ->where('value = ?', $ldap['host']);
-            $result = $db->fetchRow($query);
-            if ( !empty($result) ) {
-                // @REVIEW Line 3
-                $msg = 'The Server Host is exist,Choose another name';
-                $model = self::M_WARNING;
-            } else {
-                $query = $db->select()->from('ldap_config',
-                                             array('group'=>'MAX(`group`)'));
-                $result = $db->fetchRow($query);
-                $lastGroup = $result['group'];
-                $newGroup = $lastGroup + 1;
-                $errno = 0;
-                foreach ($ldap as $k=>$v) {
-                    if ( !empty($v) ) {
-                        $data = array('group'=>$newGroup, 'key'=>$k,
-                                      'value'=>$v, 'description'=>$k);
-                        $ret = $db->insert('ldap_config', $data);
-                        if ( $ret != 1 ) {
-                            $errno++;
-                        }
-                    }
-                }
-                if ( $errno > 0 ) {
-                    $msg = $errno . 'lines insert failed';
-                    $model = self::M_WARNING;
-                } else { 
-                    $msg = 'Create new Ldap Server successfully.';
-                    $model = self::M_NOTICE;
-                }
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if ($form->isValid($data)) {
+                $values = $form->getValues();
+                unset($values['SaveLdap']);
+                unset($values['Reset']);
+                $this->_config->saveLdap($values);
+                //$msg = 'Configuration updated successfully';
+                //$this->message($msg, self::M_NOTICE);
+                $this->_redirect('/panel/config/');
+                return;
             }
-            $this->message($msg, $model);
         } else {
-            $form->populate($ldap);
-            $errors = $form->getMessages();
-            $this->view->assign('ldap', $ldap);
-            $this->view->assign('errors', $errors);
+            //only represent the view
+            $id = $this->_request->getParam('id');
+            if (!empty($id)) {
+                $ldaps = $this->_config->getLdap($id);
+                $form->setDefaults($ldaps[0]);
+            }
         }
-        $this->_forward('config', 'panel');
+        $this->view->form = $form;
+        $this->render();
     }
 
     /**
-     * Delete a Ldap Server
-     *
+     * Delete a Ldap configuration
      */
-    public function deleteldapAction()
+    public function ldapdelAction()
     {
-        $group = $this->_request->getParam('group');
-        $db = Zend_Registry::get('db');
-        $where = $db->quoteInto('`group` = ?', $group);
-        $db->delete('ldap_config', $where);
+        $id = $this->_request->getParam('id');
+        $this->_config->delLdap($id);
         // @REVIEW
         $msg = "Ldap Server deleted successfully.";
         $this->message($msg, self::M_NOTICE);
-        $this->_forward('config', 'panel');
+        $this->_forward('view');
     }
 }

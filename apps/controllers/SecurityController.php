@@ -177,6 +177,8 @@ class SecurityController extends MessageController
     }
     /*
      * Get form object from form config file section 
+     * @param string $formConfigSection the forms name namely section of
+            the configuration
      * 
      * @return  Zend_Form
      */

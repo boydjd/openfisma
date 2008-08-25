@@ -2,7 +2,7 @@
 /**
  * Abstract.php
  *
- * Abstract Model
+ * Base Model
  *
  * @package Model
  * @author     Xhorse xhorse at users.sourceforge.net
@@ -10,7 +10,7 @@
  * @license    http://www.openfisma.org/mw/index.php?title=License
  * @version $Id$
  */
-abstract class Fisma_Model extends Zend_Db_Table
+class Fisma_Model extends Zend_Db_Table
 {
     /**
      * List all entries in the table

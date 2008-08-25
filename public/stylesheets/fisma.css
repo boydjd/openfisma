@@ -168,3 +168,28 @@ label.error {
     width:95%;
     margin:0 auto;
 }
+
+.cform {
+    padding:10px;
+    border:1px #44637A solid;
+}
+.cform dd {
+    line-height:20px;
+}
+.cform dt {
+    float:left;
+    width:400px;
+    background:#e3e3e3;
+    height:20px;
+    color:#44637A;
+    font-weight:bold;
+    line-height:20px;
+    vertical-align:middle;
+}
+.cform span {
+    float:left;
+    padding-right:10px;
+}
+.errors {
+    color:red;
+}

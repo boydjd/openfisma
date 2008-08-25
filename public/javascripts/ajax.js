@@ -101,37 +101,8 @@ $(document).ready(function(){
         $("div#checkResult").load(url,null);
     });
 
-    $("input#addLdapServer").click(function() {
-        if ($("div#addLdapServer_dialog:first").is(":hidden")) {
-            $("div#addLdapServer_dialog").slideDown("slow");
-        } else {
-            $("div#addLdapServer_dialog").hide();
-        }
-    });
-
-    $("input#addLdapAdvanced").click(function() {
-        if ($("div#addLdapAdvanced_dialog:first").is(":hidden")) {
-            $("div#addLdapAdvanced_dialog").slideDown("slow");
-        } else {
-            $("div#addLdapAdvanced_dialog").hide();
-        }
-    });
-
-    $("input[name='serverType']").change(function() {
-        var type = $("input[@name=serverType][@checked]").val();
-        if ( 'ad' == type ) {
-            if (!$("div#addLdapAdvanced_dialog:first").is(":hidden")) {
-                $("input#addLdapAdvanced").trigger('click');
-            }
-        } else {
-            if ($("div#addLdapAdvanced_dialog:first").is(":hidden")) {
-                $("input#addLdapAdvanced").trigger('click');
-            }
-        }
-    });
-
     $(".confirm").click(function(){
-        var str = "Are you sure that you want to delete this ldap server?";
+        var str = "DELETING COMFIRMATION!";
         if(confirm(str) == true){
             return true;
         }
