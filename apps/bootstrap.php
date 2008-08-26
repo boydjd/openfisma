@@ -29,6 +29,16 @@ require_once 'Zend/Db/Table.php';
 require_once MODELS . DS . 'Abstract.php';
 require_once 'Zend/Controller/Plugin/ErrorHandler.php';
 require_once 'Zend/Date.php';
+
+// sets the doctype() helper to utilize XHTML1_STRICT which is passed to the default layout
+// DocType must be set before making such calls; otherwise, they will use the default (which is HTML4 transitional).
+// Other options are as follows:
+// XHTML1_STRICT, XHTML1_TRANSITIONAL, XHTML1_FRAMESET, HTML4_STRICT
+// HTML4_LOOSE, HTML4_FRAMESET, CUSTOM_XHTML
+$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+$viewRenderer->initView();
+$viewRenderer->view->doctype('XHTML1_STRICT');
+
 //Make the php convention as the toString default format
 Zend_Date::setOptions(array(
     'format_type' => 'php'

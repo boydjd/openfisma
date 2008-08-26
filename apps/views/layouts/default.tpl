@@ -1,7 +1,16 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- Sets the doctype from the bootstrap file -->
+<?= $this->doctype() ?>
+
 <html>
 <head>
-<title></title>
+
+<!-- Sets the page title -->
+<?
+$this->headTitle()->setSeparator(' - ');
+$this->headTitle()->prepend('OpenFISMA');
+echo $this->headTitle();
+?>
+
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.ui.js"></script>
