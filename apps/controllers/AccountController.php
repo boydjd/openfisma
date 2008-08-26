@@ -49,33 +49,9 @@ require_once (MODELS . DS . 'event.php');
 class AccountController extends PoamBaseController
 {
     private $_user;
+    
     protected $_sanity = array(
-        'data' => 'user',
-        'filter' => array(
-            '*' => array(
-                'StringTrim',
-                'StripTags'
-            )
-        ) ,
-        'validator' => array(
-            'name_first' => array('Alnum' => true),
-            'name_last' => array('Alnum' => true),
-            'phone_office' => array('Alnum' => true),
-            'phone_mobile' => array(
-                'allowEmpty' => TRUE,
-                'Digits'
-            ) ,
-            'email' => 'EmailAddress',
-            'title' => array('Alnum' => true, 'allowEmpty' => TRUE),
-            'is_active' => array(
-                'Int'
-            ) ,
-            'account' => 'Alnum',
-            'password' => array(
-                'allowEmpty' => TRUE
-            )
-        ) ,
-        'flag' => TRUE
+        // @todo remove this array
     );
     
     /**
@@ -90,6 +66,63 @@ class AccountController extends PoamBaseController
                     ->initContext();
     }
 
+    /**
+     * getAccountForm() - Returns the standard form for creating, reading, and
+     * updating accounts.
+     *
+     * @return Zend_Form
+     */
+    public function getAccountForm() {
+        // Get system and roles information
+        $system = new System();
+        $db = $system->getAdapter();
+        $qry = $db->select()
+                  ->from('roles', array('id',
+                                        'name'))
+                  ->where('nickname != ?', 'auto_role')
+                  ->order('name');
+        $ret = $db->fetchAll($qry);
+
+        // Load the form and populate the dynamic pull downs
+        $form = Form_Manager::loadForm('account');
+        foreach ($ret as $row) {
+            $form->getElement('role')
+                 ->addMultiOptions(array($row['id'] => $row['name']));
+        }
+
+        $checkboxMatrix = new Form_CheckboxMatrix('systems');
+        foreach ($system->getList() as $id => $systemData) {
+            $checkboxMatrix->addCheckbox($id, $systemData['name']);
+        }
+        
+        // If the application is in database authentication mode, then remove
+        // the LDAP DN fields. If the application is in LDAP authentication mode,
+        // then remove the database authentication fields.
+        $systemAuthType = readSysConfig('auth_type');
+        if ($systemAuthType == 'ldap') {
+            $form->removeElement('account');
+            $form->removeElement('password');
+            $form->removeElement('confirm_password');
+        } else if ($systemAuthType == 'database') {
+            $form->removeElement('ldap_dn');
+            $form->removeElement('checkdn');
+        } else {
+            throw new Fisma_Exception("The account form cannot handle"
+                                    . " the current authentication type: "
+                                    . $systemAuthType);
+        }
+        // Add the checkbox matrix to a separate display group
+        $form->addElement($checkboxMatrix);
+        $form->addDisplayGroup(array('systems'), 'systemsGroup');
+
+        // I don't think it's possible to load the status menu correctly in
+        // the .ini file.
+        $form->getElement('is_active')
+             ->setMultiOptions(array(1 => 'Active', 0 => 'Locked'));
+
+        return $form;
+    }
+    
     /**
      * searchboxAction() - Render the form for searching the user accounts.
      */
@@ -173,13 +206,16 @@ class AccountController extends PoamBaseController
     }
     
     /**
-     *  viewAction() - Display a single user record with all details.
+     *  viewAction() - Display a single user record with all details. If the
+     * parameter
      */
     public function viewAction()
     {
+        $form = $this->getAccountForm();
+        
         // $id is the user id of the record that should be displayed
         $id = $this->getRequest()->getParam('id');
-        // $v is ???
+        // $v is either "view" or "edit" and indicates which view to use
         $v = $this->getRequest()->getParam('v');
 
         $user = new User();
@@ -200,7 +236,9 @@ class AccountController extends PoamBaseController
                                  'password',
                                  'ldap_dn'))
                     ->where("id = ?", $id);
+
         $userDetail = $user->fetchRow($qry)->toArray();
+        $userDetail['systems'] = $user->getMySystems($id);
 
         // Get the user's roles
         $ret = $user->getRoles($id,
@@ -214,86 +252,118 @@ class AccountController extends PoamBaseController
         } else {
             $roles = null;
         }
-        $query = $user->getAdapter()
-                      ->select()
-                      ->from('roles', array('id', 'name'))
-                      ->where('nickname != \'auto_role\'')
-                      ->order('name ASC');
-        $roleList = $user->getAdapter()->fetchPairs($query);
+        // @todo this will break if more than 1 role
+        $userDetail['role'] = $roles;
+        
+        if ($v == 'edit') {
+            $this->view->assign('viewLink',
+                                "/panel/account/sub/view/id/$id");
+            $form->setAction("/panel/account/sub/update/id/$id");
+        } else {
+            // In view mode, disable all of the form controls
+            $this->view->assign('editLink',
+                                "/panel/account/sub/view/id/$id/v/edit");
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
+        }
         
         // Assign view outputs
-        $this->view->assign('id', $id);
-        $this->view->assign('user', $userDetail);
-        $this->view->assign('roleCount', $count);
-        $this->view->assign('roles', $roles);
-        $this->view->assign('roleList', $roleList);
-        $this->view->assign('mySystems', $user->getMySystems($id));
-        $this->view->assign('allSystems', $sys->getList());
+        // @hack This is to work around a bug in Zend_View_FormHelper: the
+        // option value for is_active needs to be converted from int to string.
+        $userDetail['is_active'] = "{$userDetail['is_active']}";
+        $form->setDefaults($userDetail);
+
+        $this->view->assign('form', Form_Manager::prepareForm($form));
+
+        // Notice that the view is rendered conditionally based on the $v
+        // parameter. This can be "edit" or "view"
         $this->render($v);
     }
     
     /**
-     * updateAction() - Displays the form for updating a user's information.
+     * updateAction() - Updates account information after submitting an edit
+     * form.
      *
      * @todo cleanup this function
      */
     public function updateAction()
     {
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $userData = $req->getPost('user');
-        $userRole = $req->getPost('user_role');
-        $systemData = $req->getPost('system');
-        $confirmPassword = $req->getPost('password_confirm');
-        
-        if ( readSysConfig('auth_type') == 'database'
-             && empty($userData['account']) ) {
-            $msg = "Account can not be null.";
-            $this->message($msg, self::M_WARNING);
-            $this->_forward('view', null, null, array(
-                'v' => 'edit'
-            ));
-            return;
-        }
-        if ( readSysConfig('auth_type') == 'ldap' ) {
-            $userData['account'] = $userData['ldap_dn'];
-        }
-        if ( !empty($userData['password']) ) {
-            /// @todo validate the password complexity
-            if ($userData['password'] != $confirmPassword) {
-                $msg = "Password does not match confirmation.";
+        // Load the account form in order to perform validations.
+        $form = $this->getAccountForm();
+        $formValid = $form->isValid($_POST);
+        $accountData = $form->getValues();
+
+        $id = $this->getRequest()->getParam('id');
+        $db = $this->_user->getAdapter();
+        // Compare the two passwords
+        // @todo when we get ZF 1.6, use the addError function here and in
+        // saveAction()
+        if ($accountData['password'] != $accountData['confirm_password']) {
+            $this->message("The two passwords do not match",
+                           self::M_WARNING);
+            $this->_forward('view', null, null, array('id' => $id,
+                                                      'v' => 'edit'));
+        } else if ($formValid) {
+            if ( readSysConfig('auth_type') == 'database'
+                 && empty($accountData['account']) ) {
+                $msg = "Account can not be null.";
                 $this->message($msg, self::M_WARNING);
                 $this->_forward('view', null, null, array(
                     'v' => 'edit'
                 ));
                 return;
             }
-            $userData['password'] = md5($userData['password']);
-        } else {
-            unset($userData['password']);
-        }
-        if (!empty($userData)) {
-            if ($userData['is_active'] == 0) {
-                $userData['termination_ts'] = self::$now->toString("Y-m-d H:i:s");
-            } elseif (1 == $userData['is_active']) {
-                $userData['failure_count'] = 0;
+            if ( readSysConfig('auth_type') == 'ldap' ) {
+                $accountData['account'] = $accountData['ldap_dn'];
             }
-            $n = $this->_user->update($userData, "id=$id");
+            if ( !empty($accountData['password']) ) {
+                /// @todo validate the password complexity
+                if ($accountData['password'] !=
+                    $accountData['confirm_password']) {
+                    $msg = "The two passwords do not match.";
+                    $this->message($msg, self::M_WARNING);
+                    $this->_forward('view', null, null, array(
+                        'v' => 'edit'
+                    ));
+                    return;
+                }
+                $accountData['password'] = md5($accountData['password']);
+            } else {
+                unset($accountData['password']);
+            }
+            unset($accountData['confirm_password']);
+            $roleId = $accountData['role'];
+            unset($accountData['role']);
+            unset($accountData['submit']);
+            $systems = $accountData['systems'];
+            if (!is_array($systems)) {
+                $systems = array();
+            }
+            unset($accountData['systems']);
+
+            if ($accountData['is_active'] == 0) {
+                $accountData['termination_ts'] =
+                    self::$now->toString("Y-m-d H:i:s");
+            } elseif ($accountData['is_active'] == 1) {
+                $accountData['failure_count'] = 0;
+            }
+
+            $n = $this->_user->update($accountData, "id=$id");
             if ($n > 0) {
-                $this->_user->log(User::MODIFICATION, 
+                $this->_user->log(User::MODIFICATION,
                                    $this->me->id,
-                                   $userData['account']);
+                                   "Modified user {$accountData['account']}");
             }
-            if (!empty($systemData)) {
-                $my_sys = $this->_user->getMySystems($id);
-                $new_sys = array_diff($systemData, $my_sys);
-                $remove_sys = array_diff($my_sys, $systemData);
-                $n = $this->_user->associate($id, User::SYS, $new_sys);
-                $n = $this->_user->associate($id, User::SYS, $remove_sys,
-                                              true);
-            }
-        }
-        if (!empty($userRole)) {
+
+            $mySystems = $this->_user->getMySystems($id);
+            $addSystems = array_diff($systems, $mySystems);
+            $removeSystems = array_diff($mySystems, $systems);
+            $n = $this->_user->associate($id, User::SYS, $addSystems);
+            // The last parameter "true" inverts the association, i.e. removes
+            // the specified systems from this user's account
+            $n = $this->_user->associate($id, User::SYS, $removeSystems, true);
+
             $qry = $db->select()->from(array(
                 'ur' => 'user_roles'
             ), 'ur.*')->join(array(
@@ -305,19 +375,45 @@ class AccountController extends PoamBaseController
             $count = count($ret);
             if (1 == $count) {
                 $db->update('user_roles', array(
-                    'role_id' => $userRole
+                    'role_id' => $roleId
                 ), 'user_id =' . $id);
             } elseif (0 == $count) {
                 $db->insert('user_roles', array(
-                    'role_id' => $userRole,
+                    'role_id' => $roleId,
                     'user_id' => $id
                 ));
             } else {
-                throw new 
-                    fisma_Exception('You can not evade browser to access.');
+                throw new
+                    fisma_Exception('The user has more than 1 role.');
             }
+
+            $this->message("User ({$accountData['account']}) modified",
+                           self::M_NOTICE);
+            $this->_forward('view', null, null, array('id' => $id));
+        } else {
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors>0)) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+
+            // Error message
+            $this->message("Unable to update account:<br>$errorString",
+                           self::M_WARNING);
+
+            // On error, redirect back to the edit action.
+            $this->_forward('view', null, null, array('id' => $id,
+                                                      'v' => 'edit'));
         }
-        $this->_forward('view');
     }
     
     /**
@@ -332,18 +428,18 @@ class AccountController extends PoamBaseController
         assert($id);
         $msg = "";
         $ret = $this->_user->find($id)->toArray();
-        $user_name = $ret[0]['account'];
+        $userName = $ret[0]['account'];
         $res = $this->_user->delete('id = ' . $id);
         $res = $this->_user->getAdapter()
                     ->delete('user_systems', 'user_id = ' . $id);
         $res = $this->_user->getAdapter()
                     ->delete('user_roles', 'user_id = ' . $id);
         if ($res) {
-            $msg = "User " . $user_name . " deleted successfully.";
+            $msg = "User " . $userName . " deleted successfully.";
             $model = self::M_NOTICE;
             $this->_user->log(USER::TERMINATION, 
                                $this->me->id, 
-                               'delete user ' . $user_name);
+                               'delete user ' . $userName);
         } else {
             $msg = "Failed to delete user.";
             $model = self::M_WARNING;
@@ -352,55 +448,26 @@ class AccountController extends PoamBaseController
         $this->_forward('list');
     }
     
-    public function getAccountForm() {
-        // Get system and roles information
-        $system = new System();
-        $db = $system->getAdapter();
-        $qry = $db->select()
-                  ->from('roles', array('id',
-                                        'name'))
-                  ->where('nickname != ?', 'auto_role')
-                  ->order('name');
-        $ret = $db->fetchAll($qry);
-
-        // Load the form and populate the dynamic pull downs
-        $form = Form_Manager::loadForm('account');
-        foreach ($ret as $row) {
-            $form->getElement('role')
-                 ->addMultiOptions(array($row['id'] => $row['name']));
-        }
-
-        $checkboxMatrix = new Form_CheckboxMatrix('systemsMatrix');
-        foreach ($system->getList() as $id => $systemData) {
-            $checkboxMatrix->addCheckbox($id, $systemData['name']);
-        }
-
-        // Add the checkbox matrix to a separate display group
-        $form->addElement($checkboxMatrix);
-        $form->addDisplayGroup(array('systemsMatrix'), 'systems');
-
-        // I don't think it's possible to load the status menu correctly in
-        // the .ini file.
-        $form->getElement('is_active')
-             ->setMultiOptions(array(1 => 'Active', 0 => 'Locked'));
-
-        // If there are any parameters in the _POST variable, then use that
-        // to prepopulate the form.
-        $form->setDefaults($_POST);
-             
-        return $form;
-    }
-    
     /**
      * createAction() - Display the form for creating a new user account.
-     *
-     * @todo cleanup this function
      */
     public function createAction()
     {
         // Get the account form
         $form = $this->getAccountForm();
-
+        $form->setAction('/panel/account/sub/save');
+        
+        // The password fields are required during creation *if* we are in
+        // database authentication mode
+        if (readSysConfig('auth_type') == 'database') {
+            $form->getElement('password')->setRequired(true);
+            $form->getElement('confirm_password')->setRequired(true);
+        }
+        
+        // If there is data in the _POST variable, then use that to
+        // pre-populate the form.
+        $form->setDefaults($_POST);
+        
         // Assign view outputs.
         $this->view->form = Form_Manager::prepareForm($form);
         $this->render();
@@ -408,24 +475,39 @@ class AccountController extends PoamBaseController
     
     /**
      * saveAction() - Saves information for a newly created user.
-     *
-     * @todo cleanup this function
      */
     public function saveAction()
     {
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
+
+        // The password fields are required during creation *if* we are in
+        // database authentication mode
+        if (readSysConfig('auth_type') == 'database') {
+            $form->getElement('password')->setRequired(true);
+            $form->getElement('confirm_password')->setRequired(true);
+        }
+
+        // Validate forms and get the submitted values
+        $formValid = $form->isValid($_POST);
         $accountData = $form->getValues();
-        print_r($accountData);
+        
+        // Compare the two passwords
         if ($accountData['password'] != $accountData['confirm_password']) {
             $this->message("The two passwords do not match",
                            self::M_WARNING);
-        } else if ($form->isValid($_POST)) {
+            $this->_forward('create');
+        } else if ($formValid) {
+            // Need to unset any parameters which aren't going into the db, due
+            // to the way the insert() function works below.
+            // @todo fix the insert function and then clean this up
             unset($accountData['confirm_password']);
             $roleId = $accountData['role'];
             unset($accountData['role']);
             unset($accountData['submit']);
-            unset($accountData['systemsMatrix']);
+            // @todo see
+            $systems = $accountData['systems'];
+            unset($accountData['systems']);
             
             // Create the user's main record.
             if ( 'ldap' == readSysConfig('auth_type') ) {
@@ -452,6 +534,9 @@ class AccountController extends PoamBaseController
                              'create user('.$accountData['account'].')');
             $this->message("User ({$accountData['account']}) added",
                            self::M_NOTICE);
+                           
+            // On success, redirect to read view
+            $this->_forward('view', null, null, array('id' => $userId));
         } else {
             /**
              * @todo this error display code needs to go into the decorator,
@@ -459,24 +544,27 @@ class AccountController extends PoamBaseController
              * put in a more convenient place
              */
             $errorString = '';
-            foreach ($form->getErrors() as $field => $fieldErrors) {
+            foreach ($form->getMessages() as $field => $fieldErrors) {
                 if (count($fieldErrors>0)) {
                     foreach ($fieldErrors as $error) {
-                        $errorString .= "$field failed because \"$error\"<br>";
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
                     }
                 }
             }
-            $this->message("Unable to create account: $errorString",
+
+            // Error message
+            $this->message("Unable to create account:<br>$errorString",
                            self::M_WARNING);
+                           
+            // On error, redirect back to the create action.
+            $this->_forward('create');
         }
-        $this->_forward('create');
     }
 
     /**
      * checkDnAction() - Check to see if the specified LDAP
      * distinguished name (DN) exists in the system's specified LDAP directory.
-     *
-     * @todo language check
      */
     public function checkdnAction()
     {
@@ -484,7 +572,6 @@ class AccountController extends PoamBaseController
         $config = new Config();
         $data = $config->getLdap();
         $dn = $this->_request->getParam('dn');
-
         $msg = '';
         foreach ($data as $opt) {
             unset($opt['id']);
@@ -500,13 +587,19 @@ class AccountController extends PoamBaseController
         echo $msg;
     }
 
+    /**
+     * assignroleAction() - ???
+     *
+     * @todo fix the camelCase in the name of this function
+     * @todo clean up this function
+     */
     public function assignroleAction()
     {
         $req = $this->getRequest();
-        $user_id = $req->getParam('id');
+        $userId = $req->getParam('id');
         $db = $this->_user->getAdapter();
-        $ret = $this->_user->find($user_id)->toArray();
-        $user_name = $ret[0]['account'];
+        $ret = $this->_user->find($userId)->toArray();
+        $userName = $ret[0]['account'];
         $qry = $db->select()->from(array(
             'r' => 'roles'
         ), array(
@@ -516,20 +609,20 @@ class AccountController extends PoamBaseController
         ->join(array(
             'ur' => 'user_roles'
         ), 'ur.role_id = r.id', array())
-        ->where('ur.user_id = ?', $user_id)
+        ->where('ur.user_id = ?', $userId)
         ->where('r.nickname !=?', 'auto_role');
-        $assign_roles = $db->fetchAll($qry);
+        $assignRoles = $db->fetchAll($qry);
         $qry->reset();
-        $ret = $this->_user->find($user_id)->toArray();
-        $auto_role = $ret[0]['auto_role'];
+        $ret = $this->_user->find($userId)->toArray();
+        $autoRole = $ret[0]['auto_role'];
         $qry->from('roles', array(
             'role_id' => 'id',
             'role_name' => 'name'
         ))->where('nickname != ?', 'auto_role');
-        $all_roles = $db->fetchAll($qry);
-        foreach ($all_roles as $v) {
-            if (!in_array($v, $assign_roles)) {
-                $available_roles[] = $v;
+        $allRoles = $db->fetchAll($qry);
+        foreach ($allRoles as $v) {
+            if (!in_array($v, $assignRoles)) {
+                $availableRoles[] = $v;
             }
         }
         $qry->reset();
@@ -548,38 +641,38 @@ class AccountController extends PoamBaseController
         ->join(array(
             'r' => 'roles'
         ), 'r.id = ur.role_id', array())
-        ->where('r.name = ?', $auto_role);
-        $assign_privileges = $db->fetchAll($qry);
-        $this->view->assign('user_id', $user_id);
-        $this->view->assign('user_name', $user_name);
-        $this->view->assign('assign_roles', $assign_roles);
-        $this->view->assign('available_roles', $available_roles);
-        $this->view->assign('assign_privileges', $assign_privileges);
+        ->where('r.name = ?', $autoRole);
+        $assignPrivileges = $db->fetchAll($qry);
+        $this->view->assign('user_id', $userId);
+        $this->view->assign('user_name', $userName);
+        $this->view->assign('assign_roles', $assignRoles);
+        $this->view->assign('available_roles', $availableRoles);
+        $this->view->assign('assign_privileges', $assignPrivileges);
         if ('assign' == $req->getParam('do')) {
-            $assign_roles = $req->getParam('assign_roles');
-            $assign_privileges = $req->getParam('assign_privileges');
-            $db->delete('user_roles', 'user_id = ' . $user_id);
-            foreach ($assign_roles as $v) {
+            $assignRoles = $req->getParam('assign_roles');
+            $assignPrivileges = $req->getParam('assign_privileges');
+            $db->delete('user_roles', 'user_id = ' . $userId);
+            foreach ($assignRoles as $v) {
                 $db->insert('user_roles', array(
-                    'user_id' => $user_id,
+                    'user_id' => $userId,
                     'role_id' => $v
                 ));
             }
-            if (!empty($assign_privileges)) {
+            if (!empty($assignPrivileges)) {
                 $qry = $db->select()->from(array(
                     'r' => 'roles'
                 ), array(
                     'role_id' => 'r.id'
-                ))->where('r.name = ?', $auto_role);
+                ))->where('r.name = ?', $autoRole);
                 $ret = $db->fetchRow($qry);
                 if (!empty($ret)) {
                     $role_id = $ret['role_id'];
                     $db->insert('user_roles', array(
-                        'user_id' => $user_id,
+                        'user_id' => $userId,
                         'role_id' => $role_id
                     ));
                     $db->delete('role_functions', 'role_id = ' . $role_id);
-                    foreach ($assign_privileges as $v) {
+                    foreach ($assignPrivileges as $v) {
                         $db->insert('role_functions', array(
                             'role_id' => $role_id,
                             'function_id' => $v
@@ -587,16 +680,16 @@ class AccountController extends PoamBaseController
                     }
                 } else {
                     $db->insert('roles', array(
-                        'name' => $auto_role,
+                        'name' => $autoRole,
                         'nickname' => 'auto_role',
                         'desc' => 'extra role for user'
                     ));
                     $role_id = $db->LastInsertId();
                     $db->insert('user_roles', array(
-                        'user_id' => $user_id,
+                        'user_id' => $userId,
                         'role_id' => $role_id
                     ));
-                    foreach ($assign_privileges as $v) {
+                    foreach ($assignPrivileges as $v) {
                         $db->insert('role_functions', array(
                             'role_id' => $role_id,
                             'function_id' => $v
@@ -606,21 +699,21 @@ class AccountController extends PoamBaseController
             }
             $this->message('assign role and privileges successfully.', 
                             self::M_NOTICE);
-            $this->_redirect('panel/account/sub/assignrole/id/' . $user_id);
+            $this->_redirect('panel/account/sub/assignrole/id/' . $userId);
         } else {
             $this->render();
         }
     }
     /**
-     * Search avaliable privileges 
+     * searchprivilegeAction() - ???
      */
     public function searchprivilegeAction()
     {
         $req = $this->_request;
         $db = $this->_user->getAdapter();
-        $user_id = $req->getParam('id');
-        $ret = $this->_user->find($user_id)->toArray();
-        $auto_role = $ret[0]['auto_role'];
+        $userId = $req->getParam('id');
+        $ret = $this->_user->find($userId)->toArray();
+        $autoRole = $ret[0]['auto_role'];
         $qry = $db->select()->from(array(
             'f' => 'functions'
         ), array(
@@ -636,8 +729,8 @@ class AccountController extends PoamBaseController
         ->join(array(
             'r' => 'roles'
         ), 'r.id = ur.role_id', array())
-        ->where('r.name = ?', $auto_role);
-        $assign_privileges = $db->fetchAll($qry);
+        ->where('r.name = ?', $autoRole);
+        $assignPrivileges = $db->fetchAll($qry);
         $roles = substr(str_replace('-', ',', $req->getParam('assign_roles')),
                          0, -1);
         $qry->reset();
@@ -658,13 +751,13 @@ class AccountController extends PoamBaseController
                 'rf' => 'role_functions'
             ), 'rf.function_id = f.id', array())
             ->where('rf.role_id in (' . $roles . ')');
-            $exist_privileges = array_merge($db->fetchAll($qry),
-                $assign_privileges);
+            $existPrivileges = array_merge($db->fetchAll($qry),
+                $assignPrivileges);
         } else {
-            $exist_privileges = $assign_privileges;
+            $existPrivileges = $assignPrivileges;
         }
         foreach ($all_privileges as $v) {
-            if (!in_array($v, $exist_privileges)) {
+            if (!in_array($v, $existPrivileges)) {
                 $available_privileges[] = $v;
             }
         }

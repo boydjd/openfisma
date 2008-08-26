@@ -17,7 +17,7 @@
 </div>
 
 <div class="form_box">
-<?= $this->form ?>
+<?php echo $this->form ?>
 </div>
 
 <br>

@@ -156,7 +156,13 @@ class Zend_View_Helper_FormSelect extends Zend_View_Helper_FormElement
              . ' label="' . $this->view->escape($label) . '"';
 
         // selected?
-        if (in_array($value, $selected, 0 === $value)) {
+        // @hack Need to modify this line because it causes an error when the
+        // select contains an option with a value equal to zero -- that option
+        // can never be selected by default.
+        //
+        // There is a bug existing (ZF-1930) for this issue
+        // -mhaase@endeavorsystems.com
+        if (in_array($value, $selected)) {
             $opt .= ' selected="selected"';
         }
 
