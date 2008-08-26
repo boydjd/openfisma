@@ -36,6 +36,7 @@ require_once 'Zend/Form/Element/Checkbox.php';
 require_once 'Zend/Validate/Between.php';
 require_once (FORMS . '/Manager.php');
 require_once (FORMS . '/CheckboxMatrix.php');
+require_once (MODELS . DS . 'event.php');
 
 /**
  * The account controller deals with creating, updating, and managing user
@@ -458,11 +459,11 @@ class AccountController extends PoamBaseController
              * put in a more convenient place
              */
             $errorString = '';
-            foreach($form->getErrors() as $field => $fieldErrors) {
+            foreach ($form->getErrors() as $field => $fieldErrors) {
                 if (count($fieldErrors>0)) {
-                	foreach ($fieldErrors as $error) {
+                    foreach ($fieldErrors as $error) {
                         $errorString .= "$field failed because \"$error\"<br>";
-                	}
+                    }
                 }
             }
             $this->message("Unable to create account: $errorString",
@@ -671,4 +672,37 @@ class AccountController extends PoamBaseController
         $this->_helper->layout->setLayout('ajax');
         $this->render('availableprivi');
     }
+    /**
+     * For setting events which user interested in
+     *
+     */
+    public function notificationeventAction()
+    {
+        $user_id = $this->_request->getParam('id');
+        $event = new Event();
+
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if (!isset($data['enableEvents'])) {
+                $data['enableEvents'] = array();
+            }
+            $event->saveEnabledEvents($user_id, $data['enableEvents']);
+            if ($data['notify_frequency']) {
+                $where = $this->_user->getAdapter()
+                    ->quoteInto('`id` = ?', $user_id);
+                $this->_user->update(array('notify_frequency' => 
+                    $data['notify_frequency']), $where);
+            } 
+        }
+        
+        $ret = $this->_user->find($user_id);
+        $this->view->notify_frequency = $ret->current()->notify_frequency;
+        $allEvent = $event->getUserAllEvents($user_id);
+        $enabledEvent = $event->getEnabledEvents($user_id);
+        
+        $this->view->availableList = array_diff($allEvent, $enabledEvent);
+        $this->view->enableList = array_intersect($allEvent, $enabledEvent);
+        $this->render();
+    }
+    
 }

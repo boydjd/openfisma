@@ -277,6 +277,8 @@ CREATE TABLE `users` (
   `phone_mobile` varchar(12) default NULL,
   `email` varchar(64) NOT NULL default '',
   `auto_role` varchar(20) NOT NULL,
+  `notify_frequency` int(10) NOT NULL default '720',
+  `most_recent_notify_ts` datetime NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `account` (`account`)
 );
@@ -312,3 +314,15 @@ CREATE TABLE `ldap_config` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `user_events` (
+  `user_id` int(10) NOT NULL,
+  `event_id` int(10) NOT NULL,
+  PRIMARY KEY  (`user_id`,`event_id`)
+);
+
+CREATE TABLE `events` (
+  `id` int(10) NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL,
+  `function_id` int(10) NOT NULL,
+  PRIMARY KEY  (`id`,`name`)
+);

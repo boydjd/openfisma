@@ -33,6 +33,14 @@ $(document).ready(function(){
         return !$('#exist_functions option:selected').remove().appendTo('#available_functions');  
     }); 
 
+    $('#addNotificationEvents').click(function() {
+        return !$('#availableEvents option:selected').remove().appendTo('#enableEvents');
+    });
+	
+	$('#removeNotificationEvents').click(function() {
+        return !$('#enableEvents option:selected').remove().appendTo('#availableEvents');
+    });
+
     $('#add_role').click(function() {
         return !$('#available_roles option:selected').remove().appendTo('#assign_roles');
     });
@@ -73,6 +81,11 @@ $(document).ready(function(){
         });
     }); 
 
+    $("form[name='event_form']").submit(function() {
+        $('#enableEvents option').each(function(i) {  
+            $(this).attr("selected", "selected");  
+        });
+    });
 
     asset_detail();
     

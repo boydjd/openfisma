@@ -67,7 +67,8 @@
                  echo $this->formSelect('user_role',nullGet($this->roles,0),null,$this->role_list);
              }
         ?>
-                &nbsp;<a href="/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a></td>
+                &nbsp;<a href="/panel/account/sub/assignrole/id/<?php echo $this->id;?>">Advanced</a> &nbsp; <a href="/panel/account/sub/notificationevent/id/<?php echo $this->id;?>">Notification
+                Events Setting</a></td>
         </tr>
         <tr>
             <td align="right" class="thc">Title:</td>
