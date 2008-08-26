@@ -28,6 +28,19 @@ class Config extends Fisma_Model
     protected $_primary = 'id';
     protected $_ldaps = array('name'=>'ldap_config',
                               'primary'=>'id');
+    protected $_mapLdap = array(
+            'host' => 'host',
+            'port' => 'port',
+            'username' => 'username',
+            'password' => 'password',
+            'useSsl' => 'use_ssl',
+            'bindRequiresDn' => 'bind_requires_dn',
+            'baseDn' => 'basedn',
+            'accountFilterFormat' => 'account_filter',
+            'accountCanonicalForm' => 'account_canonical',
+            'accountDomainNameShort' => 'domain_short',
+            'accountDomainName' => 'domain_name'
+    );
 
 
 
@@ -41,12 +54,18 @@ class Config extends Fisma_Model
     public function getLdap($id=null)
     {
         $ldapConfig = new Fisma_Model($this->_ldaps);
-        if (!empty($id)) {
-            $ret = $ldapConfig->find($id);
-        } else {
-            $ret = $ldapConfig->fetchAll();
+        if (isset($id) && !is_array($id)) {
+            $id = array($id);
         }
-        return $ret->toArray();
+        $ret = $ldapConfig->getList($this->_mapLdap,$id);
+        /*
+        $qry = $ldapConfig->select()->from($ldapConfig, $this->_mapLdap);
+        if (!empty($id)) {
+            $qry->where("id=$id");
+        }
+        $ret = $ldapConfig->fetchAll($qry);
+        */
+        return $ret;
     }
 
     /**
@@ -54,17 +73,17 @@ class Config extends Fisma_Model
      *
      *  @param array $value data to be saved/added
      */
-     public function saveLdap($values)
+     public function saveLdap($values,$id=null)
      {
-        $ldapConfig = new Fisma_Model($this->_ldaps);
-        if (empty($values['id'])) {
-            $ret = $ldapConfig->insert($values);
-        } else {
-            $id = $values['id'];
-            unset($values['id']);
-            $ret = $ldapConfig->update($values, "id=$id");
-        }
-        return $ret;
+         $revVal = array_flip($this->_mapLdap);
+         $values = directMap($revVal, $values);
+         $ldapConfig = new Fisma_Model($this->_ldaps);
+         if (empty($id)) {
+             $ret = $ldapConfig->insert($values);
+         } else {
+             $ret = $ldapConfig->update($values, "id=$id");
+         }
+         return $ret;
      }
 
     /**

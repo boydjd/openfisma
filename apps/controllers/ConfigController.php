@@ -32,6 +32,9 @@ class ConfigController extends SecurityController
     {
         parent::init();
         $this->_config = new Config();
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('ldapvalid', 'html')
+                    ->initContext();
     }
 
     /**
@@ -91,13 +94,14 @@ class ConfigController extends SecurityController
     public function ldapupdateAction()
     {
         $form = $this->getForm('ldap');
+        $id = $this->_request->getParam('id');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
             if ($form->isValid($data)) {
                 $values = $form->getValues();
                 unset($values['SaveLdap']);
                 unset($values['Reset']);
-                $this->_config->saveLdap($values);
+                $this->_config->saveLdap($values,$id);
                 //$msg = 'Configuration updated successfully';
                 //$this->message($msg, self::M_NOTICE);
                 $this->_redirect('/panel/config/');
@@ -105,10 +109,9 @@ class ConfigController extends SecurityController
             }
         } else {
             //only represent the view
-            $id = $this->_request->getParam('id');
             if (!empty($id)) {
                 $ldaps = $this->_config->getLdap($id);
-                $form->setDefaults($ldaps[0]);
+                $form->setDefaults($ldaps[$id]);
             }
         }
         $this->view->form = $form;
@@ -127,4 +130,35 @@ class ConfigController extends SecurityController
         $this->message($msg, self::M_NOTICE);
         $this->_forward('view');
     }
+
+    /**
+     * Validate the configuration
+     *
+     * This is only happens in ajax context
+     */
+    public function ldapvalidAction()
+    {
+        require_once "Zend/Ldap.php";
+        $form = $this->getForm('ldap');
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if ($form->isValid($data)) {
+                try{
+                    $data = $form->getValues();
+                    unset($data['id']);
+                    unset($data['SaveLdap']);
+                    unset($data['Reset']);
+                    $ldapcn = new Zend_Ldap($data);
+                    $ldapcn->connect();
+                    $ldapcn->bind();
+                    echo "<b> Bind successfully! </b>";
+                }catch (Zend_Ldap_Exception $e) {
+                        echo "<b>". $e->getMessage(). "</b>";
+                }
+            }
+        } else {
+            echo "<b>Invalid Parameters</b>";
+        }
+    }
+
 }

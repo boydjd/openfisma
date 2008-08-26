@@ -177,3 +177,21 @@
         }
         return $ret;
     }
+
+    /**
+     *  mapping the key/value from different arrays
+     * 
+     *  @param array $array1 the key1=>val1
+     *  @param array $array2 the val1=>val2
+     *  @return array the key1=>val2
+     */
+    function directMap($array1, $array2)
+    {
+        $ret = array();
+        foreach ($array1 as $k=>$v) {
+            if (array_key_exists($v, $array2)) {
+                $ret[$k] = $array2[$v];
+            }
+        }
+        return $ret;
+    }

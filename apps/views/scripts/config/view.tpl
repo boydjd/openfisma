@@ -23,14 +23,15 @@
 <tr>
     <th>LDAP Connection</th>
     <th>Domain Name</th>
-    <th>use ssl</th>
+    <th>bindRequiresDn</th>
+    <th>accountFilterFormat</th>
     <th>Edit</th>
     <th>Del</th>
 </tr>
 <?php 
 function makeLdapUrl($value)
 {
-    $url = 'LDAP://';
+    $url = $value['useSsl'] ? "ldaps://" : "ldap://";
     if (!empty($value['username'])) {
         $url .= $value['username'];
         if (!empty($value['password'])) {
@@ -46,17 +47,18 @@ function makeLdapUrl($value)
     return $url;
 }
 
-foreach ($this->ldaps as $opt) { 
+foreach ($this->ldaps as $id=>$opt) { 
     echo '<tr>
            <td class="tdc">', makeLdapUrl($opt), '</td>';
-    echo '<td class="tdc">', $opt['domain_name'], '</td>';
-    echo '<td class="tdc">', $opt['use_ssl']?'yes':'no', '</td>';
+    echo '<td class="tdc">', $opt['accountDomainName'], '</td>';
+    echo '<td class="tdc">', $opt['bindRequiresDn']?'yes':'no', '</td>';
+    echo '<td class="tdc">', $opt['accountFilterFormat'], '</td>';
     echo '<td class="tdc" >
-        <a href="/panel/config/sub/ldapupdate/id/'.$opt['id'].'" title="edit the LDAP configuration">
+        <a href="/panel/config/sub/ldapupdate/id/'.$id.'" title="edit the LDAP configuration">
         <img src="/images/edit.png" border="0"></a>
     </td>';
     echo '<td class="tdc">
-        <a href="/panel/config/sub/ldapdel/id/' .$opt['id']. '" class="confirm";">
+        <a href="/panel/config/sub/ldapdel/id/' .$id. '" class="confirm";">
         <img src="/images/del.png" border="0"></a>
     </td>';
     echo '</tr>';

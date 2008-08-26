@@ -79,7 +79,7 @@ class Fisma_Model extends Zend_Db_Table
     function count() {
         $countQuery = $this->select()
                            ->from($this->_name,
-                                  'count(*) count');
+                                  'count(*) AS count');
         $row = $this->fetchRow($countQuery);
         return $row->count;
     }

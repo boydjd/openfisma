@@ -84,6 +84,9 @@ class AccountController extends PoamBaseController
     {
         parent::init();
         $this->_user = new User();
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('checkdn', 'html')
+                    ->initContext();
     }
 
     /**
@@ -474,32 +477,26 @@ class AccountController extends PoamBaseController
      *
      * @todo language check
      */
-    public function checkDnAction()
+    public function checkdnAction()
     {
+        require_once "Zend/Ldap.php";
+        $config = new Config();
+        $data = $config->getLdap();
         $dn = $this->_request->getParam('dn');
-        $this->_helper->layout->setLayout('ajax');
-        if ( empty($dn) ) {
-            echo '<font color="red">Dn is missing</font>';
-        } else {
-            $multiOptions = readLdapConfig();
-            foreach ($multiOptions as $name=>$options) {
-                @$ds = ldap_connect($options['host'], $options['port']);
-                ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
-                ldap_bind($ds, $options['username'], $options['password']);
-                $ret = ldap_explode_dn($dn, 3);
-                $result = @ldap_search($ds, $options['baseDn'],
-                          'uid='.$ret[0]);
-                $entries = @ldap_get_entries($ds, $result);
-                if ( $entries['count'] != 0 && $dn == $entries[0]['dn'] ) {
-                    $flag = true;
-                    echo'<font color="green">The Dn exists</font>';
-                    return;
-                }
-            }
-            if ( empty($flag) ) {
-                echo'<font color="red">The Dn does not exist</font>';
+
+        $msg = '';
+        foreach ($data as $opt) {
+            unset($opt['id']);
+            $srv = new Zend_Ldap($opt);
+            try {
+                $dn = $srv->getCanonicalAccountName($dn,
+                            Zend_Ldap::ACCTNAME_FORM_DN); 
+                $msg = "$dn exists";
+            } catch (Zend_Ldap_Exception $e) {
+                $msg .= $e->getMessage();
             }
         }
+        echo $msg;
     }
 
     public function assignroleAction()

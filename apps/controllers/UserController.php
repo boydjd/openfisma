@@ -60,11 +60,9 @@ class UserController extends MessageController
                 throw new Zend_Auth_Exception('The account has been locked');
             }
 
-            $auth = Zend_Auth::getInstance();
             $authType = readSysConfig('auth_type');
-            $authAdapter = $this->authenticate($authType,
-                                             $username, $password);
-            $result = $auth->authenticate($authAdapter);
+            $auth = Zend_Auth::getInstance();
+            $result = $this->authenticate($authType, $username, $password);
             if ( !$result->isValid() ) {
                 if ( Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID == 
                      $result->getCode() ) {
@@ -259,7 +257,7 @@ Please create a password that adheres to these complexity requirements:<br>
      * @param string $type auth_type
      * @param string $username post username for login
      * @param string $password post password for login
-     * @return Zend_Auth_Adapter 
+     * @return Zend_Auth_Result
      */
     protected function authenticate($type, $username, $password)
     {
@@ -268,23 +266,17 @@ Please create a password that adheres to these complexity requirements:<br>
             $type = 'database';
         }
         if ( 'ldap' == $type ) {
-            $multiOptions = readLdapConfig();
-            $auth = Zend_Auth::getInstance();
-            foreach ($multiOptions as $group=>$options) {
-                $authAdapter = new Zend_Auth_Adapter_Ldap(
-                               array($group=>$options), $username, $password);
-                $result = $auth->authenticate($authAdapter);
-                if ( true == $result->isValid() ) {
-                    return $authAdapter;
-                }
-            }
+            $config = new Config();
+            $data = $config->getLdap();
+            $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
         }
         if ( 'database' == $type ) {
             $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users',
                                                         'account', 'password');
             $authAdapter->setIdentity($username)->setCredential(md5($password));
         }
-        return $authAdapter;
+        $auth = Zend_Auth::getInstance();
+        return $auth->authenticate($authAdapter);
     }
 
 }
