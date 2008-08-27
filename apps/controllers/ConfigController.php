@@ -37,6 +37,11 @@ class ConfigController extends SecurityController
                     ->initContext();
     }
 
+    public function indexAction()
+    {
+        $this->_helper->actionStack('notification');
+        $this->_helper->actionStack('view');
+    }
     /**
      * Display and update the persistent configurations
      */
@@ -57,33 +62,36 @@ class ConfigController extends SecurityController
         $general->setDefaults($configs);
         if ($this->_request->isPost()) {
             $configPost = $this->_request->getPost();
-            if ($general->isValid($configPost)) {
-                $values = $general->getValues();
-                //array_intersect_key requires PHP > 5.1.0
-                $validVals = array(
-                    Config::MAX_ABSENT  =>0,
-                    Config::AUTH_TYPE   =>0,
-                    Config::F_THRESHOLD =>0,
-                    Config::EXPIRING_TS =>0 
-                 );
-                $values = array_intersect_key($values, $validVals);
-                foreach ($values as $k => $v) {
-                    //@todo check $values whether is modified
-                    $records[] = $k;
-                    $where = $this->_config->getAdapter()->quoteInto('`key` = ?', $k);
-                    if ($k == Config::EXPIRING_TS) {
-                        $v *= 3600; //convert to second
+            if (isset($configPost[Config::MAX_ABSENT])) {
+                if ($general->isValid($configPost)) {
+                    $values = $general->getValues();
+                    //array_intersect_key requires PHP > 5.1.0
+                    $validVals = array(
+                        Config::MAX_ABSENT  =>0,
+                        Config::AUTH_TYPE   =>0,
+                        Config::F_THRESHOLD =>0,
+                        Config::EXPIRING_TS =>0 
+                     );
+                    $values = array_intersect_key($values, $validVals);
+                    foreach ($values as $k => $v) {
+                        //@todo check $values whether is modified
+                        $records[] = $k;
+                        $where = $this->_config->getAdapter()
+                            ->quoteInto('`key` = ?', $k);
+                        if ($k == Config::EXPIRING_TS) {
+                            $v *= 3600; //convert to second
+                        }
+                        $this->_config->update(array('value' => $v), $where);
                     }
-                    $this->_config->update(array('value' => $v), $where);
-                }
-                $this->_notification
-                     ->add(Notification::CONFIGURATION_MODIFIED,
-                        $this->me->account, $records);
+                    $this->_notification
+                         ->add(Notification::CONFIGURATION_MODIFIED,
+                            $this->me->account, $records);
 
-                $msg = 'Configuration updated successfully';
-                $this->message($msg, self::M_NOTICE);
-            } else {
-                $general->populate($configPost);
+                    $msg = 'Configuration updated successfully';
+                    $this->message($msg, self::M_NOTICE);
+                } else {
+                    $general->populate($configPost);
+                }
             }
         }
 
@@ -107,7 +115,7 @@ class ConfigController extends SecurityController
                 $values = $form->getValues();
                 unset($values['SaveLdap']);
                 unset($values['Reset']);
-                $this->_config->saveLdap($values,$id);
+                $this->_config->saveLdap($values, $id);
                 //$msg = 'Configuration updated successfully';
                 //$this->message($msg, self::M_NOTICE);
                 $this->_redirect('/panel/config/');
@@ -166,5 +174,38 @@ class ConfigController extends SecurityController
             echo "<b>Invalid Parameters</b>";
         }
     }
-
+    /**
+     * Notification event system base setting
+     *
+     */
+    public function notificationAction()
+    {
+        $config = new Config();
+        $form = $this->getForm('notification');
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if (isset($data[Config::SENDER])) {
+                if ($form->isValid($data)) {
+                    $data = $form->getValues();
+                    unset($data['submit']);
+                    unset($data['reset']);
+                    foreach ($data as $k => $v) {
+                        $where = $config->getAdapter()
+                            ->quoteInto('`key` = ?', $k);
+                        $config->update(array('value' => $v), $where);
+                    }
+                } else {
+                    $form->populate($data);
+                }
+            }
+        } 
+        $items = $config->getList(array('key', 'value'));
+        $configs = array();
+        foreach ($items as $item) {
+            $configs[$item['key']] = $item['value'];
+        }
+        $form->setDefaults($configs);
+        $this->view->form = $form;
+        $this->render();
+    }
 }

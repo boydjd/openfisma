@@ -28,7 +28,8 @@ class PanelController extends SecurityController
     }
     public function headerAction()
     {
-        $this->_helper->layout->assign('header', $this->view->render($this->_helper->viewRenderer->getViewScript()));
+        $this->_helper->layout->assign('header',
+            $this->view->render($this->_helper->viewRenderer->getViewScript()));
         $this->_helper->layout->setLayout('default');
     }
     public function dashboardAction()
@@ -119,7 +120,7 @@ class PanelController extends SecurityController
 
     public function configAction()
     {
-        $sub = $this->_request->getParam('sub','view');
+        $sub = $this->_request->getParam('sub', 'index');
         $this->_helper->actionStack('header');
         $this->_helper->actionStack($sub, 'Config');
     }

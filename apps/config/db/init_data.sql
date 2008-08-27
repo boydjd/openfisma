@@ -1,8 +1,13 @@
-INSERT INTO `configurations` VALUES
+INSERT INTO `configurations` (`id`, `key`, `value`, `description`) VALUES
 (1,'max_absent_time','90','Maximum Days An Account Can Be Inactive'),
 (2,'failure_threshold','3','Maximum Login Attempts Before Server Locks Account'),
 (3,'expiring_seconds','1800','Seconds that the authentication session expiring'),
-(4,'auth_type','database','authentication type');
+(4,'auth_type','database','Authentication type'),
+(5,'sender', NULL, 'Send Email Address'),
+(6,'subject', NULL, 'Email Subject'),
+(7,'smtp_host', NULL, 'Smtp server name'),
+(8,'smtp_username', NULL, 'Username for smtp Authenticate'),
+(9,'smtp_password', NULL, 'Password for smtp Authenticate');
 
 INSERT INTO `evaluations` (`id`, `name`, `precedence_id`, `function_id`, `group`) VALUES
 (1, 'EV_SSO', 0, 25, 'EVIDENCE'),

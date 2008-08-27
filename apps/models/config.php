@@ -23,7 +23,13 @@ class Config extends Fisma_Model
     const AUTH_TYPE     = 'auth_type';
     const F_THRESHOLD   = 'failure_threshold';
     const EXPIRING_TS   = 'expiring_seconds';
-
+    
+    const SENDER    = 'sender';
+    const SUBJECT     = 'subject';
+    const SMTP_HOST   = 'smtp_host';
+    const SMTP_USERNAME   = 'smtp_username';
+    const SMTP_PASSWORD   = 'smtp_password';
+    
     protected $_name = 'configurations';
     protected $_primary = 'id';
     protected $_ldaps = array('name'=>'ldap_config',
@@ -57,7 +63,7 @@ class Config extends Fisma_Model
         if (isset($id) && !is_array($id)) {
             $id = array($id);
         }
-        $ret = $ldapConfig->getList($this->_mapLdap,$id);
+        $ret = $ldapConfig->getList($this->_mapLdap, $id);
         /*
         $qry = $ldapConfig->select()->from($ldapConfig, $this->_mapLdap);
         if (!empty($id)) {
