@@ -96,8 +96,8 @@ class AccountController extends PoamBaseController
         }
         
         // If the application is in database authentication mode, then remove
-        // the LDAP DN fields. If the application is in LDAP authentication mode,
-        // then remove the database authentication fields.
+        // the LDAP DN fields. If the application is in LDAP authentication
+        // mode, then remove the database authentication fields.
         $systemAuthType = readSysConfig('auth_type');
         if ($systemAuthType == 'ldap') {
             $form->removeElement('account');
@@ -299,7 +299,9 @@ class AccountController extends PoamBaseController
         // Compare the two passwords
         // @todo when we get ZF 1.6, use the addError function here and in
         // saveAction()
-        if ($accountData['password'] != $accountData['confirm_password']) {
+        if ( isset($accountData['password'])
+             && ($accountData['password'] !=
+                 $accountData['confirm_password']) ) {
             $this->message("The two passwords do not match",
                            self::M_WARNING);
             $this->_forward('view', null, null, array('id' => $id,
@@ -341,6 +343,7 @@ class AccountController extends PoamBaseController
                 $systems = array();
             }
             unset($accountData['systems']);
+            unset($accountData['checkdn']);
 
             if ($accountData['is_active'] == 0) {
                 $accountData['termination_ts'] =
@@ -498,7 +501,9 @@ class AccountController extends PoamBaseController
         $accountData = $form->getValues();
         
         // Compare the two passwords
-        if ($accountData['password'] != $accountData['confirm_password']) {
+        if ( isset($accountData['password'])
+             && ($accountData['password'] !=
+                 $accountData['confirm_password']) ) {
             $this->message("The two passwords do not match",
                            self::M_WARNING);
             $this->_forward('create');
@@ -513,6 +518,7 @@ class AccountController extends PoamBaseController
             // @todo see
             $systems = $accountData['systems'];
             unset($accountData['systems']);
+            unset($accountData['checkdn']);
             
             // Create the user's main record.
             if ( 'ldap' == readSysConfig('auth_type') ) {
@@ -588,7 +594,14 @@ class AccountController extends PoamBaseController
                             Zend_Ldap::ACCTNAME_FORM_DN); 
                 $msg = "$dn exists";
             } catch (Zend_Ldap_Exception $e) {
-                $msg .= $e->getMessage();
+                // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
+                // DN does not exist.
+                if ($e->getErrorCode() ==
+                    Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
+                    $msg = "$dn does NOT exist";
+                } else {
+                    $msg .= 'Unknown error while checking DN: '.$e->getMessage();
+                }
             }
         }
         echo $msg;
@@ -673,15 +686,15 @@ class AccountController extends PoamBaseController
                 ))->where('r.name = ?', $autoRole);
                 $ret = $db->fetchRow($qry);
                 if (!empty($ret)) {
-                    $role_id = $ret['role_id'];
+                    $roleId = $ret['role_id'];
                     $db->insert('user_roles', array(
                         'user_id' => $userId,
-                        'role_id' => $role_id
+                        'role_id' => $roleId
                     ));
-                    $db->delete('role_functions', 'role_id = ' . $role_id);
+                    $db->delete('role_functions', 'role_id = ' . $roleId);
                     foreach ($assignPrivileges as $v) {
                         $db->insert('role_functions', array(
-                            'role_id' => $role_id,
+                            'role_id' => $roleId,
                             'function_id' => $v
                         ));
                     }
@@ -691,14 +704,14 @@ class AccountController extends PoamBaseController
                         'nickname' => 'auto_role',
                         'desc' => 'extra role for user'
                     ));
-                    $role_id = $db->LastInsertId();
+                    $roleId = $db->LastInsertId();
                     $db->insert('user_roles', array(
                         'user_id' => $userId,
-                        'role_id' => $role_id
+                        'role_id' => $roleId
                     ));
                     foreach ($assignPrivileges as $v) {
                         $db->insert('role_functions', array(
-                            'role_id' => $role_id,
+                            'role_id' => $roleId,
                             'function_id' => $v
                         ));
                     }
@@ -745,7 +758,7 @@ class AccountController extends PoamBaseController
             'function_id' => 'id',
             'function_name' => 'name'
         ));
-        $all_privileges = $db->fetchAll($qry);
+        $allPrivileges = $db->fetchAll($qry);
         if (!empty($roles)) {
             $qry->reset();
             $qry->from(array(
@@ -763,12 +776,12 @@ class AccountController extends PoamBaseController
         } else {
             $existPrivileges = $assignPrivileges;
         }
-        foreach ($all_privileges as $v) {
+        foreach ($allPrivileges as $v) {
             if (!in_array($v, $existPrivileges)) {
-                $available_privileges[] = $v;
+                $availablePrivileges[] = $v;
             }
         }
-        $this->view->assign('available_privileges', $available_privileges);
+        $this->view->assign('available_privileges', $availablePrivileges);
         $this->_helper->layout->setLayout('ajax');
         $this->render('availableprivi');
     }
@@ -778,7 +791,7 @@ class AccountController extends PoamBaseController
      */
     public function notificationeventAction()
     {
-        $user_id = $this->_request->getParam('id');
+        $userId = $this->_request->getParam('id');
         $event = new Event();
 
         if ($this->_request->isPost()) {
@@ -786,19 +799,19 @@ class AccountController extends PoamBaseController
             if (!isset($data['enableEvents'])) {
                 $data['enableEvents'] = array();
             }
-            $event->saveEnabledEvents($user_id, $data['enableEvents']);
+            $event->saveEnabledEvents($userId, $data['enableEvents']);
             if ($data['notify_frequency']) {
                 $where = $this->_user->getAdapter()
-                    ->quoteInto('`id` = ?', $user_id);
+                    ->quoteInto('`id` = ?', $userId);
                 $this->_user->update(array('notify_frequency' => 
                     $data['notify_frequency']), $where);
             } 
         }
         
-        $ret = $this->_user->find($user_id);
+        $ret = $this->_user->find($userId);
         $this->view->notify_frequency = $ret->current()->notify_frequency;
-        $allEvent = $event->getUserAllEvents($user_id);
-        $enabledEvent = $event->getEnabledEvents($user_id);
+        $allEvent = $event->getUserAllEvents($userId);
+        $enabledEvent = $event->getEnabledEvents($userId);
         
         $this->view->availableList = array_diff($allEvent, $enabledEvent);
         $this->view->enableList = array_intersect($allEvent, $enabledEvent);

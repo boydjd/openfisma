@@ -108,7 +108,7 @@ $(document).ready(function(){
     });
 
     $("#checkdn").click(function(){
-        var dn = $("input[name='user[ldap_dn]']").val();
+        var dn = $("input[name='ldap_dn']").val();
         var dn = encodeURIComponent(dn);
         var url = "/account/checkdn/format/html/dn/"+dn;
         $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
