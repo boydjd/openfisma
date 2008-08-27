@@ -24,6 +24,21 @@ require_once 'Pager.php';
  */
 class RemediationController extends PoamBaseController
 {
+    //define the events of notification
+    private $_notificationArray = array('action_suggested'=>Notification::UPDATE_FINDING_RECOMMENDATION,
+                                       'type'=>Notification::UPDATE_COURSE_OF_ACTION,
+                                       'action_planned'=>Notification::UPDATE_COURSE_OF_ACTION,
+                                       'action_est_date'=>Notification::UPDATE_EST_COMPLETION_DATE,
+                                       'threat_level'=>Notification::UPDATE_THREAT,
+                                       'threat_source'=>Notification::UPDATE_THREAT,
+                                       'threat_justification'=>Notification::UPDATE_THREAT,
+                                       'cmeasure_effectiveness'=>Notification::UPDATE_COUNTERMEASURES,
+                                       'cmeasure'=>Notification::UPDATE_COUNTERMEASURES,
+                                       'cmeasure_justification'=>Notification::UPDATE_COUNTERMEASURES,
+                                       'system_id'=>Notification::UPDATE_FINDING_ASSIGNMENT,
+                                       'blscr_id'=>Notification::UPDATE_CONTROL_ASSIGNMENT,
+                                       'action_status'=>Notification::MITIGATION_STRATEGY_APPROVED,
+                                       'action_resources'=>Notification::UPDATE_FINDING_RESOURCES);
     /**
      *  Default action.
      *
@@ -367,10 +382,15 @@ class RemediationController extends PoamBaseController
                 ///@todo SSO can only approve the action after all the required info provided
             }
             $result = $this->_poam->update($poam, $where);
-            
+                        
             // Generate audit log records if the update is successful
             if( $result > 0 ) {
                 foreach($poam as $k => $v) {
+                    if (array_key_exists($k, $this->_notificationArray)) {
+                        $this->_notification->add($this->_notificationArray[$k],
+                            $this->me->account, $id);
+                    }
+
                     $log_content = "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
             	    $this->_poam->writeLogs($id, $this->me->id, self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION', $log_content);
                 }
@@ -415,6 +435,10 @@ class RemediationController extends PoamBaseController
             );
             $db = Zend_Registry::get('db');
             $result = $db->insert('evidences', $data);
+            $evidenceId = $db->LastInsertId();
+            $this->_notification->add(Notification::EVIDENCE_UPLOAD,
+                $this->me->account, $evidenceId);
+
             $update_data = array(
                 'status' => 'EP',
                 'action_actual_date' => $today
@@ -463,6 +487,12 @@ class RemediationController extends PoamBaseController
                 'user_id' => $this->me->id,
                 'date' => self::$now->toString('Y-m-d')
             ));
+            if ( $eval_id == 1 ) {
+                $this->_notification
+                     ->add(Notification::EVIDENCE_APPROVAL_1ST,
+                        $this->me->account, $poam_id);
+            }
+
             $log_content.= " Decision: $decision.";
             if ($decision == 'DENIED') {
                 $this->_poam->update(array(
@@ -485,12 +515,23 @@ class RemediationController extends PoamBaseController
                 $this->_poam->update(array(
                     'status' => 'ES'
                 ) , 'id=' . $poam_id);
+
+                $this->_notification
+                     ->add(Notification::EVIDENCE_APPROVAL_2ND,
+                        $this->me->account, $poam_id);
             }
             if ($decision == 'APPROVED' && $eval_id == 3) {
                 $log_content.= " Status: CLOSED";
                 $this->_poam->update(array(
                     'status' => 'CLOSED'
                 ) , 'id=' . $poam_id);
+            
+                $this->_notification
+                     ->add(Notification::EVIDENCE_APPROVAL_3RD,
+                        $this->me->account, $poam_id);
+                $this->_notification
+                     ->add(NOtification::POAM_CLOSED,
+                        $this->me->account, $poam_id);
             }
             if (!empty($log_content)) {
                 $log_content = "Changed: $log_content";

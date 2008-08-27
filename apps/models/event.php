@@ -20,12 +20,15 @@ class Event extends Fisma_Model
      * @param string $eventName
      * @return int event id.
      */
-    public function getEventId($eventName)
+    public function getEventName($eventId)
     {
-        $sql = $this->select()->from($this->_name, 'id')
-                             ->where('name = ?', $eventName);
-        $res = $this->_db->fetchRow($sql);
-        return $res['id'];
+        $res = $this->find($eventId);
+        if (!empty($res)) {
+            $eventName =  $res->current()->name;
+        } else {
+            $eventName = '';
+        }
+        return $eventName;
     }
     
     /**

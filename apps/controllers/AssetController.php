@@ -127,7 +127,11 @@ class AssetController extends PoamBaseController
                 'address_ip' => $asset_ip,
                 'address_port' => $asset_port
             );
-            $asset_last_insert_id = $this->_asset->insert($asset_row);
+            $assetId = $this->_asset->insert($asset_row);
+
+            $this->_notification->add(Notification::ASSET_CREATED,
+                $this->me->account, array($assetId));
+
             $this->message("Asset created successfully", self::M_NOTICE);
         }
         $this->view->system_list = $system_list;
@@ -316,6 +320,9 @@ class AssetController extends PoamBaseController
         }
         $res = $this->_asset->update($data, 'id = ' . $id);
         if ($res) {
+            $this->_notification->add(Notification::ASSET_MODIFIED,
+                $this->me->account, $id);
+
             $msg = 'Asset edited successfully';
             $this->message($msg, self::M_NOTICE);
         } else {
@@ -337,6 +344,7 @@ class AssetController extends PoamBaseController
         $errno = 0;
         foreach ($post as $k => $id) {
             if ('aid_' == substr($k, 0, 4)) {
+                $assetIds[] = $id;
                 $res = $this->_asset->delete("id = $id");
                 if (!$res) {
                     $errno++;
@@ -347,6 +355,9 @@ class AssetController extends PoamBaseController
             $msg = $errno . "Failed to delete the asset";
             $this->message($msg, self::M_WARNING);
         } else {
+            $this->_notification->add(Notification::ASSET_DELETED,
+               $this->me->account, $assetIds);
+
             $msg = "Asset deleted successfully";
             $this->message($msg, self::M_NOTICE);
         }

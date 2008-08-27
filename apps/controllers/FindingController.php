@@ -157,6 +157,7 @@ class FindingController extends PoamBaseController
                         if (empty($ret)) {
                             $failedArray[] = $data;
                         } else {
+                            $poamIds[] = $ret;                        
                             $succeedArray[] = $data;
                         }
                     }
@@ -186,6 +187,9 @@ template. Please update your CSV file and try again.<br />";
                     $summaryMsg.= " Congratulations! All of the linesa contained
                         in the CSV were parsed and injected successfully.";
                 }
+                 $this->_notification
+                      ->add(Notification::FINDING_INJECT,
+                          $this->me->account, $poamIds);
                 $this->view->assign('error_msg', $summaryMsg);
             }
             $this->render();
@@ -219,6 +223,11 @@ template. Please update your CSV file and try again.<br />";
                 $logContent = "a new finding was created";
                 $this->_poam->writeLogs($poamId, $this->me->id,
                      self::$now->toString('Y-m-d H:i:s'), 'CREATION', $logContent);
+
+                $this->_notification
+                     ->add(Notification::FINDING_CREATED,
+                         $this->me->account, $poamId);
+
                 $message = "Finding created successfully";
                 $model = self::M_NOTICE;
             }
@@ -244,6 +253,7 @@ template. Please update your CSV file and try again.<br />";
         $poam = new poam();
         foreach ($post as $key => $id) {
             if (substr($key, 0, 3) == 'id_') {
+                $poamId[] = $id;
                 $res = $poam->update(array(
                     'status' => 'DELETED'
                 ), 'id = ' . $id);
@@ -256,6 +266,9 @@ template. Please update your CSV file and try again.<br />";
         }
         $msg = 'Delete ' . $successno . ' Findings Successfully,'
                 . $errno . ' Failed!';
+
+        $this->_notification->add(Notification::FINDING_DELETED,
+            $this->me->account, $poamId);
         $this->message($msg, self::M_NOTICE);
         $this->_forward('searchbox', 'finding', null, array(
             's' => 'search'
@@ -497,7 +510,7 @@ template. Please update your CSV file and try again.<br />";
                                     'status' => 'NEW',
                                     'finding_data' => $row
                                 );
-                                $poamId[] = $this->_poam->insert($data);
+                                $poamIds[] = $this->_poam->insert($data);
                             }
                         }
                     }
@@ -546,7 +559,7 @@ template. Please update your CSV file and try again.<br />";
                         }
                     }
                 }
-                foreach ($poamId as $i => $id) {
+                foreach ($poamIds as $i => $id) {
                     $data = array(
                         'poam_id' => $id,
                         'vuln_seq' => $vulnId[$i],
@@ -557,13 +570,16 @@ template. Please update your CSV file and try again.<br />";
                 foreach ($unifiedData['vulnerabilities']['cve'] as $i => $v) {
                     if (!empty($v)) {
                         $poamVulns = array(
-                            'poam_id' => $poamId[$i],
+                            'poam_id' => $poamIds[$i],
                             'vuln_seq' => $v,
                             'vuln_type' => 'CVE'
                         );
                         $db->insert('poam_vulns', $poamVulns);
                     }
                 }
+                $this->_notification
+                      ->add(Notification::FINDING_IMPORT,
+                          $this->me->account, $poamIds);
                 $msg = "Injection complete.";
                 $this->message($msg, self::M_NOTICE);
             } else {

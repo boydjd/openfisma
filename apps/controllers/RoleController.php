@@ -100,11 +100,15 @@ class RoleController extends SecurityController
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
             $role = $req->getPost('role');
-            $res = $this->_role->insert($role);
-            if (!$res) {
+            $roleId = $this->_role->insert($role);
+            if (!$roleId) {
                 $msg = "Error Create Role";
                 $model = self::M_WARNING;
             } else {
+                $this->_notification
+                     ->add(Notification::ROLE_CREATED,
+                         $this->me->account, $roleId);
+
                 $msg = "Successfully Create a Role.";
                 $model = self::M_NOTICE;
             }
@@ -127,6 +131,10 @@ class RoleController extends SecurityController
                 $msg = "Error for Delete Role";
                 $model = self::M_WARNING;
             } else {
+                $this->_notification
+                     ->add(Notification::ROLE_DELETED,
+                         $this->me->account, $id);
+
                 $msg = "Successfully Delete a Role.";
                 $model = self::M_NOTICE;
             }
@@ -158,6 +166,9 @@ class RoleController extends SecurityController
             $msg = "Edit Role Failed";
             $model = self::M_WARNING;
         } else {
+            $this->_notification->add(Notification::ROLE_MODIFIED,
+                $this->me->account, $id);
+
             $msg = "Successfully Edit Role.";
             $model = self::M_NOTICE;
         }

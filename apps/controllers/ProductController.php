@@ -125,10 +125,14 @@ class ProductController extends SecurityController
                 }
             }
             $data['meta'] = $data['vendor'] . ' ' . $data['name'] . ' ' . $data['version'];
-            $res = $this->_product->insert($data);
-            if (!$res) {
+            $productId = $this->_product->insert($data);
+            if (!$productId) {
                 $msg = "Failed to create the product";
             } else {
+                $this->_notification
+                     ->add(Notification::PRODUCT_CREATED,
+                         $this->me->account, $productId);
+
                 $msg = "Product successfully created";
             }
             $this->message($msg, self::M_NOTICE);
@@ -150,7 +154,11 @@ class ProductController extends SecurityController
                 $msg = "Failed to delete the product";
                 $model = self::M_WARNING;
             } else {
-                $msg = "Product created successfully";
+                $this->_notification
+                     ->add(Notification::PRODUCT_DELETED,
+                         $this->me->account, $id);
+
+                $msg = "Product deleted successfully";
                 $model = self::M_NOTICE;
             }
         }
@@ -190,6 +198,10 @@ class ProductController extends SecurityController
             $msg = "Failed to edit the product";
             $model = self::M_WARNING;
         } else {
+             $this->_notification
+                  ->add(Notification::PRODUCT_MODIFIED,
+                      $this->me->account, $id);
+
             $msg = "Product edited successfully";
             $model = self::M_NOTICE;
         }

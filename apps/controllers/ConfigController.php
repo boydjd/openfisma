@@ -68,12 +68,18 @@ class ConfigController extends SecurityController
                  );
                 $values = array_intersect_key($values, $validVals);
                 foreach ($values as $k => $v) {
+                    //@todo check $values whether is modified
+                    $records[] = $k;
                     $where = $this->_config->getAdapter()->quoteInto('`key` = ?', $k);
                     if ($k == Config::EXPIRING_TS) {
                         $v *= 3600; //convert to second
                     }
                     $this->_config->update(array('value' => $v), $where);
                 }
+                $this->_notification
+                     ->add(Notification::CONFIGURATION_MODIFIED,
+                        $this->me->account, $records);
+
                 $msg = 'Configuration updated successfully';
                 $this->message($msg, self::M_NOTICE);
             } else {

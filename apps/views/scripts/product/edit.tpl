@@ -28,8 +28,7 @@
  
     <tr>
         <td align="right" class="thc" width="200">Description:</td>
-        <td class="tdc">&nbsp;<textarea name="prod_desc" size="30" cols="110" rows="5">
-            <?php echo $this->product['desc'];?></textarea></td>
+        <td class="tdc">&nbsp;<textarea name="prod_desc" size="30" cols="110" rows="5"><?php echo $this->product['desc'];?></textarea></td>
     </tr>
    </table>
 <br>

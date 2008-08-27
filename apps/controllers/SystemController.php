@@ -167,6 +167,10 @@ class SystemController extends SecurityController
                 $msg = "Failed to create the system";
                 $model = self::M_WARNING;
             } else {
+                $this->_notification
+                     ->add(Notification::SYSTEM_CREATED,
+                         $this->me->account, $id);
+
                 $msg = "System created successfully";
                 $model = self::M_NOTICE;
             }
@@ -206,6 +210,10 @@ class SystemController extends SecurityController
                 $msg = "Failed to delete the system";
                 $model = self::M_WARNING;
             } else {
+                $this->_notification
+                     ->add(Notification::SYSTEM_DELETED,
+                        $this->me->account, $id);
+
                 $msg = "System deleted successfully";
                 $model = self::M_NOTICE;
             }
@@ -251,15 +259,15 @@ class SystemController extends SecurityController
         $res = 0;
         $system = $this->_request->getParam('system');
         $res+= $this->_system->update($system, 'id = ' . $id);
+
         $sysgroup_data['name'] = $system['name'];
-        $sysgroup_data['nickname'] = $system['nickname'];
-        $query = $db->select()->from(array(
-            'sgs' => 'systemgroup_systems'
-        ), array())->join(array(
-            'sg' => 'system_groups'
-        ), 'sgs.sysgroup_id = sg.id', 'id')
-            ->where('sgs.system_id = ?', $id)
-            ->where('sg.is_identity = 1');
+        $sysgroup_data['nickname'] = $system['nickname'];        
+        $query = $db->select()
+                    ->from(array('sgs' => 'systemgroup_systems'), array())
+                    ->join(array('sg' => 'system_groups'),
+                        'sgs.sysgroup_id = sg.id', 'id')
+                    ->where('sgs.system_id = ?', $id)
+                    ->where('sg.is_identity = 1');
         $result = $db->fetchRow($query);
         $res+= $db->update('system_groups',
             $sysgroup_data, 'id = ' . $result['id']);
@@ -278,6 +286,9 @@ class SystemController extends SecurityController
                    " (except system groups)";
             $model = self::M_WARNING;
         } else {
+            $this->_notification->add(Notification::SYSTEM_MODIFIED,
+                $this->me->account, $id);
+
             $msg = "System edited successfully";
             $model = self::M_NOTICE;
         }

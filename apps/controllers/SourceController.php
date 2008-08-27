@@ -94,11 +94,15 @@ class SourceController extends SecurityController
                     $data[$k] = $v;
                 }
             }
-            $res = $this->_source->insert($data);
-            if (!$res) {
+            $sourceId = $this->_source->insert($data);
+            if (!$sourceId) {
                 $msg = "Failed to create the finding source";
                 $model = self::M_WARNING;
             } else {
+                 $this->_notification
+                      ->add(Notification::SOURCE_CREATED,
+                          $this->me->account, $sourceId);
+
                 $msg = "Finding source successfully created";
                 $model = self::M_NOTICE;
             }
@@ -122,6 +126,10 @@ class SourceController extends SecurityController
                 $msg = "Failed to delete the finding source";
                 $model = self::M_WARNING;
             } else {
+                $this->_notification
+                     ->add(Notification::SOURCE_DELETED,
+                        $this->me->account, $id);
+
                 $msg = "Finding source deleted successfully";
                 $model = self::M_NOTICE;
             }
@@ -161,6 +169,9 @@ class SourceController extends SecurityController
             $msg = "Failed to edit the finding source";
             $model = self::M_WARNING;
         } else {
+            $this->_notification->add(Notification::SOURCE_MODIFIED,
+                $this->me->account, $id);
+
             $msg = "Finding source edited successfully";
             $model = self::M_NOTICE;
         }

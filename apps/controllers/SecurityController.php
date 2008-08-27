@@ -14,6 +14,7 @@ require_once 'Zend/Date.php';
 require_once 'Zend/Auth.php';
 require_once 'Zend/Db.php';
 require_once MODELS . DS . 'user.php';
+require_once MODELS . DS . 'notification.php';
 require_once CONTROLLERS . DS . 'MessageController.php';
 require_once 'Zend/Acl.php';
 require_once 'Zend/Acl/Role.php';
@@ -82,6 +83,8 @@ class SecurityController extends MessageController
                     $this->_request->getParam($this->_sanity['data']));
             }
         }
+
+        $this->_notification = new Notification();
     }
 
     public function preDispatch()

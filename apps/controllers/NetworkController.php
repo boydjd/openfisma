@@ -116,11 +116,15 @@ class NetworkController extends SecurityController
     {
         if ('save' == $this->_request->getParam('s')) {
             $network_data = $this->_request->getParam('network');
-            $res = $this->_network->insert($network_data);
-            if (!$res) {
+            $networkId = $this->_network->insert($network_data);
+            if (!$networkId) {
                 $msg = "Failed to create the network";
                 $model = self::M_WARNING;
             } else {
+                $this->_notification
+                     ->add(Notification::NETWORK_CREATED,
+                         $this->me->account, $networkId);
+
                 $msg = "network successfully created";
                 $model = self::M_NOTICE;
             }
@@ -147,6 +151,10 @@ class NetworkController extends SecurityController
                 $msg = "Failed to delete the network";
                 $model = self::M_WARNING;
             } else {
+                $this->_notification
+                     ->add(Notification::NETWORK_DELETED,
+                         $this->me->account, $id);
+
                 $msg = "network deleted successfully";
                 $model = self::M_NOTICE;
             }
@@ -184,6 +192,9 @@ class NetworkController extends SecurityController
             $msg = "Network has no updated";
             $model = self::M_NOTICE;
         } else {
+            $this->_notification->add(Notification::NETWORK_MODIFIED,
+                $$this->me->account, $id);
+
             $msg = "Network edited successfully";
             $model = self::M_NOTICE;
         }

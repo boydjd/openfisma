@@ -97,12 +97,16 @@ class SysgroupController extends SecurityController
                 unset($sysGroup['submit']);
                 unset($sysGroup['reset']);
                 $sysGroup['is_identity'] = 0;
-                $res = $this->_sysgroup->insert($sysGroup);
-                if (! $res) {
-                    //@REVIEW 2 lines
+                $sysGroupId = $this->_sysgroup->insert($sysGroup);
+                if (! $sysGroupId) {
+                    //@REVIEW 3 lines
                     $msg = "Failure in creation";
                     $model = self::M_WARNING;
                 } else {
+                    $this->_notification
+                         ->add(Notification::SYSGROUP_CREATED,
+                             $this->me->account, $sysGroupId);
+
                     $msg = "The system group is created";
                     $model = self::M_NOTICE;
                 }
@@ -133,6 +137,10 @@ class SysgroupController extends SecurityController
             if (!$res) {
                 $msg = "Failure during deletion";
             } else {
+                $this->_notification
+                     ->add(Notification::SYSGROUP_DELETED,
+                        $this->me->account, $id);
+
                 $msg = "The system group is deleted";
                 $model = self::M_NOTICE;
             }
@@ -161,7 +169,11 @@ class SysgroupController extends SecurityController
                 unset($sysgroup['reset']);
                 $res = $this->_sysgroup->update($sysgroup, 'id = ' . $id);
                 if ($res) {
-                    //@REVIEW 2 lines
+                    //@REVIEW 3 lines
+                    $this->_notification
+                         ->add(Notification::SYSGROUP_MODIFIED,
+                             $this->me->account, $id);
+
                     $msg = "The system group is saved";
                     $model = self::M_NOTICE;
                 } else {
