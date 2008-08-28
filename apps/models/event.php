@@ -47,8 +47,8 @@ class Event extends Fisma_Model
             ->join(array('e'=>'events'), 'e.function_id=rf.function_id',
                     array('id', 'name'))
             ->where('ur.user_id=?', $uid);
-        if (!empty($name)) {
-            $sql->order($name);
+        if (!empty($order)) {
+            $sql->order($order);
         }
         return $this->_db->fetchPairs($sql);
     }
@@ -66,8 +66,8 @@ class Event extends Fisma_Model
             ->from(array('e'=>'events'), array('id', 'name'))
             ->join(array('ue'=>'user_events'), 'ue.event_id=e.id', array())
             ->where('ue.user_id=?', $uid);
-        if (!empty($name)) {
-            $sql->order($name);
+        if (!empty($order)) {
+            $sql->order($order);
         }
         return $this->_db->fetchPairs($sql);
     }
