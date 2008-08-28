@@ -70,6 +70,7 @@ CREATE TABLE `evaluations` (
 CREATE TABLE `notifications` (
   `id` int(10) NOT NULL auto_increment,
   `event_id` int(10) NOT NULL,
+  `user_id` int(10) NOT NULL,
   `event_text` text NOT NULL,
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
