@@ -18,7 +18,7 @@ require_once 'Zend/Mail/Transport/Smtp.php';
 require_once 'Zend/Db/Table.php';
 require_once MODELS . DS . 'Abstract.php';
 require_once MODELS . DS . 'notification.php';
-require_once MODELS . DS .'user.php';
+require_once MODELS . DS . 'user.php';
 require_once (CONFIGS . DS . 'setting.php');
 require_once 'Zend/Date.php';
 require_once 'Zend/View.php';
@@ -100,14 +100,15 @@ class FismaNotify
     public function getTransport()
     {
         $transport = null;
-        if (readSysConfig('smtp_username') 
-            && readSysConfig('smtp_password') 
-            && readSysConfig('smtp_host')) {
+        if ( 'smtp' == readSysConfig('send_type')) {
             $config = array('auth' => 'login',
                 'username' => readSysConfig('smtp_username'),
-                'password' => readSysConfig('smtp_password'));
+                'password' => readSysConfig('smtp_password'),
+                'port' => readSysConfig('smtp_port'));
             $transport = new Zend_Mail_Transport_Smtp(readSysConfig('smtp_host'),
                 $config);
+        } else {
+            $transport = new Zend_Mail_Transport_Sendmail();
         }
         return $transport;
     }
