@@ -88,11 +88,22 @@ class Notification extends Fisma_Model
         } else {
             $record = $recordId;
         }
+
         $event = new event();
-        $eventName = $event->getEventName($eventId);
-        
+        $ret = $event->find($eventId);
+        if (empty($ret)) {
+            throw new fisma_Exception('Event name is not exist');
+        }
+        $eventName = $ret->current()->name;
+
+        $query = $this->_db->select()->from('users','id')
+                       ->where('account = ?', $userName);
+        $result = $this->_db->fetchRow($query);
+        $userId = $result['id'];
+
         $eventText = "$eventName (ID ($record) by $userName ";
         $data = array('event_id'=> $eventId,
+                      'user_id' => $userId,
                       'event_text'=> $eventText,
                       'timestamp'=>Zend_Date::now()->toString("Y-m-d H:i:s"));
         $this->insert($data);
@@ -102,23 +113,29 @@ class Notification extends Fisma_Model
      * Get event record which user interested
      *
      * @param int $userId
+     * @param string $beforTime
+     * @param string $afterTime
      * @return array event records
      */
-    public function getEventData($userId)
+    public function getEventData($userId, $afterTime, $beforTime=null)
     {
-        $db = $this->_db;
-        $tmpArray = array();
-        $sql= $db->select()->from('user_events', 'event_id')
-                           ->where('user_id = ?', $userId);
-        $eventIdArray = $db->fetchCol($sql);
-        if (empty($eventIdArray)) {
-            return NULL;
+        if (!isset($beforTime)) {
+            $beforTime = Zend_Date::now()->toString('Y-m-d H:i:s');
         }
-        $eventIdString = implode(",", $eventIdArray);
-        $sql = $db->select()->from(array('n' => 'notifications'), '*')
-            ->where("n.event_id in ($eventIdString)")
-            ->join(array('e' => 'events'), 'e.id = n.event_id', 'e.name');
-        $ret = $db->fetchAll($sql);
+
+        $query = $this->_db->select()
+                           ->from(array('n'=>'notifications'), 'n.*')
+                           ->join(array('e'=>'events'), 'e.id = n.event_id',
+                                array('event_name'=>'e.name'))
+                           ->join(array('ue'=>'user_events'),
+                                'ue.event_id = e.id', array())
+                           ->where('ue.user_id = ?', $userId)
+                           ->where('n.timestamp >= ?', $afterTime)
+                           ->where('n.timestamp < ?', $beforTime)
+                           ->order('n.user_id')
+                           ->order('e.name')
+                           ->order('n.timestamp');
+        $ret = $this->_db->fetchAll($query);
         return $ret;
     }
 }

@@ -59,11 +59,11 @@ class FismaNotify
                                       'email', 'notify_frequency',
                                       'most_recent_notify_ts'));
         
+        $currentTime = Zend_Date::now();
         foreach ($ulist as $id=>$userData) {
             $sendTime = new Zend_Date($userData['most_recent_notify_ts']);
             $sendTime->add($userData['notify_frequency'], Zend_Date::MINUTE);
-                
-            if (Zend_Date::now()->isEarlier($sendTime)) {
+            if ($currentTime->isEarlier($sendTime)) {
                 continue;
             }
 
@@ -71,14 +71,15 @@ class FismaNotify
             $contentTpl = new Zend_View();
             $contentTpl->setScriptPath(VIEWS . DS . self::EMAIL_VIEW_PATH);
 
-            //$contentTpl->emailInfo=$emailInfo;
             $mail->setFrom(readSysConfig('sender'), "OpenFISMA");
             $mail->addTo($userData['email'],
                 "{$userData['name_first']} {$userData['name_last']}");
             $mail->setSubject(readSysConfig('subject'));
 
             $notification = new Notification();
-            $contentTpl->notifyData = $notification->getEventData($id);
+            $contentTpl->notifyData = $notification->getEventData($id,
+                $userData['most_recent_notify_ts']);
+
             if (count($contentTpl->notifyData)) {
                 $content = $contentTpl->render(self::EMAIL_VIEW);
                 $mail->setBodyText($content);
@@ -86,7 +87,7 @@ class FismaNotify
             }
 
             // Update user's last notify time
-            $now = Zend_Date::NOW()->toString('Y-m-d H:i:s');
+            $now = $currentTime->toString('Y-m-d H:i:s');
             $updateData = array('most_recent_notify_ts'=>$now);
             $user->update($updateData, 'id = '.$id);
         }

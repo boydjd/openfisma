@@ -14,22 +14,6 @@ class Event extends Fisma_Model
     protected $_name = 'events';
     protected $_primary = 'id';
     
-    /**
-     * Get event id according to event name 
-     *
-     * @param string $eventName
-     * @return int event id.
-     */
-    public function getEventName($eventId)
-    {
-        $res = $this->find($eventId);
-        if (!empty($res)) {
-            $eventName =  $res->current()->name;
-        } else {
-            $eventName = '';
-        }
-        return $eventName;
-    }
     
     /**
      * Get all events that the specified user can have
