@@ -15,6 +15,7 @@ import(LIBS, VENDORS, VENDORS . DS . 'Pear');
 
 require_once 'Zend/Mail.php';
 require_once 'Zend/Mail/Transport/Smtp.php';
+require_once 'Zend/Mail/Transport/Sendmail.php';
 require_once 'Zend/Db/Table.php';
 require_once MODELS . DS . 'Abstract.php';
 require_once MODELS . DS . 'notification.php';
