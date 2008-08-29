@@ -17,6 +17,7 @@ require_once 'Zend/Auth/Exception.php';
 require_once (CONTROLLERS . DS . 'MessageController.php');
 require_once (MODELS . DS . 'user.php');
 require_once (MODELS . DS . 'system.php');
+require_once (MODELS . DS . 'notification.php');
 require_once 'Zend/Date.php';
 /**
  * UserController
@@ -63,11 +64,16 @@ class UserController extends MessageController
             $authType = readSysConfig('auth_type');
             $auth = Zend_Auth::getInstance();
             $result = $this->authenticate($authType, $username, $password);
+            
+            $notification = new Notification();
             if ( !$result->isValid() ) {
                 if ( Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID == 
                      $result->getCode() ) {
                     $this->_user->log(User::LOGINFAILURE, $whologin->id, 
                                       'Password Error');
+                    $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
+                        $whologin->account, $whologin->id);
+
                     if ($whologin->failure_count >= 
                         readSysConfig('failure_threshold') - 1 ) {
                         $this->_user->log(User::TERMINATION, $whologin->id,
@@ -91,6 +97,9 @@ class UserController extends MessageController
                     Please contact an administrator.");
             }
             $this->_user->log(User::LOGIN, $me->id, "Success");
+            $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
+                $whologin->account, $whologin->id);
+
             $nickname = $this->_user->getRoles($me->id);
             foreach ($nickname as $n) {
                 $me->roleArray[] = $n['nickname'];
@@ -124,6 +133,10 @@ class UserController extends MessageController
         $me = $auth->getIdentity();
         if (!empty($me)) {
             $this->_user->log(User::LOGOUT, $me->id, $me->account . ' logout');
+            $notification = new Notification();
+            $notification->add(Notification::ACCOUNT_LOGOUT,
+                $me->account, $me->id);
+            
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');

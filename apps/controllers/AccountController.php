@@ -140,19 +140,36 @@ class AccountController extends PoamBaseController
             'phone_office' => 'Office Phone',
             'phone_mobile' => 'Mobile Phone'
         );
-        $this->view->assign('criteria', $criteria);
-        
+        $postAction = "/panel/account/sub/list";
+
         // Count the total number of users and configure the pager
         $user = new User();
         $userCount = $user->count();
         $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
         $this->_paging['totalItems'] = $userCount;
         $this->_paging['fileName'] = "/panel/account/sub/list/p/%d";
+
+        if ('log' == $this->_request->getParam('sub')) {
+            $criteria = array(
+                'event'=>'Event Name',
+                'account'=>'Account Name');
+            $postAction = "/panel/account/sub/log";
+
+            $query = $user->getAdapter()->select()->from('account_logs',
+                         array('count'=>'count(*)'));
+            $ret = $user->getAdapter()->fetchRow($query);
+            $logCount = $ret['count'];
+            $this->_paging['totalItems'] = $logCount;
+            $this->_paging['fileName'] = "/panel/account/sub/log/p/%d";
+        }
+
         $pager = &Pager::factory($this->_paging);
         
         // Assign view outputs
+        $this->view->assign('criteria', $criteria);
         $this->view->assign('fid', $this->_request->getParam('fid'));
         $this->view->assign('qv', $this->_request->getParam('qv'));
+        $this->view->assign('postAction', $postAction);
         $this->view->assign('total', $userCount);
         $this->view->assign('links', $pager->getLinks());
         $this->render();
@@ -176,11 +193,11 @@ class AccountController extends PoamBaseController
                                  'phone_mobile',
                                  'email'));
 
-        // $fid is the name of the field
-        $fid = $user->getAdapter()->quote($this->getRequest()->getParam('fid'));
-        // $qv is the value to search for in the field
-        $qv = $user->getAdapter()->quote($this->getRequest()->getParam('qv'));
-        $qry->where("$fid = $qv");
+        $qv = $this->_request->getParam('qv');
+        if (!empty($qv)) {
+            $fid = $this->_request->getParam('fid');
+            $qry->where("$fid = '$qv'");
+        }
 
         $qry->order("name_last ASC");
         $qry->limitPage($this->_paging['currentPage'], 
@@ -189,6 +206,7 @@ class AccountController extends PoamBaseController
         
         // Format the query results appropriately for passing to the view script
         $userList = $data->toArray();
+        $roleList = array();
         foreach ($userList as $row) {
             $ret = $user->getRoles($row['id'],
                                    array('nickname', 'id'));
@@ -815,6 +833,33 @@ class AccountController extends PoamBaseController
         
         $this->view->availableList = array_diff($allEvent, $enabledEvent);
         $this->view->enableList = array_intersect($allEvent, $enabledEvent);
+        $this->render();
+    }
+
+    /**
+     * logAction() - List all the users log message.
+     */
+    public function logAction()
+    {
+        // Set up the query to get the full list of user logs
+        $db = $this->_user->getAdapter();
+        $qry = $db->select()
+                  ->from(array('al' => 'account_logs'),
+                         array('timestamp', 'event', 'user_id', 'message'))
+                  ->joinLeft(array('u'=>'users'),'al.user_id = u.id','account');
+
+        $qv = $this->_request->getParam('qv');
+        if (!empty($qv)) {
+            $fid = $this->_request->getParam('fid');
+            $qry->where("$fid = '$qv'");
+        }
+        $qry->order("timestamp DESC");
+        $qry->limitPage($this->_paging['currentPage'], 
+                        $this->_paging['perPage']);
+        $logList = $db->fetchAll($qry);
+        
+        // Assign view outputs
+        $this->view->assign('logList', $logList);
         $this->render();
     }
     

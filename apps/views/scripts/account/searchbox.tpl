@@ -8,6 +8,7 @@
         <tr>
             <th>[<a id="user_list" href="/panel/account/sub/list">User List</a>] (total: <?php echo $this->total;?>)</th>
             <th>[<a id="add_user" href="/panel/account/sub/create" title="add new Users">Add User</a>]</th>
+            <th>[<a id="user_log" href="/panel/account/sub/log" title="Review user logs">User Logs</a>]</th>
             <th>
                 <table align="center">
                     <tbody>
@@ -20,7 +21,7 @@
             </th>
             <th>
                 
-                <form name="query" method="post" action="/panel/account/sub/list">
+                <form name="query" method="post" action="<?php echo $this->postAction;?>">
                     <table align="center">
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

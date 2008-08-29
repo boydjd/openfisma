@@ -60,7 +60,10 @@ INSERT INTO `events` (`id`, `name`, `function_id`) VALUES
 (39, 'Network Modified', 86),
 (40, 'Network Created', 87),
 (41, 'Network Deleted', 88),
-(42, 'System Configuration Modified', 0);
+(42, 'System Configuration Modified', 0),
+(43, 'Account Login Success', 0),
+(44, 'Account Login Failure', 0),
+(45, 'Account Logout', 0);
 
 INSERT INTO `functions` (`id`, `name`, `screen`, `action`, `desc`, `open`) VALUES 
 (1, 'View Dashboard', 'dashboard', 'read', '', '1'),

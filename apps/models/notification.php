@@ -72,6 +72,9 @@ class Notification extends Fisma_Model
     const NETWORK_CREATED = 40;
     const NETWORK_DELETED = 41;
     const CONFIGURATION_MODIFIED = 42;
+    const ACCOUNT_LOGIN_SUCCESS = 43;
+    const ACCOUNT_LOGIN_FAILURE = 44;
+    const ACCOUNT_LOGOUT = 45;
 
     /**
      * Add notification record
