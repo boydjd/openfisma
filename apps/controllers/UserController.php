@@ -58,7 +58,23 @@ class UserController extends MessageController
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             if ( $whologin->is_active == false ) {
-                throw new Zend_Auth_Exception('The account has been locked');
+                $unlockDuration = readSysConfig('unlock_duration');
+                if (0 == $unlockDuration) {
+                    throw new Zend_Auth_Exception('Your account has been locked');
+                } else {
+                    $terminationTs = new Zend_Date($whologin->termination_ts);
+                    $terminationTs->add($unlockDuration, Zend_Date::SECOND);
+                    if ($terminationTs->isEarlier($now)) {
+                        $updateData = array('is_active'=>1, 'failure_count'=>0);
+                        $this->_user->update($updateData, 'id  = '.$whologin->id);
+                    } else {
+                        throw new Zend_Auth_Exception('Your user account has been
+                        locked due to '.readSysConfig("failure_threshold").'
+                        unsuccessful login attempts,your account will be unlocked
+                        in '.$unlockDuration / 3600 .' hours, please try again at
+                        that time.');
+                    }
+                }
             }
 
             $authType = readSysConfig('auth_type');

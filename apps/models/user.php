@@ -103,6 +103,7 @@ class User extends Fisma_Model
             if ($type == self::LOGINFAILURE) {
                 if (++ $row->failure_count >=
                     readSysConfig('failure_threshold')) {
+                    $row->termination_ts = date("YmdHis");
                     $row->is_active = false;
                 }
                 $row->save();
