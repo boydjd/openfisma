@@ -11,7 +11,10 @@ $output_cols = array(
 "Risk Level",
 "Recommendation",
 "Corrective Action",
-"ECD"
+"ECD",
+"Control",
+"Threats",
+"Countermeasure"
 );
 $count_cols = count($output_cols);
 
@@ -36,18 +39,20 @@ $format_times =& $workbook->addFormat(array('Size' => 10,
     'Bottom'=>1,'Top'=>1,'Left'=>1,'Right'=>1
     ));
 $format_times->setFontFamily('Times New Roman');
-
+$format_times->setAlign('left');
+$format_times->setAlign('top');
+$format_times->setTextWrap();
 $rowi=0;
 $headinfo="Report run time: ".date("Y-m-d H:i:s");
 $worksheet->write($rowi++, 0, $headinfo,$format_times);
-$worksheet->mergeCells($rowi,0,$rowi,2);
+$worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);
 $worksheet->write($rowi++, 0, 'Results',$format_header);
-$worksheet->setColumn(0,1,10);
+$worksheet->setColumn(0,0,30);
 $worksheet->setColumn(2,2,50);
 $worksheet->setColumn(3,8,10);
 $worksheet->setColumn(9,10,50);
-$worksheet->setColumn(11,11,50);
-$worksheet->mergeCells($rowi,0,$rowi,13);
+$worksheet->setColumn(11,14,15);
+$worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);
 //inject the titles
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
@@ -64,7 +69,10 @@ foreach( $this->poam_list as $p ) {
         $p['threat_level'],
         $p['action_suggested'],
         $p['action_planned'],
-        $p['action_est_date']);
+        $p['action_est_date'],
+        NULL == $p['blscr_id']?N:Y,
+        'NONE' == $p['threat_level']?N:Y,
+        'NONE' == $p['cmeasure_effectiveness']?N:Y);
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
 

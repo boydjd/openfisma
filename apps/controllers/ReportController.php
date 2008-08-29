@@ -233,6 +233,9 @@ class ReportController extends PoamBaseController
                 'action_planned',
                 'threat_level',
                 'action_est_date',
+                'threat_level',
+                'cmeasure_effectiveness',
+                'blscr_id',
                 'count' => 'count(*)'), 
                 $criteria, $this->_paging['currentPage'], 
                 $this->_paging['perPage']);
