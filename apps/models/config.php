@@ -25,6 +25,10 @@ class Config extends Fisma_Model
     const EXPIRING_TS   = 'expiring_seconds';
     const UNLOCK_ENABLED = 'unlock_enabled';
     const UNLOCK_DURATION = 'unlock_duration';
+
+    const CONTACT_NAME  = 'contact_name';
+    const CONTACT_PHONE = 'contact_phone';
+    const CONTACT_EMAIL = 'contact_email';
     
     const SENDER    = 'sender';
     const SUBJECT     = 'subject';

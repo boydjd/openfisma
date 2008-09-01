@@ -10,4 +10,8 @@
             <a href="javascript:history.back()">Please click here to return your last page!</a>
         </td>
     </tr>
+    <tr>
+        <td>Technical Support: <?php echo readSysConfig('contact_name');?>, Phone: <?php echo readSysConfig('contact_phone');?>, Email: <a href="mailto:<?php echo readSysConfig('contact_email');?>"><?php echo readSysConfig('contact_email');?></a>
+        </td>
+    </tr>
 </table>

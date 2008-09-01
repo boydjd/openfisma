@@ -73,7 +73,10 @@ class ConfigController extends SecurityController
                         Config::F_THRESHOLD =>0,
                         Config::EXPIRING_TS =>0,
                         Config::UNLOCK_ENABLED =>0,
-                        Config::UNLOCK_DURATION =>0
+                        Config::UNLOCK_DURATION =>0,
+                        Config::CONTACT_NAME  =>0,
+                        Config::CONTACT_PHONE =>0,
+                        Config::CONTACT_EMAIL =>0
                      );
                     $values = array_intersect_key($values, $validVals);
                     foreach ($values as $k => $v) {

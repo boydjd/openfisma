@@ -75,7 +75,9 @@ class UserController extends MessageController
                     }
                 } else {
                     throw new Zend_Auth_Exception('Your account has been locked,
-                        please contact the Administrator.');
+                        please contact the 
+                        <a href="mailto:'.readSysConfig('contact_email').'">
+                        Administrator</a>.');
                 }
             }
 

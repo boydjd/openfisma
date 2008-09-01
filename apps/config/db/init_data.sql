@@ -11,7 +11,10 @@ INSERT INTO `configurations` (`id`, `key`, `value`, `description`) VALUES
 (10,'send_type', 'sendmail', 'Notification email send type'),
 (11,'smtp_port', '25', 'Smtp server port'),
 (12,'unlock_enabled', '0', 'Enable Automated Account Unlock'),
-(13,'unlock_duration', '0', 'Automated Account Unlock Duration');
+(13,'unlock_duration', '0', 'Automated Account Unlock Duration'),
+(14,'contact_name', '', 'End-user technical support Contact name'),
+(15,'contact_phone', '', 'End-user technical support Contact phone number'),
+(16,'contact_email', 'mark.haase@ed.gov', 'End-user technical support Contact Email Address');
 
 INSERT INTO `evaluations` (`id`, `name`, `precedence_id`, `function_id`, `group`) VALUES
 (1, 'EV_SSO', 0, 25, 'EVIDENCE'),
