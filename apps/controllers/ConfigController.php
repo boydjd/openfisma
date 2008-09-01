@@ -54,7 +54,7 @@ class ConfigController extends SecurityController
         foreach ($ret as $item) {
             if (in_array($item['key'], array(Config::EXPIRING_TS,
                     Config::UNLOCK_DURATION))) {
-                $item['value'] /= 3600; //convert to hour from second
+                $item['value'] /= 60; //convert to hour from second
             }
             $configs[$item['key']] = $item['value'];
         }
@@ -72,6 +72,7 @@ class ConfigController extends SecurityController
                         Config::AUTH_TYPE   =>0,
                         Config::F_THRESHOLD =>0,
                         Config::EXPIRING_TS =>0,
+                        Config::UNLOCK_ENABLED =>0,
                         Config::UNLOCK_DURATION =>0
                      );
                     $values = array_intersect_key($values, $validVals);
@@ -82,7 +83,7 @@ class ConfigController extends SecurityController
                             ->quoteInto('`key` = ?', $k);
                         if (in_array($k, array(Config::EXPIRING_TS,
                             Config::UNLOCK_DURATION))) { 
-                            $v *= 3600; //convert to second
+                            $v *= 60; //convert to second
                         }
                         $this->_config->update(array('value' => $v), $where);
                     }

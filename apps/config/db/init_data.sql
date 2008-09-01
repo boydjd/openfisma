@@ -10,7 +10,8 @@ INSERT INTO `configurations` (`id`, `key`, `value`, `description`) VALUES
 (9,'smtp_password', NULL, 'Password for smtp Authenticate'),
 (10,'send_type', 'sendmail', 'Notification email send type'),
 (11,'smtp_port', '25', 'Smtp server port'),
-(12,'unlock_duration', '', 'Automated Account Unlock Duration (hour)');
+(12,'unlock_enabled', '0', 'Enable Automated Account Unlock'),
+(13,'unlock_duration', '0', 'Automated Account Unlock Duration');
 
 INSERT INTO `evaluations` (`id`, `name`, `precedence_id`, `function_id`, `group`) VALUES
 (1, 'EV_SSO', 0, 25, 'EVIDENCE'),

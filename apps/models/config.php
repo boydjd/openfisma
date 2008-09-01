@@ -23,6 +23,7 @@ class Config extends Fisma_Model
     const AUTH_TYPE     = 'auth_type';
     const F_THRESHOLD   = 'failure_threshold';
     const EXPIRING_TS   = 'expiring_seconds';
+    const UNLOCK_ENABLED = 'unlock_enabled';
     const UNLOCK_DURATION = 'unlock_duration';
     
     const SENDER    = 'sender';
