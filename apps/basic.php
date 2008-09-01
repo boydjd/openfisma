@@ -105,6 +105,9 @@
             $configs = array();
             foreach ($pairs as $v) {
                 $configs[$v->key] = $v->value;
+                if ('use_notification' == $v->key) {
+                    $configs[$v->key] = $v->description;
+                }
             }
             Zend_Registry::set(SYSCONFIG, new Zend_Config($configs));
         }

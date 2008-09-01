@@ -49,13 +49,17 @@ class ConfigController extends SecurityController
     {
         // Fill up with data
         $general = $this->getForm('config');
-        $ret = $this->_config->getList(array('key' , 'value'));
+        $ret = $this->_config->getList(array('key', 'value', 'description'));
         $configs = NULL;
         foreach ($ret as $item) {
             if (in_array($item['key'], array(Config::EXPIRING_TS,
                     Config::UNLOCK_DURATION))) {
                 $item['value'] /= 60; //convert to hour from second
             }
+            if (Config::USE_NOTIFICATION == $item['key']) {
+                $item['value'] = $item['description'];
+            }
+
             $configs[$item['key']] = $item['value'];
         }
 
@@ -76,7 +80,8 @@ class ConfigController extends SecurityController
                         Config::UNLOCK_DURATION =>0,
                         Config::CONTACT_NAME  =>0,
                         Config::CONTACT_PHONE =>0,
-                        Config::CONTACT_EMAIL =>0
+                        Config::CONTACT_EMAIL =>0,
+                        Config::USE_NOTIFICATION =>0
                      );
                     $values = array_intersect_key($values, $validVals);
                     foreach ($values as $k => $v) {
@@ -88,7 +93,12 @@ class ConfigController extends SecurityController
                             Config::UNLOCK_DURATION))) { 
                             $v *= 60; //convert to second
                         }
-                        $this->_config->update(array('value' => $v), $where);
+                        if (Config::USE_NOTIFICATION == $k) {
+                            $this->_config->update(array('description' => $v),
+                                $where);
+                        } else {
+                            $this->_config->update(array('value' => $v), $where);
+                        }
                     }
                     $this->_notification
                          ->add(Notification::CONFIGURATION_MODIFIED,
