@@ -18,7 +18,7 @@ $(document).ready(function(){
                 });
         
 
-    $("select[name='system']").change(function(){
+    $("select[name='poam[system_id]']").change(function(){
         searchAsset();
     });
 
@@ -179,7 +179,7 @@ function shortcut(step){
 }
 
 function searchAsset( ){
-    var trigger = $("select[name='system']");
+    var trigger = $("select[name='poam[system_id]']");
     var sys = trigger.children("option:selected").attr('value');
     var param =  '';
     if( null != sys){
@@ -191,13 +191,13 @@ function searchAsset( ){
         }
     });
     var url = trigger.attr("url") + param ;
-    $("select[name='asset_list']").parent().load(url,null,function(){
+    $("select[name='poam[asset_id]']").parent().load(url,null,function(){
         asset_detail();
     });
 }
 
 function asset_detail() {
-    $("select[name='asset_list']").change(function(){
+    $("select[name='poam[asset_id]']").change(function(){
         var url = $(this).attr('url')+ $(this).children("option:selected").attr('value');
         $("div#asset_info").load(url,null);
     });

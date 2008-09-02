@@ -200,26 +200,20 @@ template. Please update your CSV file and try again.<br />";
      */
     public function createAction()
     {
-        $req = $this->getRequest();
-        $do = $req->getParam('is', 'view');
-        if ("new" == $do) {
+        if ("new" == $this->_request->getParam('is')) {
+            $poam = $this->_request->getPost('poam');
             try {
-                $data = array();
-                $data['source_id'] = $req->getParam('source');
-                $data['asset_id'] = $req->getParam('asset_list');
-                if (!empty($data['asset_id'])) {
+                if (!empty($poam['asset_id'])) {
                     $asset = new asset();
-                    $ret = $asset->find($data['asset_id'])->toArray();
-                    $data['system_id'] = $ret[0]['system_id'];
+                    $ret = $asset->find($poam['asset_id']);
+                    $poam['system_id'] = $ret->current()->system_id;
                 }
-                $data['status'] = 'NEW';
-                $discoverTs = new Zend_Date($req->getParam('discovereddate'),
-                                            Zend_Date::DATES);
-                $data['discover_ts'] = $discoverTs->toString("Y-m-d");
-                $data['finding_data'] = $req->getParam('finding_data');
-                $data['create_ts'] = self::$now->toString("Y-m-d H:i:s");
-                $data['created_by'] = $this->me->id;
-                $poamId = $this->_poam->insert($data);
+                $poam['status'] = 'NEW';
+                $discoverTs = new Zend_Date($poam['discover_ts']);
+                $poam['discover_ts'] = $discoverTs->toString("Y-m-d");
+                $poam['create_ts'] = self::$now->toString("Y-m-d H:i:s");
+                $poam['created_by'] = $this->me->id;
+                $poamId = $this->_poam->insert($poam);
                 $logContent = "a new finding was created";
                 $this->_poam->writeLogs($poamId, $this->me->id,
                      self::$now->toString('Y-m-d H:i:s'), 'CREATION', $logContent);
@@ -237,6 +231,11 @@ template. Please update your CSV file and try again.<br />";
             }
             $this->message($message, $model);
         }
+        require_once MODELS . DS . 'blscr.php';
+        $blscr = new Blscr();
+        $list = array_keys($blscr->getList('class'));
+        $blscr_list = array_combine($list, $list);
+        $this->view->blscr_list = $blscr_list;
         $this->view->assign('system', $this->_system_list);
         $this->view->assign('source', $this->_source_list);
         $this->render();

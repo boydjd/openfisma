@@ -1,5 +1,10 @@
-<script LANGUAGE="JavaScript" type="test/javascript" src="/javascripts/ajax.js"></script>
-
+<?php
+    $this->blscr_list[0] = 'NONE';
+    $threatLevelList =  array("NONE" => "NONE",
+                              "LOW" => "LOW",
+                              "MODERATE" => "MODERATE",
+                              "HIGH" => "HIGH");
+?>
 <div class="barleft">
   <div class="barright">
     <p><b>Finding Creation</b></p>
@@ -22,7 +27,7 @@
                             <td>
                                 <table border="0" cellpadding="0" cellspacing="0">
                                     <tr>
-                                        <td><input type="text" class="date" name="discovereddate" size="12" maxlength="10" value="<?php echo date('Ymd');?>" url=""></td>
+                                        <td><input type="text" class="date" name="poam[discover_ts]" size="12" maxlength="10" value="<?php echo date('Ymd');?>" url=""></td>
                                     </tr>
                                 </table>
                             </td>
@@ -32,7 +37,7 @@
                             <td>
                             <?php 
                                 $this->source[0] = '--Any--';
-                                echo $this->formSelect('source', 0, null, $this->source); 
+                                echo $this->formSelect('poam[source_id]', 0, null, $this->source); 
                             ?>
                                 
                             </td>
@@ -43,12 +48,47 @@
             </tr>
             <tr>
                 <td><b>Enter Description of Finding:<b><br>
-                    <textarea name="finding_data" cols="60" rows="5" style="border:1px solid #44637A; width:100%; height:70px;"></textarea>
+                    <textarea name="poam[finding_data]" cols="60" rows="5" style="border:1px solid #44637A; width:100%; height:70px;"></textarea>
                 </td>
             </tr>
         </table>
             </td>
             </tr>
+            <tr>
+                <td>
+                    <table cellpadding="5" width="100%" class="tipframe">
+                        <th align='left' >Recommendation</th>
+                        <tr>
+                            <td colspan='2'>
+                            <textarea name="poam[action_suggested]" cols="60" rows="5" style="border:1px solid #44637A; width:100%; height:70px;"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </td>                
+            </tr>
+            <tr>
+                <td>
+                    <table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
+                        <tr>
+                            <th align="left" >Security Control:&nbsp;
+                            <?php echo $this->formSelect('poam[blscr_id]', 0, null, $this->blscr_list);?>
+                            </th>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
+                        <tr>
+                            <th align="left" >Risk Level:&nbsp;
+                            <?php echo $this->formSelect('poam[threat_level]', 'NONE', null, $threatLevelList);?>
+                            </th>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
             <tr>
                 <td>
                     <table border="0" width="100%" cellpadding="5" class="tipframe">
@@ -64,7 +104,7 @@
                                         <td>
                             <?php 
                                 $this->system[0] = '--Any--';
-                                echo $this->formSelect('system', 0, 
+                                echo $this->formSelect('poam[system_id]', 0, 
                                 array('url'=>"/asset/search"), 
                                 $this->system); 
                             ?>
@@ -88,7 +128,7 @@
                         </tr>
                         <tr>
                             <td width="200" align="center"><b>Asset Name:</b><div>
-                                <select id="asset_list" name="asset_list" size="8" style="width: 190px;" >
+                                <select name="poam[asset_id]" size="8" style="width: 190px;" >
                                 </select></div>                            </td>
                             <td width="600" align="center" valign="top">
                                 <fieldset style="height:115; border:1px solid #44637A; padding:5">

@@ -1,4 +1,4 @@
-<select name="asset_list" size="8" style="width: 190px;" url='/asset/detail/id/'>
+<select name="poam[asset_id]" size="8" style="width: 190px;" url='/asset/detail/id/'>
 <?php 
     foreach( $this->assets as $a ) {
         echo '<option value="', $a['id'], '">', $a['name'], '</option>',"\n"; 
