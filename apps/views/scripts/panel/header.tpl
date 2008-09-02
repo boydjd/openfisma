@@ -6,8 +6,12 @@
                 <input type="submit" value="Change Password" /></form>&nbsp;
             <?php } ?>
                 <form class="button_link" action="/user/logout">
-                <input type="submit" value="Logout" /></form><br>
-				<li><b><?php echo $this->identity;  ?></b> is currently logged in 
+                <input type="submit" value="Logout" /></form>
+                </li>
+				<li><b><?php echo $this->identity;  ?></b> is currently logged in. <i>Last Login <?php 
+                    echo $this->lastLogin->toString("D, M j H:i");
+                    ?></i>
+                </li>
 			</ul></td>
 	</tr>
 </table>
