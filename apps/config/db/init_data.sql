@@ -12,10 +12,11 @@ INSERT INTO `configurations` (`id`, `key`, `value`, `description`) VALUES
 (11,'smtp_port', '25', 'Smtp server port'),
 (12,'unlock_enabled', '0', 'Enable Automated Account Unlock'),
 (13,'unlock_duration', '0', 'Automated Account Unlock Duration'),
-(14,'contact_name', '', 'End-user technical support Contact name'),
-(15,'contact_phone', '', 'End-user technical support Contact phone number'),
-(16,'contact_email', 'mark.haase@ed.gov', 'End-user technical support Contact Email Address'),
-(17,'use_notification', 'System use notification', 'This is a United States Government Computer system. We encourage its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474) Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.');
+(14,'contact_name', '', 'Technical support Contact name'),
+(15,'contact_phone', '', 'Technical support Contact phone number'),
+(16,'contact_email', 'mark.haase@ed.gov', 'Technical support Contact Email Address'),
+(17,'contact_subject', 'OVMS%20Feedback%2FBugs', 'Technical Support Email Subject Text'),
+(18,'use_notification', 'System use notification', 'This is a United States Government Computer system. We encourage its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474) Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.');
 
 INSERT INTO `evaluations` (`id`, `name`, `precedence_id`, `function_id`, `group`) VALUES
 (1, 'EV_SSO', 0, 25, 'EVIDENCE'),

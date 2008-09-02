@@ -40,6 +40,7 @@ class ConfigController extends SecurityController
     public function indexAction()
     {
         $this->_helper->actionStack('notification');
+        $this->_helper->actionStack('contact');
         $this->_helper->actionStack('view');
     }
     /**
@@ -78,9 +79,6 @@ class ConfigController extends SecurityController
                         Config::EXPIRING_TS =>0,
                         Config::UNLOCK_ENABLED =>0,
                         Config::UNLOCK_DURATION =>0,
-                        Config::CONTACT_NAME  =>0,
-                        Config::CONTACT_PHONE =>0,
-                        Config::CONTACT_EMAIL =>0,
                         Config::USE_NOTIFICATION =>0
                      );
                     $values = array_intersect_key($values, $validVals);
@@ -118,6 +116,43 @@ class ConfigController extends SecurityController
         $this->view->generalform = $general;
         $this->render();
     }
+
+    /**
+     *  Add/Update Technical Contact Information configurations
+     */
+    public function contactAction()
+    {
+        $config = new Config();
+        $form = $this->getForm('contact');
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if (isset($data[Config::CONTACT_NAME])) {
+                if ($form->isValid($data)) {
+                    $data = $form->getValues();
+                    unset($data['submit']);
+                    unset($data['reset']);
+                    foreach ($data as $k => $v) {
+                        $where = $config->getAdapter()
+                            ->quoteInto('`key` = ?', $k);
+                        $config->update(array('value' => $v), $where);
+                    }
+                    $msg = 'Configuration updated successfully';
+                    $this->message($msg, self::M_NOTICE);
+                } else {
+                    $form->populate($data);
+                }
+            }
+        }
+        $items = $config->getList(array('key', 'value'));
+        $configs = array();
+        foreach ($items as $item) {
+            $configs[$item['key']] = $item['value'];
+        }
+        $form->setDefaults($configs);
+        $this->view->form = $form;
+        $this->render();
+    }
+
 
     /**
      *  Add/Update LDAP configurations
@@ -211,6 +246,8 @@ class ConfigController extends SecurityController
                             ->quoteInto('`key` = ?', $k);
                         $config->update(array('value' => $v), $where);
                     }
+                    $msg = 'Configuration updated successfully';
+                    $this->message($msg, self::M_NOTICE);
                 } else {
                     $form->populate($data);
                 }

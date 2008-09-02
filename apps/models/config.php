@@ -29,6 +29,7 @@ class Config extends Fisma_Model
     const CONTACT_NAME  = 'contact_name';
     const CONTACT_PHONE = 'contact_phone';
     const CONTACT_EMAIL = 'contact_email';
+    const CONTACT_SUBJECT = 'contact_subject';
 
     const USE_NOTIFICATION = 'use_notification';
     
