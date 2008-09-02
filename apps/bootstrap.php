@@ -37,7 +37,7 @@ require_once 'Zend/Date.php';
 // HTML4_LOOSE, HTML4_FRAMESET, CUSTOM_XHTML
 $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
 $viewRenderer->initView();
-$viewRenderer->view->doctype('XHTML1_STRICT');
+$viewRenderer->view->doctype('HTML4_STRICT');
 
 //Make the php convention as the toString default format
 Zend_Date::setOptions(array(
