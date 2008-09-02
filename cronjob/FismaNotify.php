@@ -1,4 +1,6 @@
+#!/usr/bin/php
 <?php
+
 /**
  * FismaNotify.php
  *

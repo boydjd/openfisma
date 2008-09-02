@@ -91,6 +91,21 @@ Once the wizard has completed you may log in with the username
 "root" and password "0p3nfism@", please note the 0 is a zero. This
 password should be changed immediately after logging in.
 
+2.1 Email Notification Setting
+
+To enable the capability of automated email notification, it's necessary to 
+create a cronjob to the cronjob/FismaNotify.php. For example:
+# run the bell every 5 minutes
+5 0 * * *  /where/openfisma/installed/cronjob/FismaNotify.php >> /tmp/out 2>&1
+
+or the cronjob should be 
+5 0 * * *  php /where/cronjob/FismaNotify.php >> /tmp/out 2>&1
+
+Note: the frequency of the cronjob determind the possible shortest interval 
+between every consequent notifying action. It's not effective if any user 
+set the customized notification interval shorter than it.
+
+
 3.0 Security Hardening
 
 After the installation you will want to remove the ability to run the
