@@ -132,8 +132,8 @@ class UserController extends MessageController
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
             $store->write($me);
-            return $this->_forward('index', 'Panel');
-
+            $this->_helper->layout->setLayout('notice');
+            return $this->render('rule');
         }catch(Zend_Auth_Exception $e) {
             $this->view->assign('error', $e->getMessage());
             $this->render();

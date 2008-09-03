@@ -57,7 +57,8 @@ class ConfigController extends SecurityController
                     Config::UNLOCK_DURATION))) {
                 $item['value'] /= 60; //convert to hour from second
             }
-            if (Config::USE_NOTIFICATION == $item['key']) {
+            if (in_array($item['key'], array(Config::USE_NOTIFICATION,
+                Config::BEHAVIOR_RULE))) {
                 $item['value'] = $item['description'];
             }
 
@@ -79,7 +80,8 @@ class ConfigController extends SecurityController
                         Config::EXPIRING_TS =>0,
                         Config::UNLOCK_ENABLED =>0,
                         Config::UNLOCK_DURATION =>0,
-                        Config::USE_NOTIFICATION =>0
+                        Config::USE_NOTIFICATION =>0,
+                        Config::BEHAVIOR_RULE =>0
                      );
                     $values = array_intersect_key($values, $validVals);
                     foreach ($values as $k => $v) {
@@ -91,7 +93,8 @@ class ConfigController extends SecurityController
                             Config::UNLOCK_DURATION))) { 
                             $v *= 60; //convert to second
                         }
-                        if (Config::USE_NOTIFICATION == $k) {
+                        if (in_array($k,array(Config::USE_NOTIFICATION,
+                            Config::BEHAVIOR_RULE))) {
                             $this->_config->update(array('description' => $v),
                                 $where);
                         } else {

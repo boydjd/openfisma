@@ -105,7 +105,8 @@
             $configs = array();
             foreach ($pairs as $v) {
                 $configs[$v->key] = $v->value;
-                if ('use_notification' == $v->key) {
+                if (in_array($v->key, array('use_notification',
+                    'behavior_rule'))) {
                     $configs[$v->key] = $v->description;
                 }
             }

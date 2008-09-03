@@ -193,3 +193,24 @@ label.error {
 .errors {
     color:red;
 }
+
+.notice {
+	font-size: 12px;
+    width:70%;
+    margin:10em auto;
+    border: 1px solid #BEBEBE;
+    padding-bottom:5px;
+}
+
+.notice p{
+    padding: 0px 5px ;
+}
+
+.notice h1 {
+    padding: 5px 5px ;
+	color: #44637A;		/* Dark Blue */
+    background-color: #DDDDDD;
+	line-height: 23px;
+	font-weight: bold;
+    margin-top:0;
+}

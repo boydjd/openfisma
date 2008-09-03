@@ -32,6 +32,7 @@ class Config extends Fisma_Model
     const CONTACT_SUBJECT = 'contact_subject';
 
     const USE_NOTIFICATION = 'use_notification';
+    const BEHAVIOR_RULE    = 'behavior_rule';
     
     const SENDER    = 'sender';
     const SUBJECT     = 'subject';
