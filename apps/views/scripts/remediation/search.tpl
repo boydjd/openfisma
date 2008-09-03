@@ -24,8 +24,9 @@
         <th nowrap>View</th>
         </tr>
         <!-- REMEDIATION ROWS -->
-        <?php foreach($this->list as $row){
+        <?php
             $today = date('Y-m-d',time());
+            foreach($this->list as $row){
             $finding_data = strlen($row['finding_data'])>120?substr($row['finding_data'],0,120)."...":$row['finding_data'];
         ?>
         <tr>
