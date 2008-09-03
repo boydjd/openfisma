@@ -1,14 +1,12 @@
-<!-- Sets the doctype from the bootstrap file -->
-<?= $this->doctype() ?>
-
+<?php
+    echo $this->doctype();
+?>
 <html>
 <head>
-
-<!-- Sets the page title -->
-<?
-$this->headTitle()->setSeparator(' - ');
-$this->headTitle()->prepend('OpenFISMA');
-echo $this->headTitle();
+<?php
+    $this->headTitle()->setSeparator(' - ');
+    $this->headTitle()->prepend('OpenFISMA');
+    echo $this->headTitle();
 ?>
 
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -18,13 +16,6 @@ echo $this->headTitle();
 <link rel="icon"
       type="image/ico"
       href="images/favicon.ico" />
-
-
-<!--[If lte IE 6]>
-<style type="text/css" >
-@import url("/stylesheets/ie.css");
-</style>
-<![endif]-->
 
 <style type="text/css">
 <!--
@@ -53,7 +44,7 @@ echo $this->headTitle();
 <div id='bottom'>
         <table width="100%">
         <tr><td colspan=2><hr style="color: #44637A;" size="1"></td></tr>
-        <tr> <td>If you find bugs or wish to provide feedback, please report to <a href="mailto:<?php echo readSysConfig('contact_email');?>?Subject=<?php echo readSysConfig('contact_subject');?>">us</a>.</td>
+        <tr> <td>If you find bugs or wish to provide feedback, please contact the <a href="mailto:<?php echo readSysConfig('contact_email');?>?Subject=<?php echo readSysConfig('contact_subject');?>">administrator</a>.</td>
              <td align="right"><a href="/panel/user/sub/privacy/">Privacy Policy</a>&nbsp;|&nbsp;<i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i> </td>
         </tr>
         </table>

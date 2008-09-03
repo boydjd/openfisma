@@ -1,7 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<?php
+    echo $this->doctype();
+?>
 <html>
 <head>
-<title></title>
+<?php
+    $this->headTitle()->setSeparator(' - ');
+    $this->headTitle()->prepend('OpenFISMA');
+    echo $this->headTitle();
+?>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" type="text/css" href="/stylesheets/layout.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/fisma.css">
@@ -19,7 +25,7 @@
 
         <div id='bottom'>
             <table width="100%">
-            <tr><td colspan=2><hr color="#44637A" size="1"></hr></td></tr>
+            <tr><td colspan=2><hr style="color: #44637A;"></td></tr>
             <tr> <td align="right"> <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i> </td> </tr>
             </table>
         </div>
