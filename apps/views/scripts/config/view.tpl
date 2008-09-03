@@ -8,6 +8,11 @@
     <?php echo $this->generalform->setAttrib('class','cform'); ?> 
 </div>
 
+<div class="barleft">
+<div class="barright">
+<p><b>Privacy Policy</b>&nbsp;[<a href="/panel/config/sub/privacy/">Edit</a>]</p>
+</div>
+</div>
 
 <?php  if('ldap' == readSysConfig('auth_type',true)){ ?>
 

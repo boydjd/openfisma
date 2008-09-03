@@ -265,4 +265,37 @@ class ConfigController extends SecurityController
         $this->view->form = $form;
         $this->render();
     }
+
+    /**
+     *  Add/Update Privacy Policy configurations
+     */
+    public function privacyAction()
+    {
+        $config = new Config();
+        $form = $this->getForm('privacy');
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if (isset($data[Config::PRIVACY_POLICY])) {
+                if ($form->isValid($data)) {
+                    $data = $form->getValues();
+                    $where = $config->getAdapter()
+                        ->quoteInto('`key` = ?', 'privacy_policy');
+                    $config->update(array('description' =>
+                        $data['privacy_policy']), $where);
+                    $msg = 'Configuration updated successfully';
+                    $this->message($msg, self::M_NOTICE);
+                } else {
+                    $form->populate($data);
+                }
+            }
+        }
+        $items = $config->getList(array('key', 'description'));
+        $configs = array();
+        foreach ($items as $item) {
+            $configs[$item['key']] = $item['description'];
+        }
+        $form->setDefaults($configs);
+        $this->view->form = $form;
+        $this->render();
+    }
 }

@@ -33,6 +33,7 @@ class Config extends Fisma_Model
 
     const USE_NOTIFICATION = 'use_notification';
     const BEHAVIOR_RULE    = 'behavior_rule';
+    const PRIVACY_POLICY   = 'privacy_policy';
     
     const SENDER    = 'sender';
     const SUBJECT     = 'subject';

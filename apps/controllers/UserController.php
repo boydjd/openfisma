@@ -312,4 +312,12 @@ Please create a password that adheres to these complexity requirements:<br>
         return $auth->authenticate($authAdapter);
     }
 
+    /**
+     * User Privacy Policy
+     */
+    public function privacyAction()
+    {
+        $this->render();
+    }
+
 }
