@@ -196,10 +196,11 @@ label.error {
 
 .notice {
 	font-size: 12px;
-    width:70%;
-    margin:10em auto;
+    width:60%;
+    margin:2em auto;
     border: 1px solid #BEBEBE;
     padding-bottom:5px;
+    text-align:center;
 }
 
 .notice p{
@@ -207,10 +208,17 @@ label.error {
 }
 
 .notice h1 {
+    text-align:left;
     padding: 5px 5px ;
 	color: #44637A;		/* Dark Blue */
     background-color: #DDDDDD;
 	line-height: 23px;
 	font-weight: bold;
     margin-top:0;
+}
+
+.notice textarea {
+    BORDER-STYLE:none;
+    margin:10px auto;
+    width:70%;
 }

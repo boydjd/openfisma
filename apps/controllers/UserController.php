@@ -320,4 +320,12 @@ Please create a password that adheres to these complexity requirements:<br>
         $this->render();
     }
 
+    /**
+     * Rules of Behavior
+     */
+    public function robAction()
+    {
+        $this->render();
+    }
+
 }

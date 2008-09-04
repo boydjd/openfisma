@@ -21,13 +21,17 @@
     <div id="headbar"><img src="/images/login_title.gif" ></div>
             <?php echo $this->layout()->CONTENT; ?>
     <div id='bottom'>
-        <table width="100%">
-            <tr><td colspan=2><hr style="color:#a2b4c2; background-color:#a2b4c2;" size="1"></td></tr>
-            <tr> <td>If you find bugs or wish to provide feedback, please <a href="mailto:mark.haase@ed.gov?Subject=OVMS%20Feedback%2FBugs">contact us</a>.</td>
-                 <td align="right"> <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i> </td>
-            </tr>
-            </table>
-        </div>
+    <table width="100%">
+        <tr>
+            <td colspan=2><hr style="color: #44637A;" size="1"></td>
+        </tr>
+        <tr>
+            <td align="right">
+            <a href="mailto:<?php echo readSysConfig('contact_email');?>">Contact Administrator</a>&nbsp;|&nbsp;
+            <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i>
+        </td>
+    </tr>
+</table>
     </div>
 </body>
 

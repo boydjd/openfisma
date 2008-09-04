@@ -24,10 +24,10 @@
         <?php echo $this->layout()->CONTENT; ?>
 
         <div id='bottom'>
-            <table width="100%">
-            <tr><td colspan=2><hr style="color: #44637A;"></td></tr>
-            <tr> <td align="right"> <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i> </td> </tr>
-            </table>
+            <?php 
+                $this->action('footer', 'panel'); 
+                echo $this->layout()->footer; 
+            ?>
         </div>
     </div>
 

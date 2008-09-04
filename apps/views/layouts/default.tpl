@@ -40,19 +40,13 @@
 <div id='detail'>
         <?php echo $this->layout()->CONTENT; ?>
 </div><!--detail-->
-
-<div id='bottom'>
-        <table width="100%">
-        <tr><td colspan=2><hr style="color: #44637A;" size="1"></td></tr>
-        <tr> <td>If you find bugs or wish to provide feedback, please contact the <a href="mailto:<?php echo readSysConfig('contact_email');?>?Subject=<?php echo readSysConfig('contact_subject');?>">administrator</a>.</td>
-             <td align="right"><a href="/panel/user/sub/privacy/">Privacy Policy</a>&nbsp;|&nbsp;<i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i> </td>
-        </tr>
-        </table>
-</div><!--bottom-->
-
+<div id='footer'>
+        <?php echo $this->layout()->footer; ?>
+</div>
 </div><!--content-->
 
 </div><!--container-->
 
 </body>
 </html>
+

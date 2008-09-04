@@ -2,9 +2,9 @@
 
 <h1>Behavior Rules for Openfisma</h1>
 
-<p>
-    <?php echo readSysConfig('behavior_rule'); ?>
-</p>
+    
+<textarea rows="35"><?php echo readSysConfig('behavior_rule'); ?></textarea>
+
 
 <p>
     <a class="button" href="/user/logout">Cancel</a>

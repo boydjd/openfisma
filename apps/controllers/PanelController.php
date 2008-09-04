@@ -33,7 +33,15 @@ class PanelController extends SecurityController
         $this->_helper->layout->assign('header',
             $this->view->render($this->_helper->viewRenderer->getViewScript()));
         $this->_helper->layout->setLayout('default');
+        $this->_helper->actionStack('footer');
     }
+
+    public function footerAction()
+    {
+        $this->_helper->layout->assign('footer',
+            $this->view->render($this->_helper->viewRenderer->getViewScript()));
+    }
+
     public function dashboardAction()
     {
         $this->_helper->actionStack('index', 'Dashboard');
