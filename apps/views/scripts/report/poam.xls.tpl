@@ -56,7 +56,9 @@ $worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);
 //inject the titles
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
+$today = date('Y-m-d',time());
 foreach( $this->poam_list as $p ) {
+    $p['status'] = $p['status'] == 'EN' && $p['action_est_date']<$today?'EO':$p['status'];
     $data = array(
         $this->system_list[$p['system_id']],
         $p['id'],
