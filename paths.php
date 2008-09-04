@@ -38,3 +38,4 @@ define('VIEWS', APPS . '/views');
 define('CONTROLLERS', APPS . '/controllers');
 define('VENDORS', ROOT . '/vendor');
 define('LIBS', ROOT . '/include');
+define('TEST', ROOT . '/test');
