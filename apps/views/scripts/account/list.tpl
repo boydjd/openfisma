@@ -23,9 +23,6 @@ function delok(entryname)
     <th>Role</th>
     <th>Username</th>
     <?php if(isAllow('admin_users','update')){
-              echo'<th>Notification</th>';
-          } 
-          if(isAllow('admin_users','update')){
               echo'<th>Edit</th>';
           }
           if(isAllow('admin_users','read')){
@@ -45,12 +42,7 @@ function delok(entryname)
     <td class="tdc">&nbsp;<?php echo $user['email'];?></td>
     <td class="tdc">&nbsp;<?php echo $this->roleList[$user['id']];?></td>
     <td class="tdc">&nbsp;<?php echo $user['account'];?></td>
-    <?php if(isAllow('admin_users','update')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/account/sub/notificationevent/id/<?php echo $user['id'];?>" title="notification for Users">
-        <img src="/images/notification.png" border="0"></a>
-    </td>
-    <?php } if(isAllow('admin_users','update')){ ?>
+    <?php  if(isAllow('admin_users','update')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/account/sub/view/v/edit/id/<?php echo $user['id'];?>" title="edit the Users">
         <img src="/images/edit.png" border="0"></a>

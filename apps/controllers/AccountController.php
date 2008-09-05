@@ -429,6 +429,7 @@ class AccountController extends PoamBaseController
                     }
                 }
             }
+            $errorString = addslashes($errorString);
 
             // Error message
             $this->message("Unable to update account:<br>$errorString",
@@ -802,38 +803,6 @@ class AccountController extends PoamBaseController
         $this->view->assign('available_privileges', $availablePrivileges);
         $this->_helper->layout->setLayout('ajax');
         $this->render('availableprivi');
-    }
-    /**
-     * For setting events which user interested in
-     *
-     */
-    public function notificationeventAction()
-    {
-        $userId = $this->_request->getParam('id');
-        $event = new Event();
-
-        if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if (!isset($data['enableEvents'])) {
-                $data['enableEvents'] = array();
-            }
-            $event->saveEnabledEvents($userId, $data['enableEvents']);
-            if ($data['notify_frequency']) {
-                $where = $this->_user->getAdapter()
-                    ->quoteInto('`id` = ?', $userId);
-                $this->_user->update(array('notify_frequency' => 
-                    $data['notify_frequency']), $where);
-            } 
-        }
-        
-        $ret = $this->_user->find($userId);
-        $this->view->notify_frequency = $ret->current()->notify_frequency;
-        $allEvent = $event->getUserAllEvents($userId);
-        $enabledEvent = $event->getEnabledEvents($userId);
-        
-        $this->view->availableList = array_diff($allEvent, $enabledEvent);
-        $this->view->enableList = array_intersect($allEvent, $enabledEvent);
-        $this->render();
     }
 
     /**

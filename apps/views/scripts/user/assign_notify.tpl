@@ -32,7 +32,7 @@ function delok(entryname)
     </div>
 </div>
 <div class='block'>
-    <form name="event_form" enctype="application/x-www-form-urlencoded" method="post" action="">
+    <form name="event_form" enctype="application/x-www-form-urlencoded" method="post" action="/panel/user/sub/savenotify">
         <div>
             <p><span>Notify Frequency:</span>
                 <input name="notify_frequency" type="text" value="<?php echo $this->notify_frequency?>" />

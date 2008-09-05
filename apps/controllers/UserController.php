@@ -18,7 +18,10 @@ require_once (CONTROLLERS . DS . 'MessageController.php');
 require_once (MODELS . DS . 'user.php');
 require_once (MODELS . DS . 'system.php');
 require_once (MODELS . DS . 'notification.php');
+require_once (FORMS . '/Manager.php');
 require_once 'Zend/Date.php';
+require_once (MODELS . DS . 'event.php');
+
 /**
  * UserController
  *
@@ -31,9 +34,11 @@ require_once 'Zend/Date.php';
 class UserController extends MessageController
 {
     private $_user = null;
+    private $_me = null;
     public function init()
     {
         $this->_user = new User();
+        $this->_me = Zend_Auth::getInstance()->getIdentity();
     }
     
     /**
@@ -149,18 +154,138 @@ class UserController extends MessageController
      */
     public function logoutAction()
     {
-        $auth = Zend_Auth::getInstance();
-        $me = $auth->getIdentity();
-        if (!empty($me)) {
-            $this->_user->log(User::LOGOUT, $me->id, $me->account . ' logout');
+        //$auth = Zend_Auth::getInstance();
+        //$me = $auth->getIdentity();
+        if (!empty($this->_me)) {
+            $this->_user->log(User::LOGOUT, $this->_me->id,
+                $this->_me->account . ' logout');
             $notification = new Notification();
             $notification->add(Notification::ACCOUNT_LOGOUT,
-                $me->account, $me->id);
+                $this->_me->account, $this->_me->id);
             
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');
     }
+
+    /**
+     * getprofileForm() - Returns the standard form for reading, and
+     * updating user profile.
+     *
+     * @return Zend_Form
+     */
+    public function getprofileForm()
+    {
+        $form = Form_Manager::loadForm('account');
+        $form->removeElement('account');
+        $form->removeElement('password');
+        $form->removeElement('confirm_password');
+        $form->removeElement('ldap_dn');
+        $form->removeElement('checkdn');
+        $form->removeElement('role');
+        $form->removeElement('is_active');
+        return $form;
+    }
+
+    /**
+     * Change user's profile infor
+     */
+    public function profileAction()
+    {
+        // Profile Form
+        $form = $this->getprofileForm();
+        $query = $this->_user->select()->setIntegrityCheck(false)
+                            ->from('users', array('name_last', 'name_first',
+                                'phone_office', 'phone_mobile', 'email',
+                                'title'))
+                            ->where('id = ?', $this->_me->id);
+        $userProfile = $this->_user->fetchRow($query)->toArray();
+        $form->setAction("/panel/user/sub/updateprofile");
+        $form->setDefaults($userProfile);
+        $this->view->assign('form', Form_Manager::prepareForm($form));
+
+        // assign notification events
+        $event = new Event();
+
+        $ret = $this->_user->find($this->_me->id);
+        $this->view->notify_frequency = $ret->current()->notify_frequency;
+        $allEvent = $event->getUserAllEvents($this->_me->id);
+        $enabledEvent = $event->getEnabledEvents($this->_me->id);
+        
+        $this->view->availableList = array_diff($allEvent, $enabledEvent);
+        $this->view->enableList = array_intersect($allEvent, $enabledEvent);
+
+        $this->render();
+    }
+
+    /**
+     * updateprofileAction() - Updates user's profile information
+     *
+     */
+    public function updateprofileAction()
+    {
+        // Load the account form in order to perform validations.
+        $form = $this->getProfileForm();
+        $formValid = $form->isValid($_POST);
+        $profileData = $form->getValues();
+        unset($profileData['submit']);
+
+        if ($formValid) {
+            $ret = $this->_user->update($profileData, 'id = ' .$this->_me->id);
+            if ($ret > 0) {
+                $this->_user->log(User::MODIFICATION, $this->_me->id, 
+                    "{$this->_me->account} Profile Modified");
+                $this->message("profile modified succefully.", self::M_NOTICE);
+            }
+        } else {
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors > 0 )) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .="$label: $error<br>";
+                    }
+                }
+            }
+            // Error message
+            $this->message("Unable to update account:<br>".addslashes($errorString),
+                self::M_WARNING);
+            // On error, redirect back to the profile action.
+        }
+        $this->_forward('profile');
+    }
+
+    /**
+     * save notify events
+     */
+    public function savenotifyAction()
+    {
+        $event = new Event();
+        $data = $this->_request->getPost();
+        if (!isset($data['enableEvents'])) {
+            $data['enableEvents'] = array();
+        }
+        $event->saveEnabledEvents($this->_me->id, $data['enableEvents']);
+        if ($data['notify_frequency']) {
+            $ret = $this->_user->update(array('notify_frequency' => 
+                $data['notify_frequency']), "id = ".$this->_me->id);
+            if ($ret > 0 || 0 == $ret) {
+                $this->message("Notification events modified succefully.",
+                    self::M_NOTICE);
+            } else {
+                $this->message("Notification events modified failed.",
+                    self::M_WARNING);
+            }
+            $this->_forward('profile');
+        }
+    }
+
+        
     /**
      * Change user's password
      */
@@ -233,7 +358,7 @@ Please create a password that adheres to these complexity requirements:<br>
             $this->message($msg, $model);
         }
         $this->_helper->actionStack('header', 'Panel');
-        $this->render();
+        $this->_forward('profile');
     }
     
     /**
