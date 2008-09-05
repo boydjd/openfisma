@@ -27,15 +27,15 @@ if (!defined('ROOT')) {
  * The root directory for the web site
  */
 if (!defined('WEB_ROOT')) {
-    define('WEB_ROOT', ROOT . '/public');
+    define('WEB_ROOT', ROOT . DS . 'public');
 }
 
-define('APPS', ROOT . '/apps');
-define('CONFIGS', APPS . '/config');
-define('FORMS', APPS . '/forms');
-define('MODELS', APPS . '/models');
-define('VIEWS', APPS . '/views');
-define('CONTROLLERS', APPS . '/controllers');
-define('VENDORS', ROOT . '/vendor');
-define('LIBS', ROOT . '/include');
-define('TEST', ROOT . '/test');
+define('APPS', ROOT . DS . 'apps');
+define('CONFIGS', APPS . DS . 'config');
+define('FORMS', APPS . DS . 'forms');
+define('MODELS', APPS . DS . 'models');
+define('VIEWS', APPS . DS . 'views');
+define('CONTROLLERS', APPS . DS . 'controllers');
+define('VENDORS', ROOT . DS . 'vendor');
+define('LIBS', ROOT . DS . 'include');
+define('LOG', ROOT . DS . 'log');

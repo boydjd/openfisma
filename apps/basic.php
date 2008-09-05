@@ -113,8 +113,8 @@
             Zend_Registry::set(SYSCONFIG, new Zend_Config($configs));
         }
         if ( !isset(Zend_Registry::get(SYSCONFIG)->$key) ) {
-            throw new fisma_Exception("$key does not exist in system 
-                                      configuration");
+            throw new fisma_Exception(
+            "$key does not exist in system configuration");
         }
         return Zend_Registry::get(SYSCONFIG)->$key;
     }

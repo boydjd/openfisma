@@ -29,13 +29,18 @@ require_once 'Zend/Db/Table.php';
 require_once MODELS . DS . 'Abstract.php';
 require_once 'Zend/Controller/Plugin/ErrorHandler.php';
 require_once 'Zend/Date.php';
-
-// sets the doctype() helper to utilize XHTML1_STRICT which is passed to the default layout
-// DocType must be set before making such calls; otherwise, they will use the default (which is HTML4 transitional).
+require_once 'Zend/Log.php';
+require_once 'Zend/Log/Writer/Stream.php';
+require_once 'Zend/Auth.php';
+// sets the doctype() helper to utilize XHTML1_STRICT 
+// which is passed to the default layout
+// DocType must be set before making such calls; otherwise,
+// they will use the default (which is HTML4 transitional).
 // Other options are as follows:
 // XHTML1_STRICT, XHTML1_TRANSITIONAL, XHTML1_FRAMESET, HTML4_STRICT
 // HTML4_LOOSE, HTML4_FRAMESET, CUSTOM_XHTML
-$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+$viewRenderer = Zend_Controller_Action_HelperBroker::
+    getStaticHelper('viewRenderer');
 $viewRenderer->initView();
 $viewRenderer->view->doctype('HTML4_STRICT');
 
@@ -61,8 +66,8 @@ $front = Zend_Controller_Front::getInstance();
 $router = $front->getRouter();
 if (!isInstall()) {
     // Define route that permit only install controller
-    $route['install'] = new Zend_Controller_Router_Route_Regex('([^/]*)/?(.*)$', array(
-        'controller' => 'install'
+    $route['install'] = new Zend_Controller_Router_Route_Regex('([^/]*)/?(.*)$',
+        array('controller' => 'install'
     ), array(
         'action' => 2
     ), 'install/%2$s');
@@ -78,15 +83,16 @@ if (!isInstall()) {
     Zend_Db_Table::setDefaultAdapter($db);
     Zend_Registry::set('db', $db);
     // Define additional route to permit the last page(complete) of installation
-    $route['install_end'] = new Zend_Controller_Router_Route_Static('install/complete', array(
-        'controller' => 'install',
-        'action' => 'complete'
+    $route['install_end'] = new 
+        Zend_Controller_Router_Route_Static('install/complete', array(
+            'controller' => 'install',
+            'action' => 'complete'
     ));
     // Define route for safty
     // Any hack attempt to access installation would result in logout.
-    $route['install'] = new Zend_Controller_Router_Route_Regex('install/.*', array(
-        'controller' => 'user',
-        'action' => 'logout'
+    $route['install'] = new Zend_Controller_Router_Route_Regex('install/.*',
+        array('controller' => 'user',
+              'action' => 'logout'
     ));
     $router->addRoute('noinstall', $route['install']);
     $router->addRoute('install_end', $route['install_end']);
@@ -97,4 +103,18 @@ if (!isInstall()) {
         'action' => 'error'
     )));
 }
-Zend_Controller_Front::run(APPS . DS . 'controllers');
+
+try {
+    $front->throwExceptions(true);
+    Zend_Controller_Front::run(APPS . DS . 'controllers');
+} catch (Exception $e) {
+    $write = new Zend_Log_Writer_Stream(LOG . DS . ERROR_LOG);
+    $log = new Zend_Log($write);
+    $me = Zend_Auth::getInstance()->getIdentity();
+    $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
+        "$me->account($me->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+    $formatter = new Zend_Log_Formatter_Simple($format);
+    $write->setFormatter($formatter);
+    $log->log($e->getMessage(), Zend_Log::ERR);
+    echo "Fatal error, please check the log file " . ERROR_LOG;
+}
