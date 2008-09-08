@@ -104,7 +104,7 @@ class Notification extends Fisma_Model
         $result = $this->_db->fetchRow($query);
         $userId = $result['id'];
 
-        $eventText = "$eventName (ID ($record) by $userName ";
+        $eventText = "$eventName by $userName($record) ";
         $data = array('event_id'=> $eventId,
                       'user_id' => $userId,
                       'event_text'=> $eventText,
@@ -113,7 +113,10 @@ class Notification extends Fisma_Model
     }
 
     /**
-     * Get event record which user interested
+     * Get event record which user interested.
+     *
+     * the result excludes those events caused by the observer himself.
+     * i.e. $userID. 
      *
      * @param int $userId
      * @param string $beforTime
@@ -133,6 +136,7 @@ class Notification extends Fisma_Model
                            ->join(array('ue'=>'user_events'),
                                 'ue.event_id = e.id', array())
                            ->where('ue.user_id = ?', $userId)
+			   ->where('n.user_id != ?', $userId)
                            ->where('n.timestamp >= ?', $afterTime)
                            ->where('n.timestamp < ?', $beforTime)
                            ->order('n.user_id')

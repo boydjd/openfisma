@@ -52,7 +52,22 @@ class FismaNotify
     }
 
     /**
-     *  Iterat the users and decide to send any message to them
+     *  Iterat the users and decide to send any message to them.
+     *
+     *  The notification belling is individually. It enumerates all users. 
+     *	For each one, do following:
+     *  - To determine if his next notification is due, which is controled
+     *	  by user's profile "Notify Frequency" setting.
+     *  - To fetch all valid events he concerns if the notification is due.
+     *	  The valid events are filtered by time. Those happen after his 
+     *	  last notification belling time and before now. Please be aware 
+     *	  that 'now' here is a snapshot of timestamp when the script starts
+     *	  to run. It reduces the complexity introduced by the execution time
+     *	  impaction of the script itself.
+     *	- To send the mail to recipient.
+     *	- To update the last notification belling timestamp if it succeeds.
+     * 	- To delete those events that are obsoleted for all the users.
+     *
      *  @todo log the email send results
      */
     public function bell()
@@ -87,12 +102,12 @@ class FismaNotify
                 $content = $contentTpl->render(self::EMAIL_VIEW);
                 $mail->setBodyText($content);
                 $mail->send($this->getTransport());
+		// Update user's last notify time
+		$now = $currentTime->toString('Y-m-d H:i:s');
+		$updateData = array('most_recent_notify_ts'=>$now);
+		$user->update($updateData, 'id = '.$id);
             }
 
-            // Update user's last notify time
-            $now = $currentTime->toString('Y-m-d H:i:s');
-            $updateData = array('most_recent_notify_ts'=>$now);
-            $user->update($updateData, 'id = '.$id);
         }
         $this->purge();
     }
@@ -118,6 +133,11 @@ class FismaNotify
 
     /**
      *  Delete obseleted notification
+     *
+     *	The obselete timestamp is the earliest successfully belling time that 
+     *	users have, which makes sure the event is concerned by nobody and can 
+     *  be safely deleted.
+     *
      */
     public function purge()
     {
