@@ -8,6 +8,9 @@
 # version designated on the command line (or the most recent version
 # if not specified).
 #
+# For information about the OpenFISMA migrations policy:
+# http://docs.google.com/Doc?id=dgznrgjw_15f7wt6cg3
+#
 # WARNING: This script passes your schema password in plaintext on
 # the command line, which makes it visible to any other users logged
 # into your system. This script should only be used on private
@@ -149,7 +152,6 @@ sub dumpSchema {
                                                -u $config->{'dbUser'} 
                                                -p$config->{'dbPassword'}
                                                --compact
-                                               --no-data
                                                $config->{'tempSchema'}";
   $command =~ s/\s+/ /g; # Reformat the command onto one line
   &debugLog($command);
