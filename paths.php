@@ -30,13 +30,14 @@ if (!defined('WEB_ROOT')) {
     define('WEB_ROOT', ROOT . DS . 'public');
 }
 
-define('APPS', ROOT . DS . 'apps');
-define('CONFIGS', APPS . DS . 'config');
-define('FORMS', APPS . DS . 'forms');
-define('MODELS', APPS . DS . 'models');
-define('VIEWS', APPS . DS . 'views');
-define('CONTROLLERS', APPS . DS . 'controllers');
-define('VENDORS', ROOT . DS . 'vendor');
-define('LIBS', ROOT . DS . 'include');
-define('LOG', ROOT . DS . 'log');
+define('APPS', ROOT . '/apps');
+define('CONFIGS', APPS . '/config');
+define('CONTROLLERS', APPS . '/controllers');
+define('FORMS', APPS . '/forms');
+define('LIBS', ROOT . '/include');
+define('LOG', ROOT . '/log');
+define('MIGRATIONS', ROOT . '/migrations');
+define('MODELS', APPS . '/models');
 define('TEST', ROOT . '/test');
+define('VENDORS', ROOT . '/vendor');
+define('VIEWS', APPS . '/views');

@@ -194,11 +194,7 @@ class InstallController extends Zend_Controller_Action
                 );
                 try {
                     $db = Zend_DB::factory(new Zend_Config($zend_dsn));
-                    $init_db_path = CONFIGS . DS . 'db';
-                    $init_files = array(
-                        $init_db_path . DS . 'schema.sql',
-                        $init_db_path . DS . 'init_data.sql'
-                    );
+                    $init_files = array(MIGRATIONS . '/base.sql');
                     if ($ret = import_data($db, $init_files)) {
                         $checklist['schema'] = 'ok';
                     }
