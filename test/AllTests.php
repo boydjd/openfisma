@@ -26,7 +26,9 @@
  * @version   $Id:$
  */
 
-require_once '../paths.php';
+require_once dirname(__FILE__).'/../paths.php';
+// Change directory to TEST, in order to make including files relatively simple
+chdir(TEST);
 set_include_path(get_include_path() .
                  PATH_SEPARATOR . VENDORS .
                  PATH_SEPARATOR . TEST);
@@ -41,7 +43,7 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
  * @package Test
  * @version $Id:$
  */
-class phpucAllTests
+class AllTests
 {
     /**
      * main() - Test controller main method
@@ -63,8 +65,9 @@ class phpucAllTests
     public static function suite() {
         $suite = new PHPUnit_Framework_TestSuite('phpUnderControl - AllTests');
         
-        // Load in all files which are in subdirectories of the current
+        // Load in all files which are in subdirectories of the test
         // directory
+	chdir(TEST);
         $directory = opendir('.');
         while (false !== ($subdirectory = readdir($directory))) {
             // Ignore directories prefixed with a '.'

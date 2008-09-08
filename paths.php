@@ -39,3 +39,4 @@ define('CONTROLLERS', APPS . DS . 'controllers');
 define('VENDORS', ROOT . DS . 'vendor');
 define('LIBS', ROOT . DS . 'include');
 define('LOG', ROOT . DS . 'log');
+define('TEST', ROOT . '/test');
