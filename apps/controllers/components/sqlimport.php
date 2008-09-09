@@ -31,6 +31,7 @@ function import_data($db,$dataFile){
                 $dumpline = fgets($handle,'4096');
                 $dumpline = ereg_replace("\r\n$","\n",$dumpline);
                 $dumpline = ereg_replace("\r$","\n",$dumpline);
+                $dumpline = ereg_replace("--.*\n","\n",$dumpline);
                 $dumpline = trim($dumpline);
                 $execute = format_data($dumpline);
                 if($execute['opt']=='incomplete'){
