@@ -110,9 +110,15 @@ try {
 } catch (Exception $e) {
     $write = new Zend_Log_Writer_Stream(LOG . DS . ERROR_LOG);
     $log = new Zend_Log($write);
-    $me = Zend_Auth::getInstance()->getIdentity();
-    $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-        "$me->account($me->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+    $auth = Zend_Auth::getInstance();
+    if ($auth->hasIdentity()) {
+        $me = $auth->getIdentity();
+        $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
+            "$me->account($me->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+    } else {
+        $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
+            "{$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+    }
     $formatter = new Zend_Log_Formatter_Simple($format);
     $write->setFormatter($formatter);
     $log->log($e->getMessage(), Zend_Log::ERR);
