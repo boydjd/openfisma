@@ -92,7 +92,7 @@ class Notification extends Fisma_Model
             $record = $recordId;
         }
 
-        $event = new event();
+        $event = new Event();
         $ret = $event->find($eventId);
         if (empty($ret)) {
             throw new fisma_Exception('Event name is not exist');
@@ -136,7 +136,7 @@ class Notification extends Fisma_Model
                            ->join(array('ue'=>'user_events'),
                                 'ue.event_id = e.id', array())
                            ->where('ue.user_id = ?', $userId)
-			   ->where('n.user_id != ?', $userId)
+                           ->where('n.user_id != ?', $userId)
                            ->where('n.timestamp >= ?', $afterTime)
                            ->where('n.timestamp < ?', $beforTime)
                            ->order('n.user_id')
