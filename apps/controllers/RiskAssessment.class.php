@@ -1,43 +1,78 @@
 <?php
-/*
-** Risk assessment calculation class.
-**
-** This module takes vulnerability aspects - system confidentiality,
-** availability and integrity, mission criticality, threat and
-** countermeasure effectiveness - and combines these to determine
-** sensitivity, threat likelihood and overall risk posed by the
-** vulnerability to the particular system.
-**
-** The class is instantiated with all aspects, some of which may be NULL
-** depending on the risk assessment desired.
-**
-** Aspects required for each assessment:
-** Data Sensitivity
-**  confidentiality
-**  availability
-**  integrity
-** Impact
-**  confidentiality
-**  availability
-**  integrity
-**  mission criticality
-** Threat Likelihood
-**  countermeasure effectiveness
-**  threat level
-** Overall Risk
-**  confidentiality
-**  availability
-**  integrity
-**  mission criticality
-**  countermeasure effectiveness
-**  threat level
-**
-** Values for the aspects are of the set ["HIGH", "MODERATE", "LOW"].
-** Input values are case-insensitive.
-**
-** Output values are from the set ["HIGH", "MODERATE", "LOW"].
-**
-*/
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    ???
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
+ *
+ * @todo Clean up this file and assign an author. The file is named incorrectly,
+ * and isn't really a controller of any sort. The logic here probably needs to
+ * be merged into the POA&M model class.
+ */
+ 
+/**
+ * Displays warnings or informational messages to the user via DHTML.
+ *
+ * Risk assessment calculation class.
+ *
+ * This module takes vulnerability aspects - system confidentiality,
+ * availability and integrity, mission criticality, threat and
+ * countermeasure effectiveness - and combines these to determine
+ * sensitivity, threat likelihood and overall risk posed by the
+ * vulnerability to the particular system.
+ *
+ * The class is instantiated with all aspects, some of which may be NULL
+ * depending on the risk assessment desired.
+ *
+ * Aspects required for each assessment:
+ * Data Sensitivity
+ *  confidentiality
+ *  availability
+ *  integrity
+ * Impact
+ *  confidentiality
+ *  availability
+ *  integrity
+ *  mission criticality
+ * Threat Likelihood
+ *  countermeasure effectiveness
+ *  threat level
+ * Overall Risk
+ *  confidentiality
+ *  availability
+ *  integrity
+ *  mission criticality
+ *  countermeasure effectiveness
+ *  threat level
+ *
+ * Values for the aspects are of the set ["HIGH", "MODERATE", "LOW"].
+ * Input values are case-insensitive.
+ *
+ * Output values are from the set ["HIGH", "MODERATE", "LOW"].
+ *
+ * @package   Controller
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ *
+ * @todo This class needs a lot of cleaning up. See the file todo comments.
+ */
 class RiskAssessment
 {
     /*

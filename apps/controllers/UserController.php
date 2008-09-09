@@ -1,14 +1,26 @@
 <?php
 /**
- * fileName UserController.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * description User Controller
+ * This file is part of OpenFISMA.
  *
- * @package Controller
- * @author     Xhorse   xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
 require_once 'Zend/Auth.php';
 require_once 'Zend/Auth/Adapter/DbTable.php';
@@ -23,13 +35,11 @@ require_once 'Zend/Date.php';
 require_once (MODELS . DS . 'event.php');
 
 /**
- * UserController
+ * Handles CRUD for "user" objects.
  *
- * This controller is not required of authentication and ACLs
- * @package Controller
- * @author     Xhorse   xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @package   Controller
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class UserController extends MessageController
 {

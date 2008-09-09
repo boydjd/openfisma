@@ -1,26 +1,43 @@
 <?php
 /**
- * RemediationController.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * Remediation Controller
+ * This file is part of OpenFISMA.
  *
- * @package    Controller
- * @author     Xhorse   xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version    $Id$
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
+ 
 require_once CONTROLLERS . DS . 'PoamBaseController.php';
 require_once MODELS . DS . 'user.php';
 require_once MODELS . DS . 'evaluation.php';
 require_once APPS . DS . 'Exception.php';
 require_once 'Pager.php';
+
 /**
- * Remediation Controller
- * @package Controller
- * @author     Xhorse   xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
+ * The remediation controller handles CRUD for findings in remediation.
+ *
+ * @package   Controller
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ *
+ * @todo As part of the ongoing refactoring, this class should probably be
+ * merged with the FindingController.
  */
 class RemediationController extends PoamBaseController
 {

@@ -1,15 +1,31 @@
 <?php 
 /**
- * scanreport_interface.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * Plugin Interface
+ * This file is part of OpenFISMA.
  *
- * @package Controller_components_import
- * @author     Xhorse xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
-*/
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    ???
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
+ *
+ * @todo This file seems to be redundant with the ../scanreport_interface.php,
+ * one of the two files needs to be removed, and in either case the interface
+ * needs much better documentation.
+ */
 
 interface ScanResult 
 {

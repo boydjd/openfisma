@@ -1,25 +1,39 @@
 <?php
 /**
- * InstallController.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * Install Controller
+ * This file is part of OpenFISMA.
  *
- * @package Controller
- * @author     Jim <jimc@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
+
 require_once 'Zend/Filter/Input.php';
 require_once 'Zend/Validate/Hostname.php';
 require_once 'Zend/Validate/Between.php';
 require_once 'Zend/Validate/InArray.php';
+
 /**
- * System Installer
- * @package Controller
- * @author     Jim <jimc@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
+ * The install controller handles all of the actions for the installer program.
+ *
+ * @package   Controller
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class InstallController extends Zend_Controller_Action
 {

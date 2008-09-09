@@ -1,25 +1,38 @@
 <?php
 /**
- * metainfoController.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * metainfo Controller
+ * This file is part of OpenFISMA.
  *
- * @package Controller
- * @author     Xhorse   xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Chris Chen <chriszero@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
+ 
 require_once CONTROLLERS . DS . 'PoamBaseController.php';
 require_once MODELS . DS . 'blscr.php';
+
 /**
- *  Provide yellow book inquery for meta information such as types, decisions.
+ * The metainfo controller provides access to certain metadata. This controller
+ * is designed to be invoked asynchronously and does not render a full view.
  *
- *  Usually it render a select element.
- * @package Controller
- * @author     Xhorse   xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @package   Controller
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class MetainfoController extends PoamBaseController
 {

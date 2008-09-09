@@ -1,24 +1,39 @@
 <?php
 /**
- * blscr.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * BLSCR means baseline security control requirements. NIST 800-53 specifies
- * which security controls apply to each level of system: LOW, MODERATE, and HIGH.
- * The baseline requirments specify a greater level of security for systems
- * with a higher impact rating.
+ * This file is part of OpenFISMA.
  *
- * @package Model
- * @author     Xhorse xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version    $Id$
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
+ 
 require_once 'Abstract.php';
+
 /**
- * @package Model
- * @author     Xhorse xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=Licensea
+ * A business object which represents NIST baseline security controls. (See NIST
+ * 800-53 for the catalog of controls.)
+ *
+ * @package   Model
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ *
+ * @todo this class should be named with a capital
  */
 class Blscr extends Fisma_Model
 {

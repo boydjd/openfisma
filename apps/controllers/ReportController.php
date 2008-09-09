@@ -1,24 +1,39 @@
 <?php
 /**
- * ReportController.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * Report Controller
+ * This file is part of OpenFISMA.
  *
- * @package Controller
- * @author     Rayn ryan at sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
+
 require_once CONTROLLERS . DS . 'PoamBaseController.php';
 require_once CONTROLLERS . DS . 'RiskAssessment.class.php';
 require_once 'Pager.php';
+
 /**
- * Poams Report
- * @package Controller
- * @author     Rayn ryan at sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
+ * The report controller creates the multitude of reports available in
+ * OpenFISMA.
+ *
+ * @package   Controller
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class ReportController extends PoamBaseController
 {

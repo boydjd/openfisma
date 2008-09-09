@@ -1,28 +1,38 @@
 <?php
 /**
- * DashboardController.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * Dashboard Controller
+ * This file is part of OpenFISMA.
  *
- * @package Controller
- * @author     Xhorse   xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
+ 
 require_once 'Zend/Controller/Action.php';
 require_once CONTROLLERS . DS . 'SecurityController.php';
 require_once MODELS . DS . 'poam.php';
 require_once MODELS . DS . 'system.php';
+
 /**
- * DashboardController is responsible for all dashboard creation
- *
- * The dashboard works in this way:
- *      The view displays the flash chart plugins, which request individual 
- *      XML data files from the server and in the end display pie, bars chart.
+ * The dashboard controller displays the user dashboard when the user first logs
+ * in.
  *
  * @package   Controller
- * @author    Xhorse   xhorse at users.sourceforge.net
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
