@@ -115,8 +115,10 @@ class Notification extends Fisma_Model
         }
         $eventName = $ret->current()->name;
 
-        $query = $this->_db->select()->from('users','id')
-                       ->where('account = ?', $userName);
+        $query = $this->_db
+                      ->select()
+                      ->from('users', 'id')
+                      ->where('account = ?', $userName);
         $result = $this->_db->fetchRow($query);
         $userId = $result['id'];
 

@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -35,6 +35,11 @@ require_once 'Zend/Form/Decorator/Abstract.php';
  */
 class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
 {
+    /**
+     * buildLabel() - Create the label for this element.
+     *
+     * @return The label rendered in HTML.
+     */
     public function buildLabel() {
         $element = $this->getElement();
         $render = '';
@@ -48,13 +53,19 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                 $label = $translator->translate($label);
             }
             $label .= ':';
-            $render = $element->getView()->formLabel($element->getName(), $label);
+            $render = $element->getView()
+                              ->formLabel($element->getName(), $label);
         } else {
             $render = '&nbsp;';
         }
         return $render;
     }
 
+    /**
+     * buildInput() - Create the input control for this element.
+     *
+     * @return The input control rendered in HTML.
+     */
     public function buildInput() {
         $element = $this->getElement();
         $helper  = $element->helper;
@@ -66,17 +77,27 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
         );
     }
 
+    /**
+     * buildErrors() - Create the error message for this element (if
+     * applicable).
+     *
+     * @return The error message rendered in HTML.
+     */
     public function buildErrors() {
         $element  = $this->getElement();
         $messages = $element->getErrors();
         if (empty($messages)) {
             return '';
         }
-        return '<div class="errors">' . $element->getView()->formErrors($messages) . '</div>';
+        return '<div class="errors">'
+               . $element->getView()->formErrors($messages)
+               . '</div>';
     }
 
     /**
      * render() - Decorates the specified content with HTML table markup
+     *
+     * @return The element rendered in HTML.
      */
     public function render($content) {
         $element = $this->getElement();

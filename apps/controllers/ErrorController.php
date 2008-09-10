@@ -58,13 +58,18 @@ class ErrorController extends Zend_Controller_Action
 
         default:
             $content .= "<h1>Error!</h1>" . PHP_EOL;
-            $content .= "<p>An unexpected error occurred with your request. Please try again later.</p>";
+            $content .= "<p>An unexpected error occurred with your request."
+                      . " Please try again later.</p>";
             // @todo Log the exception
             break;
         }
         $this->getResponse()->clearBody();
-        $this->view->content = $content . '<p>' . $errors->exception->getMessage() . '</p>'
-                                        . '<pre>' . $errors->exception->getTraceAsString() . '</pre>';
+        $this->view->content = $content . '<p>'
+                                        . $errors->exception->getMessage()
+                                        . '</p>'
+                                        . '<pre>'
+                                        . $errors->exception->getTraceAsString()
+                                        . '</pre>';
         $this->_helper->actionStack('header', 'panel');
         $this->render();
     }
@@ -78,7 +83,7 @@ class ErrorController extends Zend_Controller_Action
         $this->_helper->layout->setLayout('error');
         $content = "<h1>Input Error!</h1>" . PHP_EOL;
         $content.= "Error input fields:";
-        foreach($errors as $fieldname => $erroritem) {
+        foreach ($errors as $fieldname => $erroritem) {
             $content.= " $fieldname  ";
         }
         $this->getResponse()->clearBody();

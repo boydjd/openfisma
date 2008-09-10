@@ -616,7 +616,8 @@ class AccountController extends PoamBaseController
                     Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
                     $msg = "$dn does NOT exist";
                 } else {
-                    $msg .= 'Unknown error while checking DN: '.$e->getMessage();
+                    $msg .= 'Unknown error while checking DN: '
+                          . $e->getMessage();
                 }
             }
         }
@@ -812,7 +813,9 @@ class AccountController extends PoamBaseController
         $qry = $db->select()
                   ->from(array('al' => 'account_logs'),
                          array('timestamp', 'event', 'user_id', 'message'))
-                  ->joinLeft(array('u'=>'users'),'al.user_id = u.id','account');
+                  ->joinLeft(array('u'=>'users'),
+                             'al.user_id = u.id',
+                             'account');
 
         $qv = $this->_request->getParam('qv');
         if (!empty($qv)) {

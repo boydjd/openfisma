@@ -54,7 +54,7 @@ class SecurityController extends MessageController
     /**
      authenticated user instance
      */
-    protected $me = null;
+    protected $_me = null;
     /**
      * rules to sanity check the data
      */
@@ -86,7 +86,7 @@ class SecurityController extends MessageController
         }
         $this->_auth = Zend_Auth::getInstance();
         if ($this->_auth->hasIdentity()) {
-            $this->me = $this->_auth->getIdentity();
+            $this->_me = $this->_auth->getIdentity();
             $store = $this->_auth->getStorage();
             // refresh the expiring timer
             $exps = new Zend_Session_Namespace($store->getNamespace());
@@ -104,10 +104,10 @@ class SecurityController extends MessageController
 
     public function preDispatch()
     {
-        if (empty($this->me)) {
+        if (empty($this->_me)) {
             $this->_forward('login', 'User');
         } else {
-            $this->view->identity = $this->me->account;
+            $this->view->identity = $this->_me->account;
             $input = $this->_validator;
             if (isset($input) && $this->_sanity['flag'] &&
                     ($input->hasInvalid() || $input->hasMissing())) {
@@ -169,10 +169,10 @@ class SecurityController extends MessageController
                 ->where('r.nickname = ?', 'auto_role');
             $res = $db->fetchAll($query);
             if (!empty($res)) {
-                $auto_role = $res[0]['role_name'];
-                $acl->addRole(new Zend_Acl_Role($auto_role));
+                $autoRole = $res[0]['role_name'];
+                $acl->addRole(new Zend_Acl_Role($autoRole));
                 foreach ($res as $row) {
-                    $acl->allow($auto_role, $row['screen'], $row['action']);
+                    $acl->allow($autoRole, $row['screen'], $row['action']);
                 }
             }
             Zend_Registry::set('acl', $acl);

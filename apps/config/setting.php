@@ -26,8 +26,8 @@
 require_once 'Zend/Registry.php';
 require_once 'Zend/Config.php';
 require_once 'Zend/Config/Ini.php';
-define( 'CONFIGFILE_NAME', 'install.conf');
-define( 'ERROR_LOG', 'error.log');
+define('CONFIGFILE_NAME', 'install.conf');
+define('ERROR_LOG', 'error.log');
 //assuming not installed first unless it is
 Zend_Registry::set('installed', false);
 if (is_file(CONFIGS . DS . CONFIGFILE_NAME)) {
@@ -41,7 +41,7 @@ if (is_file(CONFIGS . DS . CONFIGFILE_NAME)) {
         if ($config->debug->level > 0) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
-            foreach($config->debug->xdebug as $k => $v) {
+            foreach ($config->debug->xdebug as $k => $v) {
                 if ($k == 'start_trace') {
                     if (1 == $v && function_exists('xdebug_start_trace')) {
                         xdebug_start_trace();

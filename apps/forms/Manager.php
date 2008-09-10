@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -35,7 +35,8 @@ require_once 'Zend/Config/Ini.php';
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Form_Manager {
+class Form_Manager
+{
     /**
      * loadForm() - Loads a specified form by looking in the standard forms
      * directory.

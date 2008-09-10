@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -32,7 +32,8 @@ require_once 'Zend/Form/Element.php';
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Form_CheckboxMatrix extends Zend_Form_Element {
+class Form_CheckboxMatrix extends Zend_Form_Element
+{
     protected $_checkboxes = array();
     protected $_defaults = array();
     

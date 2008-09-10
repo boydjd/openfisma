@@ -27,8 +27,7 @@
  * needs much better documentation.
  */
 
-interface ScanResult 
-{
+interface ScanResult {
     /** 
      * To decide wether or not the file can be parsed
      *
@@ -36,7 +35,8 @@ interface ScanResult
      */
     public function isValid($file);
     /** 
-     * Convert the file to an iteratable data which can be directly injected into database
+     * Convert the file to an iteratable data which can be directly injected
+     * into database
      *
      * @return mixed
      */
