@@ -1,10 +1,31 @@
-#!/usr/bin/perl -w
-######################################################################
+#!/usr/bin/perl
+################################################################################
+#
+# expireAccounts.pl
+#
+# Copyright (c) 2008 Endeavor Systems, Inc.
+#
+# This file is part of OpenFISMA.
+#
+# OpenFISMA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OpenFISMA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+#
+################################################################################
 #
 # expireAccounts.pl [--dryrun]
 #
 # This POSIX-only script (not Windows compatible) is used to expire
-# inactive OS accounts. This script allows OpenFISMA instances to 
+# inactive OS accounts. This script allows OpenFISMA instances to
 # implement the security control AC-2(3) specified in NIST SP 800-53.
 #
 # This will also lock accounts which have never logged in, since their
@@ -19,10 +40,13 @@
 # script will be before actually committing those effects.
 #
 # Set the script to run nightly in the root crontab.
-# 
-# Author: Mark E. Haase
 #
-######################################################################
+# Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+# Copyright: (c) 2008 Endeavor Systems, Inc. (http://www.endeavorsystems.com)
+# License:   http://www.openfisma.org/mw/index.php?title=License
+# Version:   $Id$
+#
+################################################################################
 
 #use strict;
 use Cwd qw/realpath/;

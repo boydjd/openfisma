@@ -1,7 +1,26 @@
 #!/usr/bin/perl
-######################################################################
+################################################################################
 #
 # schemadump.pl
+#
+# Copyright (c) 2008 Endeavor Systems, Inc.
+#
+# This file is part of OpenFISMA.
+#
+# OpenFISMA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OpenFISMA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+#
+################################################################################
 #
 # This script dumps the schema named in the schema.cfg file (in the
 # same directory as this script) into a file called schema.sql (also
@@ -16,12 +35,14 @@
 # TODO Devise a way to safely pass the password. Probably put it in
 # the user's my.cnf file.
 #
+# TODO Is this file still necessary??
+#
 # Author:    Mark E. Haase <mhaase@endeavorsystems.com>
 # Copyright: (c) 2008 Endeavor Systems, Inc. (http://www.endeavorsystems.com)
 # License:   http://www.openfisma.org/mw/index.php?title=License
 # Version:   $Id$
 #
-######################################################################
+################################################################################
 
 use strict;
 use Cwd qw/realpath/;

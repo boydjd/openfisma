@@ -1,14 +1,27 @@
 #!/usr/bin/php
 <?php
-
 /**
- * FismaNotify.php
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
- * @package cronjob
- * @author     Xhorse xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- * @version $Id$
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
  */
 
 require_once dirname(__FILE__) . '/../paths.php';
@@ -27,21 +40,24 @@ require_once 'Zend/Date.php';
 require_once 'Zend/View.php';
 
 /**
- * The CLI object that responsible for extracting notifications, sending them 
- * and purge them.
+ * This class is responsible for scanning for notifications which need to be
+ * delivered, delivering the notifications, and then removing the sent
+ * notifications from the queue.
  *
- * @package cronjob
- * @author     Xhorse xhorse at users.sourceforge.net
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @package    Cron_Job
+ * @subpackage Controller_Subpackage
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class FismaNotify
 {
     const EMAIL_VIEW_PATH = '/scripts/mail';
     const EMAIL_VIEW = 'notification.tpl';
 
-    public function __construct()
-    {
+    /**
+     * __construct() - Sets up the database connection
+     */
+    public function __construct() {
         Zend_Date::setOptions(array(
             'format_type' => 'php'
         ));
@@ -52,7 +68,8 @@ class FismaNotify
     }
 
     /**
-     *  Iterat the users and decide to send any message to them.
+     * bell() - Iterate through the users and check who has notifications
+     * pending.
      *
      *  The notification belling is individually. It enumerates all users. 
      *	For each one, do following:
@@ -70,8 +87,7 @@ class FismaNotify
      *
      *  @todo log the email send results
      */
-    public function bell()
-    {
+    public function bell() {
         $user = new User();
         $ulist = $user->getList(array('id', 'name_first', 'name_last',
                                       'email', 'email_validate',
@@ -115,10 +131,12 @@ class FismaNotify
     }
 
     /** 
-     *  Make the instance of proper transport method according to the config
+     *  getTransport() - Make the instance of proper transport method according
+     *  to the config.
+     *
+     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail
      */
-    public function getTransport()
-    {
+    public function getTransport() {
         $transport = null;
         if ( 'smtp' == readSysConfig('send_type')) {
             $config = array('auth' => 'login',
@@ -134,15 +152,13 @@ class FismaNotify
     }
 
     /**
-     *  Delete obseleted notification
+     *  purge() - Delete obseleted notification
      *
      *	The obselete timestamp is the earliest successfully belling time that 
      *	users have, which makes sure the event is concerned by nobody and can 
      *  be safely deleted.
-     *
      */
-    public function purge()
-    {
+    public function purge() {
         $user = new User();
         $query = $user->select()->from('users',
             array('min_notify_ts'=>'MIN(most_recent_notify_ts)'));

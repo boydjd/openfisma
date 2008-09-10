@@ -1,30 +1,40 @@
 #!/usr/bin/perl
-######################################################################
+################################################################################
 #
 # testmigrate.pl
 #
-# This script dumps the schema named in the schema.cfg file (in the
-# same directory as this script) into a file called schema.sql (also
-# in this directory. It does not dump any data except for the schema
-# version.
+# Copyright (c) 2008 Endeavor Systems, Inc.
+#
+# This file is part of OpenFISMA.
+#
+# OpenFISMA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OpenFISMA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+#
+################################################################################
+#
+# This script is the developer's tool for OpenFISMA migrations. It is used to
+# test patches before committing them, and used to update the base.sql with the
+# latest application schema and all metadata.
 #
 # For information about the OpenFISMA migrations policy:
 # http://docs.google.com/Doc?id=dgznrgjw_15f7wt6cg3
-#
-# WARNING: This script passes your schema password in plaintext on
-# the command line, which makes it visible to any other users logged
-# into your system. This script should only be used on private
-# systems.
-#
-# TODO Devise a way to safely pass the password. Probably put it in
-# the user's my.cnf file.
 #
 # Author:    Mark E. Haase <mhaase@endeavorsystems.com>
 # Copyright: (c) 2008 Endeavor Systems, Inc. (http://www.endeavorsystems.com)
 # License:   http://www.openfisma.org/mw/index.php?title=License
 # Version:   $Id$
 #
-######################################################################
+################################################################################
 
 use strict;
 use Cwd qw/realpath/;
