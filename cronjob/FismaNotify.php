@@ -74,14 +74,16 @@ class FismaNotify
     {
         $user = new User();
         $ulist = $user->getList(array('id', 'name_first', 'name_last',
-                                      'email', 'notify_frequency',
+                                      'email', 'email_validate',
+                                      'notify_frequency',
                                       'most_recent_notify_ts'));
         
         $currentTime = Zend_Date::now();
         foreach ($ulist as $id=>$userData) {
-            $sendTime = new Zend_Date($userData['most_recent_notify_ts']);
+            $sendTime = new Zend_Date($userData['most_recent_notify_ts'], "Y-m-d H:i:s");
             $sendTime->add($userData['notify_frequency'], Zend_Date::MINUTE);
-            if ($currentTime->isEarlier($sendTime)) {
+            if ($currentTime->isEarlier($sendTime)
+                || false == $userData['email_validate']) {
                 continue;
             }
 

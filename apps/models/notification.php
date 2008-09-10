@@ -155,6 +155,7 @@ class Notification extends Fisma_Model
                            ->where('n.user_id != ?', $userId)
                            ->where('n.timestamp >= ?', $afterTime)
                            ->where('n.timestamp < ?', $beforTime)
+                           ->where('n.user_id <> ?', $userId)
                            ->order('n.user_id')
                            ->order('e.name')
                            ->order('n.timestamp');

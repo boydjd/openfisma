@@ -33,6 +33,9 @@ require_once (MODELS . DS . 'notification.php');
 require_once (FORMS . '/Manager.php');
 require_once 'Zend/Date.php';
 require_once (MODELS . DS . 'event.php');
+require_once 'Zend/Mail.php';
+require_once 'Zend/Mail/Transport/Smtp.php';
+require_once 'Zend/Mail/Transport/Sendmail.php';
 
 /**
  * Handles CRUD for "user" objects.
@@ -179,7 +182,7 @@ class UserController extends MessageController
     }
 
     /**
-     * getprofileForm() - Returns the standard form for reading, and
+     * Returns the standard form for reading, and
      * updating user profile.
      *
      * @return Zend_Form
@@ -229,7 +232,7 @@ class UserController extends MessageController
     }
 
     /**
-     * updateprofileAction() - Updates user's profile information
+     * Updates user's profile information
      *
      */
     public function updateprofileAction()
@@ -241,11 +244,24 @@ class UserController extends MessageController
         unset($profileData['submit']);
 
         if ($formValid) {
-            $ret = $this->_user->update($profileData, 'id = ' .$this->_me->id);
+            $result = $this->_user->find($this->_me->id);
+            $originalEmail = $result->current()->email;
+            $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
             if ($ret > 0) {
                 $this->_user->log(User::MODIFICATION, $this->_me->id, 
                     "{$this->_me->account} Profile Modified");
-                $this->message("profile modified succefully.", self::M_NOTICE);
+                $msg = "profile modified succefully.";
+
+                if ($originalEmail != $profileData['email']) {
+                    $this->_user->update(array('email_validate'=>0),
+                        'id = '.$this->_me->id);
+                    $this->_emailvalidate($this->_me->id,
+                        $profileData['email'], 'update');
+                    $msg .="<br />we have send a validation to your new email.".
+                           "please check it.";
+                }
+                $this->view->setScriptPath(VIEWS . DS . 'scripts');
+                $this->message($msg, self::M_NOTICE);
             }
         } else {
             /**
@@ -436,7 +452,8 @@ Please create a password that adheres to these complexity requirements:<br>
         if ( 'ldap' == $type ) {
             $config = new Config();
             $data = $config->getLdap();
-            $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
+            $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username,
+                                                      $password);
         }
         if ( 'database' == $type ) {
             $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users',
@@ -463,4 +480,72 @@ Please create a password that adheres to these complexity requirements:<br>
         $this->render();
     }
 
+    public function emailvalidateAction()
+    {
+        $userId = $this->_request->getParam('id');
+        $ret = $this->_user->find($userId);
+        $userEmail = $ret->current()->email;
+        $query = $this->_user->getAdapter()->select()
+                      ->from('validate_emails', 'validate_code')
+                      ->where('user_id = ?', $userId)
+                      ->where('email = ?', $userEmail)
+                      ->order('id DESC');
+        $ret = $this->_user->getAdapter()->fetchRow($query);
+        if ($this->_request->getParam('code') == $ret['validate_code']) {
+            $this->_user->getAdapter()->delete('validate_emails',
+                'user_id = '.$userId);
+            $this->_user->update(array('email_validate'=>1), 'id = '.$userId);
+            $msg = "Validate Successful,the browser will back to log in page
+                    after 3 seconds";
+        } else {
+            $msg = "Validate Failed,the browser will back to log in page
+                   after 3 seconds";
+        }
+        $this->view->msg = $msg;
+        $this->render();
+    }
+
+    protected function _emailvalidate($userId, $email, $type)
+    {
+        $mail = new Zend_Mail();
+
+        $mail->setFrom(readSysConfig('sender'), "OpenFISMA");
+        $mail->addTo($email);
+        $mail->setSubject("Email validation");
+
+        $validateCode = md5(rand());
+        
+        $data = array('user_id'=>$userId, 'email'=>$email,
+            'validate_code'=>$validateCode);
+        $this->_user->getAdapter()->insert('validate_emails', $data);
+
+        $contentTpl = $this->view->setScriptPath(VIEWS . DS . 'scripts/mail');
+        $contentTpl = $this->view;
+
+        $contentTpl->actionType = $type;
+        $contentTpl->validateCode = $validateCode;
+        $contentTpl->userId = $userId;
+        $content = $contentTpl->render('validate.tpl');
+        $mail->setBodyText($content);
+        $mail->send($this->_getTransport());
+    }
+
+    /**
+     *  Make the instance of proper transport method according to the config
+     */
+    protected function _getTransport()
+    {
+        $transport = null;
+        if ( 'smtp' == readSysConfig('send_type')) {
+            $config = array('auth' => 'login',
+                'username' => readSysConfig('smtp_username'),
+                'password' => readSysConfig('smtp_password'),
+                'port' => readSysConfig('smtp_port'));
+            $transport = new Zend_Mail_Transport_Smtp(readSysConfig('smtp_host'),
+                $config);
+        } else {
+            $transport = new Zend_Mail_Transport_Sendmail();
+        }
+        return $transport;
+    }
 }
