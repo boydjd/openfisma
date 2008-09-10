@@ -27,7 +27,8 @@
  * needs much better documentation.
  */
 
-interface ScanResult {
+interface ScanResult
+{
     /** 
      * To decide wether or not the file can be parsed
      *
