@@ -9,3 +9,5 @@ Notification Type: <?php echo $row['event_name']; ?>
 Timestamp: <?php echo $row['timestamp']; ?> 
 Event Text: <?php echo $row['event_text']; ?> 
 <?php } ?>
+---------------------------------------
+
