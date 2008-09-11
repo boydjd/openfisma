@@ -121,11 +121,11 @@ class UserController extends MessageController
                 }
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
-            $me = (object)($whologin->toArray());
+            $_me = (object)($whologin->toArray());
             $period = readSysConfig('max_absent_time');
             $deactiveTime = clone $now;
             $deactiveTime->sub($period, Zend_Date::DAY);
-            $lastLogin = new Zend_Date($me->last_login_ts,
+            $lastLogin = new Zend_Date($_me->last_login_ts,
                                        'YYYY-MM-DD HH-MI-SS');
 
             if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) 
@@ -134,22 +134,22 @@ class UserController extends MessageController
                     because you have not logged in for $period or more days.
                     Please contact an administrator.");
             }
-            $this->_user->log(User::LOGIN, $me->id, "Success");
+            $this->_user->log(User::LOGIN, $_me->id, "Success");
             $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
                 $whologin->account, $whologin->id);
 
-            $nickname = $this->_user->getRoles($me->id);
+            $nickname = $this->_user->getRoles($_me->id);
             foreach ($nickname as $n) {
-                $me->roleArray[] = $n['nickname'];
+                $_me->roleArray[] = $n['nickname'];
             }
-            if ( empty( $me->roleArray ) ) {
-                $me->roleArray[] = $me->account . '_r';
+            if ( empty( $_me->roleArray ) ) {
+                $_me->roleArray[] = $_me->account . '_r';
             }
-            $me->systems = $this->_user->getMySystems($me->id);
+            $_me->systems = $this->_user->getMySystems($_me->id);
             $store = $auth->getStorage();
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
-            $store->write($me);
+            $store->write($_me);
             $this->_helper->layout->setLayout('notice');
             return $this->render('rule');
         }catch(Zend_Auth_Exception $e) {
@@ -168,7 +168,7 @@ class UserController extends MessageController
     public function logoutAction()
     {
         //$auth = Zend_Auth::getInstance();
-        //$me = $auth->getIdentity();
+        //$_me = $auth->getIdentity();
         if (!empty($this->_me)) {
             $this->_user->log(User::LOGOUT, $this->_me->id,
                 $this->_me->account . ' logout');
@@ -320,8 +320,8 @@ class UserController extends MessageController
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
             $auth = Zend_Auth::getInstance();
-            $me = $auth->getIdentity();
-            $id = $me->id;
+            $_me = $auth->getIdentity();
+            $id = $_me->id;
             $pwds = $req->getPost('pwd');
             $oldpass = md5($pwds['old']);
             $newpass = md5($pwds['new']);

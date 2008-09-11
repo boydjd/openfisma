@@ -44,7 +44,7 @@ class PanelController extends SecurityController
     }
     public function headerAction()
     {
-        $lastLogin = new Zend_Date($this->me->last_login_ts);
+        $lastLogin = new Zend_Date($this->_me->last_login_ts);
         $this->view->lastLogin = $lastLogin;
         $this->_helper->layout->assign('header',
             $this->view->render($this->_helper->viewRenderer->getViewScript()));

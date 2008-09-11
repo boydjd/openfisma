@@ -118,7 +118,7 @@ class ConfigController extends SecurityController
                     }
                     $this->_notification
                          ->add(Notification::CONFIGURATION_MODIFIED,
-                            $this->me->account, $records);
+                            $this->_me->account, $records);
 
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);

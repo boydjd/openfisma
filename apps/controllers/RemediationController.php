@@ -87,11 +87,11 @@ class RemediationController extends PoamBaseController
             'TOTAL' => 0
         );
         // mock array_fill_key in 5.2.0
-        $count = count($this->me->systems);
+        $count = count($this->_me->systems);
         $sum = array_fill(0, $count, $summary_tmp);
-        $summary = array_combine($this->me->systems, $sum);
+        $summary = array_combine($this->_me->systems, $sum);
         $total = $summary_tmp;
-        $ret = $this->_poam->search($this->me->systems, array(
+        $ret = $this->_poam->search($this->_me->systems, array(
             'count' => array(
                 'status',
                 'system_id'
@@ -120,7 +120,7 @@ class RemediationController extends PoamBaseController
             $total['ES']+= $summary[$id]['ES'];
             $total['TOTAL']+= $summary[$id]['TOTAL'];
         }
-        $eo_count = $this->_poam->search($this->me->systems, array(
+        $eo_count = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
         ) , array(
@@ -131,7 +131,7 @@ class RemediationController extends PoamBaseController
             $summary[$eo['system_id']]['EO'] = $eo['count'];
             $total['EO']+= $summary[$eo['system_id']]['EO'];
         }
-        $en_count = $this->_poam->search($this->me->systems, array(
+        $en_count = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
         ) , array(
@@ -142,7 +142,7 @@ class RemediationController extends PoamBaseController
             $summary[$en['system_id']]['EN'] = $en['count'];
             $total['EN']+= $summary[$en['system_id']]['EN'];
         }
-        $spsso = $this->_poam->search($this->me->systems, array(
+        $spsso = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
         ) , array(
@@ -152,7 +152,7 @@ class RemediationController extends PoamBaseController
             $summary[$sp['system_id']]['EP_SSO'] = $sp['count'];
             $total['EP_SSO']+= $sp['count'];
         }
-        $spsnp = $this->_poam->search($this->me->systems, array(
+        $spsnp = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
         ) , array(
@@ -260,7 +260,7 @@ class RemediationController extends PoamBaseController
                 break;
             }
         }
-        $list = $this->_poam->search($this->me->systems, array(
+        $list = $this->_poam->search($this->_me->systems, array(
             'id',
             'source_id',
             'system_id',
@@ -405,11 +405,11 @@ class RemediationController extends PoamBaseController
                 foreach($poam as $k => $v) {
                     if (array_key_exists($k, $this->_notificationArray)) {
                         $this->_notification->add($this->_notificationArray[$k],
-                            $this->me->account, $id);
+                            $this->_me->account, $id);
                     }
 
                     $log_content = "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
-            	    $this->_poam->writeLogs($id, $this->me->id, self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION', $log_content);
+            	    $this->_poam->writeLogs($id, $this->_me->id, self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION', $log_content);
                 }
             }
         }
@@ -422,7 +422,7 @@ class RemediationController extends PoamBaseController
         $id = $req->getParam('id');
         define('EVIDENCE_PATH', WEB_ROOT . DS . 'evidence');
         if ($_FILES && $id > 0) {
-            $user_id = $this->me->id;
+            $user_id = $this->_me->id;
             $now_str = self::$now->toString('Y-m-d-his');
             if (!file_exists(EVIDENCE_PATH)) {
                 mkdir(EVIDENCE_PATH, 0755);
@@ -454,7 +454,7 @@ class RemediationController extends PoamBaseController
             $result = $db->insert('evidences', $data);
             $evidenceId = $db->LastInsertId();
             $this->_notification->add(Notification::EVIDENCE_UPLOAD,
-                $this->me->account, $evidenceId);
+                $this->_me->account, $evidenceId);
 
             $update_data = array(
                 'status' => 'EP',
@@ -501,13 +501,13 @@ class RemediationController extends PoamBaseController
             $evv_id = $this->_poam->reviewEv($eid, array(
                 'decision' => $decision,
                 'eval_id' => $eval_id,
-                'user_id' => $this->me->id,
+                'user_id' => $this->_me->id,
                 'date' => self::$now->toString('Y-m-d')
             ));
             if ( $eval_id == 1 ) {
                 $this->_notification
                      ->add(Notification::EVIDENCE_APPROVAL_1ST,
-                        $this->me->account, $poam_id);
+                        $this->_me->account, $poam_id);
             }
 
             $log_content.= " Decision: $decision.";
@@ -520,7 +520,7 @@ class RemediationController extends PoamBaseController
                 $comm = new Comments();
                 $comm->insert(array(
                     'poam_evaluation_id' => $evv_id,
-                    'user_id' => $this->me->id,
+                    'user_id' => $this->_me->id,
                     'date' => 'CURDATE()',
                     'topic' => $topic,
                     'content' => $body
@@ -535,7 +535,7 @@ class RemediationController extends PoamBaseController
 
                 $this->_notification
                      ->add(Notification::EVIDENCE_APPROVAL_2ND,
-                        $this->me->account, $poam_id);
+                        $this->_me->account, $poam_id);
             }
             if ($decision == 'APPROVED' && $eval_id == 3) {
                 $log_content.= " Status: CLOSED";
@@ -545,14 +545,14 @@ class RemediationController extends PoamBaseController
             
                 $this->_notification
                      ->add(Notification::EVIDENCE_APPROVAL_3RD,
-                        $this->me->account, $poam_id);
+                        $this->_me->account, $poam_id);
                 $this->_notification
                      ->add(NOtification::POAM_CLOSED,
-                        $this->me->account, $poam_id);
+                        $this->_me->account, $poam_id);
             }
             if (!empty($log_content)) {
                 $log_content = "Changed: $log_content";
-                $this->_poam->writeLogs($poam_id, $this->me->id, self::$now->toString('Y-m-d H:i:s') , 'EVIDENCE EVALUATION', $log_content);
+                $this->_poam->writeLogs($poam_id, $this->_me->id, self::$now->toString('Y-m-d H:i:s') , 'EVIDENCE EVALUATION', $log_content);
             }
         }
         $this->_redirect('/panel/remediation/sub/view/id/' . $poam_id, array(

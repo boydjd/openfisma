@@ -91,7 +91,7 @@ class SecurityController extends MessageController
             // refresh the expiring timer
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
-            $this->initializeAcl($this->me->id);
+            $this->initializeAcl($this->_me->id);
             if (isset($this->_sanity['data'])) {
                 $this->_validator = new Zend_Filter_Input(
                     $this->_sanity['filter'], $this->_sanity['validator'],

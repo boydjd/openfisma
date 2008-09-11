@@ -66,7 +66,7 @@ class FindingController extends PoamBaseController
                 'ES'
             );
         }
-        $result = $this->_poam->search($this->me->systems, $fields, $criteria,
+        $result = $this->_poam->search($this->_me->systems, $fields, $criteria,
                      $this->_paging['currentPage'], $this->_paging['perPage']);
         $total = array_pop($result);
         $this->_paging['totalItems'] = $total;
@@ -203,7 +203,7 @@ template. Please update your CSV file and try again.<br />";
                 }
                  $this->_notification
                       ->add(Notification::FINDING_INJECT,
-                          $this->me->account, $poamIds);
+                          $this->_me->account, $poamIds);
                 $this->view->assign('error_msg', $summaryMsg);
             }
             $this->render();
@@ -226,15 +226,15 @@ template. Please update your CSV file and try again.<br />";
                 $discoverTs = new Zend_Date($poam['discover_ts']);
                 $poam['discover_ts'] = $discoverTs->toString("Y-m-d");
                 $poam['create_ts'] = self::$now->toString("Y-m-d H:i:s");
-                $poam['created_by'] = $this->me->id;
+                $poam['created_by'] = $this->_me->id;
                 $poamId = $this->_poam->insert($poam);
                 $logContent = "a new finding was created";
-                $this->_poam->writeLogs($poamId, $this->me->id,
+                $this->_poam->writeLogs($poamId, $this->_me->id,
                      self::$now->toString('Y-m-d H:i:s'), 'CREATION', $logContent);
 
                 $this->_notification
                      ->add(Notification::FINDING_CREATED,
-                         $this->me->account, $poamId);
+                         $this->_me->account, $poamId);
 
                 $message = "Finding created successfully";
                 $model = self::M_NOTICE;
@@ -281,7 +281,7 @@ template. Please update your CSV file and try again.<br />";
                 . $errno . ' Failed!';
 
         $this->_notification->add(Notification::FINDING_DELETED,
-            $this->me->account, $poamId);
+            $this->_me->account, $poamId);
         $this->message($msg, self::M_NOTICE);
         $this->_forward('searchbox', 'finding', null, array(
             's' => 'search'
@@ -519,7 +519,7 @@ template. Please update your CSV file and try again.<br />";
                                     'create_ts' => 
                                         self::$now->toString('Y-m-d H:i:s'),
                                     'discover_ts' => $v['discover_ts'],
-                                    'created_by' => $this->me->id,
+                                    'created_by' => $this->_me->id,
                                     'status' => 'NEW',
                                     'finding_data' => $row
                                 );
@@ -592,7 +592,7 @@ template. Please update your CSV file and try again.<br />";
                 }
                 $this->_notification
                       ->add(Notification::FINDING_IMPORT,
-                          $this->me->account, $poamIds);
+                          $this->_me->account, $poamIds);
                 $msg = "Injection complete.";
                 $this->message($msg, self::M_NOTICE);
             } else {

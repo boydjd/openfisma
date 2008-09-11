@@ -137,7 +137,7 @@ class NetworkController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::NETWORK_CREATED,
-                         $this->me->account, $networkId);
+                         $this->_me->account, $networkId);
 
                 $msg = "network successfully created";
                 $model = self::M_NOTICE;
@@ -167,7 +167,7 @@ class NetworkController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::NETWORK_DELETED,
-                         $this->me->account, $id);
+                         $this->_me->account, $id);
 
                 $msg = "network deleted successfully";
                 $model = self::M_NOTICE;
@@ -207,7 +207,7 @@ class NetworkController extends SecurityController
             $model = self::M_NOTICE;
         } else {
             $this->_notification->add(Notification::NETWORK_MODIFIED,
-                $$this->me->account, $id);
+                $$this->_me->account, $id);
 
             $msg = "Network edited successfully";
             $model = self::M_NOTICE;

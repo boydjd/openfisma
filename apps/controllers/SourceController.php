@@ -115,7 +115,7 @@ class SourceController extends SecurityController
             } else {
                  $this->_notification
                       ->add(Notification::SOURCE_CREATED,
-                          $this->me->account, $sourceId);
+                          $this->_me->account, $sourceId);
 
                 $msg = "Finding source successfully created";
                 $model = self::M_NOTICE;
@@ -142,7 +142,7 @@ class SourceController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::SOURCE_DELETED,
-                        $this->me->account, $id);
+                        $this->_me->account, $id);
 
                 $msg = "Finding source deleted successfully";
                 $model = self::M_NOTICE;
@@ -184,7 +184,7 @@ class SourceController extends SecurityController
             $model = self::M_WARNING;
         } else {
             $this->_notification->add(Notification::SOURCE_MODIFIED,
-                $this->me->account, $id);
+                $this->_me->account, $id);
 
             $msg = "Finding source edited successfully";
             $model = self::M_NOTICE;

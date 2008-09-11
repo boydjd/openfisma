@@ -177,22 +177,22 @@ class ReportController extends PoamBaseController
                 'FAW' => 0,
                 'FS' => 0
             );
-            $summary['AAW'] = $this->_poam->search($this->me->systems, array(
+            $summary['AAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
             ) , $criteria_aaw);
-            $summary['BAW'] = $this->_poam->search($this->me->systems, array(
+            $summary['BAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
             ) , $criteria_baw);
-            $summary['CAW'] = $this->_poam->search($this->me->systems, array(
+            $summary['CAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
             ) , $criteria_caw);
-            $summary['DAW'] = $this->_poam->search($this->me->systems, array(
+            $summary['DAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
             ) , $criteria_daw);
-            $summary['EAW'] = $this->_poam->search($this->me->systems, array(
+            $summary['EAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
             ) , $criteria_eaw);
-            $summary['FAW'] = $this->_poam->search($this->me->systems, array(
+            $summary['FAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
             ) , $criteria_faw);
             $this->view->assign('summary', $summary);
@@ -233,7 +233,7 @@ class ReportController extends PoamBaseController
                 $criteria['created_date_end']->add(1, Zend_Date::YEAR);
                 unset($criteria['year']);
             }
-            $list = & $this->_poam->search($this->me->systems, array(
+            $list = & $this->_poam->search($this->_me->systems, array(
                 'id',
                 'finding_data',
                 'system_id',
@@ -310,7 +310,7 @@ class ReportController extends PoamBaseController
                     unset($criteria['overdue']['begin_date']);
                 }
             }
-            $list = & $this->_poam->search($this->me->systems, array(
+            $list = & $this->_poam->search($this->_me->systems, array(
                 'id',
                 'finding_data',
                 'system_id',

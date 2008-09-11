@@ -145,7 +145,7 @@ class ProductController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::PRODUCT_CREATED,
-                         $this->me->account, $productId);
+                         $this->_me->account, $productId);
 
                 $msg = "Product successfully created";
             }
@@ -170,7 +170,7 @@ class ProductController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::PRODUCT_DELETED,
-                         $this->me->account, $id);
+                         $this->_me->account, $id);
 
                 $msg = "Product deleted successfully";
                 $model = self::M_NOTICE;
@@ -214,7 +214,7 @@ class ProductController extends SecurityController
         } else {
              $this->_notification
                   ->add(Notification::PRODUCT_MODIFIED,
-                      $this->me->account, $id);
+                      $this->_me->account, $id);
 
             $msg = "Product edited successfully";
             $model = self::M_NOTICE;

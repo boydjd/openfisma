@@ -68,7 +68,7 @@ class PoamBaseController extends SecurityController
         $tmp_list = $sys->getList(array(
             'name',
             'nickname'
-        ) , $this->me->systems, 'nickname');
+        ) , $this->_me->systems, 'nickname');
         $this->_network_list = $net->getList('name');
         foreach($tmp_list as $k => $v) {
             $this->_system_list[$k] = "({$v['nickname']}) {$v['name']}";

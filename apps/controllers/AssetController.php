@@ -112,7 +112,7 @@ class AssetController extends PoamBaseController
         $systems = new System();
         $user = new User();
         $product = new Product();
-        $systems = $user->getMySystems($this->me->id);
+        $systems = $user->getMySystems($this->_me->id);
         $sys_id_set = implode(',', $systems);
         $db = Zend_Registry::get('db');
         $qry = $db->select();
@@ -145,7 +145,7 @@ class AssetController extends PoamBaseController
             $assetId = $this->_asset->insert($asset_row);
 
             $this->_notification->add(Notification::ASSET_CREATED,
-                $this->me->account, array($assetId));
+                $this->_me->account, array($assetId));
 
             $this->message("Asset created successfully", self::M_NOTICE);
         }
@@ -336,7 +336,7 @@ class AssetController extends PoamBaseController
         $res = $this->_asset->update($data, 'id = ' . $id);
         if ($res) {
             $this->_notification->add(Notification::ASSET_MODIFIED,
-                $this->me->account, $id);
+                $this->_me->account, $id);
 
             $msg = 'Asset edited successfully';
             $this->message($msg, self::M_NOTICE);
@@ -371,7 +371,7 @@ class AssetController extends PoamBaseController
             $this->message($msg, self::M_WARNING);
         } else {
             $this->_notification->add(Notification::ASSET_DELETED,
-               $this->me->account, $assetIds);
+               $this->_me->account, $assetIds);
 
             $msg = "Asset deleted successfully";
             $this->message($msg, self::M_NOTICE);

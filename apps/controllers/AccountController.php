@@ -371,9 +371,9 @@ class AccountController extends PoamBaseController
             if ($n > 0) {
                 $this->_notification
                      ->add(Notification::ACCOUNT_MODIFIED,
-                        $this->me->account, $id);
+                        $this->_me->account, $id);
                 $this->_user->log(User::MODIFICATION,
-                                   $this->me->id,
+                                   $this->_me->id,
                                    "Modified user {$accountData['account']}");
             }
 
@@ -458,11 +458,11 @@ class AccountController extends PoamBaseController
                     ->delete('user_roles', 'user_id = ' . $id);
         if ($res) {
             $this->_notification->add(Notification::ACCOUNT_DELETED,
-                $this->me->account, $id);
+                $this->_me->account, $id);
             $msg = "User " . $userName . " deleted successfully.";
             $model = self::M_NOTICE;
             $this->_user->log(USER::TERMINATION, 
-                               $this->me->id, 
+                               $this->_me->id,
                                'delete user ' . $userName);
         } else {
             $msg = "Failed to delete user.";
@@ -556,10 +556,10 @@ class AccountController extends PoamBaseController
             }
 
             $this->_notification->add(Notification::ACCOUNT_CREATED,
-                $this->me->account, $userId);
+                $this->_me->account, $userId);
             // Log the new account creation and display a success message to the
             // user.
-            $this->_user->log(User::CREATION, $this->me->id,
+            $this->_user->log(User::CREATION, $this->_me->id,
                              'create user('.$accountData['account'].')');
             $this->message("User ({$accountData['account']}) added",
                            self::M_NOTICE);

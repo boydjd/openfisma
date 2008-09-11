@@ -44,7 +44,7 @@ class DashboardController extends SecurityController
     {
         parent::init();
         $sys = new System();
-        $this->_all_systems = $this->me->systems;
+        $this->_all_systems = $this->_me->systems;
     }
     function preDispatch()
     {

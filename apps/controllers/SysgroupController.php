@@ -119,7 +119,7 @@ class SysgroupController extends SecurityController
                 } else {
                     $this->_notification
                          ->add(Notification::SYSGROUP_CREATED,
-                             $this->me->account, $sysGroupId);
+                             $this->_me->account, $sysGroupId);
 
                     $msg = "The system group is created";
                     $model = self::M_NOTICE;
@@ -153,7 +153,7 @@ class SysgroupController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::SYSGROUP_DELETED,
-                        $this->me->account, $id);
+                        $this->_me->account, $id);
 
                 $msg = "The system group is deleted";
                 $model = self::M_NOTICE;
@@ -186,7 +186,7 @@ class SysgroupController extends SecurityController
                     //@REVIEW 3 lines
                     $this->_notification
                          ->add(Notification::SYSGROUP_MODIFIED,
-                             $this->me->account, $id);
+                             $this->_me->account, $id);
 
                     $msg = "The system group is saved";
                     $model = self::M_NOTICE;

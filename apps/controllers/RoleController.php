@@ -121,7 +121,7 @@ class RoleController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::ROLE_CREATED,
-                         $this->me->account, $roleId);
+                         $this->_me->account, $roleId);
 
                 $msg = "Successfully Create a Role.";
                 $model = self::M_NOTICE;
@@ -147,7 +147,7 @@ class RoleController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::ROLE_DELETED,
-                         $this->me->account, $id);
+                         $this->_me->account, $id);
 
                 $msg = "Successfully Delete a Role.";
                 $model = self::M_NOTICE;
@@ -181,7 +181,7 @@ class RoleController extends SecurityController
             $model = self::M_WARNING;
         } else {
             $this->_notification->add(Notification::ROLE_MODIFIED,
-                $this->me->account, $id);
+                $this->_me->account, $id);
 
             $msg = "Successfully Edit Role.";
             $model = self::M_NOTICE;

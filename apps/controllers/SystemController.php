@@ -146,7 +146,7 @@ class SystemController extends SecurityController
             $system = $req->getParam('system');
             $id = $this->_system->insert($system);
             $this->_user = new user();
-            $this->me->systems = $this->_user->getMySystems($this->me->id);
+            $this->_me->systems = $this->_user->getMySystems($this->_me->id);
             $system_groups = array(
                 'name' => $system['name'],
                 'nickname' => $system['nickname'],
@@ -183,7 +183,7 @@ class SystemController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::SYSTEM_CREATED,
-                         $this->me->account, $id);
+                         $this->_me->account, $id);
 
                 $msg = "System created successfully";
                 $model = self::M_NOTICE;
@@ -214,7 +214,7 @@ class SystemController extends SecurityController
                 $errno++;
             }
             $this->_user = new user();
-            $this->me->systems = $this->_user->getMySystems($this->me->id);
+            $this->_me->systems = $this->_user->getMySystems($this->_me->id);
             $res = $this->_system->getAdapter()
                 ->delete('systemgroup_systems', 'system_id = ' . $id);
             if (!$res) {
@@ -226,7 +226,7 @@ class SystemController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::SYSTEM_DELETED,
-                        $this->me->account, $id);
+                        $this->_me->account, $id);
 
                 $msg = "System deleted successfully";
                 $model = self::M_NOTICE;
@@ -301,7 +301,7 @@ class SystemController extends SecurityController
             $model = self::M_WARNING;
         } else {
             $this->_notification->add(Notification::SYSTEM_MODIFIED,
-                $this->me->account, $id);
+                $this->_me->account, $id);
 
             $msg = "System edited successfully";
             $model = self::M_NOTICE;
