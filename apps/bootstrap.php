@@ -136,6 +136,11 @@ try {
     }
     $formatter = new Zend_Log_Formatter_Simple($format);
     $write->setFormatter($formatter);
-    $log->log($e->getMessage(), Zend_Log::ERR);
+    // Get the stack trace and indent it by 4 spaces
+    $stackTrace = $e->getTraceAsString();
+    $stackTrace = preg_replace("/^/", "    ", $stackTrace);
+    $stackTrace = preg_replace("/\n/", "\n    ", $stackTrace);
+    $log->log($e->getMessage() . "\n$stackTrace",
+              Zend_Log::ERR);
     echo "Fatal error, please check the log file " . ERROR_LOG;
 }
