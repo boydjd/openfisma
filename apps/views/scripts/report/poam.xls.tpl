@@ -72,9 +72,9 @@ foreach( $this->poam_list as $p ) {
         $p['action_suggested'],
         $p['action_planned'],
         $p['action_est_date'],
-        NULL == $p['blscr_id']?N:Y,
-        'NONE' == $p['threat_level']?N:Y,
-        'NONE' == $p['cmeasure_effectiveness']?N:Y);
+        NULL == $p['blscr_id'] ? "N" : "Y",
+        ('NONE' == $p['threat_level'] || trim($p['threat_source']) == '' || trim($p['threat_justification']) == '') ? "N" : "Y",
+        ('NONE' == $p['cmeasure_effectiveness'] || trim($p['cmeasure']) == '' || trim($p['cmeasure_justification']) == '') ? "N" : "Y");
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
 
