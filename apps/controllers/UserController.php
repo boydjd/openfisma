@@ -221,7 +221,8 @@ class UserController extends MessageController
         $event = new Event();
 
         $ret = $this->_user->find($this->_me->id);
-        $this->view->notify_frequency = $ret->current()->notify_frequency;
+        $this->view->notify_frequency = $ret->current()->notify_frequency / 60;
+        $this->view->notify_email = $ret->current()->notify_email;
         $allEvent = $event->getUserAllEvents($this->_me->id);
         $enabledEvent = $event->getEnabledEvents($this->_me->id);
         
@@ -246,13 +247,15 @@ class UserController extends MessageController
         if ($formValid) {
             $result = $this->_user->find($this->_me->id);
             $originalEmail = $result->current()->email;
+            $notifyEmail = $result->current()->notify_email;
             $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
             if ($ret > 0) {
                 $this->_user->log(User::MODIFICATION, $this->_me->id, 
                     "{$this->_me->account} Profile Modified");
                 $msg = "profile modified succefully.";
 
-                if ($originalEmail != $profileData['email']) {
+                if ($originalEmail != $profileData['email']
+                    && empty($notifyEmail)) {
                     $this->_user->update(array('email_validate'=>0),
                         'id = '.$this->_me->id);
                     $this->_emailvalidate($this->_me->id,
@@ -293,22 +296,38 @@ class UserController extends MessageController
     {
         $event = new Event();
         $data = $this->_request->getPost();
+        $row = $this->_user->find($this->_me->id);
+        $originalEmail = $row->current()->notify_email;
+
         if (!isset($data['enableEvents'])) {
             $data['enableEvents'] = array();
         }
         $event->saveEnabledEvents($this->_me->id, $data['enableEvents']);
-        if ($data['notify_frequency']) {
-            $ret = $this->_user->update(array('notify_frequency' => 
-                $data['notify_frequency']), "id = ".$this->_me->id);
-            if ($ret > 0 || 0 == $ret) {
-                $this->message("Notification events modified succefully.",
-                    self::M_NOTICE);
-            } else {
-                $this->message("Notification events modified failed.",
-                    self::M_WARNING);
-            }
-            $this->_forward('profile');
+        $notifyData = array('notify_frequency' =>
+                                $data['notify_frequency'] * 60,
+                            'notify_email' => $data['notify_email']);
+        $ret = $this->_user->update($notifyData, "id = ".$this->_me->id);
+        if ($ret > 0 || 0 == $ret) {
+            $msg = "Notification events modified succefully.";
+            $model = self::M_NOTICE;
+        } else {
+            $msg = "Notification events modified failed.";
+            $model = self::M_WARNING;
         }
+
+
+        if ( $originalEmail != $data['notify_email'] ) {
+            $this->_user->update(array('email_validate'=>0),
+                        'id = '.$this->_me->id);
+            $this->_emailvalidate($this->_me->id,
+                        $data['notify_email'], 'update');
+            $msg .="<br />we have send a validation to your new email.".
+                   "please check it.";
+        }
+
+        $this->view->setScriptPath(VIEWS . DS . 'scripts');
+        $this->message($msg, $model);
+        $this->_forward('profile');
     }
 
         
@@ -485,10 +504,12 @@ Please create a password that adheres to these complexity requirements:<br>
         $userId = $this->_request->getParam('id');
         $ret = $this->_user->find($userId);
         $userEmail = $ret->current()->email;
+        $notifyEmail = $ret->current()->notify_email;
+        $email = !empty($notifyEmail)?$notifyEmail:$userEmail;
         $query = $this->_user->getAdapter()->select()
                       ->from('validate_emails', 'validate_code')
                       ->where('user_id = ?', $userId)
-                      ->where('email = ?', $userEmail)
+                      ->where('email = ?', $email)
                       ->order('id DESC');
         $ret = $this->_user->getAdapter()->fetchRow($query);
         if ($this->_request->getParam('code') == $ret['validate_code']) {

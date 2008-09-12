@@ -91,7 +91,7 @@ class FismaNotify
         $user = new User();
         $ulist = $user->getList(array('id', 'name_first', 'name_last',
                                       'email', 'email_validate',
-                                      'notify_frequency',
+                                      'notify_frequency', 'notify_email',
                                       'most_recent_notify_ts'));
         
         $currentTime = Zend_Date::now();
@@ -108,7 +108,13 @@ class FismaNotify
             $contentTpl->setScriptPath(VIEWS . DS . self::EMAIL_VIEW_PATH);
 
             $mail->setFrom(readSysConfig('sender'), "OpenFISMA");
-            $mail->addTo($userData['email'],
+
+            if ( !empty($userData['notify_email']) ) {
+                $receiveEmail = $userData['notify_email'];
+            } else {
+                $receiveEmail = $userData['email'];
+            }
+                $mail->addTo($receiveEmail,
                 "{$userData['name_first']} {$userData['name_last']}");
             $mail->setSubject(readSysConfig('subject'));
 
