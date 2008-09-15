@@ -17,24 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once 'Abstract.php';
 
 /**
- * An object which represents user commentary on specific findings.
+ * A business object which represents a source of findings against information
+ * systems.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Comments extends Fisma_Model
+class Source extends FismaModel
 {
-    protected $_name = 'comments';
+    protected $_name = 'sources';
     protected $_primary = 'id';
 }
-

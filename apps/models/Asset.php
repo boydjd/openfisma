@@ -17,24 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Ryan Yang <ryan@users.sourceforge.net>
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
 
-require_once 'Abstract.php';
-
 /**
- * An object which represents a plug-in piece of software for OpenFISMA which
- * enhances it's core functionality without modifying the core application
- * itself.
+ * A business object which represents assets belonging to a particular
+ * information system.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- */class Plugin extends Fisma_Model
+ *
+ * @todo this class should be named with a capital
+ */
+class Asset extends Zend_Db_Table
 {
-    protected $_name = 'plugins';
+    protected $_name = 'assets';
     protected $_primary = 'id';
 }

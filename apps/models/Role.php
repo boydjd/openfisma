@@ -22,19 +22,17 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
-
-require_once 'Abstract.php';
-
+ 
 /**
- * A business object which represents a source of findings against information
- * systems.
+ * A business object which represents a role within the Access Control scheme.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Source extends Fisma_Model
+class Role extends FismaModel
 {
-    protected $_name = 'sources';
+    protected $_name = 'roles';
     protected $_primary = 'id';
 }
+

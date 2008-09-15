@@ -23,9 +23,6 @@
  * @version   $Id$
  */
 
-require_once 'Zend/Db/Table/Abstract.php';
-require_once (MODELS . DS . 'event.php');
-
 /**
  * A business object which represents a notification sent to an end user
  * regarding the occurrence of some event within OpenFISMA.
@@ -34,7 +31,7 @@ require_once (MODELS . DS . 'event.php');
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Notification extends Fisma_Model
+class Notification extends FismaModel
 {
     /**
      * The default table name 
@@ -162,6 +159,8 @@ class Notification extends Fisma_Model
                            ->order('e.name')
                            ->order('n.timestamp');
         $ret = $this->_db->fetchAll($query);
+       
+       
         return $ret;
     }
 }

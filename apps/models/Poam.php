@@ -23,9 +23,6 @@
  * @version   $Id$
  */
 
-require_once 'Zend/Db/Table.php';
-require_once 'Zend/Db/Expr.php';
-
 /**
  * A business object which represents a plan of action and milestones related
  * to a particular finding.

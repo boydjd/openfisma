@@ -23,13 +23,12 @@
  * @version   $Id$
  */
 
-require_once 'Zend/Registry.php';
-require_once 'Zend/Config.php';
-require_once 'Zend/Config/Ini.php';
 define('CONFIGFILE_NAME', 'install.conf');
 define('ERROR_LOG', 'error.log');
+
 //assuming not installed first unless it is
 Zend_Registry::set('installed', false);
+
 if (is_file(CONFIGS . DS . CONFIGFILE_NAME)) {
     $config = new Zend_Config_Ini(CONFIGS . DS . CONFIGFILE_NAME);
     if (!empty($config->database)) {
@@ -55,5 +54,3 @@ if (is_file(CONFIGS . DS . CONFIGFILE_NAME)) {
     ///@todo system wide log setting
     
 }
-
-

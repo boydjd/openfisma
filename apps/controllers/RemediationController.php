@@ -22,12 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once CONTROLLERS . DS . 'PoamBaseController.php';
-require_once MODELS . DS . 'user.php';
-require_once MODELS . DS . 'evaluation.php';
-require_once APPS . DS . 'Exception.php';
-require_once 'Pager.php';
 
 /**
  * The remediation controller handles CRUD for findings in remediation.
@@ -71,7 +65,6 @@ class RemediationController extends PoamBaseController
      */
     public function summaryAction()
     {
-        require_once MODELS . DS . 'system.php';
         $req = $this->getRequest();
         $today = parent::$now->toString('Ymd');
         $summary_tmp = array(
@@ -473,8 +466,6 @@ class RemediationController extends PoamBaseController
      */
     public function evidenceAction()
     {
-        require_once MODELS . DS . 'evidence.php';
-        require_once MODELS . DS . 'comments.php';
         $req = $this->getRequest();
         $eval_id = $req->getParam('evaluation');
         $decision = $req->getParam('decision');

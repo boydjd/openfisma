@@ -33,7 +33,7 @@
  *
  * @todo This class should probably be abstract.
  */
-class Fisma_Model extends Zend_Db_Table
+class FismaModel extends Zend_Db_Table
 {
     /**
      * List all entries in the table

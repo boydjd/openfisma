@@ -23,8 +23,6 @@
  * @version   $Id$
  */
  
-require_once 'Zend/Controller/Action.php';
-
 /**
  * The error controller implements error-handling logic and displays user-level
  * errors to the user.

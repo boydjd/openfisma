@@ -22,20 +22,17 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once 'Zend/Db/Table.php';
 
 /**
- * A business object which represents a software product that can be installed
- * on an information system asset.
+ * An object which represents a plug-in piece of software for OpenFISMA which
+ * enhances it's core functionality without modifying the core application
+ * itself.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- */
-class Product extends Zend_Db_Table
+ */class Plugin extends FismaModel
 {
-    protected $_name = 'products';
+    protected $_name = 'plugins';
     protected $_primary = 'id';
 }
-

@@ -23,21 +23,6 @@
  * @version   $Id$
  */
 
-require_once 'Zend/Date.php';
-require_once 'Zend/Auth.php';
-require_once 'Zend/Db.php';
-require_once MODELS . DS . 'user.php';
-require_once MODELS . DS . 'notification.php';
-require_once CONTROLLERS . DS . 'MessageController.php';
-require_once 'Zend/Acl.php';
-require_once 'Zend/Acl/Role.php';
-require_once 'Zend/Acl/Resource.php';
-require_once 'Zend/Form.php';
-require_once 'Zend/Form/Element/Text.php';
-require_once 'Zend/Form/Element/Submit.php';
-require_once 'Zend/Form/Element/Reset.php';
-require_once 'Zend/Form/Element/Button.php';
-
 /**
  * ???
  *

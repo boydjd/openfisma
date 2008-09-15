@@ -23,8 +23,6 @@
  * @version   $Id$
  */
 
-require_once MODELS . DS . 'poam.php';
-
 /**
  * A business object which represents a security vulnerability reported against
  * an information system.

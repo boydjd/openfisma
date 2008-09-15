@@ -25,8 +25,6 @@
  * @todo Clean up and assign an author
  */
 
-require_once 'Zend/Db/Table/Abstract.php';
-
 /**
  * A business object which represents an event in OpenFISMA that is able to
  * generate notifications to end users.
@@ -35,7 +33,7 @@ require_once 'Zend/Db/Table/Abstract.php';
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Event extends Fisma_Model
+class Event extends FismaModel
 {
     /**
      * The default table name 

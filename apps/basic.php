@@ -31,45 +31,6 @@
          Form config file name.
      */
     define('FORMCONFIGFILE', 'form.conf');
-
-
-    require_once(APPS . DS .'Exception.php');
-
-    /** 
-     * include library files
-     *
-     * @param ... filenames
-    */
-    function uses()
-    {
-        $args = func_get_args();
-        foreach ($args as $file) {
-            require_once(LIBS . DS . strtolower($file) . '.php');
-        }
-    }
-
-    /**
-     * add path(es) into the including path variable
-     *
-     * @param ... pathes
-     */
-    function import() 
-    {
-        $args = func_get_args();
-        $targetPath = null;
-        foreach ($args as $dir) {
-            if ( is_dir($dir) ) {
-                $targetPath .= $dir . PATH_SEPARATOR ;
-            } else {
-                throw new fisma_Exception($dir . ' is missing or not 
-                                          a directory');
-            }
-        }
-        if (! empty($targetPath) ) {
-            $includePath = ini_get('include_path');
-            ini_set('include_path', $targetPath . $includePath);
-        }
-    }
  
     /** 
         Exam the Acl of the existing logon user to decide permission or denial.
@@ -115,7 +76,6 @@
     {
         assert(!empty($key) && is_bool($isFresh));
         if ( ! Zend_Registry::isRegistered(SYSCONFIG) || $isFresh ) {
-            require_once( MODELS . DS . 'config.php' );
             $m = new Config();
             $pairs = $m->fetchAll();
             $configs = array();

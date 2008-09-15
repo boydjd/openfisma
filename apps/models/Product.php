@@ -17,25 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once 'Abstract.php';
 
 /**
- * A business object which represents a piece of evidence supporting a
- * remediation.
+ * A business object which represents a software product that can be installed
+ * on an information system asset.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Evidence extends Fisma_Model
+class Product extends Zend_Db_Table
 {
-    protected $_name = 'evidences';
+    protected $_name = 'products';
     protected $_primary = 'id';
 }
 

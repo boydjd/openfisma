@@ -23,8 +23,6 @@
  * @version   $Id$
  */
  
-require_once CONTROLLERS . DS . 'SecurityController.php';
-
 /**
  * The panel controller is the main controller for dispatching actions to other
  * controllers. It also includes actions for building the header and footer of

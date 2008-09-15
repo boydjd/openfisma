@@ -22,11 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once CONTROLLERS . DS . 'SecurityController.php';
-require_once MODELS . DS . 'role.php';
-require_once 'Pager.php';
-require_once 'Zend/Filter/Input.php';
 
 /**
  * The role controller handles CRUD for role objects.

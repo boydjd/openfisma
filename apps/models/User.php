@@ -23,11 +23,6 @@
  * @version   $Id$
  */
 
-require_once 'Zend/Db/Table.php';
-require_once MODELS . DS . 'Abstract.php';
-require_once ('Zend/Log/Writer/Db.php');
-require_once ('Zend/Log.php');
-
 /**
  * An object which represents a user in OpenFISMA.
  *
@@ -35,7 +30,7 @@ require_once ('Zend/Log.php');
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class User extends Fisma_Model
+class User extends FismaModel
 {
     protected $_name = 'users';
     protected $_primary = 'id';

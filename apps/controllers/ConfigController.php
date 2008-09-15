@@ -22,10 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once CONTROLLERS . DS . 'SecurityController.php';
-require_once MODELS . DS . 'config.php';
-require_once 'Zend/Form/Element/Hidden.php';
 
 /**
  * The configuration controller deals with displaying and updating system
@@ -222,7 +218,6 @@ class ConfigController extends SecurityController
      */
     public function ldapvalidAction()
     {
-        require_once "Zend/Ldap.php";
         $form = $this->getForm('ldap');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();

@@ -17,28 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    ???
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- *
- * @todo This file doesn't fit into the OpenFISMA coding standards. It should be
- * refactored into a more fitting class, or else the comments should be
- * improved.
  */
 
-require_once MODELS . DS . 'Abstract.php';
-
 /**
- * A business object which represents a grouping of information systems.
+ * An object which represents user commentary on specific findings.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Sysgroup extends Fisma_Model
+class Comments extends FismaModel
 {
-    protected $_name = 'system_groups';
+    protected $_name = 'comments';
     protected $_primary = 'id';
 }
 

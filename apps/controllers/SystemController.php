@@ -22,14 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once 'Zend/Controller/Action.php';
-require_once (CONTROLLERS . DS . 'SecurityController.php');
-require_once (MODELS . DS . 'user.php');
-require_once (MODELS . DS . 'system.php');
-require_once ('Pager.php');
-require_once 'Zend/Date.php';
-require_once 'Zend/Filter/Input.php';
 
 /**
  * Handles CRUD for "system" objects.

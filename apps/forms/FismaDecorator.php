@@ -23,8 +23,6 @@
  * @version   $Id:$
  */
 
-require_once 'Zend/Form/Decorator/Abstract.php';
-
 /**
  * A standard decorator that can be used for most forms in OpenFISMA in order
  * to provide a consistent look-and-feel across the application.

@@ -23,8 +23,6 @@
  * @version   $Id:$
  */
 
-require_once 'Zend/Form/Element.php';
-
 /**
  * Renders multiple checkboxes in column format.
  *

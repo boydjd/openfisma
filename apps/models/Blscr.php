@@ -23,8 +23,6 @@
  * @version   $Id$
  */
  
-require_once 'Abstract.php';
-
 /**
  * A business object which represents NIST baseline security controls. (See NIST
  * 800-53 for the catalog of controls.)
@@ -35,7 +33,7 @@ require_once 'Abstract.php';
  *
  * @todo this class should be named with a capital
  */
-class Blscr extends Fisma_Model
+class Blscr extends FismaModel
 {
     protected $_name = 'blscrs';
     protected $_primary = 'code';

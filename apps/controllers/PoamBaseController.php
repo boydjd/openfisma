@@ -23,12 +23,6 @@
  * @version   $Id$
  */
 
-require_once MODELS . DS . 'poam.php';
-require_once MODELS . DS . 'system.php';
-require_once MODELS . DS . 'source.php';
-require_once MODELS . DS . 'network.php';
-require_once CONTROLLERS . DS . 'SecurityController.php';
-
 /**
  * ???
  *

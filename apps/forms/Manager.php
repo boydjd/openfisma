@@ -23,9 +23,6 @@
  * @version   $Id:$
  */
 
-require_once 'Zend/Form.php';
-require_once 'Zend/Config/Ini.php';
-
 /**
  * Provides an interface for loading forms that takes care of setting up the
  * common aspects of all forms used in OpenFISMA, such as standard decorators,

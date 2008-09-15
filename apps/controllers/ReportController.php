@@ -23,10 +23,6 @@
  * @version   $Id$
  */
 
-require_once CONTROLLERS . DS . 'PoamBaseController.php';
-require_once CONTROLLERS . DS . 'RiskAssessment.class.php';
-require_once 'Pager.php';
-
 /**
  * The report controller creates the multitude of reports available in
  * OpenFISMA.
@@ -540,7 +536,6 @@ class ReportController extends PoamBaseController
      */
     public function rafsAction()
     {
-        require_once 'Archive/Tar.php';
         $sid = $this->_req->getParam('system_id');
         $this->view->assign('system_list', $this->_system_list);
         if (!empty($sid)) {

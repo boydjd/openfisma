@@ -23,18 +23,6 @@
  * @version   $Id$
  */
 
-require_once (CONTROLLERS . '/PoamBaseController.php');
-require_once (MODELS . '/user.php');
-require_once (MODELS . '/system.php');
-require_once ('Pager.php');
-require_once 'Zend/Date.php';
-require_once 'Zend/Filter/Input.php';
-require_once 'Zend/Form/Element/Checkbox.php';
-require_once 'Zend/Validate/Between.php';
-require_once (FORMS . '/Manager.php');
-require_once (FORMS . '/CheckboxMatrix.php');
-require_once (MODELS . DS . 'event.php');
-
 /**
  * The account controller deals with creating, updating, and managing user
  * accounts on the system.
@@ -597,7 +585,6 @@ class AccountController extends PoamBaseController
      */
     public function checkdnAction()
     {
-        require_once "Zend/Ldap.php";
         $config = new Config();
         $data = $config->getLdap();
         $dn = $this->_request->getParam('dn');

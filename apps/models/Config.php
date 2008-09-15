@@ -23,8 +23,6 @@
  * @version   $Id$
  */
  
-require_once MODELS . DS . 'Abstract.php';
-
 /**
  * An object which represents an OpenFISMA configuration item.
  *
@@ -32,7 +30,7 @@ require_once MODELS . DS . 'Abstract.php';
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Config extends Fisma_Model
+class Config extends FismaModel
 {
     const MAX_ABSENT    = 'max_absent_time';
     const AUTH_TYPE     = 'auth_type';
@@ -85,7 +83,7 @@ class Config extends Fisma_Model
      */
     public function getLdap($id=null)
     {
-        $ldapConfig = new Fisma_Model($this->_ldaps);
+        $ldapConfig = new FismaModel($this->_ldaps);
         if (isset($id) && !is_array($id)) {
             $id = array($id);
         }
@@ -109,7 +107,7 @@ class Config extends Fisma_Model
      {
          $revVal = array_flip($this->_mapLdap);
          $values = directMap($revVal, $values);
-         $ldapConfig = new Fisma_Model($this->_ldaps);
+         $ldapConfig = new FismaModel($this->_ldaps);
          if (empty($id)) {
              $ret = $ldapConfig->insert($values);
          } else {
@@ -126,7 +124,7 @@ class Config extends Fisma_Model
      public function delLdap($id)
      {
         assert(is_numeric($id));
-        $ldapConfig = new Fisma_Model($this->_ldaps);
+        $ldapConfig = new FismaModel($this->_ldaps);
         return $ldapConfig->delete("id=$id");
      }
 }

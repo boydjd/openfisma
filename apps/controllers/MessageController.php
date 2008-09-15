@@ -22,8 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once 'Zend/Controller/Action.php';
 
 /**
  * Displays warnings or informational messages to the user via DHTML.

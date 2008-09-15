@@ -17,27 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Ryan Yang <ryanyang@users.sourceforge.net>
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
 
-require_once 'Abstract.php';
-
 /**
- * A business object which represents a network of information systems. (In
- * practice, this represents a grouping of information systems within a single
- * agency which may contain private IP addressing schemes, in order to
- * distinguish services with the same IP and port which are running on separate
- * private networks).
+ * A business object which represents a reviewer's evaluation of a piece of
+ * evidence supporting a particular remediation.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Network extends Fisma_Model
+class Evaluation extends FismaModel
 {
-    protected $_name = 'networks';
+    protected $_name = 'evaluations';
     protected $_primary = 'id';
+
+    public function getEvEvalList () {
+        return array(1 => array('name' => 'EV_SSO',
+                                'function' =>
+                                    'update_evidence_approval_first'),
+                     2 => array('name' => 'EV_FSA',
+                                'function' =>
+                                    'update_evidence_approval_second'),
+                     3 => array('name' => 'EV_IVV',
+                                'function' =>
+                                    'update_evidence_approval_third'));
+    }
 }
+

@@ -23,20 +23,18 @@
  * @version   $Id$
  */
  
-require_once 'Zend/Db/Table.php';
 
 /**
- * A business object which represents assets belonging to a particular
- * information system.
+ * A business object which represents a piece of evidence supporting a
+ * remediation.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- *
- * @todo this class should be named with a capital
  */
-class asset extends Zend_Db_Table
+class Evidence extends FismaModel
 {
-    protected $_name = 'assets';
+    protected $_name = 'evidences';
     protected $_primary = 'id';
 }
+

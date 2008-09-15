@@ -23,11 +23,6 @@
  * @version   $Id$
  */
  
-require_once 'Zend/Controller/Action.php';
-require_once CONTROLLERS . DS . 'SecurityController.php';
-require_once MODELS . DS . 'poam.php';
-require_once MODELS . DS . 'system.php';
-
 /**
  * The dashboard controller displays the user dashboard when the user first logs
  * in.

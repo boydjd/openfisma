@@ -22,10 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-require_once CONTROLLERS . DS . 'SecurityController.php';
-require_once MODELS . DS . 'source.php';
-require_once 'Pager.php';
 
 /**
  * Handles CRUD for finding source objects.

@@ -23,12 +23,6 @@
  * @version   $Id$
  */
  
-require_once (CONTROLLERS . DS . 'PoamBaseController.php');
-require_once (MODELS . DS . 'finding.php');
-require_once (MODELS . DS . 'asset.php');
-require_once (MODELS . DS . 'product.php');
-require_once (MODELS . DS . 'plugin.php');
-require_once ('Pager.php');
 define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
 
 /**
@@ -245,7 +239,6 @@ template. Please update your CSV file and try again.<br />";
             }
             $this->message($message, $model);
         }
-        require_once MODELS . DS . 'blscr.php';
         $blscr = new Blscr();
         $list = array_keys($blscr->getList('class'));
         $blscr_list = array_combine($list, $list);
@@ -454,10 +447,8 @@ template. Please update your CSV file and try again.<br />";
                 $this->render();
                 return;
             }
-            require_once (CONTROLLERS . DS . 'components' . DS . 
-                           'import' . DS . 'interface.php');
-            require_once (CONTROLLERS . DS . 'components' . DS . 
-                           'import' . DS . $pluginClass . '.php');
+            require_once (CONTROLLERS . '/components/import/interface.php');
+            require_once (CONTROLLERS . "/components/import/$pluginClass.php");
             require_once ('parseXml.class.php');
             $assets['system_id'] = $req->getParam('system_id');
             $assets['source_id'] = $req->getParam('source');

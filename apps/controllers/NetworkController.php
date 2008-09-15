@@ -23,11 +23,6 @@
  * @version   $Id$
  */
  
-require_once CONTROLLERS . DS . 'SecurityController.php';
-require_once MODELS . DS . 'network.php';
-require_once 'Pager.php';
-require_once 'Zend/Filter/Input.php';
-
 /**
  * The network controller handles searching, displaying, creating, and updating
  * network objects.

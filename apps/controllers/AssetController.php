@@ -23,13 +23,6 @@
  * @version   $Id$
  */
 
-require_once CONTROLLERS . DS . 'PoamBaseController.php';
-require_once MODELS . DS . 'asset.php';
-require_once MODELS . DS . 'system.php';
-require_once MODELS . DS . 'source.php';
-require_once MODELS . DS . 'product.php';
-require_once 'Pager.php';
-
 /**
  * The asset controller deals with creating, updating, and managing assets
  * on the system.

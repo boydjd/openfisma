@@ -23,11 +23,6 @@
  * @version   $Id$
  */
 
-require_once 'Zend/Filter/Input.php';
-require_once 'Zend/Validate/Hostname.php';
-require_once 'Zend/Validate/Between.php';
-require_once 'Zend/Validate/InArray.php';
-
 /**
  * The install controller handles all of the actions for the installer program.
  *
@@ -194,7 +189,7 @@ class InstallController extends Zend_Controller_Action
                 }
             }
             if ($ret) {
-                require_once (CONTROLLERS . DS . 'components' . DS . 'sqlimport.php');
+                require_once(CONTROLLERS . '/components/sqlimport.php');
                 $zend_dsn = array(
                     'adapter' => 'mysqli',
                     'params' => array(

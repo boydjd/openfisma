@@ -22,20 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
-require_once 'Zend/Auth.php';
-require_once 'Zend/Auth/Adapter/DbTable.php';
-require_once 'Zend/Auth/Adapter/Ldap.php';
-require_once 'Zend/Auth/Exception.php';
-require_once (CONTROLLERS . DS . 'MessageController.php');
-require_once (MODELS . DS . 'user.php');
-require_once (MODELS . DS . 'system.php');
-require_once (MODELS . DS . 'notification.php');
-require_once (FORMS . '/Manager.php');
-require_once 'Zend/Date.php';
-require_once (MODELS . DS . 'event.php');
-require_once 'Zend/Mail.php';
-require_once 'Zend/Mail/Transport/Smtp.php';
-require_once 'Zend/Mail/Transport/Sendmail.php';
 
 /**
  * Handles CRUD for "user" objects.
@@ -48,6 +34,10 @@ class UserController extends MessageController
 {
     private $_user = null;
     private $_me = null;
+    
+    /**
+     * init() - ???
+     */         
     public function init()
     {
         $this->_user = new User();
@@ -55,7 +45,7 @@ class UserController extends MessageController
     }
     
     /**
-     * User login
+     * loginAction() - Handles user login, verifying the password, etc.
      */
     public function loginAction()
     {
@@ -71,8 +61,7 @@ class UserController extends MessageController
             $whologin = $this->_user->fetchRow("account = '$username'");
             if ( empty($whologin) ) {
                 $this->_user->log(User::LOGINFAILURE, '',
-                    "none exist username: ".$username);
-                //to cover the fact
+                    "This username does not exist: ".$username);
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             if ( ! $whologin->is_active ) {
@@ -81,14 +70,15 @@ class UserController extends MessageController
                     $unlockDuration = readSysConfig('unlock_duration');
                     $terminationTs = new Zend_Date($whologin->termination_ts);
                     $terminationTs->add($unlockDuration, Zend_Date::SECOND);
+                    $unlockRemaining = $terminationTs->sub(new Zend_Date());
                     if ($terminationTs->isEarlier($now)) {
                         $updateData = array('is_active'=>1, 'failure_count'=>0);
                         $this->_user->update($updateData, 'id  = '.$whologin->id);
                     } else {
                         throw new Zend_Auth_Exception('Your user account has been
                         locked due to '.readSysConfig("failure_threshold").'
-                        unsuccessful login attempts,your account will be unlocked
-                        in '.$unlockDuration / 60 .' minutes, please try again at
+                        unsuccessful login attempts, your account will be unlocked
+                        in '.$unlockRemaining->getMinute() .' minutes, please try again at
                         that time.');
                     }
                 } else {

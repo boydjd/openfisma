@@ -27,8 +27,6 @@
  * improved.
  */
 
-require_once 'Abstract.php';
-
 /**
  * A business object which represents an information system.
  *
@@ -36,7 +34,7 @@ require_once 'Abstract.php';
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class System extends Fisma_Model
+class System extends FismaModel
 {
     protected $_name = 'systems';
     protected $_primary = 'id';

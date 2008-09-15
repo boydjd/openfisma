@@ -17,24 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Ryan Yang <ryan@users.sourceforge.net>
+ * @author    Ryan Yang <ryanyang@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
 
-require_once 'Abstract.php';
-
 /**
- * A business object which represents a role within the Access Control scheme.
+ * A business object which represents a network of information systems. (In
+ * practice, this represents a grouping of information systems within a single
+ * agency which may contain private IP addressing schemes, in order to
+ * distinguish services with the same IP and port which are running on separate
+ * private networks).
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Role extends Fisma_Model
+class Network extends FismaModel
 {
-    protected $_name = 'roles';
+    protected $_name = 'networks';
     protected $_primary = 'id';
 }
-

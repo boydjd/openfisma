@@ -23,9 +23,6 @@
  * @version   $Id$
  */
  
-require_once CONTROLLERS . DS . 'PoamBaseController.php';
-require_once MODELS . DS . 'blscr.php';
-
 /**
  * The metainfo controller provides access to certain metadata. This controller
  * is designed to be invoked asynchronously and does not render a full view.
