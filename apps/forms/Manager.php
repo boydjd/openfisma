@@ -42,13 +42,13 @@ class Form_Manager
      * directory.
      *
      * @param string $formName The name of the form to load. This form should
-     * exist inside the forms directory. (Do not include the '.ini' file
+     * exist inside the forms directory. (Do not include the '.form' file
      * extension.)
      * @return Zend_Form
      */
     static function loadForm($formName) {
-        // Load the form from an .ini file
-        $config = new Zend_Config_Ini(FORMS . "/$formName.ini", $formName);
+        // Load the form from a .form file
+        $config = new Zend_Config_Ini(FORMS . "/$formName.form", $formName);
         $form = new Zend_Form($config);
 
         return $form;
