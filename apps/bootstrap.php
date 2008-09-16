@@ -23,15 +23,11 @@
  * @version   $Id$
  */
 
-if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname(__FILE__)));
-}
-
 /**
  * The paths.php file needs to be included before defining the loadClass
  * function, in order for that function to know which paths to search.
  */
-require_once (ROOT . '/paths.php');
+require_once (dirname(dirname(__FILE__)) . '/paths.php');
 
 /**
  * loadClass() - Define a standard handler for loading classes without having
@@ -64,8 +60,6 @@ function loadClass($className) {
     
     // If the file isn't found in any includes directory, then throw an
     // exception.
-    die("Unable to autoload class $className\nThe include path contains: "
-      . print_r($includePathParts,true));
     throw new Exception("Unable to autoload class \"$className\"");
 }
 // Register our custom class loader:

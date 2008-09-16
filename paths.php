@@ -9,19 +9,17 @@
  * @version    $Id$
  */
 
+/**
+ * The application root. This is the directory which contains paths.php.
+ */
+define('ROOT', realpath(dirname(__FILE__)));
+
 if (!defined('DS')) {
     /**
      * Eventually this definition should be removed. It doesn't serve any purpose,
      * but unfortunately it is used heavily in our legacy php code.
      */
     define('DS', DIRECTORY_SEPARATOR);
-}
-
-if (!defined('WEB_ROOT')) {
-    /**
-     * The root directory for the web site
-     */
-    define('WEB_ROOT', ROOT . DS . 'public');
 }
 
 define('APPS', ROOT . '/apps');
@@ -35,6 +33,8 @@ define('MODELS', APPS . '/models');
 define('TEST', ROOT . '/test');
 define('VENDORS', ROOT . '/vendor');
 define('VIEWS', APPS . '/views');
+define('WEB_ROOT', ROOT . '/public');
+
 
 // Update the class path for includes
 $includeDirectories = array(
