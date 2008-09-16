@@ -33,15 +33,11 @@
  */
 class Notification extends FismaModel
 {
-    /**
-     * The default table name 
-     */
     protected $_name = 'notifications';
     protected $_primary = 'id';
     
     /**
-     * Notification events name
-     *
+     * Notification event constants
      */
     const FINDING_CREATED = 1;
     const FINDING_IMPORT = 2;
@@ -90,41 +86,45 @@ class Notification extends FismaModel
     const ACCOUNT_LOGOUT = 45;
 
     /**
-     * Add notification record
+     * add() - Add notifications for the specified event.
      *
-     * @param int $eventId the id of the event name
-     * @param string $userName
-     * @param int or array $record_id such as poam_id, asset_id,
-     * system_id and so on.
+     * @param int $eventType The type of event
+     * @param string $userName The name of the user who caused the event
+     * @param int|array $recordId The ID of the affected object (nullable)
+     *
+     * @todo Reconsider the $recordId parameter... seems to be useless
      */
-    public function add($eventId, $userName, $recordId)
+    public function add($eventType, $userName, $recordId)
     {
+        // Format the $recordId for inclusion in the event text.
+        // Notice: this value is currently not used
         if (is_array($recordId)) {
             $record = implode(",", $recordId);
         } else {
             $record = $recordId;
         }
 
+        // Create a new event object with the specified type
         $event = new Event();
-        $ret = $event->find($eventId);
+        $ret = $event->find($eventType);
         if (empty($ret)) {
-            throw new fisma_Exception('Event name is not exist');
+            throw new fisma_Exception('Event name does not exist');
         }
         $eventName = $ret->current()->name;
 
-        $query = $this->_db
-                      ->select()
-                      ->from('users', 'id')
-                      ->where('account = ?', $userName);
-        $result = $this->_db->fetchRow($query);
-        $userId = $result['id'];
+        // Construct the event text
+        $eventText = "$eventName by $userName";
 
-        $eventText = "$eventName by $userName($record) ";
-        $data = array('event_id'=> $eventId,
-                      'user_id' => $userId,
-                      'event_text'=> $eventText,
-                      'timestamp'=>Zend_Date::now()->toString("Y-m-d H:i:s"));
-        $this->insert($data);
+        // Create notification records for all interested users
+        $query = "INSERT INTO notifications
+                       SELECT null,
+                              ue.event_id,
+                              ue.user_id,
+                              '$eventText',
+                              null
+                         FROM user_events ue
+                        WHERE ue.event_id = $eventType";
+        $statement = $this->_db->query($query);
     }
 
     /**
