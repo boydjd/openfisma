@@ -62,20 +62,20 @@ class Form_Manager
         $form->setMethod('post');
         
         // Use the FismaDecorator for all Display Groups and Elements
-        $form->addPrefixPath('Form', '../apps/forms', 'decorator');
+        //$form->addPrefixPath('Form', '../apps/Form', 'decorator');
         $form->setDecorators(array(
-            'FormElements',
-            'FismaDecorator'
+            new Zend_Form_Decorator_FormElements(),
+            new Form_FismaDecorator()
         ));
 
-        $form->addDisplayGroupPrefixPath('Form', '../apps/forms', 'decorator');
+        //$form->addDisplayGroupPrefixPath('Form', FORMS, 'decorator');
         $form->setDisplayGroupDecorators(array(
-            'FormElements',
-            'FismaDecorator'
+            new Zend_Form_Decorator_FormElements(),
+            new Form_FismaDecorator()
         ));
 
-        $form->addElementPrefixPath('Form', '../apps/forms', 'decorator');
-        $form->setElementDecorators(array('FismaDecorator'));
+        //$form->addElementPrefixPath('Form', FORMS, 'decorator');
+        $form->setElementDecorators(array(new Form_FismaDecorator()));
         
         // By default, all input is trimmed of extraneous white space
         $form->setElementFilters(array('StringTrim'));

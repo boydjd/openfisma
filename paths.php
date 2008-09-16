@@ -27,7 +27,7 @@ if (!defined('WEB_ROOT')) {
 define('APPS', ROOT . '/apps');
 define('CONFIGS', APPS . '/config');
 define('CONTROLLERS', APPS . '/controllers');
-define('FORMS', APPS . '/forms');
+define('FORMS', APPS . '/Form');
 define('LIBS', ROOT . '/include');
 define('LOG', ROOT . '/log');
 define('MIGRATIONS', ROOT . '/migrations');
@@ -41,7 +41,7 @@ $includeDirectories = array(
     CONTROLLERS,
     MODELS,
     VENDORS,
-    FORMS,
+    APPS,
     // Have to hack in the path to Pear since it doesn't follow ZF standards:
     VENDORS . '/Pear'
 );
