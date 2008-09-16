@@ -32,11 +32,22 @@
  */
 class UserController extends MessageController
 {
+    /**
+     * The current user for this session.
+     *
+     * @var User
+     */
     private $_user = null;
+    
+    /**
+     * The Zend_Auth identity corresponding to the current user.
+     *
+     * @var Zend_Auth
+     */
     private $_me = null;
     
     /**
-     * init() - ???
+     * init() - Initialize internal data structures.
      */         
     public function init()
     {
@@ -52,68 +63,108 @@ class UserController extends MessageController
         $req = $this->getRequest();
         $username = $req->getPost('username');
         $password = $req->getPost('userpass');
+        
+        // If the username isn't passed in the post variables, then just display
+        // the login screen without any further processing.
         $this->_helper->layout->setLayout('login');
         if ( empty($username) ) {
             return $this->render();
         }
-        $now = new Zend_Date();
+
         try {
+            /**
+             * @todo Fix this SQL injection
+             */
             $whologin = $this->_user->fetchRow("account = '$username'");
-            if ( empty($whologin) ) {
+
+            // If the username isn't found, throw an exception
+            if (empty($whologin)) {
                 $this->_user->log(User::LOGINFAILURE, '',
                     "This username does not exist: ".$username);
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
+
+            // If the account is locked...
+            // (due to manual lock, expired account, password errors, etc.)
             if ( ! $whologin->is_active ) {
                 $unlockEnabled = readSysConfig('unlock_enabled');
                 if (1 == intval($unlockEnabled)) {
                     $unlockDuration = readSysConfig('unlock_duration');
+
+                    // If the system administrator has elected to have accounts
+                    // unlock automatically, then calculate how much time is
+                    // left on the lock.
+                    $now = new Zend_Date();
                     $terminationTs = new Zend_Date($whologin->termination_ts);
-                    $terminationTs->add($unlockDuration, Zend_Date::SECOND);
-                    $unlockRemaining = $terminationTs->sub(new Zend_Date());
+                    $terminationTs->add($unlockDuration, Zend_Date::MINUTE);
+                    $unlockRemaining = clone $terminationTs;
+                    $unlockRemaining->sub($now);
+                    $minutesRemaining =
+                        ceil($unlockRemaining->getTimestamp() / 60);
+
                     if ($terminationTs->isEarlier($now)) {
-                        $updateData = array('is_active'=>1, 'failure_count'=>0);
-                        $this->_user->update($updateData, 'id  = '.$whologin->id);
+                        $updateData =
+                        $this->_user
+                             ->update(
+                                array(
+                                    'is_active'=>1,
+                                    'failure_count'=>0,
+                                    'termination_ts'=>NULL
+                                ),
+                                'id  = '.$whologin->id
+                            );
                     } else {
-                        throw new Zend_Auth_Exception('Your user account has been
-                        locked due to '.readSysConfig("failure_threshold").'
-                        unsuccessful login attempts, your account will be unlocked
-                        in '.$unlockRemaining->getMinute() .' minutes, please try again at
-                        that time.');
+                        throw new Zend_Auth_Exception('Your user account has
+                        been locked due to ' .
+                        readSysConfig("failure_threshold") .
+                        " or more unsuccessful login attempts. Your account will
+                        be unlocked in $minutesRemaining minutes. Please try
+                        again at that time.");
                     }
                 } else {
-                    throw new Zend_Auth_Exception('Your account has been locked,
-                        please contact the 
-                        <a href="mailto:'.readSysConfig('contact_email').'">
-                        Administrator</a>.');
+                    // If accounts are not unlocked automatically on this
+                    // system, then let the user know that they need to contact
+                    // the administrator.
+                    throw new Zend_Auth_Exception('Your account has been locked
+                        due to ' .
+                        readSysConfig("failure_threshold") .
+                        ' or more unsuccessful login attempts. Please contact
+                        the <a href="mailto:' .
+                        readSysConfig('contact_email') .
+                        '">Administrator</a>.');
                 }
             }
 
+            // Proceed through authorization based on the configured mechanism
+            // (LDAP, Database, etc.)
             $authType = readSysConfig('auth_type');
             $auth = Zend_Auth::getInstance();
             $result = $this->authenticate($authType, $username, $password);
             
-            $notification = new Notification();
-            if ( !$result->isValid() ) {
-                if ( Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID == 
-                     $result->getCode() ) {
-                    $this->_user->log(User::LOGINFAILURE, $whologin->id, 
-                                      'Password Error');
-                    $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
-                        $whologin->account, $whologin->id);
+            if (!$result->isValid()) {
+                $this->_user->log(User::LOGINFAILURE,
+                                  $whologin->id,
+                                  'Password Error');
+                $notification = new Notification();
+                $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
+                                   $whologin->account,
+                                   $whologin->id);
 
-                    if ($whologin->failure_count >= 
-                        readSysConfig('failure_threshold') - 1 ) {
-                        $this->_user->log(User::TERMINATION, $whologin->id,
-                            'account locked');
-                    }
-                    throw new Zend_Auth_Exception("Password Error");
+                if ($whologin->failure_count >= 
+                    readSysConfig('failure_threshold') - 1 ) {
+                    $this->_user->log(User::TERMINATION,
+                                      $whologin->id,
+                                      'Account locked');
                 }
+                
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
+            
+            // At this point, the user is authenticated.
+            // Now check if the account has expired.
             $_me = (object)($whologin->toArray());
             $period = readSysConfig('max_absent_time');
-            $deactiveTime = clone $now;
+            $deactiveTime = new Zend_Date();
             $deactiveTime->sub($period, Zend_Date::DAY);
             $lastLogin = new Zend_Date($_me->last_login_ts,
                                        'YYYY-MM-DD HH-MI-SS');
@@ -122,12 +173,18 @@ class UserController extends MessageController
                 && $lastLogin->isEarlier($deactiveTime) ) {
                 throw new Zend_Auth_Exception("Your account has been locked
                     because you have not logged in for $period or more days.
-                    Please contact an administrator.");
+                    Please contact the <a href=\"mailto:" .
+                    readSysConfig('contact_email') .
+                    '">Administrator</a>.');
             }
+            
+            // If we get this far, then the login is totally successful.
             $this->_user->log(User::LOGIN, $_me->id, "Success");
+            $notification = new Notification();
             $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
                 $whologin->account, $whologin->id);
 
+            // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
             foreach ($nickname as $n) {
                 $_me->roleArray[] = $n['nickname'];
@@ -136,46 +193,44 @@ class UserController extends MessageController
                 $_me->roleArray[] = $_me->account . '_r';
             }
             $_me->systems = $this->_user->getMySystems($_me->id);
+            
+            // Set up the session timeout
             $store = $auth->getStorage();
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
             $store->write($_me);
+            
+            // Render the view
             $this->_helper->layout->setLayout('notice');
             return $this->render('rule');
-        }catch(Zend_Auth_Exception $e) {
+        } catch(Zend_Auth_Exception $e) {
             $this->view->assign('error', $e->getMessage());
             $this->render();
         }
     }
-    
+
     /**
-     Exam the Acl to decide permission or denial.
-     @param $user array of User's roles
-     @param $resource resources
-     @param $action actions
-     @return bool permit or not
+     * logoutAction() - Close out the current user's session.
      */
-    public function logoutAction()
-    {
-        //$auth = Zend_Auth::getInstance();
-        //$_me = $auth->getIdentity();
+    public function logoutAction() {
         if (!empty($this->_me)) {
             $this->_user->log(User::LOGOUT, $this->_me->id,
                 $this->_me->account . ' logout');
             $notification = new Notification();
             $notification->add(Notification::ACCOUNT_LOGOUT,
                 $this->_me->account, $this->_me->id);
-            
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');
     }
 
     /**
-     * Returns the standard form for reading, and
-     * updating user profile.
+     * getprofileForm() - Returns the standard form for reading, and updating
+     * the current user's profile.
      *
      * @return Zend_Form
+     *
+     * @todo This function is not named correctly
      */
     public function getprofileForm()
     {
@@ -191,7 +246,9 @@ class UserController extends MessageController
     }
 
     /**
-     * Change user's profile infor
+     * profileAction() - Display the user's "Edit Profile" page.
+     *
+     * @todo Cleanup this method: comments and formatting
      */
     public function profileAction()
     {
@@ -223,8 +280,10 @@ class UserController extends MessageController
     }
 
     /**
-     * Updates user's profile information
+     * updateprofileAction() - Handle any edits to a user's profile settings.
      *
+     * @todo Cleanup this method: comments and formatting
+     * @todo This method is named incorrectly
      */
     public function updateprofileAction()
     {
@@ -280,7 +339,10 @@ class UserController extends MessageController
     }
 
     /**
-     * save notify events
+     * savenotifyAction() - Handle any edits to a user's notification settings.
+     *
+     * @todo Cleanup this method: comments and formatting
+     * @todo This method is named incorrectly
      */
     public function savenotifyAction()
     {
@@ -322,7 +384,10 @@ class UserController extends MessageController
 
         
     /**
-     * Change user's password
+     * pwdchangeAction() - Handle any edits to a user's profile settings.
+     *
+     * @todo Cleanup this method: comments and formatting
+     * @todo This method is named incorrectly
      */
     public function pwdchangeAction()
     {
@@ -397,10 +462,11 @@ Please create a password that adheres to these complexity requirements:<br>
     }
     
     /**
-     * Check User's password
-     * @param $pass the new password for changed
-     * @param $level check level
-     * @return true or false
+     * checkPassword() - ??? (Does this implement password complexity? If so,
+     * this is deprecated in favor of using a Zend_validator.
+     *
+     * @todo Cleanup this method: comments and formatting...what does this
+     * method do?
      */
     function checkPassword($pass, $level = 1) {
         if($level > 1) {
@@ -445,36 +511,41 @@ Please create a password that adheres to these complexity requirements:<br>
         return true;
     }
     /**
-     * Authenticate the user according to the auth setting 
+     * authenticate() - Authenticate the user against LDAP or backend database.
      *
-     * @param string $type auth_type
-     * @param string $username post username for login
-     * @param string $password post password for login
+     * @param string $type The type of authorization ('ldap' or 'database')
+     * @param string $username Username for login
+     * @param string $password Password for login
      * @return Zend_Auth_Result
      */
-    protected function authenticate($type, $username, $password)
-    {
+    protected function authenticate($type, $username, $password) {
         $db = Zend_Registry::get('db');
-        if ( 'root' == $username ) {
+
+        // The root user is always authenticated against the database.
+        if ($username == 'root') {
             $type = 'database';
         }
-        if ( 'ldap' == $type ) {
+
+        // Handle LDAP or database authentication for non-root users.
+        if ($type == 'ldap') {
             $config = new Config();
             $data = $config->getLdap();
             $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username,
                                                       $password);
-        }
-        if ( 'database' == $type ) {
+        } else if ($type == 'database') {
             $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users',
                                                         'account', 'password');
             $authAdapter->setIdentity($username)->setCredential(md5($password));
         }
+        
         $auth = Zend_Auth::getInstance();
         return $auth->authenticate($authAdapter);
     }
 
     /**
-     * User Privacy Policy
+     * privacyAction() - Display the system's privacy policy.
+     *
+     * @todo the business logic is stored in the view instead of the controller
      */
     public function privacyAction()
     {
@@ -482,13 +553,22 @@ Please create a password that adheres to these complexity requirements:<br>
     }
 
     /**
-     * Rules of Behavior
+     * robAction() - Display the system's Rules Of Behavior.
+     *
+     * @todo the business logic is stored in the view instead of the controller
+     * @todo rename this function to rulesOfBehaviorAction -- that name is
+     * easier to understand
      */
     public function robAction()
     {
         $this->render();
     }
 
+    /**
+     * emailvalidateAction() - Validate the user's e-mail change.
+     *
+     * @todo Cleanup this method: comments and formatting
+     */
     public function emailvalidateAction()
     {
         $userId = $this->_request->getParam('id');
@@ -516,6 +596,12 @@ Please create a password that adheres to these complexity requirements:<br>
         $this->render();
     }
 
+    /**
+     * _emailvalidate() - Validate the user's e-mail change.
+     *
+     * @todo Cleanup this method: comments and formatting
+     * @todo This function is named incorrectly
+     */
     protected function _emailvalidate($userId, $email, $type)
     {
         $mail = new Zend_Mail();
@@ -542,7 +628,10 @@ Please create a password that adheres to these complexity requirements:<br>
     }
 
     /**
-     *  Make the instance of proper transport method according to the config
+     * _getTransport() - Return the appropriate Zend_Mail_Transport subclass,
+     * based on the system's configuration.
+     *
+     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail
      */
     protected function _getTransport()
     {

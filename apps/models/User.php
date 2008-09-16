@@ -93,34 +93,49 @@ class User extends FismaModel
         return $sys;
     }
     /** 
-        Log any creation, modification, disabling and termination of account.
-
-        @param $type constant {CREATION,MODIFICATION,DISABLING,TERMINATION,
-                        LOGIN,LOGINFAILURE,LOGOUT}
-        @param $uid int action taken user id
-        @param $extra_msg string extra message to be logged.
+     * Log any creation, modification, disabling and termination of account.
+     *
+     * @param $type constant {CREATION,MODIFICATION,DISABLING,TERMINATION,
+     *                  LOGIN,LOGINFAILURE,LOGOUT}
+     * @param $uid int action taken user id
+     * @param $extra_msg string extra message to be logged.
+     *
+     * @todo This "log" function modifies the object!! This is extremely bad.
+     * Move the object modification into the controller and take it out of this
+     * function. It is completely unmaintainable.
      */
-    public function log ($type, $uid, $msg = null)
-    {
-        assert(in_array($type, array(self::CREATION, self::MODIFICATION,
-             self::DISABLING, self::TERMINATION, self::LOGINFAILURE,
-             self::LOGIN, self::LOGOUT)));
+    public function log ($type, $uid, $msg = null) {
+        assert(
+            in_array(
+                $type,
+                array(
+                    self::CREATION,
+                    self::MODIFICATION,
+                    self::DISABLING,
+                    self::TERMINATION,
+                    self::LOGINFAILURE,
+                    self::LOGIN,
+                    self::LOGOUT
+                )
+            )
+        );
         assert(is_string($msg));
         assert($this->_logger);
         if ( !empty($uid) ) {
             $rows = $this->find($uid);
             $row = $rows->current();
+            $now = new Zend_Date();
+            $nowSqlString = $now->get('Y-m-d H:i:s');
             if ($type == self::LOGINFAILURE) {
-                if (++ $row->failure_count >=
-                    readSysConfig('failure_threshold')) {
-                    $row->termination_ts = date("YmdHis");
-                    $row->is_active = false;
+                $row->failure_count++;
+                if ($row->failure_count >= readSysConfig('failure_threshold')) {
+                    $row->termination_ts = $nowSqlString;
+                    $row->is_active = 0;
                 }
                 $row->save();
-            }
-            if ($type == self::LOGIN) {
+            } else if ($type == self::LOGIN) {
                 $row->failure_count = 0;
-                $row->last_login_ts = date("YmdHis");
+                $row->last_login_ts = $nowSqlString;
                 $row->save();
             }
         }
@@ -128,6 +143,7 @@ class User extends FismaModel
         $this->_logger->setEventItem('type', $type);
         $this->_logger->info($msg);
     }
+    
     /**
         Associate systems to a user.
 
