@@ -212,7 +212,7 @@ template. Please update your CSV file and try again.<br />";
             $poam = $this->_request->getPost('poam');
             try {
                 if (!empty($poam['asset_id'])) {
-                    $asset = new asset();
+                    $asset = new Asset();
                     $ret = $asset->find($poam['asset_id']);
                     $poam['system_id'] = $ret->current()->system_id;
                 }
@@ -477,7 +477,7 @@ template. Please update your CSV file and try again.<br />";
                         }
                     }
                     if ('asset' == $k && !empty($v['name'])) {
-                        $asset = new asset();
+                        $asset = new Asset();
                         $v['prod_id'] = isset($prodId) ? $prodId : '';
                         $v['system_id'] = $assets['system_id'];
                         $v['network_id'] = $assets['network_id'];
