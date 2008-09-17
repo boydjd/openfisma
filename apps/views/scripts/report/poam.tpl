@@ -124,6 +124,8 @@
         <th class="tdc">Recommendation</th>
         <th class="tdc">Corrective Action</th>
         <th class="tdc">ECD</th>
+        <th class="tdc">Threat Source</th>
+        <th class="tdc">Countermeasure</th>
     </tr>
     <?php 
         $today = date('Y-m-d',time());
@@ -157,6 +159,8 @@
         <td class="tdc"><?php echo $row['action_suggested'];?></td>
         <td class="tdc"><?php echo $row['action_planned'];?></td>
         <td class="tdc" align="center"><?php echo $row['action_est_date'];?></td>
+        <td class="tdc"><?php echo $row['threat_source'];?></td>
+        <td class="tdc"><?php echo $row['cmeasure'];?></td>
     </tr>
     <?php } ?>
 </table>

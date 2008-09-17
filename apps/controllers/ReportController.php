@@ -175,22 +175,22 @@ class ReportController extends PoamBaseController
             );
             $summary['AAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ) , $criteria_aaw);
+            ), $criteria_aaw);
             $summary['BAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ) , $criteria_baw);
+            ), $criteria_baw);
             $summary['CAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ) , $criteria_caw);
+            ), $criteria_caw);
             $summary['DAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ) , $criteria_daw);
+            ), $criteria_daw);
             $summary['EAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ) , $criteria_eaw);
+            ), $criteria_eaw);
             $summary['FAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ) , $criteria_faw);
+            ), $criteria_faw);
             $this->view->assign('summary', $summary);
         }
         $this->render();
@@ -242,8 +242,9 @@ class ReportController extends PoamBaseController
                 'status',
                 'action_suggested',
                 'action_planned',
-                'threat_level',
                 'action_est_date',
+                'cmeasure',
+                'threat_source',
                 'threat_level',
                 'threat_source',
                 'threat_justification',
@@ -302,7 +303,8 @@ class ReportController extends PoamBaseController
             }
             if (!empty($criteria['overdue'])) {
                 $date = clone self::$now;
-                $date->sub(($criteria['overdue']['day'] - 1) * 30, Zend_Date::DAY);
+                $date->sub(($criteria['overdue']['day'] - 1) * 30,
+                    Zend_Date::DAY);
                 $criteria['overdue']['end_date'] = clone $date;
                 $date->sub(30, Zend_Date::DAY);
                 $criteria['overdue']['begin_date'] = $date;
@@ -377,33 +379,33 @@ class ReportController extends PoamBaseController
         $rpdata = array();
         $query = $db->select()->from(array(
             'p' => 'poams'
-        ) , array(
+        ), array(
             'num' => 'count(p.id)'
         ))->join(array(
             'b' => 'blscrs'
-        ) , 'b.code = p.blscr_id', array(
+        ), 'b.code = p.blscr_id', array(
             'blscr' => 'b.code'
         ))->where("b.class = 'MANAGEMENT'")->group("b.code");
         $rpdata[] = $db->fetchAll($query);
         $query->reset();
         $query = $db->select()->from(array(
             'p' => 'poams'
-        ) , array(
+        ), array(
             'num' => 'count(p.id)'
         ))->join(array(
             'b' => 'blscrs'
-        ) , 'b.code = p.blscr_id', array(
+        ), 'b.code = p.blscr_id', array(
             'blscr' => 'b.code'
         ))->where("b.class = 'OPERATIONAL'")->group("b.code");
         $rpdata[] = $db->fetchAll($query);
         $query->reset();
         $query = $db->select()->from(array(
             'p' => 'poams'
-        ) , array(
+        ), array(
             'num' => 'count(p.id)'
         ))->join(array(
             'b' => 'blscrs'
-        ) , 'b.code = p.blscr_id', array(
+        ), 'b.code = p.blscr_id', array(
             'blscr' => 'b.code'
         ))->where("b.class = 'TECHNICAL'")->group("b.code");
         $rpdata[] = $db->fetchAll($query);
@@ -425,9 +427,10 @@ class ReportController extends PoamBaseController
         $fips_totals['MODERATE'] = 0;
         $fips_totals['HIGH'] = 0;
         $fips_totals['n/a'] = 0;
-        foreach($systems as $sid => & $system) {
+        foreach ($systems as $sid => & $system) {
             if (strtolower($system['conf']) != 'none') {
-                $risk_obj = new RiskAssessment($system['conf'], $system['avail'], $system['integ'], null, null, null);
+                $risk_obj = new RiskAssessment($system['conf'],
+                    $system['avail'], $system['integ'], null, null, null);
                 $fips199 = $risk_obj->get_data_sensitivity();
             } else {
                 $fips199 = 'n/a';
@@ -455,16 +458,17 @@ class ReportController extends PoamBaseController
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
             'prod' => 'products'
-        ) , array(
+        ), array(
             'Vendor' => 'prod.vendor',
             'Product' => 'prod.name',
             'Version' => 'prod.version',
             'NumoOV' => 'count(prod.id)'
         ))->join(array(
             'p' => 'poams'
-        ) , 'p.status IN ("OPEN","EN","UP","ES")', array())->join(array(
+        ), 'p.status IN ("OPEN","EN","UP","ES")', array())->join(array(
             'a' => 'assets'
-        ) , 'a.id = p.asset_id AND a.prod_id = prod.id', array())->group("prod.vendor")->group("prod.name")->group("prod.version");
+        ), 'a.id = p.asset_id AND a.prod_id = prod.id', array())
+            ->group("prod.vendor")->group("prod.name")->group("prod.version");
         $rpdata = $db->fetchAll($query);
         $this->view->assign('rpdata', $rpdata);
         $this->render();
@@ -474,13 +478,13 @@ class ReportController extends PoamBaseController
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
             'p' => 'products'
-        ) , array(
+        ), array(
             'Vendor' => 'p.vendor',
             'Product' => 'p.name',
             'Version' => 'p.version'
         ))->join(array(
             'a' => 'assets'
-        ) , 'a.source = "SCAN" AND a.prod_id = p.id', array());
+        ), 'a.source = "SCAN" AND a.prod_id = p.id', array());
         $rpdata = $db->fetchAll($query);
         $this->view->assign('rpdata', $rpdata);
         $this->render();
@@ -492,30 +496,31 @@ class ReportController extends PoamBaseController
         $rpdata = array();
         $query = $db->select()->from(array(
             'sys' => 'systems'
-        ) , array(
+        ), array(
             'sysnick' => 'sys.nickname',
             'vulncount' => 'count(sys.id)'
         ))->join(array(
             'p' => 'poams'
-        ) , 'p.type IN ("CAP","AR","FP") AND
-                           p.status IN ("OPEN","EN","EP","ES") AND p.system_id = sys.id', array())->join(array(
+        ), 'p.type IN ("CAP","AR","FP") AND
+            p.status IN ("OPEN","EN","EP","ES") AND p.system_id = sys.id',
+            array())->join(array(
             'a' => 'assets'
-        ) , 'a.id = p.asset_id', array())->group("p.system_id");
+        ), 'a.id = p.asset_id', array())->group("p.system_id");
         $sys_vulncounts = $db->fetchAll($query);
         $sys_nicks = $system->getList('nickname');
         $system_totals = array();
-        foreach($sys_nicks as $nickname) {
+        foreach ($sys_nicks as $nickname) {
             $system_nick = $nickname;
             $system_totals[$system_nick] = 0;
         }
         $total_open = 0;
-        foreach((array)$sys_vulncounts as $sv_row) {
+        foreach ((array)$sys_vulncounts as $sv_row) {
             $system_nick = $sv_row['sysnick'];
             $system_totals[$system_nick] = $sv_row['vulncount'];
             $total_open++;
         }
         $system_total_array = array();
-        foreach(array_keys($system_totals) as $key) {
+        foreach (array_keys($system_totals) as $key) {
             $val = $system_totals[$key];
             $this_row = array();
             $this_row['nick'] = $key;
@@ -541,7 +546,9 @@ class ReportController extends PoamBaseController
         if (!empty($sid)) {
             $query = $this->_poam->select()->from($this->_poam, array(
                 'id'
-            ))->where('system_id=?', $sid)->where('threat_level IS NOT NULL AND threat_level != \'NONE\'')->where('cmeasure_effectiveness IS NOT NULL AND 
+            ))->where('system_id=?', $sid)
+                ->where('threat_level IS NOT NULL AND threat_level != \'NONE\'')
+                ->where('cmeasure_effectiveness IS NOT NULL AND 
                                     cmeasure_effectiveness != \'NONE\'');
             $poam_ids = $this->_poam->getAdapter()->fetchCol($query);
             $count = count($poam_ids);
@@ -551,21 +558,24 @@ class ReportController extends PoamBaseController
                 @unlink($fname);
                 $rafs = new Archive_Tar($fname, true);
                 $this->view->assign('source_list', $this->_source_list);
-                $path = $this->_helper->viewRenderer->getViewScript('raf', array(
+                $path = $this->_helper->viewRenderer
+                    ->getViewScript('raf', array(
                     'controller' => 'remediation',
                     'suffix' => 'pdf.tpl'
                 ));
-                foreach($poam_ids as $id) {
+                foreach ($poam_ids as $id) {
                     $poam_detail = & $this->_poam->getDetail($id);
                     $this->view->assign('poam', $poam_detail);
-                    $rafs->addString("raf_{$id}.pdf", $this->view->render($path));
+                    $rafs->addString("raf_{$id}.pdf",
+                        $this->view->render($path));
                 }
                 header("Content-type: application/octetstream");
                 header('Content-Length: ' . filesize($fname));
                 header("Content-Disposition: attachment; filename=RAFs.tgz");
                 header("Content-Transfer-Encoding: binary");
                 header("Expires: 0");
-                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+                header("Cache-Control: must-revalidate, post-check=0,".
+                    " pre-check=0");
                 header("Pragma: public");
                 echo file_get_contents($fname);
                 @unlink($fname);
