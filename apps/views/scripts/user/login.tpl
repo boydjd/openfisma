@@ -13,7 +13,7 @@
     </ul>
 </form>
 <p id='warning'>
-<?php echo readSysConfig('use_notification');?>
+<?php echo nl2br(readSysConfig('use_notification'));?>
 </p>
 
 
