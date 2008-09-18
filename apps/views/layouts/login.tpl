@@ -13,6 +13,10 @@
     <link rel="icon"
           type="image/ico"
           href="/images/favicon.ico" />
+    <style> 
+        a {color:#FFFFFF} 
+        a:hover {color:#FFFF00} 
+    </style>
 </head>
 
 <body>
@@ -27,7 +31,9 @@
         </tr>
         <tr>
             <td align="right">
-            <a href="mailto:<?php echo readSysConfig('contact_email');?>">Contact Administrator</a>&nbsp;|&nbsp;
+            <a href="mailto:<?php echo readSysConfig('contact_email');?>?Subject=<?php echo urlencode(readSysConfig('contact_subject'));?>">Contact Administrator</a>&nbsp;|&nbsp;
+            <a href="/user/rob/">Rules of Behavior</a>&nbsp;|&nbsp;
+            <a href="/user/privacy/">Privacy Policy</a>&nbsp;|&nbsp;
             <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i>
         </td>
     </tr>

@@ -8,7 +8,7 @@
         <td  align="left"><b>Alerts </b>
             <ul>
             <!-- Awaiting Mitigation Strategy -->
-            <li>There are <b><a href="<?php echo $this->url ?>OPEN"><?PHP echo $this->alert['OPEN'];?></a></b> finding(s) awaiting a mitigation strategy and approval.</li>
+            <li>There are <b><a href="<?php echo $this->url ?>NEW"><?PHP echo $this->alert['NEW'];?></a></b> finding(s) awaiting a mitigation strategy and <b><a href="<?php echo $this->url;?>OPEN"><?PHP echo $this->alert['OPEN'];?></a></b> awaiting approval.</li>
             <!-- Awaiting Evidence -->
             <li>There are <b><a href="<?php echo $this->url ?>EN"><?PHP echo $this->alert['EN'];?></a></b> finding(s) awaiting evidence.
             <!-- Overdue Awaiting Evidence -->

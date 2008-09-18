@@ -58,13 +58,10 @@ class DashboardController extends SecurityController
      */
     public function indexAction()
     {
+        $new_count  = $this->_poam->search($this->_all_systems, array(
+            'count' => 'count(*)'), array('status' => 'NEW'));
         $open_count = $this->_poam->search($this->_all_systems, array(
-            'count' => 'count(*)'
-        ), array(
-            'status' => array(
-                'NEW', 'OPEN'
-            )
-        ));
+            'count' => 'count(*)'), array('status' => 'OPEN'));
         $en_count = $this->_poam->search($this->_all_systems, array(
             'count' => 'count(*)'
         ), array(
@@ -82,6 +79,7 @@ class DashboardController extends SecurityController
         ));
         $alert = array();
         $alert['TOTAL'] = $total;
+        $alert['NEW']  = $new_count;
         $alert['OPEN'] = $open_count;
         $alert['EN'] = $en_count;
         $alert['EO'] = $eo_count;
