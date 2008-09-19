@@ -3,6 +3,19 @@
 <p><b>Dashboard</b>
 </div>
 </div>
+
+<table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
+    <tr>
+        <td  align="left"><b>Last Login</b>
+            <ul>
+            <li>Last Logged in at <b><?php echo $this->lastLogin->toString("D, M j H:i");?></b></li>
+            <li>From Ip address <b><?php echo $this->lastLoginIp;?></b></li>
+            <li>There were <b><?php echo $this->failureCount;?></b> bad login attempts since your last login.</li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
 <table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
     <tr>
         <td  align="left"><b>Alerts </b>

@@ -84,8 +84,14 @@ class DashboardController extends SecurityController
         $alert['EN'] = $en_count;
         $alert['EO'] = $eo_count;
         $url = '/panel/remediation/sub/searchbox/s/search/status/';
+
         $this->view->url = $url;
         $this->view->alert = $alert;
+
+        $lastLogin = new Zend_Date($this->_me->last_login_ts);
+        $this->view->lastLogin = $lastLogin;
+        $this->view->lastLoginIp = $this->_me->last_login_ip;
+        $this->view->failureCount = $this->_me->failure_count;
         $this->render();
     }
     /**

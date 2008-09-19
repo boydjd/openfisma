@@ -136,6 +136,7 @@ class User extends FismaModel
             } else if ($type == self::LOGIN) {
                 $row->failure_count = 0;
                 $row->last_login_ts = $nowSqlString;
+                $row->last_login_ip = $_SERVER["REMOTE_ADDR"];
                 $row->most_recent_notify_ts = $nowSqlString;
                 $row->save();
             }
