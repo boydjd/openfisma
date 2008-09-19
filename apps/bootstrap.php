@@ -69,6 +69,12 @@ spl_autoload_register("loadClass");
 require_once (APPS . '/basic.php');
 require_once (CONFIGS . '/setting.php');
 
+// If we are in command line mode, then drop out of the bootstrap before we
+// render any views.
+if (defined('COMMAND_LINE')) {
+    return;
+}
+
 // Initialize the view renderer
 // @todo what is the difference between $viewRenderer and $viewRender?
 $viewRenderer = Zend_Controller_Action_HelperBroker::
