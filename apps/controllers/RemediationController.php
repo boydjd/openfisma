@@ -65,7 +65,33 @@ class RemediationController extends PoamBaseController
      */
     public function summaryAction()
     {
-        $req = $this->getRequest();
+        $criteria['system_id'] = $this->_request->getParam('system_id');
+        $criteria['source_id'] = $this->_request->getParam('source_id');
+        $criteria['type'] = $this->_request->getParam('type');
+        $criteria['status'] = $this->_request->getParam('status');
+        $criteria['ids'] = $this->_request->getParam('ids');
+        $criteria['asset_owner'] = $this->_request->getParam('asset_owner', 0);
+
+        $tmp = $this->_request->getParam('est_date_begin');
+        if (!empty($tmp)) {
+            $criteria['est_date_begin'] = new Zend_Date($tmp,
+                Zend_Date::DATES);
+        }
+        $tmp = $this->_request->getParam('est_date_end');
+        if (!empty($tmp)) {
+            $criteria['est_date_end'] = new Zend_Date($tmp, Zend_Date::DATES);
+        }
+        $tmp = $this->_request->getParam('created_date_begin');
+        if (!empty($tmp)) {
+            $criteria['created_date_begin'] = new Zend_Date($tmp,
+                Zend_Date::DATES);
+        }
+        $tmp = $this->_request->getParam('created_date_end');var_dump($tmp);
+        if (!empty($tmp)) {
+            $criteria['created_date_end'] = new Zend_Date($tmp,
+                Zend_Date::DATES);
+        }
+
         $today = parent::$now->toString('Ymd');
         $summary_tmp = array(
             'NEW' => 0,
@@ -79,10 +105,16 @@ class RemediationController extends PoamBaseController
             'CLOSED' => 0,
             'TOTAL' => 0
         );
-        // mock array_fill_key in 5.2.0
-        $count = count($this->_me->systems);
-        $sum = array_fill(0, $count, $summary_tmp);
-        $summary = array_combine($this->_me->systems, $sum);
+
+        if ( !empty($criteria['system_id']) ) {
+            $sum = array('0' => $summary_tmp);
+            $summary = array($criteria['system_id'] => $summary_tmp);
+        } else {
+            // mock array_fill_key in 5.2.0
+            $count = count($this->_me->systems);
+            $sum = array_fill(0, $count, $summary_tmp);
+            $summary = array_combine($this->_me->systems, $sum);
+        }
         $total = $summary_tmp;
         $ret = $this->_poam->search($this->_me->systems, array(
             'count' => array(
@@ -92,7 +124,7 @@ class RemediationController extends PoamBaseController
             'status',
             'type',
             'system_id'
-        ));
+        ), $criteria);
         $sum = array();
         foreach($ret as $s) {
             $sum[$s['system_id']][$s['status']] = $s['count'];
@@ -138,9 +170,9 @@ class RemediationController extends PoamBaseController
         $spsso = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array(
+        ) , array_merge(array(
             'ep' => 0
-        ));
+        ), $criteria));
         foreach($spsso as $sp) {
             $summary[$sp['system_id']]['EP_SSO'] = $sp['count'];
             $total['EP_SSO']+= $sp['count'];
@@ -148,9 +180,9 @@ class RemediationController extends PoamBaseController
         $spsnp = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array(
+        ) , array_merge(array(
             'ep' => 1
-        ));
+        ), $criteria));
         foreach($spsnp as $sp) {
             $summary[$sp['system_id']]['EP_SNP'] = $sp['count'];
             $total['EP_SNP']+= $sp['count'];
@@ -159,6 +191,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('systems', $this->_system_list);
         $this->view->assign('summary', $summary);
         $this->render('summary');
+        $this->_helper->actionStack('searchbox','Remediation', null, array('action'=>'summary'));
     }
     /**
      *  Do the real searching work. It's a thin wrapper of poam model's search method.
@@ -307,13 +340,21 @@ class RemediationController extends PoamBaseController
         }
         $tmp = $req->getParam('created_date_end');
         if (!empty($tmp)) {
-            $criteria['created_date_end'] = new Zend_Date($tmp, Zend_Date::DATES);
+          $de =  $criteria['created_date_end'] = new Zend_Date($tmp);
         }
+
+        if ('summary' == $this->_request->getParam('action')) {
+            $postAction = "/panel/remediation/sub/summary";
+        } else {
+            $postAction = "/panel/remediation/sub/searchbox/s/search";
+        }
+
         $this->makeUrl($criteria);
         $this->view->assign('url', $this->_paging_base_path);
         $this->view->assign('criteria', $criteria);
         $this->view->assign('systems', $this->_system_list);
         $this->view->assign('sources', $this->_source_list);
+        $this->view->assign('postAction', $postAction);
         $this->render();
         if ('search' == $req->getParam('s')) {
             $this->_paging_base_path = $req->getBaseUrl() . '/panel/remediation/sub/searchbox/s/search';

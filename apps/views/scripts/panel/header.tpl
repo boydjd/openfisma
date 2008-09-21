@@ -50,7 +50,7 @@
     }
     if(isAllow('remediation','read')) {
         echo '<ul><li>
-              <h2><a href="/panel/remediation/sub/index/">Remediation</a></h2>
+              <h2><a>Remediation</a></h2>
               <ul>
               <li><a href="/panel/remediation/sub/summary">Remediation Summary</a>
               <li><a href="/panel/remediation/sub/searchbox">Remediation Search</a>
