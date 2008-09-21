@@ -86,7 +86,7 @@ class RemediationController extends PoamBaseController
             $criteria['created_date_begin'] = new Zend_Date($tmp,
                 Zend_Date::DATES);
         }
-        $tmp = $this->_request->getParam('created_date_end');var_dump($tmp);
+        $tmp = $this->_request->getParam('created_date_end');
         if (!empty($tmp)) {
             $criteria['created_date_end'] = new Zend_Date($tmp,
                 Zend_Date::DATES);
