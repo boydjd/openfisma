@@ -15,7 +15,7 @@
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/ajax.js"></script>
 <link rel="icon"
       type="image/ico"
-      href="images/favicon.ico" />
+      href="/images/favicon.ico" />
 
 <style type="text/css">
 <!--
