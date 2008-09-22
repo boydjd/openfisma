@@ -99,16 +99,17 @@ class Notify
             // If this is the last entry OR if the next entry has a different
             // user ID, then this current message is completed and should be
             // e-mailed to the user.
-            if ($i == (count($notifications) - 1)
+            if (($i == (count($notifications) - 1)
                 || $notifications[$i]['user_id'] !=
-                   $notifications[$i+1]['user_id']) {
+                   $notifications[$i+1]['user_id'])
+                && 1 == $notifications[$i]['email_validate']) {
 
                 Notify::sendNotificationEmail($currentNotifications);
                 Notify::purgeNotifications($db, $currentNotifications);
                 Notify::updateUserNotificationTimestamp(
                     $db,
-                    $notifications[$i]['user_id'],
-                    $nowSqlString
+                    $notifications[$i]['user_id']
+                    //$nowSqlString
                 );
 
                 // Move onto the next user
@@ -132,7 +133,8 @@ class Notify
         $mail->setFrom(readSysConfig('sender'), "OpenFISMA");
 
         // Set the to: header
-        $receiveEmail = $notifications[0]['email'];
+        $receiveEmail = nullGet($notifications[0]['notify_email'], 
+            $notifications[0]['email']);
         $mail->addTo(
             $receiveEmail,
             "{$notifications[0]['name_first']} {$notifications[0]['name_last']}"

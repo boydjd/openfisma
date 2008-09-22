@@ -137,7 +137,7 @@ class SystemController extends SecurityController
             $errno = 0;
             $system = $req->getParam('system');
             $id = $this->_system->insert($system);
-            $this->_user = new user();
+            $this->_user = new User();
             $this->_me->systems = $this->_user->getMySystems($this->_me->id);
             $system_groups = array(
                 'name' => $system['name'],
