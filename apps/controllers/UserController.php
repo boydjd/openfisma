@@ -268,7 +268,7 @@ class UserController extends MessageController
         $event = new Event();
 
         $ret = $this->_user->find($this->_me->id);
-        $this->view->notify_frequency = $ret->current()->notify_frequency / 60;
+        $this->view->notify_frequency = $ret->current()->notify_frequency;
         $this->view->notify_email = $ret->current()->notify_email;
         $allEvent = $event->getUserAllEvents($this->_me->id);
         $enabledEvent = $event->getEnabledEvents($this->_me->id);
@@ -356,7 +356,7 @@ class UserController extends MessageController
         }
         $event->saveEnabledEvents($this->_me->id, $data['enableEvents']);
         $notifyData = array('notify_frequency' =>
-                                $data['notify_frequency'] * 60,
+                                $data['notify_frequency'],
                             'notify_email' => $data['notify_email']);
         $ret = $this->_user->update($notifyData, "id = ".$this->_me->id);
         if ($ret > 0 || 0 == $ret) {
