@@ -1,9 +1,9 @@
---------------------------------------------------------------------------------
+--
 -- Author:    Chris Chen
 -- Copyright: (c) 2008 Endeavor Systems, Inc.
 -- License:   http://www.openfisma.org/mw/index.php?title=License
 -- Version:   $Id:$
---------------------------------------------------------------------------------
+--
 
 -- Add configuration items for sending e-mails, account unlock, and contact
 -- information.
