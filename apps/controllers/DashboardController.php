@@ -55,9 +55,28 @@ class DashboardController extends SecurityController
 
     /**
      * The integrated dashboard which has three charts in total
+     *
+     * @todo fix the SQL injection at the beginning of this function
      */
     public function indexAction()
     {
+        // Check to see if we got passed a "dismiss" parameter to dismiss
+        // notifications
+        $request = $this->getRequest();
+        $notificationsToDismiss = $request->getParam('dismiss');
+        if (isset($notificationsToDismiss)) {
+            $notification = new Notification();
+            // Remove the notifications
+            $deleteQuery = "DELETE FROM notifications
+                                  WHERE id IN ($notificationsToDismiss)
+                                    AND user_id = {$this->_me->id}";
+                                  //  var_dump($this); die;
+            $statement = $notification->getAdapter()->query($deleteQuery);
+
+            // The most_recent_notify_ts is not updated here because no e-mails
+            // are sent.
+        }
+        
         $new_count  = $this->_poam->search($this->_all_systems, array(
             'count' => 'count(*)'), array('status' => 'NEW'));
         $open_count = $this->_poam->search($this->_all_systems, array(
@@ -92,8 +111,22 @@ class DashboardController extends SecurityController
         $this->view->lastLogin = $lastLogin;
         $this->view->lastLoginIp = $this->_me->last_login_ip;
         $this->view->failureCount = $this->_me->failure_count;
+        
+        $notification = new Notification();
+        $notifications = $notification->getNotifications($this->_me->id);
+        if (count($notifications) > 0) {
+            $this->view->notifications = $notifications;
+        }
+        $ids = array();
+        foreach ($notifications as $notification) {
+            $ids[] = $notification['id'];
+        }
+        $idString = urlencode(implode(',', $ids));
+        $this->view->dismissUrl = "/panel/dashboard/dismiss/$idString";
+        
         $this->render();
     }
+    
     /**
      * statistics per status 
      */

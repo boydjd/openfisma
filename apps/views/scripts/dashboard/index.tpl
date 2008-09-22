@@ -6,18 +6,6 @@
 
 <table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
     <tr>
-        <td  align="left"><b>Last Login</b>
-            <ul>
-            <li>Last Logged in at <b><?php echo $this->lastLogin->toString("D, M j H:i");?></b></li>
-            <li>From Ip address <b><?php echo $this->lastLoginIp;?></b></li>
-            <li>There were <b><?php echo $this->failureCount;?></b> bad login attempts since your last login.</li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
-<table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
-    <tr>
         <td  align="left"><b>Alerts </b>
             <ul>
             <!-- Awaiting Mitigation Strategy -->
@@ -30,6 +18,45 @@
         </td>
     </tr>
 </table>
+
+<table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
+    <tr>
+        <td  align="left"><b>Last Login</b>
+            <ul>
+            <li>Last Logged in at <b><?php echo $this->lastLogin->toString("D, M j H:i");?></b></li>
+            <li>From Ip address <b><?php echo $this->lastLoginIp;?></b></li>
+            <li>There were <b><?php echo $this->failureCount;?></b> bad login attempts since your last login.</li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<?php
+if (isset($this->notifications)) {
+?>
+    <table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
+        <tr>
+            <td  align="left">
+                <b>Notifications</b>
+                <p>
+                    You have new notifications that you have not received in e-mail yet.
+                    Click <a href="<?php echo $this->dismissUrl; ?>">here</a> to dismiss these notifications.
+                </p>
+                <ol>
+                <?php
+                foreach($this->notifications as $notification) {
+                ?>
+                    <li><b><?php echo $notification['event_text']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['timestamp']; ?></b></li>
+                <?php
+                }
+                ?>
+                </ol>
+            </td>
+        </tr>
+    </table>
+<?php
+}
+?>
 
 <?php if ( !empty( $this->alert['TOTAL'] ) ) { ?>
 <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tipframe">

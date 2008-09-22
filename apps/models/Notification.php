@@ -146,4 +146,25 @@ class Notification extends FismaModel
                         WHERE ue.event_id = $eventType";
         $statement = $this->_db->query($query);
     }
+    
+    /**
+     * getNotifications() - Get all notifications for the specified user.
+     *
+     * @param integer $userId
+     * @return array Array of notification rows
+     */
+    public function getNotifications($userId) {
+        // Query to get notifications for this user
+        $notificationsQuery =
+             "SELECT n.id,
+                     n.event_text,
+                     n.timestamp
+                FROM notifications n
+               WHERE n.user_id=$userId
+            ORDER BY n.timestamp";
+        $statement = $this->_db->query($notificationsQuery);
+        $notifications = $statement->fetchAll();
+        
+        return $notifications;
+    }
 }
