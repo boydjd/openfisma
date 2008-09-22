@@ -96,7 +96,7 @@ class UserController extends MessageController
                     // left on the lock.
                     $now = new Zend_Date();
                     $terminationTs = new Zend_Date($whologin->termination_ts);
-                    $terminationTs->add($unlockDuration, Zend_Date::MINUTE);
+                    $terminationTs->add($unlockDuration, Zend_Date::SECOND);
                     $unlockRemaining = clone $terminationTs;
                     $unlockRemaining->sub($now);
                     $minutesRemaining =
