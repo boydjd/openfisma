@@ -353,6 +353,8 @@ class AccountController extends PoamBaseController
                     self::$now->toString("Y-m-d H:i:s");
             } elseif ($accountData['is_active'] == 1) {
                 $accountData['failure_count'] = 0;
+                $accountData['last_login_ts'] = new Zend_Db_Expr('NOW()');
+                $accountData['termination_ts'] = NULL;
             }
 
             $n = $this->_user->update($accountData, "id=$id");
