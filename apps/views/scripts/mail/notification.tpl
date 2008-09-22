@@ -5,9 +5,8 @@ log in to your account at http://openfisma.instance.com and select "User Prefere
 <?php
 foreach( $this->notifyData as $row ){ ?>
 --------------------------------------- 
-Notification Type: <?php echo $row['event_name']; ?> 
-Timestamp: <?php echo $row['timestamp']; ?> 
-Event Text: <?php echo $row['event_text']; ?> 
+Event Text: <?php echo $row['event_text']; ?>
+Timestamp: <?php echo $row['timestamp']; ?>
 <?php } ?>
 ---------------------------------------
 
