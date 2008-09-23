@@ -1,6 +1,6 @@
 <div class="notice">
 
-<h1>Behavior Rules for Openfisma</h1>
+<h1>Behavior Rules for <?php echo readSysConfig('system_name');?></h1>
 
     
 <textarea rows="35"><?php echo readSysConfig('behavior_rule'); ?></textarea>

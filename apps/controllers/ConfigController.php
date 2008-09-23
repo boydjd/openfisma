@@ -84,6 +84,7 @@ class ConfigController extends SecurityController
                     $values = $general->getValues();
                     //array_intersect_key requires PHP > 5.1.0
                     $validVals = array(
+                        Config::SYSTEM_NAME =>0,
                         Config::MAX_ABSENT  =>0,
                         Config::AUTH_TYPE   =>0,
                         Config::F_THRESHOLD =>0,

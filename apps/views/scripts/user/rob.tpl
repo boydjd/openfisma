@@ -14,7 +14,7 @@ a.button {
     </div>
 </div>
 <div class="notice">
-<h1>Behavior Rules for Openfisma</h1>
+<h1>Behavior Rules for <?php echo readSysConfig('system_name');?></h1>
 <div><?php echo nl2br(readSysConfig('behavior_rule')); ?></div>
 </div>
 

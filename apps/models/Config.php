@@ -32,6 +32,7 @@
  */
 class Config extends FismaModel
 {
+    const SYSTEM_NAME   = 'system_name';
     const MAX_ABSENT    = 'max_absent_time';
     const AUTH_TYPE     = 'auth_type';
     const F_THRESHOLD   = 'failure_threshold';

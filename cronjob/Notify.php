@@ -130,7 +130,7 @@ class Notify
         $contentTpl->setScriptPath(VIEWS . '/' . self::EMAIL_VIEW_PATH);
 
         // Set the from: header
-        $mail->setFrom(readSysConfig('sender'), "OpenFISMA");
+        $mail->setFrom(readSysConfig('sender'), readSysConfig('system_name'));
 
         // Set the to: header
         $receiveEmail = nullGet($notifications[0]['notify_email'], 
