@@ -465,7 +465,7 @@ class RemediationController extends PoamBaseController
                 mkdir(EVIDENCE_PATH . DS . $id, 0755);
             }
             $count = 0;
-            $filename = preg_replace('/^([^.]*)\.([^.]*)$/', '$1-' . $now_str . '.$2', $_FILES['evidence']['name'], 2, $count);
+            $filename = preg_replace('/^([^.]*)(\.[^.]*)?\.([^.]*)$/', '$1$2-' . $now_str . '.$3', $_FILES['evidence']['name'], 2, $count);
             $abs_file = EVIDENCE_PATH . DS . $id . DS . $filename;
             if ($count > 0) {
                 $result_move = move_uploaded_file($_FILES['evidence']['tmp_name'], $abs_file);
