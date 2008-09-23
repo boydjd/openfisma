@@ -5,8 +5,13 @@
 </style>
 
 <div class="notice">
-
-<h1>Behavior Rules for <?php echo readSysConfig('system_name');?></h1>
+<p>
+    <i>System policy states that you must review and accept the Rules of Behavior
+    for <?php echo readSysConfig('system_name');?> every
+    <?php echo readSysConfig('rob_duration');?> days. If you do not accept these
+    rules then you will be logged off.</i>
+</p>
+<h1>Rules of Behavior for <?php echo readSysConfig('system_name');?></h1>
 
     
 <div><?php echo nl2br(readSysConfig('behavior_rule')); ?></div>

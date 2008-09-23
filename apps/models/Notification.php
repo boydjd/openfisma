@@ -128,7 +128,7 @@ class Notification extends FismaModel
         $event = new Event();
         $ret = $event->find($eventType);
         if (empty($ret)) {
-            throw new fisma_Exception('Event name does not exist');
+            throw new FismaException('Event name does not exist');
         }
         $eventName = $ret->current()->name;
 

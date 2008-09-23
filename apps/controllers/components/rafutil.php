@@ -36,7 +36,7 @@ function calSensitivity($arrayOfty)
         if( in_array($a, $_senseMap) ){
             $value += $_senseRevMap[$a];
         }else{
-            throw new fisma_Exception('Wrong sensitivity calculation:'.
+            throw new FismaException('Wrong sensitivity calculation:'.
                         var_export($arrayOfty,true));
         }
     }

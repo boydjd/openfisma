@@ -387,20 +387,20 @@ template. Please update your CSV file and try again.<br />";
             $src = new System();
             $this->view->systems = $src->getList('nickname');
             if (count($this->view->systems) == 0) {
-                throw new fisma_Exception(
+                throw new FismaException(
                     "The spreadsheet template can not be " .
                     "prepared because there are no systems defined.");
             }
             $src = new Network();
             $this->view->networks = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new fisma_Exception("The spreadsheet template can not be
+                 throw new FismaException("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
             $src = new Source();
             $this->view->sources = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new fisma_Exception("The spreadsheet template can
+                 throw new FismaException("The spreadsheet template can
                      not be prepared because there are no finding sources
                      defined.");
             }
@@ -410,7 +410,7 @@ template. Please update your CSV file and try again.<br />";
             // look for error.xls.tpl instead of error.tpl
             $contextSwitch->initContext('xls');
             $this->render();
-        } catch(fisma_Exception $fe) {
+        } catch(FismaException $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')
                 ->setViewSuffix('tpl');
             $this->message($fe->getMessage(), self::M_WARNING);

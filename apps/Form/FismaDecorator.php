@@ -121,7 +121,7 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                     . '</tr></table>'
                     . '</form>';
         } else {
-            throw new Fisma_Exception("The element to be rendered is an unknown"
+            throw new FismaException("The element to be rendered is an unknown"
                                     . " class: "
                                     . get_class($element));
         }

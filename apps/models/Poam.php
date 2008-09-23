@@ -34,7 +34,7 @@
  * @todo This class is named incorrectly: not capitalized
  * @todo This class should probably be merged with the finding class.
  */
-class poam extends Zend_Db_Table
+class Poam extends Zend_Db_Table
 {
     protected $_name = 'poams';
     protected $_primary = 'id';
@@ -79,7 +79,7 @@ class poam extends Zend_Db_Table
                                    AND p.action_est_date < ?", $overdue['end_date']->toString('Ymd'));
                 }
             } else {
-                throw new fisma_Exception('Parameters wrong in overdue ' . var_export($overdue, true));
+                throw new FismaException('Parameters wrong in overdue ' . var_export($overdue, true));
             }
         }
         if (! empty($actual_date_begin)) {
@@ -254,7 +254,7 @@ class poam extends Zend_Db_Table
     public function &getDetail ($id)
     {
         if (! is_numeric($id)) {
-            throw new fisma_Exception('Make sure a valid ID is inputed');
+            throw new FismaException('Make sure a valid ID is inputed');
         }
         $poam_detail = $this->search(null, '*', array('id' => $id));
         $ret = array();

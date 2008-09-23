@@ -200,11 +200,13 @@ class UserController extends MessageController
             $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
             $store->write($_me);
             
-            // Render the view
-            $deactiveTime = new Zend_Date();
-            $deactiveTime->sub(readSysConfig('rob_duration'), Zend_Date::DAY);
-            $createdTime = new Zend_Date($_me->created_ts);
-            if ($createdTime->isEarlier($deactiveTime)) {
+            // Check to see if the user needs to review the rules of behavior.
+            // If they do, then send them to that page. Otherwise, send them to
+            // the dashboard.
+            $nextRobReview = new Zend_Date($_me->last_rob);
+            $nextRobReview->add(readSysConfig('rob_duration'), Zend_Date::DAY);
+            $now = new Zend_Date();
+            if ($now->isEarlier($nextRobReview)) {
                 $this->_forward('index', 'Panel');
             } else {
                 $this->_helper->layout->setLayout('notice');
@@ -320,10 +322,10 @@ class UserController extends MessageController
             $originalEmail = $result->current()->email;
             $notifyEmail = $result->current()->notify_email;
             $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
-            if ($ret > 0) {
+            if ($ret == 1) {
                 $this->_user->log(User::MODIFICATION, $this->_me->id, 
                     "{$this->_me->account} Profile Modified");
-                $msg = "profile modified succefully.";
+                $msg = "Profile modified successfully.";
 
                 if ($originalEmail != $profileData['email']
                     && empty($notifyEmail)) {
@@ -331,11 +333,17 @@ class UserController extends MessageController
                         'id = '.$this->_me->id);
                     $this->_emailvalidate($this->_me->id,
                         $profileData['email'], 'update');
-                    $msg .="<br />we have send a validation to your new email.".
-                           "please check it.";
+                    $msg .= "<br />Because you changed your e-mail address, we
+                            have sent you a confirmation message.<br />You will
+                            need to confirm the validity of your new e-mail
+                            address before you will receive any e-mail
+                            notifications.";
                 }
-                $this->view->setScriptPath(VIEWS . DS . 'scripts');
+                $this->view->setScriptPath(VIEWS . '/scripts');
                 $this->message($msg, self::M_NOTICE);
+            } else {
+                $this->message("Unable to update account. ($ret)",
+                    self::M_WARNING);
             }
         } else {
             /**
@@ -382,21 +390,24 @@ class UserController extends MessageController
                             'notify_email' => $data['notify_email']);
         $ret = $this->_user->update($notifyData, "id = ".$this->_me->id);
         if ($ret > 0 || 0 == $ret) {
-            $msg = "Notification events modified succefully.";
+            $msg = "Notification events modified successfully.";
             $model = self::M_NOTICE;
         } else {
-            $msg = "Notification events modified failed.";
+            $msg = "Failed to update the notification events.";
             $model = self::M_WARNING;
         }
 
 
-        if ( $originalEmail != $data['notify_email'] ) {
+        if ( $originalEmail != $data['notify_email']
+             && $data['notify_email'] != '' ) {
             $this->_user->update(array('email_validate'=>0),
                         'id = '.$this->_me->id);
             $this->_emailvalidate($this->_me->id,
                         $data['notify_email'], 'update');
-            $msg .="<br />we have send a validation to your new email.".
-                   "please check it.";
+            $msg .="<br />Because you changed your notification e-mail address,
+                    we have sent you a confirmation message.<br />You will need
+                    to confirm the validity of your new e-mail address before
+                    you will receive any e-mail notifications.";
         }
 
         $this->view->setScriptPath(VIEWS . DS . 'scripts');
@@ -440,7 +451,7 @@ Please create a password that adheres to these complexity requirements:<br>
 --The password can also contain National Characters if desired (Non-Alphanumeric, !,@,#,$,% etc.)<br>
 --The password cannot be the same as your last 3 passwords<br>
 --The password cannot contain your first name or last name<br>";';
-                        throw new fisma_Exception($msg);
+                        throw new FismaException($msg);
                         //$msg = "The password doesn\'t meet the required complexity!";
                         
                     } else {
@@ -608,11 +619,15 @@ Please create a password that adheres to these complexity requirements:<br>
             $this->_user->getAdapter()->delete('validate_emails',
                 'user_id = '.$userId);
             $this->_user->update(array('email_validate'=>1), 'id = '.$userId);
-            $msg = "Validate Successful,the browser will back to log in page
-                    after 3 seconds";
+            $msg = "Your e-mail address has been validated. You may close this
+                    window or click <a href='http://"
+                    . $_SERVER['SERVER_NAME']
+                    . "'>here</a> to go back to "
+                    . readSysConfig('system_name')
+                    . '.';
         } else {
-            $msg = "Validate Failed,the browser will back to log in page
-                   after 3 seconds";
+            $msg = "Error: Your e-mail address can not be confirmed. Please
+                    contact an administrator.";
         }
         $this->view->msg = $msg;
         $this->render();
@@ -628,7 +643,7 @@ Please create a password that adheres to these complexity requirements:<br>
     {
         $mail = new Zend_Mail();
 
-        $mail->setFrom(readSysConfig('sender'), "OpenFISMA");
+        $mail->setFrom(readSysConfig('sender'), readSysConfig('system_name'));
         $mail->addTo($email);
         $mail->setSubject("Email validation");
 

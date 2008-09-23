@@ -16,16 +16,6 @@
 	width:300px;
 }
 </style>
-<script language="javascript">
-function delok(entryname)
-{
-    var str = "Are you sure that you want to delete this user?";
-    if(confirm(str) == true){
-        return true;
-    }
-    return false;
-}
-</script>
 <div class="barleft">
     <div class="barright">
         <p><b>Notification Events</b> 
@@ -35,11 +25,17 @@ function delok(entryname)
     <form name="event_form" enctype="application/x-www-form-urlencoded" method="post" action="/panel/user/sub/savenotify">
     <table>
         <tr>
-            <td width="15%"><b>Notify Frequency:</b></td>
-            <td><input name="notify_frequency" type="text" value="<?php echo $this->notify_frequency;?>" size="30"/>(Hour)</td>
+            <td colspan="2"><i>You can limit how often the system sends you e-mails:</i></td>
         </tr>
         <tr>
-            <td><b>Notify Email:</b></td>
+            <td><b>Notify Frequency (hours):</b></td>
+            <td><input name="notify_frequency" type="text" value="<?php echo $this->notify_frequency;?>" size="30"/></td>
+        </tr>
+        <tr>
+            <td colspan="2"><i>If you would like to receive e-mail notifications at an alternate address, enter that address below:</i></td>
+        </tr>
+        <tr>
+            <td><b>Notify E-mail:</b></td>
             <td><input name="notify_email" type="text" value="<?php echo $this->notify_email;?>" size="30" /></td>
         </tr>
         <tr>
@@ -54,7 +50,7 @@ function delok(entryname)
                 <input type="button" name="remove" id="removeNotificationEvents" value="<-">
             </p>
         </div>
-        <div class="inline" id="enable"><b>Enable events:</b><br />
+        <div class="inline" id="enable"><b>Selected events:</b><br />
         <?php echo $this->formSelect('enableEvents',null, array('multiple' => 'multiple', 'size' => '20'), $this->enableList)?></div>
         </td></tr>
         <tr>
