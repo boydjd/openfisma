@@ -201,12 +201,34 @@ class UserController extends MessageController
             $store->write($_me);
             
             // Render the view
-            $this->_helper->layout->setLayout('notice');
-            return $this->render('rule');
+            $deactiveTime = new Zend_Date();
+            $deactiveTime->sub(readSysConfig('rob_duration'), Zend_Date::DAY);
+            $createdTime = new Zend_Date($_me->created_ts);
+            if ($createdTime->isEarlier($deactiveTime)) {
+                $this->_forward('index', 'Panel');
+            } else {
+                $this->_helper->layout->setLayout('notice');
+                return $this->render('rule');
+            }
         } catch(Zend_Auth_Exception $e) {
             $this->view->assign('error', $e->getMessage());
             $this->render();
         }
+    }
+
+    /**
+     * store user last accept rob
+     * create a audit event
+     */
+    public function acceptrobAction() {
+        $now = new Zend_Date();
+        $nowSqlString = $now->toString('Y-m-d H:i:s');
+        $this->_user->update(array('last_rob'=>$nowSqlString),
+            'id = '.$this->_me->id);
+        $notification = new Notification();
+        $notification->add(Notification::ROB_ACCEPT,
+            $this->_me->account, $this->_me->id);
+        $this->_forward('index', 'Panel');
     }
 
     /**

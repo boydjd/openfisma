@@ -1,14 +1,20 @@
+<style>
+.notice {
+    text-align:left;
+}
+</style>
+
 <div class="notice">
 
 <h1>Behavior Rules for <?php echo readSysConfig('system_name');?></h1>
 
     
-<textarea rows="35"><?php echo readSysConfig('behavior_rule'); ?></textarea>
+<div><?php echo nl2br(readSysConfig('behavior_rule')); ?></div>
 
 
 <p>
     <a class="button" href="/user/logout">Cancel</a>
-    <a class="button" href="/panel/index">Continue</a>
+    <a class="button" href="/user/acceptrob">Continue</a>
 </p>
 
 <p style="clear:both"></p>

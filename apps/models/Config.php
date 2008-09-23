@@ -47,6 +47,7 @@ class Config extends FismaModel
 
     const USE_NOTIFICATION = 'use_notification';
     const BEHAVIOR_RULE    = 'behavior_rule';
+    const ROB_DURATION     = 'rob_duration';
     const PRIVACY_POLICY   = 'privacy_policy';
     
     const SENDER    = 'sender';

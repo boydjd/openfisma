@@ -92,7 +92,8 @@ class ConfigController extends SecurityController
                         Config::UNLOCK_ENABLED =>0,
                         Config::UNLOCK_DURATION =>0,
                         Config::USE_NOTIFICATION =>0,
-                        Config::BEHAVIOR_RULE =>0
+                        Config::BEHAVIOR_RULE =>0,
+                        Config::ROB_DURATION  =>0
                      );
                     $values = array_intersect_key($values, $validVals);
                     foreach ($values as $k => $v) {
