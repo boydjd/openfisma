@@ -434,12 +434,24 @@ class RemediationController extends PoamBaseController
             }
             $result = $this->_poam->update($poam, $where);
                         
-            // Generate audit log records if the update is successful
+            // Generate notifications and audit records if the update is
+            // successful
+            $notificationsSent = array();
             if( $result > 0 ) {
                 foreach($poam as $k => $v) {
-                    if (array_key_exists($k, $this->_notificationArray)) {
-                        $this->_notification->add($this->_notificationArray[$k],
-                            $this->_me->account, $id);
+                    // We shouldn't send the same type of notification twice
+                    // in one update. $notificationsSent is a set which
+                    // tracks which notifications we have already created.
+                    if (array_key_exists($k, $this->_notificationArray)
+                        && !array_key_exists($this->_notificationArray[$k],
+                                             $notificationsSent)) {
+                        $this->_notification->add(
+                            $this->_notificationArray[$k],
+                            $this->_me->account,
+                            "PoamID: $id",
+                            nullGet($poam['system_id'], $oldpoam['system_id'])
+                        );
+                        $notificationsSent[$this->_notificationArray[$k]] = 1;
                     }
 
                     $log_content = "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
@@ -456,6 +468,13 @@ class RemediationController extends PoamBaseController
         $id = $req->getParam('id');
         define('EVIDENCE_PATH', WEB_ROOT . DS . 'evidence');
         if ($_FILES && $id > 0) {
+            $poam = $this->_poam->find($id)->toArray();
+            if (empty($poam)) {
+                throw new FismaException('incorrect ID specified for poam');
+            } else {
+                $poam = $poam[0];
+            }
+            
             $user_id = $this->_me->id;
             $now_str = self::$now->toString('Y-m-d-his');
             if (!file_exists(EVIDENCE_PATH)) {
@@ -487,8 +506,12 @@ class RemediationController extends PoamBaseController
             $db = Zend_Registry::get('db');
             $result = $db->insert('evidences', $data);
             $evidenceId = $db->LastInsertId();
-            $this->_notification->add(Notification::EVIDENCE_UPLOAD,
-                $this->_me->account, $evidenceId);
+            $this->_notification->add(
+                Notification::EVIDENCE_APPROVAL_1ST,
+                $this->_me->account,
+                "PoamId: $id",
+                $poam['system_id']
+            );
 
             $update_data = array(
                 'status' => 'EP',
@@ -513,6 +536,16 @@ class RemediationController extends PoamBaseController
         $eid = $req->getParam('id');
         $ev = new Evidence();
         $ev_detail = $ev->find($eid);
+
+        // Get the poam data because we need system_id to generate the
+        // notification
+        $poam = $this->_poam->find($ev_detail->current()->poam_id)->toArray();
+        if (empty($poam)) {
+            throw new FismaException('incorrect ID specified for poam');
+        } else {
+            $poam = $poam[0];
+        }
+        
         if (empty($ev_detail)) {
             throw new FismaException('Wrong evidence id:' . $eid);
         }
@@ -538,8 +571,10 @@ class RemediationController extends PoamBaseController
             ));
             if ( $eval_id == 1 ) {
                 $this->_notification
-                     ->add(Notification::EVIDENCE_APPROVAL_1ST,
-                        $this->_me->account, $poam_id);
+                     ->add(Notification::EVIDENCE_APPROVAL_2ND,
+                        $this->_me->account,
+                        "PoamId: $poam_id",
+                        $poam['system_id']);
             }
 
             $log_content.= " Decision: $decision.";
@@ -558,6 +593,11 @@ class RemediationController extends PoamBaseController
                     'content' => $body
                 ));
                 $log_content.= " Status: EN. Topic: $topic. Content: $body.";
+                $this->_notification
+                     ->add(Notification::EVIDENCE_DENIED,
+                        $this->_me->account,
+                        "PoamId: $poam_id",
+                        $poam['system_id']);
             }
             if ($decision == 'APPROVED' && $eval_id == 2) {
                 $log_content.= " Status: ES";
@@ -566,8 +606,10 @@ class RemediationController extends PoamBaseController
                 ) , 'id=' . $poam_id);
 
                 $this->_notification
-                     ->add(Notification::EVIDENCE_APPROVAL_2ND,
-                        $this->_me->account, $poam_id);
+                     ->add(Notification::EVIDENCE_APPROVAL_3RD,
+                        $this->_me->account,
+                        "PoamId: $poam_id",
+                        $poam['system_id']);
             }
             if ($decision == 'APPROVED' && $eval_id == 3) {
                 $log_content.= " Status: CLOSED";
@@ -576,11 +618,10 @@ class RemediationController extends PoamBaseController
                 ) , 'id=' . $poam_id);
             
                 $this->_notification
-                     ->add(Notification::EVIDENCE_APPROVAL_3RD,
-                        $this->_me->account, $poam_id);
-                $this->_notification
-                     ->add(NOtification::POAM_CLOSED,
-                        $this->_me->account, $poam_id);
+                     ->add(Notification::POAM_CLOSED,
+                        $this->_me->account,
+                        "PoamId: $poam_id",
+                        $poam['system_id']);
             }
             if (!empty($log_content)) {
                 $log_content = "Changed: $log_content";

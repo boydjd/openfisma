@@ -451,7 +451,7 @@ class AccountController extends PoamBaseController
                 $this->_me->account, $id);
             $msg = "User " . $userName . " deleted successfully.";
             $model = self::M_NOTICE;
-            $this->_user->log(USER::TERMINATION, 
+            $this->_user->log(USER::TERMINATION,
                                $this->_me->id,
                                'delete user ' . $userName);
         } else {

@@ -5,8 +5,8 @@ log in to your account at http://<?php echo $_SERVER['SERVER_NAME']; ?> and sele
 <?php
 foreach( $this->notifyData as $row ){ ?>
 --------------------------------------- 
-Event Text: <?php echo $row['event_text']; ?>
-Timestamp: <?php echo $row['timestamp']; ?>
+<?php echo $row['event_text']; ?>
+<?php echo $row['timestamp']; ?>
 <?php } ?>
 ---------------------------------------
 

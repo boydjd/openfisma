@@ -1,10 +1,9 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 	<tr><td><img id="logo" src="/images/customer_logo.jpg" /></td>
-		<td align="right"><ul class="loginfo">
+		<td align="right"><p>
                 <form class="button_link" action="/user/logout">
-                <input type="submit" value="Logout" /></form>
-                </li>
-				<li><b><?php echo $this->identity;  ?></b> is currently logged in.</li>
+                <input type="submit" value="Logout" /></form></p>
+                <p><b><?php echo $this->identity;  ?></b> is currently logged in.</p>
 			</ul></td>
 	</tr>
 </table>

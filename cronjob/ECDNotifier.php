@@ -61,16 +61,18 @@ class ECDNotifier
         
         // Get all findings which expire today, or 7/14/21 days from now
         $query = "SELECT p.id,
+                         p.system_id,
                          DATE_FORMAT(p.action_est_date, '%m/%e/%y') ecd,
                          DATEDIFF(p.action_est_date, CURDATE()) days_remaining
                     FROM poams p
-                   WHERE DATE(p.action_est_date) = CURDATE()
-                      OR DATE(p.action_est_date) =
-                         DATE_ADD(CURDATE(), INTERVAL 7 DAY)
-                      OR DATE(p.action_est_date) =
-                         DATE_ADD(CURDATE(), INTERVAL 14 DAY)
-                      OR DATE(p.action_est_date) =
-                         DATE_ADD(CURDATE(), INTERVAL 21 DAY)";
+                   WHERE p.status <> 'CLOSED'
+                     AND (   DATE(p.action_est_date) = CURDATE()
+                          OR DATE(p.action_est_date) =
+                             DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                          OR DATE(p.action_est_date) =
+                             DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+                          OR DATE(p.action_est_date) =
+                             DATE_ADD(CURDATE(), INTERVAL 21 DAY))";
         $statement = $db->query($query);
         $expiringPoams = $statement->fetchAll();
 
@@ -80,32 +82,28 @@ class ECDNotifier
         foreach($expiringPoams as $poam) {
             switch($poam['days_remaining']) {
                 case 0:
-                    $notification->add(Notification::ECD_EXPIRES_TODAY,
-                                       null,
-                                       "PoamId:{$poam['id']}, ECD:{$poam['ecd']}");
+                    $notificationType = Notification::ECD_EXPIRES_TODAY;
                     break;
                 case 7:
-                    $notification->add(Notification::ECD_EXPIRES_7_DAYS,
-                                       null,
-                                       "PoamId:{$poam['id']}, ECD:{$poam['ecd']}");
+                    $notificationType = Notification::ECD_EXPIRES_7_DAYS;
                     break;
                 case 14:
-                    $notification->add(Notification::ECD_EXPIRES_14_DAYS,
-                                       null,
-                                       "PoamId:{$poam['id']}, ECD:{$poam['ecd']}");
+                    $notificationType = Notification::ECD_EXPIRES_14_DAYS;
                     break;
                 case 21:
-                    $notification->add(Notification::ECD_EXPIRES_21_DAYS,
-                                       null,
-                                       "PoamId:{$poam['id']}, ECD:{$poam['ecd']}");
+                    $notificationType = Notification::ECD_EXPIRES_21_DAYS;
                     break;
                 default:
                     // This should never happen, because the query is written
                     // to exclude it.
                     throw new Exception("ECD Notifier has an internal error.");
             }
+            $notification->add(
+                $notificationType,
+                null,
+                "PoamId: {$poam['id']}, ECD: {$poam['ecd']}",
+                $poam['system_id']
+            );
         }
     }
-
-
 }

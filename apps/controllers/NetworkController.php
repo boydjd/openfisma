@@ -202,7 +202,7 @@ class NetworkController extends SecurityController
             $model = self::M_NOTICE;
         } else {
             $this->_notification->add(Notification::NETWORK_MODIFIED,
-                $$this->_me->account, $id);
+                $this->_me->account, $id);
 
             $msg = "Network edited successfully";
             $model = self::M_NOTICE;

@@ -63,6 +63,7 @@ class Notification extends FismaModel
     const EVIDENCE_APPROVAL_1ST = 18;
     const EVIDENCE_APPROVAL_2ND = 19;
     const EVIDENCE_APPROVAL_3RD = 20;
+    const EVIDENCE_DENIED = 51;
     
     const ACCOUNT_MODIFIED = 21;
     const ACCOUNT_DELETED = 22;
@@ -109,10 +110,11 @@ class Notification extends FismaModel
      * @param int $eventType The type of event
      * @param string $userName The name of the user who caused the event
      * @param int|string|array $recordId An ID or description of the object
+     * @param int $systemId The ID of the associated system, if applicable
      *
      * @todo Reconsider the $recordId parameter... seems to be useless
      */
-    public function add($eventType, $userName, $recordId)
+    public function add($eventType, $userName, $recordId, $systemId=null)
     {
         // Format the $recordId for inclusion in the event text.
         // Notice: this value is currently not used
@@ -136,14 +138,27 @@ class Notification extends FismaModel
                      . "($record)";
 
         // Create notification records for all interested users
-        $query = "INSERT INTO notifications
-                       SELECT null,
-                              ue.event_id,
-                              ue.user_id,
-                              '$eventText',
-                              null
-                         FROM user_events ue
-                        WHERE ue.event_id = $eventType";
+        if ($systemId == null) {
+            $query = "INSERT INTO notifications
+                           SELECT null,
+                                  ue.event_id,
+                                  ue.user_id,
+                                  '$eventText',
+                                  null
+                             FROM user_events ue
+                            WHERE ue.event_id = $eventType";
+        } else {
+            $query = "INSERT INTO notifications
+                           SELECT null,
+                                  ue.event_id,
+                                  ue.user_id,
+                                  '$eventText',
+                                  null
+                             FROM user_events ue
+                       INNER JOIN user_systems us ON ue.user_id = us.user_id
+                            WHERE us.system_id = $systemId
+                              AND ue.event_id = $eventType";
+        }
         $statement = $this->_db->query($query);
     }
     

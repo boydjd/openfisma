@@ -26,6 +26,15 @@
 define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
 
 /**
+ * The following class does not conform to ZF naming standards, so it must be
+ * explicitly included before it can be referenced.
+ *
+ * @todo See if we can make this less hacky
+ */
+require_once(dirname(dirname(dirname(__FILE__)))
+             . '/include/parseXml.class.php');
+
+/**
  * The finding controller is used for searching, displaying, and updating
  * findings.
  *
@@ -192,7 +201,7 @@ template. Please update your CSV file and try again.<br />";
                          injected successfully. <br />";
                 }
                 if (count($succeedArray) == $row) {
-                    $summaryMsg.= " Congratulations! All of the linesa contained
+                    $summaryMsg.= " Congratulations! All of the lines contained
                         in the CSV were parsed and injected successfully.";
                 }
                  $this->_notification
@@ -227,8 +236,12 @@ template. Please update your CSV file and try again.<br />";
                      self::$now->toString('Y-m-d H:i:s'), 'CREATION', $logContent);
 
                 $this->_notification
-                     ->add(Notification::FINDING_CREATED,
-                         $this->_me->account, $poamId);
+                     ->add(
+                           Notification::FINDING_CREATED,
+                           $this->_me->account,
+                           "PoamID: $poamId",
+                           $poam['system_id']
+                       );
 
                 $message = "Finding created successfully";
                 $model = self::M_NOTICE;
@@ -272,9 +285,11 @@ template. Please update your CSV file and try again.<br />";
         }
         $msg = 'Delete ' . $successno . ' Findings Successfully,'
                 . $errno . ' Failed!';
-
-        $this->_notification->add(Notification::FINDING_DELETED,
-            $this->_me->account, $poamId);
+        // @todo The delete action isn't support right now, but when it is,
+        // the notification needs to be limited to the system from which the
+        // finding is being deleted.
+        //$this->_notification->add(Notification::FINDING_DELETED,
+        //    $this->_me->account, $poamId);
         $this->message($msg, self::M_NOTICE);
         $this->_forward('searchbox', 'finding', null, array(
             's' => 'search'
@@ -285,7 +300,7 @@ template. Please update your CSV file and try again.<br />";
      */
     protected function insertCsvRow($row)
     {
-        $asset = new asset();
+        $asset = new Asset();
         $poam = new poam();
         if (!is_array($row) || (count($row) < 7)) {
             return false;
@@ -449,7 +464,6 @@ template. Please update your CSV file and try again.<br />";
             }
             require_once (CONTROLLERS . '/components/import/interface.php');
             require_once (CONTROLLERS . "/components/import/$pluginClass.php");
-            require_once ('parseXml.class.php');
             $assets['system_id'] = $req->getParam('system_id');
             $assets['source_id'] = $req->getParam('source');
             $assets['network_id'] = $req->getParam('network');

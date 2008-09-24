@@ -82,6 +82,7 @@ class Notify
                     FROM notifications n
               INNER JOIN events e on e.id = n.event_id
               INNER JOIN users u ON u.id = n.user_id
+                   WHERE u.email_validate = 1
                      AND DATE_ADD(u.most_recent_notify_ts,
                                   INTERVAL u.notify_frequency HOUR) < NOW()
                 ORDER BY n.user_id";
@@ -99,17 +100,15 @@ class Notify
             // If this is the last entry OR if the next entry has a different
             // user ID, then this current message is completed and should be
             // e-mailed to the user.
-            if (($i == (count($notifications) - 1)
-                || $notifications[$i]['user_id'] !=
-                   $notifications[$i+1]['user_id'])
-                && 1 == $notifications[$i]['email_validate']) {
+            if ($i == (count($notifications) - 1)
+                || ($notifications[$i]['user_id'] !=
+                    $notifications[$i+1]['user_id'])) {
 
                 Notify::sendNotificationEmail($currentNotifications);
                 Notify::purgeNotifications($db, $currentNotifications);
                 Notify::updateUserNotificationTimestamp(
                     $db,
                     $notifications[$i]['user_id']
-                    //$nowSqlString
                 );
 
                 // Move onto the next user
@@ -120,9 +119,13 @@ class Notify
     }
 
     /**
-     * sendNotificationEmail() - ??
+     * sendNotificationEmail() - Compose and send the notification email for
+     * this user.
      *
-     * @todo complete this documentation, use the notify_email if available
+     * Notice that there is a bit of a hack -- the addressing information is
+     * stored in the 0 row of $notifications.
+     *
+     * @param array $notifications A group of rows from the notification table
      */
     static function sendNotificationEmail($notifications) {
         $mail = new Zend_Mail();
@@ -150,9 +153,15 @@ class Notify
         
         // Send the e-mail
         $mail->send(Notify::getTransport());
-        print("Email was sent to $receiveEmail\n");
+        print(new Zend_Date()." Email was sent to $receiveEmail\n");
     }
 
+    /**
+     * purgeNotifications() - Remove notifications from the queue table.
+     *
+     * @param Zend_Db $db The database connection handle
+     * @param array $notifications A group of rows from the notifications table
+     */
     static function purgeNotifications($db, $notifications) {
         $notificationIds = array();
         foreach ($notifications as $notification) {
@@ -165,6 +174,14 @@ class Notify
         $db->query($query);
     }
 
+    /**
+     * updateUserNotificationTimestamp() - Updates the timestamp for the
+     * specified user so that he will not receieve too many e-mail in too short
+     * of a time period.
+     *
+     * @param Zend_Db $db The database connection handle
+     * @param integer $userId The Id of the user to update
+     */
     static function updateUserNotificationTimestamp($db, $userId) {
         $query = "UPDATE users
                      SET most_recent_notify_ts = NOW()
@@ -186,8 +203,11 @@ class Notify
                 'username' => readSysConfig('smtp_username'),
                 'password' => readSysConfig('smtp_password'),
                 'port' => readSysConfig('smtp_port'));
-            $transport = new Zend_Mail_Transport_Smtp(readSysConfig('smtp_host'),
-                $config);
+            $transport =
+                new Zend_Mail_Transport_Smtp(
+                    readSysConfig('smtp_host'),
+                    $config
+                );
         } else {
             $transport = new Zend_Mail_Transport_Sendmail();
         }

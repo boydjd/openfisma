@@ -205,7 +205,7 @@ class SystemController extends SecurityController
             if (!$res) {
                 $errno++;
             }
-            $this->_user = new user();
+            $this->_user = new User();
             $this->_me->systems = $this->_user->getMySystems($this->_me->id);
             $res = $this->_system->getAdapter()
                 ->delete('systemgroup_systems', 'system_id = ' . $id);
@@ -227,6 +227,7 @@ class SystemController extends SecurityController
         $this->message($msg, $model);
         $this->_forward('list');
     }
+    
     public function viewAction()
     {
         $req = $this->getRequest();
