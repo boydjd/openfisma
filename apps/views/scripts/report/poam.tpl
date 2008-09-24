@@ -7,7 +7,8 @@
                        '2009' =>'2009');
     $status_list = array('0'        =>'All Status',
                          'CLOSED' =>'Closed',
-                         'OPEN'   =>'Open');
+                         'OPEN'   =>'Open',
+                         'NEW'    =>'New');
     $type_list = array('0'      =>'All Type',
                        'CAP'  =>'CAP',
                        'FP'   =>'FP',
