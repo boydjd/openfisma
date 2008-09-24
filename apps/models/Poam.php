@@ -246,6 +246,38 @@ class Poam extends Zend_Db_Table
         }
         return $ret;
     }
+
+    /**
+        Get poam status
+        @param $id int primary key of poam
+     */
+    public function getStatus ($id)
+    {
+        if (! is_numeric($id)) {
+            throw new FismaException('Make sure a valid ID is inputed');
+        }
+        $ret = $this->find($id);
+        if ('EN' == $ret->current()->status
+            && date('Y-m-d H:i:s') > $ret->current()->action_est_date) {
+            return 'EO';
+        } else if ('EP' == $ret->current()->status) {
+            $query = $this->_db->select()->from(array('pe'=>'poam_evaluations'), '*')
+                               ->join(array('ev'=>'evidences'), 'pe.group_id = ev.id', array())
+                               ->join(array('p'=>'poams'), 'ev.poam_id = p.id', array())
+                               ->where('p.id = ?', $id)
+                               ->where('pe.decision = "APPROVED"')
+                               ->order('pe.id DESC');
+            $row = $this->_db->fetchRow($query);
+            if (!empty($row)) {
+                return 'EP(S&P)';
+            } else {
+                return 'EP(SSO)';
+            }
+        } else {
+            return $ret->current()->status;
+        }
+    }
+
     /** 
         Get detail information of a remediation by Id
 
