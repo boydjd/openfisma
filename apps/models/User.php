@@ -47,6 +47,7 @@ class User extends FismaModel
     const LOGINFAILURE = 'loginfailure';
     const LOGIN = 'login';
     const LOGOUT = 'logout';
+    const ROB_ACCEPT = 'rob_accept';
     public function init ()
     {
         $writer = new Zend_Log_Writer_Db($this->_db, $this->_log_name, $this->_log_map);
@@ -96,7 +97,7 @@ class User extends FismaModel
      * Log any creation, modification, disabling and termination of account.
      *
      * @param $type constant {CREATION,MODIFICATION,DISABLING,TERMINATION,
-     *                  LOGIN,LOGINFAILURE,LOGOUT}
+     *                  LOGIN,LOGINFAILURE,LOGOUT, ROB_ACCEPT}
      * @param $uid int action taken user id
      * @param $extra_msg string extra message to be logged.
      *
@@ -115,7 +116,8 @@ class User extends FismaModel
                     self::TERMINATION,
                     self::LOGINFAILURE,
                     self::LOGIN,
-                    self::LOGOUT
+                    self::LOGOUT,
+                    self::ROB_ACCEPT
                 )
             )
         );

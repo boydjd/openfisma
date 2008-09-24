@@ -203,7 +203,7 @@ class UserController extends MessageController
             // Check to see if the user needs to review the rules of behavior.
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
-            $nextRobReview = new Zend_Date($_me->last_rob);
+            $nextRobReview = new Zend_Date($_me->last_rob,'Y-m-d');
             $nextRobReview->add(readSysConfig('rob_duration'), Zend_Date::DAY);
             $now = new Zend_Date();
             if ($now->isEarlier($nextRobReview)) {
@@ -227,9 +227,7 @@ class UserController extends MessageController
         $nowSqlString = $now->toString('Y-m-d H:i:s');
         $this->_user->update(array('last_rob'=>$nowSqlString),
             'id = '.$this->_me->id);
-        $notification = new Notification();
-        $notification->add(Notification::ROB_ACCEPT,
-            $this->_me->account, $this->_me->id);
+        $this->_user->log(User::ROB_ACCEPT, $this->_me->id, 'accept ROB');
         $this->_forward('index', 'Panel');
     }
 

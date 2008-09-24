@@ -103,8 +103,6 @@ class Notification extends FismaModel
     const ECD_EXPIRES_14_DAYS = 48;
     const ECD_EXPIRES_21_DAYS = 49;
 
-    const ROB_ACCEPT  = 50;
-
     /**
      * add() - Add notifications for the specified event.
      *
