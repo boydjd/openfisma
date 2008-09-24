@@ -68,6 +68,7 @@ class Notification extends FismaModel
     const ACCOUNT_MODIFIED = 21;
     const ACCOUNT_DELETED = 22;
     const ACCOUNT_CREATED = 23;
+    const ACCOUNT_LOCKED = 52;
     
     const SYSGROUP_DELETED = 24;
     const SYSGROUP_MODIFIED = 25;
@@ -176,7 +177,7 @@ class Notification extends FismaModel
                      n.timestamp
                 FROM notifications n
                WHERE n.user_id=$userId
-            ORDER BY n.timestamp";
+            ORDER BY n.timestamp, n.id";
         $statement = $this->_db->query($notificationsQuery);
         $notifications = $statement->fetchAll();
         

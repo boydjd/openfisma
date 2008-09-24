@@ -147,14 +147,25 @@ class UserController extends MessageController
                                   'Password Error');
                 $notification = new Notification();
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
-                                   $whologin->account,
-                                   $whologin->id);
+                                   null,
+                                   "User: {$whologin->account}");
 
-                if ($whologin->failure_count >= 
-                    readSysConfig('failure_threshold') - 1 ) {
+                if ($whologin->failure_count >=
+                    readSysConfig('failure_threshold') - 1) {
                     $this->_user->log(User::TERMINATION,
                                       $whologin->id,
                                       'Account locked');
+                    $notification = new Notification();
+                    $notification->add(Notification::ACCOUNT_LOCKED,
+                                       null,
+                                       "User: {$whologin->account}");
+                    throw new Zend_Auth_Exception('Your account has been locked
+                        due to ' .
+                        readSysConfig("failure_threshold") .
+                        ' or more unsuccessful login attempts. Please contact
+                        the <a href="mailto:' .
+                        readSysConfig('contact_email') .
+                        '">Administrator</a>.');
                 }
                 
                 throw new Zend_Auth_Exception("Incorrect username or password");
@@ -181,8 +192,11 @@ class UserController extends MessageController
             // If we get this far, then the login is totally successful.
             $this->_user->log(User::LOGIN, $_me->id, "Success");
             $notification = new Notification();
-            $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
-                $whologin->account, $whologin->id);
+            $notification->add(
+                Notification::ACCOUNT_LOGIN_SUCCESS,
+                $whologin->account,
+                "UserId: {$whologin->id}"
+            );
 
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
@@ -239,8 +253,11 @@ class UserController extends MessageController
             $this->_user->log(User::LOGOUT, $this->_me->id,
                 $this->_me->account . ' logout');
             $notification = new Notification();
-            $notification->add(Notification::ACCOUNT_LOGOUT,
-                $this->_me->account, $this->_me->id);
+            $notification->add(
+                Notification::ACCOUNT_LOGOUT,
+                null,
+                "User: {$this->_me->account}"
+            );
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');
