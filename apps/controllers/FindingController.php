@@ -204,9 +204,7 @@ template. Please update your CSV file and try again.<br />";
                     $summaryMsg.= " Congratulations! All of the lines contained
                         in the CSV were parsed and injected successfully.";
                 }
-                 $this->_notification
-                      ->add(Notification::FINDING_INJECT,
-                          $this->_me->account, $poamIds);
+                
                 $this->view->assign('error_msg', $summaryMsg);
             }
             $this->render();
@@ -374,6 +372,11 @@ template. Please update your CSV file and try again.<br />";
             'finding_data' => $row[6]
         );
         $ret = $poam->insert($poamData);
+        $this->_notification
+             ->add(Notification::FINDING_INJECT,
+                   $this->_me->account,
+                   "PoamId: $ret",
+                   $poamData['system_id']);
         return $ret;
     }
     /** 
@@ -597,7 +600,9 @@ template. Please update your CSV file and try again.<br />";
                 }
                 $this->_notification
                       ->add(Notification::FINDING_IMPORT,
-                          $this->_me->account, $poamIds);
+                            $this->_me->account,
+                            'PoamIds: ' . implode(', ', $poamIds),
+                            $req->getParam('system_id'));
                 $msg = "Injection complete.";
                 $this->message($msg, self::M_NOTICE);
             } else {
