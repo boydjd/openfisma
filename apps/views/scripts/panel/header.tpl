@@ -1,10 +1,6 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 	<tr><td><img id="logo" src="/images/customer_logo.jpg" /></td>
 		<td align="right"><ul class="loginfo">
-            <?php if ( 'ldap' != readSysConfig('auth_type') ) { ?>
-                <li><form class="button_link" action="/panel/user/sub/profile">
-                <input type="submit" value="Profile Setting" /></form>&nbsp;
-            <?php } ?>
                 <form class="button_link" action="/user/logout">
                 <input type="submit" value="Logout" /></form>
                 </li>
@@ -37,8 +33,12 @@
         echo 
         '<ul>
             <li> 
-            <h2><a>Finding</a></h2>
+            <h2><a href="/panel/remediation/sub/summary">Finding</a></h2>
             <ul>';
+        if(isAllow('remediation', 'read')) {
+            echo'<li><a href="/panel/remediation/sub/summary">Remediation Summary</a>
+                 <li><a href="/panel/remediation/sub/searchbox">Remediation Search</a>';
+        }
         if(isAllow('finding','create')) {
             echo "\n",'<li><a href="/panel/finding/sub/create">New Finding</a>
                 <li><a href="/finding/injection">Spreadsheet Upload</a>
@@ -46,16 +46,6 @@
         }
         echo '</ul>
              </li></ul>';
-        echo '<img src="/images/menu_line.gif" border="0">';
-    }
-    if(isAllow('remediation','read')) {
-        echo '<ul><li>
-              <h2><a>Remediation</a></h2>
-              <ul>
-              <li><a href="/panel/remediation/sub/summary">Remediation Summary</a>
-              <li><a href="/panel/remediation/sub/searchbox">Remediation Search</a>
-              </ul>
-              </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('report','read')) { 
@@ -111,6 +101,8 @@
             </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
+    echo'<ul><li><h2><a href="/panel/user/sub/profile">User Preferences</a></h2></li></ul>';
+    echo '<img src="/images/menu_line.gif" border="0">';
     /*
     if(isAllow('vulnerability','read')) {
         echo'<ul><li><h2><a href="/mainPanel.php?panel=association" >Vulnerability</a></h2>';
