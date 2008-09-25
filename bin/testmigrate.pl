@@ -194,6 +194,7 @@ sub dumpSchema {
                                                -u $config->{'dbUser'} 
                                                -p$config->{'dbPassword'}
                                                --compact
+					       --skip-extended-insert
                                                $config->{'tempSchema'}";
   $command =~ s/\s+/ /g; # Reformat the command onto one line
   &debugLog($command);

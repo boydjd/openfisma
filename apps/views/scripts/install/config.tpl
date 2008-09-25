@@ -7,6 +7,9 @@ params.username=<?php echo $this->dsn['name_c'];?>
 params.password=<?php echo $this->dsn['pass_c'];?> 
 params.dbname=<?php echo $this->dsn['dbname'];?> 
 
+[host]
+hostUrl=<?php echo "{$this->hostUrl}\n"; ?>
+
 [debug]
 ; DBG=1, RELEASE=0
 level=0

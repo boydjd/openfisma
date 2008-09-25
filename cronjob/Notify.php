@@ -128,6 +128,14 @@ class Notify
      * @param array $notifications A group of rows from the notification table
      */
     static function sendNotificationEmail($notifications) {
+        // If the hostUrl isn't set, then fetch it from the install.conf file.
+        // This will only execute one per script execution.
+        static $hostUrl;
+        if (!isset($hostUrl)) {
+            $config = new Zend_Config_Ini(CONFIGS . '/install.conf', 'host');
+            $hostUrl = $config->hostUrl;
+        }
+        
         $mail = new Zend_Mail();
         $contentTpl = new Zend_View();
         $contentTpl->setScriptPath(VIEWS . '/' . self::EMAIL_VIEW_PATH);
@@ -148,6 +156,7 @@ class Notify
 
         // Render the message body
         $contentTpl->notifyData = $notifications;
+        $contentTpl->hostUrl = $hostUrl;
         $content = $contentTpl->render(self::EMAIL_VIEW);
         $mail->setBodyText($content);
         
