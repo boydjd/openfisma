@@ -84,7 +84,7 @@ class Notify
               INNER JOIN users u ON u.id = n.user_id
                    WHERE u.email_validate = 1
                      AND DATE_ADD(u.most_recent_notify_ts,
-                                  INTERVAL u.notify_frequency HOUR) < NOW()
+                                  INTERVAL (u.notify_frequency * 60) MINUTE) < NOW()
                 ORDER BY n.user_id";
         $statement = $db->query($query);
         $notifications = $statement->fetchAll();
