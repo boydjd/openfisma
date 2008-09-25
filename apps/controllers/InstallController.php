@@ -220,6 +220,16 @@ class InstallController extends Zend_Controller_Action
         if ($ret) {
             if (is_writable(CONFIGS . DS . CONFIGFILE_NAME)) {
                 $conf_tpl = $this->_helper->viewRenderer->getViewScript('config');
+
+                // Set the host URL. This value is saved into the install.conf
+                $hostUrl = $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
+                if (isset($_SERVER['HTTP_HOST'])) {
+                    $hostUrl .= $_SERVER['HTTP_HOST'];
+                } else {
+                    $hostUrl .= $_SERVER['SERVER_NAME'];
+                }
+                $this->view->hostUrl = $hostUrl;
+
                 $dbconfig = $this->view->render($conf_tpl);
                 if (0 < file_put_contents(CONFIGS . DS . CONFIGFILE_NAME, $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
