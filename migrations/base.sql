@@ -841,6 +841,7 @@ INSERT INTO `schema_version` VALUES (13);
 INSERT INTO `schema_version` VALUES (15);
 INSERT INTO `schema_version` VALUES (17);
 INSERT INTO `schema_version` VALUES (18);
+INSERT INTO `schema_version` VALUES (19);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -938,7 +939,7 @@ CREATE TABLE `users` (
   `phone_office` varchar(12) NOT NULL,
   `phone_mobile` varchar(12) default NULL,
   `email` varchar(64) NOT NULL default '',
-  `email_validate` tinyint(1) NOT NULL default '0',
+  `email_validate` tinyint(1) NOT NULL default '1',
   `auto_role` varchar(20) NOT NULL,
   `notify_frequency` float NOT NULL default '12',
   `most_recent_notify_ts` datetime NOT NULL,
@@ -984,4 +985,4 @@ CREATE TABLE `vulnerabilities` (
   PRIMARY KEY  (`seq`,`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO schema_version (schema_version) VALUES (19);
+INSERT INTO schema_version (schema_version) VALUES (20);
