@@ -20,7 +20,7 @@
  * @author    ???
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
+ * @version   $Id: RiskAssessment.class.php 863 2008-09-09 21:17:03Z mehaase $
  *
  * @todo Clean up this file and assign an author. The file is named incorrectly,
  * and isn't really a controller of any sort. The logic here probably needs to

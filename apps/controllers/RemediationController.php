@@ -112,8 +112,12 @@ class RemediationController extends PoamBaseController
         } else {
             // mock array_fill_key in 5.2.0
             $count = count($this->_me->systems);
-            $sum = array_fill(0, $count, $summary_tmp);
-            $summary = array_combine($this->_me->systems, $sum);
+            if ( 0 == $count ) {
+                $summary = array();
+            } else {
+                $sum = array_fill(0, $count, $summary_tmp);
+                $summary = array_combine($this->_me->systems, $sum);
+            }
         }
         $total = $summary_tmp;
         $ret = $this->_poam->search($this->_me->systems, array(

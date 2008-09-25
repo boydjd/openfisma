@@ -636,7 +636,7 @@ Please create a password that adheres to these complexity requirements:<br>
             $this->_user->update(array('email_validate'=>1), 'id = '.$userId);
             $msg = "Your e-mail address has been validated. You may close this
                     window or click <a href='http://"
-                    . $_SERVER['SERVER_NAME']
+                    . $_SERVER['HTTP_HOST']
                     . "'>here</a> to go back to "
                     . readSysConfig('system_name')
                     . '.';
