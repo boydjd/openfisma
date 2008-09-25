@@ -20,50 +20,42 @@
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('asset','read')) {
-        echo 
-        "<ul>
-             <li>
-             <h2><a href='/panel/asset/sub/searchbox/s/search'>Assets</a></h2>
-             </li>
-         </ul>";
-        echo '<img src="/images/menu_line.gif" border="0">';
+        echo'<ul><li><h2><a href="/panel/asset/sub/searchbox/s/search">Assets</a></h2></li></ul>';
+        echo'<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('finding','read')) {
-        echo 
-        '<ul>
-            <li> 
-            <h2><a href="/panel/remediation/sub/summary">Finding</a></h2>
-            <ul>';
+        echo'<ul><li><h2><a href="/panel/remediation/sub/summary">Finding</a></h2>';
+        echo'<ul>';
         if(isAllow('remediation', 'read')) {
-            echo'<li><a href="/panel/remediation/sub/summary">Remediation Summary</a>
-                 <li><a href="/panel/remediation/sub/searchbox">Remediation Search</a>';
+            echo'<li><a href="/panel/remediation/sub/summary">Remediation Summary</a>';
+            echo'<li><a href="/panel/remediation/sub/searchbox">Remediation Search</a>';
         }
         if(isAllow('finding','create')) {
-            echo "\n",'<li><a href="/panel/finding/sub/create">New Finding</a>
-                <li><a href="/finding/injection">Spreadsheet Upload</a>
-                <li><a href="/finding/import">Upload Scan Results</a>';
+            echo'<li><a href="/panel/finding/sub/create">New Finding</a>';
+            echo'<li><a href="/finding/injection">Spreadsheet Upload</a>';
+            echo'<li><a href="/finding/import">Upload Scan Results</a>';
         }
         echo '</ul>
              </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('report','read')) { 
-        echo "\n",'<ul><li><h2><a>Reports</a></h2>
-              <ul>';
+        echo'<ul><li><h2><a>Reports</a></h2>';
+        echo'<ul>';
         if(isAllow('report', 'generate_poam_report' )) {
-            echo "\n",'<li><a href="/panel/report/sub/poam">POA&amp;M Report</a>';
+            echo'<li><a href="/panel/report/sub/poam">POA&amp;M Report</a>';
         }            
         if(isAllow('report','generate_fisma_report')) {
-            echo "\n",'<li><a href="/panel/report/sub/fisma">FISMA POA&amp;M Report</a>';
+            echo'<li><a href="/panel/report/sub/fisma">FISMA POA&amp;M Report</a>';
         }
         if(isAllow('report','generate_general_report')) {
-            echo "\n",'<li><a href="/panel/report/sub/general">General Report</a>';
+            echo'<li><a href="/panel/report/sub/general">General Report</a>';
         }
         if(isAllow('report','generate_system_rafs')) {
-            echo "\n",'<li><a href="/panel/report/sub/rafs">Generate System RAFs</a>';
+            echo'<li><a href="/panel/report/sub/rafs">Generate System RAFs</a>';
         }
         if(isAllow('report','generate_overdue_report')) {
-            echo "\n",'<li><a href="/panel/report/sub/overdue">Overdue Report</a>';
+            echo'<li><a href="/panel/report/sub/overdue">Overdue Report</a>';
         }            
         echo'</ul>
              </li></ul>';
