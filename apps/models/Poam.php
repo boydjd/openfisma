@@ -241,6 +241,11 @@ class Poam extends Zend_Db_Table
             $query->limitPage($currentPage, $perPage);
         }
         $ret = $this->_db->fetchAll($query);
+        foreach ($ret as &$row) {
+            if (! empty($row['status']) && ! empty($row['id'])) {
+                $row['status'] = $this->getStatus($row['id']);
+            }
+        }
         if ($count_fields && $count) {
             array_push($ret, $count);
         }
@@ -249,7 +254,7 @@ class Poam extends Zend_Db_Table
 
     /**
         Get poam status
-        @param $id int primary key of poam
+        @param int $id primary key of poam
      */
     public function getStatus ($id)
     {
@@ -281,7 +286,7 @@ class Poam extends Zend_Db_Table
     /** 
         Get detail information of a remediation by Id
 
-        @param $id int primary key of poam
+        @param int $id primary key of poam
      */
     public function &getDetail ($id)
     {

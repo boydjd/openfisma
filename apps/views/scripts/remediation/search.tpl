@@ -25,7 +25,6 @@
         </tr>
         <!-- REMEDIATION ROWS -->
         <?php
-            $today = date('Y-m-d',time());
             foreach($this->list as $row){
             $finding_data = strlen($row['finding_data'])>120?substr($row['finding_data'],0,120)."...":$row['finding_data'];
         ?>
@@ -38,7 +37,7 @@
             </td>
             <td align='center' class='tdc'><?php echo $this->systems[$row['system_id']];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['type'];?></td>
-            <td align='center' class='tdc' nowrap><?php echo $row['status']=='EN' && $row['action_est_date']<$today?'EO':$row['status'];?></td>
+            <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>
             <td align='left'   class='tdc'><?php echo $finding_data;?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['action_est_date'];?></td> 
             <td align="center" valign='middle' class='tdc'><a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>

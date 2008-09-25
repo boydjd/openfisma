@@ -8,7 +8,9 @@ require_once( CONTROLLERS . DS . 'components' . DS . 'rafutil.php');
     $status_name = array('NEW' => 'New',
                          'OPEN' =>'Open',
                          'EN' => 'Evidence Needed',
-                         'EP' => 'Evidence Provided',
+                         'EO' => 'Evidence Overdue',
+                         'EP(SSO)' =>'Evidence Provided to SSO',
+                         'EP(S&P)' => 'Evidence Provided to S&P',
                          'ES' => 'Evidence Submitted',
                          'CLOSED' => 'Closed' );
 

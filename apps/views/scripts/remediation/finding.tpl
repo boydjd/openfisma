@@ -23,18 +23,7 @@
                     <td><b>Source:&nbsp;</b> (<?php echo $this->poam['source_nickname'];?>) <?php echo $this->poam['source_name'];?></td>
                 </tr>
                 <tr>
-                    <td><b>Status:&nbsp;</b>
-                        <?php 
-                    $st = $this->poam['status'];
-                    if( 'EN' == $st ) {
-                        $date = new Zend_Date($this->poam['action_est_date']);
-                        if( $date->isEarlier(Zend_Date::now()) ){
-                            $st = 'EO';
-                        }
-                    }
-                    echo $st;
-                ?>
-                    </td>
+                    <td><b>Status:&nbsp;</b><?php echo $this->poam['status'];?></td>
                 </tr>
                 <tr>
                     <td>
