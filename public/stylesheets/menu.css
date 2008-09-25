@@ -21,13 +21,17 @@ body {
 div#menu {
     margin-top:1em;
     background-color:#42637B;
-    height: 28px;
+    height: 40px;
 }
 
 div#menu ul {
     padding: 2px 0px;
     float:left;
     width:120px;
+}
+
+div#menu ul li a {
+    width: 100%;
 }
 
 div#menu ul li a:hover {
@@ -48,7 +52,6 @@ div#menu ul ul {
 }
 
 div#menu li:hover ul {
-    z-index:10;
     display: block;
 }
 
@@ -80,5 +83,4 @@ div#menu ul ul a{
 div#menu ul ul a:hover {
     color: #42637B;
     background: #FFFFB5 url(../images/arrow.gif) no-repeat 0.6em ;
-    padding:1px 1em 0em 1.8em;
 }
