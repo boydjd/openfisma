@@ -1,10 +1,10 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 	<tr><td><img id="logo" src="/images/customer_logo.jpg" /></td>
-		<td align="right"><p>
+		<td align="right">
                 <form class="button_link" action="/user/logout">
-                <input type="submit" value="Logout" /></form></p>
+                <input type="submit" value="Logout" /></form>
                 <p><b><?php echo $this->identity;  ?></b> is currently logged in.</p>
-			</ul></td>
+		</td>
 	</tr>
 </table>
 <div id="menu">
