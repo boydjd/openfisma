@@ -152,10 +152,10 @@ class RemediationController extends PoamBaseController
         $eo_count = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array(
+        ) , array_merge($criteria, array(
             'status' => 'EN',
             'est_date_end' => parent::$now
-        ));
+        )));
         foreach($eo_count as $eo) {
             $summary[$eo['system_id']]['EO'] = $eo['count'];
             $total['EO']+= $summary[$eo['system_id']]['EO'];
@@ -163,10 +163,10 @@ class RemediationController extends PoamBaseController
         $en_count = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array(
+        ) , array_merge($criteria, array(
             'status' => 'EN',
             'est_date_begin' => parent::$now
-        ));
+        )));
         foreach($en_count as $en) {
             $summary[$en['system_id']]['EN'] = $en['count'];
             $total['EN']+= $summary[$en['system_id']]['EN'];

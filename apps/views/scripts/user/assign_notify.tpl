@@ -29,7 +29,7 @@
         </tr>
         <tr>
             <td><b>Notify Frequency (hours):</b></td>
-            <td><input name="notify_frequency" type="text" value="<?php echo $this->notify_frequency;?>" size="30"/></td>
+            <td><input name="notify_frequency" type="text" value="<?php echo round($this->notify_frequency, 2);?>" size="30"/></td>
         </tr>
         <tr>
             <td colspan="2"><i>If you would like to receive e-mail notifications at an alternate address, enter that address below:</i></td>

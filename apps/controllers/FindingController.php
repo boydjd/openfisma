@@ -403,7 +403,7 @@ template. Please update your CSV file and try again.<br />";
          */
         try {
             $src = new System();
-            $this->view->systems = $src->getList('nickname');
+            $this->view->systems = $src->getList('nickname', $this->_me->systems);
             if (count($this->view->systems) == 0) {
                 throw new FismaException(
                     "The spreadsheet template can not be " .
