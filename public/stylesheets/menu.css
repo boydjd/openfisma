@@ -21,7 +21,8 @@ body {
 div#menu {
     margin-top:1em;
     background-color:#42637B;
-    height: 40px;
+    height: 26px;
+    overflow: hidden;
 }
 
 div#menu ul {
