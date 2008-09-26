@@ -24,7 +24,7 @@
         echo'<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('finding','read')) {
-        echo'<ul><li><h2><a href="/panel/remediation/sub/summary">Finding</a></h2>';
+        echo'<ul><li><h2><a href="/panel/remediation/sub/summary">Findings</a></h2>';
         echo'<ul>';
         if(isAllow('remediation', 'read')) {
             echo'<li><a href="/panel/remediation/sub/summary">Remediation Summary</a>';
@@ -106,6 +106,5 @@
         echo '<img src="/images/menu_line.gif" border="0">';
     }*/
 ?>
-&nbsp;
 </div>
 <div id="msgbar"></div>

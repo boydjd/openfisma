@@ -1,7 +1,4 @@
 <style>
-.notice {
-    text-align:left;
-}
 a.button {
     display:inline;
     float:none;
@@ -15,6 +12,11 @@ a.button {
 </div>
 <div class="notice">
 <h1>Rules of Behavior for <?php echo readSysConfig('system_name');?></h1>
-<div><?php echo nl2br(readSysConfig('behavior_rule')); ?></div>
+<p><?php
+    $behaviorRules = readSysConfig('behavior_rule');
+    // Replace double newline with <p> tags
+    $behaviorRules = preg_replace("/\n\s+\n/", '</p><p>', $behaviorRules);
+    print($behaviorRules);
+?></p>
 </div>
 

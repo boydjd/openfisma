@@ -15,7 +15,7 @@ a.button {
 </div>
 <div class="notice">
 <h1>Privacy Policy for <?php echo readSysConfig('system_name');?></h1>
-<div><?php echo nl2br(readSysConfig('privacy_policy')); ?></div>
+<p><?php echo nl2br(readSysConfig('privacy_policy')); ?></p>
 </div>
 
 
