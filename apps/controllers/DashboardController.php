@@ -107,7 +107,8 @@ class DashboardController extends SecurityController
         $this->view->url = $url;
         $this->view->alert = $alert;
 
-        $lastLogin = new Zend_Date($this->_me->last_login_ts);
+        $lastLoginDate = new Zend_Date($this->_me->last_login_ts);
+        $lastLogin = $lastLoginDate->toString('l, M j, g:i a');
         $this->view->lastLogin = $lastLogin;
         $this->view->lastLoginIp = $this->_me->last_login_ip;
         $this->view->failureCount = $this->_me->failure_count;
