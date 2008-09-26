@@ -223,6 +223,12 @@ template. Please update your CSV file and try again.<br />";
                     $ret = $asset->find($poam['asset_id']);
                     $poam['system_id'] = $ret->current()->system_id;
                 }
+                // Validate that the user has selected a finding source
+                if ($poam['source_id'] == 0) {
+                    throw new FismaException(
+                        "You must select a finding source"
+                    );
+                }
                 $poam['status'] = 'NEW';
                 $discoverTs = new Zend_Date($poam['discover_ts']);
                 $poam['discover_ts'] = $discoverTs->toString("Y-m-d");
@@ -245,7 +251,11 @@ template. Please update your CSV file and try again.<br />";
                 $model = self::M_NOTICE;
             }
             catch(Zend_Exception $e) {
-                $message = "Failed to create the finding";
+                if ($e instanceof FismaException) {
+                    $message = $e->getMessage();
+                } else {
+                    $message = "Failed to create the finding";
+                }
                 $model = self::M_WARNING;
             }
             $this->message($message, $model);
