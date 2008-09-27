@@ -16,7 +16,9 @@ define('ROOT', realpath(dirname(__FILE__)));
 
 if (!defined('DS')) {
     /**
-     * Eventually this definition should be removed. It doesn't serve any purpose,
+     * Eventually this definition should be removed.
+     * It doesn't serve any purpose
+     *
      * but unfortunately it is used heavily in our legacy php code.
      */
     define('DS', DIRECTORY_SEPARATOR);
@@ -45,7 +47,5 @@ $includeDirectories = array(
     // Have to hack in the path to Pear since it doesn't follow ZF standards:
     VENDORS . '/Pear'
 );
-ini_set(
-    'include_path',
-    implode(':', $includeDirectories) . ':' . ini_get('include_path')
-);
+ini_set('include_path',
+    implode(':', $includeDirectories) . ':' . ini_get('include_path'));
