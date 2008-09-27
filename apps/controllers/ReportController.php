@@ -77,21 +77,21 @@ class ReportController extends PoamBaseController
         $req = $this->getRequest();
         $criteria['year'] = $req->getParam('y');
         $criteria['quarter'] = $req->getParam('q');
-        $criteria['system_id'] = $system_id = $req->getParam('system');
+        $criteria['systemId'] = $systemId = $req->getParam('system');
         $criteria['startdate'] = $req->getParam('startdate');
         $criteria['enddate'] = $req->getParam('enddate');
-        $this->view->assign('system_list', $this->_system_list);
+        $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('criteria', $criteria);
-        $date_begin = '';
-        $date_end = '';
+        $dateBegin = '';
+        $dateEnd = '';
         if ('search' == $req->getParam('s') || 
             'pdf' == $req->getParam('format') || 
             'xls' == $req->getParam('format')) {
             if (!empty($criteria['startdate']) && 
                 !empty($criteria['enddate'])) {
-                $date_begin = new 
+                $dateBegin = new 
                     Zend_Date($criteria['startdate'], Zend_Date::DATES);
-                $date_end = new 
+                $dateEnd = new 
                     Zend_Date($criteria['enddate'], Zend_Date::DATES);
             }
             if (!empty($criteria['year'])) {
@@ -121,44 +121,44 @@ class ReportController extends PoamBaseController
                     $startdate = $criteria['year'] . '-01-01';
                     $enddate = $criteria['year'] . '-12-31';
                 }
-                $date_begin = new Zend_Date($startdate, Zend_Date::DATES);
-                $date_end = new Zend_Date($enddate, Zend_Date::DATES);
+                $dateBegin = new Zend_Date($startdate, Zend_Date::DATES);
+                $dateEnd = new Zend_Date($enddate, Zend_Date::DATES);
             }
-            $system_array = array(
-                'system_id' => $system_id
+            $systemArray = array(
+                'system_id' => $systemId
             );
-            $aaw_array = array(
-                'created_date_end' => $date_begin,
-                'closed_date_begin' => $date_end
+            $aawArray = array(
+                'created_date_end' => $dateBegin,
+                'closed_date_begin' => $dateEnd
             ); //or close_ts is null
-            $baw_array = array(
-                'created_date_end' => $date_end,
-                'est_date_end' => $date_end,
-                'actual_date_begin' => $date_begin,
-                'action_date_end' => $date_end
+            $bawArray = array(
+                'created_date_end' => $dateEnd,
+                'est_date_end' => $dateEnd,
+                'actual_date_begin' => $dateBegin,
+                'action_date_end' => $dateEnd
             );
-            $caw_array = array(
-                'created_date_end' => $date_end,
-                'est_date_begin' => $date_end
+            $cawArray = array(
+                'created_date_end' => $dateEnd,
+                'est_date_begin' => $dateEnd
             ); // and actual_date_begin is null
-            $daw_array = array(
-                'est_date_end' => $date_end,
-                'actual_date_begin' => $date_end
+            $dawArray = array(
+                'est_date_end' => $dateEnd,
+                'actual_date_begin' => $dateEnd
             ); //or action_actual_date is null
-            $eaw_array = array(
-                'created_date_begin' => $date_begin,
-                'created_date_end' => $date_end
+            $eawArray = array(
+                'created_date_begin' => $dateBegin,
+                'created_date_end' => $dateEnd
             );
-            $faw_array = array(
-                'created_date_end' => $date_end,
-                'closed_date_begin' => $date_end
+            $fawArray = array(
+                'created_date_end' => $dateEnd,
+                'closed_date_begin' => $dateEnd
             ); //or close_ts is null
-            $criteria_aaw = array_merge($system_array, $aaw_array);
-            $criteria_baw = array_merge($system_array, $baw_array);
-            $criteria_caw = array_merge($system_array, $caw_array);
-            $criteria_daw = array_merge($system_array, $daw_array);
-            $criteria_eaw = array_merge($system_array, $eaw_array);
-            $criteria_faw = array_merge($system_array, $faw_array);
+            $criteriaAaw = array_merge($systemArray, $aawArray);
+            $criteriaBaw = array_merge($systemArray, $bawArray);
+            $criteriaCaw = array_merge($systemArray, $cawArray);
+            $criteriaDaw = array_merge($systemArray, $dawArray);
+            $criteriaEaw = array_merge($systemArray, $eawArray);
+            $criteriaFaw = array_merge($systemArray, $fawArray);
             $summary = array(
                 'AAW' => 0,
                 'AS' => 0,
@@ -175,22 +175,22 @@ class ReportController extends PoamBaseController
             );
             $summary['AAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ), $criteria_aaw);
+            ), $criteriaAaw);
             $summary['BAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ), $criteria_baw);
+            ), $criteriaBaw);
             $summary['CAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ), $criteria_caw);
+            ), $criteriaCaw);
             $summary['DAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ), $criteria_daw);
+            ), $criteriaDaw);
             $summary['EAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ), $criteria_eaw);
+            ), $criteriaEaw);
             $summary['FAW'] = $this->_poam->search($this->_me->systems, array(
                 'count' => 'count(*)'
-            ), $criteria_faw);
+            ), $criteriaFaw);
             $this->view->assign('summary', $summary);
         }
         $this->render();
@@ -202,31 +202,31 @@ class ReportController extends PoamBaseController
     {
         $req = $this->getRequest();
         $params = array(
-            'system_id' => 'system_id',
-            'source_id' => 'source_id',
+            'systemId' => 'system_id',
+            'sourceId' => 'source_id',
             'type' => 'type',
             'year' => 'year',
             'status' => 'status'
         );
         $criteria = $this->retrieveParam($req, $params);
-        $this->view->assign('source_list', $this->_source_list);
-        $this->view->assign('system_list', $this->_system_list);
-        $this->view->assign('network_list', $this->_network_list);
+        $this->view->assign('source_list', $this->_sourceList);
+        $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('criteria', $criteria);
-        $is_export = $req->getParam('format');
-        if ('search' == $req->getParam('s') || isset($is_export)) {
-            $this->_paging_base_path.= '/panel/report/sub/poam/s/search';
-            if (isset($is_export)) {
+        $isExport = $req->getParam('format');
+        if ('search' == $req->getParam('s') || isset($isExport)) {
+            $this->_pagingBasePath.= '/panel/report/sub/poam/s/search';
+            if (isset($isExport)) {
                 $this->_paging['currentPage'] = 
                     $this->_pagging['perPage'] = null;
             }
             $this->makeUrl($criteria);
             if (!empty($criteria['year'])) {
-                $criteria['created_date_begin'] = new 
+                $criteria['createdDateBegin'] = new 
                     Zend_Date($criteria['year'], Zend_Date::YEAR);
-                $criteria['created_date_end'] = clone 
+                $criteria['createdDateEnd'] = clone 
                     $criteria['created_date_begin'];
-                $criteria['created_date_end']->add(1, Zend_Date::YEAR);
+                $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
                 unset($criteria['year']);
             }
             $list = & $this->_poam->search($this->_me->systems, array(
@@ -257,7 +257,7 @@ class ReportController extends PoamBaseController
                 $this->_paging['perPage']);
             $total = array_pop($list);
             $this->_paging['totalItems'] = $total;
-            $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
+            $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());
@@ -268,37 +268,37 @@ class ReportController extends PoamBaseController
     {
         $req = $this->getRequest();
         $params = array(
-            'system_id' => 'system_id',
-            'source_id' => 'source_id',
-            'overdue_type' => 'overdue_type',
-            'overdue_day' => 'overdue_day',
+            'systemId' => 'system_id',
+            'sourceId' => 'source_id',
+            'overdueType' => 'overdue_type',
+            'overdueDay' => 'overdue_day',
             'year' => 'year'
         );
         $criteria = $this->retrieveParam($req, $params);
-        $this->view->assign('source_list', $this->_source_list);
-        $this->view->assign('system_list', $this->_system_list);
+        $this->view->assign('source_list', $this->_sourceList);
+        $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('criteria', $criteria);
-        $is_export = $req->getParam('format');
-        if ('search' == $req->getParam('s') || isset($is_export)) {
-            $this->_paging_base_path.= '/panel/report/sub/overdue/s/search';
-            if (isset($is_export)) {
+        $isExport = $req->getParam('format');
+        if ('search' == $req->getParam('s') || isset($isExport)) {
+            $this->_pagingBasePath.= '/panel/report/sub/overdue/s/search';
+            if (isset($isExport)) {
                 $this->_paging['currentPage'] = 
                     $this->_paging['perPage'] = null;
             }
             $this->makeUrl($criteria);
-            $this->view->assign('url', $this->_paging_base_path);
-            if (isset($criteria['overdue_type'])) {
-                $criteria['overdue']['type'] = $criteria['overdue_type'];
+            $this->view->assign('url', $this->_pagingBasePath);
+            if (isset($criteria['overdueType'])) {
+                $criteria['overdue']['type'] = $criteria['overdueType'];
             }
-            if (isset($criteria['overdue_day'])) {
-                $criteria['overdue']['day'] = $criteria['overdue_day'];
+            if (isset($criteria['overdueDay'])) {
+                $criteria['overdue']['day'] = $criteria['overdueDay'];
             }
             if (!empty($criteria['year'])) {
-                $criteria['created_date_begin'] =
+                $criteria['createdDateBegin'] =
                     new Zend_Date($criteria['year'], Zend_Date::YEAR);
-                $criteria['created_date_end'] = 
-                    clone $criteria['created_date_begin'];
-                $criteria['created_date_end']->add(1, Zend_Date::YEAR);
+                $criteria['createdDateEnd'] = 
+                    clone $criteria['createdDateBegin'];
+                $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
                 unset($criteria['year']);
             }
             if (!empty($criteria['overdue'])) {
@@ -308,7 +308,8 @@ class ReportController extends PoamBaseController
                 $criteria['overdue']['end_date'] = clone $date;
                 $date->sub(30, Zend_Date::DAY);
                 $criteria['overdue']['begin_date'] = $date;
-                if ($criteria['overdue']['day'] == 5) { ///@todo hardcode greater than 120
+                if ($criteria['overdue']['day'] == 5) {
+                    ///@todo hardcode greater than 120
                     unset($criteria['overdue']['begin_date']);
                 }
             }
@@ -332,7 +333,7 @@ class ReportController extends PoamBaseController
                 $this->_paging['perPage']);
             $total = array_pop($list);
             $this->_paging['totalItems'] = $total;
-            $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
+            $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());
@@ -353,7 +354,8 @@ class ReportController extends PoamBaseController
             $REPORT_GEN_BLSCR = 1; // NIST Baseline Security Controls Report
             $REPORT_GEN_FIPS = 2; // FIPS 199 Category Breakdown
             $REPORT_GEN_PRODS = 3; // Products with Open Vulnerabilities
-            $REPORT_GEN_SWDISC = 4; // Software Discovered Through Vulnerability Assessments
+            $REPORT_GEN_SWDISC = 4; // Software Discovered Through
+                                    // Vulnerability Assessments
             $REPORT_GEN_TOTAL = 5; // Total # Systems with Open Vulnerabilitie
             if ($REPORT_GEN_BLSCR == $type) {
                 $this->_forward('blscr');
@@ -422,16 +424,16 @@ class ReportController extends PoamBaseController
             'avail' => 'availability',
             'integ' => 'availability'
         ));
-        $fips_totals = array();
-        $fips_totals['LOW'] = 0;
-        $fips_totals['MODERATE'] = 0;
-        $fips_totals['HIGH'] = 0;
-        $fips_totals['n/a'] = 0;
+        $fipsTotals = array();
+        $fipsTotals['LOW'] = 0;
+        $fipsTotals['MODERATE'] = 0;
+        $fipsTotals['HIGH'] = 0;
+        $fipsTotals['n/a'] = 0;
         foreach ($systems as $sid => & $system) {
             if (strtolower($system['conf']) != 'none') {
-                $risk_obj = new RiskAssessment($system['conf'],
+                $riskObj = new RiskAssessment($system['conf'],
                     $system['avail'], $system['integ'], null, null, null);
-                $fips199 = $risk_obj->get_data_sensitivity();
+                $fips199 = $riskObj->get_data_sensitivity();
             } else {
                 $fips199 = 'n/a';
             }
@@ -444,12 +446,12 @@ class ReportController extends PoamBaseController
                 $system['last_update'] = $ret['last_update'];
             }
             $system['fips'] = $fips199;
-            $fips_totals[$fips199]+= 1;
+            $fipsTotals[$fips199]+= 1;
             $system['crit'] = $system['avail'];
         }
         $rpdata = array();
         $rpdata[] = $systems;
-        $rpdata[] = $fips_totals;
+        $rpdata[] = $fipsTotals;
         $this->view->assign('rpdata', $rpdata);
         $this->render();
     }
@@ -506,29 +508,29 @@ class ReportController extends PoamBaseController
             array())->join(array(
             'a' => 'assets'
         ), 'a.id = p.asset_id', array())->group("p.system_id");
-        $sys_vulncounts = $db->fetchAll($query);
-        $sys_nicks = $system->getList('nickname');
-        $system_totals = array();
-        foreach ($sys_nicks as $nickname) {
-            $system_nick = $nickname;
-            $system_totals[$system_nick] = 0;
+        $sysVulncounts = $db->fetchAll($query);
+        $sysNicks = $system->getList('nickname');
+        $systemTotals = array();
+        foreach ($sysNicks as $nickname) {
+            $systemNick = $nickname;
+            $systemTotals[$systemNick] = 0;
         }
-        $total_open = 0;
-        foreach ((array)$sys_vulncounts as $sv_row) {
-            $system_nick = $sv_row['sysnick'];
-            $system_totals[$system_nick] = $sv_row['vulncount'];
-            $total_open++;
+        $totalOpen = 0;
+        foreach ((array)$sysVulncounts as $svRow) {
+            $systemNick = $svRow['sysnick'];
+            $systemTotals[$systemNick] = $svRow['vulncount'];
+            $totalOpen++;
         }
-        $system_total_array = array();
-        foreach (array_keys($system_totals) as $key) {
-            $val = $system_totals[$key];
-            $this_row = array();
-            $this_row['nick'] = $key;
-            $this_row['num'] = $val;
-            array_push($system_total_array, $this_row);
+        $systemTotalArray = array();
+        foreach (array_keys($systemTotals) as $key) {
+            $val = $systemTotals[$key];
+            $thisRow = array();
+            $thisRow['nick'] = $key;
+            $thisRow['num'] = $val;
+            array_push($systemTotalArray, $thisRow);
         }
-        array_push($rpdata, $total_open);
-        array_push($rpdata, $system_total_array);
+        array_push($rpdata, $totalOpen);
+        array_push($rpdata, $systemTotalArray);
         $this->view->assign('rpdata', $rpdata);
         $this->render();
     }
@@ -542,7 +544,7 @@ class ReportController extends PoamBaseController
     public function rafsAction()
     {
         $sid = $this->_req->getParam('system_id');
-        $this->view->assign('system_list', $this->_system_list);
+        $this->view->assign('system_list', $this->_systemList);
         if (!empty($sid)) {
             $query = $this->_poam->select()->from($this->_poam, array(
                 'id'
@@ -550,22 +552,22 @@ class ReportController extends PoamBaseController
                 ->where('threat_level IS NOT NULL AND threat_level != \'NONE\'')
                 ->where('cmeasure_effectiveness IS NOT NULL AND 
                                     cmeasure_effectiveness != \'NONE\'');
-            $poam_ids = $this->_poam->getAdapter()->fetchCol($query);
-            $count = count($poam_ids);
+            $poamIds = $this->_poam->getAdapter()->fetchCol($query);
+            $count = count($poamIds);
             if ($count > 0) {
                 $this->_helper->layout->disableLayout(true);
                 $fname = tempnam('/tmp/', "RAFs");
                 @unlink($fname);
                 $rafs = new Archive_Tar($fname, true);
-                $this->view->assign('source_list', $this->_source_list);
+                $this->view->assign('source_list', $this->_sourceList);
                 $path = $this->_helper->viewRenderer
                     ->getViewScript('raf', array(
                     'controller' => 'remediation',
                     'suffix' => 'pdf.tpl'
                 ));
-                foreach ($poam_ids as $id) {
-                    $poam_detail = & $this->_poam->getDetail($id);
-                    $this->view->assign('poam', $poam_detail);
+                foreach ($poamIds as $id) {
+                    $poamDetail = & $this->_poam->getDetail($id);
+                    $this->view->assign('poam', $poamDetail);
                     $rafs->addString("raf_{$id}.pdf",
                         $this->view->render($path));
                 }

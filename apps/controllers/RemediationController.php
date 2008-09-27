@@ -36,20 +36,21 @@
 class RemediationController extends PoamBaseController
 {
     //define the events of notification
-    private $_notificationArray = array('action_suggested'=>Notification::UPDATE_FINDING_RECOMMENDATION,
-                                       'type'=>Notification::UPDATE_COURSE_OF_ACTION,
-                                       'action_planned'=>Notification::UPDATE_COURSE_OF_ACTION,
-                                       'action_est_date'=>Notification::UPDATE_EST_COMPLETION_DATE,
-                                       'threat_level'=>Notification::UPDATE_THREAT,
-                                       'threat_source'=>Notification::UPDATE_THREAT,
-                                       'threat_justification'=>Notification::UPDATE_THREAT,
-                                       'cmeasure_effectiveness'=>Notification::UPDATE_COUNTERMEASURES,
-                                       'cmeasure'=>Notification::UPDATE_COUNTERMEASURES,
-                                       'cmeasure_justification'=>Notification::UPDATE_COUNTERMEASURES,
-                                       'system_id'=>Notification::UPDATE_FINDING_ASSIGNMENT,
-                                       'blscr_id'=>Notification::UPDATE_CONTROL_ASSIGNMENT,
-                                       'action_status'=>Notification::MITIGATION_STRATEGY_APPROVED,
-                                       'action_resources'=>Notification::UPDATE_FINDING_RESOURCES);
+    private $_notificationArray =
+        array('action_suggested'=>Notification::UPDATE_FINDING_RECOMMENDATION,
+              'type'=>Notification::UPDATE_COURSE_OF_ACTION,
+              'action_planned'=>Notification::UPDATE_COURSE_OF_ACTION,
+              'action_est_date'=>Notification::UPDATE_EST_COMPLETION_DATE,
+              'threat_level'=>Notification::UPDATE_THREAT,
+              'threat_source'=>Notification::UPDATE_THREAT,
+              'threat_justification'=>Notification::UPDATE_THREAT,
+              'cmeasure_effectiveness'=>Notification::UPDATE_COUNTERMEASURES,
+              'cmeasure'=>Notification::UPDATE_COUNTERMEASURES,
+              'cmeasure_justification'=>Notification::UPDATE_COUNTERMEASURES,
+              'system_id'=>Notification::UPDATE_FINDING_ASSIGNMENT,
+              'blscr_id'=>Notification::UPDATE_CONTROL_ASSIGNMENT,
+              'action_status'=>Notification::MITIGATION_STRATEGY_APPROVED,
+              'action_resources'=>Notification::UPDATE_FINDING_RESOURCES);
     /**
      *  Default action.
      *
@@ -65,35 +66,35 @@ class RemediationController extends PoamBaseController
      */
     public function summaryAction()
     {
-        $criteria['system_id'] = $this->_request->getParam('system_id');
-        $criteria['source_id'] = $this->_request->getParam('source_id');
+        $criteria['systemId'] = $this->_request->getParam('system_id');
+        $criteria['sourceId'] = $this->_request->getParam('source_id');
         $criteria['type'] = $this->_request->getParam('type');
         $criteria['status'] = $this->_request->getParam('status');
         $criteria['ids'] = $this->_request->getParam('ids');
-        $criteria['asset_owner'] = $this->_request->getParam('asset_owner', 0);
+        $criteria['assetOwner'] = $this->_request->getParam('asset_owner', 0);
 
         $tmp = $this->_request->getParam('est_date_begin');
         if (!empty($tmp)) {
-            $criteria['est_date_begin'] = new Zend_Date($tmp,
+            $criteria['estDateBegin'] = new Zend_Date($tmp,
                 Zend_Date::DATES);
         }
         $tmp = $this->_request->getParam('est_date_end');
         if (!empty($tmp)) {
-            $criteria['est_date_end'] = new Zend_Date($tmp, Zend_Date::DATES);
+            $criteria['estDateEnd'] = new Zend_Date($tmp, Zend_Date::DATES);
         }
         $tmp = $this->_request->getParam('created_date_begin');
         if (!empty($tmp)) {
-            $criteria['created_date_begin'] = new Zend_Date($tmp,
+            $criteria['createdDateBegin'] = new Zend_Date($tmp,
                 Zend_Date::DATES);
         }
         $tmp = $this->_request->getParam('created_date_end');
         if (!empty($tmp)) {
-            $criteria['created_date_end'] = new Zend_Date($tmp,
+            $criteria['createdDateEnd'] = new Zend_Date($tmp,
                 Zend_Date::DATES);
         }
 
         $today = parent::$now->toString('Ymd');
-        $summary_tmp = array(
+        $summaryTmp = array(
             'NEW' => 0,
             'OPEN' => 0,
             'EN' => 0,
@@ -106,20 +107,20 @@ class RemediationController extends PoamBaseController
             'TOTAL' => 0
         );
 
-        if ( !empty($criteria['system_id']) ) {
-            $sum = array('0' => $summary_tmp);
-            $summary = array($criteria['system_id'] => $summary_tmp);
+        if ( !empty($criteria['systemId']) ) {
+            $sum = array('0' => $summaryTmp);
+            $summary = array($criteria['systemId'] => $summaryTmp);
         } else {
             // mock array_fill_key in 5.2.0
             $count = count($this->_me->systems);
             if ( 0 == $count ) {
                 $summary = array();
             } else {
-                $sum = array_fill(0, $count, $summary_tmp);
+                $sum = array_fill(0, $count, $summaryTmp);
                 $summary = array_combine($this->_me->systems, $sum);
             }
         }
-        $total = $summary_tmp;
+        $total = $summaryTmp;
         $ret = $this->_poam->search($this->_me->systems, array(
             'count' => array(
                 'status',
@@ -130,11 +131,11 @@ class RemediationController extends PoamBaseController
             'system_id'
         ), $criteria);
         $sum = array();
-        foreach($ret as $s) {
+        foreach ($ret as $s) {
             $sum[$s['system_id']][$s['status']] = $s['count'];
         }
-        foreach($sum as $id => & $s) {
-            $summary[$id] = $summary_tmp;
+        foreach ($sum as $id => & $s) {
+            $summary[$id] = $summaryTmp;
             $summary[$id]['NEW'] = nullGet($s['NEW'], 0);
             $summary[$id]['OPEN'] = nullGet($s['OPEN'], 0);
             $summary[$id]['ES'] = nullGet($s['ES'], 0);
@@ -149,71 +150,73 @@ class RemediationController extends PoamBaseController
             $total['ES']+= $summary[$id]['ES'];
             $total['TOTAL']+= $summary[$id]['TOTAL'];
         }
-        $eo_count = $this->_poam->search($this->_me->systems, array(
+        $eoCount = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array_merge($criteria, array(
+        ), array_merge($criteria, array(
             'status' => 'EN',
-            'est_date_end' => parent::$now
+            'estDateEnd' => parent::$now
         )));
-        foreach($eo_count as $eo) {
+        foreach ($eoCount as $eo) {
             $summary[$eo['system_id']]['EO'] = $eo['count'];
             $total['EO']+= $summary[$eo['system_id']]['EO'];
         }
-        $en_count = $this->_poam->search($this->_me->systems, array(
+        $enCount = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array_merge($criteria, array(
+        ), array_merge($criteria, array(
             'status' => 'EN',
-            'est_date_begin' => parent::$now
+            'estDateBegin' => parent::$now
         )));
-        foreach($en_count as $en) {
+        foreach ($enCount as $en) {
             $summary[$en['system_id']]['EN'] = $en['count'];
             $total['EN']+= $summary[$en['system_id']]['EN'];
         }
         $spsso = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array_merge(array(
+        ), array_merge(array(
             'ep' => 0
         ), $criteria));
-        foreach($spsso as $sp) {
+        foreach ($spsso as $sp) {
             $summary[$sp['system_id']]['EP_SSO'] = $sp['count'];
             $total['EP_SSO']+= $sp['count'];
         }
         $spsnp = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
-        ) , array_merge(array(
+        ), array_merge(array(
             'ep' => 1
         ), $criteria));
-        foreach($spsnp as $sp) {
+        foreach ($spsnp as $sp) {
             $summary[$sp['system_id']]['EP_SNP'] = $sp['count'];
             $total['EP_SNP']+= $sp['count'];
         }
         $this->view->assign('total', $total);
-        $this->view->assign('systems', $this->_system_list);
+        $this->view->assign('systems', $this->_systemList);
         $this->view->assign('summary', $summary);
         $this->render('summary');
-        $this->_helper->actionStack('searchbox','Remediation', null, array('action'=>'summary'));
+        $this->_helper->actionStack('searchbox', 'Remediation', null,
+            array('action'=>'summary'));
     }
     /**
-     *  Do the real searching work. It's a thin wrapper of poam model's search method.
+     *  Do the real searching work. It's a thin wrapper
+     *  of poam model's search method.
      */
     protected function _search($criteria)
     {
         //refer to searchbox.tpl for a complete status list
-        $internal_crit = & $criteria;
+        $internalCrit = & $criteria;
         if (!empty($criteria['status'])) {
             $now = clone parent::$now;
             switch ($criteria['status']) {
             case 'NEW':
-                $internal_crit['status'] = 'NEW';
+                $internalCrit['status'] = 'NEW';
                 break;
 
             case 'OPEN':
-                $internal_crit['status'] = 'OPEN';
-                $internal_crit['type'] = array(
+                $internalCrit['status'] = 'OPEN';
+                $internalCrit['type'] = array(
                     'CAP',
                     'FP',
                     'AR'
@@ -221,37 +224,37 @@ class RemediationController extends PoamBaseController
                 break;
 
             case 'EN':
-                $internal_crit['status'] = 'EN';
+                $internalCrit['status'] = 'EN';
                 //Should we include EO status in?
-                $internal_crit['est_date_begin'] = $now;
+                $internalCrit['estDateBegin'] = $now;
                 break;
 
             case 'EO':
-                $internal_crit['status'] = 'EN';
-                $internal_crit['est_date_end'] = $now;
+                $internalCrit['status'] = 'EN';
+                $internalCrit['estDateEnd'] = $now;
                 break;
 
             case 'EP-SSO':
                 ///@todo EP searching needed
-                $internal_crit['status'] = 'EP';
-                $internal_crit['ep'] = 0; //level
+                $internalCrit['status'] = 'EP';
+                $internalCrit['ep'] = 0; //level
                 break;
 
             case 'EP-SNP':
-                $internal_crit['status'] = 'EP';
-                $internal_crit['ep'] = 1; //level
+                $internalCrit['status'] = 'EP';
+                $internalCrit['ep'] = 1; //level
                 break;
 
             case 'ES':
-                $internal_crit['status'] = 'ES';
+                $internalCrit['status'] = 'ES';
                 break;
 
             case 'CLOSED':
-                $internal_crit['status'] = 'CLOSED';
+                $internalCrit['status'] = 'CLOSED';
                 break;
 
             case 'NOT-CLOSED':
-                $internal_crit['status'] = array(
+                $internalCrit['status'] = array(
                     'OPEN',
                     'EN',
                     'EP',
@@ -260,33 +263,33 @@ class RemediationController extends PoamBaseController
                 break;
 
             case 'NOUP-30':
-                $internal_crit['status'] = array(
+                $internalCrit['status'] = array(
                     'OPEN',
                     'EN',
                     'EP',
                     'ES'
                 );
-                $internal_crit['modify_ts'] = $now->sub(30, Zend_Date::DAY);
+                $internalCrit['modify_ts'] = $now->sub(30, Zend_Date::DAY);
                 break;
 
             case 'NOUP-60':
-                $internal_crit['status'] = array(
+                $internalCrit['status'] = array(
                     'OPEN',
                     'EN',
                     'EP',
                     'ES'
                 );
-                $internal_crit['modify_ts'] = $now->sub(60, Zend_Date::DAY);
+                $internalCrit['modify_ts'] = $now->sub(60, Zend_Date::DAY);
                 break;
 
             case 'NOUP-90':
-                $internal_crit['status'] = array(
+                $internalCrit['status'] = array(
                     'OPEN',
                     'EN',
                     'EP',
                     'ES'
                 );
-                $internal_crit['modify_ts'] = $now->sub(90, Zend_Date::DAY);
+                $internalCrit['modify_ts'] = $now->sub(90, Zend_Date::DAY);
                 break;
             }
         }
@@ -299,17 +302,19 @@ class RemediationController extends PoamBaseController
             'finding_data',
             'action_est_date',
             'count' => 'count(*)'
-        ) , $internal_crit, $this->_paging['currentPage'], $this->_paging['perPage']);
+        ), $internalCrit, $this->_paging['currentPage'],
+            $this->_paging['perPage']);
         $total = array_pop($list);
         $this->_paging['totalItems'] = $total;
-        $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
-        $lastSearch_url = str_replace('%d', $this->_paging['currentPage'], $this->_paging['fileName']);
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
+        $lastSearchUrl = str_replace('%d', $this->_paging['currentPage'],
+            $this->_paging['fileName']);
         $urlNamespace = new Zend_Session_Namespace('urlNamespace');
-        $urlNamespace->lastSearch = $lastSearch_url;
+        $urlNamespace->lastSearch = $lastSearchUrl;
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('list', $list);
-        $this->view->assign('systems', $this->_system_list);
-        $this->view->assign('sources', $this->_source_list);
+        $this->view->assign('systems', $this->_systemList);
+        $this->view->assign('sources', $this->_sourceList);
         $this->view->assign('total_pages', $total);
         $this->view->assign('links', $pager->getLinks());
         $this->render('search');
@@ -317,34 +322,36 @@ class RemediationController extends PoamBaseController
     public function searchboxAction()
     {
         $req = $this->getRequest();
-        $this->_paging_base_path.= '/panel/remediation/sub/searchbox/s/search';
+        $this->_pagingBasePath.= '/panel/remediation/sub/searchbox/s/search';
         // parse the params of search
-        $criteria['system_id'] = $req->getParam('system_id');
-        $criteria['source_id'] = $req->getParam('source_id');
+        $criteria['systemId'] = $req->getParam('system_id');
+        $criteria['sourceId'] = $req->getParam('source_id');
         $criteria['type'] = $req->getParam('type');
         $criteria['status'] = $req->getParam('status');
         $criteria['ids'] = $req->getParam('ids');
-        $criteria['asset_owner'] = $req->getParam('asset_owner', 0);
+        $criteria['assetOwner'] = $req->getParam('asset_owner', 0);
         $criteria['order'] = array();
-        if ($req->getParam('sortby') != null && $req->getParam('order') != null) {
+        if ($req->getParam('sortby') != null
+            && $req->getParam('order') != null) {
             array_push($criteria['order'], $req->getParam('sortby'));
             array_push($criteria['order'], $req->getParam('order'));
         }
         $tmp = $req->getParam('est_date_begin');
         if (!empty($tmp)) {
-            $criteria['est_date_begin'] = new Zend_Date($tmp, Zend_Date::DATES);
+            $criteria['estDateBegin'] = new Zend_Date($tmp, Zend_Date::DATES);
         }
         $tmp = $req->getParam('est_date_end');
         if (!empty($tmp)) {
-            $criteria['est_date_end'] = new Zend_Date($tmp, Zend_Date::DATES);
+            $criteria['estDateEnd'] = new Zend_Date($tmp, Zend_Date::DATES);
         }
         $tmp = $req->getParam('created_date_begin');
         if (!empty($tmp)) {
-            $criteria['created_date_begin'] = new Zend_Date($tmp, Zend_Date::DATES);
+            $criteria['createdDateBegin'] = new Zend_Date($tmp,
+                Zend_Date::DATES);
         }
         $tmp = $req->getParam('created_date_end');
         if (!empty($tmp)) {
-          $de =  $criteria['created_date_end'] = new Zend_Date($tmp);
+            $criteria['createdDateEnd'] = new Zend_Date($tmp);
         }
 
         if ('summary' == $this->_request->getParam('action')) {
@@ -354,21 +361,24 @@ class RemediationController extends PoamBaseController
         }
 
         $this->makeUrl($criteria);
-        $this->view->assign('url', $this->_paging_base_path);
+        $this->view->assign('url', $this->_pagingBasePath);
         $this->view->assign('criteria', $criteria);
-        $this->view->assign('systems', $this->_system_list);
-        $this->view->assign('sources', $this->_source_list);
+        $this->view->assign('systems', $this->_systemList);
+        $this->view->assign('sources', $this->_sourceList);
         $this->view->assign('postAction', $postAction);
         $this->render();
         if ('search' == $req->getParam('s')) {
-            $this->_paging_base_path = $req->getBaseUrl() . '/panel/remediation/sub/searchbox/s/search';
+            $this->_pagingBasePath = $req->getBaseUrl()
+                . '/panel/remediation/sub/searchbox/s/search';
             $this->_paging['currentPage'] = $req->getParam('p', 1);
-            foreach($criteria as $key => $value) {
+            foreach ($criteria as $key => $value) {
                 if (!empty($value)) {
                     if ($value instanceof Zend_Date) {
-                        $this->_paging_base_path.= '/' . $key . '/' . $value->toString('Ymd') . '';
+                        $this->_pagingBasePath.=
+                            '/' . $key . '/' . $value->toString('Ymd') . '';
                     } else {
-                        $this->_paging_base_path.= '/' . $key . '/' . $value . '';
+                        $this->_pagingBasePath.=
+                            '/' . $key . '/' . $value . '';
                     }
                 }
             }
@@ -383,26 +393,28 @@ class RemediationController extends PoamBaseController
     {
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        $poam_detail = $this->_poam->getDetail($id);
-        if (empty($poam_detail)) {
-            throw new FismaException("POAM($id) is not found, Make sure a valid ID is inputed");
+        $poamDetail = $this->_poam->getDetail($id);
+        if (empty($poamDetail)) {
+            throw new FismaException("POAM($id) is not found,
+                Make sure a valid ID is inputed");
         }
-        $ev_evaluation = $this->_poam->getEvEvaluation($id);
+        $evEvaluation = $this->_poam->getEvEvaluation($id);
         // currently we don't need to support the comments for est_date change
         //$act_evaluation = $this->_poam->getActEvaluation($id);
         $evs = array();
-        foreach($ev_evaluation as $ev_eval) {
-            $evid = & $ev_eval['id'];
+        foreach ($evEvaluation as $evEval) {
+            $evid = & $evEval['id'];
             if (!isset($evs[$evid]['ev'])) {
-                $evs[$evid]['ev'] = array_slice($ev_eval, 0, 5);
+                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
             }
-            $evs[$evid]['eval'][$ev_eval['eval_name']] = array_slice($ev_eval, 5);
+            $evs[$evid]['eval'][$evEval['eval_name']] =
+                array_slice($evEval, 5);
         }
-        $this->view->assign('poam', $poam_detail);
+        $this->view->assign('poam', $poamDetail);
         $this->view->assign('logs', $this->_poam->getLogs($id));
         $this->view->assign('ev_evals', $evs);
-        $this->view->assign('system_list', $this->_system_list);
-        $this->view->assign('network_list',$this->_network_list);
+        $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('network_list', $this->_networkList);
         $this->render();
     }
     public function modifyAction()
@@ -418,10 +430,10 @@ class RemediationController extends PoamBaseController
                 $oldpoam = $oldpoam[0];
             }
             $where = $this->_poam->getAdapter()->quoteInto('id = ?', $id);
-            $log_content = "Changed:";
+            $logContent = "Changed:";
             //@todo sanity check
             //@todo this should be encapsulated in a single transaction
-            foreach($poam as $k => $v) {
+            foreach ($poam as $k => $v) {
                 if ($k == 'type' && $oldpoam['status'] == 'NEW') {
                     assert(empty($poam['status']));
                     $poam['status'] = 'OPEN';
@@ -430,36 +442,39 @@ class RemediationController extends PoamBaseController
                 if ($k == 'action_status' && $v == 'APPROVED') {
                     $poam['status'] = 'EN';
                 } elseif ($k == 'action_status' && $v == 'DENIED') {
-                    // If the SSO denies, then put back into OPEN status to make the POAM
+                    // If the SSO denies, then put back into OPEN status to
+                    // make the POAM
                     // editable again.
                     $poam['status'] = 'OPEN';
                 }
-                ///@todo SSO can only approve the action after all the required info provided
+                ///@todo SSO can only approve the action after all the required
+                // info provided
             }
             $result = $this->_poam->update($poam, $where);
                         
             // Generate notifications and audit records if the update is
             // successful
             $notificationsSent = array();
-            if( $result > 0 ) {
-                foreach($poam as $k => $v) {
+            if ( $result > 0 ) {
+                foreach ($poam as $k => $v) {
                     // We shouldn't send the same type of notification twice
                     // in one update. $notificationsSent is a set which
                     // tracks which notifications we have already created.
                     if (array_key_exists($k, $this->_notificationArray)
                         && !array_key_exists($this->_notificationArray[$k],
                                              $notificationsSent)) {
-                        $this->_notification->add(
-                            $this->_notificationArray[$k],
+                        $this->_notification->add($this->_notificationArray[$k],
                             $this->_me->account,
                             "PoamID: $id",
-                            nullGet($poam['system_id'], $oldpoam['system_id'])
-                        );
+                            nullGet($poam['system_id'], $oldpoam['system_id']));
                         $notificationsSent[$this->_notificationArray[$k]] = 1;
                     }
 
-                    $log_content = "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
-            	    $this->_poam->writeLogs($id, $this->_me->id, self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION', $log_content);
+                    $logContent =
+                        "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
+            	    $this->_poam->writeLogs($id, $this->_me->id,
+                        self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION',
+                        $logContent);
                 }
             }
         }
@@ -479,8 +494,8 @@ class RemediationController extends PoamBaseController
                 $poam = $poam[0];
             }
             
-            $user_id = $this->_me->id;
-            $now_str = self::$now->toString('Y-m-d-his');
+            $userId = $this->_me->id;
+            $nowStr = self::$now->toString('Y-m-d-his');
             if (!file_exists(EVIDENCE_PATH)) {
                 mkdir(EVIDENCE_PATH, 0755);
             }
@@ -488,43 +503,49 @@ class RemediationController extends PoamBaseController
                 mkdir(EVIDENCE_PATH . DS . $id, 0755);
             }
             $count = 0;
-            $filename = preg_replace('/^([^.]*)(\.[^.]*)?\.([^.]*)$/', '$1$2-' . $now_str . '.$3', $_FILES['evidence']['name'], 2, $count);
-            $abs_file = EVIDENCE_PATH . DS . $id . DS . $filename;
+            $filename = preg_replace('/^([^.]*)(\.[^.]*)?\.([^.]*)$/',
+                '$1$2-' . $nowStr . '.$3', $_FILES['evidence']['name'],
+                2, $count);
+            $absFile = EVIDENCE_PATH . DS . $id . DS . $filename;
             if ($count > 0) {
-                $result_move = move_uploaded_file($_FILES['evidence']['tmp_name'], $abs_file);
-                if ($result_move) {
-                    chmod($abs_file, 0755);
+                $resultMove =
+                    move_uploaded_file($_FILES['evidence']['tmp_name'],
+                        $absFile);
+                if ($resultMove) {
+                    chmod($absFile, 0755);
                 } else {
-                    throw new FismaException('Failed in move_uploaded_file(). ' . $abs_file . $_FILES['evidence']['error']);
+                    throw new FismaException('Failed in move_uploaded_file(). '
+                        . $absFile . $_FILES['evidence']['error']);
                 }
             } else {
                 throw new FismaException('The filename is not valid');
             }
-            $today = substr($now_str, 0, 10);
+            $today = substr($nowStr, 0, 10);
             $data = array(
                 'poam_id' => $id,
                 'submission' => $filename,
-                'submitted_by' => $user_id,
+                'submitted_by' => $userId,
                 'submit_ts' => $today
             );
             $db = Zend_Registry::get('db');
             $result = $db->insert('evidences', $data);
             $evidenceId = $db->LastInsertId();
-            $this->_notification->add(
-                Notification::EVIDENCE_APPROVAL_1ST,
+            $this->_notification->add(Notification::EVIDENCE_APPROVAL_1ST,
                 $this->_me->account,
                 "PoamId: $id",
-                $poam['system_id']
-            );
+                $poam['system_id']);
 
-            $update_data = array(
+            $updateData = array(
                 'status' => 'EP',
                 'action_actual_date' => $today
             );
-            $result = $this->_poam->update($update_data, "id = $id");
+            $result = $this->_poam->update($updateData, "id = $id");
             if ($result > 0) {
-                $log_content = "Changed: status: EP . Upload evidence: $filename OK";
-                $this->_poam->writeLogs($id, $user_id, self::$now->toString('Y-m-d H:i:s') , 'UPLOAD EVIDENCE', $log_content);
+                $logContent = "Changed: status: EP . Upload evidence:"
+                              ." $filename OK";
+                $this->_poam->writeLogs($id, $userId,
+                    self::$now->toString('Y-m-d H:i:s'),
+                    'UPLOAD EVIDENCE', $logContent);
             }
         }
         $this->_redirect('/panel/remediation/sub/view/id/' . $id);
@@ -535,22 +556,22 @@ class RemediationController extends PoamBaseController
     public function evidenceAction()
     {
         $req = $this->getRequest();
-        $eval_id = $req->getParam('evaluation');
+        $evalId = $req->getParam('evaluation');
         $decision = $req->getParam('decision');
         $eid = $req->getParam('id');
         $ev = new Evidence();
-        $ev_detail = $ev->find($eid);
+        $evDetail = $ev->find($eid);
 
         // Get the poam data because we need system_id to generate the
         // notification
-        $poam = $this->_poam->find($ev_detail->current()->poam_id)->toArray();
+        $poam = $this->_poam->find($evDetail->current()->poam_id)->toArray();
         if (empty($poam)) {
             throw new FismaException('incorrect ID specified for poam');
         } else {
             $poam = $poam[0];
         }
         
-        if (empty($ev_detail)) {
+        if (empty($evDetail)) {
             throw new FismaException('Wrong evidence id:' . $eid);
         }
         if ($decision == 'APPROVE') {
@@ -560,79 +581,81 @@ class RemediationController extends PoamBaseController
         } else {
             throw new FismaException('Wrong decision:' . $decision);
         }
-        $poam_id = $ev_detail->current()->poam_id;
-        $log_content = "";
+        $poamId = $evDetail->current()->poam_id;
+        $logContent = "";
         if (in_array($decision, array(
             'APPROVED',
             'DENIED'
         ))) {
-            $log_content = "";
-            $evv_id = $this->_poam->reviewEv($eid, array(
+            $logContent = "";
+            $evvId = $this->_poam->reviewEv($eid, array(
                 'decision' => $decision,
-                'eval_id' => $eval_id,
+                'eval_id' => $evalId,
                 'user_id' => $this->_me->id,
                 'date' => self::$now->toString('Y-m-d')
             ));
-            if ( $eval_id == 1 ) {
+            if ( $evalId == 1 ) {
                 $this->_notification
                      ->add(Notification::EVIDENCE_APPROVAL_2ND,
                         $this->_me->account,
-                        "PoamId: $poam_id",
+                        "PoamId: $poamId",
                         $poam['system_id']);
             }
 
-            $log_content.= " Decision: $decision.";
+            $logContent.= " Decision: $decision.";
             if ($decision == 'DENIED') {
                 $this->_poam->update(array(
                     'status' => 'EN'
-                ) , 'id=' . $poam_id);
+                ), 'id=' . $poamId);
                 $topic = $req->getParam('topic');
                 $body = $req->getParam('reject');
                 $comm = new Comments();
                 $comm->insert(array(
-                    'poam_evaluation_id' => $evv_id,
+                    'poam_evaluation_id' => $evvId,
                     'user_id' => $this->_me->id,
                     'date' => 'CURDATE()',
                     'topic' => $topic,
                     'content' => $body
                 ));
-                $log_content.= " Status: EN. Topic: $topic. Content: $body.";
+                $logContent.= " Status: EN. Topic: $topic. Content: $body.";
                 $this->_notification
                      ->add(Notification::EVIDENCE_DENIED,
                         $this->_me->account,
-                        "PoamId: $poam_id",
+                        "PoamId: $poamId",
                         $poam['system_id']);
             }
-            if ($decision == 'APPROVED' && $eval_id == 2) {
-                $log_content.= " Status: ES";
+            if ($decision == 'APPROVED' && $evalId == 2) {
+                $logContent.= " Status: ES";
                 $this->_poam->update(array(
                     'status' => 'ES'
-                ) , 'id=' . $poam_id);
+                ), 'id=' . $poamId);
 
                 $this->_notification
                      ->add(Notification::EVIDENCE_APPROVAL_3RD,
                         $this->_me->account,
-                        "PoamId: $poam_id",
+                        "PoamId: $poamId",
                         $poam['system_id']);
             }
-            if ($decision == 'APPROVED' && $eval_id == 3) {
-                $log_content.= " Status: CLOSED";
+            if ($decision == 'APPROVED' && $evalId == 3) {
+                $logContent.= " Status: CLOSED";
                 $this->_poam->update(array(
                     'status' => 'CLOSED'
-                ) , 'id=' . $poam_id);
+                ), 'id=' . $poamId);
             
                 $this->_notification
                      ->add(Notification::POAM_CLOSED,
                         $this->_me->account,
-                        "PoamId: $poam_id",
+                        "PoamId: $poamId",
                         $poam['system_id']);
             }
-            if (!empty($log_content)) {
-                $log_content = "Changed: $log_content";
-                $this->_poam->writeLogs($poam_id, $this->_me->id, self::$now->toString('Y-m-d H:i:s') , 'EVIDENCE EVALUATION', $log_content);
+            if (!empty($logContent)) {
+                $logContent = "Changed: $logContent";
+                $this->_poam->writeLogs($poamId, $this->_me->id,
+                    self::$now->toString('Y-m-d H:i:s'),
+                    'EVIDENCE EVALUATION', $logContent);
             }
         }
-        $this->_redirect('/panel/remediation/sub/view/id/' . $poam_id, array(
+        $this->_redirect('/panel/remediation/sub/view/id/' . $poamId, array(
             'exit'
         ));
     }
@@ -648,19 +671,21 @@ class RemediationController extends PoamBaseController
         $this->_helper->contextSwitch()->addContext('pdf', array(
             'suffix' => 'pdf',
             'headers' => array(
-                'Content-Disposition' => "attachement;filename=\"{$id}_raf.pdf\"",
+                'Content-Disposition' =>
+                    "attachement;filename=\"{$id}_raf.pdf\"",
                 'Content-Type' => 'application/pdf'
             )
         ))->addActionContext('raf', array(
             'pdf'
         ))->initContext();
-        $poam_detail = $this->_poam->getDetail($id);
-        if (empty($poam_detail)) {
-            throw new FismaException("Not able to get details for this POAM ID ($id)");
+        $poamDetail = $this->_poam->getDetail($id);
+        if (empty($poamDetail)) {
+            throw new FismaException(
+                "Not able to get details for this POAM ID ($id)");
         }
-        $this->view->assign('poam', $poam_detail);
-        $this->view->assign('system_list', $this->_system_list);
-        $this->view->assign('source_list', $this->_source_list);
+        $this->view->assign('poam', $poamDetail);
+        $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('source_list', $this->_sourceList);
         $this->render();
     }
 }

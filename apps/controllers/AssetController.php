@@ -43,7 +43,7 @@ class AssetController extends PoamBaseController
             $swCtx->addContext('pdf', array(
                 'suffix' => 'pdf',
                 'headers' => array(
-                    'Content-Disposition' => 'attachement;filename="export.pdf"',
+                    'Content-Disposition' =>'attachement;filename="export.pdf"',
                     'Content-Type' => 'application/pdf'
                 )
             ));
@@ -73,19 +73,19 @@ class AssetController extends PoamBaseController
     public function searchAction()
     {
         $req = $this->getRequest();
-        $system_id = $req->getParam('sid');
-        $asset_name = $req->getParam('name');
+        $systemId = $req->getParam('sid');
+        $assetName = $req->getParam('name');
         $ip = $req->getParam('ip');
         $port = $req->getParam('port');
         $qry = $this->_asset->select()->from($this->_asset, array(
             'id' => 'id',
             'name' => 'name'
         ))->order('name ASC');
-        if (!empty($system_id) && $system_id > 0) {
-            $qry->where('system_id = ?', $system_id);
+        if (!empty($systemId) && $systemId > 0) {
+            $qry->where('system_id = ?', $systemId);
         }
-        if (!empty($asset_name)) {
-            $qry->where('name=?', $asset_name);
+        if (!empty($assetName)) {
+            $qry->where('name=?', $assetName);
         }
         if (!empty($ip)) {
             $qry->where('address_ip = ?', $ip);
@@ -106,44 +106,44 @@ class AssetController extends PoamBaseController
         $user = new User();
         $product = new Product();
         $systems = $user->getMySystems($this->_me->id);
-        $sys_id_set = implode(',', $systems);
+        $sysIdSet = implode(',', $systems);
         $db = Zend_Registry::get('db');
         $qry = $db->select();
-        $system_list = $this->_system_list;
-        $system_list['select'] = "--select--";
+        $systemList = $this->_systemList;
+        $systemList['select'] = "--select--";
         $qry->reset();
-        $network_list = $this->_network_list;
-        $network_list['select'] = "--select--";
+        $networkList = $this->_networkList;
+        $networkList['select'] = "--select--";
         $qry->reset();
         $req = $this->getRequest();
-        $asset_name = $req->getParam('assetname', '');
-        $system_id = $req->getParam('system_list', '');
-        $network_id = $req->getParam('network_list', '');
-        $asset_ip = $req->getParam('ip', '');
-        $asset_port = $req->getParam('port', '');
-        $prod_id = $req->getParam('prod_id', '');
-        $asset_source = "MANUAL";
-        $create_time = date("Y_m_d H:m:s");
-        if (!empty($asset_name)) {
-            $asset_row = array(
-                'prod_id' => $prod_id,
-                'name' => $asset_name,
-                'create_ts' => $create_time,
-                'source' => $asset_source,
-                'system_id' => $system_id,
-                'network_id' => $network_id,
-                'address_ip' => $asset_ip,
-                'address_port' => $asset_port
+        $assetName = $req->getParam('assetname', '');
+        $systemId = $req->getParam('system_list', '');
+        $networkId = $req->getParam('network_list', '');
+        $assetIp = $req->getParam('ip', '');
+        $assetPort = $req->getParam('port', '');
+        $prodId = $req->getParam('prod_id', '');
+        $assetSource = "MANUAL";
+        $createTime = date("Y_m_d H:m:s");
+        if (!empty($assetName)) {
+            $assetRow = array(
+                'prod_id' => $prodId,
+                'name' => $assetName,
+                'create_ts' => $createTime,
+                'source' => $assetSource,
+                'system_id' => $systemId,
+                'network_id' => $networkId,
+                'address_ip' => $assetIp,
+                'address_port' => $assetPort
             );
-            $assetId = $this->_asset->insert($asset_row);
+            $assetId = $this->_asset->insert($assetRow);
 
             $this->_notification->add(Notification::ASSET_CREATED,
                 $this->_me->account, array($assetId));
 
             $this->message("Asset created successfully", self::M_NOTICE);
         }
-        $this->view->system_list = $system_list;
-        $this->view->network_list = $network_list;
+        $this->view->system_list = $systemList;
+        $this->view->network_list = $networkList;
         $this->_helper->actionStack('header', 'Panel');
         $this->render();
         $this->_forward('search', 'product');
@@ -156,17 +156,18 @@ class AssetController extends PoamBaseController
         $req = $this->getRequest();
         $id = $req->getParam('id');
         if (!empty($id)) {
-            $qry = $this->_asset->select()->setIntegrityCheck(false)->from(array(
+            $qry = $this->_asset->select()->setIntegrityCheck(false)
+                ->from(array(
                 'a' => 'assets'
-            ) , array(
+            ), array(
                 'ip' => 'address_ip'
             ))->joinleft(array(
                 's' => 'systems'
-            ) , 'a.system_id=s.id', array(
+            ), 'a.system_id=s.id', array(
                 'sname' => 's.name'
             ))->joinleft(array(
                 'p' => 'products'
-            ) , 'p.id = a.prod_id', array(
+            ), 'p.id = a.prod_id', array(
                 'pname' => 'p.name',
                 'pvendor' => 'p.vendor',
                 'pversion' => 'p.version'
@@ -196,41 +197,42 @@ class AssetController extends PoamBaseController
         $criteria['ip'] = $req->get('ip');
         $criteria['port'] = $req->get('port');
         $criteria['p'] = $req->get('p');
-        $this->view->assign('system_list', $this->_system_list);
+        $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('criteria', $criteria);
-        $is_export = $req->getParam('format');
-        if ('search' == $req->getParam('s') || isset($is_export)) {
+        $isExport = $req->getParam('format');
+        if ('search' == $req->getParam('s') || isset($isExport)) {
             if (!empty($criteria)) {
                 extract($criteria);
             }
-            $this->_paging_base_path = $req->getBaseUrl() . '/panel/asset/sub/searchbox/s/search';
+            $this->_pagingBasePath = $req->getBaseUrl()
+                . '/panel/asset/sub/searchbox/s/search';
             $this->_paging['currentPage'] = $req->getParam('p', 1);
             foreach ($criteria as $key => $value) {
                 if (!empty($value)) {
-                    $this->_paging_base_path.= '/' . $key . '/' . $value . '';
+                    $this->_pagingBasePath.= '/' . $key . '/' . $value . '';
                 }
             }
             $db = $this->_poam->getAdapter();
             $query = $db->select()->from(array(
                 'a' => 'assets'
-            ) , array(
+            ), array(
                 'asset_name' => 'a.name',
                 'address_ip' => 'a.address_ip',
                 'address_port' => 'a.address_port',
                 'aid' => 'a.id'
             ))->joinleft(array(
                 's' => 'systems'
-            ) , 'a.system_id = s.id', array(
+            ), 'a.system_id = s.id', array(
                 'system_name' => 's.name'
             ))->joinleft(array(
                 'p' => 'products'
-            ) , 'a.prod_id = p.id', array(
+            ), 'a.prod_id = p.id', array(
                 'prod_name' => 'p.name',
                 'prod_vendor' => 'p.vendor',
                 'prod_version' => 'p.version'
             ));
-            if (!empty($system_id)) {
-                $query->where('s.id = ?', $system_id);
+            if (!empty($systemId)) {
+                $query->where('s.id = ?', $systemId);
             }
             if (!empty($product)) {
                 $query->where('p.name = ?', $product);
@@ -249,14 +251,15 @@ class AssetController extends PoamBaseController
             }
             $res = $db->fetchCol($query);
             $total = count($res);
-            if (!isset($is_export)) {
-                $query->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
+            if (!isset($isExport)) {
+                $query->limitPage($this->_paging['currentPage'],
+                    $this->_paging['perPage']);
             }
-            $asset_list = $db->fetchAll($query);
+            $assetList = $db->fetchAll($query);
             $this->_paging['totalItems'] = $total;
-            $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
+            $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
-            $this->view->assign('asset_list', $asset_list);
+            $this->view->assign('asset_list', $assetList);
             $this->view->assign('links', $pager->getLinks());
         }
         $this->render();
@@ -272,7 +275,7 @@ class AssetController extends PoamBaseController
         $db = $this->_asset->getAdapter();
         $query = $db->select()->from(array(
             'a' => 'assets'
-        ) , array(
+        ), array(
             'name' => 'a.name',
             'source' => 'a.source',
             'created_date' => 'a.create_ts',
@@ -282,13 +285,13 @@ class AssetController extends PoamBaseController
             'port' => 'a.address_port'
         ))->joinLeft(array(
             'p' => 'products'
-        ) , 'a.prod_id = p.id', array(
+        ), 'a.prod_id = p.id', array(
             'prod_name' => 'p.name',
             'prod_vendor' => 'p.vendor',
             'prod_version' => 'p.version'
         ))->joinLeft(array(
             'n' => 'networks'
-        ) , 'a.network_id = n.id', array(
+        ), 'a.network_id = n.id', array(
             'net_nickname' => 'n.nickname',
             'net_name' => 'n.name'
         ))->where('a.id = ?', $id);
@@ -296,8 +299,8 @@ class AssetController extends PoamBaseController
         $this->view->assign('asset', $asset);
         $this->view->assign('id', $id);
         if ('edit' == $req->getParam('s')) {
-            $this->view->assign('system_list', $this->_system_list);
-            $this->view->assign('network_list', $this->_network_list);
+            $this->view->assign('system_list', $this->_systemList);
+            $this->view->assign('network_list', $this->_networkList);
             $this->_helper->actionStack('header', 'Panel');
             $this->render('edit');
             $this->_forward('search', 'Product');

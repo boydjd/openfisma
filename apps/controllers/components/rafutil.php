@@ -32,19 +32,19 @@ function calSensitivity($arrayOfty)
     static $_senseMap = array(1=>'LOW',10=>'MODERATE',100=>'HIGH');
     $_senseRevMap = array_flip($_senseMap);
     $value = 0;
-    foreach( $arrayOfty as $a ){
-        if( in_array($a, $_senseMap) ){
+    foreach ( $arrayOfty as $a ) {
+        if ( in_array($a, $_senseMap) ) {
             $value += $_senseRevMap[$a];
-        }else{
+        } else {
             throw new FismaException('Wrong sensitivity calculation:'.
                         var_export($arrayOfty,true));
         }
     }
-    if( intval($value/100)>0 ) {
+    if ( intval($value/100)>0 ) {
         return 'HIGH';
-    }else if ( intval($value/10)>0 ){
+    } else if ( intval($value/10)>0 ) {
         return 'MODERATE';
-    }else{
+    } else {
         return 'LOW';
     }
 }
@@ -56,21 +56,21 @@ function calSensitivity($arrayOfty)
 ** highlight value at index M.
 **
 ** Input:
-**  num_cells - number of elements in return array
-**  highlight_index - zero-based index of cell to receive highlight_color
-**  default_color - the color of ordinary cells
-**  highlight_color - the color of the highlighted cell
+**  numCells - number of elements in return array
+**  highlightIndex - zero-based index of cell to receive highlight_color
+**  defaultColor - the color of ordinary cells
+**  highlightColor - the color of the highlighted cell
 */
 
-function cell_background_colors ($num_cells, $highlight_index,
-$default_color='FFFFFF', $highlight_color='CCCCCC') 
+function cell_background_colors ($numCells, $highlightIndex,
+$defaultColor='FFFFFF', $highlightColor='CCCCCC') 
 {
 
 // Initialize array with regular cell color values
-$colors = array_fill(0, $num_cells, $default_color);
+$colors = array_fill(0, $numCells, $defaultColor);
 
 // Set highlighted cell with highlight color value
-$colors[$highlight_index] = $highlight_color;
+$colors[$highlightIndex] = $highlightColor;
 
 return $colors;
 }
@@ -78,8 +78,8 @@ return $colors;
 
 function calcImpact($sense, $criti)
 {
-$_senseMap = array('LOW'=>1,'MODERATE'=>10,'HIGH'=>100);
-$ret = min($_senseMap[$sense],$_senseMap[$criti]);
+$_senseMap = array('LOW'=>1, 'MODERATE'=>10, 'HIGH'=>100);
+$ret = min($_senseMap[$sense], $_senseMap[$criti]);
 $_revMap = array_flip($_senseMap);
 return $_revMap[$ret];
 }
@@ -88,11 +88,11 @@ function calcThreat($threat, $countmeasure)
 {
 $_senseMap = array('LOW'=>1,'MODERATE'=>10,'HIGH'=>100);
 $ret = $_senseMap[$threat]-$_senseMap[$countmeasure];
-if( $ret <= 0 ) {
+if ( $ret <= 0 ) {
     $ret =1;
-}else if( $ret > 90 ) {
+} else if ( $ret > 90 ) {
     $ret =100;
-}else {
+} else {
     $ret =10;
 }
 $_revMap = array_flip($_senseMap);

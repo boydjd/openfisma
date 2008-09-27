@@ -31,10 +31,10 @@
  *return a formatted string
  */
 function format_data($dataString){
-    $dataString = preg_replace('/\/\*.*\*\//','',$dataString);
-    if(ereg(";$",trim($dataString))){
+    $dataString = preg_replace('/\/\*.*\*\//', '', $dataString);
+    if (ereg(";$", trim($dataString))) {
         $execute['opt']='execute';
-    }else{
+    } else {
         $execute['opt']='incomplete';
     }
     $execute['sql']= $dataString;
@@ -48,31 +48,31 @@ function format_data($dataString){
  */
 function import_data($db,$dataFile){
     $tmp = "";
-    foreach($dataFile as $elem){
+    foreach ($dataFile as $elem) {
         $ret = true;
-        if($handle = fopen($elem,'r')) {
+        if ($handle = fopen($elem, 'r')) {
             $dumpline = '';
-            while(!feof($handle)&& substr($dumpline,-1)!= "\n"){
-                $dumpline = fgets($handle,'4096');
-                $dumpline = ereg_replace("\r\n$","\n",$dumpline);
-                $dumpline = ereg_replace("\r$","\n",$dumpline);
-                $dumpline = ereg_replace("--.*\n","\n",$dumpline);
+            while (!feof($handle)&& substr($dumpline, -1)!= "\n") {
+                $dumpline = fgets($handle, '4096');
+                $dumpline = ereg_replace("\r\n$", "\n", $dumpline);
+                $dumpline = ereg_replace("\r$", "\n", $dumpline);
+                $dumpline = ereg_replace("--.*\n", "\n", $dumpline);
                 $dumpline = trim($dumpline);
                 $execute = format_data($dumpline);
-                if($execute['opt']=='incomplete'){
+                if ($execute['opt']=='incomplete') {
                     $tmp .= $execute['sql'];
-                }else{
+                } else {
                     $ret = $db->query($tmp.$execute['sql']);
                     $tmp = '';
                 }
-                if( !$ret ) {
+                if ( !$ret ) {
                     break;
                 }
             }
-        }else{
+        } else {
             $ret = false;
         }
-        if(!$ret){
+        if (!$ret) {
             return $ret;
         }
      }

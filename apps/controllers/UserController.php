@@ -104,15 +104,10 @@ class UserController extends MessageController
 
                     if ($terminationTs->isEarlier($now)) {
                         $updateData =
-                        $this->_user
-                             ->update(
-                                array(
-                                    'is_active'=>1,
-                                    'failure_count'=>0,
-                                    'termination_ts'=>NULL
-                                ),
-                                'id  = '.$whologin->id
-                            );
+                        $this->_user->update(array('is_active'=>1,
+                                                   'failure_count'=>0,
+                                                   'termination_ts'=>NULL),
+                                                   'id  = '.$whologin->id);
                     } else {
                         throw new Zend_Auth_Exception('Your user account has
                         been locked due to ' .
@@ -192,11 +187,9 @@ class UserController extends MessageController
             // If we get this far, then the login is totally successful.
             $this->_user->log(User::LOGIN, $_me->id, "Success");
             $notification = new Notification();
-            $notification->add(
-                Notification::ACCOUNT_LOGIN_SUCCESS,
+            $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
                 $whologin->account,
-                "UserId: {$whologin->id}"
-            );
+                "UserId: {$whologin->id}");
 
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
@@ -217,7 +210,7 @@ class UserController extends MessageController
             // Check to see if the user needs to review the rules of behavior.
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
-            $nextRobReview = new Zend_Date($_me->last_rob,'Y-m-d');
+            $nextRobReview = new Zend_Date($_me->last_rob, 'Y-m-d');
             $nextRobReview->add(readSysConfig('rob_duration'), Zend_Date::DAY);
             $now = new Zend_Date();
             if ($now->isEarlier($nextRobReview)) {
@@ -253,11 +246,8 @@ class UserController extends MessageController
             $this->_user->log(User::LOGOUT, $this->_me->id,
                 $this->_me->account . ' logout');
             $notification = new Notification();
-            $notification->add(
-                Notification::ACCOUNT_LOGOUT,
-                null,
-                "User: {$this->_me->account}"
-            );
+            $notification->add(Notification::ACCOUNT_LOGOUT, null,
+                "User: {$this->_me->account}");
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');
@@ -368,7 +358,7 @@ class UserController extends MessageController
              */
             $errorString = '';
             foreach ($form->getMessages() as $field => $fieldErrors) {
-                if (count($fieldErrors > 0 )) {
+                if (count($fieldErrors > 0)) {
                     foreach ($fieldErrors as $error) {
                         $label = $form->getElement($field)->getLabel();
                         $errorString .="$label: $error<br>";
@@ -376,7 +366,8 @@ class UserController extends MessageController
                 }
             }
             // Error message
-            $this->message("Unable to update account:<br>".addslashes($errorString),
+            $this->message("Unable to update account:<br>"
+                .addslashes($errorString),
                 self::M_WARNING);
             // On error, redirect back to the profile action.
         }
@@ -449,48 +440,57 @@ class UserController extends MessageController
             $newpass = md5($pwds['new']);
             $res = $this->_user->find($id)->toArray();
             $password = $res[0]['password'];
-            $history_pass = $res[0]['history_password'];
+            $historyPass = $res[0]['history_password'];
             if ($pwds['new'] != $pwds['confirm']) {
-                $msg = 'The new password does not match the confirm password, please try again.';
+                $msg = 'The new password does not match the confirm password,'
+                       .' please try again.';
                 $model = self::M_WARNING;
             } else {
                 if ($oldpass != $password) {
-                    $msg = 'The old password supplied is incorrect, please try again.';
+                    $msg = 'The old password supplied is incorrect,'
+                           .' please try again.';
                     $model = self::M_WARNING;
                 } else {
                     if (!$this->checkPassword($pwds['new'], 2)) {
-                        $msg = 'This password does not meet the password complexity requirements.<br>
+                        $msg = 'This password does not meet the password
+                               complexity requirements.<br>
 Please create a password that adheres to these complexity requirements:<br>
 --The password must be at least 8 character long<br>
---The password must contain at least 1 lower case letter (a-z), 1 upper case letter (A-Z), and 1 digit (0-9)<br>
---The password can also contain National Characters if desired (Non-Alphanumeric, !,@,#,$,% etc.)<br>
+--The password must contain at least 1 lower case letter (a-z),
+ 1 upper case letter (A-Z), and 1 digit (0-9)<br>
+--The password can also contain National Characters if desired 
+(Non-Alphanumeric, !,@,#,$,% etc.)<br>
 --The password cannot be the same as your last 3 passwords<br>
 --The password cannot contain your first name or last name<br>";';
                         throw new FismaException($msg);
-                        //$msg = "The password doesn\'t meet the required complexity!";
-                        
                     } else {
                         if ($newpass == $password) {
-                            $msg = 'Your new password cannot be the same as your old password.';
+                            $msg = 'Your new password cannot be the same as'
+                                   .' your old password.';
                             $model = self::M_WARNING;
                         } else {
-                            if (strpos($history_pass, $newpass) > 0) {
-                                $msg = 'Your password must be different from the last three passwords you have used. Please pick a different password.';
+                            if (strpos($historyPass, $newpass) > 0) {
+                                $msg = 'Your password must be different from'
+                                    .' the last three passwords you have used.'
+                                    .' Please pick a different password.';
                                 $model = self::M_WARNING;
                             } else {
-                                if (strpos($history_pass, $password) > 0) {
-                                    $history_pass = ':' . $newpass . $history_pass;
+                                if (strpos($historyPass, $password) > 0) {
+                                    $historyPass = ':' . $newpass
+                                        . $historyPass;
                                 } else {
-                                    $history_pass = ':' . $newpass . ':' . $password . $history_pass;
+                                    $historyPass = ':' . $newpass . ':'
+                                        . $password . $historyPass;
                                 }
-                                $history_pass = substr($history_pass, 0, 99);
+                                $historyPass = substr($historyPass, 0, 99);
                                 $now = date('Y-m-d H:i:s');
                                 $data = array(
                                     'password' => $newpass,
-                                    'history_password' => $history_pass,
+                                    'history_password' => $historyPass,
                                     'password_ts' => $now
                                 );
-                                $result = $this->_user->update($data, 'id = ' . $id);
+                                $result = $this->_user->update($data,
+                                    'id = ' . $id);
                                 if (!$result) {
                                     $msg = 'Failed to change the password';
                                     $model = self::M_WARNING;
@@ -517,23 +517,30 @@ Please create a password that adheres to these complexity requirements:<br>
      * method do?
      */
     function checkPassword($pass, $level = 1) {
-        if($level > 1) {
+        if ($level > 1) {
 
             $nameincluded = true;
             // check last name
-            if (empty($this->user_name_last) || strpos($pass, $this->user_name_last) === false) {
+            if (empty($this->user_name_last)
+                || strpos($pass, $this->user_name_last) === false) {
                 $nameincluded = false;
             }
             if (!$nameincluded) {
                 // check first name
-                if (empty($this->user_name_first) || strpos($pass, $this->user_name_first) === false) $nameincluded = false;
-                else $nameincluded = true;
+                if (empty($this->user_name_first)
+                    || strpos($pass, $this->user_name_first) === false) {
+                    $nameincluded = false;
+                } else {
+                    $nameincluded = true;
+                }
             }
             if ($nameincluded) return false; // include first name or last name
             // high level
             if (strlen($pass) < 8) return false;
-            // must be include three style among upper case letter, lower case letter, symbol, digit.
-            // following rule: at least three type in four type, or symbol and any of other three types
+            // must be include three style among upper case letter,
+            // lower case letter, symbol, digit.
+            // following rule: at least three type in four type,
+            // or symbol and any of other three types
             $num = 0;
             if (preg_match("/[0-9]+/", $pass)) // all are digit
             $num++;
@@ -547,7 +554,8 @@ Please create a password that adheres to these complexity requirements:<br>
         } else if ($level == 1) {
             // low level
             if (strlen($pass) < 3) return false;
-            // must include three style among upper case letter, lower case letter, symbol, digit.
+            // must include three style among upper case letter,
+            // lower case letter, symbol, digit.
             // following rule: at least two type in four type
             if (preg_match("/^[0-9]+$/", $pass)) // all are digit
             return false;
@@ -693,8 +701,8 @@ Please create a password that adheres to these complexity requirements:<br>
                 'username' => readSysConfig('smtp_username'),
                 'password' => readSysConfig('smtp_password'),
                 'port' => readSysConfig('smtp_port'));
-            $transport = new Zend_Mail_Transport_Smtp(readSysConfig('smtp_host'),
-                $config);
+            $transport = new Zend_Mail_Transport_Smtp(
+                readSysConfig('smtp_host'), $config);
         } else {
             $transport = new Zend_Mail_Transport_Sendmail();
         }

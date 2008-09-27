@@ -66,7 +66,7 @@ class RoleController extends SecurityController
     {
         parent::preDispatch();
         $req = $this->getRequest();
-        $this->_paging_base_path = $req->getBaseUrl() . '/panel/role/sub/list';
+        $this->_pagingBasePath = $req->getBaseUrl() . '/panel/role/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
     public function searchboxAction()
@@ -76,13 +76,13 @@ class RoleController extends SecurityController
         $qv = $req->getParam('qv');
         $query = $this->_role->select()->from(array(
             'r' => 'roles'
-        ) , array(
+        ), array(
             'count' => 'COUNT(r.id)'
         ));
         $res = $this->_role->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
@@ -95,13 +95,15 @@ class RoleController extends SecurityController
         $req = $this->getRequest();
         $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
-        $query = $this->_role->select()->from('roles', '*')->where('nickname != "auto_role"');
+        $query = $this->_role->select()->from('roles', '*')
+                                       ->where('nickname != "auto_role"');
         if (!empty($value)) {
             $query->where("$field = ?", $value);
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
-        $role_list = $this->_role->fetchAll($query)->toArray();
-        $this->view->assign('role_list', $role_list);
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
+        $roleList = $this->_role->fetchAll($query)->toArray();
+        $this->view->assign('role_list', $roleList);
         $this->render();
     }
     public function createAction()
@@ -156,9 +158,9 @@ class RoleController extends SecurityController
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $result = $this->_role->find($id)->toArray();
-        $role_list = $result[0];
+        $roleList = $result[0];
         $this->view->assign('id', $id);
-        $this->view->assign('role', $role_list);
+        $this->view->assign('role', $roleList);
         if ('edit' == $req->getParam('v')) {
             $this->render('edit');
         } else {
@@ -188,48 +190,48 @@ class RoleController extends SecurityController
     {
         $req = $this->getRequest();
         $do = $req->getParam('do');
-        $role_id = $req->getParam('id');
-        $screen_name = $req->getParam('screen_name');
+        $roleId = $req->getParam('id');
+        $screenName = $req->getParam('screen_name');
         $db = $this->_role->getAdapter();
         $qry = $db->select()->from(array(
             'f' => 'functions'
-        ) , array(
+        ), array(
             'function_id' => 'id',
             'function_name' => 'name'
         ))->join(array(
             'rf' => 'role_functions'
-        ) , 'f.id = rf.function_id', array())->where('rf.role_id = ?', $role_id);
-        $exist_functions = $db->fetchAll($qry);
+        ), 'f.id = rf.function_id', array())->where('rf.role_id = ?', $roleId);
+        $existFunctions = $db->fetchAll($qry);
         if ('search_function' == $do) {
             $qry->reset();
             $qry->from('functions', array(
                 'function_id' => 'id',
                 'function_name' => 'name'
             ));
-            if (!empty($screen_name)) {
-                $qry->where('screen = ?', $screen_name);
+            if (!empty($screenName)) {
+                $qry->where('screen = ?', $screenName);
             }
-            $all_functions = $db->fetchAll($qry);
-            $available_functions = array();
-            foreach($all_functions as $v) {
-                if (!in_array($v, $exist_functions)) {
-                    $available_functions[] = $v;
+            $allFunctions = $db->fetchAll($qry);
+            $availableFunctions = array();
+            foreach ($allFunctions as $v) {
+                if (!in_array($v, $existFunctions)) {
+                    $availableFunctions[] = $v;
                 }
             }
             $this->_helper->layout->setLayout('ajax');
-            $this->view->assign('available_functions', $available_functions);
+            $this->view->assign('available_functions', $availableFunctions);
             $this->render('availablefunc');
         } elseif ('update' == $do) {
-            $function_ids = $req->getParam('exist_functions');
+            $functionIds = $req->getParam('exist_functions');
             $errno = 0;
-            $qry = "DELETE FROM `role_functions` WHERE role_id =" . $role_id;
+            $qry = "DELETE FROM `role_functions` WHERE role_id =" . $roleId;
             $res = $db->query($qry);
             if (!$res) {
                 $errno++;
             }
-            foreach($function_ids as $fid) {
+            foreach ($functionIds as $fid) {
                 $res = $db->insert('role_functions', array(
-                    'role_id' => $role_id,
+                    'role_id' => $roleId,
                     'function_id' => $fid
                 ));
                 if (!$res) {
@@ -244,20 +246,20 @@ class RoleController extends SecurityController
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
-            $this->_redirect('panel/role/sub/right/id/' . $role_id);
+            $this->_redirect('panel/role/sub/right/id/' . $roleId);
         } else {
             $qry = $db->select()->from('roles', array(
                 'id',
                 'name'
-            ))->where('id = ?', $role_id);
+            ))->where('id = ?', $roleId);
             $role = $db->fetchRow($qry);
             $qry = $db->select()->from('functions', array(
                 'screen_name' => 'screen'
             ))->group('screen');
-            $screen_list = $db->fetchAll($qry);
+            $screenList = $db->fetchAll($qry);
             $this->view->assign('role', $role);
-            $this->view->assign('screen_list', $screen_list);
-            $this->view->assign('exist_functions', $exist_functions);
+            $this->view->assign('screen_list', $screenList);
+            $this->view->assign('exist_functions', $existFunctions);
             $this->render();
         }
     }

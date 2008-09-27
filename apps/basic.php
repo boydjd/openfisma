@@ -161,16 +161,16 @@
     /**
      *  mapping the key/value from different arrays
      * 
-     *  @param array $array1 the key1=>val1
-     *  @param array $array2 the val1=>val2
+     *  @param array $arrayA the key1=>val1
+     *  @param array $arrayB the val1=>val2
      *  @return array the key1=>val2
      */
-    function directMap($array1, $array2)
+    function directMap($arrayA, $arrayB)
     {
         $ret = array();
-        foreach ($array1 as $k=>$v) {
-            if (array_key_exists($v, $array2)) {
-                $ret[$k] = $array2[$v];
+        foreach ($arrayA as $k=>$v) {
+            if (array_key_exists($v, $arrayB)) {
+                $ret[$k] = $arrayB[$v];
             }
         }
         return $ret;

@@ -93,7 +93,7 @@ class FindingController extends PoamBaseController
             $detail = $poam->find($id)->current();
             $this->view->finding = $poam->getDetail($id);
             $this->view->finding['system_name'] = 
-                    $this->_system_list[$this->view->finding['system_id']];
+                    $this->_systemList[$this->view->finding['system_id']];
             $this->render();
         } else {
             /// @todo Add a new Excption page to indicate Access denial
@@ -237,15 +237,14 @@ template. Please update your CSV file and try again.<br />";
                 $poamId = $this->_poam->insert($poam);
                 $logContent = "a new finding was created";
                 $this->_poam->writeLogs($poamId, $this->_me->id,
-                     self::$now->toString('Y-m-d H:i:s'), 'CREATION', $logContent);
+                     self::$now->toString('Y-m-d H:i:s'), 'CREATION',
+                        $logContent);
 
                 $this->_notification
-                     ->add(
-                           Notification::FINDING_CREATED,
+                     ->add(Notification::FINDING_CREATED,
                            $this->_me->account,
                            "PoamID: $poamId",
-                           $poam['system_id']
-                       );
+                           $poam['system_id']);
 
                 $message = "Finding created successfully";
                 $model = self::M_NOTICE;
@@ -262,10 +261,10 @@ template. Please update your CSV file and try again.<br />";
         }
         $blscr = new Blscr();
         $list = array_keys($blscr->getList('class'));
-        $blscr_list = array_combine($list, $list);
-        $this->view->blscr_list = $blscr_list;
-        $this->view->assign('system', $this->_system_list);
-        $this->view->assign('source', $this->_source_list);
+        $blscrList = array_combine($list, $list);
+        $this->view->blscr_list = $blscrList;
+        $this->view->assign('system', $this->_systemList);
+        $this->view->assign('source', $this->_sourceList);
         $this->render();
     }
     /**
@@ -413,7 +412,8 @@ template. Please update your CSV file and try again.<br />";
          */
         try {
             $src = new System();
-            $this->view->systems = $src->getList('nickname', $this->_me->systems);
+            $this->view->systems = $src->getList('nickname',
+                $this->_me->systems);
             if (count($this->view->systems) == 0) {
                 throw new FismaException(
                     "The spreadsheet template can not be " .
@@ -456,9 +456,9 @@ template. Please update your CSV file and try again.<br />";
         $plugin = new Plugin();
         $pluginList = $plugin->getList('name');
         $this->view->assign('plugin_list', $pluginList);
-        $this->view->assign('system_list', $this->_system_list);
-        $this->view->assign('network_list', $this->_network_list);
-        $this->view->assign('source_list', $this->_source_list);
+        $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('network_list', $this->_networkList);
+        $this->view->assign('source_list', $this->_sourceList);
         $msg = '';
         if (isset($_FILES['upload_file'])) {
             $pluginId = $req->getParam('plugin');

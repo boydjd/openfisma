@@ -36,21 +36,21 @@ class Finding extends Poam
     /**
         count the summary of findings according to certain criteria
 
-        @param $date_range discovery time range
+        @param $dateRange discovery time range
         @param $systems system id those findings belongs to
         @return array of counts
      */
-    public function getStatusCount ($systems, $date_range = array(), $status = null)
+    public function getStatusCount ($systems, $dateRange = array(), $status = null)
     {
         assert(! empty($systems) && is_array($systems));
         $criteria = array();
-        if (isset($date_range)) {
+        if (isset($dateRange)) {
             // range follows [from, to)
-            if (! empty($date_range['from'])) {
-                $criteria['created_date_begin'] = $date_range['from'];
+            if (! empty($dateRange['from'])) {
+                $criteria['created_date_begin'] = $dateRange['from'];
             }
-            if (! empty($date_range['to'])) {
-                $criteria['created_date_end'] = $date_range['to'];
+            if (! empty($dateRange['to'])) {
+                $criteria['created_date_end'] = $dateRange['to'];
             }
         }
         if (isset($status)) {
@@ -62,9 +62,11 @@ class Finding extends Poam
                 $ret[$s] = 0;
             }
         } else {
-            $ret = array('NEW' => 0 , 'OPEN' => 0 , 'EN' => 0 , 'EP' => 0 , 'ES' => 0 , 'CLOSED' => 0 , 'DELETED' => 0);
+            $ret = array('NEW' => 0, 'OPEN' => 0, 'EN' => 0, 'EP' => 0,
+                         'ES' => 0 , 'CLOSED' => 0 , 'DELETED' => 0);
         }
-        $raw = $this->search($systems, array('status' => 'status' , 'count' => 'status'), $criteria);
+        $raw = $this->search($systems, array('status' => 'status',
+                                'count' => 'status'), $criteria);
         foreach ($raw as $s) {
             $ret[$s['status']] = $s['count'];
         }

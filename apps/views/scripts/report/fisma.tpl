@@ -1,7 +1,7 @@
 <?php 
     $url ="/panel/report/sub/fisma/s/search";
-    if(! empty($this->criteria['system_id'])) {
-        $url .='/system/'.$this->criteria['system_id'];
+    if(! empty($this->criteria['systemId'])) {
+        $url .='/system/'.$this->criteria['systemId'];
     }
     if(! empty($this->criteria['year'])) {
         $url .='/y/'.$this->criteria['year'];
@@ -27,7 +27,7 @@
         <td >
             <?php 
                 $this->system_list[0] = 'All Systems';
-                echo $this->formSelect('system',nullGet($this->criteria['system_id'],0),null,$this->system_list);
+                echo $this->formSelect('system',nullGet($this->criteria['systemId'],0),null,$this->system_list);
             ?>
         </td>
         <td>From:<input type="text" class="date" name="startdate" value="<?php echo nullGet($this->criteria['startdate'],'');?>" size="10" maxlength="10" url="">

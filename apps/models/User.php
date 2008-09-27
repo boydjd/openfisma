@@ -34,10 +34,18 @@ class User extends FismaModel
 {
     protected $_name = 'users';
     protected $_primary = 'id';
-    protected $_log_name = 'account_logs';
+    protected $_logName = 'account_logs';
     protected $_logger = null;
-    protected $_log_map = array('priority' => 'priority' , 'timestamp' => 'timestamp' , 'user_id' => 'uid' , 'event' => 'type' , 'message' => 'message' , 'priority_name' => 'priorityName');
-    protected $_map = array(self::SYS => array('table' => 'user_systems' , 'field' => 'system_id') , self::ROLE => array('table' => 'user_roles' , 'field' => 'role_id'));
+    protected $_logMap = array('priority' => 'priority',
+                               'timestamp' => 'timestamp',
+                               'user_id' => 'uid',
+                               'event' => 'type',
+                               'message' => 'message',
+                               'priority_name' => 'priorityName');
+    protected $_map = array(self::SYS => array('table' => 'user_systems',
+                                               'field' => 'system_id'),
+                            self::ROLE => array('table' => 'user_roles',
+                                                'field' => 'role_id'));
     const SYS = 'system';
     const ROLE = 'role';
     const CREATION = 'creation';
@@ -50,7 +58,8 @@ class User extends FismaModel
     const ROB_ACCEPT = 'rob_accept';
     public function init ()
     {
-        $writer = new Zend_Log_Writer_Db($this->_db, $this->_log_name, $this->_log_map);
+        $writer = new Zend_Log_Writer_Db($this->_db, $this->_logName,
+            $this->_logMap);
         if (empty($this->_logger)) {
             $this->_logger = new Zend_Log($writer);
         }
@@ -65,7 +74,13 @@ class User extends FismaModel
     {
         $roleArray = array();
         $db = $this->_db;
-        $qry = $db->select()->from(array('u' => 'users'), array())->join(array('ur' => 'user_roles'), 'u.id = ur.user_id', array())->join(array('r' => 'roles'), 'r.id = ur.role_id', $fields)->where("u.id = $id and r.nickname != 'auto_role'");
+        $qry = $db->select()
+                  ->from(array('u' => 'users'), array())
+                  ->join(array('ur' => 'user_roles'), 'u.id = ur.user_id',
+                      array())
+                  ->join(array('r' => 'roles'), 'r.id = ur.role_id',
+                      $fields)
+                  ->where("u.id = $id and r.nickname != 'auto_role'");
         return $db->fetchAll($qry);
     }
     /**
@@ -79,18 +94,23 @@ class User extends FismaModel
     {
         assert(! empty($id));
         $db = $this->_db;
-        $origin_mode = $db->getFetchMode();
-        $qry = $db->select()->from($this->_name, 'account')->where('id = ?', $id);
+        $originMode = $db->getFetchMode();
+        $qry = $db->select()
+                  ->from($this->_name, 'account')
+                  ->where('id = ?', $id);
         $user = $db->fetchOne($qry);
         $db->setFetchMode(Zend_Db::FETCH_OBJ);
         if ($user == 'root') {
             $sys = $db->fetchCol('SELECT id from systems where 1 ORDER BY `systems`.`nickname`');
         } else {
             $qry->reset();
-            $qry = $db->select()->distinct()->from(array('us' => 'user_systems'), 'system_id')->join('systems', 'systems.id = us.system_id', array())->where("user_id = $id")->order('systems.nickname ASC');
+            $qry = $db->select()->distinct()
+                      ->from(array('us' => 'user_systems'), 'system_id')
+                      ->join('systems', 'systems.id = us.system_id', array())
+                      ->where("user_id = $id")->order('systems.nickname ASC');
             $sys = $db->fetchCol($qry);
         }
-        $db->setFetchMode($origin_mode);
+        $db->setFetchMode($originMode);
         return $sys;
     }
     /** 
@@ -106,21 +126,14 @@ class User extends FismaModel
      * function. It is completely unmaintainable.
      */
     public function log ($type, $uid, $msg = null) {
-        assert(
-            in_array(
-                $type,
-                array(
-                    self::CREATION,
-                    self::MODIFICATION,
-                    self::DISABLING,
-                    self::TERMINATION,
-                    self::LOGINFAILURE,
-                    self::LOGIN,
-                    self::LOGOUT,
-                    self::ROB_ACCEPT
-                )
-            )
-        );
+        assert(in_array($type, array(self::CREATION,
+                                     self::MODIFICATION,
+                                     self::DISABLING,
+                                     self::TERMINATION,
+                                     self::LOGINFAILURE,
+                                     self::LOGIN,
+                                     self::LOGOUT,
+                                     self::ROB_ACCEPT)));
         assert(is_string($msg));
         assert($this->_logger);
         if ( !empty($uid) ) {
@@ -164,7 +177,7 @@ class User extends FismaModel
             $data = array($data);
         }
         $ret = 0;
-        $ins_data['user_id'] = $uid;
+        $insData['user_id'] = $uid;
         if ($reverse) {
             $where[] = "user_id=$uid";
             if (! empty($data)) {
@@ -173,8 +186,9 @@ class User extends FismaModel
             }
         } else {
             foreach ($data as $id) {
-                $ins_data[$this->_map[$type]['field']] = $id;
-                $ret += $this->_db->insert($this->_map[$type]['table'], $ins_data);
+                $insData[$this->_map[$type]['field']] = $id;
+                $ret += $this->_db
+                            ->insert($this->_map[$type]['table'], $insData);
             }
         }
         return $ret;

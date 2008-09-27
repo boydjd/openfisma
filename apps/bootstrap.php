@@ -118,15 +118,13 @@ if (!isInstall()) {
     $router->addRoute('default', $route['install']);
 
     // The installer has its own error handler which is registered here:
-    $front->registerPlugin(
-        new Zend_Controller_Plugin_ErrorHandler(
-            array(
-                'model' => null,
-                'controller' => 'Install',
-                'action' => 'error'
+    $front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
+        array(
+            'model' => null,
+            'controller' => 'Install',
+            'action' => 'error'
             )
-        )
-    );
+        ));
 } else {
     // If the application has been installed, then set up the data source,
     // default routes, and default error handler.
@@ -159,15 +157,13 @@ if (!isInstall()) {
     $router->addRoute('no_install', $route['no_install']);
     
     // Register the default error controller
-    $front->registerPlugin(
-        new Zend_Controller_Plugin_ErrorHandler(
-            array(
-                'model' => null,
-                'controller' => 'Error',
-                'action' => 'error'
-            )
+    $front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
+        array(
+            'model' => null,
+            'controller' => 'Error',
+            'action' => 'error'
         )
-    );
+    ));
 }
 
 // This is the actual application bootstrap. It's wrapped in a try-catch to

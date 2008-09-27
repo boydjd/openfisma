@@ -34,9 +34,9 @@
  */
 class PoamBaseController extends SecurityController
 {
-    protected $_system_list = null;
-    protected $_source_list = null;
-    protected $_network_list = null;
+    protected $_systemList = null;
+    protected $_sourceList = null;
+    protected $_networkList = null;
     protected $_poam = null;
     /**
      * The requestor object.
@@ -58,14 +58,14 @@ class PoamBaseController extends SecurityController
         $src = new Source();
         $net = new Network();
         $sys = new System();
-        $this->_source_list = $src->getList('name');
-        $tmp_list = $sys->getList(array(
+        $this->_sourceList = $src->getList('name');
+        $tmpList = $sys->getList(array(
             'name',
             'nickname'
-        ) , $this->_me->systems, 'nickname');
-        $this->_network_list = $net->getList('name');
-        foreach($tmp_list as $k => $v) {
-            $this->_system_list[$k] = "({$v['nickname']}) {$v['name']}";
+        ), $this->_me->systems, 'nickname');
+        $this->_networkList = $net->getList('name');
+        foreach ($tmpList as $k => $v) {
+            $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
         }
     }
     public function preDispatch()
@@ -73,17 +73,18 @@ class PoamBaseController extends SecurityController
         parent::preDispatch();
         $this->_req = $this->getRequest();
         $req = $this->_req;
-        $this->_paging_base_path = $req->getBaseUrl();
+        $this->_pagingBasePath = $req->getBaseUrl();
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
     public function makeUrl($criteria)
     {
-        foreach($criteria as $key => $value) {
+        foreach ($criteria as $key => $value) {
             if (!empty($value)) {
                 if ($value instanceof Zend_Date) {
-                    $this->_paging_base_path.= '/' . $key . '/' . $value->toString('Ymd') . '';
+                    $this->_pagingBasePath.= 
+                        '/' . $key . '/' . $value->toString('Ymd') . '';
                 } else {
-                    $this->_paging_base_path.= '/' . $key . '/' . $value . '';
+                    $this->_pagingBasePath.= '/' . $key . '/' . $value . '';
                 }
             }
         }

@@ -49,7 +49,7 @@ class SysgroupController extends SecurityController
     public function preDispatch()
     {
         $req = $this->getRequest();
-        $this->_paging_base_path = $req->getBaseUrl()
+        $this->_pagingBasePath = $req->getBaseUrl()
                                    . '/panel/sysgroup/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
         if (!in_array($req->getActionName(), array(
@@ -73,7 +73,7 @@ class SysgroupController extends SecurityController
         $res = $this->_sysgroup->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
@@ -93,8 +93,8 @@ class SysgroupController extends SecurityController
         }
         $query->order('name ASC')->limitPage($this->_paging['currentPage'],
                                              $this->_paging['perPage']);
-        $sysgroup_list = $this->_sysgroup->fetchAll($query)->toArray();
-        $this->view->assign('sysgroup_list', $sysgroup_list);
+        $sysgroupList = $this->_sysgroup->fetchAll($query)->toArray();
+        $this->view->assign('sysgroup_list', $sysgroupList);
         $this->render();
     }
     public function createAction()

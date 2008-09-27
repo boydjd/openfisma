@@ -66,7 +66,7 @@ class NetworkController extends SecurityController
     }
     public function preDispatch()
     {
-        $this->_paging_base_path = $this->_request->getBaseUrl() .
+        $this->_pagingBasePath = $this->_request->getBaseUrl() .
             '/panel/network/sub/list';
         $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
         if (!in_array($this->_request->getActionName(), array(
@@ -92,7 +92,7 @@ class NetworkController extends SecurityController
         $res = $this->_network->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
@@ -114,8 +114,8 @@ class NetworkController extends SecurityController
         }
         $query->order('name ASC')->limitPage($this->_paging['currentPage'],
             $this->_paging['perPage']);
-        $network_list = $this->_network->fetchAll($query)->toArray();
-        $this->view->assign('network_list', $network_list);
+        $networkList = $this->_network->fetchAll($query)->toArray();
+        $this->view->assign('network_list', $networkList);
         $this->render();
     }
     /**
@@ -124,8 +124,8 @@ class NetworkController extends SecurityController
     public function createAction()
     {
         if ('save' == $this->_request->getParam('s')) {
-            $network_data = $this->_request->getParam('network');
-            $networkId = $this->_network->insert($network_data);
+            $networkData = $this->_request->getParam('network');
+            $networkId = $this->_network->insert($networkData);
             if (!$networkId) {
                 $msg = "Failed to create the network";
                 $model = self::M_WARNING;
@@ -179,10 +179,10 @@ class NetworkController extends SecurityController
         $id = $this->_request->getParam('id');
         $result = $this->_network->find($id)->toArray();
         foreach ($result as $v) {
-            $network_list = $v;
+            $networkList = $v;
         }
         $this->view->assign('id', $id);
-        $this->view->assign('network', $network_list);
+        $this->view->assign('network', $networkList);
         if ('edit' == $this->_request->getParam('v')) {
             $this->render('edit');
         } else {
@@ -195,8 +195,8 @@ class NetworkController extends SecurityController
     public function updateAction()
     {
         $id = $this->_request->getParam('id');
-        $network_data = $this->_request->getParam('network');
-        $res = $this->_network->update($network_data, 'id = ' . $id);
+        $networkData = $this->_request->getParam('network');
+        $res = $this->_network->update($networkData, 'id = ' . $id);
         if (0 == $res) {
             $msg = "Network has no updated";
             $model = self::M_NOTICE;

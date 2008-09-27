@@ -48,9 +48,9 @@ class SourceController extends SecurityController
     public function preDispatch()
     {
         $req = $this->getRequest();
-        $this->_paging_base_path = $req->getBaseUrl() . '/panel/source/sub/list';
+        $this->_pagingBasePath = $req->getBaseUrl() . '/panel/source/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
-        if (!in_array($req->getActionName() , array(
+        if (!in_array($req->getActionName(), array(
             'login',
             'logout'
         ))) {
@@ -65,13 +65,13 @@ class SourceController extends SecurityController
         $qv = $req->getParam('qv');
         $query = $this->_source->select()->from(array(
             's' => 'sources'
-        ) , array(
+        ), array(
             'count' => 'COUNT(s.id)'
         ))->order('s.name ASC');
         $res = $this->_source->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_paging_base_path}/p/%d";
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
@@ -88,9 +88,10 @@ class SourceController extends SecurityController
         if (!empty($value)) {
             $query->where("$field = ?", $value);
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
-        $source_list = $this->_source->fetchAll($query)->toArray();
-        $this->view->assign('source_list', $source_list);
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
+        $sourceList = $this->_source->fetchAll($query)->toArray();
+        $this->view->assign('source_list', $sourceList);
         $this->render();
     }
     public function createAction()
@@ -98,7 +99,7 @@ class SourceController extends SecurityController
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
             $post = $req->getPost();
-            foreach($post as $k => $v) {
+            foreach ($post as $k => $v) {
                 if ('source_' == substr($k, 0, 7)) {
                     $k = substr($k, 7);
                     $data[$k] = $v;
@@ -128,7 +129,8 @@ class SourceController extends SecurityController
         $qry = $db->select()->from('poams')->where('source_id = ' . $id);
         $result = $db->fetchCol($qry);
         if (!empty($result)) {
-            $msg = 'This finding source can not be deleted because it is already associated with one or more POAMS';
+            $msg = 'This finding source can not be deleted because it is'
+                   .' already associated with one or more POAMS';
             $model = self::M_WARNING;
         } else {
             $res = $this->_source->delete('id = ' . $id);
@@ -152,11 +154,11 @@ class SourceController extends SecurityController
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $result = $this->_source->find($id)->toArray();
-        foreach($result as $v) {
-            $source_list = $v;
+        foreach ($result as $v) {
+            $sourceList = $v;
         }
         $this->view->assign('id', $id);
-        $this->view->assign('source', $source_list);
+        $this->view->assign('source', $sourceList);
         if ('edit' == $req->getParam('v')) {
             $this->render('edit');
         } else {
@@ -168,7 +170,7 @@ class SourceController extends SecurityController
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $post = $req->getPost();
-        foreach($post as $k => $v) {
+        foreach ($post as $k => $v) {
             if ('source_' == substr($k, 0, 7)) {
                 $k = substr($k, 7);
                 $data[$k] = $v;

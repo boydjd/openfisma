@@ -34,12 +34,12 @@
 class DashboardController extends SecurityController
 {
     protected $_poam = null;
-    protected $_all_systems = null;
+    protected $_allSystems = null;
     function init()
     {
         parent::init();
         $sys = new System();
-        $this->_all_systems = $this->_me->systems;
+        $this->_allSystems = $this->_me->systems;
     }
     function preDispatch()
     {
@@ -77,31 +77,31 @@ class DashboardController extends SecurityController
             // are sent.
         }
         
-        $new_count  = $this->_poam->search($this->_all_systems, array(
+        $newCount  = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'), array('status' => 'NEW'));
-        $open_count = $this->_poam->search($this->_all_systems, array(
+        $openCount = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'), array('status' => 'OPEN'));
-        $en_count = $this->_poam->search($this->_all_systems, array(
+        $enCount = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'
         ), array(
             'status' => 'EN',
-            'est_date_begin' => parent::$now
+            'estDateBegin' => parent::$now
         ));
-        $eo_count = $this->_poam->search($this->_all_systems, array(
+        $eoCount = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'
         ), array(
             'status' => 'EN',
-            'est_date_end' => parent::$now
+            'estDateEnd' => parent::$now
         ));
-        $total = $this->_poam->search($this->_all_systems, array(
+        $total = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'
         ));
         $alert = array();
         $alert['TOTAL'] = $total;
-        $alert['NEW']  = $new_count;
-        $alert['OPEN'] = $open_count;
-        $alert['EN'] = $en_count;
-        $alert['EO'] = $eo_count;
+        $alert['NEW']  = $newCount;
+        $alert['OPEN'] = $openCount;
+        $alert['EN'] = $enCount;
+        $alert['EO'] = $eoCount;
         $url = '/panel/remediation/sub/searchbox/s/search/status/';
 
         $this->view->url = $url;
@@ -142,11 +142,11 @@ class DashboardController extends SecurityController
         ))) {
             $type = 'pie';
         }
-        $ret = $poam->search($this->_all_systems, array(
+        $ret = $poam->search($this->_allSystems, array(
             'count' => 'status',
             'status'
         ));
-        $eo_count = $poam->search($this->_all_systems, array(
+        $eoCount = $poam->search($this->_allSystems, array(
             'count' => 'count(*)'
         ), array(
             'status' => 'EN',
@@ -160,10 +160,10 @@ class DashboardController extends SecurityController
             'ES' => 0,
             'CLOSED' => 0
         );
-        foreach($ret as $s) {
+        foreach ($ret as $s) {
             $this->view->summary["{$s['status']}"] = $s['count'];
         }
-        $this->view->summary["EO"] = $eo_count;
+        $this->view->summary["EO"] = $eoCount;
         $this->view->chart_type = $type;
         // Headers Required for IE+SSL (see bug #2039290) to stream XML
         header('Pragma:private');
@@ -176,7 +176,7 @@ class DashboardController extends SecurityController
      */
     public function totaltypeAction()
     {
-        $ret = $this->_poam->search($this->_all_systems, array(
+        $ret = $this->_poam->search($this->_allSystems, array(
             'count' => 'type',
             'type'
         ));
@@ -186,7 +186,7 @@ class DashboardController extends SecurityController
             'FP' => 0,
             'AR' => 0
         );
-        foreach($ret as $s) {
+        foreach ($ret as $s) {
             $this->view->summary["{$s['type']}"] = $s['count'];
         }
         // Headers Required for IE+SSL (see bug #2039290) to stream XML

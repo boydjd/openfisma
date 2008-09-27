@@ -29,20 +29,20 @@
         <td width="6%" height="47"><b>System </b></td>
         <td width="21%">
         <?php echo $this->formSelect('system_id',
-                                     nullGet($this->criteria['system_id'],0), 
+                                     nullGet($this->criteria['systemId'],0), 
                                      null,$this->system_list);
-              if( !empty($this->criteria['system_id']) ) {
-                  $url .= '/system_id/'.$this->criteria['system_id'];
+              if( !empty($this->criteria['systemId']) ) {
+                  $url .= '/system_id/'.$this->criteria['systemId'];
               }
         ?>
         </td>
         <td width="6%"><b>Source</b></td>
         <td width="18%">
         <?php echo $this->formSelect('source_id',
-                                     nullGet($this->criteria['source_id'],0), 
+                                     nullGet($this->criteria['sourceId'],0), 
                                      null,$this->source_list);
-              if( !empty($this->criteria['source_id']) ) {
-                  $url .= '/source_id/'.$this->criteria['source_id'];
+              if( !empty($this->criteria['sourceId']) ) {
+                  $url .= '/source_id/'.$this->criteria['sourceId'];
               }
         ?>
         </td>

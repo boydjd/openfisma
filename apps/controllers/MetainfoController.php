@@ -45,7 +45,7 @@ class MetainfoController extends PoamBaseController
         $module = $req->getParam('o');
         $this->view->selected = $req->getParam('value', '');
         if ($module == 'system') {
-            $list = & $this->_system_list;
+            $list = & $this->_systemList;
         }
         if ($module == 'blscr') {
             $m = new Blscr();

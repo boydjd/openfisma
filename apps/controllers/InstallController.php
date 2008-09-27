@@ -48,7 +48,7 @@ class InstallController extends Zend_Controller_Action
     {
         define('REQUEST_PHP_VERSION', '5');
         $this->view->back = '/install';
-        if (version_compare(phpversion() , REQUEST_PHP_VERSION, '>')) {
+        if (version_compare(phpversion(), REQUEST_PHP_VERSION, '>')) {
             $this->view->next = '/install/checking';
             $this->view->checklist = array(
                 'version' => 'ok'
@@ -63,21 +63,21 @@ class InstallController extends Zend_Controller_Action
     }
     public function checkingAction()
     {
-        $w_directories = array(
+        $wDirectories = array(
             WEB_ROOT . DS . 'temp',
             ROOT . DS . 'log',
             WEB_ROOT . DS . 'evidence',
             CONFIGS . DS . CONFIGFILE_NAME
         );
         $notwritables = array();
-        foreach($w_directories as $k => $wok) {
+        foreach ($wDirectories as $k => $wok) {
             if (!is_writeable($wok)) {
                 array_push($notwritables, $wok);
-                unset($w_directories[$k]);
+                unset($wDirectories[$k]);
             }
         }
         $this->view->notwritables = $notwritables;
-        $this->view->writables = $w_directories;
+        $this->view->writables = $wDirectories;
         $this->view->back = '/install/envcheck';
         if (empty($notwritables)) {
             $this->view->next = '/install/dbsetting';
@@ -101,12 +101,14 @@ class InstallController extends Zend_Controller_Action
     public function dbreviewAction()
     {
         $dsn = $this->_getParam('dsn');
-        if (empty($dsn['name_c']) && empty($dsn['pass_c']) && empty($dsn['pass_c_ag'])) {
+        if (empty($dsn['name_c'])
+            && empty($dsn['pass_c'])
+            && empty($dsn['pass_c_ag'])) {
             $dsn['name_c'] = $dsn['uname'];
             $dsn['pass_c'] = $dsn['upass'];
             $dsn['pass_c_ag'] = $dsn['upass'];
         }
-        $password_compare = array(
+        $passwordCompare = array(
             $dsn['pass_c']
         );
         $filter = array(
@@ -135,7 +137,7 @@ class InstallController extends Zend_Controller_Action
             'pass_c' => 'NotEmpty',
             'pass_c_ag' => array(
                 'NotEmpty',
-                new Zend_Validate_InArray($password_compare)
+                new Zend_Validate_InArray($passwordCompare)
             )
         );
         $fv = new Zend_Filter_Input($filter, $validator);
@@ -165,9 +167,10 @@ class InstallController extends Zend_Controller_Action
             'savingconfig' => 'failure'
         );
         $method = 'connection / creation';
-        $err_message = '';
+        $errMessage = '';
         $ret = false;
-        if (mysql_connect($dsn['host'] . ':' . $dsn['port'], $dsn['uname'], $dsn['upass'])) {
+        if (mysql_connect($dsn['host'] . ':' . $dsn['port'], $dsn['uname'],
+            $dsn['upass'])) {
             if (mysql_select_db($dsn['dbname'])) {
                 $method = 'connection';
                 $checklist['connection'] = 'ok';
@@ -177,20 +180,21 @@ class InstallController extends Zend_Controller_Action
                 $checklist['creation'] = 'ok';
                 $ret = true;
             } else {
-                $err_message.= mysql_error();
+                $errMessage.= mysql_error();
             }
             if ($ret && ($dsn['uname'] != $dsn['name_c'])) {
-                $host = ('localhost' == strtolower($dsn['host'])) ? 'localhost' : '%';
-                $qry = "GRANT ALL PRIVILEGES ON `{$dsn['dbname']}` . * TO '{$dsn['name_c']}'@'{$host}' IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION;";
+                $host = ('localhost' == strtolower($dsn['host'])) ?
+                    'localhost' : '%';
+                $qry = "GRANT ALL PRIVILEGES ON `{$dsn['dbname']}`. * TO '{$dsn['name_c']}'@'{$host}' IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION;";
                 if (TRUE == ($ret = mysql_query($qry))) {
                     $checklist['grant'] = 'ok';
                 } else {
-                    $err_message.= mysql_error();
+                    $errMessage.= mysql_error();
                 }
             }
             if ($ret) {
                 require_once(CONTROLLERS . '/components/sqlimport.php');
-                $zend_dsn = array(
+                $zendDsn = array(
                     'adapter' => 'mysqli',
                     'params' => array(
                         'host' => $dsn['host'],
@@ -202,24 +206,25 @@ class InstallController extends Zend_Controller_Action
                     )
                 );
                 try {
-                    $db = Zend_Db::factory(new Zend_Config($zend_dsn));
-                    $init_files = array(MIGRATIONS . '/base.sql');
-                    if ($ret = import_data($db, $init_files)) {
+                    $db = Zend_Db::factory(new Zend_Config($zendDsn));
+                    $initFiles = array(MIGRATIONS . '/base.sql');
+                    if ($ret = import_data($db, $initFiles)) {
                         $checklist['schema'] = 'ok';
                     }
                 }
                 catch(Zend_Exception $e) {
-                    $err_message.= $e->getMessage();
+                    $errMessage.= $e->getMessage();
                     $ret = false;
                 }
             }
         } else {
-            $err_message.= mysql_error();
+            $errMessage.= mysql_error();
         }
         $this->view->dsn = $dsn;
         if ($ret) {
             if (is_writable(CONFIGS . DS . CONFIGFILE_NAME)) {
-                $conf_tpl = $this->_helper->viewRenderer->getViewScript('config');
+                $confTpl = $this->_helper->viewRenderer
+                                         ->getViewScript('config');
 
                 // Set the host URL. This value is saved into the install.conf
                 $hostUrl = $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
@@ -230,15 +235,16 @@ class InstallController extends Zend_Controller_Action
                 }
                 $this->view->hostUrl = $hostUrl;
 
-                $dbconfig = $this->view->render($conf_tpl);
-                if (0 < file_put_contents(CONFIGS . DS . CONFIGFILE_NAME, $dbconfig)) {
+                $dbconfig = $this->view->render($confTpl);
+                if (0 < file_put_contents(CONFIGS . DS . CONFIGFILE_NAME,
+                    $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
                 } else {
                     $ret = false;
-                    $err_message.= 'Write no content to the file.';
+                    $errMessage.= 'Write no content to the file.';
                 }
             } else {
-                $err_message.= 'Write config file error. ';
+                $errMessage.= 'Write config file error. ';
                 $ret = false;
             }
         }
@@ -248,7 +254,7 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '/install/complete';
         } else {
             $this->view->next = '/install/dbsetting';
-            $this->view->message = $err_message;
+            $this->view->message = $errMessage;
         }
         $this->view->checklist = $checklist;
         $this->view->back = '/install/dbsetting';

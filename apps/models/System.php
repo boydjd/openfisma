@@ -49,23 +49,27 @@ class System extends FismaModel
      *
      * (SN) System Name
      *
-     * TODO temporarily this function patches through to the parent implementation
+     * TODO temporarily this function patches through to the 
+     * parent implementation
+     *
      * when the parameters are set to anything but the default values.
      * ideally it wouldn't do this, but for backwards compatibility this is the
      * quickest way to implement it without breaking numerous other pieces.
      */
-    public function getList ($fields = '*', $primary_key = null, $order = null)
+    public function getList ($fields = '*', $primaryKey = null, $order = null)
     {
-        if (($fields === '*') && ($primary_key === null) && ($order === null)) {
-            $system_list = array();
-            $query = $this->select(array($this->_primary , 'nickname' , 'name'))->distinct()->from($this->_name)->order('nickname');
+        if (($fields === '*') && ($primaryKey === null) && ($order === null)) {
+            $systemList = array();
+            $query = $this->select(array($this->_primary, 'nickname', 'name'))
+                          ->distinct()->from($this->_name)->order('nickname');
             $result = $this->fetchAll($query);
             foreach ($result as $row) {
-                $system_list[$row->id] = array('name' => ('(' . $row->nickname . ') ' . $row->name));
+                $systemList[$row->id] = array('name' =>
+                    ('(' . $row->nickname . ') ' . $row->name));
             }
-            return $system_list;
+            return $systemList;
         } else {
-            return parent::getList($fields, $primary_key, $order);
+            return parent::getList($fields, $primaryKey, $order);
         }
     }
 }
