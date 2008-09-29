@@ -12,11 +12,9 @@ $output_cols = array(
 "Recommendation",
 "Corrective Action",
 "ECD",
-"Threat_Source",
-"Countermeasure",
-"Control",
-"Threats",
-"Countermeasure"
+"Control Y/N",
+"Threats Y/N",
+"Countermeasures Y/N"
 );
 $count_cols = count($output_cols);
 
@@ -65,18 +63,16 @@ foreach( $this->poam_list as $p ) {
         $p['finding_data'],
         $p['type'],
         $p['status'],
-        $this->source_list[$p['source_id']],
+        $p['source_id'] != 0 ? $this->source_list[$p['source_id']] : 'n/a',
         $p['asset_id'],
         !empty($p['network_id'])?$this->network_list[$p['network_id']]:'',
         $p['threat_level'],
         $p['action_suggested'],
         $p['action_planned'],
         $p['action_est_date'],
-        $p['threat_source'],
-        $p['cmeasure'],
-        NULL == $p['blscr_id']?'N':'Y',
-        'NONE' == $p['threat_level']?'N':'Y',
-        'NONE' == $p['cmeasure_effectiveness']?'N':'Y');
+        NULL == $p['blscr_id'] ? 'N' : 'Y',
+        $p['threat_level'] != 'NONE' && trim($p['threat_source']) != '' && trim($p['threat_justification']) != '' ? 'Y' : 'N',
+        $p['cmeasure_effectiveness'] != 'NONE' && trim($p['cmeasure_effectiveness']) != '' && trim($p['cmeasure_justification']) != '' ? 'Y' : 'N');
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
 

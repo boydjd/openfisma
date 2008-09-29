@@ -46,7 +46,7 @@
         <?php $tbflag = 1;
               }
            }
-           if($tbflag != 1){
+           if(isset($tbflag) && $tbflag != 1){
                $sumtd = $colnum-$i%$colnum;
                if($sumtd != $colnum){
                    $sumtd = $sumtd + 1;

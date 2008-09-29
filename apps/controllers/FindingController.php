@@ -229,6 +229,11 @@ template. Please update your CSV file and try again.<br />";
                         "You must select a finding source"
                     );
                 }
+                // If the blscr_id is zero, that means the user didn't select
+                // a security control, so set the control to null.
+                if ($poam['blscr_id'] == 0) {
+                    unset($poam['blscr_id']);
+                }
                 $poam['status'] = 'NEW';
                 $discoverTs = new Zend_Date($poam['discover_ts']);
                 $poam['discover_ts'] = $discoverTs->toString("Y-m-d");

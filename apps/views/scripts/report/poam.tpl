@@ -125,8 +125,9 @@
         <th class="tdc">Recommendation</th>
         <th class="tdc">Corrective Action</th>
         <th class="tdc">ECD</th>
-        <th class="tdc">Threat Source</th>
-        <th class="tdc">Countermeasure</th>
+        <th class="tdc">Control Y/N</th>
+        <th class="tdc">Threats Y/N</th>
+        <th class="tdc">Cmeasures Y/N</th>
     </tr>
     <?php 
         foreach($this->poam_list as  $row){ ?>
@@ -159,8 +160,9 @@
         <td class="tdc"><?php echo $row['action_suggested'];?></td>
         <td class="tdc"><?php echo $row['action_planned'];?></td>
         <td class="tdc" align="center"><?php echo $row['action_est_date'];?></td>
-        <td class="tdc"><?php echo $row['threat_source'];?></td>
-        <td class="tdc"><?php echo $row['cmeasure'];?></td>
+        <td class="tdc"><?php echo (trim($row['blscr_id']) != '') ? 'Y' : 'N';?></td>
+        <td class="tdc"><?php echo ($row['threat_level'] != 'NONE' && trim($row['threat_source']) != '' && trim($row['threat_justification']) != '') ? 'Y' : 'N';?></td>
+        <td class="tdc"><?php echo ($row['cmeasure_effectiveness'] != 'NONE' && trim($row['cmeasure_effectiveness']) != '' && trim($row['cmeasure_justification']) != '') ? 'Y' : 'N';?></td>
     </tr>
     <?php } ?>
 </table>

@@ -13,7 +13,9 @@
                 <th>BLSR Category</th>
                 <th>Total Vulnerabilities</th>
             </tr>
-            <?php foreach($this->rpdata[0] as $item){ ?>
+            <?php
+                $this->sum0 = 0;
+                foreach($this->rpdata[0] as $item){ ?>
             <tr align="center">
                 <td class="tdc"><?php echo $item['blscr'];?></td>
                 <td class="tdc"><?php echo $item['num'];?></td>
@@ -37,7 +39,9 @@
                 <th>BLSR Category</th>
                 <th>Total Vulnerabilities</th>
             </tr>
-                <?php foreach($this->rpdata[1] as $item){ ?>
+                <?php
+                    $this->sum1 = 0;
+                    foreach($this->rpdata[1] as $item){ ?>
             <tr align="center">
                 <td class="tdc"><?php echo $item['blscr'];?></td>
                 <td class="tdc"><?php echo $item['num'];?></td>
@@ -61,7 +65,9 @@
                 <th>BLSR Category</th>
                 <th>Total Vulnerabilities</th>
             </tr>
-                <?php foreach($this->rpdata[2] as $item){ ?>
+                <?php
+                    $this->sum2 = 0;
+                    foreach($this->rpdata[2] as $item){ ?>
             <tr align="center">
                 <td class="tdc"><?php echo $item['blscr'];?></td>
                 <td class="tdc"><?php echo $item['num'];?></td>
