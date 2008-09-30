@@ -10,8 +10,10 @@
     
 <p><?php
     $behaviorRules = readSysConfig('behavior_rule');
-    // Replace double newline with <p> tags
+    // Replace double newline with <p> tag
     $behaviorRules = preg_replace("/\n\s+\n/", '</p><p>', $behaviorRules);
+    // Replace single newline with <br> tag
+    $behaviorRules = str_replace("\n", '<br>', $behaviorRules);
     print($behaviorRules);
 ?></p>
 
