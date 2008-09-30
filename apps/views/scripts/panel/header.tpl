@@ -24,15 +24,15 @@
         echo'<img src="/images/menu_line.gif" border="0">';
     }
     if(isAllow('finding','read')) {
-        echo'<ul><li><h2><a href="/panel/remediation/sub/summary">Findings</a></h2>';
+        echo'<ul><li><h2><a>Findings</a></h2>';
         echo'<ul>';
         if(isAllow('remediation', 'read')) {
-            echo'<li><a href="/panel/remediation/sub/summary">Remediation Summary</a>';
-            echo'<li><a href="/panel/remediation/sub/searchbox">Remediation Search</a>';
+            echo'<li><a href="/panel/remediation/sub/summary">Summary</a>';
+            echo'<li><a href="/panel/remediation/sub/searchbox">Search</a>';
         }
         if(isAllow('finding','create')) {
-            echo'<li><a href="/panel/finding/sub/create">New Finding</a>';
-            echo'<li><a href="/finding/injection">Spreadsheet Upload</a>';
+            echo'<li><a href="/panel/finding/sub/create">Create New Finding</a>';
+            echo'<li><a href="/finding/injection">Upload Spreadsheet</a>';
             echo'<li><a href="/finding/import">Upload Scan Results</a>';
         }
         echo '</ul>

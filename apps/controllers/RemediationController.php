@@ -196,8 +196,10 @@ class RemediationController extends PoamBaseController
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('summary', $summary);
         $this->render('summary');
-        $this->_helper->actionStack('searchbox', 'Remediation', null,
-            array('action'=>'summary'));
+        // Disabling the search box for now because it is not working as
+        // intended
+        //$this->_helper->actionStack('searchbox', 'Remediation', null,
+        //    array('action'=>'summary'));
     }
     /**
      *  Do the real searching work. It's a thin wrapper
