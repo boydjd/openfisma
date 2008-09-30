@@ -33,8 +33,10 @@
  */
 class ReportController extends PoamBaseController
 {
-    public function init()
-    {
+    /**
+     * init() - Create the additional pdf and xls contexts for this class.
+     */
+    public function init() {
         parent::init();
         $swCtx = $this->_helper->contextSwitch();
         if (!$swCtx->hasContext('pdf')) {
@@ -53,8 +55,11 @@ class ReportController extends PoamBaseController
             ));
         }
     }
-    public function preDispatch()
-    {
+    
+    /**
+     * preDispatch() - Add the action contexts for this controller.
+     */
+    public function preDispatch() {
         parent::preDispatch();
         $this->req = $this->getRequest();
         $swCtx = $this->_helper->contextSwitch();
@@ -70,7 +75,7 @@ class ReportController extends PoamBaseController
     }
 
     /**
-     *  Genenerate fisma report 
+     * fismaAction() - Genenerate fisma report
      */
     public function fismaAction()
     {
@@ -195,11 +200,11 @@ class ReportController extends PoamBaseController
         }
         $this->render();
     }
+    
     /**
-     *  Generate poam report
+     * poamAction() - Generate poam report
      */
-    public function poamAction()
-    {
+    public function poamAction() {
         $req = $this->getRequest();
         $params = array(
             'systemId' => 'system_id',
@@ -264,8 +269,12 @@ class ReportController extends PoamBaseController
         }
         $this->render();
     }
-    public function overdueAction()
-    {
+    
+    /**
+     * overdueAction() - Overdue report
+     */
+    public function overdueAction() {
+        // Get request variables
         $req = $this->getRequest();
         $params = array(
             'systemId' => 'system_id',
@@ -279,14 +288,18 @@ class ReportController extends PoamBaseController
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('criteria', $criteria);
         $isExport = $req->getParam('format');
+        
         if ('search' == $req->getParam('s') || isset($isExport)) {
+            // Setup the paging if necessary
             $this->_pagingBasePath.= '/panel/report/sub/overdue/s/search';
             if (isset($isExport)) {
-                $this->_paging['currentPage'] = 
-                    $this->_paging['perPage'] = null;
+                $this->_paging['currentPage'] = null;
+                $this->_paging['perPage'] = null;
             }
             $this->makeUrl($criteria);
             $this->view->assign('url', $this->_pagingBasePath);
+            
+            // Interpret the search criteria
             if (isset($criteria['overdueType'])) {
                 $criteria['overdue']['type'] = $criteria['overdueType'];
             }
@@ -313,25 +326,36 @@ class ReportController extends PoamBaseController
                     unset($criteria['overdue']['begin_date']);
                 }
             }
-            $list = & $this->_poam->search($this->_me->systems, array(
-                'id',
-                'finding_data',
-                'system_id',
-                'network_id',
-                'source_id',
-                'asset_id',
-                'type',
-                'ip',
-                'port',
-                'status',
-                'action_suggested',
-                'action_planned',
-                'threat_level',
-                'action_est_date',
-                'count' => 'count(*)'), 
-                $criteria, $this->_paging['currentPage'], 
-                $this->_paging['perPage']);
+            
+            // Search for overdue items according to the criteria
+            $list = $this->_poam->search(
+                $this->_me->systems,
+                array(
+                    'id',
+                    'finding_data',
+                    'system_id',
+                    'network_id',
+                    'source_id',
+                    'asset_id',
+                    'type',
+                    'ip',
+                    'port',
+                    'status',
+                    'action_suggested',
+                    'action_planned',
+                    'threat_level',
+                    'action_est_date',
+                    'count' => 'count(*)'
+                ),
+                $criteria,
+                $this->_paging['currentPage'],
+                $this->_paging['perPage']
+            );
+                
+            // Last result is the total
             $total = array_pop($list);
+            
+            // Assign view outputs
             $this->_paging['totalItems'] = $total;
             $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
@@ -342,7 +366,7 @@ class ReportController extends PoamBaseController
     }
 
     /**
-     *  Generate general report
+     * generalAction() - Generate general report
      */
     public function generalAction()
     {
@@ -351,31 +375,34 @@ class ReportController extends PoamBaseController
         $this->view->assign('type', $type);
         $this->render();
         if (!empty($type) && ('search' == $req->getParam('s'))) {
-            $REPORT_GEN_BLSCR = 1; // NIST Baseline Security Controls Report
-            $REPORT_GEN_FIPS = 2; // FIPS 199 Category Breakdown
-            $REPORT_GEN_PRODS = 3; // Products with Open Vulnerabilities
-            $REPORT_GEN_SWDISC = 4; // Software Discovered Through
-                                    // Vulnerability Assessments
-            $REPORT_GEN_TOTAL = 5; // Total # Systems with Open Vulnerabilitie
-            if ($REPORT_GEN_BLSCR == $type) {
+            define('REPORT_GEN_BLSCR', 1);
+            define('REPORT_GEN_FIPS', 2);
+            define('REPORT_GEN_PRODS', 3);
+            define('REPORT_GEN_SWDISC', 4);
+            define('REPORT_GEN_TOTAL', 5);
+            
+            if (REPORT_GEN_BLSCR == $type) {
                 $this->_forward('blscr');
             }
-            if ($REPORT_GEN_FIPS == $type) {
+            if (REPORT_GEN_FIPS == $type) {
                 $this->_forward('fips');
             }
-            if ($REPORT_GEN_PRODS == $type) {
+            if (REPORT_GEN_PRODS == $type) {
                 $this->_forward('prods');
             }
-            if ($REPORT_GEN_SWDISC == $type) {
+            if (REPORT_GEN_SWDISC == $type) {
                 $this->_forward('swdisc');
             }
-            if ($REPORT_GEN_TOTAL == $type) {
+            if (REPORT_GEN_TOTAL == $type) {
                 $this->_forward('total');
             }
         }
     }
-    public function blscrAction()
-    {
+    
+    /**
+     * blscrAction() - Generate BLSCR report
+     */
+    public function blscrAction() {
         $db = $this->_poam->getAdapter();
         $system = new system();
         $rpdata = array();
@@ -414,8 +441,11 @@ class ReportController extends PoamBaseController
         $this->view->assign('rpdata', $rpdata);
         $this->render();
     }
-    public function fipsAction()
-    {
+    
+    /**
+     * fipsAction() - FIPS report
+     */
+    public function fipsAction() {
         $system = new system();
         $systems = $system->getList(array(
             'name' => 'name',
@@ -433,9 +463,9 @@ class ReportController extends PoamBaseController
             if (strtolower($system['conf']) != 'none') {
                 $riskObj = new RiskAssessment($system['conf'],
                     $system['avail'], $system['integ'], null, null, null);
-                $fips199 = $riskObj->get_data_sensitivity();
+                $fips = $riskObj->get_data_sensitivity();
             } else {
-                $fips199 = 'n/a';
+                $fips = 'n/a';
             }
             $qry = $this->_poam->select()->from('poams', array(
                 'last_update' => 'MAX(modify_ts)'
@@ -445,8 +475,8 @@ class ReportController extends PoamBaseController
                 $ret = $result->toArray();
                 $system['last_update'] = $ret['last_update'];
             }
-            $system['fips'] = $fips199;
-            $fipsTotals[$fips199]+= 1;
+            $system['fips'] = $fips;
+            $fipsTotals[$fips]+= 1;
             $system['crit'] = $system['avail'];
         }
         $rpdata = array();
@@ -455,8 +485,11 @@ class ReportController extends PoamBaseController
         $this->view->assign('rpdata', $rpdata);
         $this->render();
     }
-    public function prodsAction()
-    {
+    
+    /**
+     * prodsAction() - Generate products report
+     */
+    public function prodsAction() {
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
             'prod' => 'products'
@@ -475,8 +508,11 @@ class ReportController extends PoamBaseController
         $this->view->assign('rpdata', $rpdata);
         $this->render();
     }
-    public function swdiscAction()
-    {
+    
+    /**
+     * swdiscAction() - Software discovered report
+     */
+    public function swdiscAction() {
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
             'p' => 'products'
@@ -491,8 +527,11 @@ class ReportController extends PoamBaseController
         $this->view->assign('rpdata', $rpdata);
         $this->render();
     }
-    public function totalAction()
-    {
+    
+    /**
+     * totalAction() - ???
+     */
+    public function totalAction() {
         $db = $this->_poam->getAdapter();
         $system = new system();
         $rpdata = array();
@@ -535,11 +574,7 @@ class ReportController extends PoamBaseController
         $this->render();
     }
     /**
-     *  Batch generate RAFS report per system
-     *
-     *  All those PDF files are packed in tgz.
-     *  It reuses the PDF generation part of 
-     *  RemediationController::rafAction()
+     * rafsAction() - Batch generate RAFs for each system
      */
     public function rafsAction()
     {

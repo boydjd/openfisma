@@ -62,7 +62,7 @@ class Poam extends Zend_Db_Table
             $query->where("p.id IN (" . $ids . ")");
         }
         if (! empty($overdue)) {
-            $query->where("status = 'OPEN'");
+            $query->where("status != 'CLOSED'");
             if ($overdue['type'] == 'sso') {
                 if (isset($overdue['begin_date'])) {
                     $query->where("p.action_actual_date > ?",
@@ -74,15 +74,11 @@ class Poam extends Zend_Db_Table
                 }
             } else if ($overdue['type'] == 'action') {
                 if (isset($overdue['begin_date'])) {
-                    $query->where("(p.action_actual_date IS NULL
-                                    OR p.action_actual_date = 0)
-                                    AND p.action_est_date > ?",
+                    $query->where("p.action_est_date > ?",
                                     $overdue['begin_date']->toString('Ymd'));
                 }
                 if (isset($overdue['end_date'])) {
-                    $query->where("(p.action_actual_date IS NULL
-                                    OR p.action_actual_date = 0)
-                                    AND p.action_est_date < ?",
+                    $query->where("p.action_est_date < ?",
                                     $overdue['end_date']->toString('Ymd'));
                 }
             } else {
