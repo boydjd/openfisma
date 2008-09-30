@@ -23,7 +23,7 @@ function delok(entryname)
           if(isAllow('admin_roles','read')){
               echo'<th>View</th>';
           }
-          if(isAllow('admin_role_functions','read')){
+          if(isAllow('admin_roles','read')){
               echo'<th>Rights</th>';
           }
           if(isAllow('admin_roles','delete')){
