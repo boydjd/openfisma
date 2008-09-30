@@ -109,16 +109,16 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                     . $this->buildErrors()
                     . '</td></tr>';
         } else if ($element instanceof Zend_Form_DisplayGroup) {
-            $render = '<td><table class=\'fisma_crud\'>'
+            $render = '<div class=\'subform\'><table class=\'fisma_crud\'>'
                     . $content
-                    . '</table></td>';
+                    . '</table></div>';
             
         } else if ($element instanceof Zend_Form) {
             $render = "<form method='{$element->getMethod()}'"
                     . " action='{$element->getAction()}'>"
-                    . '<table><tr>'
+                    . '<div class=\'form\'>'
                     . $content
-                    . '</tr></table>'
+                    . '</div>'
                     . '</form>';
         } else {
             throw new FismaException("The element to be rendered is an unknown"

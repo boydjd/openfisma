@@ -96,6 +96,14 @@ td {
 /* This is the standard style for the basic CRUD forms such as users, systems,
    finding sources, etc.
 */
+div.form {
+
+}
+
+div.subform {
+    margin: 15px 0px;
+}
+
 table.fisma_crud {
     margin: 0px 15px;
     background-color: #e3e3e3;

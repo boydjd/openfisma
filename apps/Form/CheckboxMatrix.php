@@ -84,7 +84,7 @@ class Form_CheckboxMatrix extends Zend_Form_Element
     function render() {
         $render = '';
         // @todo ideally this would be configurable in the constructor
-        $columnCount = 3;
+        $columnCount = 4;
         $systemCount = count($this->_checkboxes);
         $rowCount = ceil($systemCount / $columnCount);
         
