@@ -75,6 +75,6 @@ function import_data($db,$dataFile){
         if (!$ret) {
             return $ret;
         }
-     }
-     return  true; 
+    }
+    return  true;
 }

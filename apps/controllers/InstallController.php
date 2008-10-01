@@ -185,7 +185,9 @@ class InstallController extends Zend_Controller_Action
             if ($ret && ($dsn['uname'] != $dsn['name_c'])) {
                 $host = ('localhost' == strtolower($dsn['host'])) ?
                     'localhost' : '%';
-                $qry = "GRANT ALL PRIVILEGES ON `{$dsn['dbname']}`. * TO '{$dsn['name_c']}'@'{$host}' IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION;";
+                $qry = "GRANT ALL PRIVILEGES ON `{$dsn['dbname']}`. * TO
+                       '{$dsn['name_c']}'@'{$host}'
+                       IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION";
                 if (TRUE == ($ret = mysql_query($qry))) {
                     $checklist['grant'] = 'ok';
                 } else {

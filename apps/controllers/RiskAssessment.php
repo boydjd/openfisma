@@ -28,8 +28,6 @@
  */
  
 /**
- * Displays warnings or informational messages to the user via DHTML.
- *
  * Risk assessment calculation class.
  *
  * This module takes vulnerability aspects - system confidentiality,
@@ -84,12 +82,22 @@ class RiskAssessment
     var $criticality = NULL;
     var $threat = NULL;
     var $effectiveness = NULL;
-    /*
-    ** Range of input and output values.
-    */
-    var $HIGH = 'HIGH';
-    var $MODERATE = 'MODERATE';
-    var $LOW = 'LOW';
+
+    /**
+     * High Risk/Impact Level
+     */
+    const HIGH = 'HIGH';
+
+    /**
+     * Moderate Risk/Impact Level
+     */
+    const MODERATE = 'MODERATE';
+
+    /**
+     * Low Risk/Impact Level
+     */
+    const LOW = 'LOW';
+    
     /*
     ** Instantiate a RiskAssessment class object.
     **
@@ -108,7 +116,12 @@ class RiskAssessment
     **  class instantiation
     **
     */
-    function __construct($confidentiality, $availability, $integrity, $criticality, $threat_level, $effectiveness)
+    function __construct($confidentiality,
+                         $availability,
+                         $integrity,
+                         $criticality,
+                         $threat_level,
+                         $effectiveness)
     {
         // Validate all the values passed in
         if (!is_null($confidentiality)) {
@@ -155,6 +168,7 @@ class RiskAssessment
             }
         }
     }
+    
     /*
     ** Calculate data sensitivity.
     ** This returns the high water mark of confidentiality, availability and integrity.
@@ -167,24 +181,26 @@ class RiskAssessment
     function get_data_sensitivity()
     {
         $sensitivity = NULL;
-        //echo "$this->HIGH, $this->confidentiality<br/>";
+        //echo "RiskAssessment::HIGH, $this->confidentiality<br/>";
         if (is_null($this->confidentiality) || is_null($this->availability) || is_null($this->integrity)) {
-            die("get_data_sensitivity: confidentiality, availability or integrity value(s) NULL; unable to determine data sensitivity");
+            die("get_data_sensitivity: confidentiality, availability or integrity value(s) NULL;
+                unable to determine data sensitivity");
         }
-        // Look for HIGH high water mark
-        if ($this->confidentiality == $this->HIGH || $this->availability == $this->HIGH || $this->integrity == $this->HIGH) {
-            $sensitivity = $this->HIGH;
-        }
-        // If nothing HIGH, look for MODERATE high water mark
-        else if ($this->confidentiality == $this->MODERATE || $this->availability == $this->MODERATE || $this->integrity == $this->MODERATE) {
-            $sensitivity = $this->MODERATE;
-        }
-        // otherwise everybody is LOW
-        else {
-            $sensitivity = $this->LOW;
+        // Look for high water mark
+        if ($this->confidentiality == RiskAssessment::HIGH
+            || $this->availability == RiskAssessment::HIGH
+            || $this->integrity == RiskAssessment::HIGH) {
+            $sensitivity = RiskAssessment::HIGH;
+        } else if ($this->confidentiality == RiskAssessment::MODERATE
+                   || $this->availability == RiskAssessment::MODERATE
+                   || $this->integrity == RiskAssessment::MODERATE) {
+            $sensitivity = RiskAssessment::MODERATE;
+        } else {
+            $sensitivity = RiskAssessment::LOW;
         }
         return ($sensitivity);
     }
+    
     /*
     ** Calculate impact.
     ** Combines data sensitivity and mission criticality to determine value.
@@ -201,8 +217,12 @@ class RiskAssessment
         //
         // Make sure requisite aspects in place
         //
-        if (is_null($this->confidentiality) || is_null($this->availability) || is_null($this->integrity) || is_null($this->criticality)) {
-            die("get_impact: confidentiality, availability, integrity or criticality value(s) NULL; unable to determine impact");
+        if (is_null($this->confidentiality)
+            || is_null($this->availability)
+            || is_null($this->integrity)
+            || is_null($this->criticality)) {
+            die("get_impact: confidentiality, availability, integrity or criticality value(s) NULL;
+                unable to determine impact");
         }
         //
         // Calculate sensitivity value
@@ -212,18 +232,19 @@ class RiskAssessment
         // Set up a lookup table - first index is data sensitivity, second is mission criticality
         // $impact_lookup[$sensitivity][$criticality] = $impact_assessment
         //
-        $impact_lookup[$this->HIGH][$this->HIGH] = $this->HIGH;
-        $impact_lookup[$this->HIGH][$this->MODERATE] = $this->MODERATE;
-        $impact_lookup[$this->HIGH][$this->LOW] = $this->LOW;
-        $impact_lookup[$this->MODERATE][$this->HIGH] = $this->MODERATE;
-        $impact_lookup[$this->MODERATE][$this->MODERATE] = $this->MODERATE;
-        $impact_lookup[$this->MODERATE][$this->LOW] = $this->LOW;
-        $impact_lookup[$this->LOW][$this->HIGH] = $this->LOW;
-        $impact_lookup[$this->LOW][$this->MODERATE] = $this->LOW;
-        $impact_lookup[$this->LOW][$this->LOW] = $this->LOW;
+        $impact_lookup[RiskAssessment::HIGH][RiskAssessment::HIGH] = RiskAssessment::HIGH;
+        $impact_lookup[RiskAssessment::HIGH][RiskAssessment::MODERATE] = RiskAssessment::MODERATE;
+        $impact_lookup[RiskAssessment::HIGH][RiskAssessment::LOW] = RiskAssessment::LOW;
+        $impact_lookup[RiskAssessment::MODERATE][RiskAssessment::HIGH] = RiskAssessment::MODERATE;
+        $impact_lookup[RiskAssessment::MODERATE][RiskAssessment::MODERATE] = RiskAssessment::MODERATE;
+        $impact_lookup[RiskAssessment::MODERATE][RiskAssessment::LOW] = RiskAssessment::LOW;
+        $impact_lookup[RiskAssessment::LOW][RiskAssessment::HIGH] = RiskAssessment::LOW;
+        $impact_lookup[RiskAssessment::LOW][RiskAssessment::MODERATE] = RiskAssessment::LOW;
+        $impact_lookup[RiskAssessment::LOW][RiskAssessment::LOW] = RiskAssessment::LOW;
         $impact = $impact_lookup[$sensitivity][$this->criticality];
         return ($impact);
     }
+    
     /*
     ** Calculate threat likelihood.
     ** Combines threat level and countermeasure effectiveness.
@@ -241,24 +262,26 @@ class RiskAssessment
         // Make sure requisite aspects in place
         //
         if (is_null($this->threat) || is_null($this->effectiveness)) {
-            die("get_threat_likelihood: threat level or countermeasure effectiveness value(s) NULL; unable to determine threat likelihood");
+            die("get_threat_likelihood: threat level or countermeasure effectiveness value(s) NULL;
+                unable to determine threat likelihood");
         }
         //
         // Set up a lookup table - first index is threat level, second is countermeasure effectiveness
         // $threat_lookup[$threat][$effectiveness] = $likelihood_assessment
         //
-        $threat_lookup[$this->HIGH][$this->HIGH] = $this->LOW;
-        $threat_lookup[$this->HIGH][$this->MODERATE] = $this->MODERATE;
-        $threat_lookup[$this->HIGH][$this->LOW] = $this->HIGH;
-        $threat_lookup[$this->MODERATE][$this->HIGH] = $this->LOW;
-        $threat_lookup[$this->MODERATE][$this->MODERATE] = $this->MODERATE;
-        $threat_lookup[$this->MODERATE][$this->LOW] = $this->MODERATE;
-        $threat_lookup[$this->LOW][$this->HIGH] = $this->LOW;
-        $threat_lookup[$this->LOW][$this->MODERATE] = $this->LOW;
-        $threat_lookup[$this->LOW][$this->LOW] = $this->LOW;
+        $threat_lookup[RiskAssessment::HIGH][RiskAssessment::HIGH] = RiskAssessment::LOW;
+        $threat_lookup[RiskAssessment::HIGH][RiskAssessment::MODERATE] = RiskAssessment::MODERATE;
+        $threat_lookup[RiskAssessment::HIGH][RiskAssessment::LOW] = RiskAssessment::HIGH;
+        $threat_lookup[RiskAssessment::MODERATE][RiskAssessment::HIGH] = RiskAssessment::LOW;
+        $threat_lookup[RiskAssessment::MODERATE][RiskAssessment::MODERATE] = RiskAssessment::MODERATE;
+        $threat_lookup[RiskAssessment::MODERATE][RiskAssessment::LOW] = RiskAssessment::MODERATE;
+        $threat_lookup[RiskAssessment::LOW][RiskAssessment::HIGH] = RiskAssessment::LOW;
+        $threat_lookup[RiskAssessment::LOW][RiskAssessment::MODERATE] = RiskAssessment::LOW;
+        $threat_lookup[RiskAssessment::LOW][RiskAssessment::LOW] = RiskAssessment::LOW;
         $likelihood = $threat_lookup[$this->threat][$this->effectiveness];
         return ($likelihood);
     }
+    
     /*
     ** Calculate overall risk.
     ** Combines threat likelihood and impact, pulling in all risk aspects.
@@ -274,8 +297,14 @@ class RiskAssessment
         //
         // Make sure requisite aspects are in place
         //
-        if (is_null($this->confidentiality) || is_null($this->availability) || is_null($this->integrity) || is_null($this->criticality) || is_null($this->threat) || is_null($this->effectiveness)) {
-            die("get_overall_risk: confidentiality, availability, integrity, threat level or countermeasure effectiveness value(s) NULL; unable to determine overall risk");
+        if (is_null($this->confidentiality)
+            || is_null($this->availability)
+            || is_null($this->integrity)
+            || is_null($this->criticality)
+            || is_null($this->threat)
+            || is_null($this->effectiveness)) {
+            die("get_overall_risk: confidentiality, availability, integrity, threat level or countermeasure
+                effectiveness value(s) NULL; unable to determine overall risk");
         }
         $likelihood = $this->get_threat_likelihood();
         $impact = $this->get_impact();
@@ -283,18 +312,19 @@ class RiskAssessment
         // Set up a lookup table - first index is threat likelihood, second is impact
         // $impact_lookup[$likelihood][$impact] = $risk_assessment
         //
-        $risk_lookup[$this->LOW][$this->HIGH] = $this->LOW;
-        $risk_lookup[$this->LOW][$this->MODERATE] = $this->LOW;
-        $risk_lookup[$this->LOW][$this->LOW] = $this->LOW;
-        $risk_lookup[$this->MODERATE][$this->HIGH] = $this->MODERATE;
-        $risk_lookup[$this->MODERATE][$this->MODERATE] = $this->MODERATE;
-        $risk_lookup[$this->MODERATE][$this->LOW] = $this->LOW;
-        $risk_lookup[$this->HIGH][$this->HIGH] = $this->HIGH;
-        $risk_lookup[$this->HIGH][$this->MODERATE] = $this->MODERATE;
-        $risk_lookup[$this->HIGH][$this->LOW] = $this->LOW;
+        $risk_lookup[RiskAssessment::LOW][RiskAssessment::HIGH] = RiskAssessment::LOW;
+        $risk_lookup[RiskAssessment::LOW][RiskAssessment::MODERATE] = RiskAssessment::LOW;
+        $risk_lookup[RiskAssessment::LOW][RiskAssessment::LOW] = RiskAssessment::LOW;
+        $risk_lookup[RiskAssessment::MODERATE][RiskAssessment::HIGH] = RiskAssessment::MODERATE;
+        $risk_lookup[RiskAssessment::MODERATE][RiskAssessment::MODERATE] = RiskAssessment::MODERATE;
+        $risk_lookup[RiskAssessment::MODERATE][RiskAssessment::LOW] = RiskAssessment::LOW;
+        $risk_lookup[RiskAssessment::HIGH][RiskAssessment::HIGH] = RiskAssessment::HIGH;
+        $risk_lookup[RiskAssessment::HIGH][RiskAssessment::MODERATE] = RiskAssessment::MODERATE;
+        $risk_lookup[RiskAssessment::HIGH][RiskAssessment::LOW] = RiskAssessment::LOW;
         $overall_risk = $risk_lookup[$likelihood][$impact];
         return ($overall_risk);
     }
+    
     /*
     ** Check input value for membership in set of valid values
     ** ["HIGH", "MODERATE", "LOW"].
@@ -310,9 +340,9 @@ class RiskAssessment
         //
         // Set up list of valid values
         //
-        $valid_values[$this->LOW] = 1;
-        $valid_values[$this->MODERATE] = 1;
-        $valid_values[$this->HIGH] = 1;
+        $valid_values[RiskAssessment::LOW] = 1;
+        $valid_values[RiskAssessment::MODERATE] = 1;
+        $valid_values[RiskAssessment::HIGH] = 1;
         //
         // Convert incoming value to uppercase to match valid array keys
         //

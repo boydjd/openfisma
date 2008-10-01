@@ -474,7 +474,7 @@ class RemediationController extends PoamBaseController
 
                     $logContent =
                         "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
-            	    $this->_poam->writeLogs($id, $this->_me->id,
+                    $this->_poam->writeLogs($id, $this->_me->id,
                         self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION',
                         $logContent);
                 }
