@@ -152,7 +152,7 @@ class ConfigController extends SecurityController
     public function contactAction()
     {
         $config = new Config();
-        $form = $this->getForm('contact');
+        $form = $this->getConfigForm('contact_config');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
             if (isset($data[Config::CONTACT_NAME])) {
@@ -261,7 +261,7 @@ class ConfigController extends SecurityController
     public function notificationAction()
     {
         $config = new Config();
-        $form = $this->getForm('notification');
+        $form = $this->getConfigForm('notification_config');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
             if (isset($data[Config::SENDER])) {
@@ -297,7 +297,7 @@ class ConfigController extends SecurityController
     public function privacyAction()
     {
         $config = new Config();
-        $form = $this->getForm('privacy');
+        $form = $this->getConfigForm('privacy_policy_config');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
             if (isset($data[Config::PRIVACY_POLICY])) {
