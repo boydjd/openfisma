@@ -1,0 +1,66 @@
+; This is the form for configuring the identity and e-mail setting for
+; e-mail notifications.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id:$
+
+[notification_config]
+method = "post"
+
+elements.sender.type = "text"
+elements.sender.options.label = "Send Email Address"
+elements.sender.options.size = 30
+elements.sender.options.validators.alnum.validator = "EmailAddress"
+elements.sender.options.required = true
+displayGroups.general.elements.sender = "sender"
+
+elements.subject.type = "text"
+elements.subject.options.label = "Email Subject"
+elements.subject.options.size = 30
+elements.subject.options.required = true
+displayGroups.general.elements.subject = "subject"
+
+elements.send_type.type = "select"
+elements.send_type.options.label = "Send Type"
+elements.send_type.options.multiOptions.sendmail = "sendmail"
+elements.send_type.options.multiOptions.smtp = "smtp"
+elements.send_type.options.required = true
+displayGroups.general.elements.send_type = "send_type"
+
+elements.smtp_host.type = "text"
+elements.smtp_host.options.label = "Smtp server name"
+elements.smtp_host.options.validators.alnum.validator = "Hostname"
+elements.smtp_host.options.size = 30
+displayGroups.general.elements.smtp_host = "smtp_host"
+
+elements.smtp_port.type = "text"
+elements.smtp_port.options.label = "Smtp server port"
+elements.smtp_port.options.validators.int.validator = "Int"
+elements.smtp_port.options.size = 30
+displayGroups.general.elements.smtp_port = "smtp_port"
+
+elements.smtp_username.type = "text"
+elements.smtp_username.options.label = "Username for smtp Authenticate"
+elements.smtp_username.options.size = 30
+displayGroups.general.elements.smtp_username = "smtp_username"
+
+elements.smtp_password.type = "password"
+elements.smtp_password.options.label = "Password for smtp Authenticate"
+elements.smtp_password.options.size = 30
+displayGroups.general.elements.smtp_password = "smtp_password"
+
+elements.submit.type = "submit"
+elements.submit.options.value = "Save Changes"
+elements.submit.options.size = 30
+displayGroups.general.elements.submit = "submit"
+
+; Disabling this because I don't know how to make this work. see the comments
+; at the bottom of general_config.form
+;elements.reset.type = "reset"
+;elements.reset.options.label = "Clear Changes"
+;displayGroups.general.elements.reset = "reset"
