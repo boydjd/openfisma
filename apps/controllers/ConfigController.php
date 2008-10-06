@@ -47,6 +47,20 @@ class ConfigController extends SecurityController
                     ->initContext();
     }
 
+    /**
+     * getConfigForm() - Returns the standard form for system configuration.
+     *
+     * @param string $formName The name of the form to load
+     * @return Zend_Form
+     */
+    public function getConfigForm($formName) {
+        // Load the form and populate the dynamic pull downs
+        $form = Form_Manager::loadForm($formName);
+        $form = Form_Manager::prepareForm($form);
+
+        return $form;
+    }
+
     public function indexAction()
     {
         $this->_helper->actionStack('notification');
@@ -59,7 +73,7 @@ class ConfigController extends SecurityController
     public function viewAction()
     {
         // Fill up with data
-        $general = $this->getForm('config');
+        $form = $this->getConfigForm('general_config');
         $ret = $this->_config->getList(array('key', 'value', 'description'));
         $configs = NULL;
         foreach ($ret as $item) {
@@ -75,12 +89,13 @@ class ConfigController extends SecurityController
         }
 
         // Update the change
-        $general->setDefaults($configs);
+        $form->setDefaults($configs);
         if ($this->_request->isPost()) {
             $configPost = $this->_request->getPost();
             if (isset($configPost[Config::MAX_ABSENT])) {
-                if ($general->isValid($configPost)) {
-                    $values = $general->getValues();
+                if ($form->isValid($configPost)) {
+                    $values = $form->getValues();
+                    var_dump($values);die;
                     //array_intersect_key requires PHP > 5.1.0
                     $validVals = array(
                         Config::SYSTEM_NAME =>0,
@@ -119,15 +134,15 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $general->populate($configPost);
+                    $form->populate($configPost);
                 }
             }
         }
-
+        
         //get ldap configuration
         $ldaps = $this->_config->getLdap();
         $this->view->assign('ldaps', $ldaps);
-        $this->view->generalform = $general;
+        $this->view->generalConfig = $form;
         $this->render();
     }
 

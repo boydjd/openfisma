@@ -4,8 +4,8 @@
     </div>
 </div>
 
-<div class="block"> 
-    <?php echo $this->generalform->setAttrib('class','cform'); ?> 
+<div class="block">
+    <?php echo $this->generalConfig; ?>
 </div>
 
 <div class="barleft">
