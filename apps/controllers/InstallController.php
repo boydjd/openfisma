@@ -229,7 +229,11 @@ class InstallController extends Zend_Controller_Action
                                          ->getViewScript('config');
 
                 // Set the host URL. This value is saved into the install.conf
-                $hostUrl = $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
+                if (isset($_SERVER['HTTPS']) && 'on' == $_SERVER['HTTPS']) {
+                    $hostUrl = 'https://';
+                } else {
+                    $hostUrl = 'http://';
+                }
                 if (isset($_SERVER['HTTP_HOST'])) {
                     $hostUrl .= $_SERVER['HTTP_HOST'];
                 } else {
