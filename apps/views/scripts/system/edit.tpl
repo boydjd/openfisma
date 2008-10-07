@@ -1,5 +1,3 @@
-<script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
-<script language="javascript" src="/javascripts/system.validate.js"></script>
 <?php
     $primary_array = array('0'=>'FSA');
     $states_array = array('HIGH'=>'High','MODERATE'=>'Moderate','LOW'=>'Low');

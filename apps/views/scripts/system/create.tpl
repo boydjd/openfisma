@@ -1,5 +1,3 @@
-<script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
-<script language="javascript" src="/javascripts/system.validate.js"></script>
 <div class="barleft">
 <div class="barright">
 <p><b>System Information</b>

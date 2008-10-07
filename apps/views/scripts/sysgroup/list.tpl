@@ -1,13 +1,3 @@
-<script language="javascript">
-function delok(entryname)
-{
-    var str = "Are you sure that you want to delete this system group?";
-    if(confirm(str) == true){
-        return true;
-    }
-    return false;
-}
-</script>
 <div class="barleft">
 <div class="barright">
 <p><b>System Group List</b>
@@ -44,7 +34,7 @@ function delok(entryname)
     </td>
     <?php } if(isAllow('admin_sysgroups','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/sysgroup/sub/delete/id/<?php echo $sysgroup['id'];?>" title="delete the System Groups, then no restore after deleted" onclick="return delok('System Groups');">
+        <a href="/panel/sysgroup/sub/delete/id/<?php echo $sysgroup['id'];?>" title="delete the System Groups, then no restore after deleted" onclick="return delok('System Group');">
         <img src="/images/del.png" border="0"></a>
     </td>
     <?php }?>

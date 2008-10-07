@@ -1,13 +1,3 @@
-<script language="javascript">
-function delok(entryname)
-{
-    var str = "Are you sure that you want to delete this System?";
-    if(confirm(str) == true){
-        return true;
-    }
-    return false;
-}
-</script>
 <div class="barleft">
 <div class="barright">
 <p><b>System List</b>
@@ -54,7 +44,7 @@ function delok(entryname)
     </td>
     <?php } if(isAllow('admin_systems','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('Systems');">
+        <a href="/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('System');">
         <img src="/images/del.png" border="0"></a>
     </td>
     <?php }?>

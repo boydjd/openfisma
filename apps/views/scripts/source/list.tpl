@@ -1,13 +1,3 @@
-<script language="javascript">
-function delok(entryname)
-{
-    var str = "Are you sure that you want to delete this finding source?";
-    if(confirm(str) == true){
-        return true;
-    }
-    return false;
-}
-</script>
 <div class="barleft">
 <div class="barright">
 <p><b>Finding Source List</b>
@@ -46,7 +36,7 @@ function delok(entryname)
     </td>
     <?php } if(isAllow('admin_sources','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/source/sub/delete/id/<?php echo $source['id'];?>" title="delete the Sources, then no restore after deleted" onclick="return delok('Sources');">
+        <a href="/panel/source/sub/delete/id/<?php echo $source['id'];?>" title="delete the Sources, then no restore after deleted" onclick="return delok('Finding Source');">
         <img src="/images/del.png" border="0"></a>
     </td>
     <?php }?>

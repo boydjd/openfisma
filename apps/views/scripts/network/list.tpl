@@ -1,13 +1,3 @@
-<script language="javascript">
-function delok(entryname)
-{
-    var str = "Are you sure that you want to delete this network?";
-    if(confirm(str) == true){
-        return true;
-    }
-    return false;
-}
-</script>
 <div class="barleft">
 <div class="barright">
 <p><b>Network List</b>
@@ -46,7 +36,7 @@ function delok(entryname)
     </td>
     <?php } if(isAllow('admin_networks','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/network/sub/delete/id/<?php echo $network['id'];?>" title="delete the Networks, then no restore after deleted" onclick="return delok('Networks');">
+        <a href="/panel/network/sub/delete/id/<?php echo $network['id'];?>" title="delete the Networks, then no restore after deleted" onclick="return delok('Network');">
         <img src="/images/del.png" border="0"></a>
     </td>
     <?php }?>
