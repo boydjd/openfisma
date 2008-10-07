@@ -95,7 +95,6 @@ class ConfigController extends SecurityController
             if (isset($configPost[Config::MAX_ABSENT])) {
                 if ($form->isValid($configPost)) {
                     $values = $form->getValues();
-                    var_dump($values);die;
                     //array_intersect_key requires PHP > 5.1.0
                     $validVals = array(
                         Config::SYSTEM_NAME =>0,
