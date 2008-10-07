@@ -68,30 +68,10 @@ class RemediationController extends PoamBaseController
     {
         $criteria['systemId'] = $this->_request->getParam('system_id');
         $criteria['sourceId'] = $this->_request->getParam('source_id');
-        $criteria['type'] = $this->_request->getParam('type');
-        $criteria['status'] = $this->_request->getParam('status');
-        $criteria['ids'] = $this->_request->getParam('ids');
         $criteria['assetOwner'] = $this->_request->getParam('asset_owner', 0);
 
-        $tmp = $this->_request->getParam('est_date_begin');
-        if (!empty($tmp)) {
-            $criteria['estDateBegin'] = new Zend_Date($tmp,
-                Zend_Date::DATES);
-        }
-        $tmp = $this->_request->getParam('est_date_end');
-        if (!empty($tmp)) {
-            $criteria['estDateEnd'] = new Zend_Date($tmp, Zend_Date::DATES);
-        }
-        $tmp = $this->_request->getParam('created_date_begin');
-        if (!empty($tmp)) {
-            $criteria['createdDateBegin'] = new Zend_Date($tmp,
-                Zend_Date::DATES);
-        }
-        $tmp = $this->_request->getParam('created_date_end');
-        if (!empty($tmp)) {
-            $criteria['createdDateEnd'] = new Zend_Date($tmp,
-                Zend_Date::DATES);
-        }
+        
+        $criteriaUrl = '/source_id/'.$criteria['sourceId'].'/asset_owner/'.$criteria['assetOwner'];
 
         $today = parent::$now->toString('Ymd');
         $summaryTmp = array(
@@ -194,7 +174,10 @@ class RemediationController extends PoamBaseController
         }
         $this->view->assign('total', $total);
         $this->view->assign('systems', $this->_systemList);
+        $this->view->assign('sources', $this->_sourceList);
         $this->view->assign('summary', $summary);
+        $this->view->assign('criteria', $criteria);
+        $this->view->assign('criteriaUrl', $criteriaUrl);
         $this->render('summary');
         // Disabling the search box for now because it is not working as
         // intended
@@ -356,18 +339,11 @@ class RemediationController extends PoamBaseController
             $criteria['createdDateEnd'] = new Zend_Date($tmp);
         }
 
-        if ('summary' == $this->_request->getParam('action')) {
-            $postAction = "/panel/remediation/sub/summary";
-        } else {
-            $postAction = "/panel/remediation/sub/searchbox/s/search";
-        }
-
         $this->makeUrl($criteria);
         $this->view->assign('url', $this->_pagingBasePath);
         $this->view->assign('criteria', $criteria);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
-        $this->view->assign('postAction', $postAction);
         $this->render();
         if ('search' == $req->getParam('s')) {
             $this->_pagingBasePath = $req->getBaseUrl()

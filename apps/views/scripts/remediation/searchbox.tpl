@@ -28,9 +28,7 @@
 <p><b>Remediation Search</b><span></p>
 </div>
 </div>
-<form name="filters" method="post" action="<?php echo $this->postAction;?>">
-<input type='hidden' name='sort_order' value='{$sort_order}'>
-<input type='hidden' name='sort_by'    value='{$sort_by}'>
+<form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
 
 <!-- Begin Filter Table -->
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
