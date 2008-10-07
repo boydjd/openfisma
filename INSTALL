@@ -19,7 +19,7 @@ Create a directory for OpenFISMA
  $ mkdir /opt/openfisma
 
 Change into the new directory
- $cd /opt/openfisma
+ $ cd /opt/openfisma
 
 Download the latest copy of OpenFISMA
  $ wget http://downloads.sourceforge.net/openfisma/openfisma-x.x.x.x.zip
