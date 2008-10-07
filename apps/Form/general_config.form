@@ -20,7 +20,7 @@ elements.system_name.options.required = true
 displayGroups.general.elements.system_name = "system_name"
 
 elements.max_absent_time.type = "text"
-elements.max_absent_time.options.label = "Inactive Account Expiration Period (days)"
+elements.max_absent_time.options.label = "Inactive Account Expiration (days)"
 elements.max_absent_time.options.validators.alnum.validator = "Digits"
 elements.max_absent_time.options.validators.strlen.validator = "StringLength"
 elements.max_absent_time.options.validators.strlen.options.min = "1"
@@ -29,7 +29,7 @@ elements.max_absent_time.options.required = true
 displayGroups.general.elements.max_absent_time = "max_absent_time"
 
 elements.failure_threshold.type = "text"
-elements.failure_threshold.options.label = "Maximum Login Attempts Before Server Locks Account"
+elements.failure_threshold.options.label = "Account Lockout (0-99)"
 elements.failure_threshold.options.validators.alnum.validator = "Digits"
 elements.failure_threshold.options.validators.strlen.validator = "StringLength"
 elements.failure_threshold.options.validators.strlen.options.min = "1"
@@ -38,7 +38,7 @@ elements.failure_threshold.options.required = true
 displayGroups.general.elements.failure_threshold = "failure_threshold"
 
 elements.expiring_seconds.type = "text"
-elements.expiring_seconds.options.label = "Session Timeout Limit (minutes)"
+elements.expiring_seconds.options.label = "Session Timeout (minutes)"
 elements.expiring_seconds.options.validators.alnum.validator = "Digits"
 elements.expiring_seconds.options.validators.strlen.validator = "StringLength"
 elements.expiring_seconds.options.validators.strlen.options.min = "1"
@@ -47,7 +47,7 @@ elements.expiring_seconds.options.required = true
 displayGroups.general.elements.expiring_seconds = "expiring_seconds"
 
 elements.unlock_enabled.type = "checkbox"
-elements.unlock_enabled.options.label = "Enable Automated Account Unlock"
+elements.unlock_enabled.options.label = "Automated Account Unlock"
 elements.unlock_enabled.options.validators.alnum.validator = "Digits"
 elements.unlock_enabled.options.validators.strlen.validator = "StringLength"
 elements.unlock_enabled.options.validators.between.validator = "between"
@@ -56,7 +56,7 @@ elements.unlock_enabled.options.validators.between.options.max = "1"
 displayGroups.general.elements.unlock_enabled = "unlock_enabled"
 
 elements.unlock_duration.type = "text"
-elements.unlock_duration.options.label = "Automated Account Unlock Duration (minutes)"
+elements.unlock_duration.options.label = "Account Unlock Duration (minutes)"
 elements.unlock_duration.options.validators.alnum.validator = "Digits"
 elements.unlock_duration.options.validators.strlen.validator = "StringLength"
 elements.unlock_duration.options.validators.strlen.options.min = "1"
@@ -85,10 +85,10 @@ elements.rob_duration.options.required = true
 displayGroups.general.elements.rob_duration = "rob_duration"
 
 elements.use_notification.type = "textarea"
-elements.use_notification.options.label = "System Use Notification"
+elements.use_notification.options.label = "Warning Banner"
 elements.use_notification.options.validators.strlen.validator = "StringLength"
 elements.use_notification.options.validators.strlen.options.min = "1"
-elements.use_notification.options.cols = "100"
+elements.use_notification.options.cols = "70%"
 elements.use_notification.options.rows = "7"
 elements.use_notification.options.required = true
 displayGroups.general.elements.use_notification = "use_notification"
@@ -97,7 +97,7 @@ elements.behavior_rule.type = "textarea"
 elements.behavior_rule.options.label = "Rules Of Behavior"
 elements.behavior_rule.options.validators.strlen.validator = "StringLength"
 elements.behavior_rule.options.validators.strlen.options.min = "1"
-elements.behavior_rule.options.cols = "100"
+elements.behavior_rule.options.cols = "70%"
 elements.behavior_rule.options.rows = "7"
 elements.behavior_rule.options.required = true
 displayGroups.general.elements.behavior_rule = "behavior_rule"
