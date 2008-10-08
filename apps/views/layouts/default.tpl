@@ -14,14 +14,9 @@
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.ui.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/ajax.js"></script>
 <script LANGUAGE="javascript" type="text/javascript" src="/javascripts/tiny_mce/tiny_mce.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/tiny_mce_config.js"></script>
 <script LANGUAGE="javascript" type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
 <script LANGUAGE="javascript" type="text/javascript" src="/javascripts/deleteconfirm.js"></script>
-<script LANGUAGE="javascript" type="text/javascript">
-tinyMCE.init({
-	mode : "textareas",
-	theme: "simple"
-});
-</script>
 
 <link rel="icon"
       type="image/ico"
