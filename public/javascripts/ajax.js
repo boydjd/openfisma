@@ -16,7 +16,6 @@ $(document).ready(function(){
                 buttonImageOnly: true,
                 buttonImage: '/images/calendar.gif'
                 });
-        
 
     $("select[name='poam[system_id]']").change(function(){
         searchAsset();
@@ -138,7 +137,8 @@ $(document).ready(function(){
                 cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />');
                 $('input.date').datepicker({
                         dateFormat:'yymmdd',
-                        showOn: 'both', 
+                        showOn: 'both',
+                        onClose: showJustification,
                         buttonImageOnly: true,
                         buttonImage: '/images/calendar.gif',
                         buttonText: 'Calendar'});
@@ -307,4 +307,8 @@ function message( msg ,model){
         $("#msgbar").css('background-color','lightgreen');
     }
     $("#msgbar").css('display','block');
+}
+
+function showJustification(){
+    $("div#ecd_justification").show()
 }

@@ -10,7 +10,7 @@
 <input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
 <?php 
      echo $this->partial('remediation/finding.tpl', array('poam'=>&$this->poam, 'system_list'=>&$this->system_list, 'network_list'=>&$this->network_list));
-     echo $this->partial('remediation/mitigation.tpl', array('poam'=>&$this->poam));
+     echo $this->partial('remediation/mitigation.tpl', array('poam'=>&$this->poam,'justification'=>$this->justification));
      echo $this->partial('remediation/nist.tpl', array('poam'=>&$this->poam));
 ?>
 <input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">

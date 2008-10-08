@@ -52,15 +52,54 @@
             </table>
             <!-- End Resources Required for Course of Action Table -->
 
-            <div style="width:95%;margin:0 5px" class="selectdate" >
-            <b target="est_date" <?php
-        if(in_array($this->poam['status'],array('OPEN','NEW')) && 
-            isAllow('remediation','update_est_completion_date')){
-            echo ' class="editable" ';
-        }?> >Estimated Completion Date:&nbsp;</b>
-            <span name="poam[action_est_date]" id="est_date" class="date" type="text">
-            <?php echo nullGet($this->poam['action_est_date'],'0000-00-00'); ?>
-            </span>&nbsp;&nbsp;&nbsp;
-            <b>Actual Completion Date:&nbsp;</b>
-            <?php echo nullGet($this->poam['action_actual_date'],'<i>(action not yet completed)</i>');?>
-            </div>
+            <!-- ECD Table -->
+            <table cellpadding="5" class="tipframe">
+                <tr><th align="left">Completion Date</th></tr>
+                <?php
+                    if(!empty($this->poam['action_est_date'])
+                        && $this->poam['action_est_date'] != $this->poam['action_current_date']){
+                ?>
+                <tr><td><i>The "Original ECD" is used for FISMA reporting to OMB and may not be changed.<br>
+                           The "ECD" is used for agency purposes and may be modified.</i></td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        <b target="est_date">Original Expected Completion Date:&nbsp;</b>
+                        <?php echo $this->poam['action_est_date']; ?>
+                    </td>
+                </tr>
+                <?php } ?>
+                <tr>
+                    <td>
+                        <b target="action_est_date"
+                        <?php 
+                            if(isAllow('remediation','update_finding_course_of_action')
+                                && in_array($this->poam['status'], array('NEW', 'OPEN'))){
+                                echo 'class="editable"';
+                            }
+                        ?> >Expected Completion Date:&nbsp;</b>
+                        <span name="poam[action_current_date]" id="action_est_date" class="date" type="text"> 
+                        <?php echo nullGet($this->poam['action_current_date'], '0000-00-00'); ?>
+                        </span>
+                        <?php 
+                            if (!empty($this->poam['ecd_justification'])) {
+                            echo '<b>Justification:</b>&nbsp;'.$this->poam['ecd_justification'].' --<i>by '.$this->justification['name_first'].' '.$this->justification['name_last'].' ON '.$this->justification['time'].'</i>';
+                            }
+                            if (!empty($this->poam['action_est_date'])) { 
+                        ?>
+                            <div id="ecd_justification" style="display:none">
+                                <i>Input ECD change justification here</i>:&nbsp;<input type="text" name="poam[ecd_justification]" value="<?php echo $this->poam['ecd_justification'];?>" size="100px">
+                            </div>
+                            <span name="poam[ecd_justification]" id="ecd_justification" type="text" size="100px"> 
+                            </span>
+                        <?php } ?>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Actual Completion Date:&nbsp;</b>
+                    <?php echo nullGet($this->poam['action_actual_date'],'<i>(action not yet completed)</i>');?>
+                    </td>
+                </tr>
+            </table>
+            <!-- End ECD Table -->

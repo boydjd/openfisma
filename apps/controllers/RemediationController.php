@@ -376,6 +376,19 @@ class RemediationController extends PoamBaseController
             throw new FismaException("POAM($id) is not found,
                 Make sure a valid ID is inputed");
         }
+
+        if (!empty($poamDetail['action_est_date'])
+            && $poamDetail['action_est_date'] != $poamDetail['action_current_date']) {
+            $query = $this->_poam->getAdapter()->select()
+                          ->from(array('al'=>'audit_logs'), 'date_format(timestamp, "%Y-%m-%d") as time')
+                          ->join(array('u'=>'users'), 'al.user_id = u.id',
+                                 array('u.name_first','u.name_last'))
+                          ->where('al.poam_id = ?', $id)
+                          ->where('al.description like "%action_current_date%"')
+                          ->order('al.id DESC');
+            $justification = $this->_poam->getAdapter()->fetchRow($query);
+            $this->view->assign('justification', $justification);
+        }
         $evEvaluation = $this->_poam->getEvEvaluation($id);
         // currently we don't need to support the comments for est_date change
         //$act_evaluation = $this->_poam->getActEvaluation($id);
@@ -419,6 +432,9 @@ class RemediationController extends PoamBaseController
                 }
                 if ($k == 'action_status' && $v == 'APPROVED') {
                     $poam['status'] = 'EN';
+                    if (empty($oldpoam['action_est_date'])) {
+                        $poam['action_est_date'] = $oldpoam['action_current_date'];
+                    }
                 } elseif ($k == 'action_status' && $v == 'DENIED') {
                     // If the SSO denies, then put back into OPEN status to
                     // make the POAM
