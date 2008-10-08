@@ -542,6 +542,8 @@ CREATE TABLE `poams` (
   `action_approved_by` int(10) unsigned default NULL,
   `action_resources` text,
   `action_est_date` date default NULL,
+  `action_current_date` date default NULL,
+  `ecd_justification` text,
   `action_actual_date` date default NULL,
   `cmeasure` text,
   `cmeasure_effectiveness` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
@@ -843,6 +845,7 @@ INSERT INTO `schema_version` VALUES (17);
 INSERT INTO `schema_version` VALUES (18);
 INSERT INTO `schema_version` VALUES (19);
 INSERT INTO `schema_version` VALUES (20);
+INSERT INTO `schema_version` VALUES (21);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -986,4 +989,4 @@ CREATE TABLE `vulnerabilities` (
   PRIMARY KEY  (`seq`,`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO schema_version (schema_version) VALUES (21);
+INSERT INTO schema_version (schema_version) VALUES (22);
