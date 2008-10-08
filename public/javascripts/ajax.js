@@ -132,6 +132,7 @@ $(document).ready(function(){
             var url = target.attr('href');
             var eclass = target.attr('class');
             var cur_val = target.text();
+            var cur_html = target.html();
             var cur_span = target;
             if(type == 'text'){
                 cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />');
@@ -145,8 +146,9 @@ $(document).ready(function(){
             }else if( type == 'textarea' ){
                 var row = target.attr('rows');
                 var col = target.attr('cols');
-                cur_span.replaceWith( '<textarea rows="'+row+'" cols="'+col+'" name="'+name+'">'+
-                        cur_val.trim()+ '</textarea>');
+                cur_span.replaceWith( '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">'+
+                        cur_html+ '</textarea>');
+                tinyMCE.execCommand("mceAddControl", true, name);
             }else{
                 $.get(url,{value:cur_val.trim()},
                 function(data){
