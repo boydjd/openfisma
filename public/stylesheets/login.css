@@ -40,7 +40,7 @@ p.message{
 }
 
 /* Logon Banner in Center of Page */
-p#warning {
+div#warning {
     font-family: Tahoma,verdana,arial,helvetica,sans-serif;
     width:40em;
     font-size: 12px;

@@ -12,8 +12,8 @@
 	<li class='submit'><input type="submit" value="Login" ></li>
     </ul>
 </form>
-<p id='warning'>
+<div id='warning'>
 <?php echo nl2br(readSysConfig('use_notification'));?>
-</p>
+</div>
 
 
