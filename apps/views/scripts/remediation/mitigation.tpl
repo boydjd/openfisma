@@ -60,7 +60,7 @@
                         && $this->poam['action_est_date'] != $this->poam['action_current_date']){
                 ?>
                 <tr><td><i>The "Original ECD" is used for FISMA reporting to OMB and may not be changed.<br>
-                           The "ECD" is used for agency purposes and may be modified.</i></td>
+                           The "Current ECD" is used for agency purposes and may be modified.</i></td>
                 </tr>
                 <tr>
                     <td align="left">
@@ -77,7 +77,7 @@
                                 && in_array($this->poam['status'], array('NEW', 'OPEN'))){
                                 echo 'class="editable"';
                             }
-                        ?> >Expected Completion Date:&nbsp;</b>
+                        ?> >Current Expected Completion Date:&nbsp;</b>
                         <span name="poam[action_current_date]" id="action_est_date" class="date" type="text"> 
                         <?php echo nullGet($this->poam['action_current_date'], '0000-00-00'); ?>
                         </span>
