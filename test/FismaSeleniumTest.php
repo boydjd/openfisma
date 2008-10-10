@@ -40,17 +40,60 @@ define('SELENIUM_CONFIG_FILE', CONFIGS . '/selenium.conf');
  * @version $Id:$
  */
 abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCase {
+    /**
+     * Handle for the database connection.
+     */
+    protected $_db;
+    
+    const USER_NAME = 'test_user';
+    const PASSWORD = 'test_password';
 
     /**
      * setUp() - Set up access to the Selenium server based on the contents of
      * the selenium.conf configuration file.
      */
     protected function setUp() {
+        // Run the application bootstrap in command line mode
+        define('COMMAND_LINE', true);
+        require_once(dirname(dirname(__FILE__)) . '/apps/bootstrap.php');
+        
+        // Initialize our DB connection
+        $this->_db = Zend_Db::factory(Zend_Registry::get('datasource'));
+        Zend_Db_Table::setDefaultAdapter($this->_db);
+        
+        // Load the selenium configuration and connect to the server
         $seleniumConfig = new Zend_Config_Ini(SELENIUM_CONFIG_FILE, 'selenium');
 
         $this->setHost($seleniumConfig->host);
         $this->setPort(intval($seleniumConfig->port));
         $this->setBrowser($seleniumConfig->browser);
         $this->setBrowserUrl($seleniumConfig->browserBaseUrl);
+    }
+
+    /**
+     * truncateTables() - Truncate one or more tables.
+     *
+     * @param string|array $tables The name[s] of the table[s] to truncate
+     */
+    protected function truncateTables($tables) {
+        if (is_array($tables)) {
+            foreach ($tables as $table) {
+                $this->truncateTable($table);
+            }
+        } else {
+            $this->truncateTable($tables);
+        }
+    }
+    
+    /**
+     * truncateTable() - Truncate a single table.
+     *
+     * This is a helper function to truncateTables() and is private.
+     *
+     * @param string $table The name of the table to truncate
+     */
+    private function truncateTable($table) {
+        $truncate = $this->_db->prepare("TRUNCATE TABLE $table");
+        $truncate->execute();
     }
 }
