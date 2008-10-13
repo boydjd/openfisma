@@ -63,6 +63,7 @@ class ConfigController extends SecurityController
 
     public function indexAction()
     {
+        $this->_helper->actionStack('password');
         $this->_helper->actionStack('notification');
         $this->_helper->actionStack('contact');
         $this->_helper->actionStack('view');
@@ -317,6 +318,42 @@ class ConfigController extends SecurityController
         $configs = array();
         foreach ($items as $item) {
             $configs[$item['key']] = $item['description'];
+        }
+        $form->setDefaults($configs);
+        $this->view->form = $form;
+        $this->render();
+    }
+     
+    /**
+     *  Password Complexity Policy configurations
+     */
+    public function passwordAction()
+    {
+        $config = new Config();
+        $form = $this->getConfigForm('password_config');
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if (isset($data[Config::PASS_UPPERCASE])) {
+                if ($form->isValid($data)) {
+                    $values = $form->getValues();
+                    unset($values['submit']);
+                    unset($values['reset']);
+                    foreach ($values as $k => $v) {
+                        $where = $config->getAdapter()
+                            ->quoteInto('`key` = ?', $k);
+                        $config->update(array('value' => $v), $where);
+                    }
+                    $msg = 'Password Complexity Configuration updated successfully';
+                    $this->message($msg, self::M_NOTICE);
+                } else {
+                    $form->populate($data);
+                }
+            }
+        }
+        $items = $config->getList(array('key', 'value'));
+        $configs = array();
+        foreach ($items as $item) {
+            $configs[$item['key']] = $item['value'];
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
