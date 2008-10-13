@@ -55,6 +55,13 @@ class Config extends FismaModel
     const SMTP_HOST   = 'smtp_host';
     const SMTP_USERNAME   = 'smtp_username';
     const SMTP_PASSWORD   = 'smtp_password';
+
+    const PASS_UPPERCASE  = 'pass_uppercase';
+    const PASS_LOWERCASE  = 'pass_lowercase';
+    const PASS_NUMERICAL  = 'pass_numerical';
+    const PASS_SEPCIAL    = 'pass_sepcial';
+    const PASS_MIN        = 'pass_min';
+    const PASS_MAX        = 'pass_max';    
     
     protected $_name = 'configurations';
     protected $_primary = 'id';
