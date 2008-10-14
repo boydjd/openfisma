@@ -267,6 +267,12 @@ INSERT INTO `configurations` VALUES (5,'sender','','Send Email Address');
 INSERT INTO `configurations` VALUES (20,'privacy_policy','Privacy Policy','* This is a U.S. Federal government computer system that is FOR OFFICIAL USE ONLY.\n* This system is subject to monitoring. No expectation of privacy is to be assumed.\n* Individuals found performing unauthorized activities are subject to disciplinary action including criminal prosecution.');
 INSERT INTO `configurations` VALUES (21,'system_name','Openfisma','System name');
 INSERT INTO `configurations` VALUES (22,'rob_duration','15','the duration between which the user has to accept the ROB.(Day)');
+INSERT INTO `configurations` VALUES (26,'pass_special','0','Require Special Characters');
+INSERT INTO `configurations` VALUES (25,'pass_numerical','0','Require Numerical Characters');
+INSERT INTO `configurations` VALUES (24,'pass_lowercase','1','Require Lower Case Characters');
+INSERT INTO `configurations` VALUES (23,'pass_uppercase','1','Require Upper Case Characters');
+INSERT INTO `configurations` VALUES (27,'pass_min','8','Minimum Password Length');
+INSERT INTO `configurations` VALUES (28,'pass_max','64','Maximum Password Length');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `evaluations` (
@@ -846,6 +852,7 @@ INSERT INTO `schema_version` VALUES (18);
 INSERT INTO `schema_version` VALUES (19);
 INSERT INTO `schema_version` VALUES (20);
 INSERT INTO `schema_version` VALUES (21);
+INSERT INTO `schema_version` VALUES (22);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -989,4 +996,4 @@ CREATE TABLE `vulnerabilities` (
   PRIMARY KEY  (`seq`,`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO schema_version (schema_version) VALUES (22);
+INSERT INTO schema_version (schema_version) VALUES (23);
