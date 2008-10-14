@@ -1,68 +1,81 @@
-The OpenFISMA project is an open source application designed to reduce the complexity and automate the regulatory requirements of the Federal Information Security Management Act (FISMA) and the National Institute of Standards and Technology (NIST) Risk Management Framework (RMF). While many security managers are eager to demonstrate their best practices for incident response, patch management, and configuration management, they are overwhelmed with the reporting and documentation requirements of FISMA. You can download our released software right away or peruse the current documentation.
+============================================================================
+Overview
+============================================================================
+The OpenFISMA project is an open source application designed to reduce the 
+complexity and automate the regulatory requirements of the Federal Information 
+Security Management Act (FISMA) and the National Institute of Standards and 
+Technology (NIST) Risk Management Framework (RMF). While many security managers 
+are eager to demonstrate their best practices for incident response, patch 
+management, and configuration management, they are overwhelmed with the 
+reporting and documentation requirements of FISMA. You can download our 
+released software right away or peruse the current documentation.
 
-OpenFISMA is built on the Zend Framework which is an open source, object oriented, web application framework with a flexible architecture. ZF is often referred to as a 'component library' because it has many loosely coupled components that you can use more or less independently. However, Zend Framework also provides a core model-view-controller (MVC) implementation that you can use to provide basic 'best practices' structure to web applications.
+OpenFISMA is built on the Zend Framework which is an open source, object 
+oriented, web application framework with a flexible architecture. ZF is 
+often referred to as a 'component library' because it has many loosely 
+coupled components that you can use more or less independently. However, 
+Zend Framework also provides a core model-view-controller (MVC) 
+implementation that you can use to provide basic 'best practices' 
+structure to web applications.
 
-You may also visit the OpenFISMA website for more information at http://www.openfisma.org.
+You may also visit the OpenFISMA website for more information at 
+http://www.openfisma.org.
 
-Contents:
+============================================================================
+Table of Contents
+============================================================================
 1.0 Installation Instructions
-2.0 Configuration Instructions
-3.0 Directory Layout
-4.0 Known Bugs
-5.0 Troubleshooting
-6.0 Copyright and Licensing Information
-7.0 credits and acknowledgments
-8.0 Changelog
+2.0 Troubleshooting
+3.0 Copyright and Licensing Information
+4.0 Credits and Acknowledgments
+5.0 Changelog
 
-===============================
+============================================================================
 1.0 Installation Instructions
-===============================
-Please reference the INSTALL guide for instructions on installing OpenFISMA
+============================================================================
+Please reference the INSTALL guide for instructions on installing OpenFISMA.
 
-===============================
-2.0 Configuration Instructions
-===============================
+============================================================================
+2.0 Troubleshooting
+============================================================================
+General user documentation and detailed information on OpenFISMA is 
+distributed, stored, and edited on the OpenFISMA website available at
+www.openfisma.org. 
 
-===============================
-3.0 Directory Layout
-===============================
+============================================================================
+3.0 Copyright and Licensing Information
+============================================================================
+OpenFISMA is free software: you can redistribute it and/or modify it under 
+the terms of the GNU General Public License as published by the Free 
+Software Foundation, either version 3 of the License, or (at your option) 
+any later version.
 
-apps/
-	config/
-	models/
-	views/
-		layouts/
-		scripts/
-	controllers/
-	upgrade/
-public/
-	images/
-	stylesheets/
-	javascripts/
-	flash/
-	temp/
-	evidence/
-vendor/
-log/
-test/
+OpenFISMA is distributed in the hope that it will be useful, but WITHOUT 
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
+more details.
 
-apps: General application directory for OpenFISMA.
-	config: Contains application specific config
-		db: Folder to store sql files. 
-	models: Contains database table model classes 
-	views: Master folder that contains view templates and all view related code
-		layouts:
-		scripts:
-	controllers: Contains controllers for default application 
-		ErrorController.php: Catches 500 and 404 errors and handles them 
-		IndexController.php: Default controller that gets invoked, site index
-	upgrade:
-public: This is the document root for the project, this is the only folder visible to the client browser 
-	images:Image assets 
-	javascripts: Javascript assets 
-	stylesheets: CSS assets
-	flash: Flash or SWF assets
-	evidence: Folder to handle uploaded evidence
-vendor: Contains third party libraries and standalone libraries 
-log: Log files get generated here
-test: Contains testing framework for regression testing
+You should have received a copy of the GNU General Public License along 
+with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+
+============================================================================
+4.0 Credits and Acknowledgements
+============================================================================
+OpenFISMA was sponsored by Endeavor Systems, Inc. built on the blood, 
+sweat, and tears of the security professionals and developers who strive
+to protect the Confidentiality, Integrity, and Availability of the 
+Federal Government.
+
+Special Thanks to the following individuals:
+James Ford
+Trevor Hogan
+Brian Gant
+Mark Haase
+Jim Chen
+
+============================================================================
+5.0 Changelog
+============================================================================
+Please reference the CHANGELOG for detailed changes and features added
+to OpenFISMA.
+

@@ -4,6 +4,7 @@
 ============================================================================
 
 1.0 Software Pre-Requisites
+----------------------------------------------------------------------------
 
 You must have the following software installed before proceeding with
 the installation of OpenFISMA.
@@ -14,6 +15,7 @@ the installation of OpenFISMA.
 * MySQL module for php5
 
 2.0 OpenFISMA Setup
+----------------------------------------------------------------------------
 
 Create a directory for OpenFISMA
  $ mkdir /opt/openfisma
@@ -22,10 +24,10 @@ Change into the new directory
  $ cd /opt/openfisma
 
 Download the latest copy of OpenFISMA
- $ wget http://downloads.sourceforge.net/openfisma/openfisma-x.x.x.x.zip
+ $ wget http://downloads.sourceforge.net/openfisma/openfisma-x.x.x.tgz
 
 Unzip the files you just downloaded
- $ unzip openfisma-x.x.x.zip
+ $ tar -xvf openfisma-x.x.x.tgz
 
 You should now have a directory structure which looks like the following
   > apps - folder that holds OpenFISMA application 
@@ -92,6 +94,7 @@ Once the wizard has completed you may log in with the username
 password should be changed immediately after logging in.
 
 2.1 Email Notification Setting
+----------------------------------------------------------------------------
 
 To enable the capability of automated email notification, it's necessary to 
 create a cronjob to the cronjob/FismaNotify.php. For example:
@@ -105,8 +108,8 @@ Note: the frequency of the cronjob determind the possible shortest interval
 between every consequent notifying action. It's not effective if any user 
 set the customized notification interval shorter than it.
 
-
 3.0 Security Hardening
+----------------------------------------------------------------------------
 
 After the installation you will want to remove the ability to run the
 installation wizard and protect the install.conf file. This can be done

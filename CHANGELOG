@@ -1,10 +1,64 @@
-2.0 OpenFISMA
+Version 2.1.0
 ==========================================================
-	- Added Zend Framework Library and Components
-	- Updated Dashbord to allow direct links on numeric
-		totals provided in summary.
+BUGFIX 2130822 Create finding w/o finding source
+BUGFIX 2116593 File upload doesnt work if there are 2 dots in the file name
+BUGFIX 2107578 Invalid HTML in the footer
+BUGFIX 2095056 E-mail notifications do not follow the requirements
+BUGFIX 2079118 Can not filter on remediation summary page
+BUGFIX 2049875 Audit Log Events for account creation/modification
+FEATURE LDAP Integration
+FEATURE E-mail notification
+FEATURE Improved finding injection -- add BLSCR, recommendation, etc.
+FEATURE Improved POA&M Report -- includes info about Threats and Countermeasures.
+FEATURE Filter Findings Summary
+FEATURE Refactor POAM data model (add getStatus() method)
+FEATURE Accounts can be configured to automatically unlock after a period of time.
+FEATURE Rules Of Behavior, System Usage Notification, System Name, and Privacy Policy are customizable
 
-1.3.6 OpenFISMA
+Version 2.0.3
+==========================================================
+BUGFIX 2107538 POA&M Report does not show "NEW" finding
+
+Version 2.0.2
+==========================================================
+BUGFIX 2058082 POA&M report displays EN instead of EO (required 2nd fix)
+
+Version 2.0.1
+==========================================================
+BUGFIX 2058082 POA&M report displays EN instead of EO
+
+Version 2.0 
+==========================================================
+BUGFIX 2051587 Migration script converts deleted findings
+BUGFIX 2049980 Dashboard displays wrong summary number
+BUGFIX 2049763 Security control requirements not displayed correctly
+BUGFIX 2046798 IE renders menu bar too tall
+BUGFIX 2046717 Error for asset information
+BUGFIX 2046562 Missing graphic on the FIPS199 report
+BUGFIX 2046555 PDF export for reports does not work in IE+SSL
+BUGFIX 2046554 Unable to Reset Passwords
+BUGFIX 2045910 Assets displayed incorrectly
+BUGFIX 2045904 Application Configuration not Secure
+BUGFIX 2042141 Audit log does not work as expected
+BUGFIX 2041882 Injection spreadsheet download doesn't work
+BUGFIX 2041814 Remediation detail locks all fields after initial approval
+BUGFIX 2039290 Dashboard charts do not appear on IE
+BUGFIX 2039265 The "comments and bugs" link needs to be changed.
+BUGFIX 2039222 Header doesn't work in IE
+BUGFIX 2037846 Migration.php does not work
+BUGFIX 2035664 Password Removed when updating user settings
+BUGFIX 2002655 Login error is not displayed correctly
+BUGFIX 1997139 Application does not allow non-root users to log in
+BUGFIX 1982437 Installation failure during Initialize Database
+BUGFIX 1982421 Installation has a dead link
+BUGFIX 1982407 Installation reveals password
+BUGFIX 1982399 Installer has incorrect text labels
+BUGFIX 1975442 RAF PDF has the wrong format
+BUGFIX 1964607 RAFs are generated in the wrong format.
+BUGFIX 1963328 Installation fails for nightly build
+BUGFIX 1936886 Date fields are not working in the Report section.
+
+Version 1.3.6
 ==========================================================
 	- Removed many comment requirements from workflow.
 	- Implemented automated audit log generation and
