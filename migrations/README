@@ -1,0 +1,25 @@
+============================================================================
+OpenFISMA Database Migrations
+============================================================================
+
+This folder contains the up and down scripts to control schema changes to 
+the database utilized by OpenFISMA. This provides a controllable configuration
+management process which can be used to upgrade previous installations
+without destroying data. This directory also contains a base.sql file, this
+is the full copy of the OpenFISMA database schema and is always up to date
+with all up and down scripts. 
+
+Similar to Rails Migrations, the OpenFISMA Database Migrations packages 
+standards and tools together to bring order to the usually chaotic process 
+of version controlling the data model. Each change to the data model is called
+a migration, and each migration consists of a pair of short SQL scripts 
+(or patches) called up and down. The up script evolves the schema model 
+forward one step, while the down script precisely reverses the effect of the 
+up script.
+
+By comparing the existing schema version number with the desired target 
+version, a series of scripts can be executed to bring an existing schema 
+(and all the data contained therein) to match any other intermediate or 
+final schema version.
+
+
