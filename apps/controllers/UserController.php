@@ -298,11 +298,35 @@ class UserController extends MessageController
 
     /**
      * passwordAction() - Display the change password page
-     *
-     * @todo Cleanup this method: comments and formatting
      */
     public function passwordAction()
     {
+        // Load the change password file
+        $passwordForm = Form_Manager::loadForm('change_password');
+        $passwordForm = Form_Manager::prepareForm($passwordForm);
+
+        // Prepare the password requirements explanation:
+        $requirements[] = "Length must be between "
+                        . readSysConfig('pass_min')
+                        . " and "
+                        . readSysConfig('pass_max')
+                        . " characters long.";
+        if (readSysConfig('pass_uppercase') == 1) {
+            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
+        }
+        if (readSysConfig('pass_lowercase') == 1) {
+            $requirements[] = "Must contain at least 1 lower case character (a-z)";
+        }
+        if (readSysConfig('pass_numerical') == 1) {
+            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
+        }
+        if (readSysConfig('pass_special') == 1) {
+            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
+        }
+
+        $this->view->assign('requirements', $requirements);
+        $this->view->assign('form', $passwordForm);
+        
         $this->render();
     }
 
@@ -455,13 +479,12 @@ class UserController extends MessageController
             $auth = Zend_Auth::getInstance();
             $_me = $auth->getIdentity();
             $id = $_me->id;
-            $pwds = $req->getPost('pwd');
-            $oldpass = md5($pwds['old']);
-            $newpass = md5($pwds['new']);
+            $oldpass = md5($req->old_password);
+            $newpass = md5($req->new_password);
             $res = $this->_user->find($id)->toArray();
             $password = $res[0]['password'];
             $historyPass = $res[0]['history_password'];
-            if ($pwds['new'] != $pwds['confirm']) {
+            if ($req->new_password != $req->confirm_password) {
                 $msg = 'The new password does not match the confirm password, please try again.';
                 $model = self::M_WARNING;
             } else {
@@ -469,17 +492,17 @@ class UserController extends MessageController
                     $msg = 'The old password supplied is incorrect, please try again.';
                     $model = self::M_WARNING;
                 } else {
-                    $result = $this->checkPassword($pwds['new']);
+                    $result = $this->checkPassword($req->new_password);
                     if (false == $result['check']) {
                         $msg = $result['reason'];
                         $model = self::M_WARNING;
                     } else {
                         if ($newpass == $password) {
-                            $msg = 'Your new password cannot be the same as  your old password.';
+                            $msg = 'Your new password cannot be the same as your old password.';
                             $model = self::M_WARNING;
                         } else {
                             if (strpos($historyPass, $newpass) > 0) {
-                                $msg = 'Your password must be different from the last three passwords you have used Please pick a different password.';
+                                $msg = 'Your password must be different from the last three passwords you have used. Please pick a different password.';
                                 $model = self::M_WARNING;
                             } else {
                                 if (strpos($historyPass, $password) > 0) {
@@ -542,19 +565,19 @@ class UserController extends MessageController
         }
         if ($nameincluded) {
             $result['check'] = false;
-            $result['reason'] = "The new password could not include your first name or last name";
+            $result['reason'] = "The new password can not include your first name or last name";
             return $result;
         }
 
         if (strlen($pass) < readSysConfig('pass_min')) {
             $result['check'] = false;
-            $result['reason'] = "The password must be at least ".readSysConfig('pass_min')." character long";
+            $result['reason'] = "The password must be at least ".readSysConfig('pass_min')." characters long";
             return $result;
         }
 
         if (strlen($pass) > readSysConfig('pass_max')) {
             $result['check'] = false;
-            $result['reason'] = "The password must not be more than ".readSysConfig('pass_max')." character long";
+            $result['reason'] = "The password must not be more than ".readSysConfig('pass_max')." characters long";
             return $result;
         }
 
@@ -574,14 +597,14 @@ class UserController extends MessageController
         }
         if ( true == readSysConfig('pass_numerical')) {
             if ( false == preg_match("/[0-9]+/", $pass) ) {
-                $result['reason'] = "The password must contain at least 1 digit (0-9)";
+                $result['reason'] = "The password must contain at least 1 numeric digit (0-9)";
                 $result['check'] = false;
                 return $result;
             }
         }
         if ( true == readSysConfig('pass_special')) {
             if ( false == preg_match("/[^0-9a-zA-Z]+/", $pass) ) {
-                $result['reason'] = "The password must contain National Characters if desired(Non-Alphanumeric,!,@,#,$,% etc.)";
+                $result['reason'] = "The password must contain at least 1 special character (!@#$%^&*-=+~`_)";
                 $result['check'] = false;
                 return $result;
             }

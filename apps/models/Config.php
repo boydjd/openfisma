@@ -59,7 +59,7 @@ class Config extends FismaModel
     const PASS_UPPERCASE  = 'pass_uppercase';
     const PASS_LOWERCASE  = 'pass_lowercase';
     const PASS_NUMERICAL  = 'pass_numerical';
-    const PASS_SEPCIAL    = 'pass_sepcial';
+    const PASS_SPECIAL    = 'pass_special';
     const PASS_MIN        = 'pass_min';
     const PASS_MAX        = 'pass_max';    
     

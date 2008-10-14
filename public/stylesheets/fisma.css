@@ -63,7 +63,7 @@ div.button_container:after {
  */
 * html div.button_container {height: 1%;}
 
-ul {
+div#menu ul {
     margin:0;
     padding:0;
     border:0;
