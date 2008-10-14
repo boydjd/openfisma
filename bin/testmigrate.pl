@@ -177,6 +177,7 @@ for (my $i=0; $i<(scalar @migrations); $i++) {
 copy($baseSchemaFile, catfile($config->{'migrationsDir'}, 'base.sql.bak'));
 &dumpSchema($baseSchemaFile);
 open(BASESQL, ">>$baseSchemaFile") or &error("Could not append schema version to base.sql file");
+print BASESQL "TRUNCATE TABLE schema_version;\n";
 print BASESQL "INSERT INTO schema_version (schema_version) VALUES ($migrations[$#migrations]);\n";
 close BASESQL;
 
