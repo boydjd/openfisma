@@ -67,9 +67,14 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
     public function buildInput() {
         $element = $this->getElement();
         $helper  = $element->helper;
+        if ($element instanceof Zend_Form_Element_Checkbox) {
+            $value = $element->getCheckedValue();
+        }else{
+            $value = $element->getValue();
+        }
         return $element->getView()->$helper(
             $element->getName(),
-            $element->getValue(),
+            $value,
             $element->getAttribs(),
             $element->options
         );
