@@ -92,19 +92,13 @@
             </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';
     }
-    echo'<ul><li><h2><a href="/panel/user/sub/profile">User Preferences</a></h2></li></ul>';
+    echo'<ul><li><h2><a>User Preferences</a></h2>
+        <ul>
+            <li><a href="/panel/user/sub/profile">Profile</a>
+            <li><a href="/panel/user/sub/password">Change Password</a>
+            <li><a href="/panel/user/sub/notifications">Notifications</a>
+        </ul></ul>';
     echo '<img src="/images/menu_line.gif" border="0">';
-    /*
-    if(isAllow('vulnerability','read')) {
-        echo'<ul><li><h2><a href="/mainPanel.php?panel=association" >Vulnerability</a></h2>';
-        echo'<ul><li><a href="#">Asset Dashboard</a></li>';
-        if(isAllow('vulnerability','create')) {
-            echo'<li><a href="#">Create an Asset</a></li>';
-        }
-        echo'</ul>
-        </li></ul>';
-        echo '<img src="/images/menu_line.gif" border="0">';
-    }*/
 ?>
 </div>
 <div id="msgbar"></div>

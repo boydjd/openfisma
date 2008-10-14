@@ -293,6 +293,26 @@ class UserController extends MessageController
         $form->setDefaults($userProfile);
         $this->view->assign('form', Form_Manager::prepareForm($form));
 
+        $this->render();
+    }
+
+    /**
+     * passwordAction() - Display the change password page
+     *
+     * @todo Cleanup this method: comments and formatting
+     */
+    public function passwordAction()
+    {
+        $this->render();
+    }
+
+    /**
+     * notificationsAction() - Display the user's "Edit Profile" page.
+     *
+     * @todo Cleanup this method: comments and formatting
+     */
+    public function notificationsAction()
+    {
         // assign notification events
         $event = new Event();
 
@@ -301,7 +321,7 @@ class UserController extends MessageController
         $this->view->notify_email = $ret->current()->notify_email;
         $allEvent = $event->getUserAllEvents($this->_me->id);
         $enabledEvent = $event->getEnabledEvents($this->_me->id);
-        
+
         $this->view->availableList = array_diff($allEvent, $enabledEvent);
         $this->view->enableList = array_intersect($allEvent, $enabledEvent);
 
@@ -418,7 +438,7 @@ class UserController extends MessageController
 
         $this->view->setScriptPath(VIEWS . DS . 'scripts');
         $this->message($msg, $model);
-        $this->_forward('profile');
+        $this->_forward('notifications');
     }
 
         
@@ -493,7 +513,7 @@ class UserController extends MessageController
             $this->message($msg, $model);
         }
         $this->_helper->actionStack('header', 'Panel');
-        $this->_forward('profile');
+        $this->_forward('password');
     }
     
     /**

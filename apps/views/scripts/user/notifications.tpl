@@ -1,0 +1,1 @@
+<?php echo $this->partial('user/assign_notify.tpl', array('notify_frequency'=>$this->notify_frequency, 'notify_email'=>$this->notify_email, 'availableList'=>$this->availableList, 'enableList'=>$this->enableList));?>
