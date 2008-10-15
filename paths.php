@@ -44,6 +44,7 @@ $includeDirectories = array(
     MODELS,
     VENDORS,
     APPS,
+    LIBS,
     // Have to hack in the path to Pear since it doesn't follow ZF standards:
     VENDORS . '/Pear'
 );
