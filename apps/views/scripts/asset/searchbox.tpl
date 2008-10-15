@@ -1,8 +1,11 @@
 <?php
     $this->system_list[0] = '--Any--';
+    /* perserve the searching criteria in links */
     $url = '/panel/asset/sub/searchbox/s/search';
     if(!empty($this->criteria['system_id'])){
-       $url .='/system_id/'.$this->criteria['system_id'];
+        $url .='/system_id/'.$this->criteria['system_id'];
+    }else{
+        $this->criteria['system_id'] = 0;
     }
     if(!empty($this->criteria['vendor'])){
         $url .='/vendor/'.$this->criteria['vendor'];
@@ -42,8 +45,7 @@
     </tr>
     <tr>
         <td align="left">
-            <?php echo $this->formSelect('system_id',nullGet($this->criteria['system_id'],0),null,
-                $this->system_list);?>
+            <?php echo $this->formSelect('system_id',$this->criteria['system_id'],null, $this->system_list);?>
         </td>
         <td align="left"><input name="vendor" type="text" id="vendor" value="<?php echo $this->criteria['vendor'];?>"></td>
         <td align="left"><input type="text" name="product" value="<?php echo $this->criteria['product'];?>"></td>

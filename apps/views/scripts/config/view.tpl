@@ -14,7 +14,7 @@
 </div>
 </div>
 
-<?php  if('ldap' == readSysConfig('auth_type',true)){ ?>
+<?php  if('ldap' == Config_Fisma::readSysConfig('auth_type',true)){ ?>
 
 <div class="barleft">
 <div class="barright">

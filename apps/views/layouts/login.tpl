@@ -5,7 +5,7 @@
 <head>
 <?php
     $this->headTitle()->setSeparator(' - ');
-    $this->headTitle()->prepend(readSysConfig('system_name'));
+    $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
     echo $this->headTitle();
 ?>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -31,7 +31,7 @@
         </tr>
         <tr>
             <td align="right">
-            <a href="mailto:<?php echo readSysConfig('contact_email');?>?Subject=<?php echo urlencode(readSysConfig('contact_subject'));?>">Contact Administrator</a>&nbsp;|&nbsp;
+            <a href="mailto:<?php echo Config_Fisma::readSysConfig('contact_email');?>?Subject=<?php echo urlencode(Config_Fisma::readSysConfig('contact_subject'));?>">Contact Administrator</a>&nbsp;|&nbsp;
             <a href="/user/rob/">Rules of Behavior</a>&nbsp;|&nbsp;
             <a href="/user/privacy/">Privacy Policy</a>&nbsp;|&nbsp;
             <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i>

@@ -78,7 +78,7 @@
                                         </tr>
                                         <tr>
                                             <td align="right"><b>Network: </b></td>
-                                            <td>&nbsp; <?php echo nullGet($this->finding['network_name'],'');?> </td>
+                                            <td>&nbsp; <?php echo isset($this->finding['network_name'])?$this->finding['network_name']:'';?> </td>
                                         </tr>
                                         <tr>
                                             <td align="right"><b>Vendor: </b></td>

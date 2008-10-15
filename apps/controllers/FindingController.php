@@ -87,7 +87,7 @@ class FindingController extends PoamBaseController
         $id = $req->getParam('id', 0);
         assert($id);
         $this->view->assign('id', $id);
-        if (isAllow('finding', 'read')) {
+        if (Config_Fisma::isAllow('finding', 'read')) {
             $sys = new System();
             $poam = new Poam();
             $detail = $poam->find($id)->current();
@@ -134,7 +134,7 @@ class FindingController extends PoamBaseController
     public function injectionAction()
     {
         $this->_helper->actionStack('header', 'Panel');
-        if (isAllow('finding', 'create')) {
+        if (Config_Fisma::isAllow('finding', 'create')) {
             $csvFile = isset($_FILES['csv']) ? $_FILES['csv'] : array();
             if (!empty($csvFile)) {
                 if ($csvFile['size'] < 1) {

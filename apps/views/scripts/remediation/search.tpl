@@ -32,7 +32,9 @@
             <td align='center' class='tdc'><?php echo $row['id'];?></td>
             <td align='center' class='tdc' nowrap>
             <?php 
-                    echoDefault($this->sources[$row['source_id']],'Missing Source id');
+                    if (!isset($this->sources[$row['source_id']])) {
+                        echo 'Missing Source id';
+                    }
             ?>
             </td>
             <td align='center' class='tdc'><?php echo $this->systems[$row['system_id']];?></td>

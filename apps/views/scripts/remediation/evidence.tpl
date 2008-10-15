@@ -42,8 +42,8 @@
                 continue;
             }
             $value = &$evaluation[$v['name']]['decision'];
-            $username = nullGet($evaluation[$name]['username'],'...');
-            $date = nullGet($evaluation[$name]['date'],'');
+            $username = isset($evaluation[$name]['username'])?$evaluation[$name]['username']:'...';
+            $date = isset($evaluation[$name]['date'])?$evaluation[$name]['date']:'';
         }else{
             if($value == 'DENIED' ){
                 $value = 'EXCLUDED';
@@ -53,7 +53,7 @@
         }
         echo  "<tr><td><b>$name:&nbsp;</b>";
         if($value=='NONE' && $editable){
-            if(isAllow('remediation',$v['function'])){
+            if(Config_Fisma::isAllow('remediation',$v['function'])){
                 echo '<input type="hidden" name="evaluation" value="'.$k.'"/>';
                 echo '<input type="hidden" name="topic" value="" />';
                 echo '<input type="hidden" name="reject" value="" />';

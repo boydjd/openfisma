@@ -127,7 +127,7 @@ class Poam extends Zend_Db_Table
         }
         if (! empty($type)) {
             if (is_array($type)) {
-                $query->where("p.type IN (" . makeSqlInStmt($type) . ")");
+                $query->where("p.type IN ('" . implode("','",$type) . "')");
             } else {
                 $query->where("p.type = ?", $type);
             }
@@ -149,7 +149,7 @@ class Poam extends Zend_Db_Table
         }
         if (! empty($status)) {
             if (is_array($status)) {
-                $query->where("p.status IN (" . makeSqlInStmt($status) . ")");
+                $query->where("p.status IN ('" . implode("','",$status) . "')");
             } else {
                 $query->where("p.status = ?", $status);
             }
@@ -241,7 +241,7 @@ class Poam extends Zend_Db_Table
         $query = $this->_db->select()
                       ->from(array('p' => $this->_name), $pFields);
         if (! empty($sysIds)) {
-            $query->where("p.system_id IN (" . makeSqlInStmt($sysIds) . ")");
+            $query->where("p.system_id IN ('" . implode("','",$sysIds) . "')");
         }
         if (! empty($asFields)) {
             $query->joinLeft(array('as' => 'assets'), 'as.id = p.asset_id',
@@ -390,7 +390,7 @@ class Poam extends Zend_Db_Table
         }
         $query = $this->_db->select()
                       ->from(array('ev' => 'evidences'))
-                      ->where('ev.poam_id IN ('.makeSqlInStmt($poamId).')')
+                      ->where('ev.poam_id IN (\''. implode("','", $poamId) .'\')')
                       ->joinLeft(array('pvv' => 'poam_evaluations'),
                           'ev.id=pvv.group_id',
                           array('decision', 'date', 'eval_id' => 'pvv.id'))
@@ -437,7 +437,7 @@ class Poam extends Zend_Db_Table
         $query = $this->_db->select()
                       ->from(array('pvv' => 'poam_evaluations'),
                           array('decision' , 'date' , 'eval_id' => 'pvv.id'))
-                      ->where('pvv.group_id IN ('.makeSqlInStmt($poamId).')')
+                      ->where('pvv.group_id IN (\''.implode("','", $poamId).'\')')
                       ->join(array('el' => 'evaluations'),
                           'el.id=pvv.eval_id AND el.group = \'ACTION\'',
                           array('eval_name' => 'el.name',

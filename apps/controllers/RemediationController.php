@@ -116,12 +116,12 @@ class RemediationController extends PoamBaseController
         }
         foreach ($sum as $id => & $s) {
             $summary[$id] = $summaryTmp;
-            $summary[$id]['NEW'] = nullGet($s['NEW'], 0);
-            $summary[$id]['OPEN'] = nullGet($s['OPEN'], 0);
-            $summary[$id]['ES'] = nullGet($s['ES'], 0);
+            $summary[$id]['NEW'] = isset($s['NEW'])?$s['NEW']: 0;
+            $summary[$id]['OPEN'] = isset($s['OPEN'])?$s['OPEN']: 0;
+            $summary[$id]['ES'] = isset($s['ES'])?$s['ES']: 0;
             //$summary[$id]['EN'] = nullGet($s['EN'],0);
-            $summary[$id]['EP'] = nullGet($s['EP'], 0); //temp placeholder
-            $summary[$id]['CLOSED'] = nullGet($s['CLOSED'], 0);
+            $summary[$id]['EP'] = isset($s['EP'])?$s['EP']: 0; //temp placeholder
+            $summary[$id]['CLOSED'] = isset($s['CLOSED'])?$s['CLOSED']: 0;
             $summary[$id]['TOTAL'] = array_sum($s);
             $total['NEW']+= $summary[$id]['NEW'];
             //$total['EN'] += $summary[$id]['EN'];
@@ -460,7 +460,7 @@ class RemediationController extends PoamBaseController
                         $this->_notification->add($this->_notificationArray[$k],
                             $this->_me->account,
                             "PoamID: $id",
-                            nullGet($poam['system_id'], $oldpoam['system_id']));
+                            isset($poam['system_id'])?$poam['system_id']: $oldpoam['system_id']);
                         $notificationsSent[$this->_notificationArray[$k]] = 1;
                     }
 

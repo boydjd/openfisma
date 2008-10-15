@@ -13,7 +13,7 @@
     </ul>
 </form>
 <div id='warning'>
-<?php echo nl2br(readSysConfig('use_notification'));?>
+<?php echo nl2br(Config_Fisma::readSysConfig('use_notification'));?>
 </div>
 
 

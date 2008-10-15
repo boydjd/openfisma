@@ -37,7 +37,7 @@
                             <td class='head'><b>Database Name</b><br />
                                 <span style='font-size:85%;'> Name of database, the installer will
                                 attempt to create the database if it does not exist</span> </td>
-                            <td class='even'><input type='text' name='dsn[dbname]' id='dbname' size='30' maxlength='100'  value="<?php echo nullGet($this->dsn['dbname'],'');?>" />
+                            <td class='even'><input type='text' name='dsn[dbname]' id='dbname' size='30' maxlength='100'  value="<?php echo isset($this->dsn['dbname'])?$this->dsn['dbname']:'';?>" />
                                 <?php if(isset($this->message['dbname'])) {echo " <span class='notice'>*</span>";}?>                            </td>
                         </tr>
                     </table>

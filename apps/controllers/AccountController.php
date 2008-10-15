@@ -83,7 +83,7 @@ class AccountController extends PoamBaseController
         // If the application is in database authentication mode, then remove
         // the LDAP DN fields. If the application is in LDAP authentication
         // mode, then remove the database authentication fields.
-        $systemAuthType = readSysConfig('auth_type');
+        $systemAuthType = Config_Fisma::readSysConfig('auth_type');
         if ($systemAuthType == 'ldap') {
             $form->removeElement('account');
             $form->removeElement('password');
@@ -310,7 +310,7 @@ class AccountController extends PoamBaseController
             $this->_forward('view', null, null, array('id' => $id,
                                                       'v' => 'edit'));
         } else if ($formValid) {
-            if ( readSysConfig('auth_type') == 'database'
+            if ( Config_Fisma::readSysConfig('auth_type') == 'database'
                  && empty($accountData['account']) ) {
                 $msg = "Account can not be null.";
                 $this->message($msg, self::M_WARNING);
@@ -319,7 +319,7 @@ class AccountController extends PoamBaseController
                 ));
                 return;
             }
-            if ( readSysConfig('auth_type') == 'ldap' ) {
+            if ( Config_Fisma::readSysConfig('auth_type') == 'ldap' ) {
                 $accountData['account'] = $accountData['ldap_dn'];
             }
             if ( !empty($accountData['password']) ) {
@@ -473,7 +473,7 @@ class AccountController extends PoamBaseController
         
         // The password fields are required during creation *if* we are in
         // database authentication mode
-        if (readSysConfig('auth_type') == 'database') {
+        if (Config_Fisma::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirm_password')->setRequired(true);
         }
@@ -497,7 +497,7 @@ class AccountController extends PoamBaseController
 
         // The password fields are required during creation *if* we are in
         // database authentication mode
-        if (readSysConfig('auth_type') == 'database') {
+        if (Config_Fisma::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirm_password')->setRequired(true);
         }
@@ -527,9 +527,9 @@ class AccountController extends PoamBaseController
             unset($accountData['checkdn']);
             
             // Create the user's main record.
-            if ( 'ldap' == readSysConfig('auth_type') ) {
+            if ( 'ldap' == Config_Fisma::readSysConfig('auth_type') ) {
                 $accountData['account'] = $accountData['ldap_dn'];
-            } else if ( 'database' == readSysConfig('auth_type') ) {
+            } else if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
                 $accountData['password'] = md5($accountData['password']);
             }
             $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');

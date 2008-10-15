@@ -5,7 +5,7 @@
 <head>
 <?php
     $this->headTitle()->setSeparator(' - ');
-    $this->headTitle()->prepend(readSysConfig('system_name'));
+    $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
     echo $this->headTitle();
 ?>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

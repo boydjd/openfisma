@@ -21,6 +21,34 @@
                     'NOUP-90'   =>'(NOUP-90) 90+ Days Since Last Update');
     $this->systems[0] ='--Any--';
     $this->sources[0] ='--Any--';
+    unset($this->criteria['sourceId']);
+    if (!isset($this->criteria['sourceId'])) {
+        $this->criteria["sourceId"]=0;
+    }
+    if (!isset($this->criteria['type'])) {
+        $this->criteria["type"]='0';
+    }
+    if (!isset($this->criteria['status'])) {
+        $this->criteria["status"]='0';
+    }
+    if (!isset($this->criteria['assetOwner'])) {
+        $this->criteria["assetOwner"]='0';
+    }
+    if (!isset($this->criteria['systemId'])) {
+        $this->criteria["systemId"]='0';
+    }
+    if (!isset($this->criteria['estDateBegin'])) {
+        $this->criteria["estDateBegin"]='';
+    }
+    if (!isset($this->criteria['estDateEnd'])) {
+        $this->criteria["estDateEnd"]='';
+    }
+    if (!isset($this->criteria['createdDateBegin'])) {
+        $this->criteria["createdDateBegin"]='';
+    }
+    if (!isset($this->criteria['createdDateEnd'])) {
+        $this->criteria["createdDateEnd"]='';
+    }
 
 ?>
 <div class="barleft">
@@ -35,7 +63,7 @@
     <tr>
         <td><b>Finding Source: </b><br>
             <?php echo $this->formSelect('source_id',
-                                         nullGet($this->criteria['sourceId'],0),
+                                         $this->criteria['sourceId'],
                                          null,
                                          $this->sources);?>
         </td>
@@ -47,13 +75,13 @@
     <tr>
         <td ><b> Mitigation Strategy:</b><br>
         <?php echo $this->formSelect('type',
-                                     nullGet($this->criteria['type'],'0'),
+                                     $this->criteria['type'],
                                      null,
                                      $filter_type);?>
         </td>
         <td width="318" valign="top"><b> Finding Status:</b><br>
         <?php echo $this->formSelect('status', 
-                                     nullGet($this->criteria['status'],'0'), 
+                                     $this->criteria['status'], 
                                      null, 
                                      $filter_status);?>
         </td>
@@ -61,13 +89,13 @@
     <tr>
         <td ><b>Asset Owners: </b> <br/>
             <?php echo $this->formSelect('asset_owner',
-                                         nullGet($this->criteria['assetOwner'],0),
+                                         $this->criteria['assetOwner'],
                                          null,
                                          $this->systems);?>
         </td>
         <td ><b>Action Owners: </b><br>
             <?php echo $this->formSelect('system_id',
-                                         nullGet($this->criteria['systemId'],0),
+                                         $this->criteria['systemId'],
                                          null,
                                          $this->systems);?>
         </td>
@@ -78,14 +106,14 @@
                 <tr>
                     <td ><b>Estimated Completion Date:</b></td>
                     <td > From: <input type="text" class="date" name="est_date_begin" size="12" maxlength="10" 
-                    value="<?php $ts = nullGet($this->criteria['estDateBegin'],'');
+                    value="<?php $ts = $this->criteria['estDateBegin'];
                                  if($ts instanceof Zend_Date){
                                      $ts = $ts->toString('Ymd');
                                  }
                              echo $ts; ?>"></td>
                     <td > To:
                     <input type="text" class="date" name="est_date_end" size="12" maxlength="10" 
-                    value="<?php $ts = nullGet($this->criteria['estDateEnd'],'');
+                    value="<?php $ts = $this->criteria['estDateEnd'];
                                  if($ts instanceof Zend_Date){
                                      $ts = $ts->toString('Ymd');
                                  }
@@ -93,14 +121,14 @@
                     <td ><b>Date Created: </b></td>
                     <td >From:
                     <input type="text" class="date" name="created_date_begin" size="12" maxlength="10" 
-                    value="<?php $ts = nullGet($this->criteria['createdDateBegin'],'');
+                    value="<?php $ts = $this->criteria['createdDateBegin'];
                                  if($ts instanceof Zend_Date){
                                      $ts = $ts->toString('Ymd');
                                  }
                              echo $ts; ?>"></td>
                     <td > To:
                     <input type="text" class="date" name="created_date_nnd" size="12" maxlength="10" 
-                    value="<?php $ts = nullGet($this->criteria['createdDateEnd'],'');
+                    value="<?php $ts = $this->criteria['createdDateEnd'];
                                  if($ts instanceof Zend_Date){
                                      $ts = $ts->toString('Ymd');
                                  }

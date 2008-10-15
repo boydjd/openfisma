@@ -28,7 +28,7 @@
                 <tr>
                     <td>
                         <b target="action_owner" <?php
-        if(isAllow('remediation','update_finding_assignment')){
+        if(Config_Fisma::isAllow('remediation','update_finding_assignment')){
             echo ' class="editable"'; 
         }
         ?> >Responsible System:&nbsp;</b>
@@ -53,10 +53,16 @@
 ?>
                 </tr>
                 <tr>
-                    <td><b>Asset Name:&nbsp;</b> <?php echo nullGet($this->poam['asset_name'],'(none given)');?> </td>
+                    <td><b>Asset Name:&nbsp;</b><?php 
+                        echo isset($this->poam['asset_name'])?$this->poam['asset_name']:'(none given)';
+                    ?></td>
                 </tr>
                 <tr>
-                    <td><b>Known Address(es):&nbsp;</b>(<?php echo $this->network_list[$this->poam['network_id']].") ".$this->poam['ip'],':',$this->poam['port']?></td>
+                    <td><b>Known Address(es):&nbsp;</b><?php 
+        echo isset($this->network_list[$this->poam['network_id']])?
+                     "(". $this->network_list[$this->poam['network_id']]
+                     .") ".$this->poam['ip'].':'.$this->poam['port'] :'(not given)' ?></td>
+               
                 </tr>
                 <tr>
                     <td><b>Product Information:&nbsp;</b> <i>
@@ -77,7 +83,9 @@
 <table border="0" cellpadding="5" cellspacing="1" class="tipframe" >
     <th align="left">Finding Description</th>
     <tr>
-        <td><?php echo nullGet($this->poam['finding_data'],'(none given)'); ?></td>
+        <td><?php 
+            echo isset($this->poam['finding_data'])?$this->poam['finding_data']:'(none given)'; 
+        ?></td>
     </tr>
 </table>
 <?php if( !empty($this->poam['vuln']) ) { ?>
@@ -103,7 +111,7 @@
 <?php } ?>
 <table cellpadding="5" width="100%" class="tipframe">
     <th align='left' ><span target='recommendation' <?php 
-                if (isAllow('remediation','update_finding_recommendation')) {
+                if (Config_Fisma::isAllow('remediation','update_finding_recommendation')) {
                     echo 'class="editable"';
                 }
             ?> colspan='2'>Recommendation</span></th>

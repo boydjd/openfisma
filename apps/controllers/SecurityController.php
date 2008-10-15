@@ -75,7 +75,7 @@ class SecurityController extends MessageController
             $store = $this->_auth->getStorage();
             // refresh the expiring timer
             $exps = new Zend_Session_Namespace($store->getNamespace());
-            $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
+            $exps->setExpirationSeconds(Config_Fisma::readSysConfig('expiring_seconds'));
             $this->initializeAcl($this->_me->id);
             if (isset($this->_sanity['data'])) {
                 $this->_validator = new Zend_Filter_Input(
@@ -178,8 +178,12 @@ class SecurityController extends MessageController
         }
         return $crit;
     }
+
     /*
      * Get form object from form config file section 
+     * 
+     * wrapper of Config_Fisma::getForm
+     *
      * @param string $formConfigSection the forms name namely section of
             the configuration
      * 
@@ -187,9 +191,6 @@ class SecurityController extends MessageController
      */
     public function getForm ($formConfigSection)
     {
-        $formIni = new Zend_Config_Ini(CONFIGS . DS . FORMCONFIGFILE,
-            $formConfigSection);
-        $form = new Zend_Form($formIni);
-        return $form;
+        return Config_Fisma::getForm($formConfigSection);
     }
 }

@@ -29,7 +29,7 @@
         <td width="6%" height="47"><b>System </b></td>
         <td width="21%">
         <?php echo $this->formSelect('system_id',
-                                     nullGet($this->criteria['systemId'],0), 
+                                     isset($this->criteria['systemId'])?$this->criteria['systemId']:0, 
                                      null,$this->system_list);
               if( !empty($this->criteria['systemId']) ) {
                   $url .= '/system_id/'.$this->criteria['systemId'];
@@ -39,7 +39,7 @@
         <td width="6%"><b>Source</b></td>
         <td width="18%">
         <?php echo $this->formSelect('source_id',
-                                     nullGet($this->criteria['sourceId'],0), 
+                                     isset($this->criteria['sourceId'])?$this->criteria['sourceId']:0, 
                                      null,$this->source_list);
               if( !empty($this->criteria['sourceId']) ) {
                   $url .= '/source_id/'.$this->criteria['sourceId'];
@@ -49,7 +49,7 @@
         <td width="9%"><b>Fiscal Year</b></td>
         <td width="40%">
         <?php echo $this->formSelect('year',
-                                     nullGet($this->criteria['year'],0), 
+                                     isset($this->criteria['year'])?$this->criteria['year']:0, 
                                      null,$year_list);
               if( !empty($this->criteria['year']) ) {
                   $url .= '/year/'.$this->criteria['year'];
@@ -61,7 +61,7 @@
         <td height="30"><b>Type</b></td>
         <td>
         <?php echo $this->formSelect('type',
-                                    (string)nullGet($this->criteria['type'],0),
+                                    (string)isset($this->criteria['type'])?$this->criteria['type']:0,
                                     null,$type_list);
               if( !empty($this->criteria['type']) ) {
                   $url .= '/type/'.$this->criteria['type'];
@@ -71,7 +71,7 @@
         <td><b>Status</b></td>
         <td colspan="3">
         <?php echo $this->formSelect('status',
-                                    (string)nullGet($this->criteria['status'],0),
+                                    (string)isset($this->criteria['status'])?$this->criteria['status']:0,
                                     null,$status_list);
               if( !empty($this->criteria['status']) ) {
                   $url .= '/status/'.$this->criteria['status'];

@@ -15,20 +15,20 @@
     <tr>
         <td><b>Finding Source: </b>
             <?php echo $this->formSelect('source_id',
-                                         nullGet($this->criteria['sourceId'],0),
+                                         isset($this->criteria['sourceId'])?$this->criteria['sourceId']:0,
                                          null,
                                          $this->sources);?>
         </td>
         <td>
         <td ><b>Asset Owners: </b>
             <?php echo $this->formSelect('asset_owner',
-                                         nullGet($this->criteria['assetOwner'],0),
+                                         isset($this->criteria['assetOwner'])?$this->criteria['assetOwner']:0,
                                          null,
                                          $this->systems);?>
         </td>
         <td ><b>Action Owners: </b>
             <?php echo $this->formSelect('system_id',
-                                         nullGet($this->criteria['systemId'],0),
+                                         isset($this->criteria['systemId'])?$this->criteria['systemId']:0,
                                          null,
                                          $this->systems);?>
         </td>

@@ -7,7 +7,7 @@
         <table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
             <tr>
                 <th align="left" ><span target="blscr" <?php
-                    if(isAllow('remediation','update_control_assignment')){
+                    if(Config_Fisma::isAllow('remediation','update_control_assignment')){
                         echo ' class="editable"';
                     }
                 ?> >Security Control:&nbsp;</span>
@@ -56,10 +56,10 @@
             <tr><td><b>Control:&nbsp;</b> <?php echo $blscr['control'];?></td></tr>
             <tr><td><b>Guidance:&nbsp;</b> <?php echo $blscr['guidance'];?></td></tr>
             <tr><td><b>Enhancements:&nbsp;</b>
-                <?php echo nullGet($blscr['enhancements'],'<i>(none given)</i>'); ?>
+                <?php echo isset($blscr['enhancements'])?$blscr['enhancements']:'<i>(none given)</i>'; ?>
             </td></tr>
             <tr><td><b>Supplement:&nbsp;</b>
-                <?php echo nullGet($blscr['supplement'],'<i>(none given)</i>'); ?>
+                <?php echo isset($blscr['supplement'])?$blscr['supplement']:'<i>(none given)</i>'; ?>
             </td></tr>
             <?php  }  ?>
         </table>
@@ -70,7 +70,7 @@
 </div>
 </div>
 <?
-if (isAllow('report','generate_system_rafs')) {
+if (Config_Fisma::isAllow('report','generate_system_rafs')) {
 ?>
             <table class="tipframe">
                 <tr>
@@ -122,7 +122,7 @@ if (isAllow('report','generate_system_rafs')) {
                 <tr>
                     <td>
                     <b target="threat" <?php 
-                        if(isAllow('remediation','update_threat')){ 
+                        if(Config_Fisma::isAllow('remediation','update_threat')){ 
                             echo ' class="editable"';
                         } ?> >Level:&nbsp;</b>
                     <br><span id ="threat" type="select" name="poam[threat_level]"
@@ -134,7 +134,7 @@ if (isAllow('report','generate_system_rafs')) {
                  <tr>
                      <td>
                      <b target="threat_source" <?php 
-                        if(isAllow('remediation','update_threat')){ 
+                        if(Config_Fisma::isAllow('remediation','update_threat')){ 
                             echo 'class="editable"';
                         } ?> >Source:&nbsp;</b>
                      <br><span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
@@ -145,7 +145,7 @@ if (isAllow('report','generate_system_rafs')) {
                  <tr>
                     <td>
                     <b target="justification" <?php 
-                       if(isAllow('remediation','update_threat')){ 
+                       if(Config_Fisma::isAllow('remediation','update_threat')){ 
                            echo 'class="editable"';
                        }?> >Justification:&nbsp;</b>
                     <br><span type="textarea" id="justification" name="poam[threat_justification]" rows="5" cols="160">
@@ -166,7 +166,7 @@ if (isAllow('report','generate_system_rafs')) {
                     <tr>
                         <td>
                             <b target="effectiveness" <?php 
-                                if(isAllow('remediation','update_countermeasures')){
+                                if(Config_Fisma::isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 }?> >Effectiveness:&nbsp;</b>
                             <br><span type="select" name="poam[cmeasure_effectiveness]"
@@ -178,7 +178,7 @@ if (isAllow('report','generate_system_rafs')) {
                     <tr>
                         <td>
                             <b target="cmeasure" <?php 
-                                if(isAllow('remediation','update_countermeasures')){
+                                if(Config_Fisma::isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 } ?> >Countermeasure:&nbsp;</b>
                             <br><span type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
@@ -189,7 +189,7 @@ if (isAllow('report','generate_system_rafs')) {
                      <tr>
                         <td>
                             <b target="cm_justification" <?php 
-                                if(isAllow('remediation','update_countermeasures')){
+                                if(Config_Fisma::isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 }
                             ?> >Justification:&nbsp;</b>
@@ -227,7 +227,7 @@ if (isAllow('report','generate_system_rafs')) {
                         $complete++;
                     }
                 }
-                if(isAllow('remediation','update_mitigation_strategy_approval') &&
+                if(Config_Fisma::isAllow('remediation','update_mitigation_strategy_approval') &&
                     in_array($this->poam['status'],array('OPEN','EN')) && 0 == $complete) {
                     echo 'class="editable"';
                 }?> >SSO Approval: </b><!-- Action Approval-->

@@ -20,11 +20,11 @@
                 <td class="tdc"><?php echo $item['blscr'];?></td>
                 <td class="tdc"><?php echo $item['num'];?></td>
             </tr>
-            <?php $this->sum0 = $this->sum0+ $item['num'];?>
+            <?php $this->sum0 += $item['num'];?>
             <?php } ?>
             <tr align="center">
                 <td class="tdc">Total</td>
-                <td class="tdc"><?php echo nullGet($this->sum0,0);?></td>
+                <td class="tdc"><?php echo $this->sum0;?></td>
             </tr>
         </table>
     </td>
@@ -46,11 +46,11 @@
                 <td class="tdc"><?php echo $item['blscr'];?></td>
                 <td class="tdc"><?php echo $item['num'];?></td>
             </tr>
-                <?php $this->sum1 = $this->sum1+$item['num'];?>
+                <?php $this->sum1 += $item['num'];?>
                 <?php } ?>
             <tr align="center">
                 <td class="tdc">Total</td>
-                <td class="tdc"><?php echo nullGet($this->sum1,0);?></td>
+                <td class="tdc"><?php echo $this->sum1;?></td>
             </tr>
         </table>
     </td>
@@ -72,11 +72,11 @@
                 <td class="tdc"><?php echo $item['blscr'];?></td>
                 <td class="tdc"><?php echo $item['num'];?></td>
             </tr>
-                <?php $this->sum2 = $this->sum2+$item['num'];?>
+                <?php $this->sum2 += $item['num'];?>
                 <?php } ?>
             <tr align="center">
                 <td class="tdc">Total</td>
-                <td class="tdc"><?php echo nullGet($this->sum2,0);?></td>
+                <td class="tdc"><?php echo $this->sum2;?></td>
             </tr>
         </table>
     </td>

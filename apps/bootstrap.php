@@ -29,45 +29,11 @@
  */
 require_once (dirname(dirname(__FILE__)) . '/paths.php');
 
-/**
- * loadClass() - Define a standard handler for loading classes without having
- * to include the class file. This is automatically called by PHP to resolve
- * undeclared class references. Do not invoke this method directly.
- *
- * This assumes that classes are named using ZF standards or else are directly
- * in the search path. See paths.php for search path directories.
- *
- * @param string $className
- */
-function loadClass($className) {
-    // Get the include path and break it into parts
-    $includePath = get_include_path();
-    $includePathParts = explode(':', $includePath);
-    
-    // Reformat the class name into a class path by replacing underscores with
-    // forward slashes.
-    $classPath = str_replace('_', '/', $className);
-    
-    // Iterate through each includes directory to see if it contains the class
-    // file. If it does, then load that file and return.
-    foreach ($includePathParts as $includeDirectory) {
-        $classFile = "$includeDirectory/$classPath.php";
-        if (file_exists($classFile)) {
-            require_once($classFile);
-            return;
-        }
-    }
-    
-    // If the file isn't found in any includes directory, then throw an
-    // exception.
-    throw new Exception("Unable to autoload class \"$className\"");
-}
 // Register our custom class loader:
-spl_autoload_register("loadClass");
-
-// Include basic utility functions and system-wide configuration
-require_once (APPS . '/basic.php');
-require_once (CONFIGS . '/setting.php');
+require_once "Zend/Loader.php";
+Zend_Loader::registerAutoload();
+// Initialize the global setting object
+$fisma = Config_Fisma::getInstance();
 
 // If we are in command line mode, then drop out of the bootstrap before we
 // render any views.
@@ -105,7 +71,7 @@ Zend_Controller_Action_HelperBroker::addHelper($viewRender);
 // Get the front controller instance and kick it off
 $front = Zend_Controller_Front::getInstance();
 $router = $front->getRouter();
-if (!isInstall()) {
+if (!Config_Fisma::isInstall()) {
     // If the application has not been installed yet, then define the route so
     // that only the installController can be invoked. This forces the user to
     // complete installation before using the application.

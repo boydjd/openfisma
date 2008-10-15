@@ -9,7 +9,7 @@
                 <tr>
                     <td align="left">
                         <b target="type" <?php
-        if(('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status'])&& isAllow('remediation','update_finding_course_of_action')){
+        if(('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status'])&& Config_Fisma::isAllow('remediation','update_finding_course_of_action')){
             echo 'class="editable"';
         }?> >Type:&nbsp;</b>
                     <span name="poam[type]" id="type" type="select" 
@@ -22,7 +22,7 @@
                     <td>
                         <b target="action_planned" <?php 
            if(in_array($this->poam['status'],array('NEW','OPEN'))
-                && isAllow('remediation','update_finding_course_of_action')){
+                && Config_Fisma::isAllow('remediation','update_finding_course_of_action')){
                echo 'class="editable"';
            }?> >Description:&nbsp;</b>
                         <span name="poam[action_planned]" id="action_planned" 
@@ -39,7 +39,7 @@
                 <th align="left">
                 <span target="action_resources" <?php
         if(in_array($this->poam['status'],array('NEW','OPEN'))
-           && isAllow('remediation','update_finding_resources')){
+           && Config_Fisma::isAllow('remediation','update_finding_resources')){
             echo 'class="editable"';
         } ?> >Resources Required for Course of Action</span></th>
                 <tr>
@@ -73,13 +73,18 @@
                     <td>
                         <b target="action_est_date"
                         <?php 
-                            if(isAllow('remediation','update_finding_course_of_action')
+                            if(Config_Fisma::isAllow('remediation','update_finding_course_of_action')
                                 && in_array($this->poam['status'], array('NEW', 'OPEN'))){
                                 echo 'class="editable"';
                             }
                         ?> >Current Expected Completion Date:&nbsp;</b>
                         <span name="poam[action_current_date]" id="action_est_date" class="date" type="text"> 
-                        <?php echo nullGet($this->poam['action_current_date'], '0000-00-00'); ?>
+                        <?php 
+                            if (!isset($this->poam['action_current_date'])) {
+                                $this->poam['action_current_date'] = '0000-00-00';
+                            }
+                            echo $this->poam['action_current_date'] ;
+                         ?>
                         </span>
                         <?php 
                             if (!empty($this->poam['ecd_justification'])) {
@@ -98,7 +103,12 @@
                 </tr>
                 <tr>
                     <td><b>Actual Completion Date:&nbsp;</b>
-                    <?php echo nullGet($this->poam['action_actual_date'],'<i>(action not yet completed)</i>');?>
+                    <?php 
+                        if (!isset($this->poam['action_actual_date'])) {
+                            echo '<i>(action not yet completed)</i>';
+                        }
+                        echo $this->poam['action_actual_date'] ;
+                     ?>
                     </td>
                 </tr>
             </table>

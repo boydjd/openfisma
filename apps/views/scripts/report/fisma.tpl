@@ -27,13 +27,19 @@
         <td >
             <?php 
                 $this->system_list[0] = 'All Systems';
-                echo $this->formSelect('system',nullGet($this->criteria['systemId'],0),null,$this->system_list);
+                echo $this->formSelect('system',
+                                       isset($this->criteria['systemId'])?$this->criteria['systemId']:0,
+                                       null,$this->system_list);
             ?>
         </td>
-        <td>From:<input type="text" class="date" name="startdate" value="<?php echo nullGet($this->criteria['startdate'],'');?>" size="10" maxlength="10" url="">
+        <td>From:<input type="text" class="date" name="startdate" value="<?php 
+            echo isset($this->criteria['startdate'])?$this->criteria['startdate']:'';
+            ?>" size="10" maxlength="10" url="">
         </td>
         <td>To:
-        <input type="text" class="date" name="enddate" value="<?php echo nullGet($this->criteria['enddate'],'');?>" size="10" maxlength="10" url=""></td>
+        <input type="text" class="date" name="enddate" value="<?php 
+            echo isset($this->criteria['enddate'])?$this->criteria['enddate']:'';
+            ?>" size="10" maxlength="10" url=""></td>
         <td >
             <input type="submit" value="Generate Report">
         </td>

@@ -6,6 +6,7 @@ $fid_array = array('name'=>'System Name',
                    'integrity'=>'Integrity',
                    'availability'=>'Avalilability',
                    'type'=>'type');
+$this->declareVars(array('fid'=>'name'));
 ?>
 
 <div class="barleft">
@@ -36,7 +37,7 @@ $fid_array = array('name'=>'System Name',
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>
-                            <td><?php echo $this->formSelect('fid',nullGet($this->fid,'name'),null,$fid_array);?></td>
+                            <td><?php echo $this->formSelect('fid',$this->fid,null,$fid_array);?></td>
                             <td><input name="qv" value="<?php echo $this->qv;?>" title="Input your query value" size="10" maxlength="40" type="text"></td>
 
                              <td><input value="Search" title="submit your request" type="submit"></td>

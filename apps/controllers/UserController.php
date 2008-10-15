@@ -86,10 +86,10 @@ class UserController extends MessageController
 
             // If the account is locked...
             // (due to manual lock, expired account, password errors, etc.)
-            if ( ! $whologin->is_active && 'database' == readSysConfig('auth_type')) {
-                $unlockEnabled = readSysConfig('unlock_enabled');
+            if ( ! $whologin->is_active && 'database' == Config_Fisma::readSysConfig('auth_type')) {
+                $unlockEnabled = Config_Fisma::readSysConfig('unlock_enabled');
                 if (1 == intval($unlockEnabled)) {
-                    $unlockDuration = readSysConfig('unlock_duration');
+                    $unlockDuration = Config_Fisma::readSysConfig('unlock_duration');
 
                     // If the system administrator has elected to have accounts
                     // unlock automatically, then calculate how much time is
@@ -111,7 +111,7 @@ class UserController extends MessageController
                     } else {
                         throw new Zend_Auth_Exception('Your user account has
                         been locked due to ' .
-                        readSysConfig("failure_threshold") .
+                        Config_Fisma::readSysConfig("failure_threshold") .
                         " or more unsuccessful login attempts. Your account will
                         be unlocked in $minutesRemaining minutes. Please try
                         again at that time.");
@@ -122,17 +122,17 @@ class UserController extends MessageController
                     // the administrator.
                     throw new Zend_Auth_Exception('Your account has been locked
                         due to ' .
-                        readSysConfig("failure_threshold") .
+                        Config_Fisma::readSysConfig("failure_threshold") .
                         ' or more unsuccessful login attempts. Please contact
                         the <a href="mailto:' .
-                        readSysConfig('contact_email') .
+                        Config_Fisma::readSysConfig('contact_email') .
                         '">Administrator</a>.');
                 }
             }
 
             // Proceed through authorization based on the configured mechanism
             // (LDAP, Database, etc.)
-            $authType = readSysConfig('auth_type');
+            $authType = Config_Fisma::readSysConfig('auth_type');
             $auth = Zend_Auth::getInstance();
             $result = $this->authenticate($authType, $username, $password);
             
@@ -146,7 +146,7 @@ class UserController extends MessageController
                                    "User: {$whologin->account}");
 
                 if ($whologin->failure_count >=
-                    readSysConfig('failure_threshold') - 1) {
+                    Config_Fisma::readSysConfig('failure_threshold') - 1) {
                     $this->_user->log(User::TERMINATION,
                                       $whologin->id,
                                       'Account locked');
@@ -156,10 +156,10 @@ class UserController extends MessageController
                                        "User: {$whologin->account}");
                     throw new Zend_Auth_Exception('Your account has been locked
                         due to ' .
-                        readSysConfig("failure_threshold") .
+                        Config_Fisma::readSysConfig("failure_threshold") .
                         ' or more unsuccessful login attempts. Please contact
                         the <a href="mailto:' .
-                        readSysConfig('contact_email') .
+                        Config_Fisma::readSysConfig('contact_email') .
                         '">Administrator</a>.');
                 }
                 
@@ -169,7 +169,7 @@ class UserController extends MessageController
             // At this point, the user is authenticated.
             // Now check if the account has expired.
             $_me = (object)($whologin->toArray());
-            $period = readSysConfig('max_absent_time');
+            $period = Config_Fisma::readSysConfig('max_absent_time');
             $deactiveTime = new Zend_Date();
             $deactiveTime->sub($period, Zend_Date::DAY);
             $lastLogin = new Zend_Date($_me->last_login_ts,
@@ -180,7 +180,7 @@ class UserController extends MessageController
                 throw new Zend_Auth_Exception("Your account has been locked
                     because you have not logged in for $period or more days.
                     Please contact the <a href=\"mailto:" .
-                    readSysConfig('contact_email') .
+                    Config_Fisma::readSysConfig('contact_email') .
                     '">Administrator</a>.');
             }
             
@@ -204,14 +204,14 @@ class UserController extends MessageController
             // Set up the session timeout
             $store = $auth->getStorage();
             $exps = new Zend_Session_Namespace($store->getNamespace());
-            $exps->setExpirationSeconds(readSysConfig('expiring_seconds'));
+            $exps->setExpirationSeconds(Config_Fisma::readSysConfig('expiring_seconds'));
             $store->write($_me);
             
             // Check to see if the user needs to review the rules of behavior.
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
             $nextRobReview = new Zend_Date($_me->last_rob, 'Y-m-d');
-            $nextRobReview->add(readSysConfig('rob_duration'), Zend_Date::DAY);
+            $nextRobReview->add(Config_Fisma::readSysConfig('rob_duration'), Zend_Date::DAY);
             $now = new Zend_Date();
             if ($now->isEarlier($nextRobReview)) {
                 $this->_forward('index', 'Panel');
@@ -307,20 +307,20 @@ class UserController extends MessageController
 
         // Prepare the password requirements explanation:
         $requirements[] = "Length must be between "
-                        . readSysConfig('pass_min')
+                        . Config_Fisma::readSysConfig('pass_min')
                         . " and "
-                        . readSysConfig('pass_max')
+                        . Config_Fisma::readSysConfig('pass_max')
                         . " characters long.";
-        if (readSysConfig('pass_uppercase') == 1) {
+        if (Config_Fisma::readSysConfig('pass_uppercase') == 1) {
             $requirements[] = "Must contain at least 1 upper case character (A-Z)";
         }
-        if (readSysConfig('pass_lowercase') == 1) {
+        if (Config_Fisma::readSysConfig('pass_lowercase') == 1) {
             $requirements[] = "Must contain at least 1 lower case character (a-z)";
         }
-        if (readSysConfig('pass_numerical') == 1) {
+        if (Config_Fisma::readSysConfig('pass_numerical') == 1) {
             $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
-        if (readSysConfig('pass_special') == 1) {
+        if (Config_Fisma::readSysConfig('pass_special') == 1) {
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
 
@@ -569,40 +569,40 @@ class UserController extends MessageController
             return $result;
         }
 
-        if (strlen($pass) < readSysConfig('pass_min')) {
+        if (strlen($pass) < Config_Fisma::readSysConfig('pass_min')) {
             $result['check'] = false;
-            $result['reason'] = "The password must be at least ".readSysConfig('pass_min')." characters long";
+            $result['reason'] = "The password must be at least ".Config_Fisma::readSysConfig('pass_min')." characters long";
             return $result;
         }
 
-        if (strlen($pass) > readSysConfig('pass_max')) {
+        if (strlen($pass) > Config_Fisma::readSysConfig('pass_max')) {
             $result['check'] = false;
-            $result['reason'] = "The password must not be more than ".readSysConfig('pass_max')." characters long";
+            $result['reason'] = "The password must not be more than ".Config_Fisma::readSysConfig('pass_max')." characters long";
             return $result;
         }
 
-        if (true == readSysConfig('pass_uppercase')) {
+        if (true == Config_Fisma::readSysConfig('pass_uppercase')) {
             if ( false == preg_match("/[A-Z]+/", $pass)) {
                 $result['reason'] = " The password must contain at least 1 uppercase letter (A-Z),";
                 $result['check'] = false;
                 return $result;
             }
         }
-        if (true == readSysConfig('pass_lowercase')) {
+        if (true == Config_Fisma::readSysConfig('pass_lowercase')) {
             if ( false == preg_match("/[a-z]+/", $pass) ) {
                 $result['reason'] = "The password must contain at least 1 lowercase letter (a-z),";
                 $result['check'] = false;
                 return $result;
             }
         }
-        if ( true == readSysConfig('pass_numerical')) {
+        if ( true == Config_Fisma::readSysConfig('pass_numerical')) {
             if ( false == preg_match("/[0-9]+/", $pass) ) {
                 $result['reason'] = "The password must contain at least 1 numeric digit (0-9)";
                 $result['check'] = false;
                 return $result;
             }
         }
-        if ( true == readSysConfig('pass_special')) {
+        if ( true == Config_Fisma::readSysConfig('pass_special')) {
             if ( false == preg_match("/[^0-9a-zA-Z]+/", $pass) ) {
                 $result['reason'] = "The password must contain at least 1 special character (!@#$%^&*-=+~`_)";
                 $result['check'] = false;
@@ -693,7 +693,7 @@ class UserController extends MessageController
                     window or click <a href='http://"
                     . $_SERVER['HTTP_HOST']
                     . "'>here</a> to go back to "
-                    . readSysConfig('system_name')
+                    . Config_Fisma::readSysConfig('system_name')
                     . '.';
         } else {
             $msg = "Error: Your e-mail address can not be confirmed. Please
@@ -713,7 +713,7 @@ class UserController extends MessageController
     {
         $mail = new Zend_Mail();
 
-        $mail->setFrom(readSysConfig('sender'), readSysConfig('system_name'));
+        $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
         $mail->addTo($email);
         $mail->setSubject("Email validation");
 
@@ -743,13 +743,13 @@ class UserController extends MessageController
     protected function _getTransport()
     {
         $transport = null;
-        if ( 'smtp' == readSysConfig('send_type')) {
+        if ( 'smtp' == Config_Fisma::readSysConfig('send_type')) {
             $config = array('auth' => 'login',
-                'username' => readSysConfig('smtp_username'),
-                'password' => readSysConfig('smtp_password'),
-                'port' => readSysConfig('smtp_port'));
+                'username' => Config_Fisma::readSysConfig('smtp_username'),
+                'password' => Config_Fisma::readSysConfig('smtp_password'),
+                'port' => Config_Fisma::readSysConfig('smtp_port'));
             $transport = new Zend_Mail_Transport_Smtp(
-                readSysConfig('smtp_host'), $config);
+                Config_Fisma::readSysConfig('smtp_host'), $config);
         } else {
             $transport = new Zend_Mail_Transport_Sendmail();
         }

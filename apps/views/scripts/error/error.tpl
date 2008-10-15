@@ -11,7 +11,7 @@
         </td>
     </tr>
     <tr>
-        <td>Technical Support: <?php echo readSysConfig('contact_name');?>, Phone: <?php echo readSysConfig('contact_phone');?>, Email: <a href="mailto:<?php echo readSysConfig('contact_email');?>"><?php echo readSysConfig('contact_email');?></a>
+        <td>Technical Support: <?php echo Config_Fisma::readSysConfig('contact_name');?>, Phone: <?php echo Config_Fisma::readSysConfig('contact_phone');?>, Email: <a href="mailto:<?php echo Config_Fisma::readSysConfig('contact_email');?>"><?php echo Config_Fisma::readSysConfig('contact_email');?></a>
         </td>
     </tr>
 </table>

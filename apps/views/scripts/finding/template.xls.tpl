@@ -143,7 +143,7 @@
    <Column ss:StyleID="s21" ss:AutoFitWidth="0" ss:Width="92.25"/>
    <Row ss:AutoFitHeight="0" ss:Height="44.25">
     <Cell ss:MergeAcross="9" ss:StyleID="m25448952"><ss:Data ss:Type="String"
-      xmlns="http://www.w3.org/TR/REC-html40"><B><?php echo readSysConfig('system_name');?> Injection Template&#10;<Font
+      xmlns="http://www.w3.org/TR/REC-html40"><B><?php echo Config_Fisma::readSysConfig('system_name');?> Injection Template&#10;<Font
         html:Size="10">Fill the work sheet with your finding data and save it as CSV format.</Font></B></ss:Data></Cell>
    </Row>
    <Row>

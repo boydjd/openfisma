@@ -143,7 +143,7 @@ class User extends FismaModel
             $nowSqlString = $now->get('Y-m-d H:i:s');
             if ($type == self::LOGINFAILURE) {
                 $row->failure_count++;
-                if ($row->failure_count >= readSysConfig('failure_threshold')) {
+                if ($row->failure_count >= Config_Fisma::readSysConfig('failure_threshold')) {
                     $row->termination_ts = $nowSqlString;
                     $row->is_active = 0;
                 }
@@ -181,7 +181,7 @@ class User extends FismaModel
         if ($reverse) {
             $where[] = "user_id=$uid";
             if (! empty($data)) {
-                $where[] = "{$this->_map[$type]['field']} IN(" . makeSqlInStmt($data) . ")";
+                $where[] = "{$this->_map[$type]['field']} IN('" . implode("','",$data). "')";
                 $ret = $this->_db->delete($this->_map[$type]['table'], $where);
             }
         } else {

@@ -108,6 +108,24 @@ class Config extends FismaModel
     }
 
     /**
+     *  mapping the key/value from different arrays
+     * 
+     *  @param array $arrayA the key1=>val1
+     *  @param array $arrayB the val1=>val2
+     *  @return array the key1=>val2
+     */
+    private function _directMap($arrayA, $arrayB)
+    {
+        $ret = array();
+        foreach ($arrayA as $k=>$v) {
+            if (array_key_exists($v, $arrayB)) {
+                $ret[$k] = $arrayB[$v];
+            }
+        }
+        return $ret;
+    }
+
+    /**
      *  Save/Add LDAP configuration
      *
      *  @param array $value data to be saved/added
@@ -115,7 +133,7 @@ class Config extends FismaModel
      public function saveLdap($values,$id=null)
      {
          $revVal = array_flip($this->_mapLdap);
-         $values = directMap($revVal, $values);
+         $values = $this->_directMap($revVal, $values);
          $ldapConfig = new FismaModel($this->_ldaps);
          if (empty($id)) {
              $ret = $ldapConfig->insert($values);
