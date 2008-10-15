@@ -31,7 +31,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  *
- * @todo This class is named incorrectly: not capitalized
  * @todo This class should probably be merged with the finding class.
  */
 class Poam extends Zend_Db_Table

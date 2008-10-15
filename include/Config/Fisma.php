@@ -1,0 +1,220 @@
+<?php
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id: basic.php 940 2008-09-27 13:40:22Z ryanyang $
+ *
+ */
+
+class Config_Fisma
+{
+    /**
+     The section name of system wide configuration
+     */ 
+    const SYSCONFIG = 'sysconf';
+    const LDAPCONFIG = 'ldapconf';
+    const CONFIGFILE_NAME = 'install.conf';
+    const ERROR_LOG = 'log/error.log';
+    const FORMCONFIGFILE  = 'form.conf';
+
+    /**
+     * Singleton instance
+     *
+     * Marked only as protected to allow extension of the class. To extend,
+     * simply override {@link getInstance()}.
+     *
+     * @var Zend_Controller_Front
+     */
+    protected static $_instance = null;
+
+
+    /**
+     * Constructor
+     *
+     * Instantiate using {@link getInstance()}; System wide config is a singleton
+     * object.
+     *
+     * @return void
+     */
+    private function __construct()
+    {
+        //assuming not installed first unless it is
+        Zend_Registry::set('installed', false);
+
+        if (is_file(CONFIGS . '/' . self::CONFIGFILE_NAME)) {
+            $config = new Zend_Config_Ini(CONFIGS . '/' . self::CONFIGFILE_NAME);
+            if (!empty($config->database)) {
+                Zend_Registry::set('datasource', $config->database);
+                Zend_Registry::set('installed', true);
+            }
+            // Debug setting
+            if (!empty($config->debug)) {
+                if ($config->debug->level > 0) {
+                    error_reporting(E_ALL);
+                    ini_set('display_errors', 1);
+                    foreach ($config->debug->xdebug as $k => $v) {
+                        if ($k == 'start_trace') {
+                            if (1 == $v && function_exists('xdebug_start_trace')) {
+                                xdebug_start_trace();
+                            }
+                        } else {
+                            @ini_set('xdebug.' . $k, $v);
+                        }
+                    }
+                }
+            }
+            ///@todo system wide log setting
+        }
+    }
+
+    /**
+     * Enforce singleton; disallow cloning 
+     * 
+     * @return void
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Singleton instance
+     *
+     * @return Config_Fisma
+     */
+    public static function getInstance()
+    {
+        if (null === self::$_instance) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
+
+    /** 
+        Exam the Acl of the existing logon user to decide permission or denial.
+
+        @param $resource resources
+        @param $action actions
+        @return bool permit or not
+    */
+    function isAllow($resource, $action)
+    {
+        $auth = Zend_Auth::getInstance();
+        $me = $auth->getIdentity();
+        if ( $me->account == "root" ) {
+            return true;
+        }
+        $roleArray = &$me->roleArray;
+        $acl = Zend_Registry::get('acl');
+        try{
+            foreach ($roleArray as $role) {
+                if ( true == $acl->isAllowed($role, $resource, $action) ) {
+                    return true;
+                }
+            }
+        } catch(Zend_Acl_Exception $e){
+            /// @todo acl log information
+        }
+        return false;
+    }
+
+    /** 
+        Read configurations of any sections.
+        This function manages the storage, the cache, lazy initializing issue.
+        
+        @param $key string key name
+        @param $is_fresh boolean to read from persisten storage or not.
+        @return string configuration value.
+     */
+    function readSysConfig($key, $isFresh = false)
+    {
+        assert(!empty($key) && is_bool($isFresh));
+        if ( ! Zend_Registry::isRegistered(self::SYSCONFIG) || $isFresh ) {
+            $m = new Config();
+            $pairs = $m->fetchAll();
+            $configs = array();
+            foreach ($pairs as $v) {
+                $configs[$v->key] = $v->value;
+                if (in_array($v->key, array('use_notification',
+                    'behavior_rule', 'privacy_policy'))) {
+                    $configs[$v->key] = $v->description;
+                }
+            }
+            Zend_Registry::set(self::SYSCONFIG, new Zend_Config($configs));
+        }
+        if ( !isset(Zend_Registry::get(self::SYSCONFIG)->$key) ) {
+            throw new FismaException(
+            "$key does not exist in system configuration");
+        }
+        return Zend_Registry::get(self::SYSCONFIG)->$key;
+    }
+
+    /**
+     * Read Ldap configurations
+     *   
+     * @return array ldap configurations
+     */
+    function readLdapConfig()
+    {
+        if ( ! Zend_Registry::isRegistered(LDAPCONFIG) ) {
+            $db = Zend_Registry::get('db');
+            $query = $db->select()->from('ldap_config', '*');
+            $result = $db->fetchAll($query);
+            foreach ($result as $row) {
+                $multiOptions[$row['group']][$row['key']] = $row['value'];
+            }
+            Zend_Registry::set(self::LDAPCONFIG, $multiOptions);
+        }
+        return Zend_Registry::get(self::LDAPCONFIG);
+    }
+
+
+    /**
+     * To determind if the application has been properly installed.
+     * 
+     * @return bool 
+     */
+    public function isInstall()
+    {
+        $reg = Zend_Registry::getInstance();
+        $ret = false;           
+        if ( $reg->isRegistered('installed') ) {
+            $ret = $reg->get('installed');
+        }
+        return $ret;
+    }
+
+    /*
+     * Get form object from form config file section 
+     * @param string $formConfigSection the forms name namely section of
+            the configuration
+     * 
+     * @return  Zend_Form
+     */
+    public function getForm ($formConfigSection)
+    {
+        $formIni = new Zend_Config_Ini(CONFIGS . '/' . FORMCONFIGFILE,
+            $formConfigSection);
+        $form = new Zend_Form($formIni);
+        return $form;
+    }
+
+}
