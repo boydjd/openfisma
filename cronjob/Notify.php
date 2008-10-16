@@ -144,8 +144,8 @@ class Notify
         $mail->setFrom(readSysConfig('sender'), readSysConfig('system_name'));
 
         // Set the to: header
-        $receiveEmail = nullGet($notifications[0]['notify_email'], 
-            $notifications[0]['email']);
+        $receiveEmail = isset($notifications[0]['notify_email'])?
+            $notifications[0]['notify_email']:$notifications[0]['email'];
         $mail->addTo(
             $receiveEmail,
             "{$notifications[0]['name_first']} {$notifications[0]['name_last']}"

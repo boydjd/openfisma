@@ -55,22 +55,25 @@ class AppDetective implements ScanResult
             if (substr($k, 0, 21) == 'root_detail_risklevel' && !empty($v)) {
                 foreach ($v[0]['data'] as $vv) {
                     if (!empty($vv)) {
-                        $risk[]         = nullGet($vv['risk'], '');
-                        $findingData[] = 
-                                nullGet($vv['details'][0]['vulnDetail'], '');
+                        $risk[]        = isset($vv['risk'])? $vv['risk']:'';
+                        $findingData[] = isset($vv['details'][0]['vulnDetail'])?
+                            $vv['details'][0]['vulnDetail']:'';
 
-                        $vulnDesc[] = nullGet($vv['description'], '')
-                                     .nullGet($vv['summary'], '');
+                        $vulnDesc[] =
+                            isset($vv['description'])? $vv['description']:''.
+                            isset($vv['summary'])? $vv['summary']:'';
 
-                        $vulnSolution[] = nullGet($vv['fix'], '');
+                        $vulnSolution[] = isset($vv['fix'])? $vv['fix']:'';
 
-                        $cveTemp = explode('-', nullGet($vv['cve'], ''));
+                        $cveTemp = explode('-',
+                            isset($vv['cve'])? $vv['cve']:'');
 
-                        $cve[] = is_numeric(nullGet($cveTemp[1], '')
-                                           .nullGet($cveTemp[2], ''))
+                        $cve[] = is_numeric(isset($cveTemp[1])? $cveTemp[1]:''
+                                           .isset($cveTemp[2])? $cveTemp[2]:'')
                                  ?$cveTemp[1].$cveTemp[2]:'';
 
-                        $sbvTemp = explode('-', nullGet($vv['SkyBoxCode'], ''));
+                        $sbvTemp = explode('-', isset($vv['SkyBoxCode'])?
+                            $vv['SkyBoxCode']:'');
 
                         $sbv[] = !empty($sbvTemp[1])?$sbvTemp[1]:'';
                     }

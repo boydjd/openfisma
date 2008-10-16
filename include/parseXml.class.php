@@ -78,7 +78,8 @@ class XmlToArray
                 case 'complete':
                     $name = $values[$i]['tag'];
                     if (!empty($name)) {
-                        $child[$name] = nullGet($values[$i]['value'], '');
+                        $child[$name] = isset($values[$i]['value'])?
+                            $values[$i]['value']:'';
                         if (isset($values[$i]['attributes'])) {
                             $child[$name] = $values[$i]['attributes'];
                         }
@@ -129,7 +130,8 @@ class XmlToArray
         xml_parser_free($parser); 
         $i = 0; 
         $name = $values[$i]['tag']; 
-        $array[$name] = nullGet($values[$i]['attributes'], '');
+        $array[$name] =
+            isset($values[$i]['attributes'])? $values[$i]['attributes']:'';
         $array[$name] = $this->_struct_to_array($values, $i);
         return $array; 
     }

@@ -119,7 +119,6 @@ class RemediationController extends PoamBaseController
             $summary[$id]['NEW'] = isset($s['NEW'])?$s['NEW']: 0;
             $summary[$id]['OPEN'] = isset($s['OPEN'])?$s['OPEN']: 0;
             $summary[$id]['ES'] = isset($s['ES'])?$s['ES']: 0;
-            //$summary[$id]['EN'] = nullGet($s['EN'],0);
             $summary[$id]['EP'] = isset($s['EP'])?$s['EP']: 0; //temp placeholder
             $summary[$id]['CLOSED'] = isset($s['CLOSED'])?$s['CLOSED']: 0;
             $summary[$id]['TOTAL'] = array_sum($s);

@@ -24,13 +24,13 @@
                         <tr valign='top' align='left'>
                             <td class='head'><b>Database Username</b><br />
                                 <span style='font-size:85%;'>User account must be able to create databases.</span> </td>
-                            <td class='even'><input type='text' name='dsn[uname]' id='uname' size='30' maxlength='100' value="<?php echo nullGet($this->dsn['uname'],'')?>" />
+                            <td class='even'><input type='text' name='dsn[uname]' id='uname' size='30' maxlength='100' value="<?php echo isset($this->dsn['uname'])? $this->dsn['uname']:''?>" />
                             <?php if(isset($this->message['uname'])) {echo " <span class='notice'>*</span>";}?></td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Database Password</b><br />
                                 <span style='font-size:85%;'>Password for user account above.</span> </td>
-                            <td class='even'><input type='password' name='dsn[upass]' id='upass' size='30' maxlength='100'  value="<?php echo nullGet($this->dsn['upass'],'')?>"/>
+                            <td class='even'><input type='password' name='dsn[upass]' id='upass' size='30' maxlength='100'  value="<?php echo isset($this->dsn['upass'])? $this->dsn['upass']:''?>"/>
                             <?php if(isset($this->message['upass'])) {echo " <span class='notice'>*</span>";}?></td>
                         </tr>
                         <tr valign='top' align='left'>

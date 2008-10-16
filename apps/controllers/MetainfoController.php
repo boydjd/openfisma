@@ -76,8 +76,8 @@ class MetainfoController extends PoamBaseController
                 "AR" => "(AR) Accepted Risk",
                 "FP" => "(FP) False Positive"
             );
-            $this->view->selected = nullGet($list[$this->view->selected],
-                                            'CAP');
+            $this->view->selected = isset($list[$this->view->selected])? 
+                $list[$this->view->selected]:'CAP';
         }
         $this->view->list = $list;
         $this->render();

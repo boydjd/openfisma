@@ -49,4 +49,4 @@ $includeDirectories = array(
     VENDORS . '/Pear'
 );
 ini_set('include_path',
-    implode(':', $includeDirectories) . ':' . ini_get('include_path'));
+    implode(PATH_SEPARATOR, $includeDirectories) . PATH_SEPARATOR . ini_get('include_path'));

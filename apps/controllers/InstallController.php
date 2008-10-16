@@ -67,7 +67,7 @@ class InstallController extends Zend_Controller_Action
             WEB_ROOT . DS . 'temp',
             ROOT . DS . 'log',
             WEB_ROOT . DS . 'evidence',
-            CONFIGS . DS . CONFIGFILE_NAME
+            CONFIGS . DS . Config_Fisma::CONFIGFILE_NAME
         );
         $notwritables = array();
         foreach ($wDirectories as $k => $wok) {
@@ -224,7 +224,7 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->dsn = $dsn;
         if ($ret) {
-            if (is_writable(CONFIGS . DS . CONFIGFILE_NAME)) {
+            if (is_writable(CONFIGS . DS . Config_Fisma::CONFIGFILE_NAME)) {
                 $confTpl = $this->_helper->viewRenderer
                                          ->getViewScript('config');
 
@@ -242,7 +242,7 @@ class InstallController extends Zend_Controller_Action
                 $this->view->hostUrl = $hostUrl;
 
                 $dbconfig = $this->view->render($confTpl);
-                if (0 < file_put_contents(CONFIGS . DS . CONFIGFILE_NAME,
+                if (0 < file_put_contents(CONFIGS . DS . Config_Fisma::CONFIGFILE_NAME,
                     $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
                 } else {
