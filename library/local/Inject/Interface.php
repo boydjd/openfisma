@@ -17,28 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    ???
+ * @author    Jim Chen <xhorse@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  *
- * @todo This file seems to be redundant with the ../scanreport_interface.php,
- * one of the two files needs to be removed, and in either case the interface
- * needs much better documentation.
  */
 
-interface ScanResult
+
+/**
+ * The interface of plugins for various scan reports
+ */
+interface Inject_Interface
 {
     /** 
-     * To decide wether or not the file can be parsed
+     * To decide if the file is valid according to this type.
      *
+     * @param string $file filename 
      * @return boolean
      */
     public function isValid($file);
+
     /** 
-     * Convert the file to an iteratable data which can be directly injected
-     * into database
+     * Convert the file to an intermediate format, which is iteratable 
+     * and can be can be read or injected into database
      *
+     * @param string $data the content of the injecting content
      * @return mixed
      */
     public function parse($data);

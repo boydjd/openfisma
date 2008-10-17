@@ -56,7 +56,7 @@ Zend_Date::setOptions(array('format_type' => 'php'));
 // Set layout options
 $options = array(
     'layout' => 'default',
-    'layoutPath' => VIEWS . DS . 'layouts',
+    'layoutPath' => VIEWS . '/layouts',
     'contentKey' => 'CONTENT'
 );
 
@@ -68,8 +68,9 @@ $viewRender->setViewSuffix('tpl')
            ->setNeverRender(true);
 Zend_Controller_Action_HelperBroker::addHelper($viewRender);
 
-// Get the front controller instance and kick it off
 $front = Zend_Controller_Front::getInstance();
+$front->setControllerDirectory(APPS . '/controllers');
+
 $router = $front->getRouter();
 if (!Config_Fisma::isInstall()) {
     // If the application has not been installed yet, then define the route so
@@ -132,37 +133,5 @@ if (!Config_Fisma::isInstall()) {
     ));
 }
 
-// This is the actual application bootstrap. It's wrapped in a try-catch to
-// provide a high-level error facility.
-try {
-    $front->throwExceptions(true);
-    Zend_Controller_Front::run(APPS . '/controllers');
-} catch (Exception $e) {
-    $write = new Zend_Log_Writer_Stream(LOG . '/' . ERROR_LOG);
-    $log = new Zend_Log($write);
-    $auth = Zend_Auth::getInstance();
-    if ($auth->hasIdentity()) {
-        $me = $auth->getIdentity();
-        $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-            "$me->account($me->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
-    } else {
-        $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-            "{$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
-    }
-    $formatter = new Zend_Log_Formatter_Simple($format);
-    $write->setFormatter($formatter);
 
-    // Get the stack trace and indent it by 4 spaces
-    $stackTrace = $e->getTraceAsString();
-    $stackTrace = preg_replace("/^/", "    ", $stackTrace);
-    $stackTrace = preg_replace("/\n/", "\n    ", $stackTrace);
 
-    // Log the error message and stack trace.
-    $log->log($e->getMessage() . "\n$stackTrace",
-              Zend_Log::ERR);
-              
-    // @todo This needs to be improved. Ideally we'd show a real page that has
-    // administrator contact info.
-    echo "An unrecoverable error has occured. The error has been logged and"
-       . " an administrator will review the issue shortly";
-}

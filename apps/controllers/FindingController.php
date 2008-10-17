@@ -31,8 +31,7 @@ define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
  *
  * @todo See if we can make this less hacky
  */
-require_once(dirname(dirname(dirname(__FILE__)))
-             . '/include/parseXml.class.php');
+require_once('local/parseXml.class.php');
 
 /**
  * The finding controller is used for searching, displaying, and updating
@@ -469,7 +468,7 @@ template. Please update your CSV file and try again.<br />";
             $pluginId = $req->getParam('plugin');
             $ret = $plugin->find($pluginId)->toArray();
             if (!empty($ret)) {
-                $pluginClass = $ret[0]['classname'];
+                $pluginClass = 'Inject_'.$ret[0]['classname'];
             } else {
                 $this->message('post plugin is not found', self::M_WARNING);
                 $this->render();
@@ -480,8 +479,6 @@ template. Please update your CSV file and try again.<br />";
                 $this->render();
                 return;
             }
-            require_once (CONTROLLERS . '/components/import/interface.php');
-            require_once (CONTROLLERS . "/components/import/$pluginClass.php");
             $assets['system_id'] = $req->getParam('system_id');
             $assets['source_id'] = $req->getParam('source');
             $assets['network_id'] = $req->getParam('network');

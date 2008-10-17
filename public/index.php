@@ -22,5 +22,25 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
-
 require  '../apps/bootstrap.php';
+
+$front = Zend_Controller_Front::getInstance();
+// It's wrapped in a try-catch to provide a high-level error facility.
+try {
+    $front->dispatch();
+} catch (Exception $e) {
+    $log = Config_Fisma::getInstance()->getLogInstance();
+    // Get the stack trace and indent it by 4 spaces
+    $stackTrace = $e->getTraceAsString();
+    $stackTrace = preg_replace("/^/", "    ", $stackTrace);
+    $stackTrace = preg_replace("/\n/", "\n    ", $stackTrace);
+
+    // Log the error message and stack trace.
+    $log->log($e->getMessage() . "\n$stackTrace",
+              Zend_Log::ERR);
+              
+    // @todo This needs to be improved. Ideally we'd show a real page that has
+    // administrator contact info.
+    echo "An unrecoverable error has occured. The error has been logged and"
+       . " an administrator will review the issue shortly";
+}

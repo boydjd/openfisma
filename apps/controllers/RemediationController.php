@@ -478,7 +478,7 @@ class RemediationController extends PoamBaseController
     {
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        define('EVIDENCE_PATH', WEB_ROOT . DS . 'evidence');
+        define('EVIDENCE_PATH', WEB_ROOT . '/evidence');
         if ($_FILES && $id > 0) {
             $poam = $this->_poam->find($id)->toArray();
             if (empty($poam)) {
@@ -492,14 +492,15 @@ class RemediationController extends PoamBaseController
             if (!file_exists(EVIDENCE_PATH)) {
                 mkdir(EVIDENCE_PATH, 0755);
             }
-            if (!file_exists(EVIDENCE_PATH . DS . $id)) {
-                mkdir(EVIDENCE_PATH . DS . $id, 0755);
+            if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
+                mkdir(EVIDENCE_PATH .'/'. $id, 0755);
             }
             $count = 0;
             $filename = preg_replace('/^([^.]*)(\.[^.]*)?\.([^.]*)$/',
                 '$1$2-' . $nowStr . '.$3', $_FILES['evidence']['name'],
                 2, $count);
-            $absFile = EVIDENCE_PATH . DS . $id . DS . $filename;
+            $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
+            $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             if ($count > 0) {
                 $resultMove =
                     move_uploaded_file($_FILES['evidence']['tmp_name'],

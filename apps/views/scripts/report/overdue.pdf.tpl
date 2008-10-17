@@ -1,3 +1,3 @@
 <?php
-require_once( VIEWS . DS . 'scripts' .DS. 'report' .DS. 'poam.pdf.tpl');
+require_once( VIEWS . '/scripts/report/poam.pdf.tpl');
 

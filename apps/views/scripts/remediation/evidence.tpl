@@ -1,5 +1,5 @@
 <?php 
-    require_once( MODELS . DS . 'Comments.php');
+    require_once( MODELS . '/Comments.php');
     $evidence = $this->ev;
     $evaluation = $this->eval;
     $comment = new Comments();

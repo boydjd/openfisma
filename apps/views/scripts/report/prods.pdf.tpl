@@ -1,5 +1,5 @@
 <?php
-require_once( VENDORS .DS. 'pdf' . DS . 'class.ezpdf.php');
+require_once('pdf/class.ezpdf.php');
 
 $fields=array('Vendor'=>'Vendor','Product'=>'Product','Version'=>'Version','NumoOV'=>"#of Open Vulnerabilities");
 $table=$this->rpdata;
@@ -10,11 +10,11 @@ define('ORIENTATION', 'orient');
 define('PAPERTYPE', 'pagesz');
 define('PGWIDTH', 'pgwidth');
 define('PGHEIGHT', 'pgheight');
-define('FONTS', VENDORS . DS . 'pdf' . DS . 'fonts');
+define('FONTS', LIBS . '/pdf/fonts');
 
 $page_config = array( ORIENTATION => 'landscape', PAPERTYPE => 'LETTER', PGWIDTH => 792, PGHEIGHT=>612);
 $pdf =& new Cezpdf($page_config[PAPERTYPE], $page_config[ORIENTATION]);
-$pdf->selectFont(FONTS . DS . "Helvetica.afm");
+$pdf->selectFont(FONTS . "/Helvetica.afm");
 $top_margin=50;
 $bottom_margin=100;
 $left_margin=50;

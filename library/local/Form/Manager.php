@@ -45,7 +45,7 @@ class Form_Manager
      */
     static function loadForm($formName) {
         // Load the form from a .form file
-        $config = new Zend_Config_Ini(FORMS . "/$formName.form", $formName);
+        $config = new Zend_Config_Ini(CONFIGS . "/form/{$formName}.form", $formName);
         $form = new Zend_Form($config);
 
         return $form;

@@ -1,5 +1,5 @@
 <?php
-require_once( CONTROLLERS . DS . 'components' . DS . 'rafutil.php');
+require_once( 'utils/rafutil.php');
 
     $type_name = array('NONE'=>'None',
                        'CAP'=>'Corrective Action Plan',

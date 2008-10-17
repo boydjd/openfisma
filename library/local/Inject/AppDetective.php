@@ -25,13 +25,13 @@
  
 /**
  * A scan result injection plugin for injecting AppDetective XML output directly
- * into OVMS.
+ * into OpenFISMA
  *
  * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class AppDetective implements ScanResult
+class Inject_AppDetective implements Inject_Interface
 {
     
     public function isValid($file)

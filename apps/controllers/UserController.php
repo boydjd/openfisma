@@ -460,7 +460,7 @@ class UserController extends MessageController
                     you will receive any e-mail notifications.";
         }
 
-        $this->view->setScriptPath(VIEWS . DS . 'scripts');
+        $this->view->setScriptPath(VIEWS . '/scripts');
         $this->message($msg, $model);
         $this->_forward('notifications');
     }
@@ -723,7 +723,7 @@ class UserController extends MessageController
             'validate_code'=>$validateCode);
         $this->_user->getAdapter()->insert('validate_emails', $data);
 
-        $contentTpl = $this->view->setScriptPath(VIEWS . DS . 'scripts/mail');
+        $contentTpl = $this->view->setScriptPath(VIEWS . '/scripts/mail');
         $contentTpl = $this->view;
 
         $contentTpl->actionType = $type;

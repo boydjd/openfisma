@@ -1,6 +1,6 @@
 <?php
-include ( VENDORS . DS . 'pdf'. DS . 'class.ezpdf.php');
-require_once( CONTROLLERS . DS . 'components' . DS . 'rafutil.php');
+include ( 'pdf/class.ezpdf.php');
+require_once('utils/rafutil.php');
 
     $type_name = array('NONE'=>'None',
                        'CAP'=>'Corrective Action Plan',
@@ -28,10 +28,10 @@ $p = &$this->poam ; //alias
                           'showLines'=>2,
                           'width'=>400
                           );
-define('FONTS', VENDORS . DS . 'pdf' . DS . 'fonts');
+define('FONTS', LIBS . '/pdf/fonts');
 
 $pdf = new Cezpdf();
-$pdf->selectFont(FONTS . DS . "Helvetica.afm");
+$pdf->selectFont(FONTS . "/Helvetica.afm");
 
 $pdf->ezSetMargins(50,110,50,50);
 

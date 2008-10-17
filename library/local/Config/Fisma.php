@@ -32,7 +32,7 @@ class Config_Fisma
     const SYSCONFIG = 'sysconf';
     const LDAPCONFIG = 'ldapconf';
     const CONFIGFILE_NAME = 'install.conf';
-    const ERROR_LOG = 'log/error.log';
+    const ERROR_LOG = 'error.log';
     const FORMCONFIGFILE  = 'form.conf';
 
     /**
@@ -41,10 +41,16 @@ class Config_Fisma
      * Marked only as protected to allow extension of the class. To extend,
      * simply override {@link getInstance()}.
      *
-     * @var Zend_Controller_Front
+     * @var Config_Fisma
      */
     protected static $_instance = null;
 
+    
+    /**
+     * Log instance to record fatal error message
+     *
+     */
+    protected $_log = null;
 
     /**
      * Constructor
@@ -81,7 +87,6 @@ class Config_Fisma
                     }
                 }
             }
-            ///@todo system wide log setting
         }
     }
 
@@ -106,6 +111,34 @@ class Config_Fisma
         }
 
         return self::$_instance;
+    }
+
+    /**
+     * Initialize the log instance
+     *
+     * As the log requires the authente information, the log should be only initialized 
+     * after the successfully login.
+     *
+     * @return Zend_Log
+     */
+    public function getLogInstance()
+    {
+        if ( null === $this->_log ) {
+            $write = new Zend_Log_Writer_Stream(LOG . '/' . self::ERROR_LOG);
+            $auth = Zend_Auth::getInstance();
+            if ($auth->hasIdentity()) {
+                $me = $auth->getIdentity();
+                $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
+                    "$me->account($me->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+            } else {
+                $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
+                    "{$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+            }
+            $formatter = new Zend_Log_Formatter_Simple($format);
+            $write->setFormatter($formatter);
+            $this->_log = new Zend_Log($write);
+        }
+        return $this->_log;
     }
 
     /** 

@@ -7,10 +7,10 @@
 ; License   http://www.openfisma.org/mw/index.php?title=License
 ; Version   $Id:$
 
-[account]
 ; The username, password, and ldap fields are all defined here for the sake of
 ; simplicity, but at runtime the account controller will strip out the fields
 ; which do not apply to the current authentication schema (ldap or database)
+[account]
 elements.account.type = "text"
 elements.account.options.label = "Username"
 elements.account.options.required = true

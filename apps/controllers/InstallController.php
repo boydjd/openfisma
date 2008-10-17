@@ -64,10 +64,10 @@ class InstallController extends Zend_Controller_Action
     public function checkingAction()
     {
         $wDirectories = array(
-            WEB_ROOT . DS . 'temp',
-            ROOT . DS . 'log',
-            WEB_ROOT . DS . 'evidence',
-            CONFIGS . DS . Config_Fisma::CONFIGFILE_NAME
+            WEB_ROOT . '/temp',
+            ROOT . '/log',
+            WEB_ROOT . '/evidence',
+            CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME
         );
         $notwritables = array();
         foreach ($wDirectories as $k => $wok) {
@@ -195,7 +195,6 @@ class InstallController extends Zend_Controller_Action
                 }
             }
             if ($ret) {
-                require_once(CONTROLLERS . '/components/sqlimport.php');
                 $zendDsn = array(
                     'adapter' => 'mysqli',
                     'params' => array(
@@ -210,7 +209,7 @@ class InstallController extends Zend_Controller_Action
                 try {
                     $db = Zend_Db::factory(new Zend_Config($zendDsn));
                     $initFiles = array(MIGRATIONS . '/base.sql');
-                    if ($ret = import_data($db, $initFiles)) {
+                    if ($ret = $this->importSql($db, $initFiles)) {
                         $checklist['schema'] = 'ok';
                     }
                 }
@@ -224,7 +223,7 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->dsn = $dsn;
         if ($ret) {
-            if (is_writable(CONFIGS . DS . Config_Fisma::CONFIGFILE_NAME)) {
+            if (is_writable(CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME)) {
                 $confTpl = $this->_helper->viewRenderer
                                          ->getViewScript('config');
 
@@ -242,7 +241,7 @@ class InstallController extends Zend_Controller_Action
                 $this->view->hostUrl = $hostUrl;
 
                 $dbconfig = $this->view->render($confTpl);
-                if (0 < file_put_contents(CONFIGS . DS . Config_Fisma::CONFIGFILE_NAME,
+                if (0 < file_put_contents(CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME,
                     $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
                 } else {
@@ -287,5 +286,64 @@ class InstallController extends Zend_Controller_Action
         }
         $this->getResponse()->clearBody();
         $this->render();
+    }
+
+    /*
+     * trim unnecessary comments or data from the input and output the pure sql
+     *
+     * @param string $data raw string mess with comments and unexcutable information
+     * @return string executable sql statement only
+     */
+    function sanitize($dataString){
+        $dataString = preg_replace('/\/\*.*\*\//', '', $dataString);
+        if (ereg(";$", trim($dataString))) {
+            $execute['opt']='execute';
+        } else {
+            $execute['opt']='incomplete';
+        }
+        $execute['sql']= $dataString;
+        return $execute;    
+    }
+
+    /*
+     * Read from a sql dump file and execute then in a database.
+     *
+     * This function can handle a large data dump file. 
+     * LIMIT please make sure comment in one line!
+     *
+     * @param a formatted array  
+     * 
+     */
+    private function importSql($db,$dataFile){
+        $tmp = "";
+        foreach ($dataFile as $elem) {
+            $ret = true;
+            if ($handle = fopen($elem, 'r')) {
+                $dumpline = '';
+                while (!feof($handle)&& substr($dumpline, -1)!= "\n") {
+                    $dumpline = fgets($handle, '4096');
+                    $dumpline = ereg_replace("\r\n$", "\n", $dumpline);
+                    $dumpline = ereg_replace("\r$", "\n", $dumpline);
+                    $dumpline = ereg_replace("--.*\n", "\n", $dumpline);
+                    $dumpline = trim($dumpline);
+                    $execute = $this->sanitize($dumpline);
+                    if ($execute['opt']=='incomplete') {
+                        $tmp .= $execute['sql'];
+                    } else {
+                        $ret = $db->query($tmp.$execute['sql']);
+                        $tmp = '';
+                    }
+                    if ( !$ret ) {
+                        break;
+                    }
+                }
+            } else {
+                $ret = false;
+            }
+            if (!$ret) {
+                return $ret;
+            }
+        }
+        return  true;
     }
 }

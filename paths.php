@@ -14,26 +14,15 @@
  */
 define('ROOT', realpath(dirname(__FILE__)));
 
-if (!defined('DS')) {
-    /**
-     * Eventually this definition should be removed.
-     * It doesn't serve any purpose
-     *
-     * but unfortunately it is used heavily in our legacy php code.
-     */
-    define('DS', DIRECTORY_SEPARATOR);
-}
-
 define('APPS', ROOT . '/apps');
 define('CONFIGS', APPS . '/config');
 define('CONTROLLERS', APPS . '/controllers');
-define('FORMS', APPS . '/Form');
-define('LIBS', ROOT . '/include');
+define('MODELS', APPS . '/models');
 define('LOG', ROOT . '/log');
 define('MIGRATIONS', ROOT . '/migrations');
-define('MODELS', APPS . '/models');
 define('TEST', ROOT . '/test');
-define('VENDORS', ROOT . '/vendor');
+define('VENDORS', ROOT . '/library');
+define('LOCAL', ROOT . '/library/local');
 define('VIEWS', APPS . '/views');
 define('WEB_ROOT', ROOT . '/public');
 
@@ -45,6 +34,7 @@ $includeDirectories = array(
     VENDORS,
     APPS,
     LIBS,
+    LOCAL,
     // Have to hack in the path to Pear since it doesn't follow ZF standards:
     VENDORS . '/Pear'
 );

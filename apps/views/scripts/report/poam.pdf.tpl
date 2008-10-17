@@ -31,14 +31,14 @@ define('ORIENTATION', 'orient');
 define('PAPERTYPE', 'pagesz');
 define('PGWIDTH', 'pgwidth');
 define('PGHEIGHT', 'pgheight');
-define('FONTS', VENDORS . DS . 'pdf' . DS . 'fonts');
+define('FONTS', LIBS . '/pdf/fonts');
 
 $poam_config = array( ORIENTATION => 'landscape', PAPERTYPE => 'LETTER', PGWIDTH => 792);
 
-require_once( VENDORS .DS. 'pdf' . DS . 'class.ezpdf.php');
+require_once( 'pdf/class.ezpdf.php');
 
 $pdf =& new Cezpdf($poam_config[PAPERTYPE], $poam_config[ORIENTATION]);
-$pdf->selectFont(FONTS . DS . "Helvetica.afm");//needs modify to the real font file path
+$pdf->selectFont(FONTS . "/Helvetica.afm");//needs modify to the real font file path
 $horiz_margin = 50;
 $bottom_margin = 100;
 $top_margin = 50;
