@@ -23,15 +23,14 @@
  * @version   $Id$
  */
 
-/**
- * The paths.php file needs to be included before defining the loadClass
- * function, in order for that function to know which paths to search.
- */
-require_once (dirname(dirname(__FILE__)) . '/paths.php');
+// The paths.php file needs to be included before defining the loadClass
+// function, in order for that function to know which paths to search.
+require_once 'config/paths.php';
 
 // Register our custom class loader:
 require_once "Zend/Loader.php";
 Zend_Loader::registerAutoload();
+
 // Initialize the global setting object
 $fisma = Config_Fisma::getInstance();
 
