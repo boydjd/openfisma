@@ -25,7 +25,7 @@
 
 // The paths.php file needs to be included before defining the loadClass
 // function, in order for that function to know which paths to search.
-require_once 'config/paths.php';
+require_once "config/paths.php";
 
 // Register our custom class loader:
 require_once "Zend/Loader.php";
