@@ -16,7 +16,7 @@
  * @package    Zend_Mail
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mail.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: Mail.php 9222 2008-04-14 13:48:41Z yoshida@zend.co.jp $
  */
 
 
@@ -165,7 +165,7 @@ class Zend_Mail extends Zend_Mime_Message
      *
      * @param string $charset
      */
-    public function __construct($charset='iso-8859-1')
+    public function __construct($charset = 'iso-8859-1')
     {
         $this->_charset = $charset;
     }
@@ -396,7 +396,7 @@ class Zend_Mail extends Zend_Mime_Message
           return $value;
       } else {
           $quotedValue = Zend_Mime::encodeQuotedPrintable($value);
-          $quotedValue = str_replace(array('?', ' '), array('=3F', '=20'), $quotedValue);
+          $quotedValue = str_replace(array('?', ' ', '_'), array('=3F', '=20', '=5F'), $quotedValue);
           return '=?' . $this->_charset . '?Q?' . $quotedValue . '?=';
       }
     }
@@ -409,9 +409,9 @@ class Zend_Mail extends Zend_Mime_Message
      *
      * @param string  $headerName
      * @param string  $value
-     * @param boolean $append
+     * @param bool $append
      */
-    protected function _storeHeader($headerName, $value, $append=false)
+    protected function _storeHeader($headerName, $value, $append = false)
     {
 // ??        $value = strtr($value,"\r\n\t",'???');
         if (isset($this->_headers[$headerName])) {
@@ -430,6 +430,7 @@ class Zend_Mail extends Zend_Mime_Message
      * Add a recipient
      *
      * @param string $email
+     * @param boolean $to
      */
     protected function _addRecipient($email, $to = false)
     {
@@ -462,8 +463,8 @@ class Zend_Mail extends Zend_Mime_Message
     /**
      * Adds To-header and recipient
      *
-     * @param  string $name
      * @param  string $email
+     * @param  string $name
      * @return Zend_Mail Provides fluent interface
      */
     public function addTo($email, $name='')
@@ -475,8 +476,8 @@ class Zend_Mail extends Zend_Mime_Message
     /**
      * Adds Cc-header and recipient
      *
-     * @param  string    $name
      * @param  string    $email
+     * @param  string    $name
      * @return Zend_Mail Provides fluent interface
      */
     public function addCc($email, $name='')

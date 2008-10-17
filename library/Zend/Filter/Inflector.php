@@ -16,7 +16,7 @@
  * @package    Zend_Filter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Inflector.php 8226 2008-02-20 22:07:05Z ralph $
+ * @version    $Id: Inflector.php 9045 2008-03-25 15:57:29Z ralph $
  */
 
 /**
@@ -429,6 +429,7 @@ class Zend_Filter_Inflector implements Zend_Filter_Interface
         }
 
         $pregQuotedTargetReplacementIdentifier = preg_quote($this->_targetReplacementIdentifier, '#');
+        $processedParts = array();
         
         foreach ($this->_rules as $ruleName => $ruleValue) {
             if (isset($source[$ruleName])) {

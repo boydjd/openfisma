@@ -43,18 +43,50 @@ class Zend_Search_Lucene_Field
      */
     public $name;
 
-
+    /**
+     * Field value
+     * 
+     * @var boolean
+	 */
     public $value;
+    
+    /**
+     * Field is to be stored in the index for return with search hits.
+     * 
+     * @var boolean
+	 */
     public $isStored    = false;
+    
+    /**
+     * Field is to be indexed, so that it may be searched on.
+     * 
+     * @var boolean
+	 */
     public $isIndexed   = true;
+
+    /**
+     * Field should be tokenized as text prior to indexing.
+     * 
+     * @var boolean
+	 */
     public $isTokenized = true;
+    /**
+     * Field is stored as binary.
+     * 
+     * @var boolean
+	 */
     public $isBinary    = false;
 
+    /**
+     * Field are stored as a term vector
+     * 
+     * @var boolean
+	 */
     public $storeTermVector = false;
 
     /**
-     * Field boos factor
-     * It's not stored directly in the index, but affects on normalizetion factor
+     * Field boost factor
+     * It's not stored directly in the index, but affects on normalization factor
      *
      * @var float
      */
@@ -109,7 +141,7 @@ class Zend_Search_Lucene_Field
      * @param string $encoding
      * @return Zend_Search_Lucene_Field
      */
-    public static function Keyword($name, $value, $encoding = '')
+    public static function keyword($name, $value, $encoding = '')
     {
         return new self($name, $value, $encoding, true, true, false);
     }
@@ -124,7 +156,7 @@ class Zend_Search_Lucene_Field
      * @param string $encoding
      * @return Zend_Search_Lucene_Field
      */
-    public static function UnIndexed($name, $value, $encoding = '')
+    public static function unIndexed($name, $value, $encoding = '')
     {
         return new self($name, $value, $encoding, true, false, false);
     }
@@ -139,7 +171,7 @@ class Zend_Search_Lucene_Field
      * @param string $encoding
      * @return Zend_Search_Lucene_Field
      */
-    public static function Binary($name, $value)
+    public static function binary($name, $value)
     {
         return new self($name, $value, '', true, false, false, true);
     }
@@ -154,7 +186,7 @@ class Zend_Search_Lucene_Field
      * @param string $encoding
      * @return Zend_Search_Lucene_Field
      */
-    public static function Text($name, $value, $encoding = '')
+    public static function text($name, $value, $encoding = '')
     {
         return new self($name, $value, $encoding, true, true, true);
     }
@@ -169,7 +201,7 @@ class Zend_Search_Lucene_Field
      * @param string $encoding
      * @return Zend_Search_Lucene_Field
      */
-    public static function UnStored($name, $value, $encoding = '')
+    public static function unStored($name, $value, $encoding = '')
     {
         return new self($name, $value, $encoding, false, true, true);
     }

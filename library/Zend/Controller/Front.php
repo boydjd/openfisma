@@ -31,18 +31,6 @@ require_once 'Zend/Controller/Exception.php';
 /** Zend_Controller_Plugin_Broker */
 require_once 'Zend/Controller/Plugin/Broker.php';
 
-/** Zend_Controller_Request_Abstract */
-require_once 'Zend/Controller/Request/Abstract.php';
-
-/** Zend_Controller_Router_Interface */
-require_once 'Zend/Controller/Router/Interface.php';
-
-/** Zend_Controller_Dispatcher_Interface */
-require_once 'Zend/Controller/Dispatcher/Interface.php';
-
-/** Zend_Controller_Response_Abstract */
-require_once 'Zend/Controller/Response/Abstract.php';
-
 /**
  * @category   Zend
  * @package    Zend_Controller
@@ -141,7 +129,7 @@ class Zend_Controller_Front
      *
      * @return void
      */
-    private function __construct()
+    protected function __construct()
     {
         $this->_plugins = new Zend_Controller_Plugin_Broker();
     }
@@ -174,6 +162,8 @@ class Zend_Controller_Front
      *
      * Primarily used for testing; could be used to chain front controllers.
      *
+     * Also resets action helper broker, clearing all registered helpers.
+     *
      * @return void
      */
     public function resetInstance()
@@ -203,6 +193,7 @@ class Zend_Controller_Front
                     break;
             }
         }
+        Zend_Controller_Action_HelperBroker::resetHelpers();
     }
 
     /**
@@ -318,6 +309,33 @@ class Zend_Controller_Front
         }
 
         return $this;
+    }
+
+    /**
+     * Return the path to a module directory (but not the controllers directory within)
+     * 
+     * @param  string $module 
+     * @return string|null
+     */
+    public function getModuleDirectory($module = null)
+    {
+        if (null === $module) {
+            $request = $this->getRequest();
+            if (null !== $request) {
+                $module = $this->getRequest()->getModuleName();
+            }
+            if (empty($module)) {
+                $module = $this->getDispatcher()->getDefaultModule();
+            }
+        }
+
+        $controllerDir = $this->getControllerDirectory($module);
+
+        if ((null === $controllerDir) || !is_string($controllerDir)) {
+            return null;
+        }
+
+        return dirname($controllerDir);
     }
 
     /**
@@ -467,10 +485,12 @@ class Zend_Controller_Front
             Zend_Loader::loadClass($router);
             $router = new $router();
         }
+
         if (!$router instanceof Zend_Controller_Router_Interface) {
             throw new Zend_Controller_Exception('Invalid router class');
         }
 
+        $router->setFrontController($this);
         $this->_router = $router;
 
         return $this;
@@ -810,7 +830,7 @@ class Zend_Controller_Front
 
         if (!$this->getParam('noViewRenderer') && !Zend_Controller_Action_HelperBroker::hasHelper('viewRenderer')) {
             require_once 'Zend/Controller/Action/Helper/ViewRenderer.php';
-            Zend_Controller_Action_HelperBroker::addHelper(new Zend_Controller_Action_Helper_ViewRenderer());
+            Zend_Controller_Action_HelperBroker::getStack()->offsetSet(-80, new Zend_Controller_Action_Helper_ViewRenderer());
         }
 
         /**

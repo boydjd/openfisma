@@ -4,16 +4,16 @@
  *
  * LICENSE
  *
- * This source file is subject to version 1.0 of the Zend Framework
- * license, that is bundled with this package in the file LICENSE.txt, and
- * is available through the world-wide-web at the following URL:
- * http://framework.zend.com/license/new-bsd. If you did not receive
- * a copy of the Zend Framework license and are unable to obtain it
- * through the world-wide-web, please send a note to license@zend.com
- * so we can mail you a copy immediately.
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
  *
  * @package    Zend_View
- * @subpackage Helpers
+ * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @version    $Id: Placeholder.php 7078 2007-12-11 14:29:33Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
@@ -27,10 +27,10 @@ require_once 'Zend/View/Helper/Placeholder/Container/Standalone.php';
  *
  * @uses       Zend_View_Helper_Placeholder_Container_Standalone
  * @package    Zend_View
- * @subpackage Helpers
+ * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- */ 
+ */
 class Zend_View_Helper_HeadTitle extends Zend_View_Helper_Placeholder_Container_Standalone
 {
     /**
@@ -58,14 +58,14 @@ class Zend_View_Helper_HeadTitle extends Zend_View_Helper_Placeholder_Container_
                 $this->append($title);
             }
         }
-        
+
         return $this;
     }
 
     /**
      * Turn helper into string
-     * 
-     * @param  string|null $indent 
+     *
+     * @param  string|null $indent
      * @return string
      */
     public function toString($indent = null)
@@ -76,17 +76,25 @@ class Zend_View_Helper_HeadTitle extends Zend_View_Helper_Placeholder_Container_
 
         $items = array();
         foreach ($this as $item) {
-            $items[] = $this->_escape($item);
+            $items[] = ($this->_autoEscape) ? $this->_escape($item) : $item;
         }
 
-        $separator = $this->_escape($this->getSeparator());
+        $separator = ($this->_autoEscape) ? $this->_escape($this->getSeparator()) : $this->getSeparator();
+        $output = '';
+        if($prefix = $this->getPrefix()) {
+            $output  .= ($this->_autoEscape) ? $this->_escape($prefix) : $prefix;
+        }
+        $output .= implode($separator, $items);
+        if($postfix = $this->getPostfix()) {
+            $output .= ($this->_autoEscape) ? $this->_escape($postfix) : $postfix;
+        }
 
-        return $indent . '<title>' . implode($separator, $items) . '</title>';
+        return $indent . '<title>' . $output . '</title>';
     }
 
     /**
      * Cast to string
-     * 
+     *
      * @return string
      */
     public function __toString()

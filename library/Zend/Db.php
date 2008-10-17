@@ -17,7 +17,7 @@
  * @package    Zend_Db
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Db.php 8084 2008-02-17 01:41:23Z peptolab $
+ * @version    $Id: Db.php 9573 2008-05-29 22:25:26Z peptolab $
  */
 
 
@@ -186,6 +186,10 @@ class Zend_Db
      */
     public static function factory($adapter, $config = array())
     {
+        if ($config instanceof Zend_Config) {
+            $config = $config->toArray();
+        }
+
         /*
          * Convert Zend_Config argument to plain string
          * adapter name and separate config object.
@@ -228,7 +232,9 @@ class Zend_Db
          */
         $adapterNamespace = 'Zend_Db_Adapter';
         if (isset($config['adapterNamespace'])) {
-            $adapterNamespace = $config['adapterNamespace'];
+            if ($config['adapterNamespace'] != '') {
+                $adapterNamespace = $config['adapterNamespace'];
+            }
             unset($config['adapterNamespace']);
         }
         $adapterName = strtolower($adapterNamespace . '_' . $adapter);

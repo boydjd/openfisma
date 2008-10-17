@@ -41,7 +41,7 @@ require_once 'Zend/Form/Decorator/Abstract.php';
  * @subpackage Decorator
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Label.php 8648 2008-03-07 19:19:28Z matthew $
+ * @version    $Id: Label.php 10678 2008-08-05 15:06:10Z matthew $
  */
 class Zend_Form_Decorator_Label extends Zend_Form_Decorator_Abstract
 {
@@ -82,13 +82,8 @@ class Zend_Form_Decorator_Label extends Zend_Form_Decorator_Abstract
         $id = $this->getOption('id');
         if (null === $id) {
             if (null !== ($element = $this->getElement())) {
-                if (isset($element->id)) {
-                    $id = $element->id;
-                    $this->setId($id);
-                } else {
-                    $id = $element->getName();
-                    $this->setId($id);
-                }
+                $id = $element->getId();
+                $this->setId($id);
             }
         }
 
@@ -103,7 +98,11 @@ class Zend_Form_Decorator_Label extends Zend_Form_Decorator_Abstract
      */
     public function setTag($tag)
     {
-        $this->_tag = (string) $tag;
+        if (empty($tag)) {
+            $this->_tag = null;
+        } else {
+            $this->_tag = (string) $tag;
+        }
         return $this;
     }
 
@@ -136,14 +135,8 @@ class Zend_Form_Decorator_Label extends Zend_Form_Decorator_Abstract
      */
     public function getClass()
     {
-        $class = null;
-        if (null !== ($element = $this->getElement())) {
-            $class = $element->getAttrib('class');
-        }
-
-        if (null === $class) {
-            $class = '';
-        }
+        $class   = '';
+        $element = $this->getElement();
 
         $decoratorClass = $this->getOption('class');
         if (!empty($decoratorClass)) {
@@ -297,7 +290,9 @@ class Zend_Form_Decorator_Label extends Zend_Form_Decorator_Abstract
 
         if (!empty($label)) {
             $options['class'] = $class;
-            $label = $view->formLabel($element->getName(), trim($label), $options); 
+            $label = $view->formLabel($element->getFullyQualifiedName(), trim($label), $options); 
+        } else {
+            $label = '&nbsp;';
         }
 
         if (null !== $tag) {

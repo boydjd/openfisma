@@ -25,15 +25,6 @@ require_once 'Zend/Loader.php';
 /** Zend_Controller_Dispatcher_Abstract */
 require_once 'Zend/Controller/Dispatcher/Abstract.php';
 
-/** Zend_Controller_Request_Abstract */
-require_once 'Zend/Controller/Request/Abstract.php';
-
-/** Zend_Controller_Response_Abstract */
-require_once 'Zend/Controller/Response/Abstract.php';
-
-/** Zend_Controller_Action */
-require_once 'Zend/Controller/Action.php';
-
 /**
  * @category   Zend
  * @package    Zend_Controller
@@ -110,6 +101,7 @@ class Zend_Controller_Dispatcher_Standard extends Zend_Controller_Dispatcher_Abs
                 $this->addControllerDirectory($path, $module);
             }
         } else {
+            require_once 'Zend/Controller/Exception.php';
             throw new Zend_Controller_Exception('Controller directory spec must be either a string or an array');
         }
 
@@ -379,14 +371,17 @@ class Zend_Controller_Dispatcher_Standard extends Zend_Controller_Dispatcher_Abs
         $className = $this->formatControllerName($controllerName);
 
         $controllerDirs      = $this->getControllerDirectory();
-        $this->_curModule    = $this->_defaultModule;
-        $this->_curDirectory = $controllerDirs[$this->_defaultModule];
         $module = $request->getModuleName();
         if ($this->isValidModule($module)) {
             $this->_curModule    = $module;
             $this->_curDirectory = $controllerDirs[$module];
+        } elseif ($this->isValidModule($this->_defaultModule)) {
+            $request->setModuleName($this->_defaultModule);
+            $this->_curModule    = $this->_defaultModule;
+            $this->_curDirectory = $controllerDirs[$this->_defaultModule];
         } else {
-            $request->setModuleName($this->_curModule);
+            require_once 'Zend/Controller/Exception.php';
+            throw new Zend_Controller_Exception('No default module defined for this application');
         }
 
         return $className;
@@ -395,13 +390,24 @@ class Zend_Controller_Dispatcher_Standard extends Zend_Controller_Dispatcher_Abs
     /**
      * Determine if a given module is valid
      *
-     * @param string $module
+     * @param  string $module
      * @return bool
      */
     public function isValidModule($module)
     {
+        if (!is_string($module)) {
+            return false;
+        }
+
+        $module        = strtolower($module);
         $controllerDir = $this->getControllerDirectory();
-        return (is_string($module) && isset($controllerDir[$module]));
+        foreach (array_keys($controllerDir) as $moduleName) {
+            if ($module == strtolower($moduleName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

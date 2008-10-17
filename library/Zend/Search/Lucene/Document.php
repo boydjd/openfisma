@@ -44,8 +44,13 @@ class Zend_Search_Lucene_Document
      */
     protected $_fields = array();
 
+    /**
+     * Field boost factor
+     * It's not stored directly in the index, but affects on normalization factor
+     *
+     * @var float
+     */
     public $boost = 1.0;
-
 
     /**
      * Proxy method for getFieldValue(), provides more convenient access to
@@ -64,10 +69,13 @@ class Zend_Search_Lucene_Document
      * Add a field object to this document.
      *
      * @param Zend_Search_Lucene_Field $field
+     * @return Zend_Search_Lucene_Document
      */
     public function addField(Zend_Search_Lucene_Field $field)
     {
         $this->_fields[$field->name] = $field;
+
+        return $this;
     }
 
 

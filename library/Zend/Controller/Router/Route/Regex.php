@@ -15,12 +15,12 @@
  * @package    Zend_Controller
  * @subpackage Router
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id$
+ * @version    $Id: Regex.php 10744 2008-08-07 02:32:44Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-/** Zend_Controller_Router_Route_Interface */
-require_once 'Zend/Controller/Router/Route/Interface.php';
+/** Zend_Controller_Router_Route_Abstract */
+require_once 'Zend/Controller/Router/Route/Abstract.php';
 
 /**
  * Regex Route
@@ -30,12 +30,12 @@ require_once 'Zend/Controller/Router/Route/Interface.php';
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Controller_Router_Route_Regex implements Zend_Controller_Router_Route_Interface
+class Zend_Controller_Router_Route_Regex extends Zend_Controller_Router_Route_Abstract
 {
     protected $_regex = null;
     protected $_defaults = array();
     protected $_reverse = null;
-
+    protected $_map = array();
     protected $_values = array();
 
     /**
@@ -59,6 +59,10 @@ class Zend_Controller_Router_Route_Regex implements Zend_Controller_Router_Route
         $this->_reverse = $reverse;
     }
 
+    public function getVersion() {
+        return 1;
+    }
+    
     /**
      * Matches a user submitted path with a previously defined route.
      * Assigns and returns an array of defaults on a successful match.
@@ -132,20 +136,20 @@ class Zend_Controller_Router_Route_Regex implements Zend_Controller_Router_Route
 
         return $return;
     }
-    
+
     /**
      * Assembles a URL path defined by this route
      *
      * @param array $data An array of name (or index) and value pairs used as parameters
      * @return string Route path with user submitted parameters
      */
-    public function assemble($data = array())
+    public function assemble($data = array(), $reset = false, $encode = false)
     {
         if ($this->_reverse === null) {
             require_once 'Zend/Controller/Router/Exception.php';
             throw new Zend_Controller_Router_Exception('Cannot assemble. Reversed route is not specified.');
         }
-        
+
         $defaultValuesMapped  = $this->_getMappedValues($this->_defaults, true, false);
         $matchedValuesMapped  = $this->_getMappedValues($this->_values, true, false);
         $dataValuesMapped     = $this->_getMappedValues($data, true, false);
@@ -159,7 +163,7 @@ class Zend_Controller_Router_Route_Regex implements Zend_Controller_Router_Route
                 }
             }
         }
-        
+
         // merge all the data together, first defaults, then values matched, then supplied
         $mergedData = $defaultValuesMapped;
         $mergedData = $this->_arrayMergeNumericKeys($mergedData, $matchedValuesMapped);
@@ -198,9 +202,9 @@ class Zend_Controller_Router_Route_Regex implements Zend_Controller_Router_Route
     public function getDefaults() {
         return $this->_defaults;
     }
-    
+
     /**
-     * _arrayMergeNumericKeys() - allows for a strict key (numeric's included) array_merge.  
+     * _arrayMergeNumericKeys() - allows for a strict key (numeric's included) array_merge.
      * php's array_merge() lacks the ability to merge with numeric keys.
      *
      * @param array $array1
@@ -215,6 +219,6 @@ class Zend_Controller_Router_Route_Regex implements Zend_Controller_Router_Route
         }
         return $returnArray;
     }
-    
+
 
 }

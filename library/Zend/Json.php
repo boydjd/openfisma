@@ -61,7 +61,7 @@ class Zend_Json
      *
      * @param string $encodedValue Encoded in JSON format
      * @param int $objectDecodeType Optional; flag indicating how to decode
-     * objects. See {@link ZJsonDecoder::decode()} for details.
+     * objects. See {@link Zend_Json_Decoder::decode()} for details.
      * @return mixed
      */
     public static function decode($encodedValue, $objectDecodeType = Zend_Json::TYPE_ARRAY)
@@ -87,16 +87,17 @@ class Zend_Json
      *
      * @param mixed $valueToEncode
      * @param boolean $cycleCheck Optional; whether or not to check for object recursion; off by default
+     * @param array $options Additional options used during encoding
      * @return string JSON encoded object
      */
-    public static function encode($valueToEncode, $cycleCheck = false)
+    public static function encode($valueToEncode, $cycleCheck = false, $options = array())
     {
         if (function_exists('json_encode') && self::$useBuiltinEncoderDecoder !== true) {
             return json_encode($valueToEncode);
         }
 
         require_once 'Zend/Json/Encoder.php';
-        return Zend_Json_Encoder::encode($valueToEncode, $cycleCheck);
+        return Zend_Json_Encoder::encode($valueToEncode, $cycleCheck, $options);
     }
 
     /**  

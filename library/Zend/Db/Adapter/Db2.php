@@ -4,13 +4,13 @@
  *
  * LICENSE
  *
- * This source file is subject to version 1.0 of the Zend Framework
- * license, that is bundled with this package in the file LICENSE.txt, and
- * is available through the world-wide-web at the following URL:
- * http://framework.zend.com/license/new-bsd. If you did not receive
- * a copy of the Zend Framework license and are unable to obtain it
- * through the world-wide-web, please send a note to license@zend.com
- * so we can mail you a copy immediately.
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
  *
  * @package    Zend_Db
  * @subpackage Adapter
@@ -30,6 +30,11 @@ require_once 'Zend/Db.php';
 require_once 'Zend/Db/Adapter/Abstract.php';
 
 /**
+ * @see Zend_Loader
+ */
+require_once 'Zend/Loader.php';
+
+/**
  * @see Zend_Db_Statement_Db2
  */
 require_once 'Zend/Db/Statement/Db2.php';
@@ -39,8 +44,6 @@ require_once 'Zend/Db/Statement/Db2.php';
  * @package    Zend_Db
  * @copyright  Copyright (c) 2005-2008 Zend Technologies Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @author     Joscha Feth <jffeth@de.ibm.com>
- * @author     Salvador Ledezma <ledezma@us.ibm.com>
  */
 
 class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
@@ -76,6 +79,13 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
      * @var int execution flag (DB2_AUTOCOMMIT_ON or DB2_AUTOCOMMIT_OFF)
      */
     protected $_execute_mode = DB2_AUTOCOMMIT_ON;
+
+    /**
+     * Default class name for a DB statement.
+     *
+     * @var string
+     */
+    protected $_defaultStmtClass = 'Zend_Db_Statement_Db2';
 
     /**
      * Keys are UPPERCASE SQL datatypes or the constants
@@ -196,7 +206,9 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
     public function prepare($sql)
     {
         $this->_connect();
-        $stmt = new Zend_Db_Statement_Db2($this, $sql);
+        $stmtClass = $this->_defaultStmtClass;
+        Zend_Loader::loadClass($stmtClass);
+        $stmt = new $stmtClass($this, $sql);
         $stmt->setFetchMode($this->_fetchMode);
         return $stmt;
     }

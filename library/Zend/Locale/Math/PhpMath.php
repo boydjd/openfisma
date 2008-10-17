@@ -16,7 +16,7 @@
  * @package    Zend_Locale
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PhpMath.php 8761 2008-03-12 02:16:53Z alexander $
+ * @version    $Id: PhpMath.php 8760 2008-03-12 02:10:04Z alexander $
  */
 
 

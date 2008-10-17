@@ -4,20 +4,20 @@
  *
  * LICENSE
  *
- * This source file is subject to version 1.0 of the Zend Framework
- * license, that is bundled with this package in the file LICENSE.txt, and
- * is available through the world-wide-web at the following URL:
- * http://framework.zend.com/license/new-bsd. If you did not receive
- * a copy of the Zend Framework license and are unable to obtain it
- * through the world-wide-web, please send a note to license@zend.com
- * so we can mail you a copy immediately.
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
  * 
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Protocol
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Imap.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: Imap.php 9282 2008-04-22 18:21:46Z nico $
  */
 
 
@@ -344,7 +344,7 @@ class Zend_Mail_Protocol_Imap
                     require_once 'Zend/Mail/Protocol/Exception.php';
                     throw new Zend_Mail_Protocol_Exception('cannot write - connection closed?');
                 }
-                if (!$this->_assumedNextLine('+ OK')) {
+                if (!$this->_assumedNextLine('+ ')) {
                     /**
                      * @see Zend_Mail_Protocol_Exception
                      */
@@ -643,7 +643,7 @@ class Zend_Mail_Protocol_Imap
     {
         $result = array();
         $list = $this->requestAndResponse('LIST', $this->escapeString($reference, $mailbox));
-        if (!$list) {
+        if (!$list || $list === true) {
             return $result;
         }
 
@@ -735,7 +735,7 @@ class Zend_Mail_Protocol_Imap
      * @param int|null $to     if null only one message ($from) is fetched, else it's the
      *                         last message, INF means last message avaible
      * @return bool success
-     * @throw Zend_Mail_Protocol_Exception
+     * @throws Zend_Mail_Protocol_Exception
      */
     public function copy($folder, $from, $to = null)
     {
@@ -802,4 +802,30 @@ class Zend_Mail_Protocol_Imap
         // TODO: parse response
         return $this->requestAndResponse('NOOP');
     }
+
+    /**
+     * do a search request
+     *
+     * This method is currently marked as internal as the API might change and is not
+     * safe if you don't take precautions.
+     *
+     * @internal
+     * @return array message ids
+     */
+    public function search(array $params)
+    {
+        $response = $this->requestAndResponse('SEARCH', $params);
+        if (!$response) {
+        	return $response;
+        }
+        
+        foreach ($response as $ids) {
+        	if ($ids[0] == 'SEARCH') {
+        		array_shift($ids);
+        		return $ids;
+        	}
+        }
+        return array();
+    }
+
 }

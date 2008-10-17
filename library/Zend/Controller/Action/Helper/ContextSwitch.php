@@ -4,23 +4,25 @@
  *
  * LICENSE
  *
- * This source file is subject to version 1.0 of the Zend Framework
- * license, that is bundled with this package in the file LICENSE.txt, and
- * is available through the world-wide-web at the following URL:
- * http://framework.zend.com/license/new-bsd. If you did not receive
- * a copy of the Zend Framework license and are unable to obtain it
- * through the world-wide-web, please send a note to license@zend.com
- * so we can mail you a copy immediately.
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
  * @package    Zend_Controller
- * @subpackage Action_Helper
+ * @subpackage Zend_Controller_Action_Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: ContextSwitch.php 8578 2008-03-06 17:22:25Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ContextSwitch.php 11019 2008-08-24 21:40:21Z matthew $
  */
 
-/** Zend_Controller_Action_Helper_Abstract */
+/**
+ * @see Zend_Controller_Action_Helper_Abstract
+ */
 require_once 'Zend/Controller/Action/Helper/Abstract.php';
 
 /**
@@ -29,19 +31,17 @@ require_once 'Zend/Controller/Action/Helper/Abstract.php';
  * @uses       Zend_Controller_Action_Helper_Abstract
  * @category   Zend
  * @package    Zend_Controller
- * @subpackage Action_Helper
+ * @subpackage Zend_Controller_Action_Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action_Helper_Abstract
 {
-    /**#@+
+    /**
      * Trigger type constants
-     * @const string
      */
     const TRIGGER_INIT = 'TRIGGER_INIT';
     const TRIGGER_POST = 'TRIGGER_POST';
-    /**#@-*/
 
     /**
      * Supported contexts
@@ -51,7 +51,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
 
     /**
      * JSON auto-serialization flag
-     * @var bool
+     * @var boolean
      */
     protected $_autoJsonSerialization = true;
 
@@ -81,7 +81,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
  
     /**
      * Whether or not to disable layouts when switching contexts
-     * @var bool
+     * @var boolean
      */
     protected $_disableLayout = true; 
 
@@ -122,6 +122,12 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      */
     public function __construct($options = null)
     {
+        if ($options instanceof Zend_Config) {
+            $this->setConfig($options);
+        } elseif (is_array($options)) {
+            $this->setOptions($options);
+        }
+
         if (empty($this->_contexts)) {
             $this->addContexts(array(
                 'json' => array(
@@ -134,7 +140,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
                 ),
                 'xml'  => array(
                     'suffix'    => 'xml',
-                    'headers'   => array('Content-Type' => 'text/xml'),
+                    'headers'   => array('Content-Type' => 'application/xml'),
                 )
             ));
         }
@@ -144,7 +150,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Configure object from array of options
      * 
      * @param  array $options 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setOptions(array $options)
     {
@@ -174,7 +180,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Set object state from config object
      * 
      * @param  Zend_Config $config 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setConfig(Zend_Config $config)
     {
@@ -184,7 +190,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Strategy pattern: return object
      * 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function direct()
     {
@@ -193,6 +199,10 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
  
     /**
      * Initialize context detection and switching
+     *
+     * @param  mixed $format
+     * @throws Zend_Controller_Action_Exception
+     * @return void
      */ 
     public function initContext($format = null)
     {
@@ -249,6 +259,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
         }
 
         if ($this->getAutoDisableLayout()) {
+            /**
+             * @see Zend_Layout
+             */
             require_once 'Zend/Layout.php';
             $layout = Zend_Layout::getMvcInstance();
             if (null !== $layout) {
@@ -264,6 +277,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
             } elseif (is_array($callback)) {
                 call_user_func($callback);
             } else {
+                /**
+                 * @see Zend_Controller_Action_Exception
+                 */
                 require_once 'Zend/Controller/Action/Exception.php';
                 throw new Zend_Controller_Action_Exception(sprintf('Invalid context callback registered for context "%s"', $context));
             }
@@ -295,8 +311,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Should JSON contexts auto-serialize?
      * 
-     * @param  bool $flag 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  boolean $flag 
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setAutoJsonSerialization($flag)
     {
@@ -307,7 +323,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Get JSON context auto-serialization flag
      * 
-     * @return bool
+     * @return boolean
      */
     public function getAutoJsonSerialization()
     {
@@ -318,7 +334,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Set suffix from array
      * 
      * @param  array $spec 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     protected function _setSuffix(array $spec)
     {
@@ -350,6 +366,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
                 $count = count($suffixInfo);
                 switch (true) {
                     case (($count < 2) && (null === $context)):
+                        /**
+                         * @see Zend_Controller_Action_Exception
+                         */
                         require_once 'Zend/Controller/Action/Exception.php';
                         throw new Zend_Controller_Action_Exception('Invalid suffix information provided in config');
                     case ($count < 2):
@@ -384,14 +403,18 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Passing an empty suffix value to the setters disables the view script
      * suffix change.
      *
-     * @param  string $context   Context type for which to set suffix
-     * @param  string $suffix Suffix to use
-     * @param  bool $prependViewRendererSuffix Whether or not to prepend the new suffix to the viewrenderer suffix
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  string  $context                   Context type for which to set suffix
+     * @param  string  $suffix                    Suffix to use
+     * @param  boolean $prependViewRendererSuffix Whether or not to prepend the new suffix to the viewrenderer suffix
+     * @throws Zend_Controller_Action_Exception
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */ 
     public function setSuffix($context, $suffix, $prependViewRendererSuffix = true)
     {
         if (!isset($this->_contexts[$context])) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf('Cannot set suffix; invalid context type "%s"', $context));
         }
@@ -429,11 +452,15 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Retrieve suffix for given context type
      * 
      * @param  string $type Context type
+     * @throws Zend_Controller_Action_Exception
      * @return string
      */
     public function getSuffix($type)
     {
         if (!isset($this->_contexts[$type])) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf('Cannot retrieve suffix; invalid context type "%s"', $type));
         }
@@ -444,10 +471,10 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Does the given context exist?
      * 
-     * @param  string $context 
-     * @param  bool $throwException 
-     * @return bool
+     * @param  string  $context 
+     * @param  boolean $throwException 
      * @throws Zend_Controller_Action_Exception if context does not exist and throwException is true
+     * @return bool
      */
     public function hasContext($context, $throwException = false)
     {
@@ -472,6 +499,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
         }
 
         if ($throwException) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf('Context "%s" does not exist', $context));
         }
@@ -484,8 +514,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * 
      * @param  string $context 
      * @param  string $header 
-     * @param  string $content 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  string $content
+     * @throws Zend_Controller_Action_Exception 
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function addHeader($context, $header, $content)
     {
@@ -496,6 +527,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
         $content = (string) $content;
 
         if (isset($this->_contexts[$context]['headers'][$header])) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf('Cannot add "%s" header to context "%s": already exists', $header, $context));
         }
@@ -513,7 +547,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * @param  string $type   Context type for which to set suffix
      * @param  string $header Header to set
      * @param  string $content Header content
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */ 
     public function setHeader($context, $header, $content)
     {
@@ -530,8 +564,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Add multiple headers at once for a given context
      * 
      * @param  string $context 
-     * @param  array $headers 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  array  $headers 
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function addHeaders($context, array $headers)
     {
@@ -546,7 +580,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Set headers from context => headers pairs
      * 
      * @param  array $options 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     protected function _setHeaders(array $options)
     {
@@ -564,8 +598,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Set multiple headers at once for a given context
      * 
      * @param  string $context 
-     * @param  array $headers 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  array  $headers 
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setHeaders($context, array $headers)
     {
@@ -618,7 +652,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * 
      * @param  string $context 
      * @param  string $header 
-     * @return bool
+     * @return boolean
      */
     public function removeHeader($context, $header)
     {
@@ -637,7 +671,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Clear all headers for a given context
      * 
      * @param  string $context 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function clearHeaders($context)
     {
@@ -650,7 +684,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Validate trigger and return in normalized form
      * 
-     * @param  string $trigger 
+     * @param  string $trigger
+     * @throws Zend_Controller_Action_Exception 
      * @return string
      */
     protected function _validateTrigger($trigger)
@@ -661,6 +696,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
         }
 
         if (!in_array($trigger, array(self::TRIGGER_INIT, self::TRIGGER_POST))) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf('Invalid trigger "%s"', $trigger));
         }
@@ -671,11 +709,11 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Set a callback for a given context and trigger
      * 
-     * @param  string $context 
-     * @param  string $trigger 
+     * @param  string       $context 
+     * @param  string       $trigger 
      * @param  string|array $callback 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
      * @throws Zend_Controller_Action_Exception
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setCallback($context, $trigger, $callback)
     {
@@ -684,6 +722,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
 
         if (!is_string($callback)) {
             if (!is_array($callback) || (2 != count($callback))) {
+                /**
+                 * @see Zend_Controller_Action_Exception
+                 */
                 require_once 'Zend/Controller/Action/Exception.php';
                 throw new Zend_Controller_Action_Exception('Invalid callback specified');
             }
@@ -697,7 +738,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Set callbacks from array of context => callbacks pairs
      * 
      * @param  array $options 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     protected function _setCallbacks(array $options)
     {
@@ -717,8 +758,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Callbacks should be in trigger/callback pairs.
      * 
      * @param  string $context 
-     * @param  array $callbacks 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  array  $callbacks 
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setCallbacks($context, array $callbacks)
     {
@@ -769,7 +810,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * 
      * @param  string $context 
      * @param  string $trigger 
-     * @return bool
+     * @return boolean
      */
     public function removeCallback($context, $trigger)
     {
@@ -787,7 +828,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Clear all callbacks for a given context
      * 
      * @param  string $context 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function clearCallbacks($context)
     {
@@ -800,7 +841,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Set name of parameter to use when determining context format
      *
      * @param  string $name
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */ 
     public function setContextParam($name)
     {
@@ -822,11 +863,15 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Indicate default context to use when no context format provided
      *
      * @param  string $type
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @throws Zend_Controller_Action_Exception
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */ 
     public function setDefaultContext($type)
     {
         if (!isset($this->_contexts[$type])) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf('Cannot set default context; invalid context type "%s"', $type));
         }
@@ -848,8 +893,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Set flag indicating if layout should be disabled
      *
-     * @param  bool $flag
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  boolean $flag
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */ 
     public function setAutoDisableLayout($flag)
     {
@@ -860,7 +905,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Retrieve auto layout disable flag
      * 
-     * @return bool
+     * @return boolean
      */
     public function getAutoDisableLayout()
     {
@@ -871,12 +916,16 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Add new context
      *
      * @param  string $context Context type
-     * @param  array $spec Context specification
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  array  $spec    Context specification
+     * @throws Zend_Controller_Action_Exception
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */ 
     public function addContext($context, array $spec)
     {
         if ($this->hasContext($context)) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf('Cannot add context "%s"; already exists', $context));
         }
@@ -894,8 +943,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Overwrite existing context
      *
      * @param  string $context Context type
-     * @param  array $spec Context specification
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @param  array  $spec    Context specification
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */ 
     public function setContext($context, array $spec)
     {
@@ -907,7 +956,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Add multiple contexts
      * 
      * @param  array $contexts 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function addContexts(array $contexts)
     {
@@ -921,7 +970,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Set multiple contexts, after first removing all
      * 
      * @param  array $contexts 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setContexts(array $contexts)
     {
@@ -960,7 +1009,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Remove a context
      * 
      * @param  string $context 
-     * @return bool
+     * @return boolean
      */
     public function removeContext($context)
     {
@@ -974,7 +1023,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Remove all contexts
      * 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function clearContexts()
     {
@@ -996,7 +1045,8 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Post dispatch processing
      *
      * Execute postDispatch callback for current context, if available
-     * 
+     *
+     * @throws Zend_Controller_Action_Exception 
      * @return void
      */
     public function postDispatch()
@@ -1011,6 +1061,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
                 } elseif (is_array($callback)) {
                     call_user_func($callback);
                 } else {
+                    /**
+                     * @see Zend_Controller_Action_Exception
+                     */
                     require_once 'Zend/Controller/Action/Exception.php';
                     throw new Zend_Controller_Action_Exception(sprintf('Invalid postDispatch context callback registered for context "%s"', $context));
                 }
@@ -1034,6 +1087,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
         $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
         $view = $viewRenderer->view;
         if ($view instanceof Zend_View_Interface) {
+            /**
+             * @see Zend_Json
+             */
             require_once 'Zend/Json.php';
             $vars = Zend_Json::encode($view->getVars());
             $this->getResponse()->setBody($vars);
@@ -1043,9 +1099,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Add one or more contexts to an action
      * 
-     * @param  string $action 
+     * @param  string       $action 
      * @param  string|array $context 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch|void Provides a fluent interface
      */
     public function addActionContext($action, $context)
     {
@@ -1083,9 +1139,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Set a context as available for a given controller action
      * 
-     * @param  string $action 
+     * @param  string       $action 
      * @param  string|array $context 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch|void Provides a fluent interface
      */
     public function setActionContext($action, $context)
     {
@@ -1115,7 +1171,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Add multiple action/context pairs at once
      * 
      * @param  array $contexts 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function addActionContexts(array $contexts)
     {
@@ -1129,7 +1185,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Overwrite and set multiple action contexts at once
      * 
      * @param  array $contexts 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function setActionContexts(array $contexts)
     {
@@ -1142,9 +1198,10 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Does a particular controller action have the given context(s)?
      * 
-     * @param  string $action 
-     * @param  string|array $context 
-     * @return true
+     * @param  string       $action 
+     * @param  string|array $context
+     * @throws Zend_Controller_Action_Exception 
+     * @return boolean
      */
     public function hasActionContext($action, $context)
     {
@@ -1163,6 +1220,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
         $allContexts = $controller->{$contextKey};
 
         if (!is_array($allContexts)) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception("Invalid contexts found for controller");
         }
@@ -1178,6 +1238,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
         $contexts = $allContexts[$action];
 
         if (!is_array($contexts)) {
+            /**
+             * @see Zend_Controller_Action_Exception
+             */
             require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception(sprintf("Invalid contexts found for action '%s'", $action));
         }
@@ -1231,9 +1294,9 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Remove one or more contexts for a given controller action
      * 
-     * @param  string $action 
+     * @param  string       $action 
      * @param  string|array $context 
-     * @return bool
+     * @return boolean
      */
     public function removeActionContext($action, $context)
     {
@@ -1259,7 +1322,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
      * Clear all contexts for a given controller action or all actions
      * 
      * @param  string $action 
-     * @return Zend_Controller_Action_Helper_ContextSwitch
+     * @return Zend_Controller_Action_Helper_ContextSwitch Provides a fluent interface
      */
     public function clearActionContexts($action = null)
     {
@@ -1286,7 +1349,7 @@ class Zend_Controller_Action_Helper_ContextSwitch extends Zend_Controller_Action
     /**
      * Retrieve ViewRenderer
      * 
-     * @return Zend_Controller_Action_Helper_ViewRenderer
+     * @return Zend_Controller_Action_Helper_ViewRenderer Provides a fluent interface
      */
     protected function _getViewRenderer()
     {

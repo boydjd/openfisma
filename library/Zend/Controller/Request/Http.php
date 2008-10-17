@@ -39,6 +39,18 @@ require_once 'Zend/Uri.php';
 class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
 {
     /**
+     * Scheme for http
+     *
+     */
+    const SCHEME_HTTP  = 'http';
+    
+    /**
+     * Scheme for https
+     *
+     */
+    const SCHEME_HTTPS = 'https';
+
+    /**
      * Allowed parameter sources
      * @var array
      */
@@ -224,6 +236,29 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
     }
 
     /**
+     * Set GET values
+     * 
+     * @param  string|array $spec 
+     * @param  null|mixed $value 
+     * @return Zend_Controller_Request_Http
+     */
+    public function setQuery($spec, $value = null)
+    {
+        if ((null === $value) && !is_array($spec)) {
+            require_once 'Zend/Controller/Exception.php';
+            throw new Zend_Controller_Exception('Invalid value passed to setQuery(); must be either array of values or key/value pair');
+        }
+        if ((null === $value) && is_array($spec)) {
+            foreach ($spec as $key => $value) {
+                $this->setQuery($key, $value);
+            }
+            return $this;
+        }
+        $_GET[(string) $spec] = $value;
+        return $this;
+    }
+
+    /**
      * Retrieve a member of the $_GET superglobal
      *
      * If no $key is passed, returns the entire $_GET array.
@@ -240,6 +275,29 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
         }
 
         return (isset($_GET[$key])) ? $_GET[$key] : $default;
+    }
+
+    /**
+     * Set POST values
+     * 
+     * @param  string|array $spec 
+     * @param  null|mixed $value 
+     * @return Zend_Controller_Request_Http
+     */
+    public function setPost($spec, $value = null)
+    {
+        if ((null === $value) && !is_array($spec)) {
+            require_once 'Zend/Controller/Exception.php';
+            throw new Zend_Controller_Exception('Invalid value passed to setPost(); must be either array of values or key/value pair');
+        }
+        if ((null === $value) && is_array($spec)) {
+            foreach ($spec as $key => $value) {
+                $this->setPost($key, $value);
+            }
+            return $this;
+        }
+        $_POST[(string) $spec] = $value;
+        return $this;
     }
 
     /**
@@ -344,12 +402,11 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
             return $this;
         } else {
             // Set GET items, if available
-            $_GET = array();
             if (false !== ($pos = strpos($requestUri, '?'))) {
                 // Get key => value pairs and set $_GET
                 $query = substr($requestUri, $pos + 1);
                 parse_str($query, $vars);
-                $_GET = $vars;
+                $this->setQuery($vars);
             }
         }
 
@@ -810,7 +867,39 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
 
         return false;
     }
+    
+    /**
+     * Is the request a Javascript XMLHttpRequest?
+     *
+     * Should work with Prototype/Script.aculo.us, possibly others.
+     *
+     * @return boolean
+     */
+    public function isXmlHttpRequest()
+    {
+        return ($this->getHeader('X_REQUESTED_WITH') == 'XMLHttpRequest');
+    }
 
+    /**
+     * Is this a Flash request?
+     * 
+     * @return bool
+     */
+    public function isFlashRequest()
+    {
+        return ($this->getHeader('USER_AGENT') == 'Shockwave Flash');
+    }
+    
+    /**
+     * Is https secure request
+     *
+     * @return boolean
+     */
+    public function isSecure()
+    {
+        return ($this->getScheme() === self::SCHEME_HTTPS);
+    }
+    
     /**
      * Return the raw body of the request, if present
      *
@@ -860,26 +949,41 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
 
         return false;
     }
-
+    
     /**
-     * Is the request a Javascript XMLHttpRequest?
+     * Get the request URI scheme
      *
-     * Should work with Prototype/Script.aculo.us, possibly others.
-     *
-     * @return boolean
+     * @return string
      */
-    public function isXmlHttpRequest()
+    public function getScheme()
     {
-        return ($this->getHeader('X_REQUESTED_WITH') == 'XMLHttpRequest');
+        return ($this->getServer('HTTPS') == 'on') ? self::SCHEME_HTTPS : self::SCHEME_HTTP;
     }
-
+    
     /**
-     * Is this a Flash request?
-     * 
-     * @return bool
+     * Get the HTTP host.
+     *
+     * "Host" ":" host [ ":" port ] ; Section 3.2.2
+     * Note the HTTP Host header is not the same as the URI host.
+     * It includes the port while the URI host doesn't.
+     *
+     * @return string
      */
-    public function isFlashRequest()
+    public function getHttpHost()
     {
-        return ($this->getHeader('USER_AGENT') == 'Shockwave Flash');
+        $host = $this->getServer('HTTP_HOST');
+        if (!empty($host)) {
+            return $host;
+        }
+        
+        $scheme = $this->getScheme();
+        $name   = $this->getServer('SERVER_NAME');
+        $port   = $this->getServer('SERVER_PORT'); 
+
+        if (($scheme == self::SCHEME_HTTP && $port == 80) || ($scheme == self::SCHEME_HTTPS && $port == 443)) {
+            return $name;
+        } else {
+            return $name . ':' . $port;
+        }
     }
 }

@@ -16,19 +16,22 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Action.php 8444 2008-02-27 23:19:08Z ralph $
+ * @version    $Id: Action.php 10665 2008-08-05 10:57:18Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+
+/** Zend_View_Helper_Abstract.php */
+require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for rendering output of a controller action
  *
  * @package    Zend_View
- * @subpackage Helpers
+ * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_View_Helper_Action 
+class Zend_View_Helper_Action extends Zend_View_Helper_Abstract 
 {
     /**
      * @var string
@@ -50,13 +53,6 @@ class Zend_View_Helper_Action
      */
     public $response;
     
-    /**
-     * Instance of parent Zend_View object
-     *
-     * @var Zend_View_Interface
-     */
-    public $view = null;
-
     /**
      * Constructor
      *
@@ -123,9 +119,8 @@ class Zend_View_Helper_Action
         } 
 
         // clone the view object to prevent over-writing of view variables
-        $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
-        $viewRendererViewObj = $viewRenderer->view;
-        $viewRenderer->view = $this->cloneView(); 
+        $viewRendererObj = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+        Zend_Controller_Action_HelperBroker::addHelper(clone $viewRendererObj); 
         
         $this->request->setParams($params) 
                       ->setModuleName($module) 
@@ -135,8 +130,9 @@ class Zend_View_Helper_Action
  
         $this->dispatcher->dispatch($this->request, $this->response); 
  
-        // reset the view object to it's original state
-        $viewRenderer->view = $viewRendererViewObj;
+        // reset the viewRenderer object to it's original state
+        Zend_Controller_Action_HelperBroker::addHelper($viewRendererObj);
+
         
         if (!$this->request->isDispatched() 
             || $this->response->isRedirect()) 
@@ -146,22 +142,10 @@ class Zend_View_Helper_Action
         } 
  
         $return = $this->response->getBody();
-        
+        $this->resetObjects(); 
         return $return;
     }
     
-    /**
-     * Set view object
-     *
-     * @param  Zend_View_Interface $view
-     * @return Zend_View_Helper_Action
-     */
-    public function setView(Zend_View_Interface $view)
-    {
-        $this->view = $view;
-        return $this;
-    }
-
     /**
      * Clone the current View
      *

@@ -39,7 +39,7 @@ require_once 'Zend/Form/Decorator/Abstract.php';
  * @subpackage Decorator
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewHelper.php 8632 2008-03-07 17:36:54Z matthew $
+ * @version    $Id: ViewHelper.php 10198 2008-07-18 22:46:53Z matthew $
  */
 class Zend_Form_Decorator_ViewHelper extends Zend_Form_Decorator_Abstract
 {
@@ -51,14 +51,6 @@ class Zend_Form_Decorator_ViewHelper extends Zend_Form_Decorator_Abstract
         'Zend_Form_Element_Button',
         'Zend_Form_Element_Reset',
         'Zend_Form_Element_Submit',
-    );
-
-    /**
-     * Element types representing checkboxes
-     * @var array
-     */
-    protected $_checkboxTypes = array(
-        'Zend_Form_Element_Checkbox'
     );
 
     /**
@@ -206,12 +198,6 @@ class Zend_Form_Decorator_ViewHelper extends Zend_Form_Decorator_Abstract
             }
         }
 
-        foreach ($this->_checkboxTypes as $type) {
-            if ($element instanceof $type) {
-                return $element->getCheckedValue();
-            }
-        }
-
         return $element->getValue();
     }
 
@@ -240,11 +226,15 @@ class Zend_Form_Decorator_ViewHelper extends Zend_Form_Decorator_Abstract
             $element->getMultiOptions();
         }
 
-        $helper    = $this->getHelper();
-        $separator = $this->getSeparator();
-        $value     = $this->getValue($element);
+        $helper        = $this->getHelper();
+        $separator     = $this->getSeparator();
+        $value         = $this->getValue($element);
+        $attribs       = $this->getElementAttribs();
+        $name          = $element->getFullyQualifiedName();
+        $id            = $element->getId();
+        $attribs['id'] = $id;
 
-        $elementContent = $view->$helper($this->getName(), $value, $this->getElementAttribs(), $element->options);
+        $elementContent = $view->$helper($name, $value, $attribs, $element->options);
         switch ($this->getPlacement()) {
             case self::APPEND:
                 return $content . $separator . $elementContent;

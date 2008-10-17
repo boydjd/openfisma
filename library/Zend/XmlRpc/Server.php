@@ -4,18 +4,20 @@
  *
  * LICENSE
  *
- * This source file is subject to version 1.0 of the Zend Framework
- * license, that is bundled with this package in the file LICENSE.txt, and
- * is available through the world-wide-web at the following URL:
- * http://framework.zend.com/license/new-bsd. If you did not receive
- * a copy of the Zend Framework license and are unable to obtain it
- * through the world-wide-web, please send a note to license@zend.com
- * so we can mail you a copy immediately.
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
  *
+ * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Server
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Server.php 10684 2008-08-05 16:05:15Z matthew $
  */
 
 /**
@@ -112,7 +114,7 @@ require_once 'Zend/Server/Reflection/Method.php';
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_XmlRpc_Server
+class Zend_XmlRpc_Server implements Zend_Server_Interface
 {
     /**
      * Character encoding
@@ -168,7 +170,8 @@ class Zend_XmlRpc_Server
         'time'             => 'dateTime.iso8601',
         'array'            => 'array',
         'struct'           => 'struct',
-        'null'             => 'void',
+        'null'             => 'nil',
+        'nil'              => 'nil',
         'void'             => 'void',
         'mixed'            => 'struct'
     );
@@ -333,17 +336,17 @@ class Zend_XmlRpc_Server
      * Typically, you will not use this method; it will be called using the
      * results pulled from {@link Zend_XmlRpc_Server_Cache::get()}.
      *
-     * @param array $array
+     * @param  array $definition
      * @return void
      * @throws Zend_XmlRpc_Server_Exception on invalid input
      */
-    public function loadFunctions($array)
+    public function loadFunctions($definition)
     {
-        if (!is_array($array)) {
+        if (!is_array($definition)) {
             throw new Zend_XmlRpc_Server_Exception('Unable to load array; not an array', 612);
         }
 
-        foreach ($array as $key => $value) {
+        foreach ($definition as $key => $value) {
             if (!$value instanceof Zend_Server_Reflection_Function_Abstract
                 && !$value instanceof Zend_Server_Reflection_Class)
             {
@@ -351,11 +354,11 @@ class Zend_XmlRpc_Server
             }
 
             if ($value->system) {
-                unset($array[$key]);
+                unset($definition[$key]);
             }
         }
 
-        foreach ($array as $dispatchable) {
+        foreach ($definition as $dispatchable) {
             $this->_methods[] = $dispatchable;
         }
 
@@ -365,10 +368,10 @@ class Zend_XmlRpc_Server
     /**
      * Do nothing; persistence is handled via {@link Zend_XmlRpc_Server_Cache}
      *
-     * @param mixed $class
+     * @param  mixed $mode
      * @return void
      */
-    public function setPersistence($class = null)
+    public function setPersistence($mode)
     {
     }
 
@@ -447,10 +450,13 @@ class Zend_XmlRpc_Server
      * @param int $code
      * @return Zend_XmlRpc_Server_Fault
      */
-    public function fault($fault, $code = 404)
+    public function fault($fault = null, $code = 404)
     {
         if (!$fault instanceof Exception) {
             $fault = (string) $fault;
+            if (empty($fault)) {
+                $fault = 'Unknown error';
+            }
             $fault = new Zend_XmlRpc_Server_Exception($fault, $code);
         }
 
@@ -484,11 +490,17 @@ class Zend_XmlRpc_Server
 
         // Check calling parameters against signatures
         $matched    = false;
-        $sigCalled  = array();
-        foreach ($params as $param) {
-            $value = Zend_XmlRpc_Value::getXmlRpcValue($param);
-            $sigCalled[] = $value->getType();
+        $sigCalled  = $request->getTypes();
+
+        $sigLength  = count($sigCalled);
+        $paramsLen  = count($params);
+        if ($sigLength < $paramsLen) {
+            for ($i = $sigLength; $i < $paramsLen; ++$i) {
+                $xmlRpcValue = Zend_XmlRpc_Value::getXmlRpcValue($params[$i]);
+                $sigCalled[] = $xmlRpcValue->getType();
+            }
         }
+
         $signatures = $info->getPrototypes();
         foreach ($signatures as $signature) {
             $sigParams = $signature->getParameters();
@@ -544,10 +556,12 @@ class Zend_XmlRpc_Server
      * @param Zend_XmlRpc_Request $request Optional
      * @return Zend_XmlRpc_Response|Zend_XmlRpc_Fault
      */
-    public function handle(Zend_XmlRpc_Request $request = null)
+    public function handle($request = false)
     {
         // Get request
-        if ((null === $request) && (null === ($request = $this->getRequest()))) {
+        if ((!$request || !$request instanceof Zend_XmlRpc_Request)
+            && (null === ($request = $this->getRequest()))
+        ) {
             require_once 'Zend/XmlRpc/Request/Http.php';
             $request = new Zend_XmlRpc_Request_Http();
             $request->setEncoding($this->getEncoding());
@@ -680,7 +694,7 @@ class Zend_XmlRpc_Server
      * struct with a fault response.
      *
      * @see http://www.xmlrpc.com/discuss/msgReader$1208
-     * @param array $methods
+     * @param  array $methods
      * @return array
      */
     public function multicall($methods)

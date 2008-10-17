@@ -17,7 +17,7 @@
  * @package    Zend_Validate
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php 8113 2008-02-18 13:15:27Z matthew $
+ * @version    $Id: Abstract.php 10649 2008-08-04 20:58:45Z matthew $
  */
 
 
@@ -191,7 +191,9 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
         $message = $this->_messageTemplates[$messageKey];
 
         if (null !== ($translator = $this->getTranslator())) {
-            if ($translator->isTranslated($messageKey)) {
+            if ($translator->isTranslated($message)) {
+                $message = $translator->translate($message);
+            } elseif ($translator->isTranslated($messageKey)) {
                 $message = $translator->translate($messageKey);
             }
         }

@@ -17,7 +17,7 @@
  * @package    Zend_Filter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Filter.php 8435 2008-02-27 19:21:12Z darby $
+ * @version    $Id: Filter.php 8434 2008-02-27 19:15:13Z darby $
  */
 
 

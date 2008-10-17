@@ -16,7 +16,7 @@
  * @package    Zend_Session
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Exception.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: Exception.php 10745 2008-08-07 05:17:59Z ralph $
  * @since      Preview Release 0.2
  */
 
@@ -53,9 +53,9 @@ class Zend_Session_Exception extends Zend_Exception
      * @param  string $errstr
      * @return void
      */
-    static public function handleSessionStartError($errno, $errstr)
+    static public function handleSessionStartError($errno, $errstr, $errfile, $errline, $errcontext)
     {
-        self::$sessionStartError = $errstr;
+        self::$sessionStartError = $errfile . '(Line:' . $errline . '): Error #' . $errno . ' ' . $errstr . ' ' . $errcontext;
     }
 
     /**
@@ -66,7 +66,9 @@ class Zend_Session_Exception extends Zend_Exception
      * @param  string $errstr
      * @return void
      */
-    static public function handleSilentWriteClose($errno, $errstr)
+    static public function handleSilentWriteClose($errno, $errstr, $errfile, $errline, $errcontext)
     {
+        self::$sessionStartError .= PHP_EOL . $errfile . '(Line:' . $errline . '): Error #' . $errno . ' ' . $errstr . ' ' . $errcontext;
     }
 }
+

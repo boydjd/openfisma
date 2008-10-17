@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -17,12 +16,12 @@
  * @package    Zend_Acl
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Resource.php 8055 2008-02-15 21:42:54Z thomas $
+ * @version    $Id: Resource.php 8861 2008-03-16 14:30:18Z thomas $
  */
 
 
 /**
- * Zend_Acl_Resource_Interface
+ * @see Zend_Acl_Resource_Interface
  */
 require_once 'Zend/Acl/Resource/Interface.php';
 
@@ -45,7 +44,7 @@ class Zend_Acl_Resource implements Zend_Acl_Resource_Interface
     /**
      * Sets the Resource identifier
      *
-     * @param  string $id
+     * @param  string $resourceId
      * @return void
      */
     public function __construct($resourceId)

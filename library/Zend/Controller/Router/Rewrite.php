@@ -15,7 +15,7 @@
  * @package    Zend_Controller
  * @subpackage Router
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Rewrite.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: Rewrite.php 11510 2008-09-24 15:51:04Z doctorrock83 $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -28,9 +28,6 @@ require_once 'Zend/Controller/Router/Abstract.php';
 /** Zend_Controller_Router_Route */
 require_once 'Zend/Controller/Router/Route.php';
 
-/** Zend_Controller_Router_Route_Static */
-require_once 'Zend/Controller/Router/Route/Static.php';
-
 /**
  * Ruby routing based Router.
  *
@@ -42,6 +39,7 @@ require_once 'Zend/Controller/Router/Route/Static.php';
  */
 class Zend_Controller_Router_Rewrite extends Zend_Controller_Router_Abstract
 {
+
     /**
      * Whether or not to use default routes
      * @var boolean
@@ -79,12 +77,20 @@ class Zend_Controller_Router_Rewrite extends Zend_Controller_Router_Abstract
 
     /**
      * Add route to the route chain
+     * 
+     * If route implements Zend_Controller_Request_Aware interface it is initialized with a request object
      *
      * @param string $name Name of the route
      * @param Zend_Controller_Router_Route_Interface Route
      */
-    public function addRoute($name, Zend_Controller_Router_Route_Interface $route) {
+    public function addRoute($name, Zend_Controller_Router_Route_Interface $route) 
+    {
+        if (method_exists($route, 'setRequest')) {
+            $route->setRequest($this->getFrontController()->getRequest());
+        }
+        
         $this->_routes[$name] = $route;
+        
         return $this;
     }
 
@@ -256,11 +262,17 @@ class Zend_Controller_Router_Rewrite extends Zend_Controller_Router_Abstract
             $this->addDefaultRoutes();
         }
 
-        $pathInfo = $request->getPathInfo();
-
         /** Find the matching route */
         foreach (array_reverse($this->_routes) as $name => $route) {
-            if ($params = $route->match($pathInfo)) {
+            
+            // TODO: Should be an interface method. Hack for 1.0 BC  
+            if (!method_exists($route, 'getVersion') || $route->getVersion() == 1) {
+                $match = $request->getPathInfo();
+            } else {
+                $match = $request;
+            }
+                        
+            if ($params = $route->match($match)) {
                 $this->_setRequestParams($request, $params);
                 $this->_currentRoute = $name;
                 break;
@@ -290,4 +302,33 @@ class Zend_Controller_Router_Rewrite extends Zend_Controller_Router_Abstract
         }
     }
 
+    /**
+     * Generates a URL path that can be used in URL creation, redirection, etc.
+     * 
+     * @param  array $userParams Options passed by a user used to override parameters
+     * @param  mixed $name The name of a Route to use
+     * @param  bool $reset Whether to reset to the route defaults ignoring URL params
+     * @param  bool $encode Tells to encode URL parts on output
+     * @throws Zend_Controller_Router_Exception
+     * @return string Resulting absolute URL path
+     */ 
+    public function assemble($userParams, $name = null, $reset = false, $encode = true)
+    {
+        if ($name == null) {
+            try {
+                $name = $this->getCurrentRouteName();
+            } catch (Zend_Controller_Router_Exception $e) {
+                $name = 'default';
+            }
+        }
+        
+        $route = $this->getRoute($name);
+        $url   = $route->assemble($userParams, $reset, $encode);
+
+        if (!preg_match('|^[a-z]+://|', $url)) {
+            $url = rtrim($this->getFrontController()->getBaseUrl(), '/') . '/' . $url;
+        }
+
+        return $url;
+    }
 }

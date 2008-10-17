@@ -16,9 +16,12 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Partial.php 8525 2008-03-03 21:05:02Z matthew $
+ * @version    $Id: Partial.php 11510 2008-09-24 15:51:04Z doctorrock83 $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+
+/** Zend_View_Helper_Abstract.php */
+require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for rendering a template fragment in its own variable scope.
@@ -28,20 +31,13 @@
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_View_Helper_Partial
+class Zend_View_Helper_Partial extends Zend_View_Helper_Abstract
 {
     /**
      * Variable to which object will be assigned
      * @var string
      */
     protected $_objectKey;
-
-    /**
-     * Instance of parent Zend_View object
-     *
-     * @var Zend_View_Abstract
-     */
-    public $view = null;
 
     /**
      * Renders a template fragment within a variable scope distinct from the
@@ -73,6 +69,7 @@ class Zend_View_Helper_Partial
 
         $view = $this->cloneView();
         if ((null !== $module) && is_string($module)) {
+            require_once 'Zend/Controller/Front.php';
             $moduleDir = Zend_Controller_Front::getInstance()->getControllerDirectory($module);
             if (null === $moduleDir) {
                 require_once 'Zend/View/Helper/Partial/Exception.php';
@@ -101,18 +98,6 @@ class Zend_View_Helper_Partial
         }
 
         return $view->render($name);
-    }
-
-    /**
-     * Set view object
-     *
-     * @param  Zend_View_Interface $view
-     * @return Zend_View_Helper_Partial
-     */
-    public function setView(Zend_View_Interface $view)
-    {
-        $this->view = $view;
-        return $this;
     }
 
     /**

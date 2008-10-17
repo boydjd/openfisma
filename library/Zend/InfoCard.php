@@ -16,8 +16,7 @@
  * @package    Zend_InfoCard
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: InfoCard.php 8601 2008-03-06 20:50:55Z darby $
- * @author     John Coggeshall <john@zend.com>
+ * @version    $Id: InfoCard.php 11296 2008-09-08 19:46:57Z thomas $
  */
 
 /**
@@ -61,7 +60,6 @@ require_once 'Zend/InfoCard/Claims.php';
  * @package    Zend_InfoCard
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @author     John Coggeshall <john@zend.com>
  */
 class Zend_InfoCard
 {
@@ -141,7 +139,7 @@ class Zend_InfoCard
     public function getAdapter()
     {
         if(is_null($this->_adapter)) {
-            Zend_Loader::loadClass('Zend_InfoCard_Adapter_Default');
+            require_once 'Zend/InfoCard/Adapter/Default.php';
             $this->setAdapter(new Zend_InfoCard_Adapter_Default());
         }
 

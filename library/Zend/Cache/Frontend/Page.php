@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -15,27 +14,26 @@
  *
  * @category   Zend
  * @package    Zend_Cache
- * @subpackage Frontend
+ * @subpackage Zend_Cache_Frontend
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 
 /**
- * Zend_Cache_Core
+ * @see Zend_Cache_Core
  */
 require_once 'Zend/Cache/Core.php';
 
 
 /**
  * @package    Zend_Cache
- * @subpackage Frontend
+ * @subpackage Zend_Cache_Frontend
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Cache_Frontend_Page extends Zend_Cache_Core
 {
-
     /**
      * This frontend specific options
      *
@@ -45,11 +43,16 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
      *
      * ====> (boolean) debug_header :
      * - if true, a debug text is added before each cached pages
-     * 
+     *
      * ====> (boolean) content_type_memorization :
+     * - deprecated => use memorize_headers instead
      * - if the Content-Type header is sent after the cache was started, the
      *   corresponding value can be memorized and replayed when the cache is hit
      *   (if false (default), the frontend doesn't take care of Content-Type header)
+     *
+     * ====> (array) memorize_headers :
+     * - an array of strings corresponding to some HTTP headers name. Listed headers
+     *   will be stored with cache datas and "replayed" when the cache is hit
      *
      * ====> (array) default_options :
      * - an associative array of default options :
@@ -74,6 +77,7 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
         'http_conditional' => false,
         'debug_header' => false,
         'content_type_memorization' => false,
+        'memorize_headers' => array(),
         'default_options' => array(
             'cache_with_get_variables' => false,
             'cache_with_post_variables' => false,
@@ -98,12 +102,21 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     protected $_activeOptions = array();
 
     /**
+     * If true, the page won't be cached
+     *
+     * @var boolean
+     */
+    private $_cancel = false;
+
+    /**
      * Constructor
      *
-     * @param array $options associative array of options
-     * @param boolean $doNotTestCacheValidity if set to true, the cache validity won't be tested
+     * @param  array   $options                Associative array of options
+     * @param  boolean $doNotTestCacheValidity If set to true, the cache validity won't be tested
+     * @throws Zend_Cache_Exception
+     * @return void
      */
-    public function __construct($options = array())
+    public function __construct(array $options = array())
     {
         while (list($name, $value) = each($options)) {
             $name = strtolower($name);
@@ -113,6 +126,9 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
                 break;
             case 'default_options':
                 $this->_setDefaultOptions($value);
+                break;
+            case 'content_type_memorization':
+                $this->_setContentTypeMemorization($value);
                 break;
             default:
                 $this->setOption($name, $value);
@@ -129,7 +145,9 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     /**
      * Specific setter for the 'default_options' option (with some additional tests)
      *
-     * @param array $options associative array
+     * @param  array $options Associative array
+     * @throws Zend_Cache_Exception
+     * @return void
      */
     protected function _setDefaultOptions($options)
     {
@@ -147,9 +165,37 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     }
 
     /**
+     * Set the deprecated contentTypeMemorization option
+     *
+     * @param boolean $value value
+     * @return void
+     * @deprecated
+     */
+    protected function _setContentTypeMemorization($value)
+    {
+        $found = null;
+        foreach ($this->_specificOptions['memorize_headers'] as $key => $value) {
+            if (strtolower($value) == 'content-type') {
+                $found = $key;
+            }
+        }
+        if ($value) {
+            if (!$found) {
+                $this->_specificOptions['memorize_headers'][] = 'Content-Type';
+            }
+        } else {
+            if ($found) {
+                unset($this->_specificOptions['memorize_headers'][$found]);
+            }
+        }
+    }
+
+    /**
      * Specific setter for the 'regexps' option (with some additional tests)
      *
-     * @param array $options associative array
+     * @param  array $options Associative array
+     * @throws Zend_Cache_Exception
+     * @return void
      */
     protected function _setRegexps($regexps)
     {
@@ -174,12 +220,13 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     /**
      * Start the cache
      *
-     * @param string $id (optional) a cache id (if you set a value here, maybe you have to use Output frontend instead)
-     * @param boolean $doNotDie for unit testing only !
-     * @return boolean true if the cache is hit (false else)
+     * @param  string  $id       (optional) A cache id (if you set a value here, maybe you have to use Output frontend instead)
+     * @param  boolean $doNotDie For unit testing only !
+     * @return boolean True if the cache is hit (false else)
      */
     public function start($id = false, $doNotDie = false)
     {
+        $this->_cancel = false;
         $lastMatchingRegexp = null;
         foreach ($this->_specificOptions['regexps'] as $regexp => $conf) {
             if (preg_match("`$regexp`", $_SERVER['REQUEST_URI'])) {
@@ -205,15 +252,15 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
         $array = $this->load($id);
         if ($array !== false) {
             $data = $array['data'];
-            $contentType = $array['contentType'];
+            $headers = $array['headers'];
             if ($this->_specificOptions['debug_header']) {
                 echo 'DEBUG HEADER : This is a cached page !';
             }
-            if ($this->_specificOptions['content_type_memorization']) {
-                if (!is_null($contentType)) {
-                    if (!headers_sent()) {
-                        header("Content-Type: $contentType");
-                    }
+            if (!headers_sent()) {
+                foreach ($headers as $key=>$headerCouple) {
+                    $name = $headerCouple[0];
+                    $value = $headerCouple[1];
+                    header("$name: $value");
                 }
             }
             echo $data;
@@ -228,29 +275,41 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     }
 
     /**
+     * Cancel the current caching process
+     */
+    public function cancel()
+    {
+        $this->_cancel = true;
+    }
+
+    /**
      * callback for output buffering
      * (shouldn't really be called manually)
      *
-     * @param string $data buffered output
-     * @return string data to send to browser
+     * @param  string $data Buffered output
+     * @return string Data to send to browser
      */
     public function _flush($data)
     {
+        if ($this->_cancel) {
+            return $data;
+        }
         $contentType = null;
-        if ($this->_specificOptions['content_type_memorization']) {
-            if (headers_sent()) {
-                $headersList = headers_list();
-                foreach ($headersList as $header) {
-                    $tmp = split(':', $header);
-                    if (strtolower(trim($tmp[0])) == 'content-type') {
-                        $contentType = trim($tmp[1]);
-                    }
+        $storedHeaders = array();
+        $headersList = headers_list();
+        foreach($this->_specificOptions['memorize_headers'] as $key=>$headerName) {
+            foreach ($headersList as $headerSent) {
+                $tmp = split(':', $headerSent);
+                $headerSentName = trim(array_shift($tmp));
+                if (strtolower($headerName) == strtolower($headerSentName)) {
+                    $headerSentValue = trim(implode(':', $tmp));
+                    $storedHeaders[] = array($headerSentName, $headerSentValue);
                 }
             }
-        }
+        }       
         $array = array(
             'data' => $data,
-            'contentType' => $contentType
+            'headers' => $storedHeaders
         );
         $this->save($array);
         return $data;
@@ -259,7 +318,7 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     /**
      * Make an id depending on REQUEST_URI and superglobal arrays (depending on options)
      *
-     * @return mixed a cache id (string), false if the cache should have not to be used
+     * @return mixed|false a cache id (string), false if the cache should have not to be used
      */
     private function _makeId()
     {
@@ -277,10 +336,10 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     /**
      * Make a partial id depending on options
      *
-     * @param string $arrayName superglobal array name
-     * @param bool $bool1 if true, cache is still on even if there are some variables in the superglobal array
-     * @param bool $bool2 if true, we have to use the content of the superglobal array to make a partial id
-     * @return mixed partial id (string) or false if the cache should have not to be used
+     * @param  string $arrayName Superglobal array name
+     * @param  bool   $bool1     If true, cache is still on even if there are some variables in the superglobal array
+     * @param  bool   $bool2     If true, we have to use the content of the superglobal array to make a partial id
+     * @return mixed|false Partial id (string) or false if the cache should have not to be used
      */
     private function _makePartialId($arrayName, $bool1, $bool2)
     {
@@ -324,4 +383,3 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
     }
 
 }
-

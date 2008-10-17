@@ -17,8 +17,7 @@
  * @subpackage Zend_InfoCard_Xml_Security
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Security.php 8601 2008-03-06 20:50:55Z darby $
- * @author     John Coggeshall <john@zend.com>
+ * @version    $Id: Security.php 9094 2008-03-30 18:36:55Z thomas $
  */
 
 /**
@@ -38,7 +37,6 @@ require_once 'Zend/InfoCard/Xml/Security/Transform.php';
  * @subpackage Zend_InfoCard_Xml_Security
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @author     John Coggeshall <john@zend.com>
  */
 class Zend_InfoCard_Xml_Security
 {

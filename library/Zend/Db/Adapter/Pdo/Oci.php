@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Oci.php 8223 2008-02-20 21:48:14Z darby $
+ * @version    $Id: Oci.php 11673 2008-10-04 14:00:04Z mikaelkael $
  */
 
 
@@ -111,7 +110,8 @@ class Zend_Db_Adapter_Pdo_Oci extends Zend_Db_Adapter_Pdo_Abstract
         if (is_int($value) || is_float($value)) {
             return $value;
         }
-        return "'" . addcslashes($value, "\000\n\r\\'\"\032") . "'";
+        $value = str_replace("'", "''", $value);
+        return "'" . addcslashes($value, "\000\n\r\\\032") . "'";
     }
 
     /**
@@ -121,7 +121,7 @@ class Zend_Db_Adapter_Pdo_Oci extends Zend_Db_Adapter_Pdo_Abstract
      * @param string $alias An alias for the table.
      * @return string The quoted identifier and alias.
      */
-    public function quoteTableAs($ident, $alias, $auto=false)
+    public function quoteTableAs($ident, $alias = null, $auto = false)
     {
         // Oracle doesn't allow the 'AS' keyword between the table identifier/expression and alias.
         return $this->_quoteIdentifierAs($ident, $alias, $auto, ' ');

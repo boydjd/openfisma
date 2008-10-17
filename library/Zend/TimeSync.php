@@ -16,7 +16,7 @@
  * @category   Zend
  * @package    Zend_TimeSync
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: TimeSync.php 8230 2008-02-20 22:38:48Z thomas $
+ * @version    $Id: TimeSync.php 9534 2008-05-26 20:01:56Z thomas $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -171,7 +171,7 @@ class Zend_TimeSync implements IteratorAggregate
      */
     public function setServer($alias)
     {
-    	if (array_key_exists($alias, $this->_timeservers)) {
+        if (isset($this->_timeservers[$alias]) === true) {
             $this->_current = $this->_timeservers[$alias];
         } else {
             throw new Zend_TimeSync_Exception("'$alias' does not point to valid timeserver");
@@ -191,7 +191,7 @@ class Zend_TimeSync implements IteratorAggregate
             return Zend_TimeSync::$options;
         }
 
-        if (array_key_exists($key, Zend_TimeSync::$options)) {
+        if (isset(Zend_TimeSync::$options[$key]) === true) {
             return Zend_TimeSync::$options[$key];
         } else {
             throw new Zend_TimeSync_Exception("'$key' does not point to valid option");
@@ -215,7 +215,7 @@ class Zend_TimeSync implements IteratorAggregate
                 throw new Zend_TimeSync_Exception('there is no timeserver set');
             }
         }
-        if (array_key_exists($alias, $this->_timeservers)) {
+        if (isset($this->_timeservers[$alias]) === true) {
             return $this->_timeservers[$alias];
         } else {
             throw new Zend_TimeSync_Exception("'$alias' does not point to valid timeserver");

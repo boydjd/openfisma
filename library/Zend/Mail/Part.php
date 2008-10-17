@@ -4,19 +4,19 @@
  *
  * LICENSE
  *
- * This source file is subject to version 1.0 of the Zend Framework
- * license, that is bundled with this package in the file LICENSE.txt, and
- * is available through the world-wide-web at the following URL:
- * http://framework.zend.com/license/new-bsd. If you did not receive
- * a copy of the Zend Framework license and are unable to obtain it
- * through the world-wide-web, please send a note to license@zend.com
- * so we can mail you a copy immediately.
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
  * @package    Zend_Mail
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Part.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: Part.php 11815 2008-10-10 02:50:19Z yoshida@zend.co.jp $
  */
 
 
@@ -25,6 +25,11 @@
  */
 require_once 'Zend/Mime/Decode.php';
 
+/**
+ * @see Zend_Mail_Part_Interface
+ */
+require_once 'Zend/Mail/Part/Interface.php';
+
 
 /**
  * @category   Zend
@@ -32,7 +37,7 @@ require_once 'Zend/Mime/Decode.php';
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Mail_Part implements RecursiveIterator
+class Zend_Mail_Part implements RecursiveIterator, Zend_Mail_Part_Interface
 {
     /**
      * headers of part as array
@@ -177,6 +182,18 @@ class Zend_Mail_Part implements RecursiveIterator
     }
 
     /**
+     * Return size of part
+     *
+     * Quite simple implemented currently (not decoding). Handle with care.
+     *
+     * @return int size
+     */
+    public function getSize() {
+    	return strlen($this->getContent());
+    }
+
+
+    /**
      * Cache content and split in parts if multipart
      *
      * @return null
@@ -203,6 +220,9 @@ class Zend_Mail_Part implements RecursiveIterator
             throw new Zend_Mail_Exception('no boundary found in content type to split message');
         }
         $parts = Zend_Mime_Decode::splitMessageStruct($this->_content, $boundary);
+        if ($parts === null) {
+        	return;
+        }
         $counter = 1;
         foreach ($parts as $part) {
             $this->_parts[$counter++] = new self(array('headers' => $part['header'], 'content' => $part['body']));

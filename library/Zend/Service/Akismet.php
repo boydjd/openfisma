@@ -17,7 +17,7 @@
  * @subpackage Akismet
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Akismet.php 8504 2008-03-01 20:15:57Z weppos $
+ * @version    $Id: Akismet.php 8502 2008-03-01 19:56:46Z weppos $
  */
 
 

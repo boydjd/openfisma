@@ -4,23 +4,25 @@
  *
  * LICENSE
  *
- * This source file is subject to version 1.0 of the Zend Framework
- * license, that is bundled with this package in the file LICENSE.txt, and
- * is available through the world-wide-web at the following URL:
- * http://framework.zend.com/license/new-bsd. If you did not receive
- * a copy of the Zend Framework license and are unable to obtain it
- * through the world-wide-web, please send a note to license@zend.com
- * so we can mail you a copy immediately.
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
  * @package    Zend_Controller
- * @subpackage Action_Helper
+ * @subpackage Zend_Controller_Action_Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: AjaxContext.php 8120 2008-02-18 16:41:34Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: AjaxContext.php 9098 2008-03-30 19:29:10Z thomas $
  */
 
-/** Zend_Controller_Action_Helper_ContextSwitch */
+/**
+ * @see Zend_Controller_Action_Helper_ContextSwitch
+ */
 require_once 'Zend/Controller/Action/Helper/ContextSwitch.php';
 
 /**
@@ -29,7 +31,7 @@ require_once 'Zend/Controller/Action/Helper/ContextSwitch.php';
  * @uses       Zend_Controller_Action_Helper_Abstract
  * @category   Zend
  * @package    Zend_Controller
- * @subpackage Action_Helper
+ * @subpackage Zend_Controller_Action_Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */

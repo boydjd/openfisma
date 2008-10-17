@@ -53,7 +53,7 @@ require_once 'Zend/Server/Reflection/Prototype.php';
  * @subpackage Reflection
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: Abstract.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version $Id: Abstract.php 9714 2008-06-17 16:21:16Z alexander $
  */
 abstract class Zend_Server_Reflection_Function_Abstract
 {
@@ -339,6 +339,11 @@ abstract class Zend_Server_Reflection_Function_Abstract
             }
         }
 
+        if (count($paramTypesTmp) != $paramCount) {
+            throw new Zend_Server_Reflection_Exception(
+               'Variable number of arguments is not supported for services (except optional parameters). '
+             . 'Number of function arguments must currespond to actual number of arguments described in a docblock.');
+        }
 
         $paramTypes = array();
         foreach ($paramTypesTmp as $i => $param) {
