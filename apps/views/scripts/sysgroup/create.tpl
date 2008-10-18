@@ -1,6 +1,6 @@
 <div class="barleft">
     <div class="barright">
-    <p><b><?php echo $this->title;?> System Information</b>
+    <p><b><?php echo $this->title;?> Organization Information</b>
     </div>
 </div>
 <div class="form_box">

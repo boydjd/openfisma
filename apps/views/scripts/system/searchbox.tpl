@@ -1,7 +1,7 @@
 <?php
 $fid_array = array('name'=>'System Name',
                    'nickname'=>'NickName',
-                   'primary_office'=>'Primary Office',
+                   'organization'=>'Organization',
                    'confidentiality'=>'Confidentiality',
                    'integrity'=>'Integrity',
                    'availability'=>'Avalilability',

@@ -116,12 +116,12 @@ class PanelController extends SecurityController
         $this->_helper->actionStack('searchbox', 'Product');
         $this->_helper->actionStack('header');
     }
-    public function sysgroupAction()
+    public function organizationAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Sysgroup');
-        $this->_helper->actionStack('searchbox', 'Sysgroup');
+        $this->_helper->actionStack($sub, 'Organization');
+        $this->_helper->actionStack('searchbox', 'Organization');
         $this->_helper->actionStack('header');
     }
     public function sourceAction()

@@ -27,7 +27,7 @@
 <tr>
     <td class="tdc">&nbsp;<?php echo $system['name'];?></td>
     <td class="tdc">&nbsp;<?php echo $system['nickname'];?></td>
-    <td class="tdc">&nbsp;<?php echo $system['primary_office'];?></td>
+    <td class="tdc">&nbsp;<?php echo $system['organization'];?></td>
     <td class="tdc">&nbsp;<?php echo $system['confidentiality'];?></td>
     <td class="tdc">&nbsp;<?php echo $system['integrity'];?></td>
     <td class="tdc">&nbsp;<?php echo $system['availability'];?></td>

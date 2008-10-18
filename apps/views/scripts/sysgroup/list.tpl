@@ -1,40 +1,40 @@
 <div class="barleft">
 <div class="barright">
-<p><b>System Group List</b>
+<p><b>Organization List</b>
 </div>
 </div>
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 <tr align="center">
-    <th>System Group Name</th>
-    <th>System Group Nickname</th>
-    <?php if(Config_Fisma::isAllow('admin_sysgroups','update')){
+    <th>Organization Name</th>
+    <th>Organization Nickname</th>
+    <?php if(Config_Fisma::isAllow('admin_organizations','update')){
               echo'<th>Edit</th>';
           } 
-          if(Config_Fisma::isAllow('admin_sysgroups','read')){
+          if(Config_Fisma::isAllow('admin_organizations','read')){
               echo'<th>View</th>';
           }
-          if(Config_Fisma::isAllow('admin_sysgroups','delete')){
+          if(Config_Fisma::isAllow('admin_organizations','delete')){
               echo'<th>Del</th>';
           }
     ?>
 </tr>
-<?php foreach($this->sysgroup_list as $sysgroup){ ?>
+<?php foreach($this->organization_list as $organization){ ?>
 <tr>
-    <td class="tdc">&nbsp;<?php echo $sysgroup['name'];?></td>
-    <td class="tdc">&nbsp;<?php echo $sysgroup['nickname'];?></td>
-    <?php if(Config_Fisma::isAllow('admin_sysgroups','update')){ ?>
+    <td class="tdc">&nbsp;<?php echo $organization['name'];?></td>
+    <td class="tdc">&nbsp;<?php echo $organization['nickname'];?></td>
+    <?php if(Config_Fisma::isAllow('admin_organizations','update')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/sysgroup/sub/edit/id/<?php echo $sysgroup['id'];?>" title="edit the System Groups">
+        <a href="/panel/organization/sub/view/v/edit/id/<?php echo $organization['id'];?>" title="edit the Organizations">
         <img src="/images/edit.png" border="0"></a>
     </td>
-    <?php } if(Config_Fisma::isAllow('admin_sysgroups','read')){ ?>
+    <?php } if(Config_Fisma::isAllow('admin_organizations','read')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/sysgroup/sub/view/id/<?php echo $sysgroup['id'];?>" title="display the System Groups">
+        <a href="/panel/organization/sub/view/id/<?php echo $organization['id'];?>" title="display the Organizations">
         <img src="/images/view.gif" border="0"></a>
     </td>
-    <?php } if(Config_Fisma::isAllow('admin_sysgroups','delete')){ ?>
+    <?php } if(Config_Fisma::isAllow('admin_organizations','delete')){ ?>
     <td class="tdc" align="center">
-        <a href="/panel/sysgroup/sub/delete/id/<?php echo $sysgroup['id'];?>" title="delete the System Groups, then no restore after deleted" onclick="return delok('System Group');">
+        <a href="/panel/organization/sub/delete/id/<?php echo $organization['id'];?>" title="delete the Organizations, then no restore after deleted" onclick="return delok('Organization');">
         <img src="/images/del.png" border="0"></a>
     </td>
     <?php }?>

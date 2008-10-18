@@ -1,19 +1,19 @@
 <?php
-$fid_array = array('name'=>'System Group Name','nickname'=>'System Group Nickname');
+$fid_array = array('name'=>'Organization Name','nickname'=>'Organization Nickname');
 $this->declareVars(array('fid'=>'name'));
 ?>
 <div class="barleft">
 <div class="barright">
-<p><b>System Group Administration</b><span>
+<p><b>Organization Administration</b><span>
 </div>
 </div>
 <table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
-            <th>[<a href="/panel/sysgroup/sub/list">System Group List</a>] (total: <?php echo 
+            <th>[<a href="/panel/organization/sub/list">Organization List</a>] (total: <?php echo 
 $this->total;?>)</th>
-            <th>[<a href="/panel/sysgroup/sub/create" title="add new System Groups">Add 
-System Group</a>]</th>
+            <th>[<a href="/panel/organization/sub/create" title="add new Organizations">Add 
+Organization</a>]</th>
             <th>
                 <table align="center">
                     <tbody>
@@ -27,7 +27,7 @@ System Group</a>]</th>
             </th>
             <th>
                 <table align="center">
-                <form name="query" method="post" action="/panel/sysgroup/sub/list">
+                <form name="query" method="post" action="/panel/organization/sub/list">
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>

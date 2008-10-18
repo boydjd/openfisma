@@ -70,9 +70,9 @@ class Notification extends FismaModel
     const ACCOUNT_CREATED = 23;
     const ACCOUNT_LOCKED = 52;
     
-    const SYSGROUP_DELETED = 24;
-    const SYSGROUP_MODIFIED = 25;
-    const SYSGROUP_CREATED = 26;
+    const ORGANIZATION_DELETED = 24;
+    const ORGANIZATION_MODIFIED = 25;
+    const ORGANIZATION_CREATED = 26;
     
     const SYSTEM_DELETED = 27;
     const SYSTEM_MODIFIED = 28;

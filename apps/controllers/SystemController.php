@@ -88,21 +88,68 @@ class SystemController extends SecurityController
             parent::preDispatch();
         }
     }
+
+    /**
+     * Returns the standard form for creating, reading, and updating systems.
+     *
+     * @return Zend_Form
+     */
+    public function getSystemForm()
+    {
+        $form = Form_Manager::loadForm('system');
+        
+        $db = $this->_system->getAdapter();
+        $query = $db->select()->from(array('o'=>'organizations'), '*');
+        $ret =  $db->fetchAll($query);
+        if (!empty($ret)) {
+            foreach ($ret as $row) {
+                $form->getElement('organization_id')->addMultiOptions(array($row['id'] => $row['name']));
+            }
+        }
+        $array = array('HIGH'=>'High', 'MODERATE'=>'Moderate', 'LOW'=>'Low');
+        foreach ($array as $k=>$v) {
+            $form->getElement('confidentiality')->addMultiOptions(array($k=>$v));
+            $form->getElement('integrity')->addMultiOptions(array($k=>$v));
+            $form->getElement('availability')->addMultiOptions(array($k=>$v));
+        }
+        $type = array('GENERAL SUPPORT SYSTEM'=>'GENERAL SUPPORT SYSTEM',
+                      'MINOR APPLICATION'=>'MINOR APPLICATION',
+                      'MAJOR APPLICATION'=>'MAJOR APPLICATION');
+        foreach ($type as $k=>$v) {
+            $form->getElement('type')->addMultiOptions(array($k=>$v));
+        }
+        return Form_Manager::prepareForm($form);
+    }
+
+    /*
+     * list the systems from the search, if search none, it list all systems
+     */     
     public function listAction()
     {
         $req = $this->getRequest();
         $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
-        $query = $this->_system->select()->from('systems', '*');
+        $db = $this->_system->getAdapter();
+        $query = $db->select()->from(array('s'=>'systems'), 's.*')
+                               ->join(array('o'=>'organizations'), 's.organization_id = o.id',
+                                   array('organization'=>'o.name'));
         if (!empty($value)) {
-            $query->where("$field = ?", $value);
+            if ('organization' == $field) {
+                $query->where("o.name = ?", $value);
+            } else {
+                $query->where("s.$field = ?", $value);
+            }
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+        $query->order('s.name ASC')->limitPage($this->_paging['currentPage'],
             $this->_paging['perPage']);
-        $systemList = $this->_system->fetchAll($query)->toArray();
+        $systemList = $db->fetchAll($query);
         $this->view->assign('system_list', $systemList);
         $this->render();
     }
+
+    /**
+     *  Render the form for searching the systems.
+     */
     public function searchboxAction()
     {
         $req = $this->getRequest();
@@ -124,66 +171,75 @@ class SystemController extends SecurityController
         $this->view->assign('links', $pager->getLinks());
         $this->render();
     }
+
+    /**
+     * Display the form for creating a new system.
+     */
     public function createAction()
     {
-        $req = $this->getRequest();
-        $db = $this->_system->getAdapter();
-        $query = $db->select()->from(array(
-            'sg' => 'system_groups'
-        ), '*')->where('is_identity = ?', 0);
-        $sgList = $db->fetchAll($query);
-        $this->view->assign('sg_list', $sgList);
-        if ('save' == $req->getParam('s')) {
-            $errno = 0;
-            $system = $req->getParam('system');
-            $id = $this->_system->insert($system);
-            $this->_user = new User();
-            $this->_me->systems = $this->_user->getMySystems($this->_me->id);
-            $systemGroups = array(
-                'name' => $system['name'],
-                'nickname' => $system['nickname'],
-                'is_identity' => 1
-            );
-            $res = $db->insert('system_groups', $systemGroups);
-            if (!$res) {
-                $errno++;
-            }
-            $sysgroupId = $db->LastInsertId();
-            $res = $db->delete('systemgroup_systems', 'system_id = ' . $id);
-            $data = array(
-                'system_id' => $id,
-                'sysgroup_id' => $sysgroupId
-            );
-            $res = $db->insert('systemgroup_systems', $data);
-            if (!$res) {
-                $errno++;
-            }
-            $systemGroups = $this->_request->getParam('sysgroup');
-            foreach ($systemGroups as $systemgroupId) {
-                $data = array(
-                    'system_id' => $id,
-                    'sysgroup_id' => $systemgroupId
-                );
-                $res = $db->insert('systemgroup_systems', $data);
-                if (!$res) {
-                    $errno++;
+        $form = $this->getSystemForm('system');
+        $system = $this->_request->getPost();
+        if ($system) {
+            if ($form->isValid($system)) {
+                $system = $form->getValues();
+                unset($system['submit']);
+                unset($system['reset']);
+                
+                $array = array('LOW'=>1, 'MODERATE'=>2, 'HIGH'=>3);
+                $max = $array[$system['confidentiality']];
+                $system['security_categorization'] = $system['confidentiality'];
+                if ($max < $array[$system['integrity']]) {
+                    $max = $array[$system['integrity']];
+                    $system['security_categorization'] = $system['integrity'];
                 }
-            }
-            if ($errno > 0) {
-                $msg = "Failed to create the system";
-                $model = self::M_WARNING;
-            } else {
-                $this->_notification
-                     ->add(Notification::SYSTEM_CREATED,
-                         $this->_me->account, $id);
+                if ($max < $array[$system['availability']]) {
+                    $max = $array[$system['availability']];
+                    $system['security_categorization'] = $system['availability'];
+                }               
+                    
+                $systemId = $this->_system->insert($system);
+                if (! $systemId) {
+                    //@REVIEW 3 lines
+                    $msg = "Failure in creation";
+                    $model = self::M_WARNING;
+                } else {
+                    $this->_notification
+                         ->add(Notification::SYSTEM_CREATED,
+                             $this->_me->account, $systemId);
 
-                $msg = "System created successfully";
-                $model = self::M_NOTICE;
+                    $msg = "The system is created";
+                    $model = self::M_NOTICE;
+                }
+                $this->message($msg, $model);
+                $this->_forward('view', null, null, array('id' => $systemId));
+                return;
+            } else {
+                /**
+                 * @todo this error display code needs to go into the decorator,
+                 * but before that can be done, the function it calls needs to be
+                 * put in a more convenient place
+                 */
+                $errorString = '';
+                foreach ($form->getMessages() as $field => $fieldErrors) {
+                    if (count($fieldErrors>0)) {
+                        foreach ($fieldErrors as $error) {
+                            $label = $form->getElement($field)->getLabel();
+                            $errorString .= "$label: $error<br>";
+                        }
+                    }
+                }
+                // Error message
+                $this->message("Unable to create system:<br>$errorString", self::M_WARNING);
             }
-            $this->message($msg, $model);
         }
+        $this->view->title = "Create ";
+        $this->view->form = $form;
         $this->render();
     }
+
+    /**
+     *  Delete a specified system.
+     */
     public function deleteAction()
     {
         $errno = 0;
@@ -200,15 +256,9 @@ class SystemController extends SecurityController
         if (!empty($resultA) || !empty($resultB)) {
             $msg = "This system cannot be deleted because it is already".
                    " associated with one or more POAMS or assets";
+            $model = self::M_WARNING;
         } else {
             $res = $this->_system->delete('id = ' . $id);
-            if (!$res) {
-                $errno++;
-            }
-            $this->_user = new User();
-            $this->_me->systems = $this->_user->getMySystems($this->_me->id);
-            $res = $this->_system->getAdapter()
-                ->delete('systemgroup_systems', 'system_id = ' . $id);
             if (!$res) {
                 $errno++;
             }
@@ -228,78 +278,90 @@ class SystemController extends SecurityController
         $this->_forward('list');
     }
     
+    /**
+     * Display a single system record with all details.
+     */
     public function viewAction()
     {
-        $req = $this->getRequest();
-        $db = $this->_system->getAdapter();
-        $id = $req->getParam('id');
-        $query = $this->_system->select()->from('systems', '*')
-            ->where('id = ' . $id);
-        $system = $this->_system->getAdapter()->fetchRow($query);
-        $query->reset();
-        $query = $db->select()->from(array(
-            'sgs' => 'systemgroup_systems'
-        ), array())->join(array(
-            'sg' => 'system_groups'
-        ), 'sg.id = sgs.sysgroup_id', '*')
-            ->where('sgs.system_id = ?', $id)->where('sg.is_identity = 0');
-        $userSysgroupList = $db->fetchAll($query);
-        $this->view->assign('user_sysgroup_list', $userSysgroupList);
-        $this->view->assign('system', $system);
-        if ('edit' == $req->getParam('v')) {
-            $query = $db->select()->from(array(
-                'sg' => 'system_groups'
-            ), '*')->where('is_identity = ?', 0);
-            $sgList = $db->fetchAll($query);
-            $this->view->assign('id', $id);
-            $this->view->assign('sg_list', $sgList);
-            $this->render('edit');
+        $form = $this->getSystemForm();
+        $id = $this->_request->getParam('id');
+        $v = $this->_request->getParam('v');
+
+        $res = $this->_system->find($id)->toArray();
+        $system = $res[0];
+        $organization = new Organization();
+        $res = $organization->find($system['organization_id'])->toArray();
+        if (!empty($res)) {
+            $organizationName = $res[0]['name'];
         } else {
-            $this->render();
+            $organizationName = 'NONE';
         }
+        $system['organization'] = $organizationName;
+
+        if ($v == 'edit') {
+            $this->view->assign('viewLink',
+                                "/panel/system/sub/view/id/$id");
+            $form->setAction("/panel/system/sub/update/id/$id");
+        } else {
+            // In view mode, disable all of the form controls
+            $this->view->assign('editLink',
+                                "/panel/system/sub/view/id/$id/v/edit");
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
+        }
+        $form->setDefaults($system);
+        $this->view->form = $form;
+        $this->view->assign('id', $id);
+        $this->render($v);
     }
-    public function updateAction()
+
+    /**
+     * Updates system information after submitting an edit form.
+     *
+     * @todo cleanup this function
+     */
+    public function updateAction ()
     {
-        $req = $this->getRequest();
-        $db = $this->_system->getAdapter();
-        $id = $req->getParam('id');
-        $res = 0;
-        $system = $this->_request->getParam('system');
-        $res+= $this->_system->update($system, 'id = ' . $id);
+        $form = $this->getSystemForm();
+        $formValid = $form->isValid($_POST);
+        $system = $form->getValues();
 
-        $sysgroupData['name'] = $system['name'];
-        $sysgroupData['nickname'] = $system['nickname'];        
-        $query = $db->select()
-                    ->from(array('sgs' => 'systemgroup_systems'), array())
-                    ->join(array('sg' => 'system_groups'),
-                        'sgs.sysgroup_id = sg.id', 'id')
-                    ->where('sgs.system_id = ?', $id)
-                    ->where('sg.is_identity = 1');
-        $result = $db->fetchRow($query);
-        $res+= $db->update('system_groups',
-            $sysgroupData, 'id = ' . $result['id']);
-        $db->delete('systemgroup_systems',
-            "system_id = $id and sysgroup_id <> {$result['id']} ");
-        $systemGroups = $this->_request->getParam('sysgroup');
-        foreach ($systemGroups as $systemgroupId) {
-            $data = array(
-                'system_id' => $id,
-                'sysgroup_id' => $systemgroupId
-            );
-            $db->insert('systemgroup_systems', $data);
-        }
-        if ($res == 0) {
-            $msg = "Nothing changed in system information".
-                   " (except system groups)";
-            $model = self::M_WARNING;
+        $id = $this->_request->getParam('id');
+        if ($formValid) {
+            unset($system['submit']);
+            unset($system['reset']);
+            $res = $this->_system->update($system, 'id = ' . $id);
+            if ($res) {
+                //@REVIEW 3 lines
+                $this->_notification
+                     ->add(Notification::SYSTEM_MODIFIED,
+                         $this->_me->account, $id);
+
+                $msg = "The system is saved";
+                $model = self::M_NOTICE;
+            } else {
+                $msg = "Nothing changes";
+                $model = self::M_WARNING;
+            }
+            $this->message($msg, $model);
+            $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $this->_notification->add(Notification::SYSTEM_MODIFIED,
-                $this->_me->account, $id);
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors>0)) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
 
-            $msg = "System edited successfully";
-            $model = self::M_NOTICE;
+            // Error message
+            $this->message("Unable to update system:<br>$errorString", self::M_WARNING);
+            // On error, redirect back to the edit action.
+            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
-        $this->message($msg, $model);
-        $this->_forward('view', null, 'id=' . $id);
     }
 }

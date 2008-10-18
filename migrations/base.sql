@@ -418,10 +418,10 @@ INSERT INTO `functions` VALUES (42,'View Users','admin_users','read','','1');
 INSERT INTO `functions` VALUES (43,'Edit Users','admin_users','update','','1');
 INSERT INTO `functions` VALUES (44,'Delete Users','admin_users','delete','','1');
 INSERT INTO `functions` VALUES (45,'Create Users','admin_users','create','','1');
-INSERT INTO `functions` VALUES (58,'View System Groups','admin_system_groups','read','','1');
-INSERT INTO `functions` VALUES (59,'Delete System Groups','admin_system_groups','delete','','1');
-INSERT INTO `functions` VALUES (60,'Edit System Groups','admin_system_groups','update','','1');
-INSERT INTO `functions` VALUES (61,'Create System Groups','admin_system_groups','create','','1');
+INSERT INTO `functions` VALUES (58,'View Organizations','admin_organizations','read','','1');
+INSERT INTO `functions` VALUES (59,'Delete Organizations','admin_organizations','delete','','1');
+INSERT INTO `functions` VALUES (60,'Edit Organizations','admin_organizations','update','','1');
+INSERT INTO `functions` VALUES (61,'Create Organizations','admin_organizations','create','','1');
 INSERT INTO `functions` VALUES (66,'View Systems','admin_systems','read','','1');
 INSERT INTO `functions` VALUES (67,'Delete Systems','admin_systems','delete','','1');
 INSERT INTO `functions` VALUES (68,'Edit Systems','admin_systems','update','','1');
@@ -491,6 +491,13 @@ CREATE TABLE `notifications` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `organizations` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL default '',
+  `nickname` varchar(8) NOT NULL default '',
+  `father` int(10) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 CREATE TABLE `plugins` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
@@ -853,6 +860,7 @@ INSERT INTO `schema_version` VALUES (19);
 INSERT INTO `schema_version` VALUES (20);
 INSERT INTO `schema_version` VALUES (21);
 INSERT INTO `schema_version` VALUES (22);
+INSERT INTO `schema_version` VALUES (23);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -867,39 +875,21 @@ CREATE TABLE `sources` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `system_groups` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(64) NOT NULL default '',
-  `nickname` varchar(8) NOT NULL default '',
-  `is_identity` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `systemgroup_systems` (
-  `sysgroup_id` int(10) unsigned NOT NULL default '0',
-  `system_id` int(10) unsigned NOT NULL default '0',
-  KEY `sysgroup_id` (`sysgroup_id`),
-  KEY `system_id` (`system_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `systems` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(128) NOT NULL default '',
   `nickname` varchar(8) NOT NULL default '',
+  `organization_id` int(10) NOT NULL,
   `desc` text,
   `type` enum('GENERAL SUPPORT SYSTEM','MINOR APPLICATION','MAJOR APPLICATION') default NULL,
-  `primary_office` int(10) unsigned NOT NULL default '0' COMMENT 'fk to system_groups',
   `confidentiality` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
   `integrity` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
   `availability` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
+  `security_categorization` enum('NONE','LOW','MODERATE','HIGH') NOT NULL,
   `tier` int(10) unsigned NOT NULL default '0',
-  `criticality_justification` text NOT NULL,
-  `sensitivity_justification` text NOT NULL,
-  `criticality` enum('NONE','SUPPORTIVE','IMPORTANT','CRITICAL') NOT NULL,
+  `confidentiality_justification` text NOT NULL,
+  `integrity_justification` text NOT NULL,
+  `availability_justification` text NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `nickname` (`nickname`)
@@ -997,4 +987,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (23);
+INSERT INTO schema_version (schema_version) VALUES (24);

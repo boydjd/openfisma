@@ -79,8 +79,8 @@
         if(Config_Fisma::isAllow('admin_roles','read')){
             echo'<li><a href="/panel/role/sub/list">Roles</a>';
         }
-        if(Config_Fisma::isAllow('admin_system_groups','read')) {
-            echo'<li><a href="/panel/sysGroup/sub/list">System Group</a>';
+        if(Config_Fisma::isAllow('admin_organizations','read')) {
+            echo'<li><a href="/panel/Organization/sub/list">Organization</a>';
         }
         if(Config_Fisma::isAllow('admin_systems','read')) {
             echo'<li><a href="/panel/system/sub/list">Systems</a>';
