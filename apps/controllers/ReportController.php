@@ -71,6 +71,7 @@ class ReportController extends PoamBaseController
               ->addActionContext('swdisc', array('pdf', 'xls'))
               ->addActionContext('total', array('pdf', 'xls'))
               ->addActionContext('overdue', array('pdf', 'xls'))
+              ->addActionContext('plugin', array('pdf', 'xls'))
               ->initContext();
     }
 
@@ -622,5 +623,57 @@ class ReportController extends PoamBaseController
         } else {
             $this->render();
         }
+    }
+    
+    /**
+     * pluginAction() - Display the available plugin reports
+     *
+     * @todo Use Zend_Cache for the report menu
+     */         
+    public function pluginAction() 
+    {
+        // Build up report menu
+        $reportsConfig = new Zend_Config_Ini(CONFIGS . '/reports.conf');
+        $reports = $reportsConfig->toArray();
+        $this->view->assign('reports', $reports);
+        $this->render();
+    }
+
+    /**
+     * pluginAction() - Display the available plugin reports
+     */         
+    public function pluginreportAction() 
+    {
+        // Verify a plugin report name was passed to this action
+        $reportName = $this->_req->getParam('name');
+        if (!isset($reportName)) {
+            $this->forward('plugin');
+        }
+        
+        // Verify that the user has permission to run this report
+        $reportConfig = new Zend_Config_Ini(CONFIGS . '/reports.conf', $reportName);
+        $report = $reportConfig->toArray();
+        // @todo check the ROLE field of the $report array
+        
+        // Execute the report script
+        $reportScriptFile = CONFIGS . "/reports/$reportName.sql";
+        $reportScriptFileHandle = fopen($reportScriptFile, 'r');
+        while (!feof($reportScriptFileHandle)) {
+            $reportScript .= fgets($reportScriptFileHandle);
+        }
+        $db = Zend_Db::factory(Zend_Registry::get('datasource'));
+        $reportData = $db->fetchAll($reportScript);
+        
+        // Render the report results
+        if (isset($reportData[0])) {
+            $columns = array_keys($reportData[0]);
+        } else {
+            // @todo replace with a user level error message and forward to pluginAction()
+            throw new FismaException("No data for plugin report \"$reportName\"");
+        } 
+        $this->view->assign('columns', $columns);
+        $this->view->assign('rows', $reportData);
+        $this->render();
+
     }
 }
