@@ -1,21 +1,6 @@
 <?php
-include ( 'pdf/class.ezpdf.php');
-require_once('utils/rafutil.php');
-
-    $type_name = array('NONE'=>'None',
-                       'CAP'=>'Corrective Action Plan',
-                       'AR' =>'Accepted Risk',
-                       'FP' =>'False Positive');
-    $status_name = array('NEW' => 'New',
-                         'OPEN' =>'Open',
-                         'EN' => 'Evidence Needed',
-                         'EO' => 'Evidence Overdue',
-                         'EP(SSO)' =>'Evidence Provided to SSO',
-                         'EP(S&P)' => 'Evidence Provided to S&P',
-                         'EP' => 'Evidence Provided',
-                         'ES' => 'Evidence Submitted',
-                         'CLOSED' => 'Closed' );
-$p = &$this->poam ; //alias
+    include ( 'pdf/class.ezpdf.php');
+    require_once('local/rafutil.php');
 
     $headerOptions = array('showHeadings'=>0,
                            'width'=>500);
@@ -26,193 +11,160 @@ $p = &$this->poam ; //alias
     $tableOptions = array('showHeadings'=>0,
                           'shaded'=>0,
                           'showLines'=>2,
-                          'width'=>400
+                          'width'=>500
                           );
-define('FONTS', LIBS . '/pdf/fonts');
 
-$pdf = new Cezpdf();
-$pdf->selectFont(FONTS . "/Helvetica.afm");
+    $cellidx_lookup['HIGH']['LOW']          = 0;
+    $cellidx_lookup['HIGH']['MODERATE']     = 1;
+    $cellidx_lookup['HIGH']['HIGH']         = 2;
+    $cellidx_lookup['MODERATE']['LOW']      = 3;
+    $cellidx_lookup['MODERATE']['MODERATE'] = 4;
+    $cellidx_lookup['MODERATE']['HIGH']     = 5;
+    $cellidx_lookup['LOW']['LOW']           = 6;
+    $cellidx_lookup['LOW']['MODERATE']      = 7;
+    $cellidx_lookup['LOW']['HIGH']          = 8;
 
-$pdf->ezSetMargins(50,110,50,50);
+    $p = &$this->poam ; //alias
+    $sys = new System();
+    $rows = $sys->find($p['system_id']);
+    $act_owner = $rows->current()->toArray();
 
-$pdf->ezText('Risk Analysis Form (RAF)', 20, array('justification'=>'center'));
-$pdf->ezText('', 12, array('justification'=>'center')); //vertical blank
-$pdf->ezText('', 12, array('justification'=>'center'));
-$data = array(array('<b>Vulnerability/Weakness</b>'));
-$pdf->ezTable($data, null, null, $headerOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
+    $organization = new Organization();
+    $ret = $organization->find($act_owner['organization_id']);
+    $organization = $ret->current()->toArray();
 
-$data = array(
-array("<b>Weakness Tracking #:</b>",$p['id'],
-      "<b>Date Opened:</b>",        $p['create_ts']),
-array("<b>Principle Office</b>",    'FSA',
-      "<b>System Acronym:</b>",     $this->system_list[$p['system_id']]),
-array("<b>Finding Source</b>",      'FSA',
-      "<b>Repeat finding?:</b>",    'no'),
-array("<b>POA&M Type:</b>",         $type_name[$p['type']],
-      "<b>POA&M Status:</b>",       $status_name[$p['status']]),
-array("<b>Asset(s) Affected:</b>",  $p['asset_name'],"",""));
-$pdf->ezTable($data, null, null, $labelOptions);
+    $sensitivity = calSensitivity(array($act_owner['confidentiality'],
+                                        $act_owner['availability'],
+                                        $act_owner['integrity']));
 
-$data = array( array("<b>Finding:</b>",            $p['finding_data']));
-$pdf->ezTable($data, null, null, $labelOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-$data = array(array('<b>System Impact</b>'));
-$pdf->ezTable( $data, null, null, $headerOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-// the spaces are a quick hack to align the labels correctly
-$data = array(
-  array("<b>                                                 IMPACT LEVEL TABLE</b>"),
-  array("<b>                                                                            MISSION CRITICALITY</b>")
+    $availability = &$act_owner['availability'];
+    $impact = calcImpact($sensitivity, $availability);
+    $threat_likelihood = calcThreat($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
+
+    $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
+    $risk_index = $cellidx_lookup[$threat_likelihood][$impact];
+
+    define('FONTS', LIBS . '/pdf/fonts');
+
+    $pdf = new Cezpdf();
+    $pdf->selectFont(FONTS . "/Helvetica.afm");
+
+    $pdf->ezSetMargins(50,110,50,50);
+
+    $pdf->ezText('Risk Analysis Form (RAF)', 20, array('justification'=>'center'));
+    $pdf->ezText('', 12, array('justification'=>'center')); //vertical blank
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    $data = array(array('<b>Finding Information</b>'));
+    $pdf->ezTable($data, null, null, $headerOptions);
+    $pdf->ezText('', 12, array('justification'=>'center'));
+
+    $data = array(array("<b>Finding Number:</b>", $p['id'],
+                        "<b>Finding Source:</b>", strip_tags($p['source_name'])),
+                  array("<b>Date Opened</b>", $p['create_ts'],
+                        "<b>Date Discovered:</b>", $p['discover_ts']),
+                  array("<b>Organization</b>", $organization['name'],
+                        "<b>Infomation System:</b>", $this->system_list[$p['system_id']]),
+                  array("<b>Asset(s) Affected:</b>", $p['asset_name'],"",""),
+                  array("<b>Finding Description:</b>", strip_tags($p['finding_data']),"",""),
+                  array("<b>Recommendation:</b>",  strip_tags($p['action_suggested']),"",""),
+                  array("<b>Risk Level:</b>",  $p['threat_level'],"",""));
+    $pdf->ezTable($data, null, null, $labelOptions);
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
+    $data = array(array('<b>Mitigation Strategy</b>'));
+    $pdf->ezTable($data, null, null, $headerOptions);
+    $pdf->ezText('', 12, array('justification'=>'center'));
+    $data = array(array("<b>Course of Action:</b>", strip_tags($p['action_planned']), "", ""),
+                  array("<b>Course of Description:</b>", strip_tags($p['action_resources']), "", ""),
+                  array("<b>Estimated Completion Date:</b>", $p['action_current_date'], "", "")); 
+    $pdf->ezTable($data, null, null, $labelOptions);
+
+    $pdf->ezText('', 12, array('justification'=>'center'));
+    $data = array(array('<b>Risk Analysis</b>'));
+    $pdf->ezTable($data, null, null, $headerOptions);
+    $pdf->ezText('', 12, array('justification'=>'center'));
+    $data = array(array("", "<b><i>Security Categorization</i></b>"),
+                  array("<b>Security Categorization:</b>", $organization['security_categorization']),
+                  array("<b>Security Categorization Description:</b>", "The loss of confidentiality, integrity, or availability could be expected to have a serious adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data."));
+    $pdf->ezTable($data, null, null, $labelOptions);
+
+    $data = array(array("", "<b><i>Overall likelihood Rating</i></b>"));
+    $pdf->ezTable($data, null, null, $labelOptions);
+    $data = array(array("To derive an overall likelihood rating that indicates the probability that a potential vulnerability may be exercised within the construct of the associated threat environment, the following governing factors must be considered: Threat-source motivation and capability, Nature of the vulnerability, and Existence and effectiveness of current controls."));
+    $pdf->ezTable($data, null, null, $labelOptions);
+
+    $data = array(array("<b>Threat:</b>", strip_tags($p['threat_source']), "", ""),
+                  array("<b>Threat Level:</b>", $p['threat_level'], "", ""),
+                  array("<b>Countermeasures:</b>", strip_tags($p['cmeasure']), "", ""),
+                  array("<b>Countermeasures Effectiveness:</b>", strip_tags($p['cmeasure_effectiveness']), "", ""));
+    $pdf->ezTable($data, null, null, $labelOptions);
+
+    $data = array(array("<b>                                               Overall Threat Likelihood Table</b>"),
+                  array("<b>                                                                       Countermeasure</b>")
 );
+    $pdf->ezTable($data, null, null, $tableOptions);
+    $cell[0] = $threat_index == 0?'<b>high</b>':'high';
+    $cell[1] = $threat_index == 1?'<b>moderate</b>':'moderate';
+    $cell[2] = $threat_index == 2?'<b>low</b>':'low';
+    $cell[3] = $threat_index == 3?'<b>moderate</b>':'moderate';
+    $cell[4] = $threat_index == 4?'<b>moderate</b>':'moderate';
+    $cell[5] = $threat_index == 5?'<b>low</b>':'low';
+    $cell[6] = $threat_index == 6?'<b>low</b>':'low';
+    $cell[7] = $threat_index == 7?'<b>low</b>':'low';
+    $cell[8] = $threat_index == 8?'<b>low</b>':'low';
+    $data = array(array("<b>THREAT SOURCE</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
+                  array("<b>HIGH</b>", $cell[0], $cell[1], $cell[2]),
+                  array("<b>MODERATE</b>", $cell[3], $cell[4], $cell[5]),
+                  array("<b>LOW</b>", $cell[6], $cell[7], $cell[8]));    
+    $pdf->ezTable($data, null, null, $tableOptions);
+    $overall_impact = calcImpact($p['threat_level'], $p['cmeasure_effectiveness']);
+    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_impact."</b> level of risk to agency operations. "));
+    $pdf->ezTable($data, null, null, $labelOptions);
+    $pdf->ezText('', 12, array('justification'=>'center'));
 
-$pdf->ezTable($data, null, null, $tableOptions);
-$data = array(
-  array("<b>DATA SENSITIVITY</b>","<b>SUPPORTIVE</b>","<b>IMPORTANT</b>","<b>CRITICAL</b>"),
-  array("<b>HIGH</b>",     "low", "moderate", "high"),
-  array("<b>MODERATE</b>", "low", "moderate", "moderate"),
-  array("<b>LOW</b>",      "low", "low",      "low"),
-);    
+    $data = array(array("", "<b><i>Overall Risk Level</i></b>"));
+    $pdf->ezTable($data, null, null, $labelOptions);
 
-$pdf->ezTable($data, null, null, $tableOptions);
-
-$pdf->ezText('', 12, array('justification'=>'center'));
-
-$sys = new System();
-$rows = $sys->find($this->poam['system_id']);
-$act_owner = $rows->current()->toArray();
-$sensitivity = calSensitivity(array($act_owner['confidentiality'],
-                     $act_owner['availability'],
-                     $act_owner['integrity']) );
-
-$availability = &$act_owner['availability'];
-
-$impact = calcImpact($sensitivity, $availability);
-$threat_likelihood = calcThreat($this->poam['threat_level'], 
-                                 $this->poam['cmeasure_effectiveness']);
-
-$data = array(
-  array('<b>Mission Criticality:</b>',      $act_owner['criticality'],'',''),
-  array('<b>Criticality Justification:</b>',$act_owner['criticality_justification'],'',''),
-  array('<b>Data Sensitivity:</b>',         $sensitivity,'',''),
-  array('<b>Sensitivity Justification:</b>',$act_owner['sensitivity_justification'],'',''),
-  array('<b>Overall Impact Level:</b>',     $impact,'','')
+    $data = array(array("<b>                                                Overall Risk Level Analysis</b>"),
+                  array("<b>                                                            Security Categorization of Information System</b>")
 );
-$pdf->ezTable($data, null, null, $labelOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
+    $pdf->ezTable($data, null, null, $tableOptions);
+     
+    $cell[0] = $risk_index == 0?'<b>low</b>':'low';
+    $cell[1] = $risk_index == 1?'<b>moderate</b>':'moderate';
+    $cell[2] = $risk_index == 2?'<b>high</b>':'high';
+    $cell[3] = $risk_index == 3?'<b>low</b>':'low';
+    $cell[4] = $risk_index == 4?'<b>moderate</b>':'moderate';
+    $cell[5] = $risk_index == 5?'<b>moderate</b>':'moderate';
+    $cell[6] = $risk_index == 6?'<b>low</b>':'low';
+    $cell[7] = $risk_index == 7?'<b>low</b>':'low';
+    $cell[8] = $risk_index == 8?'<b>low</b>':'low';
+                                                
+    $data = array(array("<b>Threat Likelihood</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
+                  array("<b>HIGH</b>", $cell[0], $cell[1], $cell[2]),
+                  array("<b>MODERATE</b>", $cell[3], $cell[4], $cell[5]),
+                  array("<b>LOW</b>", $cell[6], $cell[7], $cell[8]));    
+    $pdf->ezTable($data, null, null, $tableOptions);
+    $overall_impact = calcImpact($threat_likelihood, $impact);
+    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_impact."</b> level of risk to agency operations. "));
+    $pdf->ezTable($data, null, null, $labelOptions);
+    $pdf->ezText('', 12, array('justification'=>'center'));
 
-$data = array(array('<b>Threat(s) and Countermeasure(s)</b>'));
-$pdf->ezTable( $data, null, null, $headerOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
+    $data = array(array('<b>Risk Level</b>', 'Risk Description and Necessary Actions'),
+                  array('<b>High:</b>', 'If an observation or finding is evaluated as a high risk, there is a strong need for corrective measures. An existing system may continue to operate, but a corrective action plan must be put in place as soon as possible.'),
+                  array('<b>Moderate:</b>', 'If an observation is rated as medium risk, corrective actions are needed and a plan must be developed to incorporate these actions within a reasonable period of time.'),
+                  array('<b>Low:</b>', 'If an observation is described as low risk, the system’s AO must determine whether corrective actions are still required or decide to accept the risk.'));
 
-$data = array(
-  array("<b>                                               THREAT LIKELIHOOD TABLE</b>"),
-  array("<b>                                                                              COUNTERMEASURE</b>")
-);
-$pdf->ezTable($data, null, null, $tableOptions);
-$data = array(
-  array("<b>THREAT SOURCE</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
-  array("<b>HIGH</b>",     "high",     "moderate", "low"),
-  array("<b>MODERATE</b>", "moderate", "moderate", "low"),
-  array("<b>LOW</b>",      "low",      "low",      "low"),
-);    
-$pdf->ezTable($data, null, null, $tableOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
+    $pdf->ezTable($data, null, null, $tableOptions);
+    $pdf->ezText('', 12, array('justification'=>'center'));
 
-$data = array(
-  array('<b>Specific Countermeasures:</b>',     $p['cmeasure'],'',''),
-  array('<b>Countermeasure Effectiveness:</b>', $p['cmeasure_effectiveness'],'',''),
-  array('<b>Effectiveness Justification:</b>',  $p['cmeasure_justification'],'',''),
-  array('<b>Threat Source(s):</b>',             $p['threat_source'],'',''),
-  array('<b>Threat Impact:</b>',                $p['threat_level'],'',''),
-  array('<b>Impact Level Justification:</b>',   $p['threat_justification'],'',''),
-  array('<b>Overall Threat Likelihood:</b>',    $threat_likelihood,'','')           
-);
-$pdf->ezTable($data, null, null, $labelOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-
-
-$data = array(array('<b>Risk Level</b>'));
-$pdf->ezTable($data, null, null, $headerOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-
-$data = array(
-  array("<b>                                                  RISK LEVEL TABLE</b>"),
-  array("<b>                                                                              IMPACT</b>")
-);
-$pdf->ezTable($data, null, null, $tableOptions);
-                                                     
-$data = array(
-  array("<b>LIKELIHOOD</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
-  array("<b>HIGH</b>",     "low",  "moderate", "high"),
-  array("<b>MODERATE</b>", "low",  "moderate", "moderate"),
-  array("<b>LOW</b>",      "low",  "low",      "low"),
-);    
-$pdf->ezTable($data, null, null, $tableOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-
-$overall_impact = calcImpact($threat_likelihood, $impact);
-
-$data = array(
-  array('<b>High:</b>', 'Strong need for corrective action'),
-  array('<b>Moderate:</b>', 'Need for corrective action within a reasonable time period.'),
-  array('<b>Low:</b>', 'Authorizing official may correct or accept the risk'),
-  array('<b>Overall Risk Level:</b>', $overall_impact)       
-);
-
-$pdf->ezTable($data, null, null, $labelOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-// Mitigration Strategy section
-$data = array(array('<b>Mitigation Strategy</b>'));
-$pdf->ezTable($data, null, null, $headerOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-
-$data = array(
-  array('<b>Recommendation(s):</b>', $p['action_suggested']),
-  array('<b>Course of Action:</b>', $p['action_planned']),
-  array('<b>Est. Completion Date:</b>', $p['action_est_date']),    
-);
-
-$pdf->ezTable($data, null, null, $labelOptions);
-
-$pdf->ezText('', 12, array('justification'=>'center'));
-// Accepted Risk section (conditional on poam type)
-if ($p['type'] == 'AR') {
-  $data = array(array('<b>AR - (Recommend accepting this low risk)</b>'));
-  $pdf->ezTable($data, null, null, $headerOptions);
-  $pdf->ezText('', 12, array('justification'=>'center'));
-  
-  $pdf->ezText('<b>Vulnerability:</b>', 12, null);
-  $pdf->ezText($p['finding_data'], 12, null);
-  $pdf->ezText('<b>Business Case Justification for accepted low risk:</b>', 12, null);
-  $pdf->ezText($p['action_planned'], 12, null);
-  $pdf->ezText('<b>Mitigating Controls:</b>', 12, null);
-  $pdf->ezText($p['cmeasure'], 12, null);                              
-  $pdf->ezText('', 12, array('justification'=>'center'));
-}
-
-// Endorsement of Risk Level Analysis section
-$data = array(array('<b>Endorsement of Risk Level Analysis</b>'));
-$pdf->ezTable($data, null, null, $headerOptions);
-$pdf->ezText('', 12, array('justification'=>'center'));
-
-$data = array(
-  array('Concur __ ', 'Non-Concur __ ','_____________________________________________','___/___/______'),
-  array('',           '',              'Business Owner/Representative',                'Date')
-);
-
-$pdf->ezTable($data,
-              null,
-              null,
-              $labelOptions
-             );
-
-$pdf->ezText('', 12, array('justification'=>'center'));
-$footer = 'WARNING: This report is for internal, official use only.  This report contains sensitive computer security related information. Public disclosure of this information would risk circumvention of the law. Recipients of this report must not, under any circumstances, show or release its contents for purposes other than official action. This report must be safeguarded to prevent improper disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.';
-$pdf->ezText($footer, 9, array('justification'=>'left'));
+    $pdf->ezText('', 12, array('justification'=>'center'));
+    $footer = 'WARNING: This report is for internal, official use only.  This report contains sensitive computer security related information. Public disclosure of this information would risk circumvention of the law. Recipients of this report must not, under any circumstances, show or release its contents for purposes other than official action. This report must be safeguarded to prevent improper disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.';
+    $pdf->ezText($footer, 9, array('justification'=>'left'));
 
 // IE has a bug where it can't display certain mimetypes if a no-cache header is sent,
 // so we need to switch the header right before we stream the PDF.
-header('Pragma: private');
-header('Cache-Control: private');
-echo $pdf->ezOutput();
+    header('Pragma: private');
+    header('Cache-Control: private');
+    echo $pdf->ezOutput();

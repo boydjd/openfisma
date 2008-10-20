@@ -12,7 +12,7 @@
             </tr>
             <tr>
                 <td align='center'></td>
-                <td colspan='3' align='center'><b>COUNTERMEASURE Effectiveness</b></td>
+                <td colspan='3' align='center'><b>Countermeasure Effectiveness</b></td>
             </tr>
             <tr>
                 <td width="25%"><b>THREAT SOURCE</b></td>
