@@ -37,7 +37,7 @@ $includeDirectories = array(
     LIBS,
     LOCAL,
     // Have to hack in the path to Pear since it doesn't follow ZF standards:
-    VENDORS . '/Pear'
+    LIBS . '/Pear'
 );
 ini_set('include_path',
     implode(PATH_SEPARATOR, $includeDirectories) . PATH_SEPARATOR . ini_get('include_path'));
