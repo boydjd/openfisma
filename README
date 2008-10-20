@@ -96,11 +96,16 @@ directory contains the small amount of configuration code that your application
 will need, including the database configuration, the environment structure, and 
 routing of incoming web requests. 
 
-application/controllers/ - Default controller directory
+application/controllers/ - Default controller directory. The controllers 
+subdirectory is where Zend looks to find controller classes. A controller handles 
+a web request from the user.
 
-application/models/ - Default models directory
+application/models/ - Default models directory. The models subdirectory holds the 
+classes that model and wrap the data stored in our application's database. 
 
-application/views/ - Default views directory
+application/views/ - Default views directory. The views subdirectory holds the 
+display templates to fill in with data from our application, convert to HTML, 
+and return to the user's browser.
 
 application/views/helpers - TODO fill in description
 application/views/filters - TODO fill in description
