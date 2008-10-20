@@ -83,10 +83,12 @@ class UserController extends MessageController
                     "This username does not exist: ".$username);
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
+            
+            $whologin = $whologin->toArray();
 
             // If the account is locked...
             // (due to manual lock, expired account, password errors, etc.)
-            if ( ! $whologin->is_active && 'database' == Config_Fisma::readSysConfig('auth_type')) {
+            if ( ! $whologin['is_active'] && 'database' == Config_Fisma::readSysConfig('auth_type')) {
                 $unlockEnabled = Config_Fisma::readSysConfig('unlock_enabled');
                 if (1 == intval($unlockEnabled)) {
                     $unlockDuration = Config_Fisma::readSysConfig('unlock_duration');
@@ -95,7 +97,7 @@ class UserController extends MessageController
                     // unlock automatically, then calculate how much time is
                     // left on the lock.
                     $now = new Zend_Date();
-                    $terminationTs = new Zend_Date($whologin->termination_ts);
+                    $terminationTs = new Zend_Date($whologin['termination_ts']);
                     $terminationTs->add($unlockDuration, Zend_Date::SECOND);
                     $unlockRemaining = clone $terminationTs;
                     $unlockRemaining->sub($now);
@@ -107,7 +109,7 @@ class UserController extends MessageController
                         $this->_user->update(array('is_active'=>1,
                                                    'failure_count'=>0,
                                                    'termination_ts'=>NULL),
-                                                   'id  = '.$whologin->id);
+                                                   'id  = '.$whologin['id']);
                     } else {
                         throw new Zend_Auth_Exception('Your user account has
                         been locked due to ' .
@@ -138,22 +140,22 @@ class UserController extends MessageController
             
             if (!$result->isValid()) {
                 $this->_user->log(User::LOGINFAILURE,
-                                  $whologin->id,
+                                  $whologin['id'],
                                   'Password Error');
                 $notification = new Notification();
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
                                    null,
-                                   "User: {$whologin->account}");
+                                   "User: {$whologin['account']}");
 
-                if ($whologin->failure_count >=
+                if ($whologin['failure_count'] >=
                     Config_Fisma::readSysConfig('failure_threshold') - 1) {
                     $this->_user->log(User::TERMINATION,
-                                      $whologin->id,
+                                      $whologin['id'],
                                       'Account locked');
                     $notification = new Notification();
                     $notification->add(Notification::ACCOUNT_LOCKED,
                                        null,
-                                       "User: {$whologin->account}");
+                                       "User: {$whologin['account']}");
                     throw new Zend_Auth_Exception('Your account has been locked
                         due to ' .
                         Config_Fisma::readSysConfig("failure_threshold") .
@@ -168,11 +170,11 @@ class UserController extends MessageController
             
             // At this point, the user is authenticated.
             // Now check if the account has expired.
-            $_me = (object)($whologin->toArray());
+            $_me = (object)$whologin;
             $period = Config_Fisma::readSysConfig('max_absent_time');
             $deactiveTime = new Zend_Date();
             $deactiveTime->sub($period, Zend_Date::DAY);
-            $lastLogin = new Zend_Date($_me->last_login_ts,
+            $lastLogin = new Zend_Date($whologin['last_login_ts'],
                                        'YYYY-MM-DD HH-MI-SS');
 
             if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) 
@@ -188,8 +190,8 @@ class UserController extends MessageController
             $this->_user->log(User::LOGIN, $_me->id, "Success");
             $notification = new Notification();
             $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
-                $whologin->account,
-                "UserId: {$whologin->id}");
+                $whologin['account'],
+                "UserId: {$whologin['id']}");
 
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
@@ -210,7 +212,7 @@ class UserController extends MessageController
             // Check to see if the user needs to review the rules of behavior.
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
-            $nextRobReview = new Zend_Date($_me->last_rob, 'Y-m-d');
+            $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
             $nextRobReview->add(Config_Fisma::readSysConfig('rob_duration'), Zend_Date::DAY);
             $now = new Zend_Date();
             if ($now->isEarlier($nextRobReview)) {
