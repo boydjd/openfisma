@@ -10,33 +10,32 @@
  */
 
 // Sets the root path of the OpenFISMA application
-define('ROOT', 			realpath('../')); 
+define('ROOT',          realpath('../')); 
  
-define('APPS', 			ROOT . '/apps');
+define('APPS',          ROOT . '/apps');
 
-define('CONFIGS', 		APPS . '/config');
-define('CONTROLLERS', 	APPS . '/controllers');
-define('MODELS', 		APPS . '/models');
-define('VIEWS', 		APPS . '/views');
+define('CONFIGS',       APPS . '/config');
+define('CONTROLLERS',   APPS . '/controllers');
+define('MODELS',        APPS . '/models');
+define('VIEWS',         APPS . '/views');
 
-define('LOG', 			ROOT . '/log');
-define('MIGRATIONS', 	ROOT . '/migrations');
-define('TEST', 			ROOT . '/test');
-define('VENDORS', 		ROOT . '/library');
-define('LOCAL', 		ROOT . '/library/local');
-define('WEB_ROOT', 		ROOT . '/public');
+define('LOG',           ROOT . '/log');
+define('MIGRATIONS',    ROOT . '/migrations');
+define('TEST',          ROOT . '/test');
+define('LIBS',          ROOT . '/library');
+define('LOCAL',         ROOT . '/library/local');
+define('WEB_ROOT',      ROOT . '/public');
 
 // Update the class path for includes
 $includeDirectories = array(
-	APPS,
-	CONFIGS,
+    APPS,
+    CONFIGS,
     CONTROLLERS,
     MODELS,
-	VIEWS,
-	LOG,
-	MIGRATIONS,
-    VENDORS,
-	LOCAL,
+    VIEWS,
+    MIGRATIONS,
+    LIBS,
+    LOCAL,
     // Have to hack in the path to Pear since it doesn't follow ZF standards:
     VENDORS . '/Pear'
 );
