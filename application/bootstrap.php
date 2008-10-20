@@ -23,11 +23,10 @@
  * @version   $Id$
  */
 
-// The paths.php file needs to be included before defining the loadClass
-// function, in order for that function to know which paths to search.
+// The paths.php file contains constants representing commonly accessed paths in the application.
 require_once "config/paths.php";
 
-// Register our custom class loader:
+// Register the class loader:
 require_once "Zend/Loader.php";
 Zend_Loader::registerAutoload();
 
@@ -42,8 +41,8 @@ if (defined('COMMAND_LINE')) {
 
 // Load config.ini file into config object, then set options for Zend_Session
 $config = new Zend_Config_Ini('config.ini', 'development');
-$config->save_path = ROOT . '/logs/data/sessions'->save_path; 
-Zend_Session::setOptions($config->toArray());
+$sessionConfig['save_path'] = ROOT . $config->save_path;
+Zend_Session::start($sessionConfig);
 
 // Initialize the view renderer
 // @todo what is the difference between $viewRenderer and $viewRender?
