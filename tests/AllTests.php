@@ -26,7 +26,7 @@
  * @version   $Id:$
  */
 
-require_once dirname(__FILE__).'/../paths.php';
+require_once dirname(dirname(__FILE__)).'/application/config/paths.php';
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
 set_include_path(get_include_path() .
@@ -48,7 +48,8 @@ class AllTests
     /**
      * main() - Test controller main method
      */
-    public static function main() {
+    public static function main()
+    {
         PHPUnit_TextUI_TestRunner::run( self::suite() );
     }
 
@@ -62,7 +63,8 @@ class AllTests
      *
      * @return PHPUnit_Framework_TestSuite
      */
-    public static function suite() {
+    public static function suite()
+    {
         $suite = new PHPUnit_Framework_TestSuite('phpUnderControl - AllTests');
         
         // Load in all files which are in subdirectories of the test
@@ -88,7 +90,8 @@ class AllTests
      * @param string $directory The name of the directory
      * @param PHPUnit2_Framework_TestSuite $suite Which suite to add these to
      */
-    public static function loadAllTests($path, $directory, $suite) {
+    public static function loadAllTests($path, $directory, $suite)
+    {
         $directoryHandle = opendir($path . '/' . $directory);
         
         // Loop through all files and subdirectories:

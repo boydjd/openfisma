@@ -39,7 +39,8 @@ define('SELENIUM_CONFIG_FILE', CONFIGS . '/selenium.conf');
  * @package Test
  * @version $Id:$
  */
-abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCase {
+abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCase
+{
     /**
      * Handle for the database connection.
      */
@@ -52,10 +53,11 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
      * setUp() - Set up access to the Selenium server based on the contents of
      * the selenium.conf configuration file.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         // Run the application bootstrap in command line mode
         define('COMMAND_LINE', true);
-        require_once(dirname(dirname(__FILE__)) . '/apps/bootstrap.php');
+        require_once(APPS . '/bootstrap.php');
         
         // Initialize our DB connection
         $this->_db = Zend_Db::factory(Zend_Registry::get('datasource'));
@@ -75,7 +77,8 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
      *
      * @param string|array $tables The name[s] of the table[s] to truncate
      */
-    protected function truncateTables($tables) {
+    protected function truncateTables($tables)
+    {
         if (is_array($tables)) {
             foreach ($tables as $table) {
                 $this->truncateTable($table);
@@ -92,8 +95,59 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
      *
      * @param string $table The name of the table to truncate
      */
-    private function truncateTable($table) {
+    private function truncateTable($table)
+    {
         $truncate = $this->_db->prepare("TRUNCATE TABLE $table");
         $truncate->execute();
     }
+
+    /**
+     * createDefaultUser() - Create a user with the default name and password
+     * (self::USER_NAME and self::PASSWORD) and give that the user the specified
+     * role.
+     *
+     * Notice: this function will truncate the users and user_roles tables, so
+     * be sure to call it <i>before</i> creating test data in those tables.
+     *
+     * @param string $role Nickname of role to assign to this user.
+     */
+    protected function createDefaultUser($role)
+    {
+        $this->truncateTables(array('users', 'user_roles'));
+
+        // Create the user
+        $userTable = new User($this->_db);
+        $userId = $userTable->insert(
+            array(
+                'account' => self::USER_NAME,
+                'password' => md5(self::PASSWORD),
+                'is_active' => 1,
+                'last_rob' => new Zend_Db_Expr('now()')
+            )
+        );
+
+        // Give the new user the specified role
+        $grantRole = $this->_db->prepare(
+            "INSERT INTO user_roles
+                  SELECT $userId,
+                         r.id
+                    FROM roles r
+                   WHERE r.nickname like '$role'"
+        );
+        $grantRole->execute();
+    }
+
+    /**
+     * login() - Login to OpenFISMA
+     */
+    protected function login()
+    {
+        $this->open('/user/logout');
+        $this->type('username', self::USER_NAME);
+        $this->type('userpass', self::PASSWORD);
+        $this->click("//input[@value='Login']");
+        $this->waitForPageToLoad();
+        $this->assertTextPresent(self::USER_NAME . ' is currently logged in');
+    }
+    
 }

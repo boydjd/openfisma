@@ -30,21 +30,18 @@ Running Unit Tests
 PHPUnit test cases are stored under the /test directory (where this README is
 located).
 
-These test cases can be run with the phpunit command by specifying the name of
-the test to run. E.g.:
+The entire test suite can be run easily using this command:
 
-$ cd /test/config
-$ ls
-ConfigTest.php
-$ phpunit ConfigTest
-...
+$ cd /path/to/project/test
+$ phpunit AllTests.php
 
-Notice that phpunit usually needs the name of the class; it finds the class by
-looking for a file with the same name and a .php extension.
+An individual test can be run by specifiying it directly:
 
-In order to run all tests, there is a special test suite included call AllTests
-which is stored in the /test/AllTests.php file. This file has a slightly
-different syntax for executing all of the test cases.
+$ cd /path/to/project/test/model
+$ phpunit User.php
+
+Note: in order to run all tests, you will need to have your Selenium-RC server
+configured correctly. (See "Running Functional Tests" below.)
 
 ==================
 Writing Unit Tests
@@ -60,7 +57,7 @@ the word "test" is considered a separate test and will be executed in isolation.
 This naming convention helps OpenFISMA automatically locate and run unit tests:
 
 E.g.:
-$ cat > /test/config/NewTest.php
+$ cat > /path/to/project/test/config/NewTest.php
 require 'PHPUnit/Framework/TestCase.php';
 
 class Test_Config_NewTest extends PHPUnit_Framework_TestCase {
@@ -72,12 +69,11 @@ class Test_Config_NewTest extends PHPUnit_Framework_TestCase {
 ========================
 Running Functional Tests
 ========================
-Selenium test cases are stored under the test/selenium directory. In order to
-execute Selenium test cases, you will need to set up a Selenium RC server. Once
-you have set up the server, then you need to edit the /apps/config/selenium.conf
-file to let OpenFISMA know how to connect to your Selenium RC server. Once this
-configuration is complete, the functional tests can be executed just like any of
-the other PHPUnit tests.
+In order to execute Selenium test cases, you will need to set up a Selenium RC
+server. Once you have set up the server, then you need to edit the
+/apps/config/selenium.conf file to let OpenFISMA know how to connect to your
+Selenium RC server. Once this configuration is complete, the functional tests
+can be executed just like any of the other PHPUnit tests.
 
 ========================
 Writing Functional Tests
@@ -87,3 +83,13 @@ class sets up the connection to the Selenium RC server by reading the
 selenium.conf file. Functional tests can then be written using PHP Selenese.
 The structure of the files is otherwise identical to the basic unit tests -- see
 the section above.
+
+By convention, Selenium test cases are stored inside the /test/selenium
+directory.
+
+$ cat > /path/to/project/test/selenium/config/NewTest.php
+class Test_Selenium_Config_NewTest extends Test_FismaSeleniumTest {
+    function testNew() {
+        ; // do something!
+    }
+}

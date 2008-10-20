@@ -36,44 +36,17 @@ require_once 'FismaSeleniumTest.php';
  * @subpackage Test_Admin
  * @version    $Id:$
  */
-class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest {
-
+class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest
+{
     /**
-     * testCreate() - Create a user object
+     * testCrud() - Test the create, read, update, and delete for user objects
      */
-    public function testCreate() {
-        $this->truncateTables(array('users', 'user_roles'));
-
-        // Create an admin user for this test
-        $userTable = new User($this->_db);
-        $adminUserId = $userTable->insert(
-            array(
-                'account' => self::USER_NAME,
-                'password' => md5(self::PASSWORD),
-                'is_active' => 1,
-                'last_rob' => new Zend_Db_Expr('now()')
-            )
-        );
-        
-        // Give the new user an admin role
-        $grantRole = $this->_db->prepare(
-            "INSERT INTO user_roles
-                  SELECT $adminUserId,
-                         r.id
-                    FROM roles r
-                   WHERE r.nickname like 'ADMIN'"
-        );
-        $grantRole->execute();
-        
-        // Begin test: login
-        $this->open('/user/logout');
-        $this->type('username', self::USER_NAME);
-        $this->type('userpass', self::PASSWORD);
-        $this->click("//input[@value='Login']");
-        $this->waitForPageToLoad();
+    public function testCrud()
+    {
+        $this->createDefaultUser('ADMIN');
+        $this->login();
         
         // Create user
-        $this->assertTextPresent(self::USER_NAME . ' is currently logged in');
         $this->click("link=Users");
         $this->waitForPageToLoad();
         $this->click("add_user");
