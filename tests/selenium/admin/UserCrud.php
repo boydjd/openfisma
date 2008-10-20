@@ -26,7 +26,6 @@
  * @version   $Id:$
  */
 
-//require_once 'PHPUnit/Extensions/SeleniumTestCase.php';
 require_once 'FismaSeleniumTest.php';
 
 /**
@@ -71,9 +70,37 @@ class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest
         $this->assertTextPresent("john.doe");
         $this->assertTextPresent("AO");
         
-        // Review creation data on user detail
-        $this->click("//div[@id='detail']/table[2]/tbody/tr[3]/td[9]/a/img");
+        // Update user
+        $this->click("link=Users");
         $this->waitForPageToLoad();
+        $this->click("//div[@id='detail']/table[2]/tbody/tr[3]/td[8]/a/img");
+        $this->waitForPageToLoad();
+        $this->type("account", "updated.john.doe");
+        $this->type("name_first", "UpdatedJohn");
+        $this->type("name_last", "UpdatedDoe");
+        $this->type("email", "updated.email.address@agency.gov");
+        $this->select("role", "label=Certification Agent");
+        $this->click("submit");
+        $this->waitForPageToLoad();
+        
+        // Review updated data
+        $this->click("user_list");
+        $this->waitForPageToLoad();
+        $this->assertTextPresent("updated.john.doe");
+        $this->assertTextPresent("UpdatedJohn");
+        $this->assertTextPresent("UpdatedDoe");
+        $this->assertTextPresent("updated.email.address@agency.gov");
+        $this->assertTextPresent("CERTAGENT");
+
+        // Delete user
+        $this->click("//div[@id='detail']/table[2]/tbody/tr[3]/td[10]/a/img");
+        $this->getConfirmation(); // Throw away result
+        $this->waitForPageToLoad();
+        
+        // Verify user was deleted
+        $this->click("user_list");
+        $this->waitForPageToLoad();
+        $this->assertTextNotPresent("updated.john.doe");
         
         // Done
         $this->stop();
