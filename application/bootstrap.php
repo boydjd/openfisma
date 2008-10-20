@@ -40,6 +40,11 @@ if (defined('COMMAND_LINE')) {
     return;
 }
 
+// Load config.ini file into config object, then set options for Zend_Session
+$config = new Zend_Config_Ini('config.ini', 'development');
+$config->save_path = ROOT . '/logs/data/sessions'->save_path; 
+Zend_Session::setOptions($config->toArray());
+
 // Initialize the view renderer
 // @todo what is the difference between $viewRenderer and $viewRender?
 $viewRenderer = Zend_Controller_Action_HelperBroker::
