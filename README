@@ -91,7 +91,10 @@ application/apis/ - This directory is for application specific web-service api
 files that are consumed and/or provided by your application (through a controller 
 presumabely). 
 
-application/config/ - The application wide configuration directory 
+application/config/ - The application wide configuration directory. This 
+directory contains the small amount of configuration code that your application 
+will need, including the database configuration, the environment structure, and 
+routing of incoming web requests. 
 
 application/controllers/ - Default controller directory
 
@@ -145,7 +148,7 @@ data/uploads/evidence - TODO fill in description
 
 data/uploads/scanreports - TODO fill in description
 
-data/logs - TODO fill in description
+data/logs - Application error logs are stored here.
 
 data/indexes - TODO fill in description
 
@@ -181,12 +184,15 @@ file to assure all functional tests would work correctly.
 
 public/ - This directory would contain all public files for your application, including 
 index.php. index.php would setup the PHP environment, include the bootstrap.php file 
-from your application/ directory, and finally dispatch() the front controller.
+from your application/ directory, and finally dispatch() the front controller. Like the 
+public directory for a web server, this directory has web files that don't change, 
+such as JavaScript files (public/javascripts), graphics (public/images), stylesheets 
+(public/stylesheets), and HTML files (public).
 
-public/images - TODO fill in description
-public/stylesheets - TODO fill in description
-public/javascripts - TODO fill in description
-public/flash - TODO fill in description
+public/images - Holds image files for the application
+public/stylesheets - Holds css sylesheet files for the application
+public/javascripts - Holds javascript files for the application
+public/flash - Holds swf flash files for the application
 public/evidence - TODO move all evidence to data/uploads directory
 public/temp - TODO move all temp data to data/temp directory
 
