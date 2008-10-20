@@ -11,7 +11,7 @@
 // Sets the root path of the OpenFISMA application
 define('ROOT',          realpath('../')); 
  
-define('APPS',          ROOT . '/apps');
+define('APPS',          ROOT . '/application');
 
 define('CONFIGS',       APPS . '/config');
 define('CONTROLLERS',   APPS . '/controllers');
