@@ -153,6 +153,8 @@ library/ - This directory houses the library/Zend/* folder which is the Zend
 Framework. In theory, you could also use other include_path-able not named Zend/* 
 in here 
 
+library/local - TODO fill in description
+
 scripts/ - This directory is intended for maintenance, and/or build scripts. 
 Typically, these might include command line, cron, or phing build scripts that 
 are executed independently of the web application itself. 

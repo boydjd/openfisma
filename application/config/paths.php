@@ -18,7 +18,7 @@ define('CONTROLLERS',   APPS . '/controllers');
 define('MODELS',        APPS . '/models');
 define('VIEWS',         APPS . '/views');
 
-define('LOG',           ROOT . '/log');
+define('LOG',           ROOT . 'data/logs');
 define('MIGRATIONS',    ROOT . '/migrations');
 define('TEST',          ROOT . '/test');
 define('LIBS',          ROOT . '/library');
