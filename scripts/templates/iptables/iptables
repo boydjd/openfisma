@@ -1,75 +1,122 @@
-# Firewall configuration written by system-config-securitylevel
-# Manual customization of this file is not recommended.
+# set default filter policies on forward, input and output
 *filter
-:INPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:INPUT DROP [0:0]
 :OUTPUT ACCEPT [0:0]
-:RH-Firewall-1-INPUT - [0:0]
-# 
-# ROUTE ALL TRAFFIC THROUGH OUR RULE SET
-# 
--A INPUT -j RH-Firewall-1-INPUT
--A FORWARD -j RH-Firewall-1-INPUT
-#
-# BANNED CONNECTIONS
-#
--A RH-Firewall-1-INPUT -s 20.19.108.50 -j LOG --log-prefix "[ BANNED ] : " --log-level 4
--A RH-Firewall-1-INPUT -s 20.19.108.50 -j REJECT --reject-with icmp-host-prohibited
 
-#
-# GLOBAL PREFS
-#
--A RH-Firewall-1-INPUT -i lo -j LOG --log-level 4 --log-prefix "[ LOCAL ] : "
--A RH-Firewall-1-INPUT -i lo -j ACCEPT
-# 
-# PINGS
-#
--A RH-Firewall-1-INPUT -p icmp --icmp-type any -j LOG --log-level 4 --log-prefix "[ PING ] : "
--A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
-# 
-# IPSEC Protocol
-# 
-#-A RH-Firewall-1-INPUT -p 50 -j ACCEPT
-#-A RH-Firewall-1-INPUT -p 51 -j ACCEPT
-# 
-# 5353 - Multicast
-# 631  - Internet Printing Protocol
-# 
-#-A RH-Firewall-1-INPUT -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT
-#-A RH-Firewall-1-INPUT -p udp -m udp --dport 631 -j ACCEPT
-# 
-# ESTABLISHED / RELATED CONFIGURATION
-#
-#-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j LOG 
--A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-# 
-# SSH CONFIGURATION
-#
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j LOG --log-level 4 --log-prefix "[ SSH ] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
-# 
-# HTTP CONFIGURATION
-# 
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j LOG --log-level 4 --log-prefix "[ HTTPS ] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80  -j LOG --log-level 4 --log-prefix "[ HTTP ] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80  -j ACCEPT
-# 
-# NETBACKUP CONFIGURATION
-# 
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 4800:5000 -j LOG --log-level 4 --log-prefix "[ BACKUP] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 4800:5000 -j ACCEPT
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13782     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13782     -j ACCEPT
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13783     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13783     -j ACCEPT
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13722     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13722     -j ACCEPT
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13724     -j LOG --log-level 4 --log-prefix "[ BACKUP ] : "
--A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 13724     -j ACCEPT
-# 
-# DROP ANYTHING THAT HAS NOT YET MATCHED 
-# 
--A RH-Firewall-1-INPUT -j LOG --log-prefix "[ DROPPED ] : "
--A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+# Reject packets from RFC1918 class networks (i.e., spoofed)
+-A INPUT -s 10.0.0.0/8			-j DROP
+-A INPUT -s 169.254.0.0/16		-j DROP
+-A INPUT -s 172.16.0.0/12		-j DROP
+-A INPUT -s 127.0.0.0/8			-j DROP
+-A INPUT -s 224.0.0.0/4			-j DROP
+-A INPUT -d 224.0.0.0/4			-j DROP
+-A INPUT -s 240.0.0.0/5			-j DROP
+-A INPUT -d 240.0.0.0/5			-j DROP
+-A INPUT -s 0.0.0.0/8			-j DROP
+-A INPUT -d 0.0.0.0/8			-j DROP
+-A INPUT -d 239.255.255.0/24	-j DROP
+-A INPUT -d 255.255.255.255		-j DROP
+
+# Black list for Asian Pacific Network
+-A INPUT -s 58.0.0.0/8 		-j DROP
+-A INPUT -s 59.0.0.0/8 		-j DROP
+-A INPUT -s 60.0.0.0/8 		-j DROP
+-A INPUT -s 61.0.0.0/8 		-j DROP
+-A INPUT -s 112.0.0.0/8 	-j DROP
+-A INPUT -s 113.0.0.0/8 	-j DROP
+-A INPUT -s 114.0.0.0/8 	-j DROP
+-A INPUT -s 115.0.0.0/8 	-j DROP
+-A INPUT -s 116.0.0.0/8 	-j DROP
+-A INPUT -s 117.0.0.0/8 	-j DROP
+-A INPUT -s 118.0.0.0/8 	-j DROP
+-A INPUT -s 119.0.0.0/8 	-j DROP
+-A INPUT -s 120.0.0.0/8 	-j DROP
+-A INPUT -s 121.0.0.0/8 	-j DROP
+-A INPUT -s 122.0.0.0/8 	-j DROP
+-A INPUT -s 123.0.0.0/8 	-j DROP
+-A INPUT -s 124.0.0.0/8 	-j DROP
+-A INPUT -s 125.0.0.0/8 	-j DROP
+-A INPUT -s 126.0.0.0/8 	-j DROP
+-A INPUT -s 202.0.0.0/8 	-j DROP
+-A INPUT -s 203.0.0.0/8 	-j DROP
+-A INPUT -s 210.0.0.0/8 	-j DROP
+-A INPUT -s 211.0.0.0/8 	-j DROP
+-A INPUT -s 218.0.0.0/8 	-j DROP
+-A INPUT -s 219.0.0.0/8 	-j DROP
+-A INPUT -s 220.0.0.0/8 	-j DROP
+-A INPUT -s 221.0.0.0/8 	-j DROP
+-A INPUT -s 222.0.0.0/8 	-j DROP
+
+# Blacklisted from Apache Logs
+-A INPUT -s 66.212.16.0/20 		-j DROP
+-A INPUT -s 66.212.18.0/24 		-j DROP
+-A INPUT -s 66.199.224.0/19 	-j DROP
+-A INPUT -s 193.0.0.0/8 		-j DROP
+-A INPUT -s 80.0.0.0/8 			-j DROP
+-A INPUT -s 72.232.0.0/16 		-j DROP
+-A INPUT -s 72.233.0.0/17 		-j DROP
+-A INPUT -s 87.0.0.0/8 			-j DROP 
+-A INPUT -s 66.39.192.0/19 		-j DROP 
+-A INPUT -s 66.39.218.0/24 		-j DROP
+-A INPUT -s 66.232.96.0/19 		-j DROP 
+-A INPUT -s 70.84.0.0/14 		-j DROP 
+-A INPUT -s 77.0.0.0/8 			-j DROP
+-A INPUT -s 84.0.0.0/8 			-j DROP 
+-A INPUT -s 92.0.0.0/8 			-j DROP
+-A INPUT -s 94.0.0.0/8 			-j DROP
+-A INPUT -s 194.0.0.0/8 		-j DROP 
+-A INPUT -s 204.13.96.0/21 		-j DROP 
+-A INPUT -s 206.51.224.0/20 	-j DROP 
+-A INPUT -s 208.176.0.0/15 		-j DROP
+-A INPUT -s 209.8.0.0/15 		-j DROP 
+
+# White list of addresses
+-A INPUT -s 58.38.0.84 			-j ACCEPT
+-A INPUT -s 211.152.35.213 		-j ACCEPT
+
+# Allow everything related to an already established input connection
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# Allow all local connections
+-A INPUT -i lo -j ACCEPT
+
+# Allow most ICMP packets to be received so people can check our
+# presence but restrict the flow to avoid ping flood attacks
+-A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP
+-A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
+-A INPUT -p icmp -m limit --limit 1/s -j ACCEPT
+
+# Drop excessive RST packets to avoid SMURF attacks, by given the
+# next real data packet in the sequence a better chance to arrive first.
+-A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/s --limit-burst 2 -j ACCEPT
+
+# Drop invalid packets immediately
+-A INPUT   -m state --state INVALID -j DROP
+-A FORWARD -m state --state INVALID -j DROP
+-A OUTPUT  -m state --state INVALID -j DROP
+
+# Drop bogus TCP packets
+-A INPUT -p tcp -m tcp --tcp-flags ALL FIN,URG,PSH 			-j DROP
+-A INPUT -p tcp -m tcp --tcp-flags ALL ALL 					-j DROP
+-A INPUT -p tcp -m tcp --tcp-flags ALL NONE 				-j DROP
+-A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST 			-j DROP
+-A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN 			-j DROP
+-A INPUT -p tcp -m tcp --tcp-flags FIN,ACK FIN 				-j DROP
+-A INPUT -p tcp -m tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG 	-j DROP
+
+# Log SSH Connections
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j LOG --log-level 4 --log-prefix "[ SSH ] : "
+
+# Log MYSQL Connections
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j LOG --log-level 4 --log-prefix "[ MYSQL ] : "
+
+# Allow ssh, http, https, and mysql connections
+-A INPUT -p tcp -m multiport --dport ssh,http,https,3306,8080 -j ACCEPT
+
+# Default policy is to drop
+-A INPUT -j DROP
+
+# Commit the ruleset
 COMMIT
+

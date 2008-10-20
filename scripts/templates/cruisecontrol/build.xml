@@ -247,11 +247,6 @@
 			</fileset>
 		</chmod>
 
-		<!-- symlink test directory to allow test files to run -->
-		<exec executable="ln" dir="${deploy.directory}/public">
-			<arg line="-s ../test test" />
-		</exec>	
-
        	<!-- Copy the install.conf file into the correct place -->
        	<copy file="${basedir}/install.conf" tofile="${deploy.directory}/application/config/install.conf" overwrite="true" />
 		
