@@ -18,9 +18,9 @@ define('CONTROLLERS',   APPS . '/controllers');
 define('MODELS',        APPS . '/models');
 define('VIEWS',         APPS . '/views');
 
-define('LOG',           ROOT . 'data/logs');
-define('MIGRATIONS',    ROOT . '/migrations');
-define('TEST',          ROOT . '/test');
+define('LOG',           ROOT . '/data/log');
+define('MIGRATIONS',    ROOT . '/application/config/db');
+define('TEST',          ROOT . '/tests');
 define('LIBS',          ROOT . '/library');
 define('LOCAL',         ROOT . '/library/local');
 define('WEB_ROOT',      ROOT . '/public');

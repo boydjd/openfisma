@@ -22,7 +22,7 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
-require_once "../apps/bootstrap.php";
+require_once dirname(dirname(__FILE__)) . '/application/bootstrap.php';
 
 $front = Zend_Controller_Front::getInstance();
 // It's wrapped in a try-catch to provide a high-level error facility.
