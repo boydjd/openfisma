@@ -2,7 +2,6 @@
 /**
  * Define common paths used for locating specific types of files.
  *
- * @package    Root
  * @author     Xhorse <xhorse@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/mw/index.php?title=License
