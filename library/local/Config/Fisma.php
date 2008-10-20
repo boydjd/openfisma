@@ -45,6 +45,10 @@ class Config_Fisma
      */
     protected static $_instance = null;
 
+    /**
+     * Indicates whether the application is in debug mode or not
+     */
+    protected static $_debug = false;
     
     /**
      * Log instance to record fatal error message
@@ -74,6 +78,7 @@ class Config_Fisma
             // Debug setting
             if (!empty($config->debug)) {
                 if ($config->debug->level > 0) {
+                    self::$_debug = true;
                     error_reporting(E_ALL);
                     ini_set('display_errors', 1);
                     foreach ($config->debug->xdebug as $k => $v) {
@@ -111,6 +116,15 @@ class Config_Fisma
         }
 
         return self::$_instance;
+    }
+
+    /**
+     * debug() - Returns true if the application is in debug mode, false otherwise
+     *
+     * @return boolean
+     */
+    static function debug() {
+        return self::$_debug;
     }
 
     /**

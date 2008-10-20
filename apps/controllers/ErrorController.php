@@ -44,30 +44,16 @@ class ErrorController extends Zend_Controller_Action
         $content = null;
         $errors = $this->_getParam('error_handler');
         $this->_helper->layout->setLayout('error');
-        switch ($errors->type) {
-        case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
-        case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
-            // 404 error -- controller or action not found
-            $this->getResponse()->setRawHeader('HTTP/1.1 404 Not Found');
-            // ... get some output to display...
-            $content .= "<h1>404 Page not found!</h1>" . PHP_EOL;
-            $content .= "<p>The page you requested was not found.</p>";
-            break;
-
-        default:
-            $content .= "<h1>Error!</h1>" . PHP_EOL;
-            $content .= "<p>An unexpected error occurred with your request."
-                      . " Please try again later.</p>";
-            // @todo Log the exception
-            break;
-        }
         $this->getResponse()->clearBody();
-        $this->view->content = $content . '<p>'
-                                        . $errors->exception->getMessage()
-                                        . '</p>'
-                                        . '<pre>'
-                                        . $errors->exception->getTraceAsString()
-                                        . '</pre>';
+        $content = '<p>'
+                 . $errors->exception->getMessage()
+                 . '</p>'
+                 . '<pre>'
+                 . $errors->exception->getTraceAsString()
+                 . '</pre>';
+        $logger = Config_Fisma::getLogInstance();
+        $logger->log($content, Zend_Log::ERR);
+        $this->view->content = $content;
         $this->_helper->actionStack('header', 'panel');
         $this->render();
     }
