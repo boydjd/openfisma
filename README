@@ -92,24 +92,29 @@ files that are consumed and/or provided by your application (through a controlle
 presumabely). 
 
 application/config/ - The application wide configuration directory 
+
 application/controllers/ - Default controller directory
+
 application/models/ - Default models directory
+
 application/views/ - Default views directory
 
-application/controllers/helpers/ - These directories will contain action 
-helpers. Action helpers will be namespaced either as "Controller_Helper_" 
-for the default module or "<Module>Controller_Helper" in other modules. 
+application/views/helpers - TODO fill in description
+application/views/filters - TODO fill in description
+application/views/scripts - TODO fill in description
 
-application/layouts/ - This layout directory is for MCV based layouts. 
+application/layouts -  - This layout directory is for MCV based layouts. 
 Since Zend_Layout is capable of MVC and non-mvc layouts, this location 
 choice for this directory signifies that layouts are not on a 1-to-1 
 relationship with controllers and are independent of templates within views/. 
 
-application/bootstrap.php - This file represents the entry point into your
-application. This first could be procedural php or could contain a Bootstrap class. 
-Either way, the purpose for this file is to bootstrap the application – not 
-PHP settings – and make components aware of their comsumption by starting 
-or configuring them. This file would not call dispatch() on the front controller. 
+application/layouts/filters - TODO fill in description
+application/layouts/helpers - TODO fill in description
+application/layouts/scripts - TODO fill in description
+
+application/controllers/helpers/ - These directories will contain action 
+helpers. Action helpers will be namespaced either as "Controller_Helper_" 
+for the default module or "<Module>Controller_Helper" in other modules. 
 
 application/modules/ - The idea of modules allows a developer to group a set of 
 related controllers (that might be growing to be too large for any one controller 
@@ -117,12 +122,32 @@ repository) into a logically orgainized group. The sub structure of the modules
 directory would mimic the entire structure of the application directory minus the 
 bootstrap.php file.
 
+application/bootstrap.php - This file represents the entry point into your
+application. This first could be procedural php or could contain a Bootstrap class. 
+Either way, the purpose for this file is to bootstrap the application – not 
+PHP settings – and make components aware of their comsumption by starting 
+or configuring them. This file would not call dispatch() on the front controller. 
+
 data/ - The goal of this directory is to provide a place to store application 
 data that is volatile and rumtime. The interruption of some data inside this 
 directory might cause the application to fail on any one request. Also, the 
 information in this directory may or may not make its way from/into a 
 subversion repository. Examples of things contained in this directory 
 are session files, cache files, sqlite databases, logs and indexes to name a few. 
+
+data/cache - TODO fill in description
+
+data/sessions - TODO fill in description
+
+data/uploads - TODO fill in description
+
+data/uploads/evidence - TODO fill in description
+
+data/uploads/scanreports - TODO fill in description
+
+data/logs - TODO fill in description
+
+data/indexes - TODO fill in description
 
 docs/ - This directory exists for documentation, either generated (think PHPDoc) 
 or hand written 
@@ -134,6 +159,11 @@ in here
 scripts/ - This directory is intended for maintenance, and/or build scripts. 
 Typically, these might include command line, cron, or phing build scripts that 
 are executed independently of the web application itself. 
+
+scripts/cronjobs - Scripts that need to be run from cron.
+
+scripts/bin - Collection of scripts used to facilitate maintenance of the application,
+which are usually run in an interactive fashion from the command line.
 
 temp/ - The temp folder (typically set in php.ini as /tmp on unix), is set aside 
 for non- or semi- volatile application data. Roughly speaking, the contents of temp 
@@ -153,4 +183,12 @@ file to assure all functional tests would work correctly.
 public/ - This directory would contain all public files for your application, including 
 index.php. index.php would setup the PHP environment, include the bootstrap.php file 
 from your application/ directory, and finally dispatch() the front controller.
+
+public/images - TODO fill in description
+public/stylesheets - TODO fill in description
+public/javascripts - TODO fill in description
+public/flash - TODO fill in description
+public/evidence - TODO move all evidence to data/uploads directory
+public/temp - TODO move all temp data to data/temp directory
+
 
