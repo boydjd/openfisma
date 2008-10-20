@@ -25,14 +25,18 @@
 	that perform the project build. The sub targets are executed in the listed 
 	order.
   
-	1. 'clean' Clean old project build artifacts
-	2. 'checkout' Update project working copy
-	3. 'php-documentor' Generate api documentation
-	4. 'php-codesniffer' Check for coding violations.
-	5. 'phpunit' Execute unit tests, generate metrics, coverage etc. 
+	1. 'clean' Clean up the project directory from the last runtime
+	2. 'checkout' Updates the project working copy with the latest revisions
+	3. 'php-documentor' Generates api documentation used for phpundercontrol
+	4. 'php-codesniffer' Checks the application directory for Zend coding standard violations.
+	5. 'compatibility' Checks the code and generates a report detailing what version of PHP is required
+	6. 'package' Generates the binary zip and tar.gz files of the sourcecode for distribution
+	7. 'deploy-phpdocs' Copies the php html documents to a directory of your choice.
+	8. 'deploy-application' Deploys the latest binary file with tests to the test server.
+	9. 'phpunit' Execute unit tests, generate metrics, coverage etc. 
 	-->
 	<target name="build" 
-			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,compatibility,package,deploy-phpdocs,deploy,phpunit" />
+			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,php-compatibility,package-application,deploy-phpdocs,deploy-application,phpunit" />
 
 	<!-- Files to be included in application package -->
     <fileset dir="${basedir}/source" id="package.files">
@@ -139,6 +143,19 @@
 						-tb /usr/share/php/data/phpUnderControl/data/phpdoc -o HTML:Phpuc:phpuc
 						-d ${basedir}/source/application"/>
 		</exec>
+		
+		<!-- Generate phpdoc files in phpedit format for publishing to api server -->
+		<exec executable="phpdoc" dir="${basedir}/source">
+			<arg line="--undocumentedelements on 
+						--target ${basedir}/build/phpdocs 
+						--output HTML:frames:phpedit
+						--title OpenFISMA API Documentation
+						--sourcecode on
+						--directory ${basedir}/source/application
+						-ric README,INSTALL,CHANGELOG,LICENSE"/>
+		</exec>
+		<!-- Copy phpdoc error report to artifacts directory -->
+		<copy file="${basedir}/build/phpdocs/errors.html" tofile="${basedir}/build/artifacts/PHPdoc_Error_Report.html"/>
 
 	</target>
 
@@ -155,24 +172,24 @@
 	-->
 	<target name="php-codesniffer">
 		<exec executable="phpcs" 
-			dir="${basedir}/source/apps" 
+			dir="${basedir}/source/application" 
 			error="/dev/null"
 			output="${basedir}/build/logs/checkstyle.xml">
 			<arg line="--report=checkstyle 
 					--standard=Zend
-					${basedir}/source/apps"/>
+					${basedir}/source/application"/>
 		</exec>
 	</target>
 	
 	<!-- Runs the PHP_CompatibilityInfo command to check which version of PHP will be required to run the application -->
-	<target name="compatibility">
+	<target name="php-compatibility">
 		<exec executable="pci" dir="${basedir}/source" output="${basedir}/build/artifacts/PHP_Compatibility_Report.txt">
 			<arg line="--summarize --dir ${basedir}/source" />
 		</exec>
     </target>
 
 	<!-- Package binary distributions of application in multiple formats -->
-	<target name="package">
+	<target name="package-application">
 		<!-- Load svn.properties file to retrieve revision number -->
 		<property file="svn.properties" />
 		<!-- Create zip file of package files without test cases -->
@@ -206,7 +223,7 @@
 	</target>	
 	
 	<!-- Deploys the application -->
-	<target name="deploy">
+	<target name="deploy-application">
 
 		<!-- Load svn.properties file to retrieve revision number -->
 		<property file="svn.properties" />
@@ -226,7 +243,7 @@
 				<include name="log" />
 				<include name="public/temp" />
 				<include name="public/evidence" />
-				<include name="apps/config/install.conf" />
+				<include name="application/config/install.conf" />
 			</fileset>
 		</chmod>
 
