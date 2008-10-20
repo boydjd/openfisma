@@ -149,9 +149,6 @@ data/logs - TODO fill in description
 
 data/indexes - TODO fill in description
 
-docs/ - This directory exists for documentation, either generated (think PHPDoc) 
-or hand written 
-
 library/ - This directory houses the library/Zend/* folder which is the Zend 
 Framework. In theory, you could also use other include_path-able not named Zend/* 
 in here 
