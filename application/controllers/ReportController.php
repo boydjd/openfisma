@@ -600,7 +600,7 @@ class ReportController extends PoamBaseController
                 $path = $this->_helper->viewRenderer
                     ->getViewScript('raf', array(
                     'controller' => 'remediation',
-                    'suffix' => 'pdf.tpl'
+                    'suffix' => 'pdf.phtml'
                 ));
                 foreach ($poamIds as $id) {
                     $poamDetail = & $this->_poam->getDetail($id);

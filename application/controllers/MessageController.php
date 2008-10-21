@@ -45,7 +45,7 @@ class MessageController extends Zend_Controller_Action
         $msg = str_replace("\n", '', $msg);
         $this->view->msg = $msg;
         $this->view->model = $model;
-        $this->_helper->viewRenderer->renderScript('message.tpl');
+        $this->_helper->viewRenderer->renderScript('message.phtml');
     }
 
     /**
@@ -80,7 +80,7 @@ class MessageController extends Zend_Controller_Action
         $contentTpl->actionType = $type;
         $contentTpl->validateCode = $validateCode;
         $contentTpl->userId = $userId;
-        $content = $contentTpl->render('validate.tpl');
+        $content = $contentTpl->render('validate.phtml');
         $mail->setBodyText($content);
         $mail->send($this->_getTransport());
     }

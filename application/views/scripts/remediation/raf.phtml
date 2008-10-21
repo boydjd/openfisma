@@ -183,7 +183,7 @@ table.rafImpact td {
 
         $threat_likelihood = calcThreat($this->poam['threat_level'], 
                                          $this->poam['cmeasure_effectiveness']);
-        echo $this->partial('remediation/raf_tl.tpl', array('act_owner'=>$act_owner,
+        echo $this->partial('remediation/raf_tl.phtml', array('act_owner'=>$act_owner,
                                                             'poam'=>&$this->poam,
                                                             'table_lookup'=>&$cellidx_lookup,
                                                             'threat_likelihood'=>&$threat_likelihood));
@@ -193,7 +193,7 @@ table.rafImpact td {
     </tr>
     <?php
 
-        echo $this->partial('remediation/raf_risk.tpl', array('act_owner'=>$act_owner,
+        echo $this->partial('remediation/raf_risk.phtml', array('act_owner'=>$act_owner,
                                                               'impact'=>&$impact,
                                                               'table_lookup'=>&$cellidx_lookup,
                                                               'threat_likelihood'=>&$threat_likelihood));

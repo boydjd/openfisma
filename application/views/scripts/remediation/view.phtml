@@ -9,9 +9,9 @@
 <form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" method="post" class="button_link">
 <input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
 <?php 
-     echo $this->partial('remediation/finding.tpl', array('poam'=>&$this->poam, 'system_list'=>&$this->system_list, 'network_list'=>&$this->network_list));
-     echo $this->partial('remediation/mitigation.tpl', array('poam'=>&$this->poam,'justification'=>$this->justification));
-     echo $this->partial('remediation/nist.tpl', array('poam'=>&$this->poam));
+     echo $this->partial('remediation/finding.phtml', array('poam'=>&$this->poam, 'system_list'=>&$this->system_list, 'network_list'=>&$this->network_list));
+     echo $this->partial('remediation/mitigation.phtml', array('poam'=>&$this->poam,'justification'=>$this->justification));
+     echo $this->partial('remediation/nist.phtml', array('poam'=>&$this->poam));
 ?>
 <input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
 </form>
@@ -25,7 +25,7 @@
      </div>
 
      <?php 
-          echo $this->partialLoop('remediation/evidence.tpl', $this->ev_evals );
+          echo $this->partialLoop('remediation/evidence.phtml', $this->ev_evals );
           if('EN' == $this->poam['status'] && Config_Fisma::isAllow('remediation','update_evidence') ){
               echo 
               '<button id="up_evidence" onclick ="upload_evidence();">Upload Evidence</button>';
@@ -47,9 +47,9 @@
              <th>Description</td>
          </tr>
 <?php 
-     echo $this->partialLoop('remediation/log.tpl', $this->logs);
+     echo $this->partialLoop('remediation/log.phtml', $this->logs);
 ?>
     </table>
 <?php 
-     echo $this->partial('remediation/uploadev.tpl',array('id'=>$this->poam['id']));
+     echo $this->partial('remediation/uploadev.phtml',array('id'=>$this->poam['id']));
 ?>

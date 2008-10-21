@@ -72,7 +72,6 @@ $options = array(
     'contentKey' => 'CONTENT'
 );
 
-// Use ".tpl" as the default view suffix
 Zend_Layout::startMvc($options);
 $viewRender = Zend_Controller_Action_HelperBroker::
               getStaticHelper('viewRenderer');

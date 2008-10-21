@@ -61,6 +61,6 @@
 </div>
 <?php
     if(isset($this->summary)){
-        echo $this->partial('report/fismasearch.tpl',array('summary'=>&$this->summary,'url'=>&$url));
+        echo $this->partial('report/fismasearch.phtml',array('summary'=>&$this->summary,'url'=>&$url));
     }
 ?>

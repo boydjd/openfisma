@@ -443,8 +443,7 @@ template. Please update your CSV file and try again.<br />";
             $contextSwitch->initContext('xls');
             $this->render();
         } catch(FismaException $fe) {
-            Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')
-                ->setViewSuffix('tpl');
+            Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);
             $this->_forward('injection', 'Finding');
         }
