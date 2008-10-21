@@ -1,122 +1,161 @@
-# set default filter policies on forward, input and output
-*filter
-:FORWARD DROP [0:0]
-:INPUT DROP [0:0]
-:OUTPUT ACCEPT [0:0]
+#!/bin/sh
+# 
+# restore-iptables - Resets iptables to default firewall rules. 
+# 
+# Copyright (C) 2008 James Ford
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program or from the site that you downloaded it
+# from; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307   USA
 
-# Reject packets from RFC1918 class networks (i.e., spoofed)
--A INPUT -s 10.0.0.0/8			-j DROP
--A INPUT -s 169.254.0.0/16		-j DROP
--A INPUT -s 172.16.0.0/12		-j DROP
--A INPUT -s 127.0.0.0/8			-j DROP
--A INPUT -s 224.0.0.0/4			-j DROP
--A INPUT -d 224.0.0.0/4			-j DROP
--A INPUT -s 240.0.0.0/5			-j DROP
--A INPUT -d 240.0.0.0/5			-j DROP
--A INPUT -s 0.0.0.0/8			-j DROP
--A INPUT -d 0.0.0.0/8			-j DROP
--A INPUT -d 239.255.255.0/24	-j DROP
--A INPUT -d 255.255.255.255		-j DROP
+#
+# Configurations
+#
+PATH=/usr/bin:/bin:/sbin; export PATH
+IPTABLES="iptables"
 
-# Black list for Asian Pacific Network
--A INPUT -s 58.0.0.0/8 		-j DROP
--A INPUT -s 59.0.0.0/8 		-j DROP
--A INPUT -s 60.0.0.0/8 		-j DROP
--A INPUT -s 61.0.0.0/8 		-j DROP
--A INPUT -s 112.0.0.0/8 	-j DROP
--A INPUT -s 113.0.0.0/8 	-j DROP
--A INPUT -s 114.0.0.0/8 	-j DROP
--A INPUT -s 115.0.0.0/8 	-j DROP
--A INPUT -s 116.0.0.0/8 	-j DROP
--A INPUT -s 117.0.0.0/8 	-j DROP
--A INPUT -s 118.0.0.0/8 	-j DROP
--A INPUT -s 119.0.0.0/8 	-j DROP
--A INPUT -s 120.0.0.0/8 	-j DROP
--A INPUT -s 121.0.0.0/8 	-j DROP
--A INPUT -s 122.0.0.0/8 	-j DROP
--A INPUT -s 123.0.0.0/8 	-j DROP
--A INPUT -s 124.0.0.0/8 	-j DROP
--A INPUT -s 125.0.0.0/8 	-j DROP
--A INPUT -s 126.0.0.0/8 	-j DROP
--A INPUT -s 202.0.0.0/8 	-j DROP
--A INPUT -s 203.0.0.0/8 	-j DROP
--A INPUT -s 210.0.0.0/8 	-j DROP
--A INPUT -s 211.0.0.0/8 	-j DROP
--A INPUT -s 218.0.0.0/8 	-j DROP
--A INPUT -s 219.0.0.0/8 	-j DROP
--A INPUT -s 220.0.0.0/8 	-j DROP
--A INPUT -s 221.0.0.0/8 	-j DROP
--A INPUT -s 222.0.0.0/8 	-j DROP
+echo "Resetting the default policies in the filter table."
+$IPTABLES --policy INPUT ACCEPT
+$IPTABLES --policy FORWARD ACCEPT
+$IPTABLES --policy OUTPUT ACCEPT
 
-# Blacklisted from Apache Logs
--A INPUT -s 66.212.16.0/20 		-j DROP
--A INPUT -s 66.212.18.0/24 		-j DROP
--A INPUT -s 66.199.224.0/19 	-j DROP
--A INPUT -s 193.0.0.0/8 		-j DROP
--A INPUT -s 80.0.0.0/8 			-j DROP
--A INPUT -s 72.232.0.0/16 		-j DROP
--A INPUT -s 72.233.0.0/17 		-j DROP
--A INPUT -s 87.0.0.0/8 			-j DROP 
--A INPUT -s 66.39.192.0/19 		-j DROP 
--A INPUT -s 66.39.218.0/24 		-j DROP
--A INPUT -s 66.232.96.0/19 		-j DROP 
--A INPUT -s 70.84.0.0/14 		-j DROP 
--A INPUT -s 77.0.0.0/8 			-j DROP
--A INPUT -s 84.0.0.0/8 			-j DROP 
--A INPUT -s 92.0.0.0/8 			-j DROP
--A INPUT -s 94.0.0.0/8 			-j DROP
--A INPUT -s 194.0.0.0/8 		-j DROP 
--A INPUT -s 204.13.96.0/21 		-j DROP 
--A INPUT -s 206.51.224.0/20 	-j DROP 
--A INPUT -s 208.176.0.0/15 		-j DROP
--A INPUT -s 209.8.0.0/15 		-j DROP 
+echo "Resetting the default policies in the nat table."
+$IPTABLES -t nat --policy PREROUTING ACCEPT
+$IPTABLES -t nat --policy POSTROUTING ACCEPT
+$IPTABLES -t nat --policy OUTPUT ACCEPT
 
-# White list of addresses
--A INPUT -s 58.38.0.84 			-j ACCEPT
--A INPUT -s 211.152.35.213 		-j ACCEPT
+echo "Resetting the default policies in the mangle table."
+$IPTABLES -t mangle --policy PREROUTING ACCEPT
+$IPTABLES -t mangle --policy POSTROUTING ACCEPT
+$IPTABLES -t mangle --policy INPUT ACCEPT
+$IPTABLES -t mangle --policy OUTPUT ACCEPT
+$IPTABLES -t mangle --policy FORWARD ACCEPT
 
-# Allow everything related to an already established input connection
--A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+echo "Flushing all the rules in the filter and nat tables."
+$IPTABLES --flush
+$IPTABLES -t nat --flush
+$IPTABLES -t mangle --flush
 
-# Allow all local connections
--A INPUT -i lo -j ACCEPT
+echo "Erasing all chains that's not default in filter and nat table."
+$IPTABLES --delete-chain
+$IPTABLES -t nat --delete-chain
+$IPTABLES -t mangle --delete-chain
 
-# Allow most ICMP packets to be received so people can check our
-# presence but restrict the flow to avoid ping flood attacks
--A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP
--A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
--A INPUT -p icmp -m limit --limit 1/s -j ACCEPT
+echo "Loading rules to reject packets from RFC1918 class networks (i.e., spoofed)"
+$IPTABLES --append INPUT --source 10.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 169.254.0.0/16 -j DROP
+$IPTABLES --append INPUT --source 172.16.0.0/12 -j DROP
+$IPTABLES --append INPUT --source 127.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 224.0.0.0/4 -j DROP
+$IPTABLES --append INPUT --source 224.0.0.0/4 -j DROP
+$IPTABLES --append INPUT --source 240.0.0.0/5 -j DROP
+$IPTABLES --append INPUT --source 240.0.0.0/5 -j DROP
+$IPTABLES --append INPUT --source 0.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 0.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 239.255.255.0/24 -j DROP
+$IPTABLES --append INPUT --source 255.255.255.255 -j DROP
 
-# Drop excessive RST packets to avoid SMURF attacks, by given the
-# next real data packet in the sequence a better chance to arrive first.
--A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/s --limit-burst 2 -j ACCEPT
+echo "Loading rules to black list the Asian Pacific Network"
+$IPTABLES --append INPUT --source 58.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 59.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 60.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 61.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 112.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 113.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 114.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 115.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 116.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 117.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 118.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 119.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 120.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 121.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 122.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 123.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 124.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 125.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 126.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 202.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 203.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 210.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 211.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 218.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 219.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 220.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 221.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 222.0.0.0/8 -j DROP
 
-# Drop invalid packets immediately
--A INPUT   -m state --state INVALID -j DROP
--A FORWARD -m state --state INVALID -j DROP
--A OUTPUT  -m state --state INVALID -j DROP
+echo "Loading additional blacklist rules from Apache Logs"
+$IPTABLES --append INPUT --source 66.212.16.0/20 -j DROP
+$IPTABLES --append INPUT --source 66.212.18.0/24 -j DROP
+$IPTABLES --append INPUT --source 66.199.224.0/19 -j DROP
+$IPTABLES --append INPUT --source 193.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 80.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 72.232.0.0/16 -j DROP
+$IPTABLES --append INPUT --source 72.233.0.0/17 -j DROP
+$IPTABLES --append INPUT --source 87.0.0.0/8 -j DROP 
+$IPTABLES --append INPUT --source 66.39.192.0/19 -j DROP 
+$IPTABLES --append INPUT --source 66.39.218.0/24 -j DROP
+$IPTABLES --append INPUT --source 66.232.96.0/19 -j DROP 
+$IPTABLES --append INPUT --source 70.84.0.0/14 -j DROP 
+$IPTABLES --append INPUT --source 77.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 84.0.0.0/8 -j DROP 
+$IPTABLES --append INPUT --source 92.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 94.0.0.0/8 -j DROP
+$IPTABLES --append INPUT --source 194.0.0.0/8 -j DROP 
+$IPTABLES --append INPUT --source 204.13.96.0/21 -j DROP 
+$IPTABLES --append INPUT --source 206.51.224.0/20 -j DROP 
+$IPTABLES --append INPUT --source 208.176.0.0/15 -j DROP
+$IPTABLES --append INPUT --source 209.8.0.0/15 -j DROP 
 
-# Drop bogus TCP packets
--A INPUT -p tcp -m tcp --tcp-flags ALL FIN,URG,PSH 			-j DROP
--A INPUT -p tcp -m tcp --tcp-flags ALL ALL 					-j DROP
--A INPUT -p tcp -m tcp --tcp-flags ALL NONE 				-j DROP
--A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST 			-j DROP
--A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN 			-j DROP
--A INPUT -p tcp -m tcp --tcp-flags FIN,ACK FIN 				-j DROP
--A INPUT -p tcp -m tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG 	-j DROP
+echo "Loading white list rules"
+$IPTABLES --append INPUT --source 58.38.0.84 -j ACCEPT
+$IPTABLES --append INPUT --source 211.152.35.213 -j ACCEPT
 
-# Log SSH Connections
--A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j LOG --log-level 4 --log-prefix "[ SSH ] : "
+echo "Allow everything related to an already established input connection"
+$IPTABLES --append INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-# Log MYSQL Connections
--A INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j LOG --log-level 4 --log-prefix "[ MYSQL ] : "
+echo "Allow all local connections"
+$IPTABLES --append INPUT -i lo -j ACCEPT
 
-# Allow ssh, http, https, and mysql connections
--A INPUT -p tcp -m multiport --dport ssh,http,https,3306,8080 -j ACCEPT
+echo "Allow most ICMP packets but protect from ping flood attacks"
+$IPTABLES --append INPUT --protocol icmp -m icmp --icmp-type address-mask-request -j DROP
+$IPTABLES --append INPUT --protocol icmp -m icmp --icmp-type timestamp-request -j DROP
+$IPTABLES --append INPUT --protocol icmp -m limit --limit 1/s -j ACCEPT
 
-# Default policy is to drop
--A INPUT -j DROP
+echo "Drop excessive RST packets to avoid SMURF attacks" 
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags RST RST -m limit --limit 2/s --limit-burst 2 -j ACCEPT
 
-# Commit the ruleset
-COMMIT
+echo "Drop invalid packets immediately"
+$IPTABLES --append INPUT   -m state --state INVALID -j DROP
+$IPTABLES --append FORWARD -m state --state INVALID -j DROP
+$IPTABLES --append OUTPUT  -m state --state INVALID -j DROP
 
+echo "Drop bogus TCP packets"
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags ALL FIN,URG,PSH -j DROP
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags ALL ALL -j DROP
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags ALL NONE -j DROP
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags FIN,ACK FIN -j DROP
+$IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+
+echo "SSH Brute Force Defense, Limit SSH connections to 3 per minute"
+$IPTABLES --append INPUT --protocol tcp --destination-port ssh --syn -m limit --limit 1/m --limit-burst 3 -j ACCEPT
+$IPTABLES --append INPUT --protocol tcp --destination-port ssh --syn -j DROP
+
+echo "Allow http, https, and mysql connections"
+$IPTABLES --append INPUT --protocol tcp -m multiport --destination-port http,https,3306,8080 -j ACCEPT
+
+echo "Drop all other packets"
+$IPTABLES --append INPUT -j DROP
