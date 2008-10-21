@@ -268,7 +268,7 @@ class UserController extends MessageController
         $form = Form_Manager::loadForm('account');
         $form->removeElement('account');
         $form->removeElement('password');
-        $form->removeElement('confirm_password');
+        $form->removeElement('confirmPassword');
         $form->removeElement('ldap_dn');
         $form->removeElement('checkdn');
         $form->removeElement('role');
@@ -306,7 +306,6 @@ class UserController extends MessageController
         // Load the change password file
         $passwordForm = Form_Manager::loadForm('change_password');
         $passwordForm = Form_Manager::prepareForm($passwordForm);
-
         // Prepare the password requirements explanation:
         $requirements[] = "Length must be between "
                         . Config_Fisma::readSysConfig('pass_min')
@@ -380,10 +379,8 @@ class UserController extends MessageController
 
                 if ($originalEmail != $profileData['email']
                     && empty($notifyEmail)) {
-                    $this->_user->update(array('email_validate'=>0),
-                        'id = '.$this->_me->id);
-                    $this->_emailvalidate($this->_me->id,
-                        $profileData['email'], 'update');
+                    $this->_user->update(array('email_validate'=>0), 'id = '.$this->_me->id);
+                    $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
                     $msg .= "<br />Because you changed your e-mail address, we
                             have sent you a confirmation message.<br />You will
                             need to confirm the validity of your new e-mail
@@ -478,60 +475,61 @@ class UserController extends MessageController
     {
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
-            $auth = Zend_Auth::getInstance();
-            $_me = $auth->getIdentity();
-            $id = $_me->id;
-            $oldpass = md5($req->old_password);
-            $newpass = md5($req->new_password);
-            $res = $this->_user->find($id)->toArray();
-            $password = $res[0]['password'];
-            $historyPass = $res[0]['history_password'];
-            if ($req->new_password != $req->confirm_password) {
-                $msg = 'The new password does not match the confirm password, please try again.';
+            $post = $req->getPost();
+            $passwordForm = Form_Manager::loadForm('change_password');
+            $passwordForm = Form_Manager::prepareForm($passwordForm);
+            $password = $passwordForm->getElement('newPassword');
+            $password->addValidator(new Form_Validator_Password());
+            $formValid = $passwordForm->isValid($post);
+            if (!$formValid) {
+                /**
+                * @todo this error display code needs to go into the decorator,
+                * but before that can be done, the function it calls needs to be
+                * put in a more convenient place
+                */
+                $errorString = '';
+                foreach ($passwordForm->getMessages() as $field => $fieldErrors) {
+                    if (count($fieldErrors>0)) {
+                        foreach ($fieldErrors as $error) {
+                            $label = $passwordForm->getElement($field)->getLabel();
+                            $errorString .= "$label: $error<br>";
+                        }
+                    }
+                }
+                // Error message
+                $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;
             } else {
-                if ($oldpass != $password) {
-                    $msg = 'The old password supplied is incorrect, please try again.';
+                $oldPass = $req->oldPassword;
+                $newPass = $req->newPassword;
+                $confirmPass = $req->confirmPassword;
+                $result = $this->checkPassword($oldPass, $newPass, $confirmPass);
+                if (false == $result['check']) {
+                    $msg = $result['reason'];
                     $model = self::M_WARNING;
                 } else {
-                    $result = $this->checkPassword($req->new_password);
-                    if (false == $result['check']) {
-                        $msg = $result['reason'];
+                    $historyPass = $this->_me->history_password;
+                    if (strpos($historyPass, $this->_me->password) > 0) {
+                        $historyPass = ':' . md5($newPass) . $historyPass;
+                    } else {
+                        $historyPass = ':' . md5($newPass) . ':'
+                            . $this->_me->password . $historyPass;
+                    }
+                    $historyPass = substr($historyPass, 0, 99);
+                    $now = date('Y-m-d H:i:s');
+                    $data = array(
+                        'password' => md5($newPass),
+                        'history_password' => $historyPass,
+                        'password_ts' => $now
+                    );
+                    $result = $this->_user->update($data,
+                        'id = ' . $this->_me->id);
+                    if (!$result) {
+                        $msg = 'Failed to change the password';
                         $model = self::M_WARNING;
                     } else {
-                        if ($newpass == $password) {
-                            $msg = 'Your new password cannot be the same as your old password.';
-                            $model = self::M_WARNING;
-                        } else {
-                            if (strpos($historyPass, $newpass) > 0) {
-                                $msg = 'Your password must be different from the last three passwords you have used. Please pick a different password.';
-                                $model = self::M_WARNING;
-                            } else {
-                                if (strpos($historyPass, $password) > 0) {
-                                    $historyPass = ':' . $newpass
-                                        . $historyPass;
-                                } else {
-                                    $historyPass = ':' . $newpass . ':'
-                                        . $password . $historyPass;
-                                }
-                                $historyPass = substr($historyPass, 0, 99);
-                                $now = date('Y-m-d H:i:s');
-                                $data = array(
-                                    'password' => $newpass,
-                                    'history_password' => $historyPass,
-                                    'password_ts' => $now
-                                );
-                                $result = $this->_user->update($data,
-                                    'id = ' . $id);
-                                if (!$result) {
-                                    $msg = 'Failed to change the password';
-                                    $model = self::M_WARNING;
-                                } else {
-                                    $msg = 'Password changed successfully';
-                                    $model = self::M_NOTICE;
-                                }
-                            }
-                        }
+                        $msg = 'Password changed successfully';
+                        $model = self::M_NOTICE;
                     }
                 }
             }
@@ -548,18 +546,32 @@ class UserController extends MessageController
      * @todo Cleanup this method: comments and formatting...what does this
      * method do?
      */
-    function checkPassword($pass) {
+    function checkPassword($oldPass, $newPass, $confirmPass) {
         $result = array();
+
+        if ($newPass != $confirmPass) {
+            $result['check']  = false;
+            $result['reason'] = "The new password does not match the confirm password, please try again.";
+            return $result;
+        }
+
+        $res = $this->_user->find($this->_me->id);
+        if (md5($oldPass) != $res->current()->password) {
+            $result['check']  = false;
+            $result['reason'] = "The old password supplied is incorrect, please try again.";
+            return $result;
+        }
+
         $nameincluded = true;
         // check last name
         if (empty($this->user_name_last)
-            || strpos($pass, $this->user_name_last) === false) {
+            || strpos($newPass, $this->user_name_last) === false) {
             $nameincluded = false;
         }
         if (!$nameincluded) {
             // check first name
             if (empty($this->user_name_first)
-                || strpos($pass, $this->user_name_first) === false) {
+                || strpos($newPass, $this->user_name_first) === false) {
                 $nameincluded = false;
             } else {
                 $nameincluded = true;
@@ -570,46 +582,15 @@ class UserController extends MessageController
             $result['reason'] = "The new password can not include your first name or last name";
             return $result;
         }
-
-        if (strlen($pass) < Config_Fisma::readSysConfig('pass_min')) {
+        if (md5($newPass) == $this->_me->password) {
             $result['check'] = false;
-            $result['reason'] = "The password must be at least ".Config_Fisma::readSysConfig('pass_min')." characters long";
+            $result['reason'] = 'Your new password cannot be the same as your old password.';
             return $result;
         }
-
-        if (strlen($pass) > Config_Fisma::readSysConfig('pass_max')) {
+        if (strpos($this->_me->history_password, $newPass) > 0) {
             $result['check'] = false;
-            $result['reason'] = "The password must not be more than ".Config_Fisma::readSysConfig('pass_max')." characters long";
+            $result['reason']= 'Your password must be different from the last three passwords you have used. Please pick a different password.';
             return $result;
-        }
-
-        if (true == Config_Fisma::readSysConfig('pass_uppercase')) {
-            if ( false == preg_match("/[A-Z]+/", $pass)) {
-                $result['reason'] = " The password must contain at least 1 uppercase letter (A-Z),";
-                $result['check'] = false;
-                return $result;
-            }
-        }
-        if (true == Config_Fisma::readSysConfig('pass_lowercase')) {
-            if ( false == preg_match("/[a-z]+/", $pass) ) {
-                $result['reason'] = "The password must contain at least 1 lowercase letter (a-z),";
-                $result['check'] = false;
-                return $result;
-            }
-        }
-        if ( true == Config_Fisma::readSysConfig('pass_numerical')) {
-            if ( false == preg_match("/[0-9]+/", $pass) ) {
-                $result['reason'] = "The password must contain at least 1 numeric digit (0-9)";
-                $result['check'] = false;
-                return $result;
-            }
-        }
-        if ( true == Config_Fisma::readSysConfig('pass_special')) {
-            if ( false == preg_match("/[^0-9a-zA-Z]+/", $pass) ) {
-                $result['reason'] = "The password must contain at least 1 special character (!@#$%^&*-=+~`_)";
-                $result['check'] = false;
-                return $result;
-            }
         }
         $result['check'] = true;
         return $result;
@@ -703,58 +684,5 @@ class UserController extends MessageController
         }
         $this->view->msg = $msg;
         $this->render();
-    }
-
-    /**
-     * _emailvalidate() - Validate the user's e-mail change.
-     *
-     * @todo Cleanup this method: comments and formatting
-     * @todo This function is named incorrectly
-     */
-    protected function _emailvalidate($userId, $email, $type)
-    {
-        $mail = new Zend_Mail();
-
-        $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
-        $mail->addTo($email);
-        $mail->setSubject("Email validation");
-
-        $validateCode = md5(rand());
-        
-        $data = array('user_id'=>$userId, 'email'=>$email,
-            'validate_code'=>$validateCode);
-        $this->_user->getAdapter()->insert('validate_emails', $data);
-
-        $contentTpl = $this->view->setScriptPath(VIEWS . '/scripts/mail');
-        $contentTpl = $this->view;
-
-        $contentTpl->actionType = $type;
-        $contentTpl->validateCode = $validateCode;
-        $contentTpl->userId = $userId;
-        $content = $contentTpl->render('validate.tpl');
-        $mail->setBodyText($content);
-        $mail->send($this->_getTransport());
-    }
-
-    /**
-     * _getTransport() - Return the appropriate Zend_Mail_Transport subclass,
-     * based on the system's configuration.
-     *
-     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail
-     */
-    protected function _getTransport()
-    {
-        $transport = null;
-        if ( 'smtp' == Config_Fisma::readSysConfig('send_type')) {
-            $config = array('auth' => 'login',
-                'username' => Config_Fisma::readSysConfig('smtp_username'),
-                'password' => Config_Fisma::readSysConfig('smtp_password'),
-                'port' => Config_Fisma::readSysConfig('smtp_port'));
-            $transport = new Zend_Mail_Transport_Smtp(
-                Config_Fisma::readSysConfig('smtp_host'), $config);
-        } else {
-            $transport = new Zend_Mail_Transport_Sendmail();
-        }
-        return $transport;
     }
 }

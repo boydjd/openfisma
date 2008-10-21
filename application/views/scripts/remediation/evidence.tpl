@@ -16,7 +16,7 @@
         <?php 
             $url = $evidence['submission'];
             $ev_path[] = $evidence['submission'];
-            $ev_path[] ='evidence' . DS . $evidence['poam_id']. DS. $evidence['submission'];
+            $ev_path[] ='evidence' . '/' . $evidence['poam_id']. '/'. $evidence['submission'];
             $link = '%filename%';
             foreach( $ev_path as $path ) {
                 if(file_exists($path) ) {

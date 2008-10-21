@@ -87,7 +87,7 @@ class AccountController extends PoamBaseController
         if ($systemAuthType == 'ldap') {
             $form->removeElement('account');
             $form->removeElement('password');
-            $form->removeElement('confirm_password');
+            $form->removeElement('confirmPassword');
         } else if ($systemAuthType == 'database') {
             $form->removeElement('ldap_dn');
             $form->removeElement('checkdn');
@@ -259,6 +259,9 @@ class AccountController extends PoamBaseController
         $userDetail['role'] = $roles;
         
         if ($v == 'edit') {
+            // Prepare the password requirements explanation:
+            $requirements = $this->_getPasswordRequirements();
+            $this->view->assign('requirements', $requirements);
             $this->view->assign('viewLink',
                                 "/panel/account/sub/view/id/$id");
             $form->setAction("/panel/account/sub/update/id/$id");
@@ -294,6 +297,8 @@ class AccountController extends PoamBaseController
     {
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
+        $pass = $form->getElement('password');
+        $pass->addValidator(new Form_Validator_Password());
         $formValid = $form->isValid($_POST);
         $accountData = $form->getValues();
 
@@ -304,7 +309,7 @@ class AccountController extends PoamBaseController
         // saveAction()
         if ( isset($accountData['password'])
              && ($accountData['password'] !=
-                 $accountData['confirm_password']) ) {
+                 $accountData['confirmPassword']) ) {
             $this->message("The two passwords do not match",
                            self::M_WARNING);
             $this->_forward('view', null, null, array('id' => $id,
@@ -325,7 +330,7 @@ class AccountController extends PoamBaseController
             if ( !empty($accountData['password']) ) {
                 /// @todo validate the password complexity
                 if ($accountData['password'] !=
-                    $accountData['confirm_password']) {
+                    $accountData['confirmPassword']) {
                     $msg = "The two passwords do not match.";
                     $this->message($msg, self::M_WARNING);
                     $this->_forward('view', null, null, array(
@@ -337,7 +342,7 @@ class AccountController extends PoamBaseController
             } else {
                 unset($accountData['password']);
             }
-            unset($accountData['confirm_password']);
+            unset($accountData['confirmPassword']);
             $roleId = $accountData['role'];
             unset($accountData['role']);
             unset($accountData['submit']);
@@ -475,7 +480,12 @@ class AccountController extends PoamBaseController
         // database authentication mode
         if (Config_Fisma::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
-            $form->getElement('confirm_password')->setRequired(true);
+            $form->getElement('confirmPassword')->setRequired(true);
+            $form->getElement('password')->setValue($this->_randomPassword());
+            $form->getElement('confirmPassword')->setValue($this->_randomPassword());
+             // Prepare the password requirements explanation:
+            $requirements = $this->_getPasswordRequirements();
+            $this->view->assign('requirements', $requirements);
         }
         
         // If there is data in the _POST variable, then use that to
@@ -494,22 +504,25 @@ class AccountController extends PoamBaseController
     {
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
+        $post = $this->_request->getPost();
 
         // The password fields are required during creation *if* we are in
         // database authentication mode
         if (Config_Fisma::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
-            $form->getElement('confirm_password')->setRequired(true);
+            $form->getElement('confirmPassword')->setRequired(true);
+            $password = $form->getElement('password');
+            $password->addValidator(new Form_Validator_Password());
         }
 
         // Validate forms and get the submitted values
-        $formValid = $form->isValid($_POST);
+        $formValid = $form->isValid($post);
         $accountData = $form->getValues();
         
         // Compare the two passwords
         if ( isset($accountData['password'])
              && ($accountData['password'] !=
-                 $accountData['confirm_password']) ) {
+                 $accountData['confirmPassword']) ) {
             $this->message("The two passwords do not match",
                            self::M_WARNING);
             $this->_forward('create');
@@ -517,7 +530,7 @@ class AccountController extends PoamBaseController
             // Need to unset any parameters which aren't going into the db, due
             // to the way the insert() function works below.
             // @todo fix the insert function and then clean this up
-            unset($accountData['confirm_password']);
+            unset($accountData['confirmPassword']);
             $roleId = $accountData['role'];
             unset($accountData['role']);
             unset($accountData['submit']);
@@ -530,6 +543,7 @@ class AccountController extends PoamBaseController
             if ( 'ldap' == Config_Fisma::readSysConfig('auth_type') ) {
                 $accountData['account'] = $accountData['ldap_dn'];
             } else if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
+                $password = $accountData['password'];
                 $accountData['password'] = md5($accountData['password']);
             }
             $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');
@@ -551,10 +565,14 @@ class AccountController extends PoamBaseController
             // user.
             $this->_user->log(User::CREATION, $this->_me->id,
                              'create user('.$accountData['account'].')');
-            $this->message("User ({$accountData['account']}) added",
+            $this->message("User ({$accountData['account']}) added, and a validate email has been sent to this user",
                            self::M_NOTICE);
+
+            $this->emailvalidate($userId, $accountData['email'], 'create',
+                array('account'=>$accountData['account'], 'password'=>$password));
                            
             // On success, redirect to read view
+            $this->view->setScriptPath(VIEWS . '/scripts');
             $this->_forward('view', null, null, array('id' => $userId));
         } else {
             /**
@@ -820,5 +838,70 @@ class AccountController extends PoamBaseController
         $this->view->assign('logList', $logList);
         $this->render();
     }
-    
+
+    /**
+     * random a complexity password when created a user
+     */
+    protected function _randomPassword()
+    {
+        $passLengthMin = Config_Fisma::readSysConfig('pass_min');
+        $passLengthMax = $passLengthMin+5;
+        $passNum = Config_Fisma::readSysConfig('pass_numerical');
+        $passUpper = Config_Fisma::readSysConfig('pass_uppercase');
+        $passLower = Config_Fisma::readSysConfig('pass_lowercase');
+        $passSpecial = Config_Fisma::readSysConfig('pass_special');
+        
+        $flag = 0;
+        $password = "";
+        $length = rand($passLengthMin, $passLengthMax);
+        if (true == $passUpper) {
+            $possibleCharactors[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            $flag++;
+        }
+        if (true == $passLower) {
+            $possibleCharactors[] = "abcdefghijklmnopqrstuvwxyz";
+            $flag++;
+        }
+        if (true == $passNum) {
+            $possibleCharactors[] = "0123456789";
+            $flag++;
+        }
+        if (true == $passSpecial) {
+            $possibleCharactors[] = "!@#$%^&*()_+=-`~\|':;?><,.[]{}/";
+            $flag++;
+        }
+
+        while (strlen($password) < $length) {
+            if (0 == $flag) {
+                $password .= rand();
+            } else {
+                foreach ($possibleCharactors as $row) {
+                    $password .= substr($row, (rand()%(strlen($row))), 1);
+                }
+            }
+        }
+        return $password;
+    }
+
+    protected function _getPasswordRequirements()
+    {
+        $requirements[] = "Length must be between "
+                        . Config_Fisma::readSysConfig('pass_min')
+                        . " and "
+                        . Config_Fisma::readSysConfig('pass_max')
+                        . " characters long.";
+        if (Config_Fisma::readSysConfig('pass_uppercase') == 1) {
+            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
+        }
+        if (Config_Fisma::readSysConfig('pass_lowercase') == 1) {
+            $requirements[] = "Must contain at least 1 lower case character (a-z)";
+        }
+        if (Config_Fisma::readSysConfig('pass_numerical') == 1) {
+            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
+        }
+        if (Config_Fisma::readSysConfig('pass_special') == 1) {
+            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
+        }
+        return $requirements;
+    }
 }

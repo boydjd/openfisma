@@ -22,13 +22,12 @@ elements.password.type = "password"
 elements.password.options.label = "Password"
 elements.password.options.attribs.size = 35
 elements.password.options.validators.strlen.validator = "StringLength"
-elements.password.options.validators.strlen.options.min = "6"
 displayGroups.accountInfo.elements.password = "password"
 
-elements.confirm_password.type = "password"
-elements.confirm_password.options.label = "Confirm Password"
-elements.confirm_password.options.attribs.size = 35
-displayGroups.accountInfo.elements.confirm_password = "confirm_password"
+elements.confirmPassword.type = "password"
+elements.confirmPassword.options.label = "Confirm Password"
+elements.confirmPassword.options.attribs.size = 35
+displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
 elements.ldap_dn.type = "text"
 elements.ldap_dn.options.label = "LDAP DN"

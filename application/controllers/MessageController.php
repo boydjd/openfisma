@@ -47,4 +47,64 @@ class MessageController extends Zend_Controller_Action
         $this->view->model = $model;
         $this->_helper->viewRenderer->renderScript('message.tpl');
     }
+
+    /**
+     * _emailvalidate() - Validate the user's e-mail change.
+     *
+     * @todo Cleanup this method: comments and formatting
+     * @todo This function is named incorrectly
+     */
+    public function emailvalidate($userId, $email, $type, $accountInfo = null)
+    {
+        $mail = new Zend_Mail();
+
+        $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
+        $mail->addTo($email);
+        $mail->setSubject("Email validation");
+
+        $validateCode = md5(rand());
+        
+        $data = array('user_id'=>$userId, 'email'=>$email,
+            'validate_code'=>$validateCode);
+        $db = Zend_Registry::get('db');
+        $db->insert('validate_emails', $data);
+
+        $contentTpl = $this->view->setScriptPath(VIEWS . '/scripts/mail');
+        $contentTpl = $this->view;
+
+        if (!empty($accountInfo)) {
+            $contentTpl->account = $accountInfo['account'];
+            $contentTpl->password = $accountInfo['password'];
+        }
+
+        $contentTpl->actionType = $type;
+        $contentTpl->validateCode = $validateCode;
+        $contentTpl->userId = $userId;
+        $content = $contentTpl->render('validate.tpl');
+        $mail->setBodyText($content);
+        $mail->send($this->_getTransport());
+    }
+
+    /**
+     * _getTransport() - Return the appropriate Zend_Mail_Transport subclass,
+     * based on the system's configuration.
+     *
+     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail
+     */
+    private function _getTransport()
+    {
+        $transport = null;
+        if ( 'smtp' == Config_Fisma::readSysConfig('send_type')) {
+            $config = array('auth' => 'login',
+                'username' => Config_Fisma::readSysConfig('smtp_username'),
+                'password' => Config_Fisma::readSysConfig('smtp_password'),
+                'port' => Config_Fisma::readSysConfig('smtp_port'));
+            $transport = new Zend_Mail_Transport_Smtp(
+                Config_Fisma::readSysConfig('smtp_host'), $config);
+        } else {
+            $transport = new Zend_Mail_Transport_Sendmail();
+        }
+        return $transport;
+    }
+
 }
