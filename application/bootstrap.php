@@ -23,6 +23,16 @@
  * @version   $Id$
  */
 
+// APPLICATION CONSTANTS - Set the constants to use in this application.
+// These constants are accessible throughout the application, even in ini 
+// files. We optionally set APPLICATION_PATH here in case our entry point 
+// isn't index.php (e.g., if required from our test suite or a script).
+defined('APPLICATION_ROOT')
+    or define('APPLICATION_ROOT', realpath(dirname(__FILE__) . '/..'));
+
+defined('APPLICATION_PATH')
+    or define('APPLICATION_PATH', dirname(__FILE__));
+
 // The paths.php file contains constants representing commonly accessed paths in the application.
 require_once "config/paths.php";
 
@@ -41,8 +51,7 @@ if (defined('COMMAND_LINE')) {
 
 // Load config.ini file into config object, then set options for Zend_Session
 $config = new Zend_Config_Ini('config.ini', 'development');
-$sessionConfig['save_path'] = ROOT . $config->save_path;
-Zend_Session::start($sessionConfig);
+Zend_Session::start($config);
 
 // Initialize the view renderer
 // @todo what is the difference between $viewRenderer and $viewRender?
