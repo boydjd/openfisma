@@ -36,7 +36,7 @@
 	9. 'phpunit' Execute unit tests, generate metrics, coverage etc. 
 	-->
 	<target name="build" 
-			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,php-compatibility,package-application,deploy-phpdocs,deploy-application,phpunit" />
+			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,php-compatibility,package-application,deploy-phpdocs,deploy-application,cleanscreenshots,phpunit,getscreenshots" />
 
 	<!-- Files to be included in application package -->
     <fileset dir="${basedir}/source" id="package.files">
@@ -84,6 +84,9 @@
 		<mkdir dir="build/coverage" />
 		<!-- Create the artifacts directory to store items that cruisecontrol will publish for each build -->
 		<mkdir dir="build/artifacts" />
+		<!-- Create the screenshots directory to store application screenshots -->
+		<mkdir dir="build/artifacts/screenshots" />
+		<mkdir dir="build/artifacts/screenshots/thumbs" />
 		<!-- Checkout source code from branch in build.properties to the local source directory -->
 		<exec executable="svn">
 			<arg line="co ${svnroot}/${svnbranch} source" />
@@ -240,7 +243,8 @@
 		<!-- Chmod files and directories on the webserver -->
 		<chmod perm="777" type="both" >
 			<fileset dir="${deploy.directory}" >
-				<include name="log" />
+				<include name="data/sessions" />
+				<include name="data/logs" />
 				<include name="public/temp" />
 				<include name="public/evidence" />
 				<include name="application/config/install.conf" />
@@ -278,6 +282,21 @@
                        ${database.name}" />
 		</exec>
 	</target>
+
+	<!--
+	Connects to the Selenium RC server by FTP and removes any old screenshots
+	-->
+	<target name="cleanscreenshots">
+          <ftp action="del"
+               server="${selenium.host}"
+               userid="${selenium.ftpuser}"
+               password="${selenium.ftppass}"
+               verbose="yes">
+            <fileset>
+              <include name="*"/>
+            </fileset>
+          </ftp>
+	</target>
 	
 	<!--
 	Executes the project unit tests and stores the different logs in the
@@ -286,12 +305,37 @@
 	-->
 	<target name="phpunit">
        	<!-- Copy the selenium.conf file into the correct place -->
-       	<copy file="${basedir}/selenium.conf" tofile="${deploy.directory}/application/config/selenium.conf" overwrite="true" />
+       	<copy file="${basedir}/selenium.conf"
+              tofile="${deploy.directory}/application/config/selenium.conf"
+              overwrite="true" />
 
-		<exec executable="phpunit" dir="${deploy.directory}/tests" failonerror="on">
+		<exec executable="phpunit"
+              dir="${deploy.directory}/tests"
+              failonerror="on">
 			<arg line="--log-xml ${basedir}/build/logs/phpunit.xml AllTests" />
 		</exec>
 
+	</target>
+
+	<!--
+	Connects to the Selenium RC server by FTP and fetches new screenshots into the build directory,
+	then creates thumbnails for them.
+	-->
+	<target name="getscreenshots">
+<!--        <ftp action="get"
+               server="${selenium.host}"
+               userid="${selenium.ftpuser}"
+               password="${selenium.ftppass}"
+               verbose="yes">
+            <fileset dir="${basedir}/build/screenshots">
+              <include name="*"/>
+            </fileset>
+          </ftp>-->
+		<exec executable="mogrify"
+              dir="${basedir}/build/artifacts/screenshots"
+              failonerror="on">
+			<arg line="-path thumbs -thumbnail 320x240 *.png" />
+		</exec>
 	</target>
 
 </project>
