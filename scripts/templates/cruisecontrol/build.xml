@@ -322,18 +322,17 @@
 	then creates thumbnails for them.
 	-->
 	<target name="getscreenshots">
-<!--        <ftp action="get"
+        <ftp action="get"
                server="${selenium.host}"
                userid="${selenium.ftpuser}"
                password="${selenium.ftppass}"
                verbose="yes">
-            <fileset dir="${basedir}/build/screenshots">
+            <fileset dir="${basedir}/build/artifacts/screenshots">
               <include name="*"/>
             </fileset>
-          </ftp>-->
+          </ftp>
 		<exec executable="mogrify"
-              dir="${basedir}/build/artifacts/screenshots"
-              failonerror="on">
+              dir="${basedir}/build/artifacts/screenshots">
 			<arg line="-path thumbs -thumbnail 320x240 *.png" />
 		</exec>
 	</target>
