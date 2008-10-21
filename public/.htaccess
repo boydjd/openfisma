@@ -2,14 +2,18 @@
 # privileges for this htaccess file to work, this is set in the
 # apache httpd.conf file.
 
-# Rewrite rules for Zend Framework
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)$ index.php/$1 [L]
-</IfModule>
+# This set of rewrite rules specify that if the file exists 
+# under the document root directory, it should simply be served 
+# as a static resource. Otherwise, the request is for dynamic 
+# content and should be rewritten to our index.php script. Since 
+# all requests for non-static content will be rewritten to it, 
+# the index.php script serves as the entry point to our application. 
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^.*$ /index.php [NC,L]
 
 # Overrides current PHP server settings to harden the server by
 # turning off unwanted options which may be harmful. There are 
