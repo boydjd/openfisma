@@ -113,7 +113,7 @@
 		</delete>
 		<!-- Remove old artifacts -->
 		<delete includeemptydirs="true" failonerror="false">
-			<fileset dir="${basedir}/build/artifacts" includes="**/*" />
+			<fileset dir="${basedir}/build/artifacts" includes="**/*" excludes="screenshots,screenshots/thumbs" />
 		</delete>
 		<!-- Remove old phpdocs -->
 		<delete includeemptydirs="true" failonerror="false">
