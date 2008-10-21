@@ -56,7 +56,8 @@
         }
         if(Config_Fisma::isAllow('report','generate_overdue_report')) {
             echo'<li><a href="/panel/report/sub/overdue">Overdue Report</a>';
-        }            
+        }       
+        echo '<li><a href="/panel/report/sub/plugin">Plug-in Reports</a>';     
         echo'</ul>
              </li></ul>';
         echo '<img src="/images/menu_line.gif" border="0">';

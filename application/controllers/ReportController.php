@@ -71,7 +71,7 @@ class ReportController extends PoamBaseController
               ->addActionContext('swdisc', array('pdf', 'xls'))
               ->addActionContext('total', array('pdf', 'xls'))
               ->addActionContext('overdue', array('pdf', 'xls'))
-              ->addActionContext('plugin', array('pdf', 'xls'))
+              ->addActionContext('pluginreport', array('pdf', 'xls'))
               ->initContext();
     }
 
@@ -640,7 +640,7 @@ class ReportController extends PoamBaseController
     }
 
     /**
-     * pluginAction() - Display the available plugin reports
+     * pluginreportAction() - Execute and display the specified plug-in report
      */         
     public function pluginreportAction() 
     {
@@ -652,12 +652,24 @@ class ReportController extends PoamBaseController
         
         // Verify that the user has permission to run this report
         $reportConfig = new Zend_Config_Ini(CONFIGS . '/reports.conf', $reportName);
+        $reportRoles = $reportConfig->roles;
         $report = $reportConfig->toArray();
-        // @todo check the ROLE field of the $report array
+        $reportRoles = $report['roles'];
+        if (!is_array($reportRoles)) {
+            $reportRoles = array($reportRoles);
+        }
+        $user = new User();
+        $role = $user->getRoles($this->_me->id);
+        $role = $role[0]['nickname'];
+        if (!in_array($role, $reportRoles)) {
+            throw new FismaException("User \"{$this->_me->account}\" does not have permission to view"
+                                     . " the \"$reportName\" plug-in report.");
+        }
         
         // Execute the report script
         $reportScriptFile = CONFIGS . "/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
+        $reportScript = '';
         while (!feof($reportScriptFileHandle)) {
             $reportScript .= fgets($reportScriptFileHandle);
         }
@@ -671,6 +683,7 @@ class ReportController extends PoamBaseController
             // @todo replace with a user level error message and forward to pluginAction()
             throw new FismaException("No data for plugin report \"$reportName\"");
         } 
+        $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
         $this->render();
