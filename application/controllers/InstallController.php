@@ -65,7 +65,7 @@ class InstallController extends Zend_Controller_Action
     {
         $wDirectories = array(
             WEB_ROOT . '/temp',
-            ROOT . '/data/log',
+            ROOT . '/data/logs',
             WEB_ROOT . '/evidence',
             CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME
         );
