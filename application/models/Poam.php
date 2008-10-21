@@ -126,7 +126,7 @@ class Poam extends Zend_Db_Table
         }
         if (! empty($type)) {
             if (is_array($type)) {
-                $query->where("p.type IN ('" . implode("','",$type) . "')");
+                $query->where("p.type IN ('" . implode("','", $type) . "')");
             } else {
                 $query->where("p.type = ?", $type);
             }
@@ -135,20 +135,29 @@ class Poam extends Zend_Db_Table
             $query->where("p.status='EP'");
             if ($ep > 0) {
                 $ep --;
-                $query->join(array('e' => new Zend_Db_Expr("(SELECT MAX(id) as last_eid,poam_id FROM evidences GROUP BY poam_id)")), 'e.poam_id=p.id', array())->joinLeft(array('pvv' => 'poam_evaluations'), 'e.last_eid=pvv.group_id', array())->joinLeft(array('el' => 'evaluations'), 'el.id=pvv.eval_id', array())->join(array('ev' => new Zend_Db_Expr("(
+                $query->join(
+                    array('e' => new Zend_Db_Expr("(SELECT MAX(id) as last_eid,
+                                                    poam_id FROM evidences GROUP BY poam_id)")), 
+                          'e.poam_id=p.id', array())
+                    ->joinLeft(array('pvv' => 'poam_evaluations'), 'e.last_eid=pvv.group_id', array())
+                    ->joinLeft(array('el' => 'evaluations'), 'el.id=pvv.eval_id', array())
+                    ->join(array('ev' => new Zend_Db_Expr("(
                         SELECT e1.id,MAX(eval.precedence_id) level
                         FROM `evidences` AS e1, `poam_evaluations` AS pe, `evaluations` AS eval
                         WHERE ( eval.id = pe.eval_id AND e1.id = pe.group_id 
                                 AND eval.group='EVIDENCE' ) 
-                        GROUP BY e1.id)")), "ev.id=e.last_eid AND el.precedence_id=ev.level", array())->where("ev.level='$ep' AND pvv.decision='APPROVED'");
+                        GROUP BY e1.id)")), "ev.id=e.last_eid AND el.precedence_id=ev.level", array())
+                    ->where("ev.level='$ep' AND pvv.decision='APPROVED'");
             } else { //$ep==0
-                $query->join(array('e' => 'evidences'), 'e.poam_id=p.id', array())->joinLeft(array('pvv' => 'poam_evaluations'), null, array())->join(array('el' => 'evaluations'), '(el.id=pvv.eval_id AND el.group=\'EVIDENCE\') 
+                $query->join(array('e' => 'evidences'), 'e.poam_id=p.id', array())
+                ->joinLeft(array('pvv' => 'poam_evaluations'), null, array())
+                ->join(array('el' => 'evaluations'), '(el.id=pvv.eval_id AND el.group=\'EVIDENCE\') 
                              ON e.id=pvv.group_id', array())->where("ISNULL(pvv.id) ");
             }
         }
         if (! empty($status)) {
             if (is_array($status)) {
-                $query->where("p.status IN ('" . implode("','",$status) . "')");
+                $query->where("p.status IN ('" . implode("','", $status) . "')");
             } else {
                 $query->where("p.status = ?", $status);
             }
@@ -233,14 +242,12 @@ class Poam extends Zend_Db_Table
         $tableFields = array_values($fields);
         $pFields = array_diff($fields, $extraFields['asset'],
                               $extraFields['source']);
-        $asFields = array_flip(array_intersect($extraFields['asset'],
-                                $tableFields));
-        $srcFields = array_flip(array_intersect($extraFields['source'],
-                                                $tableFields));
+        $asFields = array_flip(array_intersect($extraFields['asset'], $tableFields));
+        $srcFields = array_flip(array_intersect($extraFields['source'], $tableFields));
         $query = $this->_db->select()
                       ->from(array('p' => $this->_name), $pFields);
         if (! empty($sysIds)) {
-            $query->where("p.system_id IN ('" . implode("','",$sysIds) . "')");
+            $query->where("p.system_id IN ('" . implode("','", $sysIds) . "')");
         }
         if (! empty($asFields)) {
             $query->joinLeft(array('as' => 'assets'), 'as.id = p.asset_id',

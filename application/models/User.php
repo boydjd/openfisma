@@ -34,6 +34,7 @@ class User extends FismaModel
 {
     protected $_name = 'users';
     protected $_primary = 'id';
+    protected $_rowClass = 'Table_Rowlower';
     protected $_logName = 'account_logs';
     protected $_logger = null;
     protected $_logMap = array('priority' => 'priority',
@@ -142,17 +143,17 @@ class User extends FismaModel
             $now = new Zend_Date();
             $nowSqlString = $now->get('Y-m-d H:i:s');
             if ($type == self::LOGINFAILURE) {
-                $row->failure_count++;
-                if ($row->failure_count >= Config_Fisma::readSysConfig('failure_threshold')) {
-                    $row->termination_ts = $nowSqlString;
-                    $row->is_active = 0;
+                $row->failureCount++;
+                if ($row->failureCount >= Config_Fisma::readSysConfig('failure_threshold')) {
+                    $row->terminationTs = $nowSqlString;
+                    $row->isActive = 0;
                 }
                 $row->save();
             } else if ($type == self::LOGIN) {
-                $row->failure_count = 0;
-                $row->last_login_ts = $nowSqlString;
-                $row->last_login_ip = $_SERVER["REMOTE_ADDR"];
-                $row->most_recent_notify_ts = $nowSqlString;
+                $row->failureCount = 0;
+                $row->lastLoginTs = $nowSqlString;
+                $row->lastLoginIp = $_SERVER["REMOTE_ADDR"];
+                $row->mostRecentNotifyTs = $nowSqlString;
                 $row->save();
             }
         }
@@ -181,7 +182,7 @@ class User extends FismaModel
         if ($reverse) {
             $where[] = "user_id=$uid";
             if (! empty($data)) {
-                $where[] = "{$this->_map[$type]['field']} IN('" . implode("','",$data). "')";
+                $where[] = "{$this->_map[$type]['field']} IN('" . implode("','", $data). "')";
                 $ret = $this->_db->delete($this->_map[$type]['table'], $where);
             }
         } else {

@@ -447,6 +447,7 @@ class ReportController extends PoamBaseController
      * fipsAction() - FIPS report
      */
     public function fipsAction() {
+        require_once('RiskAssessment.php');
         $system = new system();
         $systems = $system->getList(array(
             'name' => 'name',
