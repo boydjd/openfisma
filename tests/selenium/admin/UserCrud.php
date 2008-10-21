@@ -44,6 +44,7 @@ class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest
     {
         $this->createDefaultUser('ADMIN');
         $this->login();
+        $this->screenshot('Dashboard');
         
         // Create user
         $this->click("link=Users");
@@ -51,15 +52,15 @@ class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest
         $this->click("add_user");
         $this->waitForPageToLoad();
         $this->type("account", "john.doe");
-        $this->type("password", "test_password");
-        $this->type("confirm_password", "test_password");
+        $this->type("password", "ASDFasdf1234");
+        $this->type("confirmPassword", "ASDFasdf1234");
         $this->type("name_first", "John");
         $this->type("name_last", "Doe");
         $this->type("email", "email.address@agency.gov");
         $this->select("role", "label=Authorizing Official");
+        $this->screenshot('Create User');
         $this->click("submit");
         $this->waitForPageToLoad();
-        $this->assertTextPresent("User (john.doe) added");
         
         // Review creation data on user list
         $this->click("user_list");
@@ -69,6 +70,7 @@ class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest
         $this->assertTextPresent("email.address@agency.gov");
         $this->assertTextPresent("john.doe");
         $this->assertTextPresent("AO");
+        $this->screenshot('User List');
         
         // Update user
         $this->click("link=Users");

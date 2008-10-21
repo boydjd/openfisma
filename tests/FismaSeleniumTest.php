@@ -46,6 +46,16 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
      */
     protected $_db;
     
+    /**
+     * Directory on the selenium RC server in which to store screenshots
+     */
+    protected $_remoteScreenshotDir;
+    
+    /**
+     * Used to uniquely name screenshots
+     */
+    protected $_remoteScreenshotSequence = 0;
+    
     const USER_NAME = 'test_user';
     const PASSWORD = 'test_password';
 
@@ -66,10 +76,25 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
         // Load the selenium configuration and connect to the server
         $seleniumConfig = new Zend_Config_Ini(SELENIUM_CONFIG_FILE, 'selenium');
 
+        $this->_remoteScreenshotDir = $seleniumConfig->screenshotDir;
+
         $this->setHost($seleniumConfig->host);
         $this->setPort(intval($seleniumConfig->port));
         $this->setBrowser($seleniumConfig->browser);
         $this->setBrowserUrl($seleniumConfig->browserBaseUrl);
+    }
+
+    /**
+     * tearDown() - When a test fails, take a screenshot of the failure during tear down. This greatly helps to diagnose
+     * errors in Selenium test cases.
+     */
+    protected function tearDown()
+    {
+        if ($this->hasFailed()) {
+            $screenshotName = 'ERROR.'.get_class($this);
+            $this->screenshot($screenshotName);
+            $this->stop();
+        }
     }
 
     /**
@@ -150,4 +175,16 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
         $this->assertTextPresent(self::USER_NAME . ' is currently logged in');
     }
     
+    /**
+     * screenshot() - Take a Selenium RC screenshot.
+     *
+     * This assumes that the Selenium RC server is running on Windows
+     *
+     * @param string $name A name for the screenshot (use lower_case_underscore naming format, without file extension)
+     */
+    public function screenshot($name) {
+        $sequenceNumber = sprintf('%03d', $this->_remoteScreenshotSequence++);
+        $screenshotPath = $this->_remoteScreenshotDir . "\\{$sequenceNumber}_{$name}.png";
+        $this->captureEntirePageScreenshot($screenshotPath);
+    }
 }
