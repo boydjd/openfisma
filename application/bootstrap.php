@@ -73,11 +73,10 @@ $options = array(
 );
 
 // Use ".tpl" as the default view suffix
-Zend_Layout::startMvc($options)->setViewSuffix('tpl');
+Zend_Layout::startMvc($options);
 $viewRender = Zend_Controller_Action_HelperBroker::
               getStaticHelper('viewRenderer');
-$viewRender->setViewSuffix('tpl')
-           ->setNeverRender(true);
+$viewRender->setNeverRender(true);
 Zend_Controller_Action_HelperBroker::addHelper($viewRender);
 
 $front = Zend_Controller_Front::getInstance();
