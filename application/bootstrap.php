@@ -32,9 +32,39 @@ defined('APPLICATION_ROOT')
 
 defined('APPLICATION_PATH')
     or define('APPLICATION_PATH', dirname(__FILE__));
+	
+defined('APPLICATION_ENVIRONMENT')
+    or define('APPLICATION_ENVIRONMENT', 'development');
 
 // The paths.php file contains constants representing commonly accessed paths in the application.
 require_once "config/paths.php";
+
+// FRONT CONTROLLER - Get the front controller.
+// The Zend_Front_Controller class implements the Singleton pattern, which is a
+// design pattern used to ensure there is only one instance of
+// Zend_Front_Controller created on each request.
+$frontController = Zend_Controller_Front::getInstance();
+
+// CONTROLLER DIRECTORY SETUP - Point the front controller to your action
+// controller directory.
+$frontController->setControllerDirectory(APPLICATION_PATH . '/controllers');
+
+// APPLICATION ENVIRONMENT - Set the current environment
+// Set a variable in the front controller indicating the current environment --
+// commonly one of development, staging, testing, production, but wholly
+// dependent on your organization and site's needs.
+$frontController->setParam('env', APPLICATION_ENVIRONMENT);
+
+// LAYOUT SETUP - Setup the layout component
+// The Zend_Layout component implements a composite (or two-step-view) pattern
+// In this call we are telling the component where to find the layouts scripts.
+// Set layout options
+$options = array(
+    'layout' => 'default',
+    'layoutPath' => APPLICATION_PATH . '/layouts/scripts',
+    'contentKey' => 'CONTENT'
+);
+Zend_Layout::startMvc($options);
 
 // Initialize the global setting object
 $fisma = Config_Fisma::getInstance();
@@ -61,23 +91,12 @@ $viewRenderer->view->doctype('HTML4_STRICT');
 // with legacy PHP code.
 Zend_Date::setOptions(array('format_type' => 'php'));
 
-// Set layout options
-$options = array(
-    'layout' => 'default',
-    'layoutPath' => VIEWS . '/layouts',
-    'contentKey' => 'CONTENT'
-);
-
-Zend_Layout::startMvc($options);
 $viewRender = Zend_Controller_Action_HelperBroker::
               getStaticHelper('viewRenderer');
 $viewRender->setNeverRender(true);
 Zend_Controller_Action_HelperBroker::addHelper($viewRender);
 
-$front = Zend_Controller_Front::getInstance();
-$front->setControllerDirectory(APPS . '/controllers');
-
-$router = $front->getRouter();
+$router = $frontController->getRouter();
 if (!Config_Fisma::isInstall()) {
     // If the application has not been installed yet, then define the route so
     // that only the installController can be invoked. This forces the user to
@@ -91,7 +110,7 @@ if (!Config_Fisma::isInstall()) {
     $router->addRoute('default', $route['install']);
 
     // The installer has its own error handler which is registered here:
-    $front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
+    $frontController->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
         array(
             'model' => null,
             'controller' => 'Install',
@@ -130,7 +149,7 @@ if (!Config_Fisma::isInstall()) {
     $router->addRoute('no_install', $route['no_install']);
     
     // Register the default error controller
-    $front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
+    $frontController->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
         array(
             'model' => null,
             'controller' => 'Error',
