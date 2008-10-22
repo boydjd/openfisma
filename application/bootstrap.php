@@ -36,10 +36,6 @@ defined('APPLICATION_PATH')
 // The paths.php file contains constants representing commonly accessed paths in the application.
 require_once "config/paths.php";
 
-// Register the class loader:
-require_once "Zend/Loader.php";
-Zend_Loader::registerAutoload();
-
 // Initialize the global setting object
 $fisma = Config_Fisma::getInstance();
 
