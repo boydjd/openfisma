@@ -44,7 +44,7 @@ class PanelController extends SecurityController
     {
         $this->_helper->layout->assign('header',
             $this->view->render($this->_helper->viewRenderer->getViewScript()));
-        $this->_helper->layout->setLayout('default');
+        $this->_helper->layout->setLayout('layout');
         $this->_helper->actionStack('footer');
     }
 

@@ -70,12 +70,7 @@ $frontController->setParam('env', APPLICATION_ENVIRONMENT);
 // LAYOUT SETUP - Setup the layout component
 // The Zend_Layout component implements a composite (or two-step-view) pattern
 // In this call we are telling the component where to find the layouts scripts.
-// Set layout options
-$options = array(
-    'layout' => 'default',
-    'layoutPath' => APPLICATION_PATH . '/layouts/scripts',
-);
-Zend_Layout::startMvc($options);
+Zend_Layout::startMvc(APPLICATION_PATH . '/layouts/scripts');
 
 // CONFIGURATION - Setup the configuration object
 // The Zend_Config_Ini component will parse the ini file, and resolve all of
