@@ -51,13 +51,6 @@ Zend_Loader::registerAutoload();
 // The paths.php file contains constants representing commonly accessed paths in the application.
 require_once "config/paths.php";
 
-// AUTOLOADER - Set up autoloading.
-// This is a nifty trick that allows ZF to load classes automatically so
-// that you don't have to litter your code with 'include' or 'require'
-// statements.
-require_once "Zend/Loader.php";
-Zend_Loader::registerAutoload();
-
 // FRONT CONTROLLER - Get the front controller.
 // The Zend_Front_Controller class implements the Singleton pattern, which is a
 // design pattern used to ensure there is only one instance of
@@ -114,10 +107,9 @@ if (defined('COMMAND_LINE')) {
 // VIEW SETUP - Initialize properties of the view object
 // The Zend_View component is used for rendering views. Here, we grab a "global"
 // view instance from the layout object, and specify the doctype we wish to
-// use -- in this case, XHTML1 Strict.
+// use -- in this case, HTML4 Strict.
 $view = Zend_Layout::getMvcInstance()->getView();
 $view->doctype('HTML4_STRICT');
-
 
 // Start Session Handling using Zend_Session 
 Zend_Session::start($configuration);
