@@ -36,7 +36,7 @@
 	9. 'phpunit' Execute unit tests, generate metrics, coverage etc. 
 	-->
 	<target name="build" 
-			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,php-compatibility,package-application,deploy-phpdocs,deploy-application,cleanscreenshots,phpunit,getscreenshots" />
+			depends="clean,checkout,svninfo,php-documentor,php-codesniffer,package-application,deploy-phpdocs,deploy-selenium,deploy-development,cleanscreenshots,phpunit,getscreenshots" />
 
 	<!-- Files to be included in application package -->
     <fileset dir="${basedir}/source" id="package.files">
@@ -184,13 +184,6 @@
 		</exec>
 	</target>
 	
-	<!-- Runs the PHP_CompatibilityInfo command to check which version of PHP will be required to run the application -->
-	<target name="php-compatibility">
-		<exec executable="pci" dir="${basedir}/source" output="${basedir}/build/artifacts/PHP_Compatibility_Report.txt">
-			<arg line="--summarize --dir ${basedir}/source" />
-		</exec>
-    </target>
-
 	<!-- Package binary distributions of application in multiple formats -->
 	<target name="package-application">
 		<!-- Load svn.properties file to retrieve revision number -->
@@ -226,23 +219,23 @@
 	</target>	
 	
 	<!-- Deploys the application -->
-	<target name="deploy-application">
+	<target name="deploy-selenium">
 
 		<!-- Load svn.properties file to retrieve revision number -->
 		<property file="svn.properties" />
 
 		<!-- Remove old files and web directory -->
-		<delete dir="${deploy.directory}" />
+		<delete dir="${selenium.directory}" />
 
 		<!-- Create new web directory -->
-		<mkdir dir="${deploy.directory}" />
+		<mkdir dir="${selenium.directory}" />
 
 		<!-- Deploy test package to the webserver -->
-		<unzip src="${basedir}/build/artifacts/${packagename}.test.${Revision}.zip" dest="${deploy.directory}" />
+		<unzip src="${basedir}/build/artifacts/${packagename}.test.${Revision}.zip" dest="${selenium.directory}" />
 
 		<!-- Chmod files and directories on the webserver -->
 		<chmod perm="777" type="both" >
-			<fileset dir="${deploy.directory}" >
+			<fileset dir="${selenium.directory}" >
 				<include name="data/sessions" />
 				<include name="data/logs" />
 				<include name="public/temp" />
@@ -252,36 +245,102 @@
 		</chmod>
 
        	<!-- Copy the install.conf file into the correct place -->
-       	<copy file="${basedir}/install.conf" tofile="${deploy.directory}/application/config/install.conf" overwrite="true" />
+       	<copy file="${basedir}/install.conf" tofile="${selenium.directory}/application/config/install.conf" overwrite="true" />
 		
 		<!-- update the ownership of the newly distributed files -->
-		<exec executable="chown" dir="${deploy.directory}">
-			<arg line="-R ${apache.user} ${deploy.directory}" />
+		<exec executable="chown" dir="${selenium.directory}">
+			<arg line="-R ${apache.user} ${selenium.directory}" />
 		</exec>
 
 		<!-- Drop current database and then recreate it with the latest application schema and metadata -->
-		<exec executable="mysql" dir="${deploy.directory}/public">
-			<arg line="--user=${database.username} 
-					   --password=${database.password}
-					   --host=${database.host}
-					   --port=${database.port}
-					   --execute='drop database if exists ${database.name}'" />
+		<exec executable="mysql" dir="${selenium.directory}/public">
+			<arg line="--user=${seleniumdb.username} 
+					   --password=${seleniumdb.password}
+					   --host=${seleniumdb.host}
+					   --port=${seleniumdb.port}
+					   --execute='drop database if exists ${seleniumdb.name}'" />
 		</exec>
-		<exec executable="mysql" dir="${deploy.directory}/public">
-			<arg line="--user=${database.username}
-					   --password=${database.password}
-					   --host=${database.host}
-					   --port=${database.port}
-					   --execute='create database ${database.name}'" />
+		<exec executable="mysql" dir="${selenium.directory}/public">
+			<arg line="--user=${seleniumdb.username}
+					   --password=${seleniumdb.password}
+					   --host=${seleniumdb.host}
+					   --port=${seleniumdb.port}
+					   --execute='create database ${seleniumdb.name}'" />
 		</exec>
-		<exec executable="mysql" dir="${deploy.directory}/public" input="${deploy.directory}/application/config/db/base.sql">
-			<arg line="--user=${database.username}
-					   --password=${database.password}
-					   --host=${database.host}
-					   --port=${database.port}
-                       ${database.name}" />
+		<exec executable="mysql" dir="${selenium.directory}/public" input="${selenium.directory}/application/config/db/base.sql">
+			<arg line="--user=${seleniumdb.username}
+					   --password=${seleniumdb.password}
+					   --host=${seleniumdb.host}
+					   --port=${seleniumdb.port}
+                       ${seleniumdb.name}" />
 		</exec>
 	</target>
+
+	<!-- Deploys the application -->
+	<target name="deploy-development">
+
+		<!-- Load svn.properties file to retrieve revision number -->
+		<property file="svn.properties" />
+
+		<!-- Remove old files and web directory -->
+		<delete dir="${development.directory}" />
+
+		<!-- Create new web directory -->
+		<mkdir dir="${development.directory}" />
+
+		<!-- Deploy test package to the webserver -->
+		<unzip src="${basedir}/build/artifacts/${packagename}.test.${Revision}.zip" dest="${development.directory}" />
+
+		<!-- Chmod files and directories on the webserver -->
+		<chmod perm="777" type="both" >
+			<fileset dir="${development.directory}" >
+				<include name="data/sessions" />
+				<include name="data/logs" />
+				<include name="public/temp" />
+				<include name="public/evidence" />
+				<include name="application/config/install.conf" />
+			</fileset>
+		</chmod>
+
+       	<!-- Copy the install.conf file into the correct place -->
+       	<copy file="${basedir}/install.conf" tofile="${development.directory}/application/config/install.conf" overwrite="true" />
+		
+		<!-- update the ownership of the newly distributed files -->
+		<exec executable="chown" dir="${developement.directory}">
+			<arg line="-R ${apache.user} ${development.directory}" />
+		</exec>
+
+		<!-- Drop current database and then recreate it with the latest application schema and metadata -->
+		<exec executable="mysql" dir="${development.directory}/public">
+			<arg line="--user=${developmentdb.username} 
+					   --password=${developmentdb.password}
+					   --host=${developmentdb.host}
+					   --port=${developmentdb.port}
+					   --execute='drop database if exists ${developmentdb.name}'" />
+		</exec>
+		<exec executable="mysql" dir="${development.directory}/public">
+			<arg line="--user=${developmentdb.username}
+					   --password=${developmentdb.password}
+					   --host=${developmentdb.host}
+					   --port=${developmentdb.port}
+					   --execute='create database ${developmentdb.name}'" />
+		</exec>
+		<exec executable="mysql" dir="${development.directory}/public" input="${development.directory}/application/config/db/base.sql">
+			<arg line="--user=${developmentdb.username}
+					   --password=${developmentdb.password}
+					   --host=${developmentdb.host}
+					   --port=${developmentdb.port}
+                       ${developmentdb.name}" />
+		</exec>
+		<exec executable="mysql" dir="${development.directory}/public" input="${development.directory}/application/config/db/demo_data.sql">
+			<arg line="--user=${developmentdb.username}
+					   --password=${developmentdb.password}
+					   --host=${developmentdb.host}
+					   --port=${developmentdb.port}
+                       ${developmentdb.name}" />
+		</exec>
+	</target>	
+	
 
 	<!--
 	Connects to the Selenium RC server by FTP and removes any old screenshots
@@ -306,11 +365,11 @@
 	<target name="phpunit">
        	<!-- Copy the selenium.conf file into the correct place -->
        	<copy file="${basedir}/selenium.conf"
-              tofile="${deploy.directory}/application/config/selenium.conf"
+              tofile="${selenium.directory}/application/config/selenium.conf"
               overwrite="true" />
 
 		<exec executable="phpunit"
-              dir="${deploy.directory}/tests"
+              dir="${selenium.directory}/tests"
               failonerror="on">
 			<arg line="--log-xml ${basedir}/build/logs/phpunit.xml AllTests" />
 		</exec>
@@ -338,3 +397,4 @@
 	</target>
 
 </project>
+
