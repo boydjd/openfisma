@@ -36,6 +36,18 @@ defined('APPLICATION_PATH')
 defined('APPLICATION_ENVIRONMENT')
     or define('APPLICATION_ENVIRONMENT', 'development');
 
+// APPLICATION_PATH is a constant pointing to our application/ subdirectory.
+// We use this to add our "library" directory to the include_path, so that 
+// PHP can find our Zend Framework classes.
+set_include_path(APPLICATION_ROOT . '/library' . PATH_SEPARATOR . get_include_path());
+
+// AUTOLOADER - Set up autoloading.
+// This is a nifty trick that allows ZF to load classes automatically so
+// that you don't have to litter your code with 'include' or 'require'
+// statements.
+require_once "Zend/Loader.php";
+Zend_Loader::registerAutoload();
+
 // The paths.php file contains constants representing commonly accessed paths in the application.
 require_once "config/paths.php";
 
