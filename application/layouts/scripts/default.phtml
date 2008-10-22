@@ -1,15 +1,14 @@
-<?php
-    echo $this->doctype();
-?>
+<?= $this->doctype() ?> <!-- This Line will output the doctype we set inside the bootstrap file -->
+
 <html>
 <head>
-<?php
-    $this->headTitle()->setSeparator(' - ');
-    $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
-    echo $this->headTitle();
-?>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<?php 
+		$this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
+		echo $this->headTitle();
+	?>
+
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.ui.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/ajax.js"></script>
@@ -22,14 +21,14 @@
       type="image/ico"
       href="/images/favicon.ico" />
 
-<style type="text/css">
-<!--
-@import url("/stylesheets/main.css");
-@import url("/stylesheets/datepicker.css");
-@import url("/stylesheets/jquery-ui-themeroller.css");
--->
-</style>
-
+  <!--
+      The line below demonstrates usage of the headLink() view helper
+      @see http://framework.zend.com/manual/en/zend.view.helpers.html
+      -->
+  <?= $this->headLink()->appendStylesheet('/stylesheets/main.css') ?>
+  <?= $this->headLink()->appendStylesheet('/stylesheets/datepicker.css') ?>
+  <?= $this->headLink()->appendStylesheet('/stylesheets/jquery-ui-themeroller.css') ?>  
+	  
 </head>
 <body>
 
@@ -43,7 +42,11 @@
 <div id="content">
 
 <div id='detail'>
-        <?php echo $this->layout()->CONTENT; ?>
+
+		<!-- This next call will now include any content that was generated in the
+		dispatching of a controllers action (or series of actions).  -->
+		<?= $this->layout()->content ?>
+
 </div><!--detail-->
 <div id='footer'>
         <?php echo $this->layout()->footer; ?>

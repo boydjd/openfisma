@@ -62,12 +62,8 @@ $frontController->setParam('env', APPLICATION_ENVIRONMENT);
 $options = array(
     'layout' => 'default',
     'layoutPath' => APPLICATION_PATH . '/layouts/scripts',
-    'contentKey' => 'CONTENT'
 );
 Zend_Layout::startMvc($options);
-
-// Initialize the global setting object
-$fisma = Config_Fisma::getInstance();
 
 // If we are in command line mode, then drop out of the bootstrap before we
 // render any views.
@@ -75,16 +71,33 @@ if (defined('COMMAND_LINE')) {
     return;
 }
 
-// Load config.ini file into config object, then set options for Zend_Session
-$config = new Zend_Config_Ini('app.ini', 'development');
-Zend_Session::start($config);
+// VIEW SETUP - Initialize properties of the view object
+// The Zend_View component is used for rendering views. Here, we grab a "global"
+// view instance from the layout object, and specify the doctype we wish to
+// use -- in this case, XHTML1 Strict.
+$view = Zend_Layout::getMvcInstance()->getView();
+$view->doctype('HTML4_STRICT');
 
-// Initialize the view renderer
-// @todo what is the difference between $viewRenderer and $viewRender?
-$viewRenderer = Zend_Controller_Action_HelperBroker::
-                getStaticHelper('viewRenderer');
-$viewRenderer->initView();
-$viewRenderer->view->doctype('HTML4_STRICT');
+// CONFIGURATION - Setup the configuration object
+// The Zend_Config_Ini component will parse the ini file, and resolve all of
+// the values for the given section.  Here we will be using the section name
+// that corresponds to the APP's Environment
+$configuration = new Zend_Config_Ini('app.ini', APPLICATION_ENVIRONMENT);
+
+// REGISTRY - setup the application registry
+// An application registry allows the application to store application 
+// necessary objects into a safe and consistent (non global) place for future 
+// retrieval.  This allows the application to ensure that regardless of what 
+// happends in the global scope, the registry will contain the objects it 
+// needs.
+$registry = Zend_Registry::getInstance();
+$registry->configuration = $configuration;
+
+// Initialize the global setting object
+$fisma = Config_Fisma::getInstance();
+
+// Start Session Handling using Zend_Session 
+Zend_Session::start($configuration);
 
 // This configuration option tells Zend_Date to use the standard PHP date format
 // instead of standard ISO format. This is convenient for interfacing Zend_Date
@@ -118,6 +131,7 @@ if (!Config_Fisma::isInstall()) {
             )
         ));
 } else {
+
     // If the application has been installed, then set up the data source,
     // default routes, and default error handler.
     $db = Zend_Db::factory(Zend_Registry::get('datasource'));
@@ -156,7 +170,15 @@ if (!Config_Fisma::isInstall()) {
             'action' => 'error'
         )
     ));
+	
 }
+
+// CLEANUP - remove items from global scope
+// This will clear all our local boostrap variables from the global scope of 
+// this script (and any scripts that called bootstrap).  This will enforce 
+// object retrieval through the Applications's Registry
+unset($frontController, $view, $configuration, $dbAdapter, $registry);
+
 
 
 
