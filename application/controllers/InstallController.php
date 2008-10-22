@@ -239,6 +239,10 @@ class InstallController extends Zend_Controller_Action
                     $hostUrl .= $_SERVER['SERVER_NAME'];
                 }
                 $this->view->hostUrl = $hostUrl;
+                $this->view->encrypt = $dsn['encrypt'];
+                if (isset($dsn['encryptKey'])) {
+                    $this->view->encryptKey = $dsn['encryptKey'];
+                }
 
                 $dbconfig = $this->view->render($confTpl);
                 if (0 < file_put_contents(CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME,

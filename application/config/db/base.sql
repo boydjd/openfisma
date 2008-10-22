@@ -861,6 +861,7 @@ INSERT INTO `schema_version` VALUES (20);
 INSERT INTO `schema_version` VALUES (21);
 INSERT INTO `schema_version` VALUES (22);
 INSERT INTO `schema_version` VALUES (23);
+INSERT INTO `schema_version` VALUES (24);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -924,14 +925,14 @@ SET character_set_client = utf8;
 CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `account` varchar(32) NOT NULL,
-  `password` varchar(32) NOT NULL default '',
+  `password` varchar(256) NOT NULL default '',
   `title` varchar(64) default NULL,
   `name_last` varchar(32) NOT NULL default '',
   `name_middle` char(1) default NULL,
   `name_first` varchar(32) NOT NULL default '',
   `created_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `password_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  `history_password` varchar(100) NOT NULL default '',
+  `history_password` text,
   `last_login_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `last_login_ip` varchar(32) NOT NULL,
   `termination_ts` datetime default NULL,
@@ -951,7 +952,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `account` (`account`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `users` VALUES (1,'root','9d1fee901b933a42978f2eacbcddff65','admin','Application',NULL,'Admin','0000-00-00 00:00:00','0000-00-00 00:00:00','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00');
+INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','admin','Application',NULL,'Admin','0000-00-00 00:00:00','0000-00-00 00:00:00','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `validate_emails` (
@@ -987,4 +988,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (24);
+INSERT INTO schema_version (schema_version) VALUES (25);

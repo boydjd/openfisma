@@ -6,6 +6,22 @@
                     <h4>General Settings</h4>
                     <table cellspacing='5' >
                         <tr valign='top' align='left'>
+                            <td class='head'><b>Encrypt Type</b></td>
+                            <td class='even'>
+                                <select size='1' name='dsn[encrypt]' id='encrypt'>
+                                    <option value='sha1'>sha1</option>
+                                    <?php if (extension_loaded('php_mcrypt')) { ?>
+                                    <option value='sha256' selected='selected'>sha-256</option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr valign='top' align='left' id="dsnEncrypt" style="display:none">
+                            <td class='head'><b>Encrypt Key</b></td>
+                            <td class='even'><input type='text' name='dsn[encryptKey]' id='port' size='30' maxlength='100' value="<?php echo isset($this->dsn['encryptKey'])?$this->dsn['encryptKey']:''?>" /> <?php if(isset($this->message['encryptKey'])) {echo " <span class='notice'>*</span>";}?></td>
+                        </tr>
+                        <tr valign='top' align='left'>
                             <td class='head'><b>Database Product</b></td>
                             <td class='even'><select  size='1' name='dsn[type]' id='database'>
                                     <option value='mysql' selected='selected'>mysql</option>

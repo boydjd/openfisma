@@ -338,7 +338,7 @@ class AccountController extends PoamBaseController
                     ));
                     return;
                 }
-                $accountData['password'] = md5($accountData['password']);
+                $accountData['password'] = Config_Fisma::encrypt($accountData['password']);
             } else {
                 unset($accountData['password']);
             }
@@ -544,7 +544,7 @@ class AccountController extends PoamBaseController
                 $accountData['account'] = $accountData['ldap_dn'];
             } else if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
                 $password = $accountData['password'];
-                $accountData['password'] = md5($accountData['password']);
+                $accountData['password'] = Config_Fisma::encrypt($accountData['password']);
             }
             $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');
             $accountData['auto_role'] = $accountData['account'].'_r';

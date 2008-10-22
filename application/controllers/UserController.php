@@ -500,19 +500,19 @@ class UserController extends MessageController
                 $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;
             } else {
-                $newPass = $req->newPassword;
+                $newPass = Config_Fisma::encrypt($req->newPassword);
                 $ret = $this->_user->find($this->_me->id)->current();
                 $historyPass = $ret->history_password;
                 if (strpos($historyPass, $ret->password) > 0) {
-                    $historyPass = ':' . md5($newPass) . $historyPass;
+                    $historyPass = ':' . $newPass . $historyPass;
                 } else {
-                    $historyPass = ':' . md5($newPass) . ':'
+                    $historyPass = ':' . $newPass . ':'
                         . $ret->password . $historyPass;
                 }
                 $historyPass = substr($historyPass, 0, 99);
                 $now = date('Y-m-d H:i:s');
                 $data = array(
-                    'password' => md5($newPass),
+                    'password' => $newPass,
                     'history_password' => $historyPass,
                     'password_ts' => $now
                 );
@@ -557,7 +557,8 @@ class UserController extends MessageController
         } else if ($type == 'database') {
             $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users',
                                                         'account', 'password');
-            $authAdapter->setIdentity($username)->setCredential(md5($password));
+            $encryptPass = Config_Fisma::encrypt($password);
+            $authAdapter->setIdentity($username)->setCredential($encryptPass);
         }
         
         $auth = Zend_Auth::getInstance();

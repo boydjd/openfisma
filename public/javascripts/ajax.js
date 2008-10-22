@@ -20,11 +20,21 @@ $(document).ready(function(){
     $("select[name='poam[system_id]']").change(function(){
         searchAsset();
     });
-
+    if ($("select[name='dsn[encrypt]']").val().trim() == 'sha256') {
+         $("#dsnEncrypt").css("display","");
+    }
+    $("select[name='dsn[encrypt]']").change(function(){
+        var target =  $("#dsnEncrypt") ;  
+        if ( this.value.trim() == 'sha256' ) {
+            target.css("display","");
+        } else {
+            target.css("display","none");
+        }
+    });
     $("select[name='function_screen']").change(function(){
         search_function();
     }).trigger('change');
-
+    
     $('#add_function').click(function() {
         return !$('#available_functions option:selected').remove().appendTo('#exist_functions');  
     });  

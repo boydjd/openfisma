@@ -132,7 +132,7 @@ class Notify
         // This will only execute one per script execution.
         static $hostUrl;
         if (!isset($hostUrl)) {
-            $config = new Zend_Config_Ini(CONFIGS . '/install.conf', 'host');
+            $config = new Zend_Config_Ini(CONFIGS . '/install.conf', 'general');
             $hostUrl = $config->hostUrl;
         }
         

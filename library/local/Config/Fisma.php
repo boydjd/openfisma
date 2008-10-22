@@ -75,6 +75,10 @@ class Config_Fisma
                 Zend_Registry::set('datasource', $config->database);
                 Zend_Registry::set('installed', true);
             }
+            // General setting
+            if (!empty($config->general)) {
+                Zend_Registry::set('general', $config->general);
+            }
             // Debug setting
             if (!empty($config->debug)) {
                 if ($config->debug->level > 0) {
@@ -125,6 +129,35 @@ class Config_Fisma
      */
     static function debug() {
         return self::$_debug;
+    }
+
+    /**
+     * getGeneral() - Returns the general settings
+     * @param $key string key name
+     * @return string setting value
+     */
+    public function getGeneral($key) {
+        $general =  Zend_Registry::get('general');
+        return $general->$key;
+    }
+
+    /**
+     * encrypt() - Returns the encrypted password
+     * @param $password string password
+     * @return string encrypted password
+     */
+    public function encrypt($password) {
+        $encryptType = self::getGeneral('encrypt');
+        if ('sha1' == $encryptType) {
+            return sha1($password);
+        }
+        if ('sha256' == $encryptType) {
+            $key = self::getGeneral('encryptKey');
+            $cipher_alg = MCRYPT_TWOFISH;
+            $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
+            $encryptedPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            return $encryptedPassword;
+        }
     }
 
     /**
@@ -263,5 +296,4 @@ class Config_Fisma
         $form = new Zend_Form($formIni);
         return $form;
     }
-
 }

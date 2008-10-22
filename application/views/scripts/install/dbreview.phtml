@@ -1,4 +1,8 @@
 <form method="post" action="<?php echo $this->next;?>">
+    <input type='hidden' name='dsn[encrypt]' value="<?php echo $this->dsn['encrypt'];?>" />
+    <?php if (!empty($this->dsn['encryptKey'])) { ?>
+        <input type='hidden' name='dsn[encryptKey]' value="<?php echo $this->dsn['encryptKey'];?>" />
+    <?php } ?>
     <input type='hidden' name='dsn[type]' value="<?php echo $this->dsn['type'];?>" />
     <input type='hidden' name='dsn[host]' value="<?php echo $this->dsn['host'];?>" />
     <input type='hidden' name='dsn[port]' value="<?php echo $this->dsn['port'];?>" />
@@ -14,6 +18,16 @@
                     <table border='0' cellpadding='0' cellspacing='0' valign='top' width='100%'>
                         <tr>
                             <td class='bg2'><table width='100%' border='0' cellpadding='4' cellspacing='1' style="TABLE-LAYOUT:fixed;word-break:break-all;word-wrap:break-word;">
+                                    <tr>
+                                        <td width="50%" class='bg3'><b>Encrypt Type</b></td>
+                                        <td width="50%" class='bg1'><?php echo $this->dsn['encrypt']; ?></td>
+                                    </tr>
+                                    <?php if (!empty($this->dsn['encryptKey'])) { ?>
+                                    <tr>
+                                        <td width="50%" class='bg3'><b>Encrypt Key</b></td>
+                                        <td width="50%" class='bg1'><?php echo $this->dsn['encryptKey']; ?></td>
+                                    </tr>
+                                    <?php } ?>
                                     <tr>
                                         <td width="50%" class='bg3'><b>Database</b></td>
                                         <td width="50%" class='bg1'><?php echo $this->dsn['type']; ?></td>

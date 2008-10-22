@@ -73,7 +73,8 @@ class Form_Validator_Password extends Zend_Validate_Abstract
             $errno++;
             $this->_error(self::PASS_NOTCONFIRM);
         }
-        if (isset($context['oldPassword']) && md5($context['oldPassword']) != $ret->password) {
+        if (isset($context['oldPassword'])
+            && Config_Fisma::encrypt($context['oldPassword']) != $ret->password) {
             $errno++;
             $this->_error(self::PASS_NOTINCORRECT);
         }
@@ -129,7 +130,7 @@ class Form_Validator_Password extends Zend_Validate_Abstract
             $errno++;
             $this->_error(self::PASS_INCLUDE);
         }
-        if (md5($pass) == $ret->password) {
+        if (isset($context['oldPassword']) && Config_Fisma::encrypt($pass) == $ret->password) {
             $errno++;
             $this->_error(self::PASS_NOTSAMEOLD);
         }

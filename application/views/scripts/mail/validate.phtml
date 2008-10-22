@@ -10,4 +10,4 @@ And your account name is <?php echo $this->account;?>,
 your password is <?php echo $this->password;?>.
 <?php } ?>
 
-Please click here to confirm this e-mail address: http://<?php echo $_SERVER['HTTP_HOST'];?>/user/emailvalidate/id/<?php echo $this->userId;?>/code/<?php echo $this->validateCode;?>
+Please click here to confirm this e-mail address: <?php echo $this->hostUrl;?>/user/emailvalidate/id/<?php echo $this->userId;?>/code/<?php echo $this->validateCode;?>

@@ -80,6 +80,7 @@ class MessageController extends Zend_Controller_Action
         $contentTpl->actionType = $type;
         $contentTpl->validateCode = $validateCode;
         $contentTpl->userId = $userId;
+        $contentTpl->hostUrl = Config_Fisma::getGeneral('hostUrl');
         $content = $contentTpl->render('validate.phtml');
         $mail->setBodyText($content);
         $mail->send($this->_getTransport());
