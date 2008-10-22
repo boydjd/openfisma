@@ -9,7 +9,7 @@
  */
 
 // Sets the root path of the OpenFISMA application
-define('ROOT', realpath('../'));
+define('ROOT', realpath(dirname(dirname(dirname(__FILE__)))));
  
 define('APPS', ROOT . '/application');
 

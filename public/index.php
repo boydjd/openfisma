@@ -22,20 +22,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-// APPLICATION_PATH is a constant pointing to our application/ subdirectory.
-// We use this to add our "library" directory to the include_path, so that 
-// PHP can find our Zend Framework classes.
-define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application/'));
-define('APPLICATION_ROOT', realpath(dirname(__FILE__). '/..'));
-set_include_path(APPLICATION_ROOT . '/library' . PATH_SEPARATOR . get_include_path());
-
-// AUTOLOADER - Set up autoloading.
-// This is a nifty trick that allows ZF to load classes automatically so
-// that you don't have to litter your code with 'include' or 'require'
-// statements.
-require_once "Zend/Loader.php";
-Zend_Loader::registerAutoload();
 
 // REQUIRE APPLICATION BOOTSTRAP: Perform application-specific setup
 // This allows you to setup the MVC environment to utilize. Later you 
@@ -63,25 +49,3 @@ try {
 // will grab an instance and dispatch it, which dispatches your 
 // application.
 Zend_Controller_Front::getInstance()->dispatch();
-
-/* $front = Zend_Controller_Front::getInstance();
-// It's wrapped in a try-catch to provide a high-level error facility.
-try {
-    $front->dispatch();
-} catch (Exception $e) {
-    $log = Config_Fisma::getInstance()->getLogInstance();
-    // Get the stack trace and indent it by 4 spaces
-    $stackTrace = $e->getTraceAsString();
-    $stackTrace = preg_replace("/^/", "    ", $stackTrace);
-    $stackTrace = preg_replace("/\n/", "\n    ", $stackTrace);
-
-    // Log the error message and stack trace.
-    $log->log($e->getMessage() . "\n$stackTrace",
-              Zend_Log::ERR);
-              
-    // @todo This needs to be improved. Ideally we'd show a real page that has
-    // administrator contact info.
-    echo "An unrecoverable error has occured. The error has been logged and"
-       . " an administrator will review the issue shortly";
-}
- */

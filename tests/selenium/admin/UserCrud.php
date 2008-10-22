@@ -26,7 +26,7 @@
  * @version   $Id:$
  */
 
-require_once 'FismaSeleniumTest.php';
+require_once '../../FismaSeleniumTest.php';
 
 /**
  * Test the create, read, update, delete of user objects
