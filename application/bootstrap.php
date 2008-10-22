@@ -32,7 +32,7 @@ defined('APPLICATION_ROOT')
 
 defined('APPLICATION_PATH')
     or define('APPLICATION_PATH', dirname(__FILE__));
-	
+
 defined('APPLICATION_ENVIRONMENT')
     or define('APPLICATION_ENVIRONMENT', 'development');
 
@@ -170,7 +170,6 @@ if (!Config_Fisma::isInstall()) {
             'action' => 'error'
         )
     ));
-	
 }
 
 // CLEANUP - remove items from global scope
