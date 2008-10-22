@@ -39,6 +39,13 @@ defined('APPLICATION_ENVIRONMENT')
 // The paths.php file contains constants representing commonly accessed paths in the application.
 require_once "config/paths.php";
 
+// AUTOLOADER - Set up autoloading.
+// This is a nifty trick that allows ZF to load classes automatically so
+// that you don't have to litter your code with 'include' or 'require'
+// statements.
+require_once "Zend/Loader.php";
+Zend_Loader::registerAutoload();
+
 // FRONT CONTROLLER - Get the front controller.
 // The Zend_Front_Controller class implements the Singleton pattern, which is a
 // design pattern used to ensure there is only one instance of
@@ -65,6 +72,27 @@ $options = array(
 );
 Zend_Layout::startMvc($options);
 
+// CONFIGURATION - Setup the configuration object
+// The Zend_Config_Ini component will parse the ini file, and resolve all of
+// the values for the given section.  Here we will be using the section name
+// that corresponds to the APP's Environment
+$configuration = new Zend_Config_Ini('app.ini', APPLICATION_ENVIRONMENT);
+
+// REGISTRY - setup the application registry
+// An application registry allows the application to store application
+// necessary objects into a safe and consistent (non global) place for future
+// retrieval.  This allows the application to ensure that regardless of what
+// happends in the global scope, the registry will contain the objects it
+// needs.
+$registry = Zend_Registry::getInstance();
+$registry->configuration = $configuration;
+
+/**
+ * @todo Is this necessary to do? This variable isn't used anywhere.
+ */
+ // Initialize the global setting object
+$fisma = Config_Fisma::getInstance();
+
 // If we are in command line mode, then drop out of the bootstrap before we
 // render any views.
 if (defined('COMMAND_LINE')) {
@@ -78,23 +106,6 @@ if (defined('COMMAND_LINE')) {
 $view = Zend_Layout::getMvcInstance()->getView();
 $view->doctype('HTML4_STRICT');
 
-// CONFIGURATION - Setup the configuration object
-// The Zend_Config_Ini component will parse the ini file, and resolve all of
-// the values for the given section.  Here we will be using the section name
-// that corresponds to the APP's Environment
-$configuration = new Zend_Config_Ini('app.ini', APPLICATION_ENVIRONMENT);
-
-// REGISTRY - setup the application registry
-// An application registry allows the application to store application 
-// necessary objects into a safe and consistent (non global) place for future 
-// retrieval.  This allows the application to ensure that regardless of what 
-// happends in the global scope, the registry will contain the objects it 
-// needs.
-$registry = Zend_Registry::getInstance();
-$registry->configuration = $configuration;
-
-// Initialize the global setting object
-$fisma = Config_Fisma::getInstance();
 
 // Start Session Handling using Zend_Session 
 Zend_Session::start($configuration);
@@ -177,7 +188,3 @@ if (!Config_Fisma::isInstall()) {
 // this script (and any scripts that called bootstrap).  This will enforce 
 // object retrieval through the Applications's Registry
 unset($frontController, $view, $configuration, $dbAdapter, $registry);
-
-
-
-
