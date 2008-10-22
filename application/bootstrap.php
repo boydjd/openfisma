@@ -50,7 +50,7 @@ if (defined('COMMAND_LINE')) {
 }
 
 // Load config.ini file into config object, then set options for Zend_Session
-$config = new Zend_Config_Ini('config.ini', 'development');
+$config = new Zend_Config_Ini('app.ini', 'development');
 Zend_Session::start($config);
 
 // Initialize the view renderer
