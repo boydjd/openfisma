@@ -47,6 +47,13 @@ class UserController extends MessageController
     private $_me = null;
     
     /**
+     * The message displayed to the user when their e-mail address needs validation.
+     */
+    const VALIDATION_MESSAGE = "<br />Because you changed your e-mail address, we have sent you a confirmation message.
+                                <br />You will need to confirm the validity of your new e-mail address before you will
+                                receive any e-mail notifications.";
+    
+    /**
      * init() - Initialize internal data structures.
      */         
     public function init()
@@ -101,8 +108,7 @@ class UserController extends MessageController
                     $terminationTs->add($unlockDuration, Zend_Date::SECOND);
                     $unlockRemaining = clone $terminationTs;
                     $unlockRemaining->sub($now);
-                    $minutesRemaining =
-                        ceil($unlockRemaining->getTimestamp() / 60);
+                    $minutesRemaining = ceil($unlockRemaining->getTimestamp() / 60);
 
                     if ($terminationTs->isEarlier($now)) {
                         $updateData =
@@ -111,24 +117,22 @@ class UserController extends MessageController
                                                    'termination_ts'=>NULL),
                                                    'id  = '.$whologin['id']);
                     } else {
-                        throw new Zend_Auth_Exception('Your user account has
-                        been locked due to ' .
-                        Config_Fisma::readSysConfig("failure_threshold") .
-                        " or more unsuccessful login attempts. Your account will
-                        be unlocked in $minutesRemaining minutes. Please try
-                        again at that time.");
+                        throw new Zend_Auth_Exception('Your user account has been locked due to'
+                                                    . Config_Fisma::readSysConfig("failure_threshold")
+                                                    . ' or more unsuccessful login attempts. Your account will be'
+                                                    . " unlocked in $minutesRemaining minutes. Please try again at that"
+                                                    . 'time.');
                     }
                 } else {
                     // If accounts are not unlocked automatically on this
                     // system, then let the user know that they need to contact
                     // the administrator.
-                    throw new Zend_Auth_Exception('Your account has been locked
-                        due to ' .
-                        Config_Fisma::readSysConfig("failure_threshold") .
-                        ' or more unsuccessful login attempts. Please contact
-                        the <a href="mailto:' .
-                        Config_Fisma::readSysConfig('contact_email') .
-                        '">Administrator</a>.');
+                    throw new Zend_Auth_Exception('Your account has been locked due to '
+                                                . Config_Fisma::readSysConfig("failure_threshold")
+                                                . ' or more unsuccessful login attempts. Please contact the'
+                                                . ' <a href="mailto:'
+                                                . Config_Fisma::readSysConfig('contact_email')
+                                                . '">Administrator</a>.');
                 }
             }
 
@@ -147,8 +151,7 @@ class UserController extends MessageController
                                    null,
                                    "User: {$whologin['account']}");
 
-                if ($whologin['failure_count'] >=
-                    Config_Fisma::readSysConfig('failure_threshold') - 1) {
+                if ($whologin['failure_count'] >= Config_Fisma::readSysConfig('failure_threshold') - 1) {
                     $this->_user->log(User::TERMINATION,
                                       $whologin['id'],
                                       'Account locked');
@@ -156,13 +159,12 @@ class UserController extends MessageController
                     $notification->add(Notification::ACCOUNT_LOCKED,
                                        null,
                                        "User: {$whologin['account']}");
-                    throw new Zend_Auth_Exception('Your account has been locked
-                        due to ' .
-                        Config_Fisma::readSysConfig("failure_threshold") .
-                        ' or more unsuccessful login attempts. Please contact
-                        the <a href="mailto:' .
-                        Config_Fisma::readSysConfig('contact_email') .
-                        '">Administrator</a>.');
+                    throw new Zend_Auth_Exception('Your account has been locked due to '
+                                                . Config_Fisma::readSysConfig("failure_threshold")
+                                                . ' or more unsuccessful login attempts. Please contact the'
+                                                . ' <a href="mailto:'
+                                                . Config_Fisma::readSysConfig('contact_email')
+                                                . '">Administrator</a>.');
                 }
                 
                 throw new Zend_Auth_Exception("Incorrect username or password");
@@ -177,28 +179,26 @@ class UserController extends MessageController
             $lastLogin = new Zend_Date($whologin['last_login_ts'],
                                        'YYYY-MM-DD HH-MI-SS');
 
-            if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) 
-                && $lastLogin->isEarlier($deactiveTime) ) {
-                throw new Zend_Auth_Exception("Your account has been locked
-                    because you have not logged in for $period or more days.
-                    Please contact the <a href=\"mailto:" .
-                    Config_Fisma::readSysConfig('contact_email') .
-                    '">Administrator</a>.');
+            if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($deactiveTime) ) {
+                throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period"
+                                            . "or more days. Please contact the <a href=\"mailto:"
+                                            . Config_Fisma::readSysConfig('contact_email')
+                                            . '">Administrator</a>.');
             }
             
             // If we get this far, then the login is totally successful.
             $this->_user->log(User::LOGIN, $_me->id, "Success");
             $notification = new Notification();
             $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
-                $whologin['account'],
-                "UserId: {$whologin['id']}");
+                               $whologin['account'],
+                               "UserId: {$whologin['id']}");
 
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
             foreach ($nickname as $n) {
                 $_me->roleArray[] = $n['nickname'];
             }
-            if ( empty( $_me->roleArray ) ) {
+            if (empty( $_me->roleArray )) {
                 $_me->roleArray[] = $_me->account . '_r';
             }
             $_me->systems = $this->_user->getMySystems($_me->id);
@@ -234,8 +234,7 @@ class UserController extends MessageController
     public function acceptrobAction() {
         $now = new Zend_Date();
         $nowSqlString = $now->toString('Y-m-d H:i:s');
-        $this->_user->update(array('last_rob'=>$nowSqlString),
-            'id = '.$this->_me->id);
+        $this->_user->update(array('last_rob'=>$nowSqlString), 'id = '.$this->_me->id);
         $this->_user->log(User::ROB_ACCEPT, $this->_me->id, 'accept ROB');
         $this->_forward('index', 'Panel');
     }
@@ -245,11 +244,9 @@ class UserController extends MessageController
      */
     public function logoutAction() {
         if (!empty($this->_me)) {
-            $this->_user->log(User::LOGOUT, $this->_me->id,
-                $this->_me->account . ' logout');
+            $this->_user->log(User::LOGOUT, $this->_me->id, $this->_me->account . ' logout');
             $notification = new Notification();
-            $notification->add(Notification::ACCOUNT_LOGOUT, null,
-                "User: {$this->_me->account}");
+            $notification->add(Notification::ACCOUNT_LOGOUT, null, "User: {$this->_me->account}");
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');
@@ -285,11 +282,16 @@ class UserController extends MessageController
     {
         // Profile Form
         $form = $this->getprofileForm();
-        $query = $this->_user->select()->setIntegrityCheck(false)
-                            ->from('users', array('name_last', 'name_first',
-                                'phone_office', 'phone_mobile', 'email',
-                                'title'))
-                            ->where('id = ?', $this->_me->id);
+        $query = $this->_user
+                      ->select()->setIntegrityCheck(false)
+                      ->from('users',
+                             array('name_last',
+                                   'name_first',
+                                   'phone_office',
+                                   'phone_mobile',
+                                   'email',
+                                   'title'))
+                      ->where('id = ?', $this->_me->id);
         $userProfile = $this->_user->fetchRow($query)->toArray();
         $form->setAction("/panel/user/sub/updateprofile");
         $form->setDefaults($userProfile);
@@ -306,6 +308,7 @@ class UserController extends MessageController
         // Load the change password file
         $passwordForm = Form_Manager::loadForm('change_password');
         $passwordForm = Form_Manager::prepareForm($passwordForm);
+        
         // Prepare the password requirements explanation:
         $requirements[] = "Length must be between "
                         . Config_Fisma::readSysConfig('pass_min')
@@ -373,19 +376,15 @@ class UserController extends MessageController
             $notifyEmail = $result->current()->notify_email;
             $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
             if ($ret == 1) {
-                $this->_user->log(User::MODIFICATION, $this->_me->id, 
-                    "{$this->_me->account} Profile Modified");
+                $this->_user
+                     ->log(User::MODIFICATION, $this->_me->id, "{$this->_me->account} Profile Modified");
                 $msg = "Profile modified successfully.";
 
                 if ($originalEmail != $profileData['email']
                     && empty($notifyEmail)) {
                     $this->_user->update(array('email_validate'=>0), 'id = '.$this->_me->id);
                     $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
-                    $msg .= "<br />Because you changed your e-mail address, we
-                            have sent you a confirmation message.<br />You will
-                            need to confirm the validity of your new e-mail
-                            address before you will receive any e-mail
-                            notifications.";
+                    $msg .= self::VALIDATION_MESSAGE;
                 }
                 $this->view->setScriptPath(VIEWS . '/scripts');
                 $this->message($msg, self::M_NOTICE);
@@ -408,11 +407,8 @@ class UserController extends MessageController
                     }
                 }
             }
-            // Error message
-            $this->message("Unable to update account:<br>"
-                .addslashes($errorString),
-                self::M_WARNING);
-            // On error, redirect back to the profile action.
+
+            $this->message("Unable to update account:<br>" . addslashes($errorString), self::M_WARNING);
         }
         $this->_forward('profile');
     }
@@ -434,10 +430,9 @@ class UserController extends MessageController
             $data['enableEvents'] = array();
         }
         $event->saveEnabledEvents($this->_me->id, $data['enableEvents']);
-        $notifyData = array('notify_frequency' =>
-                                $data['notify_frequency'],
+        $notifyData = array('notify_frequency' => $data['notify_frequency'],
                             'notify_email' => $data['notify_email']);
-        $ret = $this->_user->update($notifyData, "id = ".$this->_me->id);
+        $ret = $this->_user->update($notifyData, "id = " . $this->_me->id);
         if ($ret > 0 || 0 == $ret) {
             $msg = "Notification events modified successfully.";
             $model = self::M_NOTICE;
@@ -447,16 +442,11 @@ class UserController extends MessageController
         }
 
 
-        if ( $originalEmail != $data['notify_email']
-             && $data['notify_email'] != '' ) {
-            $this->_user->update(array('email_validate'=>0),
-                        'id = '.$this->_me->id);
-            $this->_emailvalidate($this->_me->id,
-                        $data['notify_email'], 'update');
-            $msg .="<br />Because you changed your notification e-mail address,
-                    we have sent you a confirmation message.<br />You will need
-                    to confirm the validity of your new e-mail address before
-                    you will receive any e-mail notifications.";
+        if ($originalEmail != $data['notify_email'] && $data['notify_email'] != '') {
+            $this->_user
+                 ->update(array('email_validate'=>0), 'id = ' . $this->_me->id);
+            $this->_emailvalidate($this->_me->id, $data['notify_email'], 'update');
+            $msg .= self::VALIDATION_MESSAGE;
         }
 
         $this->view->setScriptPath(VIEWS . '/scripts');
@@ -506,8 +496,7 @@ class UserController extends MessageController
                 if (strpos($historyPass, $ret->password) > 0) {
                     $historyPass = ':' . $newPass . $historyPass;
                 } else {
-                    $historyPass = ':' . $newPass . ':'
-                        . $ret->password . $historyPass;
+                    $historyPass = ':' . $newPass . ':' . $ret->password . $historyPass;
                 }
                 $historyPass = substr($historyPass, 0, 99);
                 $now = date('Y-m-d H:i:s');
@@ -552,11 +541,9 @@ class UserController extends MessageController
         if ($type == 'ldap') {
             $config = new Config();
             $data = $config->getLdap();
-            $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username,
-                                                      $password);
+            $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
         } else if ($type == 'database') {
-            $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users',
-                                                        'account', 'password');
+            $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
             $encryptPass = Config_Fisma::encrypt($password);
             $authAdapter->setIdentity($username)->setCredential($encryptPass);
         }
@@ -599,25 +586,24 @@ class UserController extends MessageController
         $userEmail = $ret->current()->email;
         $notifyEmail = $ret->current()->notify_email;
         $email = !empty($notifyEmail)?$notifyEmail:$userEmail;
-        $query = $this->_user->getAdapter()->select()
+        $query = $this->_user
+                      ->getAdapter()
+                      ->select()
                       ->from('validate_emails', 'validate_code')
                       ->where('user_id = ?', $userId)
                       ->where('email = ?', $email)
                       ->order('id DESC');
         $ret = $this->_user->getAdapter()->fetchRow($query);
         if ($this->_request->getParam('code') == $ret['validate_code']) {
-            $this->_user->getAdapter()->delete('validate_emails',
-                'user_id = '.$userId);
+            $this->_user->getAdapter()->delete('validate_emails', 'user_id = '.$userId);
             $this->_user->update(array('email_validate'=>1), 'id = '.$userId);
-            $msg = "Your e-mail address has been validated. You may close this
-                    window or click <a href='http://"
-                    . $_SERVER['HTTP_HOST']
-                    . "'>here</a> to go back to "
-                    . Config_Fisma::readSysConfig('system_name')
-                    . '.';
+            $msg = "Your e-mail address has been validated. You may close this window or click <a href='http://"
+                 . $_SERVER['HTTP_HOST']
+                 . "'>here</a> to go back to "
+                 . Config_Fisma::readSysConfig('system_name')
+                 . '.';
         } else {
-            $msg = "Error: Your e-mail address can not be confirmed. Please
-                    contact an administrator.";
+            $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
         }
         $this->view->msg = $msg;
         $this->render();
