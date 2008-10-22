@@ -492,7 +492,7 @@ class UserController extends MessageController
             } else {
                 $newPass = Config_Fisma::encrypt($req->newPassword);
                 $ret = $this->_user->find($this->_me->id)->current();
-                $historyPass = $ret->history_password;
+                $historyPass = $ret->historyPassword;
                 if (strpos($historyPass, $ret->password) > 0) {
                     $historyPass = ':' . $newPass . $historyPass;
                 } else {
