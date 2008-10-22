@@ -38,9 +38,14 @@ class Form_Validator_Password extends Zend_Validate_Abstract
     const PASS_LOWERCASE = "pass_lowercase";
     const PASS_NUMERICAL = "pass_numerical";
     const PASS_SPECIAL   = "pass_special";
+    const PASS_INCLUDE   = "pass_include";
+    const PASS_HISTORY   = "pass_history";
+    const PASS_NOTSAMEOLD = "pass_notsameold";
+    const PASS_NOTCONFIRM = "pass_notconfirm";
+    const PASS_NOTINCORRECT = "pass_notincorrect";
 
         
-    public function isValid($pass)
+    public function isValid($pass, $context=null)
     {
         $this->_messageTemplates = array(
             self::PASS_MIN => 'must be at least '.Config_Fisma::readSysConfig("pass_min").' characters long',
@@ -48,11 +53,30 @@ class Form_Validator_Password extends Zend_Validate_Abstract
             self::PASS_UPPERCASE=>'must contain at least 1 uppercase letter (A-Z)',
             self::PASS_LOWERCASE=>'must contain at least 1 lowercase letter (a-z)',
             self::PASS_NUMERICAL=>'must contain at least 1 numeric digit (0-9)',
-            self::PASS_SPECIAL  =>'must contain at least 1 special character (!@#$%^&*-=+~`_)'
+            self::PASS_SPECIAL  =>'must contain at least 1 special character (!@#$%^&*-=+~`_)',
+            self::PASS_INCLUDE  =>'The new password can not include your first name or last name',
+            self::PASS_HISTORY  =>'Your password must be different from the last three passwords you have used. Please pick a different password',
+            self::PASS_NOTSAMEOLD =>'Your new password cannot be the same as your old password.',
+            self::PASS_NOTCONFIRM =>'The new password does not match the confirm password, please try again.',
+            self::PASS_NOTINCORRECT=>'The old password supplied is incorrect, please try again.'
         );
+
+        $user = new User();
+        $me = Zend_Auth::getInstance()->getIdentity();
+        $userId = $me->id;
+        $ret = $user->find($me->id)->current();
 
         $errno = 0;
         $this->_setValue($pass);
+
+        if (isset($context['confirmPassword']) && $pass != $context['confirmPassword']){
+            $errno++;
+            $this->_error(self::PASS_NOTCONFIRM);
+        }
+        if (isset($context['oldPassword']) && md5($context['oldPassword']) != $ret->password) {
+            $errno++;
+            $this->_error(self::PASS_NOTINCORRECT);
+        }
         if (strlen($pass) < Config_Fisma::readSysConfig('pass_min')) {
             $errno++;
             $this->_error(self::PASS_MIN);
@@ -85,6 +109,35 @@ class Form_Validator_Password extends Zend_Validate_Abstract
                 $this->_error(self::PASS_SPECIAL);
             }
         }
+        
+        $nameincluded = true;
+        // check last name
+        if (empty($ret->name_last)
+            || strpos($pass, $ret->name_last) === false) {
+            $nameincluded = false;
+        }
+        if (!$nameincluded) {
+            // check first name
+            if (empty($ret->name_first)
+                || strpos($pass, $ret->name_first) === false) {
+                $nameincluded = false;
+            } else {
+                $nameincluded = true;
+            }
+        }
+        if ($nameincluded) {
+            $errno++;
+            $this->_error(self::PASS_INCLUDE);
+        }
+        if (md5($pass) == $ret->password) {
+            $errno++;
+            $this->_error(self::PASS_NOTSAMEOLD);
+        }
+        if (strpos($ret->history_password, $pass) > 0) {
+            $errno++;
+            $this->_error(self::PASS_HISTORY);
+        }
+
         if ($errno > 0) {
             return false;
         } else {

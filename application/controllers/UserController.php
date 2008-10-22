@@ -500,37 +500,30 @@ class UserController extends MessageController
                 $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;
             } else {
-                $oldPass = $req->oldPassword;
                 $newPass = $req->newPassword;
-                $confirmPass = $req->confirmPassword;
-                $result = $this->checkPassword($oldPass, $newPass, $confirmPass);
-                if (false == $result['check']) {
-                    $msg = $result['reason'];
+                $ret = $this->_user->find($this->_me->id)->current();
+                $historyPass = $ret->history_password;
+                if (strpos($historyPass, $ret->password) > 0) {
+                    $historyPass = ':' . md5($newPass) . $historyPass;
+                } else {
+                    $historyPass = ':' . md5($newPass) . ':'
+                        . $ret->password . $historyPass;
+                }
+                $historyPass = substr($historyPass, 0, 99);
+                $now = date('Y-m-d H:i:s');
+                $data = array(
+                    'password' => md5($newPass),
+                    'history_password' => $historyPass,
+                    'password_ts' => $now
+                );
+                $result = $this->_user->update($data,
+                    'id = ' . $this->_me->id);
+                if (!$result) {
+                    $msg = 'Failed to change the password';
                     $model = self::M_WARNING;
                 } else {
-                    $historyPass = $this->_me->history_password;
-                    if (strpos($historyPass, $this->_me->password) > 0) {
-                        $historyPass = ':' . md5($newPass) . $historyPass;
-                    } else {
-                        $historyPass = ':' . md5($newPass) . ':'
-                            . $this->_me->password . $historyPass;
-                    }
-                    $historyPass = substr($historyPass, 0, 99);
-                    $now = date('Y-m-d H:i:s');
-                    $data = array(
-                        'password' => md5($newPass),
-                        'history_password' => $historyPass,
-                        'password_ts' => $now
-                    );
-                    $result = $this->_user->update($data,
-                        'id = ' . $this->_me->id);
-                    if (!$result) {
-                        $msg = 'Failed to change the password';
-                        $model = self::M_WARNING;
-                    } else {
-                        $msg = 'Password changed successfully';
-                        $model = self::M_NOTICE;
-                    }
+                    $msg = 'Password changed successfully';
+                    $model = self::M_NOTICE;
                 }
             }
             $this->message($msg, $model);
@@ -539,63 +532,6 @@ class UserController extends MessageController
         $this->_forward('password');
     }
     
-    /**
-     * checkPassword() - ??? (Does this implement password complexity? If so,
-     * this is deprecated in favor of using a Zend_validator.
-     *
-     * @todo Cleanup this method: comments and formatting...what does this
-     * method do?
-     */
-    function checkPassword($oldPass, $newPass, $confirmPass) {
-        $result = array();
-
-        if ($newPass != $confirmPass) {
-            $result['check']  = false;
-            $result['reason'] = "The new password does not match the confirm password, please try again.";
-            return $result;
-        }
-
-        $res = $this->_user->find($this->_me->id);
-        if (md5($oldPass) != $res->current()->password) {
-            $result['check']  = false;
-            $result['reason'] = "The old password supplied is incorrect, please try again.";
-            return $result;
-        }
-
-        $nameincluded = true;
-        // check last name
-        if (empty($this->user_name_last)
-            || strpos($newPass, $this->user_name_last) === false) {
-            $nameincluded = false;
-        }
-        if (!$nameincluded) {
-            // check first name
-            if (empty($this->user_name_first)
-                || strpos($newPass, $this->user_name_first) === false) {
-                $nameincluded = false;
-            } else {
-                $nameincluded = true;
-            }
-        }
-        if ($nameincluded) {
-            $result['check'] = false;
-            $result['reason'] = "The new password can not include your first name or last name";
-            return $result;
-        }
-        if (md5($newPass) == $this->_me->password) {
-            $result['check'] = false;
-            $result['reason'] = 'Your new password cannot be the same as your old password.';
-            return $result;
-        }
-        if (strpos($this->_me->history_password, $newPass) > 0) {
-            $result['check'] = false;
-            $result['reason']= 'Your password must be different from the last three passwords you have used. Please pick a different password.';
-            return $result;
-        }
-        $result['check'] = true;
-        return $result;
-    }
-
     /**
      * authenticate() - Authenticate the user against LDAP or backend database.
      *
