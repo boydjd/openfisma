@@ -208,7 +208,7 @@ class InstallController extends Zend_Controller_Action
                 );
                 try {
                     $db = Zend_Db::factory(new Zend_Config($zendDsn));
-                    $initFiles = array(APPLICATION_CONFIGS . 'db/base.sql');
+                    $initFiles = array(APPLICATION_CONFIGS . '/db/base.sql');
                     if ($ret = $this->importSql($db, $initFiles)) {
                         $checklist['schema'] = 'ok';
                     }
