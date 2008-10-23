@@ -75,10 +75,9 @@ class Config_Fisma
                 Zend_Registry::set('datasource', $config->database);
                 Zend_Registry::set('installed', true);
             }
-            // General setting
-            if (!empty($config->general)) {
-                Zend_Registry::set('general', $config->general);
-            }
+            
+            self::addSysConfig($config->general);
+
             // Debug setting
             if (!empty($config->debug)) {
                 if ($config->debug->level > 0) {
@@ -131,28 +130,19 @@ class Config_Fisma
         return self::$_debug;
     }
 
-    /**
-     * getGeneral() - Returns the general settings
-     * @param $key string key name
-     * @return string setting value
-     */
-    public function getGeneral($key) {
-        $general =  Zend_Registry::get('general');
-        return $general->$key;
-    }
 
     /**
-     * encrypt() - Returns the encrypted password
+     * Returns the encrypted password
      * @param $password string password
      * @return string encrypted password
      */
     public function encrypt($password) {
-        $encryptType = self::getGeneral('encrypt');
+        $encryptType = self::readSysConfig('encrypt');
         if ('sha1' == $encryptType) {
             return sha1($password);
         }
         if ('sha256' == $encryptType) {
-            $key = self::getGeneral('encryptKey');
+            $key = self::readSysConfig('encryptKey');
             $cipher_alg = MCRYPT_TWOFISH;
             $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
             $encryptedPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
@@ -227,7 +217,8 @@ class Config_Fisma
     function readSysConfig($key, $isFresh = false)
     {
         assert(!empty($key) && is_bool($isFresh));
-        if ( ! Zend_Registry::isRegistered(self::SYSCONFIG) || $isFresh ) {
+        if (!Zend_Registry::isRegistered(self::SYSCONFIG) || 
+                !Zend_Registry::get(self::SYSCONFIG)->isFresh) {
             $m = new Config();
             $pairs = $m->fetchAll();
             $configs = array();
@@ -238,12 +229,14 @@ class Config_Fisma
                     $configs[$v->key] = $v->description;
                 }
             }
-            Zend_Registry::set(self::SYSCONFIG, new Zend_Config($configs));
+            $configs['isFresh'] = true;
+            self::addSysConfig(new Zend_Config($configs));
         }
         if ( !isset(Zend_Registry::get(self::SYSCONFIG)->$key) ) {
             throw new Exception_General(
             "$key does not exist in system configuration");
         }
+
         return Zend_Registry::get(self::SYSCONFIG)->$key;
     }
 
@@ -295,5 +288,22 @@ class Config_Fisma
             $formConfigSection);
         $form = new Zend_Form($formIni);
         return $form;
+    }
+    
+    /**
+     * use Registry SYSCONFIG to merge other config
+     * @param object @config  
+     * @return Zend_Registry
+     */
+    public function addSysConfig($config)
+    {
+        if (Zend_Registry::isRegistered(self::SYSCONFIG)) {
+            $sysconfig = Zend_Registry::get(self::SYSCONFIG);
+            $sysconfig = new Zend_Config($sysconfig->toArray(), $allowModifications = true);
+            $sysconfig->merge($config);
+            Zend_Registry::set(self::SYSCONFIG, $sysconfig);
+        } else {
+            Zend_Registry::set(self::SYSCONFIG, $config);
+        } 
     }
 }
