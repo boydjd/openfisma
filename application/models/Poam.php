@@ -81,7 +81,7 @@ class Poam extends Zend_Db_Table
                                     $overdue['end_date']->toString('Ymd'));
                 }
             } else {
-                throw new FismaException('Parameters wrong in overdue '
+                throw new Exception_General('Parameters wrong in overdue '
                     . var_export($overdue, true));
             }
         }
@@ -296,7 +296,7 @@ class Poam extends Zend_Db_Table
     public function getStatus ($id)
     {
         if (! is_numeric($id)) {
-            throw new FismaException('Make sure a valid ID is inputed');
+            throw new Exception_General('Make sure a valid ID is inputed');
         }
         $ret = $this->find($id);
         if ('EN' == $ret->current()->status
@@ -331,7 +331,7 @@ class Poam extends Zend_Db_Table
     public function &getDetail($id)
     {
         if (! is_numeric($id)) {
-            throw new FismaException('Make sure a valid ID is inputed');
+            throw new Exception_General('Make sure a valid ID is inputed');
         }
         $poamDetail = $this->search(null, '*', array('id' => $id));
         $ret = array();

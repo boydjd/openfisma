@@ -92,7 +92,7 @@ class AccountController extends PoamBaseController
             $form->removeElement('ldap_dn');
             $form->removeElement('checkdn');
         } else {
-            throw new FismaException("The account form cannot handle"
+            throw new Exception_General("The account form cannot handle"
                                     . " the current authentication type: "
                                     . $systemAuthType);
         }
@@ -400,7 +400,7 @@ class AccountController extends PoamBaseController
                 ));
             } else {
                 throw new
-                    FismaException('The user has more than 1 role.');
+                    Exception_General('The user has more than 1 role.');
             }
 
             $this->message("User ({$accountData['account']}) modified",

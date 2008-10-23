@@ -663,7 +663,7 @@ class ReportController extends PoamBaseController
         $role = $user->getRoles($this->_me->id);
         $role = $role[0]['nickname'];
         if (!in_array($role, $reportRoles)) {
-            throw new FismaException("User \"{$this->_me->account}\" does not have permission to view"
+            throw new Exception_General("User \"{$this->_me->account}\" does not have permission to view"
                                      . " the \"$reportName\" plug-in report.");
         }
         
@@ -682,7 +682,7 @@ class ReportController extends PoamBaseController
             $columns = array_keys($reportData[0]);
         } else {
             // @todo replace with a user level error message and forward to pluginAction()
-            throw new FismaException("No data for plugin report \"$reportName\"");
+            throw new Exception_General("No data for plugin report \"$reportName\"");
         } 
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);

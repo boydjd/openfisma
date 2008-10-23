@@ -372,7 +372,7 @@ class RemediationController extends PoamBaseController
         $id = $req->getParam('id');
         $poamDetail = $this->_poam->getDetail($id);
         if (empty($poamDetail)) {
-            throw new FismaException("POAM($id) is not found,
+            throw new Exception_General("POAM($id) is not found,
                 Make sure a valid ID is inputed");
         }
 
@@ -415,7 +415,7 @@ class RemediationController extends PoamBaseController
         if (!empty($poam)) {
             $oldpoam = $this->_poam->find($id)->toArray();
             if (empty($oldpoam)) {
-                throw new FismaException('incorrect ID specified for poam');
+                throw new Exception_General('incorrect ID specified for poam');
             } else {
                 $oldpoam = $oldpoam[0];
             }
@@ -482,7 +482,7 @@ class RemediationController extends PoamBaseController
         if ($_FILES && $id > 0) {
             $poam = $this->_poam->find($id)->toArray();
             if (empty($poam)) {
-                throw new FismaException('incorrect ID specified for poam');
+                throw new Exception_General('incorrect ID specified for poam');
             } else {
                 $poam = $poam[0];
             }
@@ -508,11 +508,11 @@ class RemediationController extends PoamBaseController
                 if ($resultMove) {
                     chmod($absFile, 0755);
                 } else {
-                    throw new FismaException('Failed in move_uploaded_file(). '
+                    throw new Exception_General('Failed in move_uploaded_file(). '
                         . $absFile . $_FILES['evidence']['error']);
                 }
             } else {
-                throw new FismaException('The filename is not valid');
+                throw new Exception_General('The filename is not valid');
             }
             $today = substr($nowStr, 0, 10);
             $data = array(
@@ -560,20 +560,20 @@ class RemediationController extends PoamBaseController
         // notification
         $poam = $this->_poam->find($evDetail->current()->poam_id)->toArray();
         if (empty($poam)) {
-            throw new FismaException('incorrect ID specified for poam');
+            throw new Exception_General('incorrect ID specified for poam');
         } else {
             $poam = $poam[0];
         }
         
         if (empty($evDetail)) {
-            throw new FismaException('Wrong evidence id:' . $eid);
+            throw new Exception_General('Wrong evidence id:' . $eid);
         }
         if ($decision == 'APPROVE') {
             $decision = 'APPROVED';
         } else if ($decision == 'DENY') {
             $decision = 'DENIED';
         } else {
-            throw new FismaException('Wrong decision:' . $decision);
+            throw new Exception_General('Wrong decision:' . $decision);
         }
         $poamId = $evDetail->current()->poam_id;
         $logContent = "";
@@ -674,7 +674,7 @@ class RemediationController extends PoamBaseController
         ))->initContext();
         $poamDetail = $this->_poam->getDetail($id);
         if (empty($poamDetail)) {
-            throw new FismaException(
+            throw new Exception_General(
                 "Not able to get details for this POAM ID ($id)");
         }
         $this->view->assign('poam', $poamDetail);
