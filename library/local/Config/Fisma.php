@@ -241,7 +241,7 @@ class Config_Fisma
             Zend_Registry::set(self::SYSCONFIG, new Zend_Config($configs));
         }
         if ( !isset(Zend_Registry::get(self::SYSCONFIG)->$key) ) {
-            throw new FismaException(
+            throw new Exception_General(
             "$key does not exist in system configuration");
         }
         return Zend_Registry::get(self::SYSCONFIG)->$key;
