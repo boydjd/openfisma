@@ -69,8 +69,8 @@ class Config_Fisma
         //assuming not installed first unless it is
         Zend_Registry::set('installed', false);
 
-        if (is_file(CONFIGS . '/' . self::CONFIGFILE_NAME)) {
-            $config = new Zend_Config_Ini(CONFIGS . '/' . self::CONFIGFILE_NAME);
+        if (is_file(APPLICATION_CONFIGS . '/' . self::CONFIGFILE_NAME)) {
+            $config = new Zend_Config_Ini(APPLICATION_CONFIGS . '/' . self::CONFIGFILE_NAME);
             if (!empty($config->database)) {
                 Zend_Registry::set('datasource', $config->database);
                 Zend_Registry::set('installed', true);
@@ -291,7 +291,7 @@ class Config_Fisma
      */
     public function getForm ($formConfigSection)
     {
-        $formIni = new Zend_Config_Ini(CONFIGS . '/' . FORMCONFIGFILE,
+        $formIni = new Zend_Config_Ini(APPLICATION_CONFIGS . '/' . FORMCONFIGFILE,
             $formConfigSection);
         $form = new Zend_Form($formIni);
         return $form;

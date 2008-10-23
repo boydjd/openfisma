@@ -634,7 +634,7 @@ class ReportController extends PoamBaseController
     public function pluginAction() 
     {
         // Build up report menu
-        $reportsConfig = new Zend_Config_Ini(CONFIGS . '/reports.conf');
+        $reportsConfig = new Zend_Config_Ini(APPLICATION_CONFIGS . '/reports.conf');
         $reports = $reportsConfig->toArray();
         $this->view->assign('reports', $reports);
         $this->render();
@@ -652,7 +652,7 @@ class ReportController extends PoamBaseController
         }
         
         // Verify that the user has permission to run this report
-        $reportConfig = new Zend_Config_Ini(CONFIGS . '/reports.conf', $reportName);
+        $reportConfig = new Zend_Config_Ini(APPLICATION_CONFIGS . '/reports.conf', $reportName);
         $reportRoles = $reportConfig->roles;
         $report = $reportConfig->toArray();
         $reportRoles = $report['roles'];
@@ -668,7 +668,7 @@ class ReportController extends PoamBaseController
         }
         
         // Execute the report script
-        $reportScriptFile = CONFIGS . "/reports/$reportName.sql";
+        $reportScriptFile = APPLICATION_CONFIGS . "/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         $reportScript = '';
         while (!feof($reportScriptFileHandle)) {

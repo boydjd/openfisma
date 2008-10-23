@@ -33,6 +33,9 @@ defined('APPLICATION_ROOT')
 defined('APPLICATION_PATH')
     or define('APPLICATION_PATH', dirname(__FILE__));
 
+defined('APPLICATION_CONFIGS')
+    or define('APPLICATION_CONFIGS', dirname(__FILE__) . '/config');
+
 defined('APPLICATION_ENVIRONMENT')
     or define('APPLICATION_ENVIRONMENT', 'development');
 
@@ -76,7 +79,7 @@ Zend_Layout::startMvc(APPLICATION_PATH . '/layouts/scripts');
 // The Zend_Config_Ini component will parse the ini file, and resolve all of
 // the values for the given section.  Here we will be using the section name
 // that corresponds to the APP's Environment
-$configuration = new Zend_Config_Ini('app.ini', APPLICATION_ENVIRONMENT);
+$configuration = new Zend_Config_Ini(APPLICATION_CONFIGS . '/app.ini', APPLICATION_ENVIRONMENT);
 
 // REGISTRY - setup the application registry
 // An application registry allows the application to store application

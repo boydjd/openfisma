@@ -478,7 +478,7 @@ class RemediationController extends PoamBaseController
     {
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        define('EVIDENCE_PATH', WEB_ROOT . '/evidence');
+        define('EVIDENCE_PATH', APPLICATION_ROOT . '/public/evidence');
         if ($_FILES && $id > 0) {
             $poam = $this->_poam->find($id)->toArray();
             if (empty($poam)) {

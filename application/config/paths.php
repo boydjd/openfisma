@@ -10,26 +10,18 @@
 
 // Sets the root path of the OpenFISMA application
 define('ROOT', realpath(dirname(dirname(dirname(__FILE__)))));
- 
 define('APPS', ROOT . '/application');
-
-define('CONFIGS', APPS . '/config');
-define('CONTROLLERS', APPS . '/controllers');
 define('MODELS', APPS . '/models');
 define('VIEWS', APPS . '/views');
-
 define('LOG', ROOT . '/data/logs');
 define('MIGRATIONS', APPS . '/config/db');
 define('TEST', ROOT . '/tests');
 define('LIBS', ROOT . '/library');
 define('LOCAL', LIBS . '/local');
-define('WEB_ROOT', ROOT . '/public');
 
 // Update the class path for includes
 $includeDirectories = array(
     APPS,
-    CONFIGS,
-    CONTROLLERS,
     MODELS,
     VIEWS,
     MIGRATIONS,
