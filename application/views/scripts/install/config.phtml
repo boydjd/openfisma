@@ -8,9 +8,9 @@ params.password=<?php echo $this->dsn['pass_c'];?>
 params.dbname=<?php echo $this->dsn['dbname'];?> 
 
 [general]
+hostUrl=<?php echo "{$this->hostUrl}\n"; ?>
 encrypt=<?php echo "{$this->encrypt}\n"; ?>
 <?php echo isset($this->encryptKey)?'encryptKey='.$this->encryptKey:'';?>
-hostUrl=<?php echo "{$this->hostUrl}\n"; ?>
 
 [debug]
 ; DBG=1, RELEASE=0

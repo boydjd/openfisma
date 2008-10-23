@@ -17,9 +17,9 @@
                             </td>
                         </tr>
 
-                        <tr valign='top' align='left' id="dsnEncrypt" style="display:none">
+                        <tr valign='top' align='left' id="encryptKey" style="display:none">
                             <td class='head'><b>Encrypt Key</b></td>
-                            <td class='even'><input type='text' name='dsn[encryptKey]' id='port' size='30' maxlength='100' value="<?php echo isset($this->dsn['encryptKey'])?$this->dsn['encryptKey']:''?>" /> <?php if(isset($this->message['encryptKey'])) {echo " <span class='notice'>*</span>";}?></td>
+                            <td class='even'><input type='text' name='dsn[encryptKey]' size='30' maxlength='100' value="<?php echo isset($this->dsn['encryptKey'])?$this->dsn['encryptKey']:''?>" /> <?php if(isset($this->message['encryptKey'])) {echo " <span class='notice'>*</span>";}?></td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Database Product</b></td>
