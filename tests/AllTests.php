@@ -26,7 +26,10 @@
  * @version   $Id:$
  */
 
-require_once dirname(dirname(__FILE__)).'/application/config/paths.php';
+// Run the application bootstrap in command line mode
+define('COMMAND_LINE', true);
+require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php")); 
+
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
 set_include_path(get_include_path() .
