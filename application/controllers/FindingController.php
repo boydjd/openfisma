@@ -230,7 +230,7 @@ template. Please update your CSV file and try again.<br />";
                 }
                 // If the blscr_id is zero, that means the user didn't select
                 // a security control, so set the control to null.
-                if ($poam['blscr_id'] == 0) {
+                if ($poam['blscr_id'] == '0') {
                     unset($poam['blscr_id']);
                 }
                 $poam['status'] = 'NEW';
