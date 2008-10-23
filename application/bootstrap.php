@@ -25,8 +25,7 @@
 
 // APPLICATION CONSTANTS - Set the constants to use in this application.
 // These constants are accessible throughout the application, even in ini 
-// files. We optionally set APPLICATION_PATH here in case our entry point 
-// isn't index.php (e.g., if required from our test suite or a script).
+// files. 
 defined('APPLICATION_ROOT')
     or define('APPLICATION_ROOT', realpath(dirname(__FILE__) . '/..'));
 
@@ -36,13 +35,40 @@ defined('APPLICATION_PATH')
 defined('APPLICATION_CONFIGS')
     or define('APPLICATION_CONFIGS', dirname(__FILE__) . '/config');
 
+defined('MODELS')
+    or define('MODELS', APPLICATION_PATH . '/models');
+
+defined('VIEWS')
+    or define('VIEWS', APPLICATION_PATH . '/views');
+
+defined('APPLICATION_LOGS')
+    or define('APPLICATION_LOGS', APPLICATION_ROOT . '/data/logs');
+
+defined('LOCAL')
+    or define('LOCAL', APPLICATION_ROOT . '/library/local');
+
+defined('PEAR')
+    or define('PEAR', APPLICATION_ROOT . '/library/Pear');
+
 defined('APPLICATION_ENVIRONMENT')
     or define('APPLICATION_ENVIRONMENT', 'development');
+
+// INCLUDE PATH - Several libraries and files need to be available to our application when
+// searching for their location. We need to include these directories in the include path
+// so the application automatically searches these directories looking for files. This array
+// puts together a list of directories to add to the include path
+$includeDirectories = array(
+    APPLICATION_ROOT . '/library',
+    LOCAL,
+    PEAR,
+    MODELS,
+    VIEWS,
+);
 
 // APPLICATION_PATH is a constant pointing to our application/ subdirectory.
 // We use this to add our "library" directory to the include_path, so that 
 // PHP can find our Zend Framework classes.
-set_include_path(APPLICATION_ROOT . '/library' . PATH_SEPARATOR . get_include_path());
+set_include_path(implode(PATH_SEPARATOR, $includeDirectories) . PATH_SEPARATOR . get_include_path());
 
 // AUTOLOADER - Set up autoloading.
 // This is a nifty trick that allows ZF to load classes automatically so
@@ -50,9 +76,6 @@ set_include_path(APPLICATION_ROOT . '/library' . PATH_SEPARATOR . get_include_pa
 // statements.
 require_once "Zend/Loader.php";
 Zend_Loader::registerAutoload();
-
-// The paths.php file contains constants representing commonly accessed paths in the application.
-require_once "config/paths.php";
 
 // FRONT CONTROLLER - Get the front controller.
 // The Zend_Front_Controller class implements the Singleton pattern, which is a

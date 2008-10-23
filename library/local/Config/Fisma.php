@@ -171,7 +171,7 @@ class Config_Fisma
     public function getLogInstance()
     {
         if ( null === $this->_log ) {
-            $write = new Zend_Log_Writer_Stream(LOG . '/' . self::ERROR_LOG);
+            $write = new Zend_Log_Writer_Stream(APPLICATION_LOGS . '/' . self::ERROR_LOG);
             $auth = Zend_Auth::getInstance();
             if ($auth->hasIdentity()) {
                 $me = $auth->getIdentity();
