@@ -1,4 +1,4 @@
-<?= $this->doctype() ?> <!-- This Line will output the doctype we set inside the bootstrap file -->
+<?php echo $this->doctype() ?> <!-- This Line will output the doctype we set inside the bootstrap file -->
 
 <html>
 <head>
@@ -25,9 +25,9 @@
       The line below demonstrates usage of the headLink() view helper
       @see http://framework.zend.com/manual/en/zend.view.helpers.html
       -->
-  <?= $this->headLink()->appendStylesheet('/stylesheets/main.css') ?>
-  <?= $this->headLink()->appendStylesheet('/stylesheets/datepicker.css') ?>
-  <?= $this->headLink()->appendStylesheet('/stylesheets/jquery-ui-themeroller.css') ?>  
+  <?php echo $this->headLink()->appendStylesheet('/stylesheets/main.css') ?>
+  <?php echo $this->headLink()->appendStylesheet('/stylesheets/datepicker.css') ?>
+  <?php echo $this->headLink()->appendStylesheet('/stylesheets/jquery-ui-themeroller.css') ?>  
 	  
 </head>
 <body>
@@ -45,7 +45,7 @@
 
 		<!-- This next call will now include any content that was generated in the
 		dispatching of a controllers action (or series of actions).  -->
-		<?= $this->layout()->content ?>
+		<?php echo $this->layout()->content ?>
 
 </div><!--detail-->
 <div id='footer'>
