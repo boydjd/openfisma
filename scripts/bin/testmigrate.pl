@@ -105,8 +105,8 @@ my $schemaVersion = $database->{'schema_version'};
 # Figure out which versions exist in the migrations directory that are greater
 # than the current schema version
 if (! -d $config->{'migrationsDir'}) {&error("The migrations directory $config->{'migrationsDir'} does not exist")}
-opendir (APPLICATION_CONFIGS . '/db', $config->{'migrationsDir'});
-my @files = readdir(APPLICATION_CONFIGS . '/db');
+opendir (MIGRATIONS, $config->{'migrationsDir'});
+my @files = readdir(MIGRATIONS);
 my @migrations = ();
 foreach (@files) {
   my $migrationVersion;
@@ -123,7 +123,7 @@ foreach (@files) {
       {&error("There is no upward migration for $migrationVersion but there is a downward migration.")}
   }
 }
-closedir APPLICATION_CONFIGS . '/db';
+closedir MIGRATIONS;
 if (scalar @migrations == 0) {
   &error("There are no migrations beyond the current schema version ($schemaVersion)");
 }
