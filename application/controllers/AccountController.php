@@ -572,7 +572,7 @@ class AccountController extends PoamBaseController
                 array('account'=>$accountData['account'], 'password'=>$password));
                            
             // On success, redirect to read view
-            $this->view->setScriptPath(VIEWS . '/scripts');
+            $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
             $this->_forward('view', null, null, array('id' => $userId));
         } else {
             /**

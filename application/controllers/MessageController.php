@@ -69,7 +69,7 @@ class MessageController extends Zend_Controller_Action
         $db = Zend_Registry::get('db');
         $db->insert('validate_emails', $data);
 
-        $contentTpl = $this->view->setScriptPath(VIEWS . '/scripts/mail');
+        $contentTpl = $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts/mail');
         $contentTpl = $this->view;
 
         if (!empty($accountInfo)) {

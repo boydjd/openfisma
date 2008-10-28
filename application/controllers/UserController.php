@@ -386,7 +386,7 @@ class UserController extends MessageController
                     $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
                     $msg .= self::VALIDATION_MESSAGE;
                 }
-                $this->view->setScriptPath(VIEWS . '/scripts');
+                $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
                 $this->message($msg, self::M_NOTICE);
             } else {
                 $this->message("Unable to update account. ($ret)",
@@ -449,7 +449,7 @@ class UserController extends MessageController
             $msg .= self::VALIDATION_MESSAGE;
         }
 
-        $this->view->setScriptPath(VIEWS . '/scripts');
+        $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
         $this->message($msg, $model);
         $this->_forward('notifications');
     }

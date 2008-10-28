@@ -38,9 +38,6 @@ defined('APPLICATION_CONFIGS')
 defined('MODELS')
     or define('MODELS', APPLICATION_PATH . '/models');
 
-defined('VIEWS')
-    or define('VIEWS', APPLICATION_PATH . '/views');
-
 defined('APPLICATION_LOGS')
     or define('APPLICATION_LOGS', APPLICATION_ROOT . '/data/logs');
 
@@ -62,7 +59,6 @@ $includeDirectories = array(
     LOCAL,
     PEAR,
     MODELS,
-    VIEWS,
 );
 
 // APPLICATION_PATH is a constant pointing to our application/ subdirectory.
