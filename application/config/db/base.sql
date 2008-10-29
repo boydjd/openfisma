@@ -278,19 +278,21 @@ SET character_set_client = utf8;
 CREATE TABLE `evaluations` (
   `id` int(10) NOT NULL auto_increment,
   `name` varchar(32) NOT NULL,
+  `nickname` varchar(32) NOT NULL,
   `precedence_id` int(10) NOT NULL default '0',
   `function_id` int(10) NOT NULL,
+  `event_id` int(10) NOT NULL,
   `group` enum('EVIDENCE','ACTION') NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `evaluations` VALUES (1,'EV_SSO',0,25,'EVIDENCE');
-INSERT INTO `evaluations` VALUES (2,'EV_FSA',1,26,'EVIDENCE');
-INSERT INTO `evaluations` VALUES (3,'EV_IVV',2,27,'EVIDENCE');
-INSERT INTO `evaluations` VALUES (4,'EST',3,21,'ACTION');
-INSERT INTO `evaluations` VALUES (5,'SSO',4,24,'ACTION');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+INSERT INTO `evaluations` VALUES (1,'Mitigation Strategy Provided to ','MP_SSO',0,24,15,'ACTION');
+INSERT INTO `evaluations` VALUES (2,'Mitigation Strategy Provided to ','MP_IVV',1,92,93,'ACTION');
+INSERT INTO `evaluations` VALUES (3,'Evidence Provided to SSO','EP_SSO',0,25,18,'EVIDENCE');
+INSERT INTO `evaluations` VALUES (4,'Evidence Provided to SP','EP_SP',1,26,19,'EVIDENCE');
+INSERT INTO `evaluations` VALUES (5,'Evidence Provided to IVV','EP_IVV',2,27,20,'EVIDENCE');
 CREATE TABLE `events` (
   `id` int(10) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -312,7 +314,7 @@ INSERT INTO `events` VALUES (11,'Update Threat',91);
 INSERT INTO `events` VALUES (12,'Update Finding Recommendation',91);
 INSERT INTO `events` VALUES (13,'Update Finding Resources',91);
 INSERT INTO `events` VALUES (14,'Update Est Completion Date',91);
-INSERT INTO `events` VALUES (15,'Mitigation Strategy Approved',91);
+INSERT INTO `events` VALUES (15,'Mitigation Strategy Approved TO SSO',91);
 INSERT INTO `events` VALUES (16,'POA&M Closed',91);
 INSERT INTO `events` VALUES (17,'Evidence Upload',91);
 INSERT INTO `events` VALUES (18,'Evidence Submitted for 1st Approval',91);
@@ -349,6 +351,7 @@ INSERT INTO `events` VALUES (47,'ECD Expires in 7 Days',91);
 INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
 INSERT INTO `events` VALUES (51,'Evidence Denied',91);
 INSERT INTO `events` VALUES (52,'Account Locked',89);
+INSERT INTO `events` VALUES (53,'Mitigation Strategy Approved to IVV',91);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `evidences` (
@@ -396,7 +399,7 @@ INSERT INTO `functions` VALUES (20,'Edit Finding Resources','remediation','updat
 INSERT INTO `functions` VALUES (21,'Edit Completion Date','remediation','update_est_completion_date','','1');
 INSERT INTO `functions` VALUES (22,'View Evidence','remediation','read_evidence','','1');
 INSERT INTO `functions` VALUES (23,'Update Evidence','remediation','update_evidence','','1');
-INSERT INTO `functions` VALUES (24,'Approve Mitigation Strategy','remediation','update_mitigation_strategy_approval','','1');
+INSERT INTO `functions` VALUES (24,'Mitigation Strategy Provided to SSO','remediation','update_mitigation_strategy_approval_1','','1');
 INSERT INTO `functions` VALUES (25,'Approve Evidence Level 1','remediation','update_evidence_approval_first','','1');
 INSERT INTO `functions` VALUES (26,'Approve Evidence Level 2','remediation','update_evidence_approval_second','','1');
 INSERT INTO `functions` VALUES (27,'Approve Evidence Level 3','remediation','update_evidence_approval_third','','1');
@@ -448,6 +451,8 @@ INSERT INTO `functions` VALUES (88,'Delete Networks','admin_networks','delete','
 INSERT INTO `functions` VALUES (91,'Remediation Notifications','notification','remediation','','1');
 INSERT INTO `functions` VALUES (90,'Asset Notifications','notification','asset','','1');
 INSERT INTO `functions` VALUES (89,'Admin Notifications','notification','admin','','1');
+INSERT INTO `functions` VALUES (92,'Mitigation Strategy Provided to IVV','remediation','update_mitigation_strategy_approval_2','','1');
+INSERT INTO `functions` VALUES (93,'Mitigation Strategy submit','remediation','mitigation_strategy_operate','','1');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `ldap_config` (
@@ -542,7 +547,7 @@ CREATE TABLE `poams` (
   `modify_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `close_ts` datetime default '0000-00-00 00:00:00',
   `type` enum('NONE','CAP','FP','AR') NOT NULL default 'NONE',
-  `status` enum('NEW','OPEN','EN','EP','ES','CLOSED','DELETED') NOT NULL default 'NEW',
+  `status` enum('NEW','OPEN','MSA','EN','EP','CLOSED','DELETED') NOT NULL default 'NEW',
   `is_repeat` tinyint(1) default NULL,
   `finding_data` text NOT NULL,
   `previous_audits` text,
@@ -862,6 +867,7 @@ INSERT INTO `schema_version` VALUES (21);
 INSERT INTO `schema_version` VALUES (22);
 INSERT INTO `schema_version` VALUES (23);
 INSERT INTO `schema_version` VALUES (24);
+INSERT INTO `schema_version` VALUES (25);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -988,4 +994,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (25);
+INSERT INTO schema_version (schema_version) VALUES (26);

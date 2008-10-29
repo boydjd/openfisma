@@ -131,6 +131,26 @@ class Poam extends Zend_Db_Table
                 $query->where("p.type = ?", $type);
             }
         }
+        if (isset($mp)) {
+            $query->where("p.status='MSA'");
+            if ($mp > 0) {
+                $mp --;
+                $query->joinLeft(array('pev'=>'poam_evaluations'), 'p.id = pev.group_id', array())
+                      ->joinLeft(array('el'=>'evaluations'), 'el.id=pev.eval_id', array())
+                      ->where("el.precedence_id='$mp' AND pev.decision='APPROVED'")
+                      ->where(
+                      'ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t '.
+                      ' WHERE t.group_id=p.id GROUP BY t.group_id)');
+            } else { //$mp == 0
+                $query->joinLeft(array('pev' => 'poam_evaluations'), null, array())
+                      ->join(array('el' => 'evaluations'), '(el.id=pev.eval_id AND el.group="ACTION")
+                           ON pev.group_id = p.id', array())
+                      ->where("ISNULL(pev.id)")
+                      ->orWhere('pev.decision=\'DENIED\' AND '.
+                      'ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t '.
+                      ' WHERE t.group_id=p.id GROUP BY t.group_id)');
+            }
+        }
         if (isset($ep)) {
             $query->where("p.status='EP'");
             if ($ep > 0) {
@@ -139,20 +159,20 @@ class Poam extends Zend_Db_Table
                     array('e' => new Zend_Db_Expr("(SELECT MAX(id) as last_eid,
                                                     poam_id FROM evidences GROUP BY poam_id)")), 
                           'e.poam_id=p.id', array())
-                    ->joinLeft(array('pvv' => 'poam_evaluations'), 'e.last_eid=pvv.group_id', array())
-                    ->joinLeft(array('el' => 'evaluations'), 'el.id=pvv.eval_id', array())
+                    ->joinLeft(array('pev' => 'poam_evaluations'), 'e.last_eid=pev.group_id', array())
+                    ->joinLeft(array('el' => 'evaluations'), 'el.id=pev.eval_id', array())
                     ->join(array('ev' => new Zend_Db_Expr("(
                         SELECT e1.id,MAX(eval.precedence_id) level
                         FROM `evidences` AS e1, `poam_evaluations` AS pe, `evaluations` AS eval
                         WHERE ( eval.id = pe.eval_id AND e1.id = pe.group_id 
                                 AND eval.group='EVIDENCE' ) 
                         GROUP BY e1.id)")), "ev.id=e.last_eid AND el.precedence_id=ev.level", array())
-                    ->where("ev.level='$ep' AND pvv.decision='APPROVED'");
+                    ->where("ev.level='$ep' AND pev.decision='APPROVED'");
             } else { //$ep==0
                 $query->join(array('e' => 'evidences'), 'e.poam_id=p.id', array())
-                ->joinLeft(array('pvv' => 'poam_evaluations'), null, array())
-                ->join(array('el' => 'evaluations'), '(el.id=pvv.eval_id AND el.group=\'EVIDENCE\') 
-                             ON e.id=pvv.group_id', array())->where("ISNULL(pvv.id) ");
+                ->joinLeft(array('pev' => 'poam_evaluations'), null, array())
+                ->join(array('el' => 'evaluations'), '(el.id=pev.eval_id AND el.group=\'EVIDENCE\') 
+                             ON e.id=pev.group_id', array())->where("ISNULL(pev.id) ");
             }
         }
         if (! empty($status)) {
@@ -299,24 +319,50 @@ class Poam extends Zend_Db_Table
             throw new Exception_General('Make sure a valid ID is inputed');
         }
         $ret = $this->find($id);
-        if ('EN' == $ret->current()->status
+        if ('MSA' == $ret->current()->status) {
+            $query = $this->_db->select()
+                          ->from(array('pev'=>'poam_evaluations'), 'pev.*')
+                          ->join(array('eval'=>'evaluations'), 'eval.id = pev.eval_id',
+                              array('eval.nickname', 'precedence_id'))
+                          ->where('pev.group_id = ?', $id)
+                          ->where('pev.eval_id IN (SELECT id FROM `evaluations` WHERE `group` ="ACTION")')
+                          ->order('pev.id DESC');
+            $ret = $this->_db->fetchRow($query);
+            $eval = new Evaluation();
+            $msEvalList = $eval->getEvalList('ACTION');
+            if (!empty($ret)) {
+                if ('DENIED' == $ret['decision']) {
+                    return $msEvalList[0]['nickname'];
+                } else {
+                    return $msEvalList[$ret['precedence_id']+1]['nickname'];
+                }
+            } else {
+                return $msEvalList[0]['nickname'];
+            }
+        } else if ('EN' == $ret->current()->status
             && date('Y-m-d H:i:s') > $ret->current()->action_est_date) {
             return 'EO';
         } else if ('EP' == $ret->current()->status) {
-            $query = $this->_db->select()
-                          ->from(array('pe'=>'poam_evaluations'), '*')
-                          ->join(array('ev'=>'evidences'),
-                              'pe.group_id = ev.id', array())
-                          ->join(array('p'=>'poams'), 'ev.poam_id = p.id',
-                              array())
+             $query = $this->_db->select()
+                          ->from(array('pev'=>'poam_evaluations'), 'pev.*')
+                          ->join(array('ev'=>'evidences'), 'pev.group_id = ev.id', array())
+                          ->join(array('p'=>'poams'), 'ev.poam_id = p.id', array())
+                          ->join(array('eval'=>'evaluations'), 'eval.id = pev.eval_id',
+                                 array('eval.nickname', 'eval.precedence_id'))
                           ->where('p.id = ?', $id)
-                          ->where('pe.decision = "APPROVED"')
-                          ->order('pe.id DESC');
-            $row = $this->_db->fetchRow($query);
-            if (!empty($row)) {
-                return 'EP(S&P)';
+                          ->where('pev.eval_id IN (SELECT id FROM `evaluations` WHERE `group` = "EVIDENCE")')
+                          ->order('pev.id DESC');
+            $ret = $this->_db->fetchRow($query);
+            $eval = new Evaluation();
+            $evalList = $eval->getEvalList('EVIDENCE');
+            if (empty($ret)) {
+                return $evalList['0']['nickname'];
             } else {
-                return 'EP(SSO)';
+                if ('DENIED' == $ret['decision']) {
+                    return $evalList['0']['nickname'];                
+                } else {
+                    return $evalList[$ret['precedence_id']+1]['nickname'];
+                }
             }
         } else {
             return $ret->current()->status;
@@ -382,6 +428,7 @@ class Poam extends Zend_Db_Table
         }
         return $ret;
     }
+
     /** Get list of evaluations on evidence of specified poam
 
         @param $poamIds int|array poam id(s)
@@ -441,24 +488,24 @@ class Poam extends Zend_Db_Table
             $poamId = array($poamId);
         }
         $query = $this->_db->select()
-                      ->from(array('pvv' => 'poam_evaluations'),
-                          array('decision' , 'date' , 'eval_id' => 'pvv.id'))
-                      ->where('pvv.group_id IN (\''.implode("','", $poamId).'\')')
+                      ->from(array('pev' => 'poam_evaluations'),
+                          array('decision' , 'date' , 'pev_id' => 'pev.id'))
+                      ->where('pev.group_id IN (\''.implode("','", $poamId).'\')')
                       ->join(array('el' => 'evaluations'),
-                          'el.id=pvv.eval_id AND el.group = \'ACTION\'',
-                          array('eval_name' => 'el.name',
-                                'level' => 'el.precedence_id'))
-                      ->joinLeft(array('u' => 'users'), 'u.id=pvv.user_id',
+                          'el.id=pev.eval_id AND el.group = \'ACTION\'', 'el.*')
+                      ->joinLeft(array('f'=>'functions'), 'f.id = el.function_id', array('function'=>'f.action'))
+                      ->joinLeft(array('u' => 'users'), 'u.id=pev.user_id',
                                  array('username' => 'account'))
-                      ->order(array('pvv.id', 'pvv.date DESC', 'level DESC'));
+                      ->order(array('pev.id', 'pev.date DESC', 'el.precedence_id DESC'));
         if (! empty($decision)) {
             assert(in_array($decision,
                 array('APPROVED', 'DENIED', 'EST_CHANCED')));
-            $query->where('pvv.decision =?', $decision);
+            $query->where('pev.decision =?', $decision);
         }
         $ret = $this->_db->fetchAll($query);
         return $ret;
     }
+
     public function reviewEv ($eid, $review)
     {
         $data = array_merge(array('group_id' => $eid), $review);

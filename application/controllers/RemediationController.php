@@ -61,6 +61,7 @@ class RemediationController extends PoamBaseController
         $this->_helper->actionStack('searchbox', 'Remediation');
         $this->_helper->actionStack('summary', 'Remediation');
     }
+
     /**
      *  Display the summary page of remediation, per systems.
      */
@@ -70,23 +71,24 @@ class RemediationController extends PoamBaseController
         $criteria['sourceId'] = $this->_request->getParam('source_id');
         $criteria['assetOwner'] = $this->_request->getParam('asset_owner', 0);
 
-        
         $criteriaUrl = '/source_id/'.$criteria['sourceId'].'/asset_owner/'.$criteria['assetOwner'];
 
         $today = parent::$now->toString('Ymd');
-        $summaryTmp = array(
-            'NEW' => 0,
-            'OPEN' => 0,
-            'EN' => 0,
-            'EO' => 0,
-            'EP' => 0,
-            'EP_SNP' => 0,
-            'EP_SSO' => 0,
-            'ES' => 0,
-            'CLOSED' => 0,
-            'TOTAL' => 0
-        );
-
+        
+        $eval = new Evaluation();
+        $mpEvalList = $eval->getEvalList('ACTION');
+        $epEvalList = $eval->getEvalList('EVIDENCE');
+        foreach ($mpEvalList as $row) {
+            $mpSummaryTmp[$row['nickname']] = 0;
+        }
+        foreach ($epEvalList as $row) {
+            $epSummaryTmp[$row['nickname']] = 0;
+        }
+    
+        $summaryTmp = array_merge(array('NEW'=>0, 'OPEN'=>0), $mpSummaryTmp);
+        $summaryTmp = array_merge($summaryTmp, array('EN'=>0));
+        $summaryTmp = array_merge($summaryTmp, $epSummaryTmp);
+        $summaryTmp = array_merge($summaryTmp, array('CLOSED'=>0, 'TOTAL'=>0));
         if ( !empty($criteria['systemId']) ) {
             $sum = array('0' => $summaryTmp);
             $summary = array($criteria['systemId'] => $summaryTmp);
@@ -118,17 +120,15 @@ class RemediationController extends PoamBaseController
             $summary[$id] = $summaryTmp;
             $summary[$id]['NEW'] = isset($s['NEW'])?$s['NEW']: 0;
             $summary[$id]['OPEN'] = isset($s['OPEN'])?$s['OPEN']: 0;
-            $summary[$id]['ES'] = isset($s['ES'])?$s['ES']: 0;
-            $summary[$id]['EP'] = isset($s['EP'])?$s['EP']: 0; //temp placeholder
+            $summary[$id]['EN'] = isset($s['EN'])?$s['EN']: 0;
             $summary[$id]['CLOSED'] = isset($s['CLOSED'])?$s['CLOSED']: 0;
             $summary[$id]['TOTAL'] = array_sum($s);
             $total['NEW']+= $summary[$id]['NEW'];
-            //$total['EN'] += $summary[$id]['EN'];
-            $total['CLOSED']+= $summary[$id]['CLOSED'];
             $total['OPEN']+= $summary[$id]['OPEN'];
-            $total['ES']+= $summary[$id]['ES'];
+            $total['CLOSED']+= $summary[$id]['CLOSED'];
             $total['TOTAL']+= $summary[$id]['TOTAL'];
         }
+
         $eoCount = $this->_poam->search($this->_me->systems, array(
             'count' => 'system_id',
             'system_id'
@@ -138,42 +138,36 @@ class RemediationController extends PoamBaseController
         )));
         foreach ($eoCount as $eo) {
             $summary[$eo['system_id']]['EO'] = $eo['count'];
-            $total['EO']+= $summary[$eo['system_id']]['EO'];
+            $summary[$eo['system_id']]['EN'] = $summary[$eo['system_id']]['EN'] - $eo['count'];
+            //$total['EO']+= $summary[$eo['system_id']]['EO'];
         }
-        $enCount = $this->_poam->search($this->_me->systems, array(
-            'count' => 'system_id',
-            'system_id'
-        ), array_merge($criteria, array(
-            'status' => 'EN',
-            'estDateBegin' => parent::$now
-        )));
-        foreach ($enCount as $en) {
-            $summary[$en['system_id']]['EN'] = $en['count'];
-            $total['EN']+= $summary[$en['system_id']]['EN'];
+        foreach ($mpEvalList as $row) {
+            $mp = $this->_poam->search($this->_me->systems, array(
+                'count' => 'system_id',
+                'system_id'
+            ), array_merge(array('mp' => $row['precedence_id'], 'status'=>'MSA'), $criteria));
+            foreach ($mp as $v) {
+                $summary[$v['system_id']][$row['nickname']] = $v['count'];
+                $total[$row['nickname']]+= $v['count'];
+            }
         }
-        $spsso = $this->_poam->search($this->_me->systems, array(
-            'count' => 'system_id',
-            'system_id'
-        ), array_merge(array(
-            'ep' => 0
-        ), $criteria));
-        foreach ($spsso as $sp) {
-            $summary[$sp['system_id']]['EP_SSO'] = $sp['count'];
-            $total['EP_SSO']+= $sp['count'];
+
+        foreach ($epEvalList as $row) {
+            $ep = $this->_poam->search($this->_me->systems, array(
+                'count' => 'system_id',
+                'system_id'
+            ), array_merge(array('ep' => $row['precedence_id']), $criteria));
+            foreach ($ep as $v) {
+                $summary[$v['system_id']][$row['nickname']] = $v['count'];
+                $total[$row['nickname']]+= $v['count'];
+            }
         }
-        $spsnp = $this->_poam->search($this->_me->systems, array(
-            'count' => 'system_id',
-            'system_id'
-        ), array_merge(array(
-            'ep' => 1
-        ), $criteria));
-        foreach ($spsnp as $sp) {
-            $summary[$sp['system_id']]['EP_SNP'] = $sp['count'];
-            $total['EP_SNP']+= $sp['count'];
-        }
+            
         $this->view->assign('total', $total);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
+        $this->view->assign('mpEvalList', $mpEvalList);
+        $this->view->assign('epEvalList', $epEvalList);
         $this->view->assign('summary', $summary);
         $this->view->assign('criteria', $criteria);
         $this->view->assign('criteriaUrl', $criteriaUrl);
@@ -183,6 +177,7 @@ class RemediationController extends PoamBaseController
         //$this->_helper->actionStack('searchbox', 'Remediation', null,
         //    array('action'=>'summary'));
     }
+
     /**
      *  Do the real searching work. It's a thin wrapper
      *  of poam model's search method.
@@ -218,21 +213,6 @@ class RemediationController extends PoamBaseController
                 $internalCrit['estDateEnd'] = $now;
                 break;
 
-            case 'EP-SSO':
-                ///@todo EP searching needed
-                $internalCrit['status'] = 'EP';
-                $internalCrit['ep'] = 0; //level
-                break;
-
-            case 'EP-SNP':
-                $internalCrit['status'] = 'EP';
-                $internalCrit['ep'] = 1; //level
-                break;
-
-            case 'ES':
-                $internalCrit['status'] = 'ES';
-                break;
-
             case 'CLOSED':
                 $internalCrit['status'] = 'CLOSED';
                 break;
@@ -240,18 +220,18 @@ class RemediationController extends PoamBaseController
             case 'NOT-CLOSED':
                 $internalCrit['status'] = array(
                     'OPEN',
+                    'MSA',
                     'EN',
-                    'EP',
-                    'ES'
+                    'EP'
                 );
                 break;
 
             case 'NOUP-30':
                 $internalCrit['status'] = array(
                     'OPEN',
+                    'MSA',
                     'EN',
-                    'EP',
-                    'ES'
+                    'EP'
                 );
                 $internalCrit['modify_ts'] = $now->sub(30, Zend_Date::DAY);
                 break;
@@ -259,9 +239,9 @@ class RemediationController extends PoamBaseController
             case 'NOUP-60':
                 $internalCrit['status'] = array(
                     'OPEN',
+                    'MSA',
                     'EN',
-                    'EP',
-                    'ES'
+                    'EP'
                 );
                 $internalCrit['modify_ts'] = $now->sub(60, Zend_Date::DAY);
                 break;
@@ -269,12 +249,29 @@ class RemediationController extends PoamBaseController
             case 'NOUP-90':
                 $internalCrit['status'] = array(
                     'OPEN',
+                    'MSA',
                     'EN',
-                    'EP',
-                    'ES'
+                    'EP'
                 );
                 $internalCrit['modify_ts'] = $now->sub(90, Zend_Date::DAY);
                 break;
+            default :
+                $evaluation = new Evaluation();
+                $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
+                                              ->where('nickname = ?', $criteria['status']);
+                $ret = $evaluation->fetchRow($query)->toArray();
+                if (!empty($ret)) {
+                    $precedence_id = $ret['precedence_id'];
+                    $group = $ret['group'];
+                    if ('ACTION' == $group) {
+                        $internalCrit['status'] = 'MSA';
+                        $internalCrit['mp']     = $precedence_id;
+                    }
+                    if ('EVIDENCE' == $group) {
+                        $internalCrit['status'] = 'EP';
+                        $internalCrit['ep']     = $precedence_id;
+                    }
+                }
             }
         }
         $list = $this->_poam->search($this->_me->systems, array(
@@ -388,6 +385,35 @@ class RemediationController extends PoamBaseController
             $justification = $this->_poam->getAdapter()->fetchRow($query);
             $this->view->assign('justification', $justification);
         }
+        
+        $msEvaluation = $this->_poam->getActEvaluation($id);
+        $evalModel = new Evaluation();
+        $msEvallist = $evalModel->getEvalList('ACTION');
+        $mss = array();
+        if (!empty($msEvaluation)) {
+            $i = 0;
+            foreach ($msEvaluation as $k=>$row) {
+                if ($k != 0 && !($row['precedence_id'] > $msEvaluation[$k-1]['precedence_id'])) {
+                    $i++;
+                }
+                $mss[$i][] = $row;
+                if ($k == count($msEvaluation)-1) {
+                    if ($row['decision'] == 'DENIED') {
+                        $mss[$i+1] = $msEvallist;
+                    } else {
+                        if ($row['precedence_id'] < count($msEvallist)-1 ) {
+                            $lastEval = array_slice($msEvallist, count($msEvallist)-1-$row['precedence_id']);
+                            foreach ($lastEval as $v) {
+                                $mss[$i][] = $v;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            $mss[] = $msEvallist;
+        }
+
         $evEvaluation = $this->_poam->getEvEvaluation($id);
         // currently we don't need to support the comments for est_date change
         //$act_evaluation = $this->_poam->getActEvaluation($id);
@@ -403,6 +429,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('logs', $this->_poam->getLogs($id));
         $this->view->assign('ev_evals', $evs);
+        $this->view->assign('ms_evals', $mss);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('network_list', $this->_networkList);
         $this->render();
@@ -428,17 +455,6 @@ class RemediationController extends PoamBaseController
                     assert(empty($poam['status']));
                     $poam['status'] = 'OPEN';
                     $poam['modify_ts'] = self::$now->toString('Y-m-d H:i:s');
-                }
-                if ($k == 'action_status' && $v == 'APPROVED') {
-                    $poam['status'] = 'EN';
-                    if (empty($oldpoam['action_est_date'])) {
-                        $poam['action_est_date'] = $oldpoam['action_current_date'];
-                    }
-                } elseif ($k == 'action_status' && $v == 'DENIED') {
-                    // If the SSO denies, then put back into OPEN status to
-                    // make the POAM
-                    // editable again.
-                    $poam['status'] = 'OPEN';
                 }
                 ///@todo SSO can only approve the action after all the required
                 // info provided
@@ -474,6 +490,78 @@ class RemediationController extends PoamBaseController
         //throw new Fisma_Excpection('POAM not updated for some reason');
         $this->_redirect('/panel/remediation/sub/view/id/' . $id);
     }
+
+    /**
+     * Mitigation Strategy Approval Process
+     */
+    public function msaAction()
+    {
+        $poamId = $this->_request->getParam('id');
+        $evalId = $this->_request->getParam('eval_id');
+        $isMsa  = $this->_request->getParam('is_msa');
+        $decision = $this->_request->getPost('decision');
+        $oldpoam = $this->_poam->find($poamId)->toArray();
+        if (empty($oldpoam)) {
+            throw new Exception_General('incorrect ID specified for poam');
+        } else {
+                $oldpoam = $oldpoam[0];
+        }
+        if (isset($isMsa)) {
+            if (1 == $isMsa) {
+                $poam['status'] = 'MSA';
+            } else {
+                $poam['status'] = 'OPEN';
+            }
+        }
+
+        if (!empty($decision)) {
+            $poamEvalId = $this->_poam->reviewEv($poamId, array('decision' => $decision,
+                                                               'eval_id'  => $evalId,
+                                                               'user_id'  => $this->_me->id,
+                                                               'date'     => self::$now->toString('Y-m-d')));
+            $evaluation = new Evaluation();
+            $msEvalList = $evaluation->getEvalList('ACTION');
+            $ret = $evaluation->find($evalId);
+            $evalNickname = $ret->current()->nickname;
+            $logContent = "Update: $evalNickname\nOriginal: \"NONE\" New: \"".$decision."\"";
+            $this->_poam->writeLogs($poamId, $this->_me->id, 
+                self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION', $logContent);
+
+            $this->_notification->add($ret->current()->event_id,
+                        $this->_me->account,
+                        "PoamID: $poamId",
+                        $oldpoam['system_id']);
+
+            if ('APPROVED' == $decision) {
+                if (empty($oldpoam['action_est_date'])) {
+                    $poam['action_est_date'] = $oldpoam['action_current_date'];
+                }                
+                if ($evalId == $msEvalList[count($msEvalList)-1]['id']) {
+                    $poam['status'] = 'EN';
+                }
+            } 
+            if ('DENIED' == $decision) {
+                $poam['status'] = 'OPEN';
+                $topic = $this->_request->getParam('topic');
+                $body = $this->_request->getParam('reject');
+                $comm = new Comments();
+                $comm->insert(array('poam_evaluation_id' => $poamEvalId,
+                                    'user_id' => $this->_me->id,
+                                    'date' => self::$now->toString('Y-m-d H:i:s'),
+                                    'topic' => $topic,
+                                    'content' => $body));
+            }
+
+        }
+
+        if (!empty($poam)) {
+            $this->_poam->update($poam, 'id = '. $poamId);
+        }
+        $this->_redirect('/panel/remediation/sub/view/id/' . $poamId, array(
+            'exit'
+        ));
+    }
+
     public function uploadevidenceAction()
     {
         $req = $this->getRequest();
@@ -551,10 +639,14 @@ class RemediationController extends PoamBaseController
     {
         $req = $this->getRequest();
         $evalId = $req->getParam('evaluation');
+        $precedenceId = $req->getParam('precedence');
         $decision = $req->getParam('decision');
         $eid = $req->getParam('id');
         $ev = new Evidence();
         $evDetail = $ev->find($eid);
+
+        $eval = new Evaluation();
+        $evalList = $eval->getEvalList('EVIDENCE');
 
         // Get the poam data because we need system_id to generate the
         // notification
@@ -588,59 +680,37 @@ class RemediationController extends PoamBaseController
                 'user_id' => $this->_me->id,
                 'date' => self::$now->toString('Y-m-d')
             ));
-            if ( $evalId == 1 ) {
-                $this->_notification
-                     ->add(Notification::EVIDENCE_APPROVAL_2ND,
-                        $this->_me->account,
-                        "PoamId: $poamId",
-                        $poam['system_id']);
-            }
 
-            $logContent.= " Decision: $decision.";
-            if ($decision == 'DENIED') {
-                $this->_poam->update(array(
-                    'status' => 'EN'
-                ), 'id=' . $poamId);
+            $logContent.= $evalList[$precedenceId]['nickname'] ." Decision: $decision.";
+
+            if ('APPROVED' == $decision) {
+                $this->_notification->add($evalList[$precedenceId]['event_id'], $this->_me->account,
+                                          "PoamId: $poamId", $poam['system_id']);
+
+                
+                if ($precedenceId == count($evalList)-1) {
+                    $logContent.= " Status: CLOSED";
+                    $this->_poam->update(array('status' => 'CLOSED'), 'id=' . $poamId);
+            
+                    $this->_notification->add(Notification::POAM_CLOSED, $this->_me->account, 
+                                         "PoamId: $poamId", $poam['system_id']);
+                }
+            } else {
+                $this->_poam->update(array('status' => 'EN'), 'id=' . $poamId);
                 $topic = $req->getParam('topic');
                 $body = $req->getParam('reject');
                 $comm = new Comments();
-                $comm->insert(array(
-                    'poam_evaluation_id' => $evvId,
-                    'user_id' => $this->_me->id,
-                    'date' => 'CURDATE()',
-                    'topic' => $topic,
-                    'content' => $body
-                ));
-                $logContent.= " Status: EN. Topic: $topic. Content: $body.";
-                $this->_notification
-                     ->add(Notification::EVIDENCE_DENIED,
-                        $this->_me->account,
-                        "PoamId: $poamId",
-                        $poam['system_id']);
-            }
-            if ($decision == 'APPROVED' && $evalId == 2) {
-                $logContent.= " Status: ES";
-                $this->_poam->update(array(
-                    'status' => 'ES'
-                ), 'id=' . $poamId);
+                $comm->insert(array('poam_evaluation_id' => $evvId,
+                                    'user_id' => $this->_me->id,
+                                    'date' => 'CURDATE()',
+                                    'topic' => $topic,
+                                    'content' => $body));
 
-                $this->_notification
-                     ->add(Notification::EVIDENCE_APPROVAL_3RD,
-                        $this->_me->account,
-                        "PoamId: $poamId",
-                        $poam['system_id']);
-            }
-            if ($decision == 'APPROVED' && $evalId == 3) {
-                $logContent.= " Status: CLOSED";
-                $this->_poam->update(array(
-                    'status' => 'CLOSED'
-                ), 'id=' . $poamId);
-            
-                $this->_notification
-                     ->add(Notification::POAM_CLOSED,
-                        $this->_me->account,
-                        "PoamId: $poamId",
-                        $poam['system_id']);
+                $logContent.= " Status: EN. Topic: $topic. Content: $body.";
+                $this->_notification->add(Notification::EVIDENCE_DENIED,
+                                          $this->_me->account,
+                                          "PoamId: $poamId",
+                                          $poam['system_id']);
             }
             if (!empty($logContent)) {
                 $logContent = "Changed: $logContent";
@@ -653,6 +723,7 @@ class RemediationController extends PoamBaseController
             'exit'
         ));
     }
+
     /**
      *  Generate RAF report
      *

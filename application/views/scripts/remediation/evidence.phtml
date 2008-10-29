@@ -33,8 +33,8 @@
     $value = 'NONE';
     $editable = true;
     $eval_model = new Evaluation();
-    $ev_evallist = $eval_model->getEvEvalList() ;
-    foreach($ev_evallist as $k=>$v) { 
+    $ev_evallist = $eval_model->getEvalList('EVIDENCE');
+    foreach($ev_evallist as $k=>$v) {
         $name = &$v['name'];
         if(isset($evaluation[$name])) {
             if( $evaluation[$name]['group'] != 'EVIDENCE' ) {
@@ -54,7 +54,8 @@
         echo  "<tr><td><b>$name:&nbsp;</b>";
         if($value=='NONE' && $editable){
             if(Config_Fisma::isAllow('remediation',$v['function'])){
-                echo '<input type="hidden" name="evaluation" value="'.$k.'"/>';
+                echo '<input type="hidden" name="evaluation" value="'.$v['id'].'"/>';
+                echo '<input type="hidden" name="precedence" value="'.$v['precedence_id'].'"/>';
                 echo '<input type="hidden" name="topic" value="" />';
                 echo '<input type="hidden" name="reject" value="" />';
                 echo '<input type="hidden" name="decision" value="APPROVE" />';

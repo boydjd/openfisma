@@ -36,16 +36,18 @@ class Evaluation extends FismaModel
     protected $_name = 'evaluations';
     protected $_primary = 'id';
 
-    public function getEvEvalList () {
-        return array(1 => array('name' => 'EV_SSO',
-                                'function' =>
-                                    'update_evidence_approval_first'),
-                     2 => array('name' => 'EV_FSA',
-                                'function' =>
-                                    'update_evidence_approval_second'),
-                     3 => array('name' => 'EV_IVV',
-                                'function' =>
-                                    'update_evidence_approval_third'));
+    public function getEvalList ($group) {
+        if (!in_array($group, array('EVIDENCE', 'ACTION'))) {
+            throw new Exception_General('Make sure a valid GROUP is inputed');
+        }
+        $query = $this->_db->select()
+                      ->from(array('ev'=>'evaluations'), array('ev.*'))
+                      ->join(array('f'=>'functions'), 'ev.function_id = f.id',
+                          array('function'=>'action'))
+                      ->where('ev.group = ?', $group)
+                      ->order('ev.precedence_id');
+        $ret = $this->_db->fetchAll($query);
+        return $ret;
     }
 }
 
