@@ -286,13 +286,13 @@ CREATE TABLE `evaluations` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 INSERT INTO `evaluations` VALUES (1,'Mitigation Strategy Provided to ','MP_SSO',0,24,15,'ACTION');
 INSERT INTO `evaluations` VALUES (2,'Mitigation Strategy Provided to ','MP_IVV',1,92,93,'ACTION');
 INSERT INTO `evaluations` VALUES (3,'Evidence Provided to SSO','EP_SSO',0,25,18,'EVIDENCE');
 INSERT INTO `evaluations` VALUES (4,'Evidence Provided to SP','EP_SP',1,26,19,'EVIDENCE');
 INSERT INTO `evaluations` VALUES (5,'Evidence Provided to IVV','EP_IVV',2,27,20,'EVIDENCE');
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `events` (
   `id` int(10) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -503,15 +503,18 @@ CREATE TABLE `organizations` (
   `father` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `plugins` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
-  `classname` varchar(12) NOT NULL default '',
+  `class` varchar(256) NOT NULL,
   `desc` text,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `plugins` VALUES (1,'AppDetective Security Scanner','AppDetective','AppDetective application security assessment tool plugin');
+INSERT INTO `plugins` VALUES (1,'AppDetective Security Scanner','Inject_AppDetective','AppDetective application security assessment tool plugin');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `poam_evaluations` (
@@ -547,7 +550,7 @@ CREATE TABLE `poams` (
   `modify_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `close_ts` datetime default '0000-00-00 00:00:00',
   `type` enum('NONE','CAP','FP','AR') NOT NULL default 'NONE',
-  `status` enum('NEW','OPEN','MSA','EN','EP','CLOSED','DELETED') NOT NULL default 'NEW',
+  `status` enum('PEND','NEW','OPEN','EN','EP','ES','CLOSED','DELETED') NOT NULL default 'NEW',
   `is_repeat` tinyint(1) default NULL,
   `finding_data` text NOT NULL,
   `previous_audits` text,
@@ -852,22 +855,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (0);
-INSERT INTO `schema_version` VALUES (6);
-INSERT INTO `schema_version` VALUES (8);
-INSERT INTO `schema_version` VALUES (9);
-INSERT INTO `schema_version` VALUES (12);
-INSERT INTO `schema_version` VALUES (13);
-INSERT INTO `schema_version` VALUES (15);
-INSERT INTO `schema_version` VALUES (17);
-INSERT INTO `schema_version` VALUES (18);
-INSERT INTO `schema_version` VALUES (19);
-INSERT INTO `schema_version` VALUES (20);
-INSERT INTO `schema_version` VALUES (21);
-INSERT INTO `schema_version` VALUES (22);
-INSERT INTO `schema_version` VALUES (23);
-INSERT INTO `schema_version` VALUES (24);
-INSERT INTO `schema_version` VALUES (25);
+INSERT INTO `schema_version` VALUES (26);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -994,4 +982,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (26);
+INSERT INTO schema_version (schema_version) VALUES (28);

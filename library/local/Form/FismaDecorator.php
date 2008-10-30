@@ -119,8 +119,11 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                     . '</table></div>';
             
         } else if ($element instanceof Zend_Form) {
+            $enctype = $element->getAttrib('enctype');
             $render = "<form method='{$element->getMethod()}'"
-                    . " action='{$element->getAction()}'>"
+                    . " action='{$element->getAction()}'"
+                    . (isset($enctype) ? " enctype=\"$enctype\"" : '')
+                    . '>'
                     . '<div class=\'form\'>'
                     . $content
                     . '</div>'

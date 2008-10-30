@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -17,33 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
- *
+ * @version   $Id: FindingController.php 1054 2008-10-21 23:34:58Z ford_james $
  */
-
 
 /**
- * The interface of plugins for various scan reports
+ * Thrown when the application tries to parse or load an invalid file format.
+ *
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-interface Inject_Interface
+class Exception_InvalidFileFormat extends Exception_General
 {
-    /** 
-     * To decide if the file is valid according to this type.
-     *
-     * @param string $file filename 
-     * @return boolean
-     */
-    public function isValid($file);
-
-    /** 
-     * Convert the file to an intermediate format, which is iteratable 
-     * and can be can be read or injected into database
-     *
-     * @param string $data the content of the injecting content
-     * @return mixed
-     */
-    public function parse($data);
 }

@@ -1,0 +1,36 @@
+; This is the form for uploading a scan result
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id:$
+
+; I don't know how to set the default values for these lists in the INI file, so they are set inside the action
+; handler.
+
+[finding_upload]
+elements.plugin.type = "select"
+elements.plugin.options.label = "Plugin"
+elements.plugin.validators.alphanum = "AlphaNum"
+displayGroups.finding_upload.elements.plugin = "plugin"
+
+elements.findingSource.type = "select"
+elements.findingSource.options.label = "Finding Source"
+displayGroups.finding_upload.elements.findingSource = "findingSource"
+
+elements.system.type = "select"
+elements.system.options.label = "System"
+displayGroups.finding_upload.elements.system = "system"
+
+elements.network.type = "select"
+elements.network.options.label = "Network"
+displayGroups.finding_upload.elements.network = "network"
+
+; I couldn't figure out how to set some of the options for the file select, so those are set in the action handler
+elements.selectFile.type = "file"
+elements.selectFile.options.label = "Select File"
+displayGroups.finding_upload.elements.selectFile = "selectFile"
+
+elements.submit.type = "submit"
+elements.submit.options.value = "Upload"
+displayGroups.finding_upload.elements.submit = "submit"

@@ -36,4 +36,27 @@ class Asset extends Zend_Db_Table
 {
     protected $_name = 'assets';
     protected $_primary = 'id';
+    
+    /**
+     * getAssetId() - Retrieve an asset ID by using the unique key (network id, ip address, port)
+     *
+     * @param int $networkId
+     * @param int $ipAddress
+     * @param int $port
+     * @return int Return can be null if no asset is found
+     *
+     * @todo I like this as a static function, but it doesnt fit well with ZF's table class. Ideal solution is
+     * to create new subclass of Zend_Db_Table which has better support for static operations.
+     */
+    static function getAssetId($networkId, $ipAddress, $port) {
+        $asset = new Asset();
+        $sql = 'SELECT id
+                  FROM assets
+                 WHERE network_id = ?
+                   AND address_ip = ?
+                   AND address_port = ?';
+        $assetData = $asset->getAdapter()->fetchRow($sql, array($networkId, $ipAddress, $port));
+        $assetId = isset($assetData) ? $assetData['id'] : null;
+        return $assetId;
+    }
 }

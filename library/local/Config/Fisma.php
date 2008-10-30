@@ -22,12 +22,16 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: basic.php 940 2008-09-27 13:40:22Z ryanyang $
  *
+ * @todo This class should be renamed. "Fisma" doesn't mean anything. Also this class serves multiple purposes. It
+ * should be split up into separate classes that each serve a single purpose.
  */
 
 class Config_Fisma
 {
     /**
-     The section name of system wide configuration
+     * The section name of system wide configuration
+     *
+     * @todo Remove these.. no point in having constants which are the same name as the value that they represent.
      */ 
     const SYSCONFIG = 'sysconf';
     const LDAPCONFIG = 'ldapconf';

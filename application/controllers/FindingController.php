@@ -22,16 +22,11 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
- 
-define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
 
 /**
- * The following class does not conform to ZF naming standards, so it must be
- * explicitly included before it can be referenced.
- *
- * @todo See if we can make this less hacky
+ * @todo move this definition into the class as a constant
  */
-require_once('local/parseXml.class.php');
+define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
 
 /**
  * The finding controller is used for searching, displaying, and updating
@@ -224,13 +219,13 @@ template. Please update your CSV file and try again.<br />";
                 }
                 // Validate that the user has selected a finding source
                 if ($poam['source_id'] == 0) {
-                    throw new Exception_General(
+                    throw new FismaException(
                         "You must select a finding source"
                     );
                 }
                 // If the blscr_id is zero, that means the user didn't select
                 // a security control, so set the control to null.
-                if ($poam['blscr_id'] == '0') {
+                if ($poam['blscr_id'] == 0) {
                     unset($poam['blscr_id']);
                 }
                 $poam['status'] = 'NEW';
@@ -254,7 +249,7 @@ template. Please update your CSV file and try again.<br />";
                 $model = self::M_NOTICE;
             }
             catch(Zend_Exception $e) {
-                if ($e instanceof Exception_General) {
+                if ($e instanceof FismaException) {
                     $message = $e->getMessage();
                 } else {
                     $message = "Failed to create the finding";
@@ -419,20 +414,20 @@ template. Please update your CSV file and try again.<br />";
             $this->view->systems = $src->getList('nickname',
                 $this->_me->systems);
             if (count($this->view->systems) == 0) {
-                throw new Exception_General(
+                throw new FismaException(
                     "The spreadsheet template can not be " .
                     "prepared because there are no systems defined.");
             }
             $src = new Network();
             $this->view->networks = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new Exception_General("The spreadsheet template can not be
+                 throw new FismaException("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
             $src = new Source();
             $this->view->sources = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new Exception_General("The spreadsheet template can
+                 throw new FismaException("The spreadsheet template can
                      not be prepared because there are no finding sources
                      defined.");
             }
@@ -442,185 +437,100 @@ template. Please update your CSV file and try again.<br />";
             // look for error.xls.tpl instead of error.tpl
             $contextSwitch->initContext('xls');
             $this->render();
-        } catch(Exception_General $fe) {
+        } catch(FismaException $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);
             $this->_forward('injection', 'Finding');
         }
     }
+
     /** 
-     *  Scan result import
+     *  pluginAction() - Import scan results via a plug-in
      */
-    public function importAction()
+    public function pluginAction()
     {
-        $this->_helper->actionStack('header', 'Panel');
-        $req = $this->getRequest();
-        $db = $this->_poam->getAdapter();
+        // Load the finding plugin form
+        $uploadForm = Form_Manager::loadForm('finding_upload');
+        $uploadForm = Form_Manager::prepareForm($uploadForm);
+
+        // Populate the drop menu options
+        $uploadForm->plugin->addMultiOption('', '');
         $plugin = new Plugin();
         $pluginList = $plugin->getList('name');
-        $this->view->assign('plugin_list', $pluginList);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('source_list', $this->_sourceList);
-        $msg = '';
-        if (isset($_FILES['upload_file'])) {
-            $pluginId = $req->getParam('plugin');
-            $ret = $plugin->find($pluginId)->toArray();
-            if (!empty($ret)) {
-                $pluginClass = 'Inject_'.$ret[0]['classname'];
+        $uploadForm->plugin->addMultiOptions($pluginList);
+        
+        $uploadForm->findingSource->addMultiOption('', '');
+        $uploadForm->findingSource->addMultiOptions($this->_sourceList);
+
+        $uploadForm->system->addMultiOption('', '');
+        $uploadForm->system->addMultiOptions($this->_systemList);
+
+        $uploadForm->network->addMultiOption('', '');
+        $uploadForm->network->addMultiOptions($this->_networkList);
+        
+        // Configure the file select
+        $uploadForm->setAttrib('enctype', 'multipart/form-data');
+        $uploadForm->selectFile->setDestination(APPLICATION_ROOT . '/data/uploads/scanreports')
+                               ->addValidator('Count', false, 1) // ensure only 1 file
+                               ->addValidator('Size', false, 102400) // limit to 100K
+                               ->addValidator('Extension', false, 'xml');
+
+        // Setup the view
+        $this->_helper->actionStack('header', 'Panel');
+        $this->view->assign('uploadForm', $uploadForm);
+
+        // Handle the file upload, if necessary
+        $fileReceived = false;
+        $postValues = $this->_request->getPost();
+
+        if (isset($_POST['submit'])) {
+            if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
+                // Get information about the plugin, and then create a new instance of the plugin.
+                $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
+                $pluginTable = new Plugin();
+                $pluginInfo = $plugin->find($postValues['plugin'])->getRow(0);
+                $pluginClass = $pluginInfo->class;
+                $pluginName = $pluginInfo->name;
+                $plugin = new $pluginClass($filePath,
+                                           $postValues['network'],
+                                           $postValues['system'],
+                                           $postValues['findingSource']);
+
+                // Execute the plugin with the received file
+                try {
+                    $findingsCreated = $plugin->parse();
+                    $this->message("Your scan report was successfully uploaded."
+                                   . " $findingsCreated findings were created.",
+                                   self::M_NOTICE);
+                } catch (Exception_InvalidFileFormat $e) {
+                    $this->message("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
+                                   self::M_WARNING);
+                }
             } else {
-                $this->message('post plugin is not found', self::M_WARNING);
-                $this->render();
-                return;
-            }
-            if ($_FILES['upload_file']['type'] != 'text/xml') {
-                $this->message('It is not xml file', self::M_WARNING);
-                $this->render();
-                return;
-            }
-            $assets['system_id'] = $req->getParam('system_id');
-            $assets['source_id'] = $req->getParam('source');
-            $assets['network_id'] = $req->getParam('network');
-            $tmpfile = $_FILES['upload_file']['tmp_name'];
-            $ret = null;
-            $parser = new $pluginClass();
-            if ($parser->isValid($tmpfile)) {
-                $xmlObj = new XmlToArray(file_get_contents($tmpfile));
-                $xmlData = $xmlObj->createArray();
-                $unifiedData = $parser->parse($xmlData);
-                foreach ($unifiedData as $k => $v) {
-                    if ('product' == $k && !empty($v['meta'])) {
-                        $product = new product();
-                        $qry = $product->select()->from('products', array(
-                            'id' => 'id'
-                        ))
-                        ->where('meta = ?', $v['meta'])
-                        ->where('vendor = ?', $v['vendor'])
-                        ->where('version = ?', $v['version']);
-                        $ret = $db->fetchRow($qry);
-                        if (!empty($ret)) {
-                            $prodId = $ret['id'];
-                        } else {
-                            $prodId = $product->insert($v);
-                        }
-                    }
-                    if ('asset' == $k && !empty($v['name'])) {
-                        $asset = new Asset();
-                        $v['prod_id'] = isset($prodId) ? $prodId : '';
-                        $v['system_id'] = $assets['system_id'];
-                        $v['network_id'] = $assets['network_id'];
-                        $v['create_ts'] = self::$now->toString('Y-m-d H:i:s');
-                        $qry = $asset->select()->from('assets', array(
-                            'id' => 'id'
-                        ))
-                        ->where('prod_id = ?', $v['prod_id'])
-                        ->where('name = ?', $v['name']);
-                        $ret = $db->fetchRow($qry);
-                        if (!empty($ret['id'])) {
-                            $assetId = $ret['id'];
-                        } else {
-                            $assetId = $asset->insert($v);
-                        }
-                    }
-                    if ('blscr' == $k && !empty($v['code'])) {
-                        $blscr = new blscr();
-                        $blscrId = $blscr->insert($v);
-                    }
-                    if ('poam' == $k) {
-                        foreach ($v['finding_data'] as $row) {
-                            if (!empty($row)) {
-                                $data = array(
-                                    'asset_id' => $assetId,
-                                    'source_id' => $assets['source_id'],
-                                    'system_id' => $assets['system_id'],
-                                    'blscr_id' => 
-                                        isset($blscrId) ? $blscrId : '',
-                                    'create_ts' => 
-                                        self::$now->toString('Y-m-d H:i:s'),
-                                    'discover_ts' => $v['discover_ts'],
-                                    'created_by' => $this->_me->id,
-                                    'status' => 'NEW',
-                                    'finding_data' => $row
-                                );
-                                $poamIds[] = $this->_poam->insert($data);
-                            }
-                        }
-                    }
-                    if ('vulnerabilities' == $k && !empty($v)) {
-                        $severityInt = array(
-                            'Low' => 20,
-                            'Medium' => '55',
-                            'High' => 85,
-                            'Default' => 50,
-                            'Informational' => 0
-                        );
-                        foreach ($v['description'] as $i => $row) {
-                            if (!empty($row)) {
-                                $qry = $db->select()->from('vulnerabilities',
-                                        array('id' => 'seq'));
-                                if (!empty($v['cve'][$i])) {
-                                    $vulnData['type'] = 'CVE';
-                                    $vulnData['severity'] = 
-                                        $severityInt[$v['severity'][$i]];
-                                    $qry->where('type = ?', 'CVE')
-                                        ->where('severity = ?',
-                                            $severityInt[$v['severity'][$i]]);
-                                } else {
-                                    if (!empty($v['sbv'][$i])) {
-                                        $vulnData['type'] = 'APP';
-                                        $vulnData['severity'] = 
-                                            $severityInt[$v['severity'][$i]];
-                                        $qry->where('type = ?', 'APP')
-                                            ->where('severity = ?',
-                                              $severityInt[$v['severity'][$i]]);
-                                    }
-                                }
-                                $qry->where('description = ?', $row)
-                                    ->where('solution = ?', $v['solution'][$i]);
-                                $ret = $db->fetchRow($qry);
-                                if (!empty($ret)) {
-                                    $vulnId[] = $ret['id'];
-                                } else {
-                                    $vulnData['description'] = $row;
-                                    $vulnData['solution'] = $v['solution'][$i];
-                                    $db->insert('vulnerabilities', $vulnData);
-                                    unset($vulnData);
-                                    $vulnId[] = $db->LastInsertId();
-                                }
-                            }
+                /**
+                 * @todo this error display code needs to go into the decorator,
+                 * but before that can be done, the function it calls needs to be
+                 * put in a more convenient place
+                 */
+                $errorString = '';
+                foreach ($uploadForm->getMessages() as $field => $fieldErrors) {
+                    if (count($fieldErrors>0)) {
+                        foreach ($fieldErrors as $error) {
+                            $label = $uploadForm->getElement($field)->getLabel();
+                            $errorString .= "$label: $error<br>";
                         }
                     }
                 }
-                foreach ($poamIds as $i => $id) {
-                    $data = array(
-                        'poam_id' => $id,
-                        'vuln_seq' => $vulnId[$i],
-                        'vuln_type' => 'APP'
-                    );
-                    $db->insert('poam_vulns', $data);
+
+                if (!$fileReceived) {
+                    $errorString .= "File upload failed<br>";
                 }
-                foreach ($unifiedData['vulnerabilities']['cve'] as $i => $v) {
-                    if (!empty($v)) {
-                        $poamVulns = array(
-                            'poam_id' => $poamIds[$i],
-                            'vuln_seq' => $v,
-                            'vuln_type' => 'CVE'
-                        );
-                        $db->insert('poam_vulns', $poamVulns);
-                    }
-                }
-                $this->_notification
-                      ->add(Notification::FINDING_IMPORT,
-                            $this->_me->account,
-                            'PoamIds: ' . implode(', ', $poamIds),
-                            $req->getParam('system_id'));
-                $msg = "Injection complete.";
-                $this->message($msg, self::M_NOTICE);
-            } else {
-                $msg = 'Upload file is not valid';
-                $this->message($msg, self::M_WARNING);
+
+                // Error message
+                $this->message("Scan upload failed:<br>$errorString", self::M_WARNING);
             }
         }
+
         $this->render();
     }
 }
