@@ -117,34 +117,19 @@
             <table border="0" cellpadding="3" cellspacing="1" width="98%">
                 <tr>
                     <td ><b>Estimated Completion Date:</b></td>
-                    <td > From: <input type="text" class="date" name="est_date_begin" size="12" maxlength="10" 
-                    value="<?php $ts = $this->criteria['estDateBegin'];
-                                 if($ts instanceof Zend_Date){
-                                     $ts = $ts->toString('Ymd');
-                                 }
-                             echo $ts; ?>"></td>
-                    <td > To:
-                    <input type="text" class="date" name="est_date_end" size="12" maxlength="10" 
-                    value="<?php $ts = $this->criteria['estDateEnd'];
-                                 if($ts instanceof Zend_Date){
-                                     $ts = $ts->toString('Ymd');
-                                 }
-                             echo $ts; ?>"></td>
+                    <td > From: <input type="text" class="date" name="est_date_begin" value="<?php
+                        echo isset($this->criteria['est_date_begin'])?$this->criteria['est_date_begin']:'';
+                        ?>" size="12" maxlength="10"></td>
+                    <td > To: <input type="text" class="date" name="est_date_end" value="<?php
+                        echo isset($this->criteria['est_date_end'])?$this->criteria['est_date_end']:'';
+                        ?>" size="12" maxlength="10"></td>
                     <td ><b>Date Created: </b></td>
-                    <td >From:
-                    <input type="text" class="date" name="created_date_begin" size="12" maxlength="10" 
-                    value="<?php $ts = $this->criteria['createdDateBegin'];
-                                 if($ts instanceof Zend_Date){
-                                     $ts = $ts->toString('Ymd');
-                                 }
-                             echo $ts; ?>"></td>
-                    <td > To:
-                    <input type="text" class="date" name="created_date_nnd" size="12" maxlength="10" 
-                    value="<?php $ts = $this->criteria['createdDateEnd'];
-                                 if($ts instanceof Zend_Date){
-                                     $ts = $ts->toString('Ymd');
-                                 }
-                             echo $ts; ?>"></td>
+                    <td > From: <input type="text" class="date" name="created_date_begin" value="<?php
+                       echo isset($this->criteria['created_date_begin'])?$this->criteria['created_date_begin']:'';
+                        ?>" size="12" maxlength="10"></td>
+                    <td > To: <input type="text" class="date" name="created_date_end" value="<?php
+                        echo isset($this->criteria['created_date_end'])?$this->criteria['created_date_end']:'';
+                        ?>" size="12" maxlength="10"></td>
                 </tr>
             </table>
         </td>

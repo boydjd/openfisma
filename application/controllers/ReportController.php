@@ -96,9 +96,9 @@ class ReportController extends PoamBaseController
             if (!empty($criteria['startdate']) && 
                 !empty($criteria['enddate'])) {
                 $dateBegin = new 
-                    Zend_Date($criteria['startdate'], Zend_Date::DATES);
+                    Zend_Date($criteria['startdate'], 'Y-m-d');
                 $dateEnd = new 
-                    Zend_Date($criteria['enddate'], Zend_Date::DATES);
+                    Zend_Date($criteria['enddate'], 'Y-m-d');
             }
             if (!empty($criteria['year'])) {
                 if (!empty($criteria['quarter'])) {
@@ -134,30 +134,30 @@ class ReportController extends PoamBaseController
                 'system_id' => $systemId
             );
             $aawArray = array(
-                'created_date_end' => $dateBegin,
-                'closed_date_begin' => $dateEnd
+                'createdDateEnd' => $dateBegin,
+                'closedDateBegin' => $dateEnd
             ); //or close_ts is null
             $bawArray = array(
-                'created_date_end' => $dateEnd,
-                'est_date_end' => $dateEnd,
-                'actual_date_begin' => $dateBegin,
-                'action_date_end' => $dateEnd
+                'createdDateEnd' => $dateEnd,
+                'estDateEnd' => $dateEnd,
+                'actualDateBegin' => $dateBegin,
+                'actionDateEnd' => $dateEnd
             );
             $cawArray = array(
-                'created_date_end' => $dateEnd,
-                'est_date_begin' => $dateEnd
+                'createdDateEnd' => $dateEnd,
+                'estDateBegin' => $dateEnd
             ); // and actual_date_begin is null
             $dawArray = array(
-                'est_date_end' => $dateEnd,
-                'actual_date_begin' => $dateEnd
+                'estDateEnd' => $dateEnd,
+                'actualDateBegin' => $dateEnd
             ); //or action_actual_date is null
             $eawArray = array(
-                'created_date_begin' => $dateBegin,
-                'created_date_end' => $dateEnd
+                'createdDateBegin' => $dateBegin,
+                'createdDateEnd' => $dateEnd
             );
             $fawArray = array(
-                'created_date_end' => $dateEnd,
-                'closed_date_begin' => $dateEnd
+                'createdDateEnd' => $dateEnd,
+                'closedDateBegin' => $dateEnd
             ); //or close_ts is null
             $criteriaAaw = array_merge($systemArray, $aawArray);
             $criteriaBaw = array_merge($systemArray, $bawArray);
