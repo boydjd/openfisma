@@ -94,11 +94,11 @@ class Poam extends Zend_Db_Table
                 $actualDateEnd->toString('Y-m-d'));
         }
         if (! empty($estDateBegin)) {
-            $query->where("p.action_est_date > ?",
+            $query->where("p.action_current_date > ?",
                 $estDateBegin->toString('Y-m-d'));
         }
         if (! empty($estDateEnd)) {
-            $query->where("p.action_est_date <= ?",
+            $query->where("p.action_current_date <= ?",
                 $estDateEnd->toString('Y-m-d'));
         }
         if (! empty($createdDateBegin)) {
@@ -116,6 +116,13 @@ class Poam extends Zend_Db_Table
         if (! empty($discoveredDateEnd)) {
             $query->where("p.discover_ts <=?",
                 $discoveredDateEnd->toString('Y-m-d'));
+        }
+        // mitigation strategy submit date
+        if (! empty($mssDateBegin)) {
+            $query->where("p.mss_ts >=?", $mssDateBegin->toString('Y-m-d'));
+        }
+        if (! empty($mssDateEnd)) {
+            $query->where("p.mss_ts <=?", $mssDateEnd->toString('Y-m-d'));
         }
         if (! empty($closedDateBegin)) {
             $query->where("p.close_ts > ?",
@@ -145,10 +152,7 @@ class Poam extends Zend_Db_Table
                 $query->joinLeft(array('pev' => 'poam_evaluations'), null, array())
                       ->join(array('el' => 'evaluations'), '(el.id=pev.eval_id AND el.group="ACTION")
                            ON pev.group_id = p.id', array())
-                      ->where("ISNULL(pev.id)")
-                      ->orWhere('pev.decision=\'DENIED\' AND '.
-                      'ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t '.
-                      ' WHERE t.group_id=p.id GROUP BY t.group_id)');
+                      ->where("ISNULL(pev.id) OR (pev.decision='DENIED' AND ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t WHERE t.group_id=p.id GROUP BY t.group_id))");
             }
         }
         if (isset($ep)) {

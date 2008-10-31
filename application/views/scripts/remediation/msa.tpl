@@ -34,9 +34,9 @@ function delok()
         <p><b>Mitigation Strategy Approval</b></p>
     </div>
 </div>
-<?php if ('OPEN' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_operate')) { ?>
-    <a class="button" href="<?php echo $postAction;?>/is_msa/1">Submit Mitigation Strategy</a>
-<?php } if ('EN' == $this->poam['status'] || 'EO' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_operate')) { ?>
+<?php if ('OPEN' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_submit')) { ?>
+    <a class="button" href="<?php echo $postAction;?>/is_msa/1">Submit Mitigation Strategy</a><br>
+<?php } if ('EN' == $this->poam['status'] || 'EO' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_revise')) { ?>
     <a class="button" href="<?php echo $postAction;?>/is_msa/0" onclick="return delok();">Revise Mitigation Strategy</a><br><br>
 <?php }  }
     if ($this->poam['status']!= 'NEW' && $this->poam['status']!= 'OPEN') {

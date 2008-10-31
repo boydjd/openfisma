@@ -277,7 +277,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `evaluations` (
   `id` int(10) NOT NULL auto_increment,
-  `name` varchar(32) NOT NULL,
+  `name` varchar(100) NOT NULL,
   `nickname` varchar(32) NOT NULL,
   `precedence_id` int(10) NOT NULL default '0',
   `function_id` int(10) NOT NULL,
@@ -286,8 +286,8 @@ CREATE TABLE `evaluations` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `evaluations` VALUES (1,'Mitigation Strategy Provided to ','MP_SSO',0,24,15,'ACTION');
-INSERT INTO `evaluations` VALUES (2,'Mitigation Strategy Provided to ','MP_IVV',1,92,93,'ACTION');
+INSERT INTO `evaluations` VALUES (1,'Mitigation Strategy Provided to SSO','MP_SSO',0,24,15,'ACTION');
+INSERT INTO `evaluations` VALUES (2,'Mitigation Strategy Provided to IVV','MP_IVV',1,92,93,'ACTION');
 INSERT INTO `evaluations` VALUES (3,'Evidence Provided to SSO','EP_SSO',0,25,18,'EVIDENCE');
 INSERT INTO `evaluations` VALUES (4,'Evidence Provided to SP','EP_SP',1,26,19,'EVIDENCE');
 INSERT INTO `evaluations` VALUES (5,'Evidence Provided to IVV','EP_IVV',2,27,20,'EVIDENCE');
@@ -452,7 +452,8 @@ INSERT INTO `functions` VALUES (91,'Remediation Notifications','notification','r
 INSERT INTO `functions` VALUES (90,'Asset Notifications','notification','asset','','1');
 INSERT INTO `functions` VALUES (89,'Admin Notifications','notification','admin','','1');
 INSERT INTO `functions` VALUES (92,'Mitigation Strategy Provided to IVV','remediation','update_mitigation_strategy_approval_2','','1');
-INSERT INTO `functions` VALUES (93,'Mitigation Strategy submit','remediation','mitigation_strategy_operate','','1');
+INSERT INTO `functions` VALUES (93,'Mitigation Strategy submit','remediation','mitigation_strategy_submit','','1');
+INSERT INTO `functions` VALUES (94,'Mitigation Strategy revise','remediation','mitigation_strategy_revise','','1');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `ldap_config` (
@@ -548,9 +549,10 @@ CREATE TABLE `poams` (
   `create_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `discover_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `modify_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `mss_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `close_ts` datetime default '0000-00-00 00:00:00',
   `type` enum('NONE','CAP','FP','AR') NOT NULL default 'NONE',
-  `status` enum('PEND','NEW','OPEN','EN','EP','ES','CLOSED','DELETED') NOT NULL default 'NEW',
+  `status` enum('PEND','NEW','OPEN','MSA','EN','EP','CLOSED','DELETED') NOT NULL default 'NEW',
   `is_repeat` tinyint(1) default NULL,
   `finding_data` text NOT NULL,
   `previous_audits` text,
@@ -858,6 +860,7 @@ SET character_set_client = @saved_cs_client;
 INSERT INTO `schema_version` VALUES (26);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+INSERT INTO `schema_version` VALUES (28);
 CREATE TABLE `sources` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -982,4 +985,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (28);
+INSERT INTO schema_version (schema_version) VALUES (29);
