@@ -1,0 +1,98 @@
+OpenFISMA uses jQuery which is a fast and concise JavaScript Library that 
+simplifies HTML document traversing, event handling, animating, and Ajax 
+interactions for rapid web development. jQuery provides a very lightweight
+footprint, is CSS3 Compliant, and provides built-in Cross-browser support.
+
+OpenFISMA also relies on the jQuery UI which provides abstractions for 
+low-level interaction and high-level, themeable widgets, built on top of 
+the jQuery JavaScript Library, that you can use to build highly interactive 
+web applications.
+
+You can learn more about jQuery at http://www.jquery.com
+You can learn more about jQuery UI at http://ui.jquery.com
+
+===========================================================================
+File Contents
+===========================================================================
+jquery-1.2.6.min.js - Compressed jQuery core library
+jquery-ui-personalized-1.6rc2.min.js - Compressed jQuery UI library
+jquery.form.js - ????
+jquery.validate.js - ?????
+remediation_edit.js - ?????
+
+jQuery UI features a wide range of core interaction plugins as well as many 
+UI widgets. It's possible to use components individually. OpenFISMA 
+currently uses the following UI features:
+
+Core
+------------------------------------------------------------------------------
+The Core is a required dependency for all other plugins and contains basic 
+functions and initializers.
+
+  UI Core - The core of jQuery UI, required for all interaction modules
+            and widgets
+
+Interaction 
+------------------------------------------------------------------------------
+The core of the library revolves around different interaction modules, some 
+of them required by most of the widgets.
+
+  Draggable  - Makes any element on the page drag and droppable. 
+  Droppable  - Generated drop targets for draggable elements.
+  Sortable   - Makes a list of items sortable.
+  Selectable - Makes a list of elements mouse selectable by dragging a box or
+               clicking on them. 
+  Resizable  - Makes any element on the page resizable. Optionally uses 
+               themes.
+
+Widgets 
+------------------------------------------------------------------------------
+On top of the core interaction modules are built a number of reusable widgets 
+with a graphical representation and support for themes.
+
+  Accordion    - Creates a accordion effect from existing markup, like seen
+                 on apple.com 
+  #Autocomplete - Autocompletes a text input with remote or local data. 
+  #Colorpicker  - Colorpicker that can be attached to a input or be displayed
+                 inline. 
+  Dialog       - Opens existing markup in a draggable and resizable dialog. 
+  Datepicker   - A datepicker that can be toggled from a input or displayed
+                 inline.
+  #Magnifier    - Creates a similar effect than the OSX Dock, but highly
+                 configurable.
+  #Progressbar  - A status indicator that can be used for a loading state and
+                 standard percentage indicators.
+  Slider       - A flexible slider with multiple ranges and accessibility
+                 via keyboard.
+  Spinner      - A spinner form component that allows to spin through values. 
+  Tabs         - Transforms a set of container elements into a tab structure.
+
+Effects
+------------------------------------------------------------------------------
+Rich effects that assist certain widgets and can be used standalone 
+(Without jQuery UI's core).
+
+  Effects Core       - Extends the internal jQuery effects, includes morphing, 
+                       easing and is required by all other effects.
+  Effect "Blind"     - Blinds the element. 
+  Effect "Bounce"    - Bounces an element horizontally or vertically n-times.
+  Effect "Clip"      - Clips the element on and off like an old TV.
+  Effect "Drop"      - A Drop out effect by moving the element in one direction 
+                       and hiding it at the same time.
+  Effect "Explode"   - The element explodes in all directions into n pieces. 
+                       Also supports imploding again.
+  Effect "Fold"      - Folds the element first horizontally and then vertically.
+  Effect "Highlight" - Highlights the background of the element in a defined 
+                       color for a custom duration.
+  Effect "Pulsate"   - The element pulsates n times by changing the opacity to 
+                       zero and back.
+  Effect "Scale"     - Grow or shrink any element and it's content and restore 
+                       it again.
+  Effect "Shake"     - Shakes the element horizontally or vertically n times.
+  Effect "Slide"     - The element slides in and out of the viewport.
+  Effect "Transfer"  - Transfer effect from one element to another
+
+
+TODO - Review functionality list and trim to used values only. Items marked
+with a # are not included in the current packed version of the UI. Recommend
+adding autocomplete and removing unecessary effects and widgets.
