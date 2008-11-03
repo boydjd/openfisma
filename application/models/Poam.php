@@ -145,24 +145,23 @@ class Poam extends Zend_Db_Table
                 $query->joinLeft(array('pev'=>'poam_evaluations'), 'p.id = pev.group_id', array())
                       ->joinLeft(array('el'=>'evaluations'), 'el.id=pev.eval_id', array())
                       ->where("el.precedence_id='$mp' AND pev.decision='APPROVED'")
-                      ->where(
-                      'ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t '.
+                      ->where('ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t '.
                       ' WHERE t.group_id=p.id GROUP BY t.group_id)');
             } else { //$mp == 0
                 $query->joinLeft(array('pev' => 'poam_evaluations'), null, array())
                       ->join(array('el' => 'evaluations'), '(el.id=pev.eval_id AND el.group="ACTION")
                            ON pev.group_id = p.id', array())
-                      ->where("ISNULL(pev.id) OR (pev.decision='DENIED' AND ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t WHERE t.group_id=p.id GROUP BY t.group_id))");
+                      ->where("ISNULL(pev.id) OR (pev.decision='DENIED' AND ROW(p.id,pev.id)= ".
+                      "(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t WHERE t.group_id=p.id ".
+                      "GROUP BY t.group_id))");
             }
         }
         if (isset($ep)) {
             $query->where("p.status='EP'");
             if ($ep > 0) {
                 $ep --;
-                $query->join(
-                    array('e' => new Zend_Db_Expr("(SELECT MAX(id) as last_eid,
-                                                    poam_id FROM evidences GROUP BY poam_id)")), 
-                          'e.poam_id=p.id', array())
+                $query->join(array('e' => new Zend_Db_Expr("(SELECT MAX(id) as last_eid, poam_id ".
+                                   "  FROM evidences GROUP BY poam_id)")), 'e.poam_id=p.id', array())
                     ->joinLeft(array('pev' => 'poam_evaluations'), 'e.last_eid=pev.group_id', array())
                     ->joinLeft(array('el' => 'evaluations'), 'el.id=pev.eval_id', array())
                     ->join(array('ev' => new Zend_Db_Expr("(

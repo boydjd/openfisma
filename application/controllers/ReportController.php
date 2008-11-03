@@ -329,8 +329,7 @@ class ReportController extends PoamBaseController
             }
             
             // Search for overdue items according to the criteria
-            $list = $this->_poam->search(
-                $this->_me->systems,
+            $list = $this->_poam->search($this->_me->systems,
                 array(
                     'id',
                     'finding_data',
@@ -350,8 +349,7 @@ class ReportController extends PoamBaseController
                 ),
                 $criteria,
                 $this->_paging['currentPage'],
-                $this->_paging['perPage']
-            );
+                $this->_paging['perPage']);
                 
             // Last result is the total
             $total = array_pop($list);

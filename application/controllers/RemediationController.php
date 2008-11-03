@@ -285,15 +285,15 @@ class RemediationController extends PoamBaseController
                                               ->where('nickname = ?', $criteria['status']);
                 $ret = $evaluation->fetchRow($query)->toArray();
                 if (!empty($ret)) {
-                    $precedence_id = $ret['precedence_id'];
+                    $precedenceId = $ret['precedence_id'];
                     $group = $ret['group'];
                     if ('ACTION' == $group) {
                         $internalCrit['status'] = 'MSA';
-                        $internalCrit['mp']     = $precedence_id;
+                        $internalCrit['mp']     = $precedenceId;
                     }
                     if ('EVIDENCE' == $group) {
                         $internalCrit['status'] = 'EP';
-                        $internalCrit['ep']     = $precedence_id;
+                        $internalCrit['ep']     = $precedenceId;
                     }
                 }
             }
