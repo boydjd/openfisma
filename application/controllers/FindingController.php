@@ -576,7 +576,7 @@ template. Please update your CSV file and try again.<br />";
                 $poam = new Poam();
                 $poam->delete("id IN ($inString)");
             }
-            $this->_forward('approve', 'Finding');
         }
+        $this->_forward('approve', 'Finding');
     }
 }
