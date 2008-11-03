@@ -436,7 +436,13 @@ class RemediationController extends PoamBaseController
                         $mss[$i+1] = $msEvallist;
                     } else {
                         if ($row['precedence_id'] < count($msEvallist)-1 ) {
-                            $lastEval = array_slice($msEvallist, count($msEvallist)-1-$row['precedence_id']);
+                            // count($msEvallist)-1 is the max precedence_id
+                            $flag = count($msEvallist)-1-$row['precedence_id'];
+                            if ($flag == 1) {
+                                $lastEval = array_slice($msEvallist, -1);
+                            } else {
+                                $lastEval = array_slice($msEvallist, $flag-1);
+                            }
                             foreach ($lastEval as $v) {
                                 $mss[$i][] = $v;
                             }
