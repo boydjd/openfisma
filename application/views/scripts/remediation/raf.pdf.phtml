@@ -84,9 +84,18 @@
     $data = array(array('<b>Risk Analysis</b>'));
     $pdf->ezTable($data, null, null, $headerOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
+    if ($act_owner['security_categorization'] == 'HIGH') {
+        $effect = 'severe or catastrophic';
+    }
+    if ($act_owner['security_categorization'] == 'MODERATE') {
+        $effect = 'serious';
+    }
+    if ($act_owner['security_categorization'] == 'LOW') {
+        $effect = 'limited';
+    }
     $data = array(array("", "<b><i>Security Categorization</i></b>"),
-                  array("<b>Security Categorization:</b>", $organization['security_categorization']),
-                  array("<b>Security Categorization Description:</b>", "The loss of confidentiality, integrity, or availability could be expected to have a serious adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data."));
+                  array("<b>Security Categorization:</b>", $act_owner['security_categorization']),
+                  array("<b>Security Categorization Description:</b>", "The loss of confidentiality, integrity, or availability could be expected to have a ".$effect." adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data."));
     $pdf->ezTable($data, null, null, $labelOptions);
 
     $data = array(array("", "<b><i>Overall likelihood Rating</i></b>"));

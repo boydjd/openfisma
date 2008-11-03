@@ -151,8 +151,19 @@ table.rafImpact td {
     <tr>
         <td width="40%">Security Categorization:</td><td width="60%"><?php echo $act_owner['security_categorization'];?></td>
     </tr>
+    <?php
+        if ($act_owner['security_categorization'] == 'HIGH') {
+            $effect = 'severe or catastrophic';
+        }
+        if ($act_owner['security_categorization'] == 'MODERATE') {
+            $effect = 'serious';
+        }
+        if ($act_owner['security_categorization'] == 'LOW') {
+            $effect = 'limited';
+        }
+    ?>
     <tr>
-        <td>Security Categorization Description:</td><td>The loss of confidentiality, integrity, or availability could be expected to have a serious adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data.</td>
+        <td>Security Categorization Description:</td><td>The loss of confidentiality, integrity, or availability could be expected to have a <?php echo $effect;?> adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data.</td>
     </tr>
     <tr>
         <td colspan="2" align="center"><b><i>Overall likelihood Rating</i></b></td>
