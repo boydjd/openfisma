@@ -70,6 +70,7 @@ class RemediationController extends PoamBaseController
         $criteria['systemId'] = $this->_request->getParam('system_id');
         $criteria['sourceId'] = $this->_request->getParam('source_id');
         $criteria['assetOwner'] = $this->_request->getParam('asset_owner', 0);
+        $criteria['notStatus'] = 'PEND'; //exclude pending findings from the search criteria
         
         $criteriaUrl = '';
         if (!empty($criteria['sourceId'])) {

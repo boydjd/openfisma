@@ -43,6 +43,9 @@ class Poam extends Zend_Db_Table
         if (is_array($where)) {
             extract($where);
         }
+        if (isset($notStatus)) {
+            $query->where("status <> ?", $notStatus);
+        }
         if (! empty($id)) {
             $query->where("p.id = ?", $id);
         }
