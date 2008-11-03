@@ -204,7 +204,8 @@ class Inject_AppDetective extends Inject_Abstract
             
             // Now persist the finding
             $findingTable = new Finding();
-            $findingTable->insert($finding);
+            $id = $findingTable->insert($finding);
+            $findingTable->checkForDuplicate($id);
         }
         
         return count($this->_findings);

@@ -476,7 +476,6 @@ template. Please update your CSV file and try again.<br />";
                                ->addValidator('Extension', false, 'xml');
 
         // Setup the view
-        $this->_helper->actionStack('header', 'Panel');
         $this->view->assign('uploadForm', $uploadForm);
 
         // Handle the file upload, if necessary
@@ -532,5 +531,52 @@ template. Please update your CSV file and try again.<br />";
         }
 
         $this->render();
+    }
+    
+    /** 
+     * approveAction() - Allows a user to approve or delete pending findings
+     *
+     * @todo Use Zend_Pager
+     */
+    public function approveAction() {
+        Config_Fisma::requirePrivilege('finding', 'approve');
+        
+        $db = Zend_Registry::get('db');
+        $findings = $db->fetchAll(
+            "SELECT p.id, 
+                    p.finding_data, 
+                    p.duplicate_poam_id,
+                    s.nickname                    
+               FROM poams p
+         INNER JOIN systems s ON p.system_id = s.id
+              WHERE status = 'PEND' 
+           ORDER BY system_id,
+                    id
+        ");
+        
+        $this->view->assign('findings', $findings);
+        $this->render();
+    }
+    
+    /**
+     * processApprovalAction() - Process the form submitted from the approveAction()
+     *
+     * @todo Add audit logging
+     */
+    public function processApprovalAction() {
+        $db = Zend_Registry::get('db');
+        $post = $this->getRequest()->getPost();
+        if (isset($post['findings'])) {
+            $inString = mysql_real_escape_string(implode(',', $post['findings']));
+            if (isset($_POST['approve_selected'])) {
+                $poam = new Poam();
+                $now = new Zend_Db_Expr('now()');
+                $poam->update(array('status' => 'NEW', 'create_ts' => $now), "id IN ($inString)");
+            } elseif (isset($_POST['delete_selected'])) {
+                $poam = new Poam();
+                $poam->delete("id IN ($inString)");
+            }
+            $this->_forward('approve', 'Finding');
+        }
     }
 }

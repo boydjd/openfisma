@@ -1,0 +1,37 @@
+<div class="barleft">
+    <div class="barright">
+        <p><b>Approve Pending Findings</b></p>
+    </div>
+</div>
+
+<form method="POST" action="/panel/finding/sub/process-approval">
+    <table>
+        <tr>
+            <th>Select</th>
+            <th>Id</th>
+            <th>System</th>
+            <th>Description</th>
+            <th>Duplicate</th>
+        </tr>
+<?php
+    foreach ($this->findings as $finding) {
+        print "<tr><td><input type=\"checkbox\" name=\"findings[]\" value=\"{$finding['id']}\"></td>";
+        print "<td><a href=\"/panel/remediation/sub/view/id/{$finding['id']}\">{$finding['id']}</a></td>";
+        print "<td>{$finding['nickname']}</td>";
+        print "<td>{$finding['finding_data']}</td>";
+        print "<td>";
+        if (isset($finding['duplicate_poam_id'])) {
+            print "<a href=\"/panel/remediation/sub/view/id/{$finding['duplicate_poam_id']}\">{$finding['duplicate_poam_id']}</a>";
+        } else {
+            print "&nbsp;";
+        }
+        print "</td>";
+        print "</tr>";
+    }
+?>
+    </table>
+    <input type="button" name="select_all" value="Select All">
+    <input type="button" name="select_none" value="Select None">
+    <input type="submit" name="delete_selected" value="Delete Selected">
+    <input type="submit" name="approve_selected" value="Approve Selected">
+</form>

@@ -32,8 +32,11 @@
         }
         if(Config_Fisma::isAllow('finding','create')) {
             echo'<li><a href="/panel/finding/sub/create">Create New Finding</a>';
-            echo'<li><a href="/finding/injection">Upload Spreadsheet</a>';
-            echo'<li><a href="/finding/plugin">Upload Scan Results</a>';
+            echo'<li><a href="/panel/finding/sub/injection">Upload Spreadsheet</a>';
+            echo'<li><a href="/panel/finding/sub/plugin">Upload Scan Results</a>';
+        }
+        if (Config_Fisma::hasPrivilege('finding', 'approve')) {
+            echo'<li><a href="/panel/finding/sub/approve">Approve Injected Findings</a>';            
         }
         echo '</ul>
              </li></ul>';

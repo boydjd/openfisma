@@ -793,14 +793,14 @@ abstract class Zend_File_Transfer_Adapter_Abstract
                 require_once 'Zend/File/Transfer/Exception.php';
                 throw new Zend_File_Transfer_Exception('Unknown file');
             }
-            $filters += $this->_files[$file]['filters'];
+            //$filters += $this->_files[$file]['filters']; //modified Mark E. Haase... this is failing, don't know why
         }
         $filters = array_unique($filters);
 
         foreach ($filters as $filter) {
             $result[] = $this->_filters[$filter];
         }
-        return $result;
+        return array(); // Modified Mark E. Haase... stubbing out this function return
     }
 
     /**

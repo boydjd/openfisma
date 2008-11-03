@@ -454,6 +454,7 @@ INSERT INTO `functions` VALUES (89,'Admin Notifications','notification','admin',
 INSERT INTO `functions` VALUES (92,'Mitigation Strategy Provided to IVV','remediation','update_mitigation_strategy_approval_2','','1');
 INSERT INTO `functions` VALUES (93,'Mitigation Strategy submit','remediation','mitigation_strategy_submit','','1');
 INSERT INTO `functions` VALUES (94,'Mitigation Strategy revise','remediation','mitigation_strategy_revise','','1');
+INSERT INTO `functions` VALUES (95,'Approve Injected Findings','finding','approve','','1');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `ldap_config` (
@@ -574,6 +575,7 @@ CREATE TABLE `poams` (
   `threat_source` text,
   `threat_level` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
   `threat_justification` text,
+  `duplicate_poam_id` int(11) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
@@ -664,6 +666,7 @@ INSERT INTO `role_functions` VALUES (7,66);
 INSERT INTO `role_functions` VALUES (7,70);
 INSERT INTO `role_functions` VALUES (7,71);
 INSERT INTO `role_functions` VALUES (7,77);
+INSERT INTO `role_functions` VALUES (7,95);
 INSERT INTO `role_functions` VALUES (8,1);
 INSERT INTO `role_functions` VALUES (8,2);
 INSERT INTO `role_functions` VALUES (8,6);
@@ -677,6 +680,7 @@ INSERT INTO `role_functions` VALUES (8,34);
 INSERT INTO `role_functions` VALUES (8,35);
 INSERT INTO `role_functions` VALUES (8,39);
 INSERT INTO `role_functions` VALUES (8,40);
+INSERT INTO `role_functions` VALUES (8,95);
 INSERT INTO `role_functions` VALUES (10,1);
 INSERT INTO `role_functions` VALUES (10,2);
 INSERT INTO `role_functions` VALUES (10,3);
@@ -732,6 +736,7 @@ INSERT INTO `role_functions` VALUES (10,85);
 INSERT INTO `role_functions` VALUES (10,86);
 INSERT INTO `role_functions` VALUES (10,87);
 INSERT INTO `role_functions` VALUES (10,88);
+INSERT INTO `role_functions` VALUES (10,95);
 INSERT INTO `role_functions` VALUES (11,1);
 INSERT INTO `role_functions` VALUES (11,2);
 INSERT INTO `role_functions` VALUES (11,3);
@@ -857,10 +862,9 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (26);
+INSERT INTO `schema_version` VALUES (29);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-INSERT INTO `schema_version` VALUES (28);
 CREATE TABLE `sources` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -985,4 +989,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (29);
+INSERT INTO schema_version (schema_version) VALUES (30);

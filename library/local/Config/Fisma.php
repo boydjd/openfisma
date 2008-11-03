@@ -182,6 +182,48 @@ class Config_Fisma
         return $this->_log;
     }
 
+    /**
+     * hasPrivilege() - Returns true if the current user has the specified privilege. 
+     * This static function deprecates the isAllow function().
+     *
+     * @todo Move into new Auth class
+     */
+    public static function hasPrivilege($screen, $action) 
+    {
+        $auth = Zend_Auth::getInstance();
+        $me = $auth->getIdentity();
+        if ( $me->account == "root" ) {
+            return true;
+        }
+        $roleArray = &$me->roleArray;
+        $acl = Zend_Registry::get('acl');
+        try{
+            foreach ($roleArray as $role) {
+                if ( true == $acl->isAllowed($role, $screen, $action) ) {
+                    return true;
+                }
+            }
+        } catch(Zend_Acl_Exception $e){
+            /// @todo acl log information
+        }
+        return false;        
+    }
+
+    /**
+     * requirePrivilege() - Determine if the current user has the specified privilege. If the user does not have
+     * the specified privilege, then the user is redirected to the dashboard.
+     * 
+     * @todo Move into new Auth class
+     * @todo What is the ZF way to do this?
+     */
+    public static function requirePrivilege($screen, $action) 
+    {
+        if (!self::hasPrivilege($screen, $action)) {
+            header('Location: /panel/dashboard');
+        }
+    }
+
+
     /** 
         Exam the Acl of the existing logon user to decide permission or denial.
 

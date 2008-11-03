@@ -72,5 +72,40 @@ class Finding extends Poam
         }
         return $ret;
     }
+    
+    /**
+     * checkForDuplicate() - Compares a finding to all previous findings to see if any appear
+     * to be duplicates. If so, the function updates the duplicate_poam_id field of the new finding
+     * and returns the id of the original finding.
+     * 
+     * If there are more than 2 findings with the same description, then the function
+     * returns the id of the oldest one.
+     *
+     * @param int $id
+     * @return int The id of the original or null if no duplicates are found
+     */
+    public function checkForDuplicate($id) {
+        $db = $this->getAdapter();
+        $id = $db->quote($id);
+        $results = $db->fetchAll(
+            "SELECT old_poam.id
+               FROM poams old_poam
+         INNER JOIN poams new_poam 
+                 ON old_poam.id <> new_poam.id
+                AND old_poam.finding_data LIKE new_poam.finding_data
+              WHERE new_poam.id = $id
+           ORDER BY old_poam.id"
+        );
+        
+        // If any rows are found, then return the id of the first (it is the oldest)
+        if (isset($results[0])) {
+            $duplicatePoamId = $results[0]['id'];
+            $poam = new Poam();
+            $poam->update(array('duplicate_poam_id' => $duplicatePoamId), "id = $id");
+            return $duplicatePoamId;
+        } else {
+            return null;
+        }
+    }
 }
 
