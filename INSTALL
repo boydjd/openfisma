@@ -1,4 +1,3 @@
-
 ============================================================================
     OpenFISMA INSTALLATION INSTRUCTIONS
 ============================================================================
@@ -30,10 +29,10 @@ Unzip the files you just downloaded
  $ tar -xvf openfisma-x.x.x.tgz
 
 You should now have a directory structure which looks like the following
-  > apps - folder that holds OpenFISMA application 
-  > public - public folder or document root for webserver
-  > vendor - third party modules used by OpenFISMA
-  > log - log files created by OpenFISMA
+  > application - folder that holds OpenFISMA application 
+  > public      - public folder or document root for webserver
+  > library     - third party modules used by OpenFISMA
+  > data        - holds log files and other data created by OpenFISMA
 
 Next you will need to tell Apache where the public directory of OpenFISMA
 resides. Apache configuration is different on almost all flavors of unix
@@ -41,46 +40,76 @@ but the configuration file below should only require minimal changes to
 get you up and running. You will need to customize the server name to 
 the appropriate name and validate that the path for the error logs is 
 correct. 
-  
-    # Virtual Host for Reyosoft Development and Testing
-    <VirtualHost *:80>
-		# sets the hostname of the server
-		Servername www.openfisma.org
-		# sets the directory from which apache will serve files
-		DocumentRoot "/opt/openfisma/public"
-		# sets the name of the file to which the server will log any errors it encounters
-		ErrorLog /var/log/apache2/openfisma-error.log
-		# sets the name of the file to which the server will log information to
-		CustomLog /var/log/apache2/openfisma-access.log common
-		<IfModule mod_php5.c>
-			# Disables allow_url_fopen
-			php_admin_flag allow_url_fopen Off
-			# Disables allow_url_include
-			php_admin_flag allow_url_include Off
-			# Enable PHP stealth mode
-			php_admin_flag expose_php Off
-		</IfModule>
-		<Directory "/opt/openfisma/public">
-			AllowOverride All
-			Options FollowSymLinks
-			Allow from all
-		</Directory>
-	</VirtualHost>
 
-The following files need to be writeable for the installation script 
-to run. 
-	
-    /apps/config/install.conf
+# Virtual Host for serving SSL access to OpenFISMA
+NameVirtualHost *:80
+
+<VirtualHost *:80>
+   # EDIT THIS ENTRY!
+   # Hostname and port that the server uses to identify itself
+   # ServerName fully-qualified-domain-name[:port]
+   ServerName openfisma.example.gov
+
+   # Instructs apache to remove Trace and Track messages from the
+   # header response.
+   RewriteEngine on
+   RewriteCond %{REQUEST_METHOD} ^TRAC(E|K)
+   RewriteRule .* - [F]
+   TraceEnable off
+
+   # Sets the Document Root for apache to serve files
+   DocumentRoot "/opt/openfisma/public"
+
+   # Sets the permissions on the document root directory
+   <Directory "/opt/openfisma/public">
+     <LimitExcept GET POST>
+        deny from all
+     </LimitExcept>
+    Order allow,deny
+    allow from all
+
+    # Instructs Apache to (1) not list directory contents, (2) not follow 
+    # symbolic links, (3) disables server side includes, and (4) disables
+    # content negotiation
+    Options -Indexes -FollowSymLinks -Includes -Multiviews
+
+    # Allow Options to be specified in .htaccess files which override
+    # any settings defined here.
+    AllowOverride Options
+
+    </Directory>
+    
+    # sets the name of the file to which the server will log any errors it encounters
+    ErrorLog /var/log/apache2/openfisma-error.log
+    # sets the name of the file to which the server will log information to
+    CustomLog /var/log/apache2/openfisma-access.log common
+
+    <IfModule mod_php5.c>
+        # Disables allow_url_fopen
+        php_admin_flag allow_url_fopen Off
+        # Disables allow_url_include
+        php_admin_flag allow_url_include Off
+        # Enable PHP stealth mode
+        php_admin_flag expose_php Off
+    </IfModule>
+    
+</VirtualHost>
+  
+
+The following files and directories need to be writeable for the 
+installation script to run. 
+
+    /application/config/install.conf
     /public/evidence
-	/public/temp
-    /log
+    /public/temp
+    /data
 
 To accomplish this we will run the following commands.
 
-   $ chmod 777 /opt/openfisma/apps/config/install.conf
+   $ chmod 777 /opt/openfisma/application/config/install.conf
    $ chmod 777 /opt/openfisma/public/evidence
    $ chmod 777 /opt/openfisma/public/temp
-   $ chmod 777 /opt/openfisma/log
+   $ chmod 777 -R /opt/openfisma/data
   
 If all has gone well, you will be able to run the installation script
 from your browser at http://<server_name>/. Follow the wizard through

@@ -51,6 +51,9 @@ $IPTABLES --delete-chain
 $IPTABLES -t nat --delete-chain
 $IPTABLES -t mangle --delete-chain
 
+echo "Allow all local connections"
+$IPTABLES --append INPUT -i lo -j ACCEPT
+
 echo "Loading rules to reject packets from RFC1918 class networks (i.e., spoofed)"
 $IPTABLES --append INPUT --source 10.0.0.0/8 -j DROP
 $IPTABLES --append INPUT --source 169.254.0.0/16 -j DROP
@@ -100,7 +103,6 @@ $IPTABLES --append INPUT --source 66.212.16.0/20 -j DROP
 $IPTABLES --append INPUT --source 66.212.18.0/24 -j DROP
 $IPTABLES --append INPUT --source 66.199.224.0/19 -j DROP
 $IPTABLES --append INPUT --source 193.0.0.0/8 -j DROP
-$IPTABLES --append INPUT --source 80.0.0.0/8 -j DROP
 $IPTABLES --append INPUT --source 72.232.0.0/16 -j DROP
 $IPTABLES --append INPUT --source 72.233.0.0/17 -j DROP
 $IPTABLES --append INPUT --source 87.0.0.0/8 -j DROP 
@@ -125,9 +127,6 @@ $IPTABLES --append INPUT --source 211.152.35.213 -j ACCEPT
 echo "Allow everything related to an already established input connection"
 $IPTABLES --append INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-echo "Allow all local connections"
-$IPTABLES --append INPUT -i lo -j ACCEPT
-
 echo "Allow most ICMP packets but protect from ping flood attacks"
 $IPTABLES --append INPUT --protocol icmp -m icmp --icmp-type address-mask-request -j DROP
 $IPTABLES --append INPUT --protocol icmp -m icmp --icmp-type timestamp-request -j DROP
@@ -150,12 +149,8 @@ $IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DR
 $IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags FIN,ACK FIN -j DROP
 $IPTABLES --append INPUT --protocol tcp -m tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
 
-echo "SSH Brute Force Defense, Limit SSH connections to 3 per minute"
-$IPTABLES --append INPUT --protocol tcp --destination-port ssh --syn -m limit --limit 1/m --limit-burst 3 -j ACCEPT
-$IPTABLES --append INPUT --protocol tcp --destination-port ssh --syn -j DROP
-
-echo "Allow http, https, and mysql connections"
-$IPTABLES --append INPUT --protocol tcp -m multiport --destination-port http,https,3306,8080 -j ACCEPT
+echo "Allow ssh, http, https, and mysql connections"
+$IPTABLES --append INPUT --protocol tcp -m multiport --destination-port ssh,http,https,3306,8080 -j ACCEPT
 
 echo "Drop all other packets"
 $IPTABLES --append INPUT -j DROP

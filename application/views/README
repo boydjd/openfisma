@@ -1,0 +1,20 @@
+view scripts are found in application/views/scripts/; the view script for 
+the default controller and action is in 
+application/views/scripts/index/index.phtml.
+
+When determining the view script name and path, the views/scripts/ directory 
+will be used as the base path, with a directories named after the individual 
+controllers providing a hierarchy of view scripts.
+
+By default, the ViewRenderer action helper is enabled. What this means is 
+that by simply defining an action method and a corresponding view script, 
+you will immediately get content rendered. By default, Zend_View is used 
+as the View layer in the MVC. The ViewRenderer does some magic, and uses 
+the controller name (e.g., index) and the current action name (e.g., index) 
+to determine what template to pull. By default, templates end in the .phtml 
+extension, so this means that, in the above example, the template 
+index/index.phtml will be rendered. Additionally, the ViewRenderer 
+automatically assumes that the directory views at the same level as the 
+controller directory will be the base view directory, and that the actual 
+view scripts will be in the views/scripts/ subdirectory. Thus, the template 
+rendered will be found in application/views/scripts/index/index.phtml. 
