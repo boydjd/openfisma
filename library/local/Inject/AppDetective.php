@@ -33,13 +33,13 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License\
  *
- * @todo Review requirements to determing if vulnerability and/or product mapping is required.
+ * @todo Add audit logging
  */
 class Inject_AppDetective extends Inject_Abstract
 {
     private $_asset;
+    private $_product;
     private $_findings;
-    private $_vulnerabilities;
     
     /**
      * parse() - Implements the required function in the Inject_Abstract interface. This parses the report and commits
@@ -55,6 +55,7 @@ class Inject_AppDetective extends Inject_Abstract
         
         // Apply mapping rules
         $this->_asset = $this->_mapAsset($report);
+        $this->_product = $this->_mapProduct($report);
         $this->_findings = $this->_mapFindings($report);
 
         // Commit all data
@@ -71,17 +72,17 @@ class Inject_AppDetective extends Inject_Abstract
      * @param SimpleXMLElement $report The full AppDetective report
      * @return array Asset information
      */
-    private function _mapAsset($report) {
+    private function _mapAsset($report)
+    {
         // Asset information is parsed out of the appName field.
         // There should only be 1 appName field in the entire report.
         $asset = array();
-        $reportAppName = $report->xpath('//root/root_header/appName');
+        $reportAppName = $report->xpath('/root/root_header/appName');
         if (count($reportAppName) == 1) {
             $reportAppName = $reportAppName[0];
         } else {
             throw new Exception_InvalidFileFormat('Expected 1 appName field, but found ' . count($reportAppName));
         }
-        $reportAppName = $reportAppName[0];
         $asset['name'] = $reportAppName;
         
         // Parse out IP Address
@@ -101,10 +102,12 @@ class Inject_AppDetective extends Inject_Abstract
             );
         }
         $asset['address_port'] = $port[1]; // match the parenthesized part of the regex
-        
+
+        // Remaining mappings
         $asset['network_id'] = $this->_networkId;
         $asset['system_id'] = $this->_systemId;
         $asset['create_ts'] = new Zend_Date();
+        $asset['source'] = 'SCAN';
         
         // Verify whether asset exists or not
         $asset['id'] = Asset::getAssetId($asset['network_id'],
@@ -112,6 +115,36 @@ class Inject_AppDetective extends Inject_Abstract
                                          $asset['address_port']);
         
         return $asset;
+    }
+
+    /**
+     * _mapProduct() - Performs mapping rules for the product object. If the asset does not already have a product
+     * defined, then create a new product. If the asset does have a product but the CPE is not defined, then
+     * update the CPE but do not change any other fields.
+     *
+     * @param SimpleXMLElement $report The full AppDetective report
+     * @return array Product information
+     */
+    private function _mapProduct($report)
+    {
+        // Product information is parsed out of the cpe-item field
+        // There should only be 1 cpe-item field in the entire report.
+        $product = array();
+        $reportCpeItem = $report->xpath("/root/root_header/*[name()='cpe-item']");
+        if (count($reportCpeItem) == 1) {
+            $reportCpeItem = $reportCpeItem[0];
+        } else {
+            throw new Exception_InvalidFileFormat('Expected 1 cpe-item field, but found ' . count($reportCpeItem));
+        }
+        $product['name'] = $reportCpeItem->title;
+        $product['cpe_name'] = $reportCpeItem->attributes()->name;
+
+        // Create a CPE object and use that to map the remaining fields
+        $cpe = new Cpe($product['cpe_name']);
+        $product['vendor'] = $cpe->vendor;
+        $product['version'] = $cpe->version;
+
+        return $product;
     }
     
     /**
@@ -121,11 +154,12 @@ class Inject_AppDetective extends Inject_Abstract
      * @param SimpleXMLElement $report The full AppDetective report
      * @return array An array of arrays contain one row for each new finding
      */
-    private function _mapFindings($report) {
+    private function _mapFindings($report)
+    {
         $findings = array();
         
         // Parse the discovered date/time out of the testDate field
-        $testDateString = $report->xpath('//root/root_header/testDate');
+        $testDateString = $report->xpath('/root/root_header/testDate');
         if (count($testDateString) == 1) {
             $testDateString = $testDateString[0];
         } else {
@@ -144,9 +178,9 @@ class Inject_AppDetective extends Inject_Abstract
         $creationDate = new Zend_Date();
         
         // Get HIGH, MEDIUM, and LOW risk findings
-        $reportData = $report->xpath('//root/root_detail_risklevel_1/data');                           // HIGH
-        $reportData = array_merge($reportData, $report->xpath('//root/root_detail_risklevel_2/data')); // MEDIUM
-        $reportData = array_merge($reportData, $report->xpath('//root/root_detail_risklevel_3/data')); // LOW
+        $reportData = $report->xpath('/root/root_detail_risklevel_1/data');                           // HIGH
+        $reportData = array_merge($reportData, $report->xpath('/root/root_detail_risklevel_2/data')); // MEDIUM
+        $reportData = array_merge($reportData, $report->xpath('/root/root_detail_risklevel_3/data')); // LOW
         
         // Iterate over all discovered findings
         foreach ($reportData as $reportFinding) {
@@ -188,13 +222,24 @@ class Inject_AppDetective extends Inject_Abstract
      *
      * @todo This function needs to wrap a transaction around its queries
      */
-    private function _commit() {
+    private function _commit()
+    {
         // If the asset id is null, then create a new asset with the specified asset information. Save the asset Id
         // in order to persist the findings.
         $assetId = $this->_asset['id'];
         if (!isset($assetId)) {
             $assetTable = new Asset();
             $assetId = $assetTable->insert($this->_asset);
+        }
+        $assetTable = new Asset();
+        $asset = $assetTable->find($assetId);
+
+        // If the asset does not have a product associated with it, then create a new product and associate it with the
+        // asset. Otherwise, update the product's CPE if it has not been defined yet.
+        if (!isset($asset->prodId)) {
+            $productTable = new Product();
+            $productId = $productTable->insert($this->_product);
+            $assetTable->update(array('prod_id' => $productId), "id = $assetId");
         }
 
         // Commit the findings

@@ -590,7 +590,9 @@ CREATE TABLE `products` (
   `name` varchar(64) NOT NULL default '',
   `version` varchar(32) NOT NULL default '',
   `desc` text,
-  PRIMARY KEY  (`id`)
+  `cpe_name` varchar(256) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `cpe_name` (`cpe_name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
