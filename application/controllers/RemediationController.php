@@ -67,17 +67,35 @@ class RemediationController extends PoamBaseController
      */
     public function summaryAction()
     {
-        $criteria['systemId'] = $this->_request->getParam('system_id');
-        $criteria['sourceId'] = $this->_request->getParam('source_id');
-        $criteria['assetOwner'] = $this->_request->getParam('asset_owner', 0);
+        $criteria['sourceId'] = $this->_request->getParam('source_id', 0);
+        $criteria['type'] = $this->_request->getParam('type');
         $criteria['notStatus'] = 'PEND'; //exclude pending findings from the search criteria
+        $criteria['aging'] = $this->_request->getParam('aging');
+        $criteria['created_date_begin'] = $this->_request->getParam('created_date_begin');
+        $criteria['created_date_end'] = $this->_request->getParam('created_date_end');
+
+        if (!empty($criteria['created_date_begin'])) {
+            $criteria['createdDateBegin'] = new Zend_Date($criteria['created_date_begin'], 'Y-m-d');
+        }
+        if (!empty($criteria['created_date_end'])) {
+            $criteria['createdDateEnd'] = new Zend_Date($criteria['created_date_end'], 'Y-m-d');
+        }
         
         $criteriaUrl = '';
         if (!empty($criteria['sourceId'])) {
             $criteriaUrl = '/source_id/'.$criteria['sourceId'];
         }
-        if (!empty($criteria['assetOwner'])) {
-            $criteriaUrl .='/asset_owner/'.$criteria['assetOwner'];
+        if (!empty($criteria['type'])) {
+            $criteriaUrl .='/type/'.$criteria['type'];
+        }
+        if (!empty($criteria['aging'])) {
+            $criteriaUrl .='/aging/'.$criteria['aging'];
+        }
+        if (!empty($criteria['createdDateBegin'])) {
+            $criteriaUrl .='/created_date_begin/'.$criteria['created_date_begin'];
+        }
+        if (!empty($criteria['created_date_end'])) {
+            $criteriaUrl .='/created_date_end/'.$criteria['created_date_end'];
         }
 
         $eval = new Evaluation();
@@ -97,18 +115,13 @@ class RemediationController extends PoamBaseController
         $summaryTmp = array_merge($summaryTmp, array('EN'=>0));
         $summaryTmp = array_merge($summaryTmp, $epSummaryTmp);
         $summaryTmp = array_merge($summaryTmp, array('CLOSED'=>0, 'TOTAL'=>0));
-        if ( !empty($criteria['systemId']) ) {
-            $sum = array('0' => $summaryTmp);
-            $summary = array($criteria['systemId'] => $summaryTmp);
+        // mock array_fill_key in 5.2.0
+        $count = count($this->_me->systems);
+        if ( 0 == $count ) {
+            $summary = array();
         } else {
-            // mock array_fill_key in 5.2.0
-            $count = count($this->_me->systems);
-            if ( 0 == $count ) {
-                $summary = array();
-            } else {
-                $sum = array_fill(0, $count, $summaryTmp);
-                $summary = array_combine($this->_me->systems, $sum);
-            }
+            $sum = array_fill(0, $count, $summaryTmp);
+            $summary = array_combine($this->_me->systems, $sum);
         }
         $total = $summaryTmp;
         $ret = $this->_poam->search($this->_me->systems, array(
