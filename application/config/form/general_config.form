@@ -28,15 +28,6 @@ elements.max_absent_time.options.validators.strlen.options.max = "10"
 elements.max_absent_time.options.required = true
 displayGroups.general.elements.max_absent_time = "max_absent_time"
 
-elements.failure_threshold.type = "text"
-elements.failure_threshold.options.label = "Account Lockout (0-99)"
-elements.failure_threshold.options.validators.alnum.validator = "Digits"
-elements.failure_threshold.options.validators.strlen.validator = "StringLength"
-elements.failure_threshold.options.validators.strlen.options.min = "1"
-elements.failure_threshold.options.validators.strlen.options.max = "10"
-elements.failure_threshold.options.required = true
-displayGroups.general.elements.failure_threshold = "failure_threshold"
-
 elements.expiring_seconds.type = "text"
 elements.expiring_seconds.options.label = "Session Timeout (minutes)"
 elements.expiring_seconds.options.validators.alnum.validator = "Digits"
@@ -45,24 +36,6 @@ elements.expiring_seconds.options.validators.strlen.options.min = "1"
 elements.expiring_seconds.options.validators.strlen.options.max = "10"
 elements.expiring_seconds.options.required = true
 displayGroups.general.elements.expiring_seconds = "expiring_seconds"
-
-elements.unlock_enabled.type = "checkbox"
-elements.unlock_enabled.options.label = "Automated Account Unlock"
-elements.unlock_enabled.options.validators.alnum.validator = "Digits"
-elements.unlock_enabled.options.validators.strlen.validator = "StringLength"
-elements.unlock_enabled.options.validators.between.validator = "between"
-elements.unlock_enabled.options.validators.between.options.min = "0"
-elements.unlock_enabled.options.validators.between.options.max = "1"
-displayGroups.general.elements.unlock_enabled = "unlock_enabled"
-
-elements.unlock_duration.type = "text"
-elements.unlock_duration.options.label = "Account Unlock Duration (minutes)"
-elements.unlock_duration.options.validators.alnum.validator = "Digits"
-elements.unlock_duration.options.validators.strlen.validator = "StringLength"
-elements.unlock_duration.options.validators.strlen.options.min = "1"
-elements.unlock_duration.options.validators.strlen.options.max = "10"
-elements.unlock_duration.options.required = true
-displayGroups.general.elements.unlock_duration = "unlock_duration"
 
 elements.auth_type.type = "select"
 elements.auth_type.options.label = "Authentication Method"

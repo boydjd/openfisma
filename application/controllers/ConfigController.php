@@ -79,7 +79,7 @@ class ConfigController extends SecurityController
         $configs = NULL;
         foreach ($ret as $item) {
             if (in_array($item['key'], array(Config::EXPIRING_TS, Config::UNLOCK_DURATION))) {
-                $item['value'] /= 60; //convert to hour from second
+                $item['value'] /= 60; //convert to minute from second
             }
             if (in_array($item['key'], array(Config::USE_NOTIFICATION,
                 Config::BEHAVIOR_RULE))) {
@@ -101,10 +101,7 @@ class ConfigController extends SecurityController
                         Config::SYSTEM_NAME =>0,
                         Config::MAX_ABSENT  =>0,
                         Config::AUTH_TYPE   =>0,
-                        Config::F_THRESHOLD =>0,
                         Config::EXPIRING_TS =>0,
-                        Config::UNLOCK_ENABLED =>0,
-                        Config::UNLOCK_DURATION =>0,
                         Config::USE_NOTIFICATION =>0,
                         Config::BEHAVIOR_RULE =>0,
                         Config::ROB_DURATION  =>0
@@ -337,6 +334,9 @@ class ConfigController extends SecurityController
                     unset($values['submit']);
                     unset($values['reset']);
                     foreach ($values as $k => $v) {
+                        if ($k == Config::UNLOCK_DURATION) {
+                            $v *=  60;//Convert to sencond
+                        }
                         $where = $config->getAdapter()
                             ->quoteInto('`key` = ?', $k);
                         $config->update(array('value' => $v), $where);
@@ -351,6 +351,9 @@ class ConfigController extends SecurityController
         $items = $config->getList(array('key', 'value'));
         $configs = array();
         foreach ($items as $item) {
+            if ($item['key'] == Config::UNLOCK_DURATION) {
+                $item['value'] /= 60; //convert to minute from second
+            }
             $configs[$item['key']] = $item['value'];
         }
         $form->setDefaults($configs);

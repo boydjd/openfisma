@@ -548,6 +548,7 @@ class AccountController extends PoamBaseController
             }
             $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');
             $accountData['auto_role'] = $accountData['account'].'_r';
+            $accountData['password_ts'] = self::$now->toString('Y-m-d H:i:s');
 
             $userId = $this->_user->insert($accountData);
             

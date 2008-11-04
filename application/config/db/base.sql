@@ -273,6 +273,7 @@ INSERT INTO `configurations` VALUES (24,'pass_lowercase','1','Require Lower Case
 INSERT INTO `configurations` VALUES (23,'pass_uppercase','1','Require Upper Case Characters');
 INSERT INTO `configurations` VALUES (27,'pass_min','8','Minimum Password Length');
 INSERT INTO `configurations` VALUES (28,'pass_max','64','Maximum Password Length');
+INSERT INTO `configurations` VALUES (29,'pass_expire','90','Password Expiration days');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `evaluations` (
@@ -862,7 +863,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (29);
+INSERT INTO `schema_version` VALUES (30);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -989,4 +990,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (30);
+INSERT INTO schema_version (schema_version) VALUES (31);

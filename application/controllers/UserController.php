@@ -83,6 +83,7 @@ class UserController extends MessageController
              * @todo Fix this SQL injection
              */
             $whologin = $this->_user->fetchRow("account = '$username'");
+            $now = new Zend_Date();
 
             // If the username isn't found, throw an exception
             if (empty($whologin)) {
@@ -106,7 +107,6 @@ class UserController extends MessageController
                             // If the system administrator has elected to have accounts
                             // unlock automatically, then calculate how much time is
                             // left on the lock.
-                            $now = new Zend_Date();
                             $terminationTs = new Zend_Date($whologin['termination_ts']);
                             $terminationTs->add($unlockDuration, Zend_Date::SECOND);
                             //beyond the time limited, unlock automatically
@@ -148,8 +148,8 @@ class UserController extends MessageController
                                   'Password Error');
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
-            
-            // At this point, the user is authenticated.
+
+                        // At this point, the user is authenticated.
             // Now check if the account has expired.
             $_me = (object)$whologin;
             $period = Config_Fisma::readSysConfig('max_absent_time');
@@ -183,18 +183,43 @@ class UserController extends MessageController
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(Config_Fisma::readSysConfig('expiring_seconds'));
             $store->write($_me);
-            
-            // Check to see if the user needs to review the rules of behavior.
-            // If they do, then send them to that page. Otherwise, send them to
-            // the dashboard.
-            $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
-            $nextRobReview->add(Config_Fisma::readSysConfig('rob_duration'), Zend_Date::DAY);
-            $now = new Zend_Date();
-            if ($now->isEarlier($nextRobReview)) {
-                $this->_forward('index', 'Panel');
+
+            //check password expire
+            $passExpirePeriod = Config_Fisma::readSysConfig('pass_expire');
+            $passwordTs = new Zend_Date($whologin['password_ts']);
+            $passwordTs->add($passExpirePeriod-3, Zend_Date::DAY); //show warning advance 3 days 
+            if ($now->isLater($passwordTs)) {
+                $passwordTs->add(3, Zend_Date::DAY);
+                $passwordTs->sub($now);
+                $leaveDays = intval($passwordTs->get('DAY'));
+                if ($leaveDays <= 3) {
+                    $message = "Your password will expire in $leaveDays days, ".
+                               " you may change it here.";
+                    $model = self::M_WARNING;
+                    // redirect back to password change action
+                    $this->_helper->_actionStack('header', 'Panel');   
+                    $this->_forward('password', null, null, array('message'=>$message,
+                                                                  'model'=>$model));
+                } else {
+                    $this->_user->log(User::TERMINATION, $_me->id, "The password expires");
+                    throw new Zend_Auth_Exception('Your user account has been locked because you have not'
+                                . ' change your password for '.$passExpirePeriod.' or more days,'
+                                . 'Please contact the'
+                                . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
+                                . '">Administrator</a>.');
+                }
             } else {
-                $this->_helper->layout->setLayout('notice');
-                return $this->render('rule');
+                // Check to see if the user needs to review the rules of behavior.
+                // If they do, then send them to that page. Otherwise, send them to
+                // the dashboard.
+                $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
+                $nextRobReview->add(Config_Fisma::readSysConfig('rob_duration'), Zend_Date::DAY);
+                if ($now->isEarlier($nextRobReview)) {
+                    $this->_forward('index', 'Panel');
+                } else {
+                    $this->_helper->layout->setLayout('notice');
+                    return $this->render('rule');
+                }
             }
         } catch(Zend_Auth_Exception $e) {
             $this->view->assign('error', $e->getMessage());
@@ -305,6 +330,12 @@ class UserController extends MessageController
 
         $this->view->assign('requirements', $requirements);
         $this->view->assign('form', $passwordForm);
+
+        $message = $this->_request->getParam('message');
+        $model   = $this->_request->getParam('model');
+        if (!empty($message) && !empty($model)) {
+            $this->message($message, $model);
+        }
         
         $this->render();
     }
