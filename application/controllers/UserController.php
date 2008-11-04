@@ -91,50 +91,50 @@ class UserController extends MessageController
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             
+            $threshold['failure'] = Config_Fisma::readSysConfig("failure_threshold");
             $whologin = $whologin->toArray();
-
+            
+            $failureCount = $whologin['failure_count'];
+            $isQualified = $whologin['is_active'];
             // If the account is locked...
             // (due to manual lock, expired account, password errors, etc.)
-            if ( ! $whologin['is_active'] && 'database' == Config_Fisma::readSysConfig('auth_type')) {
-                $unlockEnabled = Config_Fisma::readSysConfig('unlock_enabled');
-                if (1 == intval($unlockEnabled)) {
-                    $unlockDuration = Config_Fisma::readSysConfig('unlock_duration');
-
-                    // If the system administrator has elected to have accounts
-                    // unlock automatically, then calculate how much time is
-                    // left on the lock.
-                    $now = new Zend_Date();
-                    $terminationTs = new Zend_Date($whologin['termination_ts']);
-                    $terminationTs->add($unlockDuration, Zend_Date::SECOND);
-                    $unlockRemaining = clone $terminationTs;
-                    $unlockRemaining->sub($now);
-                    $minutesRemaining = ceil($unlockRemaining->getTimestamp() / 60);
-
-                    if ($terminationTs->isEarlier($now)) {
-                        $updateData =
-                        $this->_user->update(array('is_active'=>1,
-                                                   'failure_count'=>0,
-                                                   'termination_ts'=>NULL),
-                                                   'id  = '.$whologin['id']);
-                    } else {
-                        throw new Zend_Auth_Exception('Your user account has been locked due to'
-                                                    . Config_Fisma::readSysConfig("failure_threshold")
-                                                    . ' or more unsuccessful login attempts. Your account will be'
-                                                    . " unlocked in $minutesRemaining minutes. Please try again at that"
-                                                    . 'time.');
+            if ('database' == Config_Fisma::readSysConfig('auth_type')) {
+                if (!$isQualified) {
+                    if ($failureCount >= $threshold['failure']) {
+                        if (Config_Fisma::readSysConfig('unlock_enabled')) {
+                            $unlockDuration = Config_Fisma::readSysConfig('unlock_duration');
+                            // If the system administrator has elected to have accounts
+                            // unlock automatically, then calculate how much time is
+                            // left on the lock.
+                            $now = new Zend_Date();
+                            $terminationTs = new Zend_Date($whologin['termination_ts']);
+                            $terminationTs->add($unlockDuration, Zend_Date::SECOND);
+        					//beyond the time limited, unlock automatically
+                            if ($terminationTs->isEarlier($now)) {
+                                $reincarnation = clone $now;
+                                $reincarnation->sub($terminationTs);
+                                throw new Zend_Auth_Exception('Your user account has been locked due to'
+                                    . $threshold['failure']
+                                    . ' or more unsuccessful login attempts. Your account will be'
+                                    . " unlocked in ".$reincarnation->toValue(Zend_Date::MINUTE)
+                                    ." minutes. Please try again at that"
+                                    . 'time.');
+                            }
+                            $isQualified = true;
+                        } else {
+                            throw new Zend_Auth_Exception('Your user account has been locked due to'
+                                . $threshold['failure']
+                                . ' or more unsuccessful login attempts. Please contact the'
+                                . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
+                                . '">Administrator</a>.');
+                        }
+                    } else { //administrator manually lock it
+                        throw new Zend_Auth_Exception('Your account has been locked by Administrator. Please contact the'
+                                . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
+                                . '">Administrator</a>.');
                     }
-                } else {
-                    // If accounts are not unlocked automatically on this
-                    // system, then let the user know that they need to contact
-                    // the administrator.
-                    throw new Zend_Auth_Exception('Your account has been locked due to '
-                                                . Config_Fisma::readSysConfig("failure_threshold")
-                                                . ' or more unsuccessful login attempts. Please contact the'
-                                                . ' <a href="mailto:'
-                                                . Config_Fisma::readSysConfig('contact_email')
-                                                . '">Administrator</a>.');
-                }
-            }
+                }//deactive policy
+            } // database password policy
 
             // Proceed through authorization based on the configured mechanism
             // (LDAP, Database, etc.)
@@ -146,27 +146,6 @@ class UserController extends MessageController
                 $this->_user->log(User::LOGINFAILURE,
                                   $whologin['id'],
                                   'Password Error');
-                $notification = new Notification();
-                $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
-                                   null,
-                                   "User: {$whologin['account']}");
-
-                if ($whologin['failure_count'] >= Config_Fisma::readSysConfig('failure_threshold') - 1) {
-                    $this->_user->log(User::TERMINATION,
-                                      $whologin['id'],
-                                      'Account locked');
-                    $notification = new Notification();
-                    $notification->add(Notification::ACCOUNT_LOCKED,
-                                       null,
-                                       "User: {$whologin['account']}");
-                    throw new Zend_Auth_Exception('Your account has been locked due to '
-                                                . Config_Fisma::readSysConfig("failure_threshold")
-                                                . ' or more unsuccessful login attempts. Please contact the'
-                                                . ' <a href="mailto:'
-                                                . Config_Fisma::readSysConfig('contact_email')
-                                                . '">Administrator</a>.');
-                }
-                
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             
@@ -180,6 +159,7 @@ class UserController extends MessageController
                                        'YYYY-MM-DD HH-MI-SS');
 
             if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($deactiveTime) ) {
+                $this->_user->log(User::TERMINATION, $_me->id, "The account expires");
                 throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period"
                                             . "or more days. Please contact the <a href=\"mailto:"
                                             . Config_Fisma::readSysConfig('contact_email')
@@ -188,11 +168,6 @@ class UserController extends MessageController
             
             // If we get this far, then the login is totally successful.
             $this->_user->log(User::LOGIN, $_me->id, "Success");
-            $notification = new Notification();
-            $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
-                               $whologin['account'],
-                               "UserId: {$whologin['id']}");
-
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
             foreach ($nickname as $n) {

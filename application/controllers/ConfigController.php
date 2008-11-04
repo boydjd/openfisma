@@ -78,7 +78,7 @@ class ConfigController extends SecurityController
         $ret = $this->_config->getList(array('key', 'value', 'description'));
         $configs = NULL;
         foreach ($ret as $item) {
-            if (in_array($item['key'], array(Config::EXPIRING_TS))) {
+            if (in_array($item['key'], array(Config::EXPIRING_TS, Config::UNLOCK_DURATION))) {
                 $item['value'] /= 60; //convert to hour from second
             }
             if (in_array($item['key'], array(Config::USE_NOTIFICATION,
@@ -115,13 +115,11 @@ class ConfigController extends SecurityController
                         $records[] = $k;
                         $where = $this->_config->getAdapter()
                             ->quoteInto('`key` = ?', $k);
-                        if (in_array($k, array(Config::EXPIRING_TS))) { 
+                        if (in_array($k, array(Config::EXPIRING_TS, Config::UNLOCK_DURATION))) {
                             $v *= 60; //convert to second
                         }
-                        if (in_array($k, array(Config::USE_NOTIFICATION,
-                                               Config::BEHAVIOR_RULE))) {
-                            $this->_config->update(array('description' => $v),
-                                $where);
+                        if (in_array($k, array(Config::USE_NOTIFICATION,Config::BEHAVIOR_RULE))) {
+                            $this->_config->update(array('description' => $v),$where);
                         } else {
                             $this->_config
                                  ->update(array('value' => $v), $where);
