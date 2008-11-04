@@ -31,8 +31,7 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  *
  * @todo Write a description of what this class does in the comments.
- * @todo The includes on this file are probably excessive. Clean out any
- * includes which aren't necessary.
+ * @todo This isn't a controller! Why is it called Security Controller?
  */
 class SecurityController extends MessageController
 {

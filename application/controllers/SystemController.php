@@ -126,6 +126,8 @@ class SystemController extends SecurityController
      */     
     public function listAction()
     {
+        Config_Fisma::requirePrivilege('admin_systems', 'read');
+        
         $req = $this->getRequest();
         $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
@@ -152,6 +154,8 @@ class SystemController extends SecurityController
      */
     public function searchboxAction()
     {
+        Config_Fisma::requirePrivilege('admin_systems', 'read');
+        
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
         $qv = $req->getParam('qv');
@@ -177,6 +181,8 @@ class SystemController extends SecurityController
      */
     public function createAction()
     {
+        Config_Fisma::requirePrivilege('admin_systems', 'create');
+        
         $form = $this->getSystemForm('system');
         $system = $this->_request->getPost();
         if ($system) {
@@ -242,6 +248,8 @@ class SystemController extends SecurityController
      */
     public function deleteAction()
     {
+        Config_Fisma::requirePrivilege('admin_systems', 'delete');
+        
         $errno = 0;
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -283,6 +291,8 @@ class SystemController extends SecurityController
      */
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('admin_systems', 'read');
+        
         $form = $this->getSystemForm();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v');
@@ -323,6 +333,8 @@ class SystemController extends SecurityController
      */
     public function updateAction ()
     {
+        Config_Fisma::requirePrivilege('admin_systems', 'update');
+        
         $form = $this->getSystemForm();
         $formValid = $form->isValid($_POST);
         $system = $form->getValues();

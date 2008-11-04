@@ -82,6 +82,8 @@ class NetworkController extends SecurityController
      */
     public function searchboxAction()
     {
+        Config_Fisma::requirePrivilege('admin_networks', 'read');
+        
         $fid = $this->_request->getParam('fid');
         $qv = $this->_request->getParam('qv');
         $query = $this->_network->select()->from(array(
@@ -106,6 +108,8 @@ class NetworkController extends SecurityController
      */
     public function listAction()
     {
+        Config_Fisma::requirePrivilege('admin_networks', 'read');
+        
         $field = $this->_request->getParam('fid');
         $value = trim($this->_request->getParam('qv'));
         $query = $this->_network->select()->from('networks', '*');
@@ -123,6 +127,8 @@ class NetworkController extends SecurityController
      */
     public function createAction()
     {
+        Config_Fisma::requirePrivilege('admin_networks', 'create');
+        
         if ('save' == $this->_request->getParam('s')) {
             $networkData = $this->_request->getParam('network');
             $networkId = $this->_network->insert($networkData);
@@ -146,6 +152,8 @@ class NetworkController extends SecurityController
      */
     public function deleteAction()
     {
+        Config_Fisma::requirePrivilege('admin_networks', 'delete');
+        
         $id = $this->_request->getParam('id');
         $db = $this->_network->getAdapter();
         $qry = $db->select()->from('assets')->where('network_id = ' . $id);
@@ -176,6 +184,8 @@ class NetworkController extends SecurityController
      */
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('admin_networks', 'read');
+        
         $id = $this->_request->getParam('id');
         $result = $this->_network->find($id)->toArray();
         foreach ($result as $v) {
@@ -194,6 +204,8 @@ class NetworkController extends SecurityController
      */
     public function updateAction()
     {
+        Config_Fisma::requirePrivilege('admin_networks', 'update');
+        
         $id = $this->_request->getParam('id');
         $networkData = $this->_request->getParam('network');
         $res = $this->_network->update($networkData, 'id = ' . $id);

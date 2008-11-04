@@ -77,6 +77,8 @@ class FindingController extends PoamBaseController
      */
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('finding', 'read');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id', 0);
         assert($id);
@@ -99,6 +101,8 @@ class FindingController extends PoamBaseController
      */
     public function editAction()
     {
+        Config_Fisma::requirePrivilege('finding', 'update');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         assert($id);
@@ -127,6 +131,8 @@ class FindingController extends PoamBaseController
      */
     public function injectionAction()
     {
+        Config_Fisma::requirePrivilege('finding', 'inject');
+        
         $this->_helper->actionStack('header', 'Panel');
         if (Config_Fisma::isAllow('finding', 'create')) {
             $csvFile = isset($_FILES['csv']) ? $_FILES['csv'] : array();
@@ -209,6 +215,8 @@ template. Please update your CSV file and try again.<br />";
      */
     public function createAction()
     {
+        Config_Fisma::requirePrivilege('finding', 'create');
+        
         if ("new" == $this->_request->getParam('is')) {
             $poam = $this->_request->getPost('poam');
             try {
@@ -271,6 +279,8 @@ template. Please update your CSV file and try again.<br />";
      */
     public function deleteAction()
     {
+        Config_Fisma::requirePrivilege('finding', 'delete');
+        
         $req = $this->getRequest();
         $post = $req->getPost();
         $errno = 0;
@@ -395,6 +405,8 @@ template. Please update your CSV file and try again.<br />";
      */
     public function templateAction()
     {
+        Config_Fisma::requirePrivilege('finding', 'inject');
+        
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addContext('xls', array(
             'suffix' => 'xls',
@@ -449,6 +461,8 @@ template. Please update your CSV file and try again.<br />";
      */
     public function pluginAction()
     {
+        Config_Fisma::requirePrivilege('finding', 'inject');
+        
         // Load the finding plugin form
         $uploadForm = Form_Manager::loadForm('finding_upload');
         $uploadForm = Form_Manager::prepareForm($uploadForm);
@@ -564,6 +578,8 @@ template. Please update your CSV file and try again.<br />";
      * @todo Add audit logging
      */
     public function processApprovalAction() {
+        Config_Fisma::requirePrivilege('finding', 'approve');
+        
         $db = Zend_Registry::get('db');
         $post = $this->getRequest()->getPost();
         if (isset($post['findings'])) {

@@ -71,6 +71,8 @@ class RoleController extends SecurityController
     }
     public function searchboxAction()
     {
+        Config_Fisma::requirePrivilege('admin_roles', 'read');
+        
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
         $qv = $req->getParam('qv');
@@ -92,6 +94,8 @@ class RoleController extends SecurityController
     }
     public function listAction()
     {
+        Config_Fisma::requirePrivilege('admin_roles', 'read');
+        
         $req = $this->getRequest();
         $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
@@ -108,6 +112,8 @@ class RoleController extends SecurityController
     }
     public function createAction()
     {
+        Config_Fisma::requirePrivilege('admin_roles', 'create');
+        
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
             $role = $req->getPost('role');
@@ -129,6 +135,8 @@ class RoleController extends SecurityController
     }
     public function deleteAction()
     {
+        Config_Fisma::requirePrivilege('admin_roles', 'delete');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $db = $this->_role->getAdapter();
@@ -155,6 +163,8 @@ class RoleController extends SecurityController
     }
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('admin_roles', 'read');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $result = $this->_role->find($id)->toArray();
@@ -169,6 +179,8 @@ class RoleController extends SecurityController
     }
     public function updateAction()
     {
+        Config_Fisma::requirePrivilege('admin_roles', 'update');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $role = $req->getPost('role');
@@ -188,6 +200,8 @@ class RoleController extends SecurityController
     }
     public function rightAction()
     {
+        Config_Fisma::requirePrivilege('admin_roles', 'definition');
+        
         $req = $this->getRequest();
         $do = $req->getParam('do');
         $roleId = $req->getParam('id');

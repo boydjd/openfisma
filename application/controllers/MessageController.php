@@ -29,6 +29,8 @@
  * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ *
+ * @todo This doesn't appear to be a controller... why is it called MessageController??
  */
 class MessageController extends Zend_Controller_Action
 {

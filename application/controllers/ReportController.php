@@ -36,7 +36,8 @@ class ReportController extends PoamBaseController
     /**
      * init() - Create the additional pdf and xls contexts for this class.
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         $swCtx = $this->_helper->contextSwitch();
         if (!$swCtx->hasContext('pdf')) {
@@ -59,7 +60,8 @@ class ReportController extends PoamBaseController
     /**
      * preDispatch() - Add the action contexts for this controller.
      */
-    public function preDispatch() {
+    public function preDispatch()
+    {
         parent::preDispatch();
         $this->req = $this->getRequest();
         $swCtx = $this->_helper->contextSwitch();
@@ -80,6 +82,8 @@ class ReportController extends PoamBaseController
      */
     public function fismaAction()
     {
+        Config_Fisma::requirePrivilege('report', 'generate_fisma_report');
+
         $req = $this->getRequest();
         $criteria['year'] = $req->getParam('y');
         $criteria['quarter'] = $req->getParam('q');
@@ -205,7 +209,10 @@ class ReportController extends PoamBaseController
     /**
      * poamAction() - Generate poam report
      */
-    public function poamAction() {
+    public function poamAction()
+    {
+        Config_Fisma::requirePrivilege('report', 'generate_poam_report');
+        
         $req = $this->getRequest();
         $params = array(
             'systemId' => 'system_id',
@@ -274,7 +281,10 @@ class ReportController extends PoamBaseController
     /**
      * overdueAction() - Overdue report
      */
-    public function overdueAction() {
+    public function overdueAction()
+    {
+        Config_Fisma::requirePrivilege('report', 'generate_overdue_report');
+        
         // Get request variables
         $req = $this->getRequest();
         $params = array(
@@ -369,6 +379,8 @@ class ReportController extends PoamBaseController
      */
     public function generalAction()
     {
+        Config_Fisma::requirePrivilege('report', 'generate_general_report');
+        
         $req = $this->getRequest();
         $type = $req->getParam('type', '');
         $this->view->assign('type', $type);
@@ -402,6 +414,8 @@ class ReportController extends PoamBaseController
      * blscrAction() - Generate BLSCR report
      */
     public function blscrAction() {
+        Config_Fisma::requirePrivilege('report', 'generate_general_report');
+        
         $db = $this->_poam->getAdapter();
         $system = new system();
         $rpdata = array();
@@ -444,7 +458,10 @@ class ReportController extends PoamBaseController
     /**
      * fipsAction() - FIPS report
      */
-    public function fipsAction() {
+    public function fipsAction()
+    {
+        Config_Fisma::requirePrivilege('report', 'generate_general_report');
+        
         require_once('RiskAssessment.php');
         $system = new system();
         $systems = $system->getList(array(
@@ -489,7 +506,10 @@ class ReportController extends PoamBaseController
     /**
      * prodsAction() - Generate products report
      */
-    public function prodsAction() {
+    public function prodsAction()
+    {
+        Config_Fisma::requirePrivilege('report', 'generate_general_report');
+        
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
             'prod' => 'products'
@@ -512,7 +532,10 @@ class ReportController extends PoamBaseController
     /**
      * swdiscAction() - Software discovered report
      */
-    public function swdiscAction() {
+    public function swdiscAction()
+    {
+        Config_Fisma::requirePrivilege('report', 'generate_general_report');
+        
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
             'p' => 'products'
@@ -531,7 +554,10 @@ class ReportController extends PoamBaseController
     /**
      * totalAction() - ???
      */
-    public function totalAction() {
+    public function totalAction()
+    {
+        Config_Fisma::requirePrivilege('report', 'generate_general_report');
+        
         $db = $this->_poam->getAdapter();
         $system = new system();
         $rpdata = array();
@@ -578,6 +604,8 @@ class ReportController extends PoamBaseController
      */
     public function rafsAction()
     {
+        Config_Fisma::requirePrivilege('report', 'generate_system_rafs');
+        
         $sid = $this->_req->getParam('system_id');
         $this->view->assign('system_list', $this->_systemList);
         if (!empty($sid)) {
@@ -631,6 +659,8 @@ class ReportController extends PoamBaseController
      */         
     public function pluginAction() 
     {
+        Config_Fisma::requirePrivilege('report', 'read');
+        
         // Build up report menu
         $reportsConfig = new Zend_Config_Ini(APPLICATION_CONFIGS . '/reports.conf');
         $reports = $reportsConfig->toArray();
@@ -643,6 +673,8 @@ class ReportController extends PoamBaseController
      */         
     public function pluginreportAction() 
     {
+        Config_Fisma::requirePrivilege('report', 'read');
+        
         // Verify a plugin report name was passed to this action
         $reportName = $this->_req->getParam('name');
         if (!isset($reportName)) {

@@ -31,6 +31,7 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  *
  * @todo Need to explain what the purpose of this controller is.
+ * @todo This is not a controller, why is it named PoamBaseController??
  */
 class PoamBaseController extends SecurityController
 {

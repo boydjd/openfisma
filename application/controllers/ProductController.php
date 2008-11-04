@@ -63,6 +63,8 @@ class ProductController extends SecurityController
      */
     public function searchAction()
     {
+        Config_Fisma::requirePrivilege('admin_products', 'read');
+        
         $product = new Product();
         $req = $this->getRequest();
         $prodId = $req->getParam('prod_list', '');
@@ -91,6 +93,8 @@ class ProductController extends SecurityController
     }
     public function searchboxAction()
     {
+        Config_Fisma::requirePrivilege('admin_products', 'read');
+        
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
         $qv = $req->getParam('qv');
@@ -112,6 +116,8 @@ class ProductController extends SecurityController
     }
     public function listAction()
     {
+        Config_Fisma::requirePrivilege('admin_products', 'read');
+        
         $req = $this->getRequest();
         $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
@@ -127,6 +133,8 @@ class ProductController extends SecurityController
     }
     public function createAction()
     {
+        Config_Fisma::requirePrivilege('admin_products', 'create');
+        
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
             $post = $req->getPost();
@@ -154,6 +162,8 @@ class ProductController extends SecurityController
     }
     public function deleteAction()
     {
+        Config_Fisma::requirePrivilege('admin_products', 'delete');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $db = $this->_product->getAdapter();
@@ -181,6 +191,8 @@ class ProductController extends SecurityController
     }
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('admin_products', 'read');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $result = $this->_product->find($id)->toArray();
@@ -197,6 +209,8 @@ class ProductController extends SecurityController
     }
     public function updateAction()
     {
+        Config_Fisma::requirePrivilege('admin_products', 'update');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $post = $req->getPost();

@@ -60,6 +60,8 @@ class DashboardController extends SecurityController
      */
     public function indexAction()
     {
+        Config_Fisma::requirePrivilege('dashboard', 'read');
+        
         // Check to see if we got passed a "dismiss" parameter to dismiss
         // notifications
         $request = $this->getRequest();
@@ -137,6 +139,8 @@ class DashboardController extends SecurityController
      */
     public function totalstatusAction()
     {
+        Config_Fisma::requirePrivilege('dashboard', 'read');
+        
         $poam = $this->_poam;
         $req = $this->getRequest();
         $type = $req->getParam('type', 'pie');
@@ -180,6 +184,8 @@ class DashboardController extends SecurityController
      */
     public function totaltypeAction()
     {
+        Config_Fisma::requirePrivilege('dashboard', 'read');
+        
         $ret = $this->_poam->search($this->_allSystems, array(
             'count' => 'type',
             'type'

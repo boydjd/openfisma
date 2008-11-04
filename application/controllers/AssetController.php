@@ -72,6 +72,8 @@ class AssetController extends PoamBaseController
      */
     public function searchAction()
     {
+        Config_Fisma::requirePrivilege('asset', 'read');
+        
         $req = $this->getRequest();
         $systemId = $req->getParam('sid');
         $assetName = $req->getParam('name');
@@ -102,6 +104,8 @@ class AssetController extends PoamBaseController
      */
     public function createAction()
     {
+        Config_Fisma::requirePrivilege('asset', 'create');
+        
         $systems = new System();
         $user = new User();
         $product = new Product();
@@ -153,6 +157,8 @@ class AssetController extends PoamBaseController
      */
     public function detailAction()
     {
+        Config_Fisma::requirePrivilege('asset', 'read');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         if (!empty($id)) {
@@ -189,6 +195,8 @@ class AssetController extends PoamBaseController
      */
     public function searchboxAction()
     {
+        Config_Fisma::requirePrivilege('asset', 'read');
+        
         $req = $this->getRequest();
         $criteria['system_id'] = $req->get('system_id');
         $criteria['product'] = $req->get('product');
@@ -269,6 +277,8 @@ class AssetController extends PoamBaseController
      */
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('asset', 'read');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         assert($id);
@@ -313,6 +323,8 @@ class AssetController extends PoamBaseController
      */
     public function updateAction()
     {
+        Config_Fisma::requirePrivilege('asset', 'update');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         assert($id);
@@ -350,6 +362,8 @@ class AssetController extends PoamBaseController
      */
     public function deleteAction()
     {
+        Config_Fisma::requirePrivilege('asset', 'delete');
+        
         $req = $this->getRequest();
         $post = $req->getPost();
         $errno = 0;

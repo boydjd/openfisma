@@ -113,6 +113,8 @@ class AccountController extends PoamBaseController
      */
     public function searchboxAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'read');
+        
         // These are the fields which can be searched, the key is the physical
         // name and the value is the logical name which is displayed in the
         // interface.
@@ -165,6 +167,8 @@ class AccountController extends PoamBaseController
      */
     public function listAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'read');
+        
         // Set up the query to get the full list of users
         $user = new User();
         $qry = $user->select()
@@ -214,6 +218,7 @@ class AccountController extends PoamBaseController
      */
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'read');
         $form = $this->getAccountForm();
         
         // $id is the user id of the record that should be displayed
@@ -295,6 +300,8 @@ class AccountController extends PoamBaseController
      */
     public function updateAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'update');
+        
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
         $pass = $form->getElement('password');
@@ -440,6 +447,8 @@ class AccountController extends PoamBaseController
      */
     public function deleteAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'delete');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         assert($id);
@@ -472,6 +481,8 @@ class AccountController extends PoamBaseController
      */
     public function createAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'create');
+        
         // Get the account form
         $form = $this->getAccountForm();
         $form->setAction('/panel/account/sub/save');
@@ -502,6 +513,8 @@ class AccountController extends PoamBaseController
      */
     public function saveAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'update');
+        
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
         $post = $this->_request->getPost();
@@ -606,6 +619,8 @@ class AccountController extends PoamBaseController
      */
     public function checkdnAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'read');
+        
         $config = new Config();
         $data = $config->getLdap();
         $dn = $this->_request->getParam('dn');
@@ -640,6 +655,8 @@ class AccountController extends PoamBaseController
      */
     public function assignroleAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'update');
+        
         $req = $this->getRequest();
         $userId = $req->getParam('id');
         $db = $this->_user->getAdapter();
@@ -754,6 +771,8 @@ class AccountController extends PoamBaseController
      */
     public function searchprivilegeAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'read');
+        
         $req = $this->_request;
         $db = $this->_user->getAdapter();
         $userId = $req->getParam('id');
@@ -816,6 +835,8 @@ class AccountController extends PoamBaseController
      */
     public function logAction()
     {
+        Config_Fisma::requirePrivilege('admin_users', 'read');
+        
         // Set up the query to get the full list of user logs
         $db = $this->_user->getAdapter();
         $qry = $db->select()

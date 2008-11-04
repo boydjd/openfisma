@@ -63,6 +63,8 @@ class ConfigController extends SecurityController
 
     public function indexAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $this->_helper->actionStack('password');
         $this->_helper->actionStack('notification');
         $this->_helper->actionStack('contact');
@@ -73,6 +75,8 @@ class ConfigController extends SecurityController
      */
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         // Fill up with data
         $form = $this->getConfigForm('general_config');
         $ret = $this->_config->getList(array('key', 'value', 'description'));
@@ -146,6 +150,8 @@ class ConfigController extends SecurityController
      */
     public function contactAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $config = new Config();
         $form = $this->getConfigForm('contact_config');
         if ($this->_request->isPost()) {
@@ -183,6 +189,8 @@ class ConfigController extends SecurityController
      */
     public function ldapupdateAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $form = $this->getForm('ldap');
         $id = $this->_request->getParam('id');
         if ($this->_request->isPost()) {
@@ -213,6 +221,8 @@ class ConfigController extends SecurityController
      */
     public function ldapdelAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $id = $this->_request->getParam('id');
         $this->_config->delLdap($id);
         // @REVIEW
@@ -228,6 +238,8 @@ class ConfigController extends SecurityController
      */
     public function ldapvalidAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $form = $this->getForm('ldap');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
@@ -255,6 +267,8 @@ class ConfigController extends SecurityController
      */
     public function notificationAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $config = new Config();
         $form = $this->getConfigForm('notification_config');
         if ($this->_request->isPost()) {
@@ -291,6 +305,8 @@ class ConfigController extends SecurityController
      */
     public function privacyAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $config = new Config();
         $form = $this->getConfigForm('privacy_policy_config');
         if ($this->_request->isPost()) {
@@ -324,6 +340,8 @@ class ConfigController extends SecurityController
      */
     public function passwordAction()
     {
+        Config_Fisma::requirePrivilege('app_configuration', 'update');
+        
         $config = new Config();
         $form = $this->getConfigForm('password_config');
         if ($this->_request->isPost()) {

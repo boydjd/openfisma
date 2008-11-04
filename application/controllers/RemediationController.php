@@ -58,6 +58,8 @@ class RemediationController extends PoamBaseController
      */
     public function indexAction()
     {
+        Config_Fisma::requirePrivilege('remediation', 'read');
+        
         $this->_helper->actionStack('searchbox', 'Remediation');
         $this->_helper->actionStack('summary', 'Remediation');
     }
@@ -67,6 +69,8 @@ class RemediationController extends PoamBaseController
      */
     public function summaryAction()
     {
+        Config_Fisma::requirePrivilege('remediation', 'read');
+        
         $criteria['sourceId'] = $this->_request->getParam('source_id', 0);
         $criteria['type'] = $this->_request->getParam('type');
         $criteria['notStatus'] = 'PEND'; //exclude pending findings from the search criteria
@@ -340,6 +344,8 @@ class RemediationController extends PoamBaseController
     }
     public function searchboxAction()
     {
+        Config_Fisma::requirePrivilege('remediation', 'read');
+        
         $req = $this->getRequest();
         $this->_pagingBasePath.= '/panel/remediation/sub/searchbox/s/search';
         // parse the params of search
@@ -413,6 +419,8 @@ class RemediationController extends PoamBaseController
      */
     public function viewAction()
     {
+        Config_Fisma::requirePrivilege('remediation', 'read');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $poamDetail = $this->_poam->getDetail($id);
@@ -488,8 +496,16 @@ class RemediationController extends PoamBaseController
         $this->view->assign('network_list', $this->_networkList);
         $this->render();
     }
+    
+    /**
+     * modifyAction() - ???
+     *
+     * @todo Do fine-grained access-control here
+     */
     public function modifyAction()
     {
+        Config_Fisma::requirePrivilege('remediation', 'update_finding');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $poam = $req->getPost('poam');
@@ -624,6 +640,8 @@ class RemediationController extends PoamBaseController
 
     public function uploadevidenceAction()
     {
+        Config_Fisma::requirePrivilege('remediation', 'update_evidence');
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         define('EVIDENCE_PATH', APPLICATION_ROOT . '/public/evidence');
@@ -791,6 +809,8 @@ class RemediationController extends PoamBaseController
      */
     public function rafAction()
     {
+        Config_Fisma::requirePrivilege('report', 'generate_system_rafs');
+        
         $id = $this->_req->getParam('id');
         $this->_helper->layout->disableLayout(true);
         $this->_helper->contextSwitch()->addContext('pdf', array(
