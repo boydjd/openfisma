@@ -116,7 +116,7 @@ class ConfigController extends SecurityController
                             $v *= 60; //convert to second
                         }
                         if (in_array($k, array(Config::USE_NOTIFICATION,Config::BEHAVIOR_RULE))) {
-                            $this->_config->update(array('description' => $v),$where);
+                            $this->_config->update(array('description' => $v), $where);
                         } else {
                             $this->_config
                                  ->update(array('value' => $v), $where);

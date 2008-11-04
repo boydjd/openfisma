@@ -129,7 +129,8 @@ class UserController extends MessageController
                                 . '">Administrator</a>.');
                         }
                     } else { //administrator manually lock it
-                        throw new Zend_Auth_Exception('Your account has been locked by Administrator. Please contact the'
+                        throw new Zend_Auth_Exception('Your account has been locked by Administrator. '
+                                . 'Please contact the'
                                 . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
                                 . '">Administrator</a>.');
                     }
