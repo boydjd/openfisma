@@ -140,18 +140,20 @@ class User extends FismaModel
         if ( !empty($uid) ) {
             $rows = $this->find($uid);
             $row = $rows->current();
+            $account = $row->account;
+            
             $now = new Zend_Date();
             $notification = new Notification();
             $nowSqlString = $now->get('Y-m-d H:i:s');
             if ($type == self::LOGINFAILURE) {          
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
-                                   null, "User: {$whologin['account']}");
+                                   null, "User: {$account}");
                 $row->failureCount++;
                 if ($row->failureCount >= Config_Fisma::readSysConfig('failure_threshold')) {
                     $row->terminationTs = $nowSqlString;
                     $row->isActive = 0;
                     $notification->add(Notification::ACCOUNT_LOCKED,
-                        null, "User: {$whologin['account']}");
+                        null, "User: {$account}");
                 }
                 $row->save();
             } else if ($type == self::LOGIN) {
@@ -162,13 +164,13 @@ class User extends FismaModel
                 $row->isActive = 1; // in case user is locked.
                 $row->save();
                 $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
-                   $whologin['account'], "UserId: {$whologin['id']}");
+                   $account, "UserId: {$uid}");
             } else if ($type == self::TERMINATION) {
                 $row->terminationTs = $nowSqlString;
                 $row->isActive = 0;
                 $row->failureCount = 0;
                 $notification->add(Notification::ACCOUNT_LOCKED,
-                        null, "User: {$whologin['account']}");
+                        null, "User: {$account}");
                 $row->save();
             }
         }

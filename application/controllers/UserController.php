@@ -109,16 +109,16 @@ class UserController extends MessageController
                             $now = new Zend_Date();
                             $terminationTs = new Zend_Date($whologin['termination_ts']);
                             $terminationTs->add($unlockDuration, Zend_Date::SECOND);
-        					//beyond the time limited, unlock automatically
-                            if ($terminationTs->isEarlier($now)) {
+                            //beyond the time limited, unlock automatically
+                            if ($terminationTs->isLater($now)) {
                                 $reincarnation = clone $now;
-                                $reincarnation->sub($terminationTs);
+                                $terminationTs->sub($now);
                                 throw new Zend_Auth_Exception('Your user account has been locked due to'
                                     . $threshold['failure']
-                                    . ' or more unsuccessful login attempts. Your account will be'
-                                    . " unlocked in ".$reincarnation->toValue(Zend_Date::MINUTE)
-                                    ." minutes. Please try again at that"
-                                    . 'time.');
+                                    . " or more unsuccessful login attempts. Your account will be"
+                                    . " unlocked in ".ceil($terminationTs->getTimestamp()/60)
+                                    . " minutes. Please try again at that"
+                                    . " time.");
                             }
                             $isQualified = true;
                         } else {
