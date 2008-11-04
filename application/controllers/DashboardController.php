@@ -106,12 +106,16 @@ class DashboardController extends SecurityController
 
         $this->view->url = $url;
         $this->view->alert = $alert;
-
-        $lastLoginDate = new Zend_Date($this->_me->last_login_ts);
-        $lastLogin = $lastLoginDate->toString('l, M j, g:i a');
-        $this->view->lastLogin = $lastLogin;
-        $this->view->lastLoginIp = $this->_me->last_login_ip;
-        $this->view->failureCount = $this->_me->failure_count;
+        
+        if (false !== strtotime($this->_me->last_login_ts)) {
+            $lastLoginDate = new Zend_Date($this->_me->last_login_ts);
+            $lastLogin = $lastLoginDate->toString('l, M j, g:i a');
+            $this->view->lastLogin = $lastLogin;
+            $this->view->lastLoginIp = $this->_me->last_login_ip;
+            $this->view->failureCount = $this->_me->failure_count;
+        } else {
+            $this->view->applicationName = Config_Fisma::readSysConfig('system_name');
+        }
         
         $notification = new Notification();
         $notifications = $notification->getNotifications($this->_me->id);

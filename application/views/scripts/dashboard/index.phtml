@@ -22,11 +22,16 @@
 <table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
     <tr>
         <td  align="left"><b>Last Login</b>
+            <?php if(!empty($this->lastLogin)) { ?>
             <ul>
             <li>Last Logged in at <b><?php echo $this->lastLogin; ?></b></li>
             <li>From Ip address <b><?php echo $this->lastLoginIp;?></b></li>
             <li>There were <b><?php echo $this->failureCount;?></b> bad login attempts since your last login.</li>
             </ul>
+            <?php } else { ?>
+            <p>This is the first time you have logged into <?php echo $this->applicationName ?>,
+            We will begin tracking your login attempts moving forward.</p>
+            <?php } ?>
         </td>
     </tr>
 </table>
