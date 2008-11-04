@@ -44,9 +44,6 @@ defined('APPLICATION_LOGS')
 defined('LOCAL')
     or define('LOCAL', APPLICATION_ROOT . '/library/local');
 
-defined('PDF')
-    or define('PDF', APPLICATION_ROOT . '/library/pdf');
-
 defined('PEAR')
     or define('PEAR', APPLICATION_ROOT . '/library/Pear');
 

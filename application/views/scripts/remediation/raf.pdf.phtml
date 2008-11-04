@@ -44,7 +44,7 @@
     $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
     $risk_index = $cellidx_lookup[$threat_likelihood][$impact];
 
-    define('FONTS', PDF . '/fonts');
+    define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts');
 
     $pdf = new Cezpdf();
     $pdf->selectFont(FONTS . "/Helvetica.afm");
