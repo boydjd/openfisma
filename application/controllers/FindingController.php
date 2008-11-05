@@ -227,7 +227,7 @@ template. Please update your CSV file and try again.<br />";
                 }
                 // Validate that the user has selected a finding source
                 if ($poam['source_id'] == 0) {
-                    throw new FismaException(
+                    throw new Exception_General(
                         "You must select a finding source"
                     );
                 }
@@ -257,7 +257,7 @@ template. Please update your CSV file and try again.<br />";
                 $model = self::M_NOTICE;
             }
             catch(Zend_Exception $e) {
-                if ($e instanceof FismaException) {
+                if ($e instanceof Exception_General) {
                     $message = $e->getMessage();
                 } else {
                     $message = "Failed to create the finding";
@@ -426,20 +426,20 @@ template. Please update your CSV file and try again.<br />";
             $this->view->systems = $src->getList('nickname',
                 $this->_me->systems);
             if (count($this->view->systems) == 0) {
-                throw new FismaException(
+                throw new Exception_General(
                     "The spreadsheet template can not be " .
                     "prepared because there are no systems defined.");
             }
             $src = new Network();
             $this->view->networks = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new FismaException("The spreadsheet template can not be
+                 throw new Exception_General("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
             $src = new Source();
             $this->view->sources = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new FismaException("The spreadsheet template can
+                 throw new Exception_General("The spreadsheet template can
                      not be prepared because there are no finding sources
                      defined.");
             }
@@ -449,7 +449,7 @@ template. Please update your CSV file and try again.<br />";
             // look for error.xls.tpl instead of error.tpl
             $contextSwitch->initContext('xls');
             $this->render();
-        } catch(FismaException $fe) {
+        } catch(Exception_General $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);
             $this->_forward('injection', 'Finding');

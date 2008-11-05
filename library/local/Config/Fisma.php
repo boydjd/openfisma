@@ -58,7 +58,7 @@ class Config_Fisma
      * Log instance to record fatal error message
      *
      */
-    protected $_log = null;
+    protected static $_log = null;
 
     /**
      * Constructor
@@ -164,7 +164,7 @@ class Config_Fisma
      */
     public function getLogInstance()
     {
-        if ( null === $this->_log ) {
+        if ( null === self::$_log ) {
             $write = new Zend_Log_Writer_Stream(APPLICATION_LOGS . '/' . self::ERROR_LOG);
             $auth = Zend_Auth::getInstance();
             if ($auth->hasIdentity()) {
