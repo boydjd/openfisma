@@ -669,37 +669,45 @@ class ReportController extends PoamBaseController
     }
 
     /**
-     * pluginreportAction() - Execute and display the specified plug-in report
+     * pluginReportAction() - Execute and display the specified plug-in report
+     *
+     * @todo Need to implement Excel and PDF export options
      */         
-    public function pluginreportAction() 
+    public function pluginReportAction()
     {
         Config_Fisma::requirePrivilege('report', 'read');
         
         // Verify a plugin report name was passed to this action
         $reportName = $this->_req->getParam('name');
         if (!isset($reportName)) {
-            $this->forward('plugin');
+            $this->_forward('plugin');
+            return;
         }
         
         // Verify that the user has permission to run this report
         $reportConfig = new Zend_Config_Ini(APPLICATION_CONFIGS . '/reports.conf', $reportName);
-        $reportRoles = $reportConfig->roles;
-        $report = $reportConfig->toArray();
-        $reportRoles = $report['roles'];
-        if (!is_array($reportRoles)) {
-            $reportRoles = array($reportRoles);
-        }
-        $user = new User();
-        $role = $user->getRoles($this->_me->id);
-        $role = $role[0]['nickname'];
-        if (!in_array($role, $reportRoles)) {
-            throw new Exception_General("User \"{$this->_me->account}\" does not have permission to view"
-                                     . " the \"$reportName\" plug-in report.");
+        if ($this->_me->account != 'root') {
+            $reportRoles = $reportConfig->roles;
+            $report = $reportConfig->toArray();
+            $reportRoles = $report['roles'];
+            if (!is_array($reportRoles)) {
+                $reportRoles = array($reportRoles);
+            }
+            $user = new User();
+            $role = $user->getRoles($this->_me->id);
+            $role = $role[0]['nickname'];
+            if (!in_array($role, $reportRoles)) {
+                throw new Exception_General("User \"{$this->_me->account}\" does not have permission to view"
+                                         . " the \"$reportName\" plug-in report.");
+            }
         }
         
         // Execute the report script
         $reportScriptFile = APPLICATION_CONFIGS . "/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
+        if (!$reportScriptFileHandle) {
+            throw new Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");
+        }
         $reportScript = '';
         while (!feof($reportScriptFileHandle)) {
             $reportScript .= fgets($reportScriptFileHandle);
@@ -711,8 +719,10 @@ class ReportController extends PoamBaseController
         if (isset($reportData[0])) {
             $columns = array_keys($reportData[0]);
         } else {
-            // @todo replace with a user level error message and forward to pluginAction()
-            throw new Exception_General("No data for plugin report \"$reportName\"");
+            $msg = "The report could not be created because the report query did not return any data.";
+            $this->message($msg, self::M_WARNING);
+            $this->_forward('plugin');
+            return;
         } 
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
