@@ -866,7 +866,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (31);
+INSERT INTO `schema_version` VALUES (33);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -957,7 +957,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `account` (`account`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','admin','Application',NULL,'Admin','0000-00-00 00:00:00','0000-00-00 00:00:00','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00');
+INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','admin','Application',NULL,'Admin',NOW(),NOW(),'','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `validate_emails` (
@@ -993,4 +993,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (33);
+INSERT INTO schema_version (schema_version) VALUES (34);

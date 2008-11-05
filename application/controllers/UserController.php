@@ -197,10 +197,10 @@ class UserController extends MessageController
                     $message = "Your password will expire in $leaveDays days, ".
                                " you may change it here.";
                     $model = self::M_WARNING;
+                    $this->message($message, $model);
                     // redirect back to password change action
                     $this->_helper->_actionStack('header', 'Panel');   
-                    $this->_forward('password', null, null, array('message'=>$message,
-                                                                  'model'=>$model));
+                    $this->_forward('password');
                 } else {
                     $this->_user->log(User::TERMINATION, $_me->id, "The password expires");
                     throw new Zend_Auth_Exception('Your user account has been locked because you have not'
@@ -331,13 +331,6 @@ class UserController extends MessageController
 
         $this->view->assign('requirements', $requirements);
         $this->view->assign('form', $passwordForm);
-
-        $message = $this->_request->getParam('message');
-        $model   = $this->_request->getParam('model');
-        if (!empty($message) && !empty($model)) {
-            $this->message($message, $model);
-        }
-        
         $this->render();
     }
 
