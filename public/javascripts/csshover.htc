@@ -117,34 +117,4 @@ function getElementsBySelect(rule) {
 
 		return nodes;
 	}
-	
-$(document).ready(function() {
-    if(jQuery.browser.msie && jQuery.browser.version == '6.0') {
-        $("#menu li").hover(function (){
-                if($(this).children().length == 2) {
-                    $('select').hide();
-                }
-            },function (){
-                $('select').show();
-            }
-        )
-        $("#menu ul ul").hover(function (){
-                $('select').hide();
-            },
-            function (){
-               $('select').show();
-            }
-        )
-        $("#menu li").mouseover(function (){
-                if($(this).children().length == 2) {
-                    $('select').hide();
-                }
-            }
-        )
-        $("#menu ul ul").mouseover(function (){
-                $('select').hide();
-            }
-        )
-    }
-});
 </script>

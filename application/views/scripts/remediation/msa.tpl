@@ -34,21 +34,16 @@ function delok()
         <p><b>Mitigation Strategy Approval</b></p>
     </div>
 </div>
-<div>
 <?php if ('OPEN' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_submit')) { ?>
-    <a class="button" href="<?php echo $postAction;?>/is_msa/1">Submit Mitigation Strategy</a>
+    <a class="button" href="<?php echo $postAction;?>/is_msa/1">Submit Mitigation Strategy</a><br>
 <?php } if ('EN' == $this->poam['status'] || 'EO' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_revise')) { ?>
-    <a class="button" href="<?php echo $postAction;?>/is_msa/0" onclick="return delok();">Revise Mitigation Strategy</a>
+    <a class="button" href="<?php echo $postAction;?>/is_msa/0" onclick="return delok();">Revise Mitigation Strategy</a><br><br>
 <?php }  }
-?>
-</div>
-<?php
     if ($this->poam['status']!= 'NEW' && $this->poam['status']!= 'OPEN') {
         $i = 0;
         foreach ($this->ms_evals as $v) {
             $k = $i++;
 ?>
-
 <form action="<?php echo $postAction;?>" method="post" name="ms_approval_<?php echo $k;?>">
 <table border="0" cellpadding="5" cellspacing="1" class="tipframe">
     <th align='left' colspan="2">Approval</th>

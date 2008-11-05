@@ -23,8 +23,8 @@ a.action {
  * these should appear in header or footer areas, and not mid-paragraph.
  */
 a.button {
-    /*display: block;
-    float: left;*/
+    display: block;
+    float: left;
     text-decoration: none;
     padding: 2px 5px;
     color: #000000;
