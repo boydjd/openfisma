@@ -231,7 +231,7 @@ class RemediationController extends PoamBaseController
      *  Do the real searching work. It's a thin wrapper
      *  of poam model's search method.
      */
-    protected function _search($criteria)
+    protected function _search($criteria, $html=true)
     {
         //refer to searchbox.tpl for a complete status list
         $internalCrit = & $criteria;
@@ -326,7 +326,7 @@ class RemediationController extends PoamBaseController
             'action_est_date',
             'count' => 'count(*)'
         ), $internalCrit, $this->_paging['currentPage'],
-            $this->_paging['perPage']);
+            $this->_paging['perPage'], $html);
         $total = array_pop($list);
         $this->_paging['totalItems'] = $total;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
@@ -410,7 +410,7 @@ class RemediationController extends PoamBaseController
                     }
                 }
             }
-            $this->_search($criteria);
+            $this->_search($criteria, false);
         }
     }
     /**
@@ -535,7 +535,7 @@ class RemediationController extends PoamBaseController
             // successful
             $notificationsSent = array();
             if ( $result > 0 ) {
-                foreach ($poam as $k => $v) {
+                foreach ($poam as $k => &$v) {
                     // We shouldn't send the same type of notification twice
                     // in one update. $notificationsSent is a set which
                     // tracks which notifications we have already created.

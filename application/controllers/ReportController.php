@@ -227,6 +227,7 @@ class ReportController extends PoamBaseController
         $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('criteria', $criteria);
         $isExport = $req->getParam('format');
+
         if ('search' == $req->getParam('s') || isset($isExport)) {
             $this->_pagingBasePath.= '/panel/report/sub/poam/s/search';
             if (isset($isExport)) {
@@ -267,7 +268,8 @@ class ReportController extends PoamBaseController
                 'blscr_id',
                 'count' => 'count(*)'), 
                 $criteria, $this->_paging['currentPage'], 
-                $this->_paging['perPage']);
+                $this->_paging['perPage'],
+                false);
             $total = array_pop($list);
             $this->_paging['totalItems'] = $total;
             $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";

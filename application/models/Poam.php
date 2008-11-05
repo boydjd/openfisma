@@ -37,6 +37,16 @@ class Poam extends Zend_Db_Table
 {
     protected $_name = 'poams';
     protected $_primary = 'id';
+
+    private static $_htmlFields =  array('finding_data',
+                                          'action_suggested',
+                                          'action_planned',
+                                          'action_resources',
+                                          'cmeasure',
+                                          'cmeasure_justification',
+                                          'threat_source',
+                                          'threat_justification');
+    
     protected function _parseWhere ($query, $where)
     {
         assert($query instanceof Zend_Db_Select);
@@ -235,9 +245,15 @@ class Poam extends Zend_Db_Table
      *  @param $criteria array 
      *  @param $limit integer results number.
      *  @param $pageno integer search start shift
+     * @param boolean $html If set to false, then strip HTML from returned data.
      *  @return a list of record.
      */
-    public function search ($sysIds, $fields = '*', $criteria = array(), $currentPage = null, $perPage = null)
+    public function search ($sysIds,
+                            $fields = '*',
+                            $criteria = array(),
+                            $currentPage = null,
+                            $perPage = null,
+                            $html = true)
     {
         static $extraFields = array(
                              'asset' => array('as.address_ip' => 'ip',
@@ -309,6 +325,18 @@ class Poam extends Zend_Db_Table
             $query->limitPage($currentPage, $perPage);
         }
         $ret = $this->_db->fetchAll($query);
+
+        // If the caller doesn't want HTML, then strip HTML from the $_htmlFields
+        if (!$html) {
+            foreach ($ret as &$row) {
+                foreach (self::$_htmlFields as $htmlField) {
+                    if (isset($row[$htmlField])) {
+                        $row[$htmlField] = strip_tags($row[$htmlField]);
+                    }
+                }
+            }
+        }
+        
         foreach ($ret as &$row) {
             if (! empty($row['status']) && ! empty($row['id'])) {
                 $row['status'] = $this->getStatus($row['id']);
@@ -542,13 +570,28 @@ class Poam extends Zend_Db_Table
                       ->order("al.timestamp DESC");
         return $this->_db->fetchAll($query);
     }
+
+    /**
+     * writeLogs() - Write event information to the system-wide log.
+     *
+     * @param integer $poamId
+     * @param integer $userId
+     * @param integer $timestamp
+     * @param integer $event
+     * @param string $logContent
+     *
+     * @todo Document this function properly.
+     */
     public function writeLogs ($poamId, $userId, $timestamp, $event, $logContent)
     {
-        $data = array('poam_id' => $poamId, 'user_id' => $userId,
-                      'timestamp' => $timestamp, 'event' => $event,
-                      'description' => $logContent);
+        $data = array('poam_id' => $poamId,
+                      'user_id' => $userId,
+                      'timestamp' => $timestamp,
+                      'event' => $event,
+                      'description' => trim(strip_tags($logContent)));
         $result = $this->_db->insert('audit_logs', $data);
     }
+    
     public function fismasearch ($agency)
     {
         $flag = substr($agency, 0, 1);
@@ -650,5 +693,14 @@ class Poam extends Zend_Db_Table
         }
         $result = $db->fetchRow($query);
         return $result['num_poams'];
+    }
+    
+    /**
+     * htmlFields() - Returns the names of fields which contain HTML in this table.
+     *
+     * @return array
+     */
+    public static function htmlFields() {
+        return self::$_htmlFields;
     }
 }
