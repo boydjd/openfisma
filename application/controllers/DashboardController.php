@@ -96,8 +96,7 @@ class DashboardController extends SecurityController
             'estDateEnd' => parent::$now
         ));
         $total = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'
-        ));
+            'count' => 'count(*)'), array('notStatus' => 'PEND'));
         $alert = array();
         $alert['TOTAL'] = $total;
         $alert['NEW']  = $newCount;
