@@ -90,18 +90,14 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                 $this->poam['cmeasure_effectiveness'] != 'NONE' &&
                 $this->poam['cmeasure_justification'] != '' ){
         ?>
-                <ul class='linwise' >
-                    <li> 
+                <div>
                     <a class="button" target="_blank" 
                     href="/remediation/raf/id/<?php echo $this->poam['id'];?>">
                     View RAF
                     </a>
-                    </li>
-                    <li>
                     <a class='button' target='_blank' 
-                    href="/remediation/raf/format/pdf/id/<?php echo $this->poam['id'];?>")>Export to PDF</a>
-                    </li>
-                </ul>
+                    href="/remediation/raf/format/pdf/id/<?php echo $this->poam['id'];?>">Export to PDF</a>
+                </div>
         <?php } else { ?>
             <i>(Threat and Countermeasure information must be completed to generate a RAF)</i>
         <?php } ?>
