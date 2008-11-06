@@ -575,11 +575,12 @@ class AccountController extends PoamBaseController
 
             $this->_notification->add(Notification::ACCOUNT_CREATED,
                 $this->_me->account, $userId);
+                
             // Log the new account creation and display a success message to the
             // user.
             $this->_user->log(User::CREATION, $this->_me->id,
                              'create user('.$accountData['account'].')');
-            $this->message("User ({$accountData['account']}) added, and a validate email has been sent to this user",
+            $this->message("User ({$accountData['account']}) added, and a validation email has been sent to this user.",
                            self::M_NOTICE);
 
             $this->emailvalidate($userId, $accountData['email'], 'create',

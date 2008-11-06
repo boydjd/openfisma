@@ -62,7 +62,7 @@ class MessageController extends Zend_Controller_Action
 
         $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
         $mail->addTo($email);
-        $mail->setSubject("Email validation");
+        $mail->setSubject("Confirm Your E-mail Address");
 
         $validateCode = md5(rand());
         

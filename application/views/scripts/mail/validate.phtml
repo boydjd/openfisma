@@ -5,9 +5,12 @@ You recently changed your e-mail address for <?php echo Config_Fisma::readSysCon
 <?php } if ('create' == $this->actionType) {?>
 This is an automatically generated message, please do not reply to this address.
 
-Your account had created for <?php echo Config_Fisma::readSysConfig('system_name');?>.
-And your account name is <?php echo $this->account;?>,
-your password is <?php echo $this->password;?>.
+Your <?php echo Config_Fisma::readSysConfig('system_name');?> account has been created.
+
+Login: <?php echo "{$this->account}\n";?>
+Temporary Password: <?php echo "{$this->password}\n";?>
+
+Before using your new account, you will need to validate that this is your correct e-mail address.
 <?php } ?>
 
 Please click here to confirm this e-mail address: <?php echo $this->hostUrl;?>/user/emailvalidate/id/<?php echo $this->userId;?>/code/<?php echo $this->validateCode;?>
