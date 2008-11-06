@@ -187,7 +187,7 @@ class UserController extends MessageController
 
             //check password expire
             $passExpirePeriod = Config_Fisma::readSysConfig('pass_expire');
-            $passwordTs = new Zend_Date($whologin['password_ts']);
+            $passwordTs = new Zend_Date($whologin['password_ts'], 'Y-m-d');
             $passwordTs->add($passExpirePeriod-3, Zend_Date::DAY); //show warning advance 3 days 
             if ($now->isLater($passwordTs)) {
                 $passwordTs->add(3, Zend_Date::DAY);
