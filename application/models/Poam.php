@@ -164,7 +164,8 @@ class Poam extends Zend_Db_Table
                       ->joinLeft(array('el'=>'evaluations'), 'el.id=pev.eval_id', array())
                       ->where("el.precedence_id='$mp' AND pev.decision='APPROVED'")
                       ->where('ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t '.
-                      ' WHERE t.group_id=p.id GROUP BY t.group_id)');
+                      ' WHERE t.group_id=p.id GROUP BY t.group_id)')
+                      ->where('pev.eval_id IN (SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
             } else { //$mp == 0
                 $query->joinLeft(array('pev' => 'poam_evaluations'), null, array())
                       ->join(array('el' => 'evaluations'), '(el.id=pev.eval_id AND el.group="ACTION")
@@ -188,7 +189,8 @@ class Poam extends Zend_Db_Table
                         WHERE ( eval.id = pe.eval_id AND e1.id = pe.group_id 
                                 AND eval.group='EVIDENCE' ) 
                         GROUP BY e1.id)")), "ev.id=e.last_eid AND el.precedence_id=ev.level", array())
-                    ->where("ev.level='$ep' AND pev.decision='APPROVED'");
+                    ->where("ev.level='$ep' AND pev.decision='APPROVED'")
+                    ->where('pev.eval_id IN (SELECT id FROM `evaluations` WHERE `group` = "EVIDENCE")');
             } else { //$ep==0
                 $query->join(array('e' => 'evidences'), 'e.poam_id=p.id', array())
                 ->joinLeft(array('pev' => 'poam_evaluations'), null, array())
