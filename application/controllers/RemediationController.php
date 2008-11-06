@@ -624,8 +624,7 @@ class RemediationController extends PoamBaseController
                 $comm->insert(array('poam_evaluation_id' => $poamEvalId,
                                     'user_id' => $this->_me->id,
                                     'date' => self::$now->toString('Y-m-d H:i:s'),
-                                    'topic' => $topic,
-                                    'content' => $body));
+                                    'topic' => $topic));
             }
 
         }

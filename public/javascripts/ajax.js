@@ -307,7 +307,6 @@ function ms_comment(formname){
                     var topic = $("input[name=topic]",this).val();
                     var reason = $("textarea[name=reason]",this).val();
                     form2.elements['topic'].value = topic;
-                    form2.elements['reject'].value = reason;
                     form2.elements['decision'].value = 'DENIED';
                     form2.submit();
                 }
