@@ -781,10 +781,9 @@ class RemediationController extends PoamBaseController
                 $comm->insert(array('poam_evaluation_id' => $evvId,
                                     'user_id' => $this->_me->id,
                                     'date' => 'CURDATE()',
-                                    'topic' => $topic,
-                                    'content' => $body));
+                                    'topic' => $topic));
 
-                $logContent.= " Status: EN. Topic: $topic. Content: $body.";
+                $logContent .= " Status: EN. Justification: $topic";
                 $this->_notification->add(Notification::EVIDENCE_DENIED,
                                           $this->_me->account,
                                           "PoamId: $poamId",
