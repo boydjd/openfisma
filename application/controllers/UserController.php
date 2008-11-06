@@ -204,8 +204,8 @@ class UserController extends MessageController
                 } else {
                     $this->_user->log(User::TERMINATION, $_me->id, "The password expires");
                     throw new Zend_Auth_Exception('Your user account has been locked because you have not'
-                                . ' change your password for '.$passExpirePeriod.' or more days,'
-                                . 'Please contact the'
+                                . " changed your password for $passExpirePeriod or more days."
+                                . ' Please contact the'
                                 . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
                                 . '">Administrator</a>.');
                 }
@@ -599,7 +599,7 @@ class UserController extends MessageController
             $this->_user->update(array('email_validate'=>1), 'id = '.$userId);
             $msg = "Your e-mail address has been validated. You may close this window or click <a href='http://"
                  . $_SERVER['HTTP_HOST']
-                 . "'>here</a> to go back to "
+                 . "'>here</a> to enter "
                  . Config_Fisma::readSysConfig('system_name')
                  . '.';
         } else {
