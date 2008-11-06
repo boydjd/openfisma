@@ -150,6 +150,7 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
                 'account' => self::USER_NAME,
                 'password' => Config_Fisma::encrypt(self::PASSWORD),
                 'is_active' => 1,
+                'password_ts' => new Zend_Db_Expr('now()'),
                 'last_rob' => new Zend_Db_Expr('now()')
             )
         );
