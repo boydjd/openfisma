@@ -74,7 +74,7 @@
                 $row = $comment->fetchRow('poam_evaluation_id = '.$evaluation[$name]['eval_id']);
                 echo "<td>";
                 if( !empty($row) ) {
-                    echo "<b>{$row->topic}</b>:{$row->content}";
+                    echo "<b>{$row->topic}</b>";
                 }
                 echo " -- <i> by $username ON $date </i></td>";
             }
@@ -86,8 +86,6 @@
 </form>
 
 <div id='comment_dialog' style="display:none">
-Topic:
-<input type="text" name="topic" size=80 value="" />
 Justification:
-<textarea name="reason" rows="3" cols="76" ></textarea>
+<input type="text" name="topic" size=80 value="" />
 </div>

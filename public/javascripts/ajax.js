@@ -263,7 +263,7 @@ function comment(formname){
                 .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
                 .appendTo("body").fadeTo(1, 0.4);
     var content = $("#comment_dialog").html();
-    $('<div title="Upload Evidence"></div>').append(content).
+    $('<div title="Provide Justification"></div>').append(content).
         dialog({position:'top', width: 540, height: 240, resizable: true,modal:true,
             close:function(){
                 $('#full').remove();
