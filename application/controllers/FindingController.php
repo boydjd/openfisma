@@ -556,17 +556,15 @@ template. Please update your CSV file and try again.<br />";
         Config_Fisma::requirePrivilege('finding', 'approve');
         
         $db = Zend_Registry::get('db');
-        $findings = $db->fetchAll(
-            "SELECT p.id, 
-                    p.finding_data, 
-                    p.duplicate_poam_id,
-                    s.nickname                    
-               FROM poams p
-         INNER JOIN systems s ON p.system_id = s.id
-              WHERE status = 'PEND' 
-           ORDER BY system_id,
-                    id
-        ");
+        $findings = $db->fetchAll("SELECT p.id, 
+                                          p.finding_data, 
+                                          p.duplicate_poam_id,
+                                          s.nickname                    
+                                     FROM poams p
+                               INNER JOIN systems s ON p.system_id = s.id
+                                    WHERE status = 'PEND' 
+                                 ORDER BY system_id,
+                                          id");
         
         $this->view->assign('findings', $findings);
         $this->render();

@@ -87,15 +87,13 @@ class Finding extends Poam
     public function checkForDuplicate($id) {
         $db = $this->getAdapter();
         $id = $db->quote($id);
-        $results = $db->fetchAll(
-            "SELECT old_poam.id
-               FROM poams old_poam
-         INNER JOIN poams new_poam 
-                 ON old_poam.id <> new_poam.id
-                AND old_poam.finding_data LIKE new_poam.finding_data
-              WHERE new_poam.id = $id
-           ORDER BY old_poam.id"
-        );
+        $results = $db->fetchAll("SELECT old_poam.id
+                                    FROM poams old_poam
+                              INNER JOIN poams new_poam 
+                                      ON old_poam.id <> new_poam.id
+                                     AND old_poam.finding_data LIKE new_poam.finding_data
+                                   WHERE new_poam.id = $id
+                                   ORDER BY old_poam.id");
         
         // If any rows are found, then return the id of the first (it is the oldest)
         if (isset($results[0])) {
