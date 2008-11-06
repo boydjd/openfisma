@@ -237,7 +237,7 @@ template. Please update your CSV file and try again.<br />";
                     unset($poam['blscr_id']);
                 }
                 $poam['status'] = 'NEW';
-                $discoverTs = new Zend_Date($poam['discover_ts']);
+                $discoverTs = new Zend_Date($poam['discover_ts'], 'Y-m-d');
                 $poam['discover_ts'] = $discoverTs->toString("Y-m-d");
                 $poam['create_ts'] = self::$now->toString("Y-m-d H:i:s");
                 $poam['created_by'] = $this->_me->id;
