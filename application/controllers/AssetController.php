@@ -149,6 +149,7 @@ class AssetController extends PoamBaseController
         $this->view->system_list = $systemList;
         $this->view->network_list = $networkList;
         $this->_helper->actionStack('header', 'Panel');
+        $this->render();
         $this->_forward('search', 'product');
     }
     /**

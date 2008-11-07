@@ -383,7 +383,7 @@ class ReportController extends PoamBaseController
         $req = $this->getRequest();
         $type = $req->getParam('type', '');
         $this->view->assign('type', $type);
-
+        $this->render();
         if (!empty($type) && ('search' == $req->getParam('s'))) {
             define('REPORT_GEN_BLSCR', 1);
             define('REPORT_GEN_FIPS', 2);

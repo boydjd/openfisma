@@ -374,7 +374,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('criteria', $criteria);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
-
+        $this->render();
         if ('search' == $req->getParam('s')) {
             if (!empty($criteria['est_date_begin'])) {
                 $criteria['estDateBegin'] = new Zend_Date($criteria['est_date_begin'], 'Y-m-d');
