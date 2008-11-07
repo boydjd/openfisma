@@ -615,9 +615,7 @@ class RemediationController extends PoamBaseController
             $ret = $evaluation->find($evalId);
             $evalNickname = $ret->current()->nickname;
             $logContent = "Update: $evalNickname\nOriginal: \"NONE\" New: \"".$decision."\"";
-            $this->_poam->writeLogs($poamId, $this->_me->id, 
-                self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION', $logContent);
-
+            
             $this->_notification->add($ret->current()->event_id,
                         $this->_me->account,
                         "PoamID: $poamId",
@@ -640,8 +638,14 @@ class RemediationController extends PoamBaseController
                                     'user_id' => $this->_me->id,
                                     'date' => self::$now->toString('Y-m-d H:i:s'),
                                     'topic' => $topic));
+                $logContent .=" Status: OPEN. Justification: $topic";
             }
 
+            if (!empty($logContent)) {
+                 $this->_poam->writeLogs($poamId, $this->_me->id, 
+                     self::$now->toString('Y-m-d H:i:s'), 
+                     'MODIFICATION', $logContent);
+            }
         }
 
         if (!empty($poam)) {
