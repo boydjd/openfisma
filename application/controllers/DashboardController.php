@@ -109,7 +109,7 @@ class DashboardController extends SecurityController
         $this->view->alert = $alert;
         
         if (false !== strtotime($this->_me->last_login_ts)) {
-            $lastLoginDate = new Zend_Date($this->_me->last_login_ts);
+            $lastLoginDate = new Zend_Date($this->_me->last_login_ts, Zend_Date::ISO_8601);
             $lastLogin = $lastLoginDate->toString('l, M j, g:i a');
             $this->view->lastLogin = $lastLogin;
             $this->view->lastLoginIp = $this->_me->last_login_ip;
