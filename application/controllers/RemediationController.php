@@ -510,55 +510,71 @@ class RemediationController extends PoamBaseController
         $id = $req->getParam('id');
         $poam = $req->getPost('poam');
         if (!empty($poam)) {
-            $oldpoam = $this->_poam->find($id)->toArray();
-            if (empty($oldpoam)) {
-                throw new Exception_General('incorrect ID specified for poam');
-            } else {
-                $oldpoam = $oldpoam[0];
-            }
-            $where = $this->_poam->getAdapter()->quoteInto('id = ?', $id);
-            $logContent = "Changed:";
-            //@todo sanity check
-            //@todo this should be encapsulated in a single transaction
-            foreach ($poam as $k => $v) {
-                if ($k == 'type' && $oldpoam['status'] == 'NEW') {
-                    assert(empty($poam['status']));
-                    $poam['status'] = 'OPEN';
-                    $poam['modify_ts'] = self::$now->toString('Y-m-d H:i:s');
+            try {
+                $oldpoam = $this->_poam->find($id)->toArray();
+                if (empty($oldpoam)) {
+                    throw new Exception_General("incorrect ID specified for poam");
+                } else {
+                    $oldpoam = $oldpoam[0];
                 }
-                ///@todo SSO can only approve the action after all the required
-                // info provided
-            }
-            $result = $this->_poam->update($poam, $where);
-                        
-            // Generate notifications and audit records if the update is
-            // successful
-            $notificationsSent = array();
-            if ( $result > 0 ) {
-                foreach ($poam as $k => &$v) {
-                    // We shouldn't send the same type of notification twice
-                    // in one update. $notificationsSent is a set which
-                    // tracks which notifications we have already created.
-                    if (array_key_exists($k, $this->_notificationArray)
-                        && !array_key_exists($this->_notificationArray[$k],
-                                             $notificationsSent)) {
-                        $this->_notification->add($this->_notificationArray[$k],
-                            $this->_me->account,
-                            "PoamID: $id",
-                            isset($poam['system_id'])?$poam['system_id']: $oldpoam['system_id']);
-                        $notificationsSent[$this->_notificationArray[$k]] = 1;
+                if (isset($poam['ecd_justification']) && empty($poam['ecd_justification'])) {
+                    // English check
+                    throw new Exception_General("Please input your ECD change justification, ".
+                        "and the ECD data is not changed");
+                }
+                $where = $this->_poam->getAdapter()->quoteInto('id = ?', $id);
+                $logContent = "Changed:";
+                //@todo sanity check
+                //@todo this should be encapsulated in a single transaction
+                foreach ($poam as $k => $v) {
+                    if ($k == 'type' && $oldpoam['status'] == 'NEW') {
+                        assert(empty($poam['status']));
+                        $poam['status'] = 'OPEN';
+                        $poam['modify_ts'] = self::$now->toString('Y-m-d H:i:s');
                     }
-
-                    $logContent =
-                        "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
-                    $this->_poam->writeLogs($id, $this->_me->id,
-                        self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION',
-                        $logContent);
+                    ///@todo SSO can only approve the action after all the required
+                    // info provided
                 }
+                $result = $this->_poam->update($poam, $where);
+                        
+                // Generate notifications and audit records if the update is
+                // successful
+                $notificationsSent = array();
+                if ( $result > 0 ) {
+                    foreach ($poam as $k => &$v) {
+                        // We shouldn't send the same type of notification twice
+                        // in one update. $notificationsSent is a set which
+                        // tracks which notifications we have already created.
+                        if (array_key_exists($k, $this->_notificationArray)
+                            && !array_key_exists($this->_notificationArray[$k],
+                                                 $notificationsSent)) {
+                            $this->_notification->add($this->_notificationArray[$k],
+                                $this->_me->account,
+                                "PoamID: $id",
+                                isset($poam['system_id'])?$poam['system_id']: $oldpoam['system_id']);
+                            $notificationsSent[$this->_notificationArray[$k]] = 1;
+                        }
+
+                        $logContent =
+                            "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
+                        $this->_poam->writeLogs($id, $this->_me->id,
+                            self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION',
+                            $logContent);
+                    }
+                }
+            } catch (Exception_General $e) {
+                if ($e instanceof Exception_General) {
+                    $message = $e->getMessage();
+                } else {
+                    $message = "Failed to modify the poam.";
+                }
+                $this->message($message, self::M_WARNING);
             }
         }
+        
         //throw new Fisma_Excpection('POAM not updated for some reason');
-        $this->_redirect('/panel/remediation/sub/view/id/' . $id);
+        $this->_forward('remediation', 'Panel', null, array('sub'=>'view',
+                                                            'id' => $id));
     }
 
     /**
