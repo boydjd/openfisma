@@ -32,6 +32,8 @@
         }
         if(Config_Fisma::isAllow('finding','create')) {
             echo'<li><a href="/panel/finding/sub/create">Create New Finding</a>';
+        }
+        if(Config_Fisma::isAllow('finding','inject')) {
             echo'<li><a href="/panel/finding/sub/injection">Upload Spreadsheet</a>';
             echo'<li><a href="/panel/finding/sub/plugin">Upload Scan Results</a>';
         }
