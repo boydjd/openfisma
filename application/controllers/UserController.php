@@ -113,7 +113,7 @@ class UserController extends MessageController
                             if ($terminationTs->isLater($now)) {
                                 $reincarnation = clone $now;
                                 $terminationTs->sub($now);
-                                throw new Zend_Auth_Exception('Your user account has been locked due to'
+                                throw new Zend_Auth_Exception('Your user account has been locked due to '
                                     . $threshold['failure']
                                     . " or more unsuccessful login attempts. Your account will be"
                                     . " unlocked in ".ceil($terminationTs->getTimestamp()/60)
@@ -122,14 +122,14 @@ class UserController extends MessageController
                             }
                             $isQualified = true;
                         } else {
-                            throw new Zend_Auth_Exception('Your user account has been locked due to'
+                            throw new Zend_Auth_Exception('Your user account has been locked due to '
                                 . $threshold['failure']
                                 . ' or more unsuccessful login attempts. Please contact the'
                                 . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
                                 . '">Administrator</a>.');
                         }
                     } else { //administrator manually lock it
-                        throw new Zend_Auth_Exception('Your account has been locked by Administrator. '
+                        throw new Zend_Auth_Exception('Your account has been locked by the Administrator. '
                                 . 'Please contact the'
                                 . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
                                 . '">Administrator</a>.');
