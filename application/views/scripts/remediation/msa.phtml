@@ -79,7 +79,7 @@ function delok()
                 $ret = $comment->fetchRow('poam_evaluation_id = '.$row['pev_id']);
                 echo "<td>";
                 if (!empty($ret)) {
-                    echo "<b>{$ret->topic}</b>";
+                    echo "<b>{$ret->topic}</b>:{$ret->content}";
                 }
                 echo " -- <i> by {$row['username']} ON {$row['date']}</i></td>";
             }
@@ -94,6 +94,8 @@ function delok()
 <div id='ms_dialog' style="display:none">
 Topic:
 <input type="text" name="topic" size=80 value="" />
+Justification:
+<textarea name="reason" rows="3" cols="76" ></textarea>
 </div>
 <!-- END MITIGATION STRATEGY APPROVAL TABLE -->
 
