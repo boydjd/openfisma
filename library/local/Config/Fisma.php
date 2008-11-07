@@ -219,7 +219,7 @@ class Config_Fisma
     public static function requirePrivilege($screen, $action) 
     {
         if (!self::hasPrivilege($screen, $action)) {
-            header('Location: /panel/dashboard');
+            throw new Exception_PrivilegeViolation("User does not have the privilege for ($screen, $action)");
         }
     }
 
