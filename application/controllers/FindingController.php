@@ -452,9 +452,9 @@ template. Please update your CSV file and try again.<br />";
      *  pluginAction() - Import scan results via a plug-in
      */
     public function pluginAction()
-    {
+    {       
         Config_Fisma::requirePrivilege('finding', 'inject');
-        
+
         // Load the finding plugin form
         $uploadForm = Form_Manager::loadForm('finding_upload');
         $uploadForm = Form_Manager::prepareForm($uploadForm);
@@ -464,7 +464,7 @@ template. Please update your CSV file and try again.<br />";
         $plugin = new Plugin();
         $pluginList = $plugin->getList('name');
         $uploadForm->plugin->addMultiOptions($pluginList);
-        
+
         $uploadForm->findingSource->addMultiOption('', '');
         $uploadForm->findingSource->addMultiOptions($this->_sourceList);
 
@@ -534,9 +534,10 @@ template. Please update your CSV file and try again.<br />";
                 // Error message
                 $this->message("Scan upload failed:<br>$errorString", self::M_WARNING);
             }
+            $this->render(); // Not sure why this view doesn't auto-render?? It doesn't render when the POST is set.
         }
     }
-    
+
     /** 
      * approveAction() - Allows a user to approve or delete pending findings
      *

@@ -232,14 +232,31 @@ class Inject_AppDetective extends Inject_Abstract
             $assetId = $assetTable->insert($this->_asset);
         }
         $assetTable = new Asset();
-        $asset = $assetTable->find($assetId);
+        $asset = $assetTable->fetchRow("id = $assetId")->toArray();
 
-        // If the asset does not have a product associated with it, then create a new product and associate it with the
-        // asset. Otherwise, update the product's CPE if it has not been defined yet.
-        if (!isset($asset->prodId)) {
-            $productTable = new Product();
-            $productId = $productTable->insert($this->_product);
+        // If the asset does not have a product associated with it, then re-use an existing asset or create a new asset
+        // if necessary.
+        $productTable = new Product();
+        $quotedCpeName = $productTable->getAdapter()->quote($this->_product['cpe_name']);
+        if (empty($asset['prod_id'])) {
+            $productId;
+            $existingProduct = $productTable->fetchRow("cpe_name LIKE $quotedCpeName");
+            if ($existingProduct) {
+                // Use the existing product if one is found
+                $productId = $existingProduct->id;
+            } else {
+                // If no existing product, create a new one
+                $productId = $productTable->insert($this->_product);
+            }
             $assetTable->update(array('prod_id' => $productId), "id = $assetId");
+        } else {
+            // If the asset does have a product, then do not modify it unless the CPE name is null, in which case update
+            // the CPE name.
+            $existingProduct = $productTable->fetchRow("id LIKE {$asset['prod_id']}")->toArray();
+            if ($existingProduct && empty($existingProduct['cpe_name'])) {
+                $tempProduct = array('cpe_name' => $this->_product['cpe_name']);
+                $productTable->update($tempProduct, "id = {$existingProduct['id']}");
+            }
         }
 
         // Commit the findings

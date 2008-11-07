@@ -5,33 +5,41 @@
 </div>
 
 <form method="POST" action="/panel/finding/sub/process-approval">
-    <table>
+    <table class="tbframe">
         <tr>
-            <th>Select</th>
-            <th>Id</th>
-            <th>System</th>
-            <th>Description</th>
-            <th>Duplicate</th>
+            <th class="tdc">Select</th>
+            <th class="tdc">Id</th>
+            <th class="tdc">System</th>
+            <th class="tdc">Description</th>
+            <th class="tdc">Duplicate</th>
         </tr>
 <?php
-    foreach ($this->findings as $finding) {
-        print "<tr><td><input type=\"checkbox\" name=\"findings[]\" value=\"{$finding['id']}\"></td>";
-        print "<td><a href=\"/panel/remediation/sub/view/id/{$finding['id']}\">{$finding['id']}</a></td>";
-        print "<td>{$finding['nickname']}</td>";
-        print "<td>{$finding['finding_data']}</td>";
-        print "<td>";
-        if (isset($finding['duplicate_poam_id'])) {
-            print "<a href=\"/panel/remediation/sub/view/id/{$finding['duplicate_poam_id']}\">{$finding['duplicate_poam_id']}</a>";
-        } else {
-            print "&nbsp;";
+    if (count($this->findings) > 0) {
+        foreach ($this->findings as $finding) {
+            print "<tr><td align='center' class='tdc'><input type=\"checkbox\" name=\"findings[]\" value=\"{$finding['id']}\"></td>";
+            print "<td align='center' class='tdc'><a href=\"/panel/remediation/sub/view/id/{$finding['id']}\">{$finding['id']}</a></td>";
+            print "<td align='center' class='tdc'>{$finding['nickname']}</td>";
+            print "<td class='tdc'>{$finding['finding_data']}</td>";
+            print "<td align='center' class='tdc'>";
+            if (isset($finding['duplicate_poam_id'])) {
+                print "<a href=\"/panel/remediation/sub/view/id/{$finding['duplicate_poam_id']}\">{$finding['duplicate_poam_id']}</a>";
+            } else {
+                print "&nbsp;";
+            }
+            print "</td>";
+            print "</tr>";
         }
-        print "</td>";
-        print "</tr>";
+    } else {
+        print "<tr><td class='tdc' colspan='5'><i>There are no pending findings.</i></td></tr>";
     }
 ?>
+        <tr>
+            <td class="tdc" colspan="5">
+                <input type="button" name="select_all" value="Select All">
+                <input type="button" name="select_none" value="Select None">
+                <input type="submit" name="delete_selected" value="Delete Selected">
+                <input type="submit" name="approve_selected" value="Approve Selected">
+            </td>
+        </tr>
     </table>
-    <input type="button" name="select_all" value="Select All">
-    <input type="button" name="select_none" value="Select None">
-    <input type="submit" name="delete_selected" value="Delete Selected">
-    <input type="submit" name="approve_selected" value="Approve Selected">
 </form>
