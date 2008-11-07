@@ -433,8 +433,7 @@ class RemediationController extends PoamBaseController
             && $poamDetail['action_est_date'] != $poamDetail['action_current_date']) {
             $query = $this->_poam->getAdapter()->select()
                           ->from(array('al'=>'audit_logs'), 'date_format(timestamp, "%Y-%m-%d") as time')
-                          ->join(array('u'=>'users'), 'al.user_id = u.id',
-                                 array('u.name_first','u.name_last'))
+                          ->join(array('u'=>'users'), 'al.user_id = u.id', 'u.account')
                           ->where('al.poam_id = ?', $id)
                           ->where('al.description like "%action_current_date%"')
                           ->order('al.id DESC');
