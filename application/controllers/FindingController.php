@@ -265,6 +265,7 @@ template. Please update your CSV file and try again.<br />";
         $this->view->blscr_list = $blscrList;
         $this->view->assign('system', $this->_systemList);
         $this->view->assign('source', $this->_sourceList);
+        $this->render();
     }
     /**
      *  Delete findings

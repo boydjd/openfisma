@@ -56,6 +56,7 @@ class RemediationController extends PoamBaseController
      *
      *  It combines the searching and summary into one page.
      */
+    
     public function indexAction()
     {
         Config_Fisma::requirePrivilege('remediation', 'read');
@@ -571,8 +572,7 @@ class RemediationController extends PoamBaseController
         }
         
         //throw new Fisma_Excpection('POAM not updated for some reason');
-        $this->_forward('remediation', 'Panel', null, array('sub'=>'view',
-                                                            'id' => $id));
+        $this->_forward('view', null, null, array('id' => $id));
     }
 
     /**

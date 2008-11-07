@@ -142,6 +142,7 @@ class ConfigController extends SecurityController
         $ldaps = $this->_config->getLdap();
         $this->view->assign('ldaps', $ldaps);
         $this->view->generalConfig = $form;
+        $this->render();
     }
 
     /**

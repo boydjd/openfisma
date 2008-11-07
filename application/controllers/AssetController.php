@@ -351,6 +351,7 @@ class AssetController extends PoamBaseController
             $msg = 'Failed to edit the asset';
             $this->message($msg, self::M_WARNING);
         }
+        $this->_helper->_actionStack('header','panel');
         $this->_forward('view', null, null, array(
             'id' => $id,
             's' => 'edit'
