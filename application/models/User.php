@@ -149,7 +149,8 @@ class User extends FismaModel
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
                                    null, "User: {$account}");
                 $row->failureCount++;
-                if ($row->failureCount >= Config_Fisma::readSysConfig('failure_threshold')) {
+                if ('database' ==  Config_Fisma::readSysConfig('auth_type')
+                    && $row->failureCount >= Config_Fisma::readSysConfig('failure_threshold')) {
                     $row->terminationTs = $nowSqlString;
                     $row->isActive = 0;
                     $notification->add(Notification::ACCOUNT_LOCKED,

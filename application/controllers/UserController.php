@@ -107,7 +107,7 @@ class UserController extends MessageController
                             // If the system administrator has elected to have accounts
                             // unlock automatically, then calculate how much time is
                             // left on the lock.
-                            $terminationTs = new Zend_Date($whologin['termination_ts']);
+                            $terminationTs = new Zend_Date($whologin['termination_ts'], Zend_Date::ISO_8601);
                             $terminationTs->add($unlockDuration, Zend_Date::SECOND);
                             //beyond the time limited, unlock automatically
                             if ($terminationTs->isLater($now)) {
