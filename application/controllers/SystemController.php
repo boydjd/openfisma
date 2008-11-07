@@ -146,7 +146,6 @@ class SystemController extends SecurityController
             $this->_paging['perPage']);
         $systemList = $db->fetchAll($query);
         $this->view->assign('system_list', $systemList);
-        $this->render();
     }
 
     /**
@@ -173,7 +172,6 @@ class SystemController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
 
     /**
@@ -240,7 +238,6 @@ class SystemController extends SecurityController
         }
         $this->view->title = "Create ";
         $this->view->form = $form;
-        $this->render();
     }
 
     /**

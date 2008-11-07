@@ -42,7 +42,6 @@ class InstallController extends Zend_Controller_Action
     {
         $this->view->back = '';
         $this->view->next = '/install/envcheck';
-        $this->render();
     }
     public function envcheckAction()
     {
@@ -59,7 +58,6 @@ class InstallController extends Zend_Controller_Action
             );
             $this->view->next = '';
         }
-        $this->render();
     }
     public function checkingAction()
     {
@@ -84,7 +82,6 @@ class InstallController extends Zend_Controller_Action
         } else {
             $this->view->next = '';
         }
-        $this->render();
     }
     public function dbsettingAction()
     {
@@ -96,7 +93,6 @@ class InstallController extends Zend_Controller_Action
         $this->view->title = 'General settings';
         $this->view->back = '/install/checking';
         $this->view->next = '/install/dbreview';
-        $this->render();
     }
     public function dbreviewAction()
     {
@@ -153,7 +149,6 @@ class InstallController extends Zend_Controller_Action
         } else {
             $this->view->back = '/install/dbsetting';
             $this->view->next = '/install/initial';
-            $this->render();
         }
     }
     public function initialAction()
@@ -273,7 +268,6 @@ class InstallController extends Zend_Controller_Action
     {
         $this->view->title = 'Install complete';
         $this->view->next = '/user/login';
-        $this->render();
     }
     public function errorAction()
     {
@@ -289,7 +283,6 @@ class InstallController extends Zend_Controller_Action
             break;
         }
         $this->getResponse()->clearBody();
-        $this->render();
     }
 
     /*

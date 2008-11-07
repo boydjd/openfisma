@@ -138,7 +138,7 @@ Zend_Date::setOptions(array('format_type' => 'php'));
 
 $viewRender = Zend_Controller_Action_HelperBroker::
               getStaticHelper('viewRenderer');
-$viewRender->setNeverRender(true);
+//$viewRender->setNeverRender(true);
 Zend_Controller_Action_HelperBroker::addHelper($viewRender);
 
 $router = $frontController->getRouter();

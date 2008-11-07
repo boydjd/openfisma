@@ -159,7 +159,6 @@ class AccountController extends PoamBaseController
         $this->view->assign('postAction', $postAction);
         $this->view->assign('total', $userCount);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
     
     /**
@@ -209,7 +208,6 @@ class AccountController extends PoamBaseController
         // Assign view outputs
         $this->view->assign('roleList', $roleList);
         $this->view->assign('userList', $userList);
-        $this->render();
     }
     
     /**
@@ -505,7 +503,6 @@ class AccountController extends PoamBaseController
         
         // Assign view outputs.
         $this->view->form = Form_Manager::prepareForm($form);
-        $this->render();
     }
     
     /**
@@ -763,8 +760,6 @@ class AccountController extends PoamBaseController
             $this->message('assign role and privileges successfully.', 
                             self::M_NOTICE);
             $this->_redirect('panel/account/sub/assignrole/id/' . $userId);
-        } else {
-            $this->render();
         }
     }
     /**
@@ -859,7 +854,6 @@ class AccountController extends PoamBaseController
         
         // Assign view outputs
         $this->view->assign('logList', $logList);
-        $this->render();
     }
 
     /**

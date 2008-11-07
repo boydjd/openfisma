@@ -80,6 +80,5 @@ class MetainfoController extends PoamBaseController
                 $list[$this->view->selected]:'CAP';
         }
         $this->view->list = $list;
-        $this->render();
     }
 }

@@ -90,7 +90,6 @@ class RoleController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
     public function listAction()
     {
@@ -108,7 +107,6 @@ class RoleController extends SecurityController
             $this->_paging['perPage']);
         $roleList = $this->_role->fetchAll($query)->toArray();
         $this->view->assign('role_list', $roleList);
-        $this->render();
     }
     public function createAction()
     {
@@ -131,7 +129,6 @@ class RoleController extends SecurityController
             }
             $this->message($msg, $model);
         }
-        $this->render();
     }
     public function deleteAction()
     {
@@ -173,8 +170,6 @@ class RoleController extends SecurityController
         $this->view->assign('role', $roleList);
         if ('edit' == $req->getParam('v')) {
             $this->render('edit');
-        } else {
-            $this->render();
         }
     }
     public function updateAction()
@@ -274,7 +269,6 @@ class RoleController extends SecurityController
             $this->view->assign('role', $role);
             $this->view->assign('screen_list', $screenList);
             $this->view->assign('exist_functions', $existFunctions);
-            $this->render();
         }
     }
 }

@@ -55,7 +55,6 @@ class ErrorController extends Zend_Controller_Action
         $logger->log($content, Zend_Log::ERR);
         $this->view->content = $content;
         $this->_helper->actionStack('header', 'panel');
-        $this->render();
     }
     /**
      * Error handler for input validation error

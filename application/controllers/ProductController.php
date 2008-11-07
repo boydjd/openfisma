@@ -50,6 +50,9 @@ class ProductController extends SecurityController
         $req = $this->getRequest();
         $this->_pagingBasePath = $req->getBaseUrl() . '/panel/product/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('search', 'html')
+                    ->initContext();
         if (!in_array($req->getActionName(), array(
             'login',
             'logout'
@@ -68,11 +71,9 @@ class ProductController extends SecurityController
         $product = new Product();
         $req = $this->getRequest();
         $prodId = $req->getParam('prod_list', '');
-        $prodName = $req->getParam('prodName', '');
-        $prodVendor = $req->getParam('prodVendor', '');
-        $prodVersion = $req->getParam('prodVersion', '');
-        $tplName = $req->getParam('view', 'search');
-        $this->_helper->layout->setLayout('ajax');
+        $prodName = $req->getParam('prod_name', '');
+        $prodVendor = $req->getParam('prod_vendor', '');
+        $prodVersion = $req->getParam('prod_version', '');
         $qry = $product->select()->setIntegrityCheck(false)->from(array(),
             array());
         if (!empty($prodName)) {
@@ -89,7 +90,6 @@ class ProductController extends SecurityController
         }
         $qry->limit(100, 0);
         $this->view->prod_list = $product->fetchAll($qry)->toArray();
-        $this->render($tplName);
     }
     public function searchboxAction()
     {
@@ -112,7 +112,6 @@ class ProductController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
     public function listAction()
     {
@@ -158,7 +157,6 @@ class ProductController extends SecurityController
             }
             $this->message($msg, self::M_NOTICE);
         }
-        $this->render();
     }
     public function deleteAction()
     {
@@ -181,7 +179,6 @@ class ProductController extends SecurityController
                 $this->_notification
                      ->add(Notification::PRODUCT_DELETED,
                          $this->_me->account, $id);
-
                 $msg = "Product deleted successfully";
                 $model = self::M_NOTICE;
             }
@@ -203,8 +200,6 @@ class ProductController extends SecurityController
         $this->view->assign('product', $productList);
         if ('edit' == $req->getParam('v')) {
             $this->render('edit');
-        } else {
-            $this->render();
         }
     }
     public function updateAction()

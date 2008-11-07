@@ -64,7 +64,7 @@ class ConfigController extends SecurityController
     public function indexAction()
     {
         Config_Fisma::requirePrivilege('app_configuration', 'update');
-        
+        $this->_helper->viewRenderer->setNoRender();
         $this->_helper->actionStack('password');
         $this->_helper->actionStack('notification');
         $this->_helper->actionStack('contact');
@@ -142,7 +142,6 @@ class ConfigController extends SecurityController
         $ldaps = $this->_config->getLdap();
         $this->view->assign('ldaps', $ldaps);
         $this->view->generalConfig = $form;
-        $this->render();
     }
 
     /**
@@ -180,7 +179,6 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
-        $this->render();
     }
 
 
@@ -213,7 +211,6 @@ class ConfigController extends SecurityController
             }
         }
         $this->view->form = $form;
-        $this->render();
     }
 
     /**
@@ -297,7 +294,6 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
-        $this->render();
     }
 
     /**
@@ -332,7 +328,6 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
-        $this->render();
     }
      
     /**
@@ -376,6 +371,5 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
-        $this->render();
     }
 }

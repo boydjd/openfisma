@@ -107,7 +107,6 @@ class OrganizationController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
 
     /*
@@ -128,7 +127,6 @@ class OrganizationController extends SecurityController
                                              $this->_paging['perPage']);
         $organizationList = $this->_organization->fetchAll($query)->toArray();
         $this->view->assign('organization_list', $organizationList);
-        $this->render();
     }
 
     /**
@@ -221,7 +219,6 @@ class OrganizationController extends SecurityController
         }
         $this->view->title = "Create ";
         $this->view->form = $form;
-        $this->render();
     }
 
     /**

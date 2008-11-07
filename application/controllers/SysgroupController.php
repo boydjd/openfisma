@@ -79,7 +79,6 @@ class SysgroupController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
     public function listAction()
     {
@@ -95,7 +94,6 @@ class SysgroupController extends SecurityController
                                              $this->_paging['perPage']);
         $sysgroupList = $this->_sysgroup->fetchAll($query)->toArray();
         $this->view->assign('sysgroup_list', $sysgroupList);
-        $this->render();
     }
     public function createAction()
     {
@@ -165,7 +163,6 @@ class SysgroupController extends SecurityController
         $sysgroup = $res[0];
         $this->view->assign('id', $id);
         $this->view->assign('sysgroup', $sysgroup);
-        $this->render();
     }
     public function editAction ()
     {

@@ -90,10 +90,6 @@ class FindingController extends PoamBaseController
             $this->view->finding = $poam->getDetail($id);
             $this->view->finding['system_name'] = 
                     $this->_systemList[$this->view->finding['system_id']];
-            $this->render();
-        } else {
-            /// @todo Add a new Excption page to indicate Access denial
-            $this->render();
         }
     }
     /**
@@ -133,7 +129,6 @@ class FindingController extends PoamBaseController
     {
         Config_Fisma::requirePrivilege('finding', 'inject');
         
-        $this->_helper->actionStack('header', 'Panel');
         if (Config_Fisma::isAllow('finding', 'create')) {
             $csvFile = isset($_FILES['csv']) ? $_FILES['csv'] : array();
             if (!empty($csvFile)) {
@@ -155,7 +150,6 @@ class FindingController extends PoamBaseController
             }
             if (!empty($errMsg)) {
                 $this->message($errMsg, self::M_WARNING);
-                $this->render();
                 return;
             }
             if (!empty($csvFile)) {
@@ -207,7 +201,6 @@ template. Please update your CSV file and try again.<br />";
                 
                 $this->view->assign('error_msg', $summaryMsg);
             }
-            $this->render();
         }
     }
     /**
@@ -272,7 +265,6 @@ template. Please update your CSV file and try again.<br />";
         $this->view->blscr_list = $blscrList;
         $this->view->assign('system', $this->_systemList);
         $this->view->assign('source', $this->_sourceList);
-        $this->render();
     }
     /**
      *  Delete findings
@@ -448,7 +440,6 @@ template. Please update your CSV file and try again.<br />";
             // the error handler will be confused by context switch and will 
             // look for error.xls.tpl instead of error.tpl
             $contextSwitch->initContext('xls');
-            $this->render();
         } catch(Exception_General $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);
@@ -543,8 +534,6 @@ template. Please update your CSV file and try again.<br />";
                 $this->message("Scan upload failed:<br>$errorString", self::M_WARNING);
             }
         }
-
-        $this->render();
     }
     
     /** 
@@ -567,7 +556,6 @@ template. Please update your CSV file and try again.<br />";
                                           id");
         
         $this->view->assign('findings', $findings);
-        $this->render();
     }
     
     /**

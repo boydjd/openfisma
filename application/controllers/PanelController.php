@@ -34,6 +34,11 @@
  */
 class PanelController extends SecurityController
 {
+    public function preDispatch()
+    {
+        parent::preDispatch();
+        $this->_helper->viewRenderer->setNoRender();
+    }
     /** Alias of dashboardAction
      */
     public function indexAction()
@@ -42,16 +47,13 @@ class PanelController extends SecurityController
     }
     public function headerAction()
     {
-        $this->_helper->layout->assign('header',
-            $this->view->render($this->_helper->viewRenderer->getViewScript()));
         $this->_helper->layout->setLayout('layout');
         $this->_helper->actionStack('footer');
+        $this->render('header','header');
     }
-
     public function footerAction()
     {
-        $this->_helper->layout->assign('footer',
-            $this->view->render($this->_helper->viewRenderer->getViewScript()));
+        $this->render('footer','footer');           
     }
 
     public function dashboardAction()

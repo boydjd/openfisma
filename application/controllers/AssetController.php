@@ -149,7 +149,6 @@ class AssetController extends PoamBaseController
         $this->view->system_list = $systemList;
         $this->view->network_list = $networkList;
         $this->_helper->actionStack('header', 'Panel');
-        $this->render();
         $this->_forward('search', 'product');
     }
     /**
@@ -270,7 +269,6 @@ class AssetController extends PoamBaseController
             $this->view->assign('asset_list', $assetList);
             $this->view->assign('links', $pager->getLinks());
         }
-        $this->render();
     }
     /** 
      *  View an asset in detail
@@ -311,13 +309,13 @@ class AssetController extends PoamBaseController
         if ('edit' == $req->getParam('s')) {
             $this->view->assign('system_list', $this->_systemList);
             $this->view->assign('network_list', $this->_networkList);
-            $this->_helper->actionStack('header', 'Panel');
+            //$this->_helper->actionStack('header', 'Panel');
             $this->render('edit');
-            $this->_forward('search', 'Product');
-        } else {
-            $this->render();
+            $this->_helper->actionStack('search', 'Product');
         }
     }
+
+
     /**
      *  update information of an asset
      */

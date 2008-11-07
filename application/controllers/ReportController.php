@@ -203,7 +203,6 @@ class ReportController extends PoamBaseController
             ), $criteriaFaw);
             $this->view->assign('summary', $summary);
         }
-        $this->render();
     }
     
     /**
@@ -277,7 +276,6 @@ class ReportController extends PoamBaseController
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());
         }
-        $this->render();
     }
     
     /**
@@ -373,7 +371,6 @@ class ReportController extends PoamBaseController
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());
         }
-        $this->render();
     }
 
     /**
@@ -386,7 +383,7 @@ class ReportController extends PoamBaseController
         $req = $this->getRequest();
         $type = $req->getParam('type', '');
         $this->view->assign('type', $type);
-        $this->render();
+
         if (!empty($type) && ('search' == $req->getParam('s'))) {
             define('REPORT_GEN_BLSCR', 1);
             define('REPORT_GEN_FIPS', 2);
@@ -454,7 +451,6 @@ class ReportController extends PoamBaseController
         ))->where("b.class = 'TECHNICAL'")->group("b.code");
         $rpdata[] = $db->fetchAll($query);
         $this->view->assign('rpdata', $rpdata);
-        $this->render();
     }
     
     /**
@@ -502,7 +498,6 @@ class ReportController extends PoamBaseController
         $rpdata[] = $systems;
         $rpdata[] = $fipsTotals;
         $this->view->assign('rpdata', $rpdata);
-        $this->render();
     }
     
     /**
@@ -528,7 +523,6 @@ class ReportController extends PoamBaseController
             ->group("prod.vendor")->group("prod.name")->group("prod.version");
         $rpdata = $db->fetchAll($query);
         $this->view->assign('rpdata', $rpdata);
-        $this->render();
     }
     
     /**
@@ -550,7 +544,6 @@ class ReportController extends PoamBaseController
         ), 'a.source = "SCAN" AND a.prod_id = p.id', array());
         $rpdata = $db->fetchAll($query);
         $this->view->assign('rpdata', $rpdata);
-        $this->render();
     }
     
     /**
@@ -599,7 +592,6 @@ class ReportController extends PoamBaseController
         array_push($rpdata, $totalOpen);
         array_push($rpdata, $systemTotalArray);
         $this->view->assign('rpdata', $rpdata);
-        $this->render();
     }
     /**
      * rafsAction() - Batch generate RAFs for each system
@@ -646,11 +638,7 @@ class ReportController extends PoamBaseController
                 header("Pragma: public");
                 echo file_get_contents($fname);
                 @unlink($fname);
-            } else {
-                $this->render();
             }
-        } else {
-            $this->render();
         }
     }
     
@@ -667,7 +655,6 @@ class ReportController extends PoamBaseController
         $reportsConfig = new Zend_Config_Ini(APPLICATION_CONFIGS . '/reports.conf');
         $reports = $reportsConfig->toArray();
         $this->view->assign('reports', $reports);
-        $this->render();
     }
 
     /**
@@ -729,7 +716,5 @@ class ReportController extends PoamBaseController
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
-        $this->render();
-
     }
 }

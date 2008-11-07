@@ -79,7 +79,6 @@ class SourceController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
     public function listAction()
     {
@@ -96,7 +95,6 @@ class SourceController extends SecurityController
             $this->_paging['perPage']);
         $sourceList = $this->_source->fetchAll($query)->toArray();
         $this->view->assign('source_list', $sourceList);
-        $this->render();
     }
     public function createAction()
     {
@@ -125,7 +123,6 @@ class SourceController extends SecurityController
             }
             $this->message($msg, $model);
         }
-        $this->render();
     }
     public function deleteAction()
     {
@@ -171,8 +168,6 @@ class SourceController extends SecurityController
         $this->view->assign('source', $sourceList);
         if ('edit' == $req->getParam('v')) {
             $this->render('edit');
-        } else {
-            $this->render();
         }
     }
     public function updateAction()

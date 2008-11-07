@@ -100,7 +100,6 @@ class NetworkController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-        $this->render();
     }
     /**
      * List all the Networks
@@ -120,7 +119,6 @@ class NetworkController extends SecurityController
             $this->_paging['perPage']);
         $networkList = $this->_network->fetchAll($query)->toArray();
         $this->view->assign('network_list', $networkList);
-        $this->render();
     }
     /**
      * Create a network
@@ -145,7 +143,6 @@ class NetworkController extends SecurityController
             }
             $this->message($msg, $model);
         }
-        $this->render();
     }
     /**
      * Delete a network
@@ -195,8 +192,6 @@ class NetworkController extends SecurityController
         $this->view->assign('network', $networkList);
         if ('edit' == $this->_request->getParam('v')) {
             $this->render('edit');
-        } else {
-            $this->render();
         }
     }
     /**

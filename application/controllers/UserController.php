@@ -224,7 +224,6 @@ class UserController extends MessageController
             }
         } catch(Zend_Auth_Exception $e) {
             $this->view->assign('error', $e->getMessage());
-            $this->render();
         }
     }
 
@@ -298,7 +297,6 @@ class UserController extends MessageController
         $form->setDefaults($userProfile);
         $this->view->assign('form', Form_Manager::prepareForm($form));
 
-        $this->render();
     }
 
     /**
@@ -331,7 +329,6 @@ class UserController extends MessageController
 
         $this->view->assign('requirements', $requirements);
         $this->view->assign('form', $passwordForm);
-        $this->render();
     }
 
     /**
@@ -352,8 +349,6 @@ class UserController extends MessageController
 
         $this->view->availableList = array_diff($allEvent, $enabledEvent);
         $this->view->enableList = array_intersect($allEvent, $enabledEvent);
-
-        $this->render();
     }
 
     /**
@@ -559,7 +554,6 @@ class UserController extends MessageController
      */
     public function privacyAction()
     {
-        $this->render();
     }
 
     /**
@@ -571,7 +565,6 @@ class UserController extends MessageController
      */
     public function robAction()
     {
-        $this->render();
     }
 
     /**
@@ -606,6 +599,5 @@ class UserController extends MessageController
             $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
         }
         $this->view->msg = $msg;
-        $this->render();
     }
 }

@@ -374,7 +374,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('criteria', $criteria);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
-        $this->render();
+
         if ('search' == $req->getParam('s')) {
             if (!empty($criteria['est_date_begin'])) {
                 $criteria['estDateBegin'] = new Zend_Date($criteria['est_date_begin'], 'Y-m-d');
@@ -493,7 +493,6 @@ class RemediationController extends PoamBaseController
         $this->view->assign('ms_evals', $mss);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('network_list', $this->_networkList);
-        $this->render();
     }
     
     /**
@@ -848,6 +847,5 @@ class RemediationController extends PoamBaseController
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('source_list', $this->_sourceList);
-        $this->render();
     }
 }

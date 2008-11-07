@@ -130,7 +130,6 @@ class DashboardController extends SecurityController
         $idString = urlencode(implode(',', $ids));
         $this->view->dismissUrl = "/panel/dashboard/dismiss/$idString";
         
-        $this->render();
     }
     
     /**
@@ -201,6 +200,5 @@ class DashboardController extends SecurityController
         // Headers Required for IE+SSL (see bug #2039290) to stream XML
         header('Pragma:private');
         header('Cache-Control:private');
-        $this->render();
     }
 }
