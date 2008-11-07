@@ -516,7 +516,9 @@ class RemediationController extends PoamBaseController
                 } else {
                     $oldpoam = $oldpoam[0];
                 }
-                if (isset($poam['ecd_justification']) && empty($poam['ecd_justification'])) {
+                if (!empty($oldpoam['action_est_date'])
+                    && !empty($poam['action_current_date'])
+                    && empty($poam['ecd_justification'])) {
                     // English check
                     throw new Exception_General("Please input your ECD change justification, ".
                         "and the ECD data is not changed");
