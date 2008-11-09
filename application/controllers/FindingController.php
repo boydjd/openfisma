@@ -528,7 +528,7 @@ template. Please update your CSV file and try again.<br />";
                 }
 
                 if (!$fileReceived) {
-                    $errorString .= "File upload failed<br>";
+                    $errorString .= "File not received<br>";
                 }
 
                 // Error message

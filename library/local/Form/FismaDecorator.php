@@ -107,7 +107,7 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                     . $this->buildLabel()
                     . '</td><td>'
                     . $this->buildInput()
-                    . $this->buildErrors()
+                    //. $this->buildErrors()
                     . '</td></tr>';
         } else if ($element instanceof Zend_Form_DisplayGroup) {
             $render = '<div class=\'subform\'><table class=\'fisma_crud\'>'

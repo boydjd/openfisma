@@ -45,6 +45,7 @@ class MessageController extends Zend_Controller_Action
             self::M_WARNING
         )));
         $msg = str_replace("\n", '', $msg);
+        $msg = addslashes($msg);
         $this->view->msg = $msg;
         $this->view->model = $model;
         $this->_helper->viewRenderer->renderScript('message.phtml');
