@@ -138,13 +138,14 @@
     }
     echo '<tr bgcolor="#f3f3f3">';
     echo '<td width="20%" align="center" class="tdc"><b>TOTALS</b></td>';
+    $total_url = BASE . $this->criteriaUrl;
     foreach ($statusArray as $status) {
         echo '<td align="center" class="tdc">';
-        echo $this->total[$status] == '0'?'<b>0</b>':'<a href="'.$base_url.'/status/'.$status.'"><b>'.$this->total[$status].'</b></a></b>';
+        echo $this->total[$status] == '0'?'<b>0</b>':'<a href="'.$total_url.'/status/'.$status.'"><b>'.$this->total[$status].'</b></a></b>';
         echo '</td>';
     }
     echo '<td align="center" class="tdc">';
-    echo $this->total['TOTAL'] == '0'?'<b>0</b>':'<a href="'.$base_url.'"><b>'.$this->total['TOTAL'].'</b></a>';
+    echo $this->total['TOTAL'] == '0'?'<b>0</b>':'<a href="'.$total_url.'"><b>'.$this->total['TOTAL'].'</b></a>';
     echo '</td></tr>';
 ?>
 <!-- END SUMMARY LOOP -->
