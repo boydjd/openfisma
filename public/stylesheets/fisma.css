@@ -70,6 +70,10 @@ div#menu ul {
     list-style:none;
 }
 
+ul.linwise {
+    list-style: none;
+}
+
 ul.linwise li {
   float:left;
   margin:3px 4px;
