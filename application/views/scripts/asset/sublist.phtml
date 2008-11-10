@@ -39,8 +39,8 @@
     </tr>
     <?php foreach($this->asset_list as $row){ ?>
     <tr>
-        <?php if(Config_Fisma::isAllow('asset','delete')){ ?>
-            <td align="center" class="tdc"><input type="checkbox" name="aid_<?php echo $row['aid'];?>" 
+        <?php if(Config_Fisma::isAllow('asset','delete')) { ?>
+            <td align="center" class="tdc"><input type="checkbox" name="aid[]" 
                 value="<?php echo $row['aid'];?>"></td>
         <?php } else { ?>
             <td align="center" class="tdc">&nbsp;</td>
@@ -51,9 +51,9 @@
         <td class="tdc">&nbsp;<?php echo $row['address_port'];?></td>
         <td class="tdc">&nbsp;<?php echo $row['prod_name'];?></td>
         <td class="tdc">&nbsp;<?php echo $row['prod_vendor'];?></td>
-        <?php if(Config_Fisma::isAllow('asset','update')){ ?>
+        <?php if(Config_Fisma::isAllow('asset','update')) { ?>
         <td class="tdc" align="center"><a href="/panel/asset/sub/view/s/edit/id/<?php echo $row['aid'];?>"><img src="/images/edit.png" border="0"></a></td>
-        <?php } if(Config_Fisma::isAllow('asset','read')){ ?>
+        <?php } if(Config_Fisma::isAllow('asset','read')) { ?>
         <td class="tdc" align="center"><a href="/panel/asset/sub/view/id/<?php echo $row['aid'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>

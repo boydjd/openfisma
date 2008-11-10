@@ -367,16 +367,23 @@ class AssetController extends PoamBaseController
         $req = $this->getRequest();
         $post = $req->getPost();
         $errno = 0;
-        foreach ($post as $k => $id) {
-            if ('aid_' == substr($k, 0, 4)) {
+        if (!empty($post['aid'])) {
+            $aids = $post['aid'];
+            foreach ($aids as $id) {
                 $assetIds[] = $id;
                 $res = $this->_asset->delete("id = $id");
                 if (!$res) {
                     $errno++;
                 }
             }
+        } else {
+            $errno = -1;
         }
-        if ($errno > 0) {
+
+        if ($errno < 0){
+            $msg = "Pleasse select a option at least";
+            $this->message($msg, self::M_WARNING);
+        } else if ($errno > 0) {
             $msg = $errno . "Failed to delete the asset";
             $this->message($msg, self::M_WARNING);
         } else {
