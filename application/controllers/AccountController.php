@@ -264,7 +264,9 @@ class AccountController extends PoamBaseController
         if ($v == 'edit') {
             // Prepare the password requirements explanation:
             $requirements = $this->_getPasswordRequirements();
-            $this->view->assign('requirements', $requirements);
+            if (Config_Fisma::readSysConfig('auth_type') == 'database') {
+                $this->view->assign('requirements', $requirements);
+            }
             $this->view->assign('viewLink',
                                 "/panel/account/sub/view/id/$id");
             $form->setAction("/panel/account/sub/update/id/$id");
