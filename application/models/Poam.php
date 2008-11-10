@@ -72,7 +72,7 @@ class Poam extends Zend_Db_Table
         if (! empty($aging)) {
             $agingTime = new Zend_Date();
             $agingTime->sub($aging, Zend_Date::DAY);
-            $query->where("p.create_ts > ?", $agingTime->toString('Y-m-d'));
+            $query->where("DATE(p.create_ts) >= ?", $agingTime->toString('Y-m-d'));
         }
         /// @todo sanitize the $ids
         if (! empty($ids)) {
@@ -104,50 +104,50 @@ class Poam extends Zend_Db_Table
             }
         }
         if (! empty($actualDateBegin)) {
-            $query->where("p.action_actual_date > ?",
+            $query->where("DATE(p.action_actual_date) >= ?",
                 $actualDateBegin->toString('Y-m-d'));
         }
         if (! empty($actualDateEnd)) {
-            $query->where("p.action_actual_date <= ?",
+            $query->where("DATE(p.action_actual_date) <= ?",
                 $actualDateEnd->toString('Y-m-d'));
         }
         if (! empty($estDateBegin)) {
-            $query->where("p.action_current_date > ?",
+            $query->where("DATE(p.action_current_date) >= ?",
                 $estDateBegin->toString('Y-m-d'));
         }
         if (! empty($estDateEnd)) {
-            $query->where("p.action_current_date <= ?",
+            $query->where("DATE(p.action_current_date) <= ?",
                 $estDateEnd->toString('Y-m-d'));
         }
         if (! empty($createdDateBegin)) {
-            $query->where("p.create_ts > ?",
+            $query->where("DATE(p.create_ts) >= ?",
                 $createdDateBegin->toString('Y-m-d'));
         }
         if (! empty($createdDateEnd)) {
-            $query->where("p.create_ts <=?",
+            $query->where("DATE(p.create_ts) <=?",
                 $createdDateEnd->toString('Y-m-d'));
         }
         if (! empty($discoveredDateBegin)) {
-            $query->where("p.discover_ts >=?",
+            $query->where("DATE(p.discover_ts) >=?",
                 $discoveredDateBegin->toString('Y-m-d'));
         }
         if (! empty($discoveredDateEnd)) {
-            $query->where("p.discover_ts <=?",
+            $query->where("DATE(p.discover_ts) <=?",
                 $discoveredDateEnd->toString('Y-m-d'));
         }
         // mitigation strategy submit date
         if (! empty($mssDateBegin)) {
-            $query->where("p.mss_ts >=?", $mssDateBegin->toString('Y-m-d'));
+            $query->where("DATE(p.mss_ts) >=?", $mssDateBegin->toString('Y-m-d'));
         }
         if (! empty($mssDateEnd)) {
-            $query->where("p.mss_ts <=?", $mssDateEnd->toString('Y-m-d'));
+            $query->where("DATE(p.mss_ts) <=?", $mssDateEnd->toString('Y-m-d'));
         }
         if (! empty($closedDateBegin)) {
-            $query->where("p.close_ts > ?",
+            $query->where("DATE(p.close_ts) >= ?",
                 $closedDateBegin->toString('Y-m-d'));
         }
         if (! empty($closedDateEnd)) {
-            $query->where("p.close_ts <=?", $closedDateEnd->toString('Y-m-d'));
+            $query->where("DATE(p.close_ts) <=?", $closedDateEnd->toString('Y-m-d'));
         }
         if (! empty($type)) {
             if (is_array($type)) {
@@ -624,9 +624,9 @@ class Poam extends Zend_Db_Table
                         $query->where("p.system_id IN (" . $systemIds . ")");
                         break;
                 }
-                $query->where("p.create_ts < '$startdate'")
+                $query->where("DATE(p.create_ts) <= '$startdate'")
                       ->where("p.close_ts IS NULL
-                         OR p.close_ts >= '$startdate'");
+                         OR DATE(p.close_ts) >= '$startdate'");
                 break;
             case 'b':
                 switch ($agency) {
@@ -637,10 +637,10 @@ class Poam extends Zend_Db_Table
                         $query->where("p.system_id IN (" . $systemIds . ")");
                         break;
                 }
-                $query->where("p.create_ts <= '$enddate'")
-                      ->where("p.action_est_date <= '$enddate'")
-                      ->where("p.action_date_actual >= '$startdate'")
-                      ->where("p.action_date_actual <= '$enddate'");
+                $query->where("DATE(p.create_ts) <= '$enddate'")
+                      ->where("DATE(p.action_est_date) <= '$enddate'")
+                      ->where("DATE(p.action_date_actual) >= '$startdate'")
+                      ->where("DATE(p.action_date_actual) <= '$enddate'");
                 break;
             case 'c':
                 switch ($agency) {
@@ -651,8 +651,8 @@ class Poam extends Zend_Db_Table
                         $query->where("p.system_id IN (" . $systemIds . ")");
                         break;
                 }
-                $query->where("p.create_ts <= '$enddate'")
-                      ->where("p.action_est_date > '$enddate'")
+                $query->where("DATE(p.create_ts) <= '$enddate'")
+                      ->where("p.action_est_date >= '$enddate'")
                       ->where("p.action_date_actual IS NULL");
                 break;
             case 'd':
@@ -666,7 +666,7 @@ class Poam extends Zend_Db_Table
                 }
                 $query->where("p.action_est_date <= '$enddate'")
                       ->where("p.action_date_actual IS NULL 
-                          OR p.action_date_actual > '$enddate'");
+                          OR p.action_date_actual >= '$enddate'");
                 break;
             case 'e':
                 switch ($agency) {
@@ -677,8 +677,8 @@ class Poam extends Zend_Db_Table
                         $query->where("p.system_id IN (" . $systemIds . ")");
                         break;
                 }
-                $query->where("p.create_ts >= '$startdate'")
-                      ->where("p.create_ts <= '$enddate'");
+                $query->where("DATE(p.create_ts) >= '$startdate'")
+                      ->where("DATE(p.create_ts) <= '$enddate'");
                 break;
             case 'f':
                 switch ($agency) {
@@ -690,7 +690,7 @@ class Poam extends Zend_Db_Table
                         break;
                 }
                 $query->where("p.create_ts <= '$enddate'")
-                      ->where("p.close_ts IS NULL OR p.close_ts > '$enddate'");
+                      ->where("p.close_ts IS NULL OR DATE(p.close_ts) >= '$enddate'");
                 break;
         }
         $result = $db->fetchRow($query);
