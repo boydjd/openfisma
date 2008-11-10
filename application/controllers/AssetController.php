@@ -282,28 +282,29 @@ class AssetController extends PoamBaseController
         $id = $req->getParam('id');
         assert($id);
         $db = $this->_asset->getAdapter();
-        $query = $db->select()->from(array(
-            'a' => 'assets'
-        ), array(
-            'name' => 'a.name',
-            'source' => 'a.source',
-            'created_date' => 'a.create_ts',
-            'ip' => 'a.address_ip',
-            'system_id' => 'a.system_id',
-            'network_id' => 'a.network_id',
-            'port' => 'a.address_port'
-        ))->joinLeft(array(
-            'p' => 'products'
-        ), 'a.prod_id = p.id', array(
-            'prod_name' => 'p.name',
-            'prod_vendor' => 'p.vendor',
-            'prod_version' => 'p.version'
-        ))->joinLeft(array(
-            'n' => 'networks'
-        ), 'a.network_id = n.id', array(
-            'net_nickname' => 'n.nickname',
-            'net_name' => 'n.name'
-        ))->where('a.id = ?', $id);
+        $query = $db->select()
+                    ->from(array('a' => 'assets'),
+                           array('name' => 'a.name',
+                                 'source' => 'a.source',
+                                 'created_date' => 'a.create_ts',
+                                 'ip' => 'a.address_ip',
+                                 'system_id' => 'a.system_id',
+                                 'network_id' => 'a.network_id',
+                                 'port' => 'a.address_port'))
+                    ->joinLeft(array('p' => 'products'),
+                               'a.prod_id = p.id',
+                               array('prod_name' => 'p.name',
+                                     'prod_vendor' => 'p.vendor',
+                                     'prod_version' => 'p.version'))
+                    ->joinLeft(array('n' => 'networks'),
+                               'a.network_id = n.id',
+                               array('net_nickname' => 'n.nickname',
+                                     'net_name' => 'n.name'))
+                    ->joinLeft(array('s' => 'systems'),
+                               'a.system_id = s.id',
+                               array('sys_nickname' => 's.nickname',
+                                     'sys_name' => 's.name'))
+                    ->where('a.id = ?', $id);
         $asset = $db->fetchRow($query);
         $this->view->assign('asset', $asset);
         $this->view->assign('id', $id);
