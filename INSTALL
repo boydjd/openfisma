@@ -4,7 +4,6 @@
 
 1.0 Software Pre-Requisites
 ----------------------------------------------------------------------------
-
 You must have the following software installed before proceeding with
 the installation of OpenFISMA.
 
@@ -15,7 +14,6 @@ the installation of OpenFISMA.
 
 2.0 OpenFISMA Setup
 ----------------------------------------------------------------------------
-
 Create a directory for OpenFISMA
  $ mkdir /opt/openfisma
 
