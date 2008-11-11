@@ -353,6 +353,7 @@ class RemediationController extends PoamBaseController
         $criteria['systemId'] = $req->getParam('system_id');
         $criteria['sourceId'] = $req->getParam('source_id');
         $criteria['type'] = $req->getParam('type');
+        $criteria['aging'] = $req->getParam('aging');
         $criteria['status'] = $req->getParam('status');
         $criteria['ids'] = $req->getParam('ids');
         $criteria['assetOwner'] = $req->getParam('asset_owner', 0);

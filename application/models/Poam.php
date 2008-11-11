@@ -69,10 +69,11 @@ class Poam extends Zend_Db_Table
             $query->join('assets', 'p.asset_id = assets.id', array())
                   ->where('assets.system_id = ?', $assetOwner);
         }
+
         if (! empty($aging)) {
             $agingTime = new Zend_Date();
             $agingTime->sub($aging, Zend_Date::DAY);
-            $query->where("DATE(p.create_ts) >= ?", $agingTime->toString('Y-m-d'));
+            $query->where("DATE(p.create_ts) <= ?", $agingTime->toString('Y-m-d'));
         }
         /// @todo sanitize the $ids
         if (! empty($ids)) {
