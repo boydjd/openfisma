@@ -93,15 +93,18 @@ class RemediationController extends PoamBaseController
         if (!empty($criteria['type'])) {
             $criteriaUrl .='/type/'.$criteria['type'];
         }
-        if (!empty($criteria['aging'])) {
-            $criteriaUrl .='/aging/'.$criteria['aging'];
-        }
         if (!empty($criteria['createdDateBegin'])) {
             $criteriaUrl .='/created_date_begin/'.$criteria['created_date_begin'];
         }
         if (!empty($criteria['created_date_end'])) {
             $criteriaUrl .='/created_date_end/'.$criteria['created_date_end'];
         }
+        if (!empty($criteria['aging'])) {
+            $now = self::$now;
+            $now->sub($criteria['aging'], Zend_Date::DAY);
+            $criteriaUrl .='/created_date_end/'.$now->toString('Y-m-d');
+        }
+
 
         $eval = new Evaluation();
         $mpEvalList = $eval->getEvalList('ACTION');
@@ -182,32 +185,18 @@ class RemediationController extends PoamBaseController
         $statusArray = array_keys($summaryTmp);
         $statusArray = array_slice($statusArray, 0, -2);
         foreach ($statusArray as $status) {
-            $overdueTime = new Zend_Date();
-            $overdueCriteria = array('status' => $status);
-            if (in_array($status, array('NEW', 'OPEN'))) {
-                $overdueTime->sub(30, Zend_Date::DAY);
-                $overdueCriteria['createdDateEnd'] = $overdueTime;
+            $ontimeCount = $this->_poam->search($this->_me->systems, array(
+                'count' => 'system_id',
+                'system_id'
+            ), array_merge($criteria, array('ontime'=>'ontime', 'status'=>$status)));
+            foreach ($ontimeCount as $row) {
+                $summary[$row['system_id']][$status] = $row['count'];
             }
-            if (array_key_exists($status, $mpStatus)) {
-                unset($overdueCriteria['status']);
-                $overdueTime->sub(21, Zend_Date::DAY);
-                $overdueCriteria['mp'] = $mpStatus[$status];                
-                $overdueCriteria['mssDateEnd'] = $overdueTime;
-            }
-            if ('EN' == $status) {
-                $overdueTime->sub(0, Zend_Date::DAY);
-                $overdueCriteria['estDateEnd'] = $overdueTime;
-            }
-            if (array_key_exists($status, $epStatus)) {
-                unset($overdueCriteria['status']);
-                $overdueTime->sub(14, Zend_Date::DAY);
-                $overdueCriteria['ep'] = $epStatus[$status];
-                $overdueCriteria['estDateEnd'] = $overdueTime;
-            }
+
             $overdueCount = $this->_poam->search($this->_me->systems, array(
                 'count' => 'system_id',
                 'system_id'
-            ), array_merge($criteria, $overdueCriteria));
+            ), array_merge($criteria, array('ontime'=>'overdue', 'status'=>$status)));
             foreach ($overdueCount as $row) {
                 $summary[$row['system_id']][$status.'overdue'] = $row['count'];
             }
@@ -216,8 +205,9 @@ class RemediationController extends PoamBaseController
         $this->view->assign('total', $total);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
-        $this->view->assign('mpEvalList', $mpEvalList);
-        $this->view->assign('epEvalList', $epEvalList);
+        $this->view->assign('mpCount', count($mpEvalList));
+        $this->view->assign('epCount', count($epEvalList));
+        $this->view->assign('statusArray', $statusArray);
         $this->view->assign('summary', $summary);
         $this->view->assign('criteria', $criteria);
         $this->view->assign('criteriaUrl', $criteriaUrl);
@@ -353,7 +343,6 @@ class RemediationController extends PoamBaseController
         $criteria['systemId'] = $req->getParam('system_id');
         $criteria['sourceId'] = $req->getParam('source_id');
         $criteria['type'] = $req->getParam('type');
-        $criteria['aging'] = $req->getParam('aging');
         $criteria['status'] = $req->getParam('status');
         $criteria['ids'] = $req->getParam('ids');
         $criteria['assetOwner'] = $req->getParam('asset_owner', 0);
@@ -364,6 +353,7 @@ class RemediationController extends PoamBaseController
         $criteria['mss_date_end'] = $req->getParam('mss_date_end');
         $criteria['created_date_begin'] = $req->getParam('created_date_begin');
         $criteria['created_date_end'] = $req->getParam('created_date_end');
+        $criteria['ontime'] = $req->getParam('ontime');
         $criteria['order'] = array();
         if ($req->getParam('sortby') != null
             && $req->getParam('order') != null) {

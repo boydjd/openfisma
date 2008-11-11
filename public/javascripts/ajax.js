@@ -20,6 +20,13 @@ $(document).ready(function(){
     $("select[name='poam[system_id]']").change(function(){
         searchAsset();
     });
+
+    $("select#poamSearchStatus").change(function(){
+        if ($(this).val().trim() != '0') {
+            $("select#poamSearchOnTime").removeAttr("disabled");
+        }
+    }).trigger('change');
+
     $("select#encrypt").change(function(){
         if ($(this).val().trim() == 'sha256') {
              $("#encryptKey").show();

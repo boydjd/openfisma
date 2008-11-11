@@ -93,7 +93,7 @@ class DashboardController extends SecurityController
             'count' => 'count(*)'
         ), array(
             'status' => 'EN',
-            'estDateEnd' => parent::$now
+            'ontime' => 'overdue'
         ));
         $total = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'), array('notStatus' => 'PEND'));

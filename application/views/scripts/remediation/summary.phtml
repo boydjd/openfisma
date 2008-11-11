@@ -7,6 +7,7 @@
                       '60'=>'60 Days Old',
                       '90'=>'90 Days Old',
                       '120'=>'120+ Days Old');
+    $statusArray = array_merge($this->statusArray, array('CLOSED'));
 ?>
 
 <div class="barleft">
@@ -46,40 +47,23 @@
 <table align="center" class="tbframe" width="90%">
     <tr align="center" bgcolor="#f3f3f3">
         <td class="tdc"></td>
-        <td colspan="<?php echo count($this->mpEvalList)+2;?>" class="tdc">Mitigation Strategy</td>
-        <td colspan="<?php echo count($this->epEvalList)+1;?>" class="tdc">Remediation</td>
+        <td colspan="<?php echo $this->mpCount+2;?>" class="tdc">Mitigation Strategy</td>
+        <td colspan="<?php echo $this->epCount+1;?>" class="tdc">Remediation</td>
         <td colspan="2" class="tdc"></td>
     </tr>
     <tr align="center" bgcolor="#f3f3f3">
         <td class="tdc">Action Owner</td>
-        <td class="tdc">New</td>
-        <td class="tdc">Open</td>
-<?php  
-    foreach ($this->mpEvalList as $row) {
-        $mpStatus[] = $row['nickname'];        
-?>
-        <td class="tdc"><?php echo $row['nickname'];?></td>
-<?php } ?>
-        <td class="tdc">EN</td>
-<?php  
-    foreach ($this->epEvalList as $row) { 
-        $epStatus[] = $row['nickname'];    
-?>
-        <td class="tdc"><?php echo $row['nickname'];?></td>
-<?php } ?>
-        <td class="tdc">Closed</td>
+        <?php
+            foreach ($statusArray as $v) {
+                echo '<td class="tdc">'.$v.'</td>';
+            }
+        ?>
         <td class="tdc">Total</td>
     </tr>
 
 <!-- SUMMARY LOOP -->
 <?php
     define('BASE', "/panel/remediation/sub/searchbox/s/search");
-    $statusArray = array();
-    $statusArray = array_merge(array('NEW', 'OPEN'), $mpStatus);
-    array_push($statusArray, 'EN');
-    $statusArray = array_merge($statusArray, $epStatus);
-    array_push($statusArray, 'CLOSED');
-
     foreach($this->summary as $sid=>$row){
         $base_url = BASE . '/system_id/' . $sid . $this->criteriaUrl;
         $flag = false;
@@ -93,33 +77,13 @@
         }
     
         foreach ($statusArray as $status) {
-            $overdueTime = new Zend_Date();
-            $overdueHref = $normalHref = $base_url.'/status/'.$status;
-            if ($status == 'NEW' || $status == 'OPEN') {
-                $overdueTime->sub(30, Zend_Date::DAY);
-                $overdueHref .= '/created_date_end/'.$overdueTime->toString('Y-m-d');
-                $normalHref .= '/created_date_begin/'.$overdueTime->toString('Y-m-d');
-            }
-            if (in_array($status, $mpStatus)) {
-                $overdueTime->sub(21, Zend_Date::DAY);
-                $overdueHref .= '/mss_date_end/'.$overdueTime->toString('Y-m-d');
-                $normalHref .= '/mss_date_begin/'.$overdueTime->toString('Y-m-d');
-            }
-            if ($status == 'EN') {
-                $overdueHref .= '/est_date_end/'.$overdueTime->toString('Y-m-d');
-                $normalHref .= '/est_date_begin/'.$overdueTime->toString('Y-m-d');
-            }
-            if (in_array($status, $epStatus)) {
-                $overdueTime->sub(14, Zend_Date::DAY);
-                $overdueHref .='/est_date_end/'.$overdueTime->toString('Y-m-d');
-                $normalHref .= '/est_date_begin/'.$overdueTime->toString('Y-m-d');
-            }
+            $normalHref = $base_url.'/status/'.$status.'/ontime/ontime';
+            $overdueHref = $base_url.'/status/'.$status.'/ontime/overdue';
             echo '<td align="center" class="tdc" bgcolor="#d9ead3">';
             if ($flag) {
                 echo '<table width="100%" cellspacing="0" cellpadding="0"><tr bgcolor="#d9ead3" align="center"><td>';
                 if (isset($row[$status.'overdue'])) {
-                    $normalCount = $row[$status] - $row[$status."overdue"];
-                    echo $normalCount == ''?'-':'<a href="'.$normalHref.'">'.($row[$status]-$row[$status."overdue"]).'</a>';
+                    echo $row[$status] == ''?'-':'<a href="'.$normalHref.'">'.$row[$status].'</a>';
                     echo '</td></tr>';
                     echo '<tr bgcolor="#f4cccc" align="center"><td><em><a href="'.$overdueHref.'">'.$row[$status."overdue"].'</a></em>';
                 } else {

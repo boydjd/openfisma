@@ -307,6 +307,11 @@ class Poam extends Zend_Db_Table
             $query->joinLeft(array('s' => 'sources'), 's.id = p.source_id',
                 $srcFields);
         }
+        if (! empty($criteria['ontime'])) {
+            $criteria = $this->_parseOnTime($criteria);
+            //unset($criteria['ontime']);
+        }
+
         $query->where("p.status != 'DELETED'");
         $query = $this->_parseWhere($query, $criteria);
         if (! empty($criteria['order']) && is_array($criteria['order'])) {
@@ -352,6 +357,80 @@ class Poam extends Zend_Db_Table
     }
 
     /**
+     * return poam search params
+     * @param array $overdue
+     * @return array
+     */
+    protected function _parseOnTime($criteria)
+    {
+        $eval = new Evaluation();
+        $mpEvalList = $eval->getEvalList('ACTION');
+        $epEvalList = $eval->getEvalList('EVIDENCE');
+        foreach ($mpEvalList as $row) {
+            $mpStatus[$row['nickname']] = $row['precedence_id'];
+        }
+        $overduePeriod['EN'] = 0;
+        foreach ($epEvalList as $row) {
+            $epStatus[$row['nickname']] = $row['precedence_id'];
+        }
+
+        $openOverduePeriod = 30;
+        $mpOverduePeriod = 21;
+        $enOverduePeriod = 0;
+        $epOverduePeriod = 14;
+        
+        $time = new Zend_Date();
+        $status = $criteria['status'];
+        if ('ontime' == $criteria['ontime']) {
+            if (in_array($status, array('NEW', 'OPEN'))) {
+            $time->sub($openOverduePeriod, Zend_Date::DAY);
+            $criteria['createdDateBegin'] = $time;
+            }
+            if (array_key_exists($status, $mpStatus)) {
+                unset($criteria['status']);
+                $time->sub($mpOverduePeriod, Zend_Date::DAY);
+                $criteria['mp'] = $mpStatus[$status];
+                $criteria['mssDateBegin'] = $time;
+            }
+            if ('EN' == $status) {
+                $time->sub($enOverduePeriod, Zend_Date::DAY);
+                $criteria['estDateBegin'] = $time;
+            }
+            if (array_key_exists($status, $epStatus)) {
+                unset($criteria['status']);
+                $time->sub($epOverduePeriod, Zend_Date::DAY);
+                $criteria['ep'] = $epStatus[$status];
+                $criteria['estDateBegin'] = $time;
+            }
+        } else if ('overdue' == $criteria['ontime']) {
+            if (in_array($status, array('NEW', 'OPEN'))) {
+                $time->sub($openOverduePeriod, Zend_Date::DAY);
+                $criteria['createdDateEnd'] = $time;
+            }
+            if (array_key_exists($status, $mpStatus)) {
+                unset($criteria['status']);
+                $time->sub($mpOverduePeriod, Zend_Date::DAY);
+                $criteria['mp'] = $mpStatus[$status];
+                $criteria['mssDateEnd'] = $time;
+            }
+            if ('EN' == $status) {
+                $time->sub($enOverduePeriod, Zend_Date::DAY);
+                $criteria['estDateEnd'] = $time;
+            }
+            if (array_key_exists($status, $epStatus)) {
+                unset($criteria['status']);
+                $time->sub($epOverduePeriod, Zend_Date::DAY);
+                $criteria['ep'] = $epStatus[$status];
+                $criteria['estDateEnd'] = $time;
+            }
+        } else {
+            throw new Exception_General('Parameters wrong in ontime ' . var_export($ontime, true));
+        }
+        
+        return $criteria;
+    }
+
+    /**
         Get poam status
         @param int $id primary key of poam
      */
@@ -381,9 +460,6 @@ class Poam extends Zend_Db_Table
             } else {
                 return $msEvalList[0]['nickname'];
             }
-        } else if ('EN' == $ret->current()->status
-            && date('Y-m-d H:i:s') > $ret->current()->action_est_date) {
-            return 'EO';
         } else if ('EP' == $ret->current()->status) {
              $query = $this->_db->select()
                           ->from(array('pev'=>'poam_evaluations'), 'pev.*')
@@ -408,6 +484,27 @@ class Poam extends Zend_Db_Table
             }
         } else {
             return $ret->current()->status;
+        }
+    }
+
+    
+    /**
+     *return the poam wheather is on time
+     * @param int $id primary key of poam
+     * @return true of false
+     */
+    public function isOnTime($id)
+    {
+        if (! is_numeric($id)) {
+            throw new Exception_General('Make sure a valid ID is inputed');
+        }
+        $status = $this->getStatus($id);
+        $criteria = array('id' => $id, 'status' => $status, 'ontime' => 'ontime');
+        $ret = $this->search(null, '*', $criteria);
+        if (!empty($ret)) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -467,6 +564,12 @@ class Poam extends Zend_Db_Table
             if (! empty($blscr)) {
                 $ret['blscr'] = &$blscr;
             }
+        }
+
+        if ($this->isOnTime($id)) {
+            $ret['isontime'] = 'On Time';
+        } else {
+            $ret['isontime'] = 'Overdue';
         }
         return $ret;
     }

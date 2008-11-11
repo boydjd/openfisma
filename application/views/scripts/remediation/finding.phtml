@@ -25,6 +25,11 @@
                 <tr>
                     <td><b>Status:&nbsp;</b><?php echo $this->poam['status'];?></td>
                 </tr>
+                <?php if ($this->poam['status'] != 'CLOSED') { ?>
+                <tr>
+                    <td><b>On Time:&nbsp;</b><?php echo $this->poam['isontime'];?></td>
+                </tr>
+                <?php } ?>
                 <tr>
                     <td>
                         <b target="action_owner" <?php

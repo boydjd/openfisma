@@ -4,11 +4,10 @@
                     'CAP'  =>'(CAP) Corrective Action Plan',
                     'AR'   =>'(AR) Accepted Risk',
                     'FP'   =>'(FP) False Positive');
-    $aging   = array('0' => '--Any--',
-                      '30'=>'30 Days Old',
-                      '60'=>'60 Days Old',
-                      '90'=>'90 Days Old',
-                      '120'=>'120+ Days Old');
+    $onTimes    = array(0 =>'--- Any ---',
+                        'ontime'=>'On Time',
+                        'overdue'=>'Overdue');
+
     $eval = new Evaluation();
     $mpEvalList = $eval->getEvalList('ACTION');
     $epEvalList = $eval->getEvalList('EVIDENCE');
@@ -96,7 +95,7 @@
         <td width="318" valign="top"><b> Finding Status:</b><br>
         <?php echo $this->formSelect('status', 
                                      $this->criteria['status'], 
-                                     null, 
+                                     array('id'=>'poamSearchStatus'),
                                      $filter_status);?>
         </td>
     </tr>
@@ -115,6 +114,16 @@
         </td>
     </tr>
     <tr>
+        <td ><b>OnTime:</b><br>
+            <?php echo $this->formSelect('ontime',
+                                         $this->criteria['ontime'],
+                                         array('disabled'=>'disabled', 'id'=>'poamSearchOnTime'),
+                                         $onTimes);?>
+        </td>
+        <td></td>
+    </tr>
+
+    <tr>
         <td colspan='2'>
             <table border="0" cellpadding="3" cellspacing="1" width="98%">
                 <tr>
@@ -125,9 +134,13 @@
                     <td > To: <input type="text" class="date" name="est_date_end" value="<?php
                         echo isset($this->criteria['est_date_end'])?$this->criteria['est_date_end']:'';
                         ?>" size="12" maxlength="10"></td>
-                    <td ><b>Aging Totals: </b>
-                         <?php echo $this->formSelect('aging', $this->criteria['aging'], null, $aging); ?>
-                    </td>
+                    <td ><b>Date Created: </b></td>
+                    <td > From: <input type="text" class="date" name="created_date_begin" value="<?php
+                       echo isset($this->criteria['created_date_begin'])?$this->criteria['created_date_begin']:'';
+                        ?>" size="12" maxlength="10"></td>
+                    <td > To: <input type="text" class="date" name="created_date_end" value="<?php
+                        echo isset($this->criteria['created_date_end'])?$this->criteria['created_date_end']:'';
+                        ?>" size="12" maxlength="10"></td>
                 </tr>
             </table>
         </td>
