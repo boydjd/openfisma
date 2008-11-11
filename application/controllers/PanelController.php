@@ -49,11 +49,11 @@ class PanelController extends SecurityController
     {
         $this->_helper->layout->setLayout('layout');
         $this->_helper->actionStack('footer');
-        $this->render('header','header');
+        $this->render('header', 'header');
     }
     public function footerAction()
     {
-        $this->render('footer','footer');           
+        $this->render('footer', 'footer');           
     }
 
     public function dashboardAction()

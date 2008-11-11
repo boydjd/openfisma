@@ -352,7 +352,7 @@ class AssetController extends PoamBaseController
             $msg = 'Failed to edit the asset';
             $this->message($msg, self::M_WARNING);
         }
-        $this->_helper->_actionStack('header','panel');
+        $this->_helper->_actionStack('header', 'panel');
         $this->_forward('view', null, null, array(
             'id' => $id,
             's' => 'edit'
@@ -381,7 +381,7 @@ class AssetController extends PoamBaseController
             $errno = -1;
         }
 
-        if ($errno < 0){
+        if ($errno < 0) {
             $msg = "Pleasse select a option at least";
             $this->message($msg, self::M_WARNING);
         } else if ($errno > 0) {
