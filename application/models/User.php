@@ -181,11 +181,10 @@ class User extends FismaModel
                         null, "User: {$account}");
                 $row->save();
             }
+            $this->_logger->setEventItem('uid', $uid);
+            $this->_logger->setEventItem('type', $type); 
+            $this->_logger->info($msg);
         }
-        
-        $this->_logger->setEventItem('uid', $uid);
-        $this->_logger->setEventItem('type', $type); 
-        $this->_logger->info($msg);
     }
     
     /**
