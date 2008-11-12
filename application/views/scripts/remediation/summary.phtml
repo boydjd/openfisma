@@ -27,14 +27,14 @@
             <?php echo $this->formSelect('type', $this->criteria['type'], null, $typeList);?>
         </td>
         <td><b>Aging Totals: </b>
-            <?php echo $this->formSelect('aging', $this->criteria['aging'], null, $aging); ?>
+            <?php echo $this->formSelect('aging', $this->criteria['aging'], array('id'=>'remediationSearchAging'), $aging); ?>
         </td>
     </tr>
     <tr>
-        <td><b>Date Opened From: </b><input type="text" class="date" name="created_date_begin" value="<?php
+        <td><b>Date Opened From: </b><input type="text" class="date" id="created_date_begin" name="created_date_begin" value="<?php
             echo $this->criteria['created_date_begin']; ?>"
             size="12" maxlength="20"></td>
-        <td><b>Date Opened To: </b><input type="text" class="date" name="created_date_end" value="<?php
+        <td><b>Date Opened To: </b><input type="text" class="date" id="created_date_end" name="created_date_end" value="<?php
             echo $this->criteria['created_date_end']; ?>"
             size="12" maxlength="20"></td>
     </tr>

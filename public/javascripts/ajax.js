@@ -35,6 +35,37 @@ $(document).ready(function(){
         }
     }).trigger('change');
 
+    $("select#remediationSearchAging").change(function(){
+        var value = $(this).val().trim();
+        if (value == '0') {
+            $("input#created_date_begin").removeAttr("disabled");
+            $("input#created_date_end").removeAttr("disabled");
+            $('input.date').datepicker("enable");
+        } else {
+            $("input#created_date_begin").attr("disabled", "disabled");
+            $("input#created_date_begin").val('');
+            $("input#created_date_end").attr("disabled", "disabled");
+            $("input#created_date_end").val('');
+            $('input.date').datepicker("disable");
+        }
+    }).trigger('change');
+    
+    $("input#created_date_begin").change(function (){
+        if($(this).val().trim() != '' || $("input#created_date_end").val().trim() != '') {
+            $("select#remediationSearchAging").attr("disabled", "disabled");
+        } else {
+            $("select#remediationSearchAging").attr("disabled", "");
+        }
+    }).trigger('change');
+    
+    $("input#created_date_end").change(function (){
+        if($(this).val().trim() != '' || $("input#created_date_begin").val().trim() != '') {
+            $("select#remediationSearchAging").attr("disabled", "disabled");
+        } else {
+            $("select#remediationSearchAging").attr("disabled", "");
+        }
+    }).trigger('change');
+    
     $("select#encrypt").change(function(){
         if ($(this).val().trim() == 'sha256') {
              $("#encryptKey").show();

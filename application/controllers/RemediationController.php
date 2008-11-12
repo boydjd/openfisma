@@ -102,7 +102,7 @@ class RemediationController extends PoamBaseController
         if (!empty($criteria['aging'])) {
             $now = self::$now;
             $now->sub($criteria['aging'], Zend_Date::DAY);
-            $criteriaUrl .='/created_date_end/'.$now->toString('Y-m-d');
+            $criteriaUrl .='/created_date_end/'.$now->toString('Ymd');
         }
 
 
