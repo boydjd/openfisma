@@ -514,7 +514,6 @@ class UserController extends MessageController
             }
             $this->message($msg, $model);
         }
-        $this->_helper->actionStack('header', 'Panel');
         $this->_forward('password');
     }
     

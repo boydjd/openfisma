@@ -372,5 +372,6 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
+        $this->render();
     }
 }
