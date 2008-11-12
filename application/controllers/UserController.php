@@ -87,8 +87,7 @@ class UserController extends MessageController
 
             // If the username isn't found, throw an exception
             if (empty($whologin)) {
-                $this->_user->log(User::LOGINFAILURE, '',
-                    "This username does not exist: ".$username);
+                $this->_user->log(User::LOGINFAILURE, '','Failure');
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             
@@ -119,6 +118,9 @@ class UserController extends MessageController
                                     . " unlocked in ".ceil($terminationTs->getTimestamp()/60)
                                     . " minutes. Please try again at that"
                                     . " time.");
+                            } else {
+                                $array = array('is_active'=>1, 'failure_count'=>0);
+                                $this->_user->update($array, 'id = '.$whologin['id']);
                             }
                             $isQualified = true;
                         } else {
@@ -146,7 +148,7 @@ class UserController extends MessageController
             if (!$result->isValid()) {
                 $this->_user->log(User::LOGINFAILURE,
                                   $whologin['id'],
-                                  'Password Error');
+                                  'Failure');
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
 
@@ -160,7 +162,7 @@ class UserController extends MessageController
                                        'YYYY-MM-DD HH-MI-SS');
 
             if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($deactiveTime) ) {
-                $this->_user->log(User::TERMINATION, $_me->id, "The account expires");
+                $this->_user->log(User::ACCOUNT_LOCKOUT, $_me->id, "User Account $_me->account Successfully Locked");
                 throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period"
                                             . "or more days. Please contact the <a href=\"mailto:"
                                             . Config_Fisma::readSysConfig('contact_email')
@@ -202,7 +204,7 @@ class UserController extends MessageController
                     $this->_helper->_actionStack('header', 'Panel');   
                     $this->_forward('password');
                 } else {
-                    $this->_user->log(User::TERMINATION, $_me->id, "The password expires");
+                    $this->_user->log(User::ACCOUNT_LOCKOUT, $_me->id, "User Account $_me->account Successfully Locked");
                     throw new Zend_Auth_Exception('Your user account has been locked because you have not'
                                 . " changed your password for $passExpirePeriod or more days."
                                 . ' Please contact the'
@@ -244,7 +246,7 @@ class UserController extends MessageController
      */
     public function logoutAction() {
         if (!empty($this->_me)) {
-            $this->_user->log(User::LOGOUT, $this->_me->id, $this->_me->account . ' logout');
+            $this->_user->log(User::LOGOUT, $this->_me->id, 'Success');
             $notification = new Notification();
             $notification->add(Notification::ACCOUNT_LOGOUT, null, "User: {$this->_me->account}");
             Zend_Auth::getInstance()->clearIdentity();
@@ -372,7 +374,7 @@ class UserController extends MessageController
             $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
             if ($ret == 1) {
                 $this->_user
-                     ->log(User::MODIFICATION, $this->_me->id, "{$this->_me->account} Profile Modified");
+                     ->log(User::ACCOUNT_MODIFICATION, $this->_me->id, "User Account {$this->_me->account} Successfully Modified");
                 $msg = "Profile modified successfully.";
 
                 if ($originalEmail != $profileData['email']
