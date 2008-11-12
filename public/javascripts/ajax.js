@@ -22,8 +22,16 @@ $(document).ready(function(){
     });
 
     $("select#poamSearchStatus").change(function(){
-        if ($(this).val().trim() != '0') {
+        var value = $(this).val().trim();
+        if (!(value == '0' 
+            || value == 'CLOSED'
+            || value == 'NOT-CLOSED'
+            || value == 'NOUP-30'
+            || value == 'NOUP-60'
+            || value == 'NOUP-90')) {
             $("select#poamSearchOnTime").removeAttr("disabled");
+        } else {
+            $("select#poamSearchOnTime").attr("disabled", "disabled");
         }
     }).trigger('change');
 
