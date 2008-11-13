@@ -29,10 +29,20 @@ elements.network.options.label = "Network"
 elements.network.options.required = true
 displayGroups.finding_upload.elements.network = "network"
 
-; I couldn't figure out how to set some of the options for the file select, so those are set in the action handler
 elements.selectFile.type = "file"
 elements.selectFile.options.label = "Select File"
 displayGroups.finding_upload.elements.selectFile = "selectFile"
+; Validators for the file input:
+; 1) File count must be 1
+elements.selectFile.options.validators.count.validator = "Count"
+elements.selectFile.options.validators.count.options.max = 1
+elements.selectFile.options.validators.count.options.min = 1
+; 2) Size must be less than 1MB
+elements.selectFile.options.validators.size.validator = "Size"
+elements.selectFile.options.validators.size.options.max = 1048576
+; 3) Extension must be 'xml'
+elements.selectFile.options.validators.extension.validator = "Extension"
+elements.selectFile.options.validators.extension.options.extension = "xml"
 
 elements.submit.type = "submit"
 elements.submit.options.value = "Upload"

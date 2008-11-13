@@ -11,30 +11,36 @@
             <th class="tdc">Id</th>
             <th class="tdc">System</th>
             <th class="tdc">Description</th>
-            <th class="tdc">Duplicate</th>
+            <th class="tdc">Duplicate POAM ID</th>
+            <th class="tdc">Duplicate POAM System</th>
+            <th class="tdc">Duplicate POAM Mitigation Type</th>
+            <th class="tdc">Duplicate POAM Status</th>
         </tr>
 <?php
     if (count($this->findings) > 0) {
         foreach ($this->findings as $finding) {
             print "<tr><td align='center' class='tdc'><input type=\"checkbox\" name=\"findings[]\" value=\"{$finding['id']}\"></td>";
-            print "<td align='center' class='tdc'><a href=\"/panel/remediation/sub/view/id/{$finding['id']}\">{$finding['id']}</a></td>";
+            print "<td align='center' class='tdc'><a target='_blank' href=\"/panel/remediation/sub/view/id/{$finding['id']}\">{$finding['id']}</a></td>";
             print "<td align='center' class='tdc'>{$finding['nickname']}</td>";
             print "<td class='tdc'>{$finding['finding_data']}</td>";
-            print "<td align='center' class='tdc'>";
             if (isset($finding['duplicate_poam_id'])) {
-                print "<a href=\"/panel/remediation/sub/view/id/{$finding['duplicate_poam_id']}\">{$finding['duplicate_poam_id']}</a>";
+                print "<td align='center' class='tdc'>";
+                print "<a target='_blank' href=\"/panel/remediation/sub/view/id/{$finding['duplicate_poam_id']}\">{$finding['duplicate_poam_id']}</a>";
+                print "</td><td align='center' class='tdc'>{$finding['old_nickname']}</td>";
+                print "<td align='center' class='tdc'>{$finding['old_type']}</td>";
+                print "<td align='center' class='tdc'>{$finding['old_status']}</td>";
             } else {
-                print "&nbsp;";
+                print "<td align='center' class='tdc' colspan='4'><i>No duplicate found</i></td>";
             }
             print "</td>";
             print "</tr>";
         }
     } else {
-        print "<tr><td class='tdc' colspan='5'><i>There are no pending findings.</i></td></tr>";
+        print "<tr><td class='tdc' colspan='8'><i>There are no pending findings.</i></td></tr>";
     }
 ?>
         <tr>
-            <td class="tdc" colspan="5">
+            <td class="tdc" colspan="8">
                 <input type="button" name="select_all" value="Select All">
                 <input type="button" name="select_none" value="Select None">
                 <input type="submit" name="delete_selected" value="Delete Selected">

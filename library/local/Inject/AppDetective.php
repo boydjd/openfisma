@@ -58,10 +58,8 @@ class Inject_AppDetective extends Inject_Abstract
         $this->_product = $this->_mapProduct($report);
         $this->_findings = $this->_mapFindings($report);
 
-        // Commit all data
-        $numberFindingsCreated = $this->_commit();
-        
-        return $numberFindingsCreated;
+        // Persist all data
+        $this->_persist();
     }
     
     /**
@@ -171,9 +169,8 @@ class Inject_AppDetective extends Inject_Abstract
                 "Unable to parse the date from the testDate field: \"$testDateString\""
             );
         }
-        // Notice that the format in the report is the same format that Zend_Date expects
         $discoveredDate = new Zend_Date($testDate[0]);
-
+        
         // The creation timestamp for each finding is the current system time
         $creationDate = new Zend_Date();
         
@@ -190,15 +187,16 @@ class Inject_AppDetective extends Inject_Abstract
                 $finding = array();
                 
                 // The finding's asset ID is set during the commit, since the asset may not exist yet.
-                $finding['status'] = 'PEND';
-                $finding['discover_ts'] = $discoveredDate;
-                $finding['create_ts'] = $creationDate;
+                $finding['discover_ts'] = $discoveredDate->toString('Y-m-d H:i:s');
+                $finding['create_ts'] = $creationDate->toString('Y-m-d H:i:s');
                 $finding['source_id'] = $this->_findingSourceId;
                 $finding['system_id'] = $this->_systemId;
                 $finding['action_suggested'] = $reportFinding->fix;
                 $finding['threat_level'] = $reportFinding->overview;
 
                 // The mapping for finding_data is a little more complicated
+                // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
+                // this mapping rule must be approved by a project manager.
                 $findingData = "<p>{$reportFinding->description}</p>";
                 if (isset($reportFinding->details)) {
                     $findingData .= '<ul>';
@@ -218,11 +216,11 @@ class Inject_AppDetective extends Inject_Abstract
     }
     
     /**
-     * _commit() - Commits all of the data which has been mapped from the report.
+     * _persist() - Commits all of the data which has been mapped from the report.
      *
      * @todo This function needs to wrap a transaction around its queries
      */
-    private function _commit()
+    private function _persist()
     {
         // If the asset id is null, then create a new asset with the specified asset information. Save the asset Id
         // in order to persist the findings.
@@ -264,10 +262,8 @@ class Inject_AppDetective extends Inject_Abstract
             // First set the asset ID
             $finding['asset_id'] = $assetId;
             
-            // Now persist the finding
-            $findingTable = new Finding();
-            $id = $findingTable->insert($finding);
-            $findingTable->checkForDuplicate($id);
+            // Now commit the finding
+            $this->_commit($finding);
         }
         
         return count($this->_findings);

@@ -476,10 +476,7 @@ template. Please update your CSV file and try again.<br />";
         
         // Configure the file select
         $uploadForm->setAttrib('enctype', 'multipart/form-data');
-        $uploadForm->selectFile->setDestination(APPLICATION_ROOT . '/data/uploads/scanreports')
-                               ->addValidator('Count', false, 1) // ensure only 1 file
-                               ->addValidator('Size', false, 102400) // limit to 100K
-                               ->addValidator('Extension', false, 'xml');
+        $uploadForm->selectFile->setDestination(APPLICATION_ROOT . '/data/uploads/scanreports');
 
         // Setup the view
         $this->view->assign('uploadForm', $uploadForm);
@@ -503,9 +500,11 @@ template. Please update your CSV file and try again.<br />";
 
                 // Execute the plugin with the received file
                 try {
-                    $findingsCreated = $plugin->parse();
-                    $this->message("Your scan report was successfully uploaded."
-                                   . " $findingsCreated findings were created.",
+                    $plugin->parse();
+                    $this->message("Your scan report was successfully uploaded.<br>"
+                                   . "{$plugin->created} findings were created.<br>"
+                                   . "{$plugin->reviewed} findings need review.<br>"
+                                   . "{$plugin->deleted} findings were suppressed.",
                                    self::M_NOTICE);
                 } catch (Exception_InvalidFileFormat $e) {
                     $this->message("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
@@ -547,15 +546,20 @@ template. Please update your CSV file and try again.<br />";
         $this->_helper->requirePrivilege('finding', 'approve');
         
         $db = Zend_Registry::get('db');
-        $findings = $db->fetchAll("SELECT p.id, 
-                                          p.finding_data, 
-                                          p.duplicate_poam_id,
-                                          s.nickname                    
-                                     FROM poams p
-                               INNER JOIN systems s ON p.system_id = s.id
-                                    WHERE status = 'PEND' 
-                                 ORDER BY system_id,
-                                          id");
+        $findings = $db->fetchAll("SELECT new_poam.id,
+                                          new_poam.finding_data,
+                                          new_poam.duplicate_poam_id,
+                                          new_poam_system.nickname,
+                                          old_poam.status old_status,
+                                          old_poam.type old_type,
+                                          old_poam_system.nickname old_nickname
+                                     FROM poams new_poam
+                               INNER JOIN systems new_poam_system ON new_poam.system_id = new_poam_system.id
+                                LEFT JOIN poams old_poam ON new_poam.duplicate_poam_id = old_poam.id
+                                LEFT JOIN systems old_poam_system ON old_poam.system_id = old_poam_system.id
+                                    WHERE new_poam.status = 'PEND'
+                                 ORDER BY new_poam.system_id,
+                                          new_poam.id");
         
         $this->view->assign('findings', $findings);
     }
