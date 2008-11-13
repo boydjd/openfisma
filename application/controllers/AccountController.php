@@ -588,6 +588,7 @@ class AccountController extends PoamBaseController
             // On success, redirect to read view
             $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
             $this->_forward('view', null, null, array('id' => $userId));
+            $this->_forward('create');
         } else {
             /**
              * @todo this error display code needs to go into the decorator,

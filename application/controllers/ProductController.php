@@ -156,6 +156,7 @@ class ProductController extends SecurityController
                 $msg = "Product successfully created";
             }
             $this->message($msg, self::M_NOTICE);
+            $this->render('create');
         }
     }
     public function deleteAction()

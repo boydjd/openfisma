@@ -122,6 +122,7 @@ class SourceController extends SecurityController
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
+            $this->render('create');
         }
     }
     public function deleteAction()
