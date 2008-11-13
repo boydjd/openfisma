@@ -42,6 +42,13 @@ class Inject_AppDetective extends Inject_Abstract
     private $_findings;
     
     /**
+     * Some appDetective reports can contain over 100k of vulnDetail data per finding. This is too much data to save
+     * in a mysql column, so we limit the number of vulnDetails captured to a manageable number. Anything over this
+     * amount will be truncated and a warning will be issued.
+     */
+    const MAX_VULN_DETAILS_PER_FINDING = 25;
+    
+    /**
      * parse() - Implements the required function in the Inject_Abstract interface. This parses the report and commits
      * all data to the database.
      */
@@ -57,6 +64,9 @@ class Inject_AppDetective extends Inject_Abstract
         $this->_asset = $this->_mapAsset($report);
         $this->_product = $this->_mapProduct($report);
         $this->_findings = $this->_mapFindings($report);
+        
+        // Free resources used by XML object
+        unset($report);
 
         // Persist all data
         $this->_persist();
@@ -200,8 +210,16 @@ class Inject_AppDetective extends Inject_Abstract
                 $findingData = "<p>{$reportFinding->description}</p>";
                 if (isset($reportFinding->details)) {
                     $findingData .= '<ul>';
+                    $vulnDetails = 0;
                     foreach ($reportFinding->details as $vulnerability) {
                         $findingData .= "<li>{$vulnerability->vulnDetail}";
+                        $vulnDetails++;
+                        if ($vulnDetails > self::MAX_VULN_DETAILS_PER_FINDING) {
+                            $vulnDetailsOmitted = count($reportFinding->details) - self::MAX_VULN_DETAILS_PER_FINDING;
+                            $findingData .= "<li><i>WARNING: $vulnDetailsOmitted additional vulnerability details were"
+                                          . ' truncated when this finding was injected due to storage constraints.</i>';
+                            break;
+                        }
                     }
                     $findingData .= '</ul>';
                 }
