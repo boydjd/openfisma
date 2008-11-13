@@ -41,6 +41,10 @@ class ErrorController extends Zend_Controller_Action
      */
     public function errorAction()
     {
+        // If an error occurs in any context other than the default, then the view suffix will have changed; therefore,
+        // we should always reset the view suffix before rendering an error message.
+        $this->_helper->viewRenderer->setViewSuffix('phtml');
+
         $content = null;
         $errors = $this->_getParam('error_handler');
         $this->_helper->layout->setLayout('error');
