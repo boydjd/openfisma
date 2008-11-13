@@ -72,7 +72,7 @@ class AssetController extends PoamBaseController
      */
     public function searchAction()
     {
-        Config_Fisma::requirePrivilege('asset', 'read');
+        $this->_helper->requirePrivilege('asset', 'read');
         
         $req = $this->getRequest();
         $systemId = $req->getParam('sid');
@@ -104,7 +104,7 @@ class AssetController extends PoamBaseController
      */
     public function createAction()
     {
-        Config_Fisma::requirePrivilege('asset', 'create');
+        $this->_helper->requirePrivilege('asset', 'create');
         
         $systems = new System();
         $user = new User();
@@ -157,7 +157,7 @@ class AssetController extends PoamBaseController
      */
     public function detailAction()
     {
-        Config_Fisma::requirePrivilege('asset', 'read');
+        $this->_helper->requirePrivilege('asset', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -195,7 +195,7 @@ class AssetController extends PoamBaseController
      */
     public function searchboxAction()
     {
-        Config_Fisma::requirePrivilege('asset', 'read');
+        $this->_helper->requirePrivilege('asset', 'read');
         
         $req = $this->getRequest();
         $criteria['system_id'] = $req->get('system_id');
@@ -276,7 +276,7 @@ class AssetController extends PoamBaseController
      */
     public function viewAction()
     {
-        Config_Fisma::requirePrivilege('asset', 'read');
+        $this->_helper->requirePrivilege('asset', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -323,7 +323,7 @@ class AssetController extends PoamBaseController
      */
     public function updateAction()
     {
-        Config_Fisma::requirePrivilege('asset', 'update');
+        $this->_helper->requirePrivilege('asset', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -363,7 +363,7 @@ class AssetController extends PoamBaseController
      */
     public function deleteAction()
     {
-        Config_Fisma::requirePrivilege('asset', 'delete');
+        $this->_helper->requirePrivilege('asset', 'delete');
         
         $req = $this->getRequest();
         $post = $req->getPost();

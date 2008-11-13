@@ -60,7 +60,7 @@ class SourceController extends SecurityController
     }
     public function searchboxAction()
     {
-        Config_Fisma::requirePrivilege('admin_sources', 'read');
+        $this->_helper->requirePrivilege('admin_sources', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -82,7 +82,7 @@ class SourceController extends SecurityController
     }
     public function listAction()
     {
-        Config_Fisma::requirePrivilege('admin_sources', 'read');
+        $this->_helper->requirePrivilege('admin_sources', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -98,7 +98,7 @@ class SourceController extends SecurityController
     }
     public function createAction()
     {
-        Config_Fisma::requirePrivilege('admin_sources', 'create');
+        $this->_helper->requirePrivilege('admin_sources', 'create');
         
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
@@ -126,7 +126,7 @@ class SourceController extends SecurityController
     }
     public function deleteAction()
     {
-        Config_Fisma::requirePrivilege('admin_sources', 'delete');
+        $this->_helper->requirePrivilege('admin_sources', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -156,7 +156,7 @@ class SourceController extends SecurityController
     }
     public function viewAction()
     {
-        Config_Fisma::requirePrivilege('admin_sources', 'read');
+        $this->_helper->requirePrivilege('admin_sources', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -172,7 +172,7 @@ class SourceController extends SecurityController
     }
     public function updateAction()
     {
-        Config_Fisma::requirePrivilege('admin_sources', 'update');
+        $this->_helper->requirePrivilege('admin_sources', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');

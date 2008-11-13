@@ -37,7 +37,7 @@
             echo'<li><a href="/panel/finding/sub/injection">Upload Spreadsheet</a>';
             echo'<li><a href="/panel/finding/sub/plugin">Upload Scan Results</a>';
         }
-        if (Config_Fisma::hasPrivilege('finding', 'approve')) {
+        if (Config_Fisma::isAllow('finding', 'approve')) {
             echo'<li><a href="/panel/finding/sub/approve">Approve Injected Findings</a>';            
         }
         echo '</ul>

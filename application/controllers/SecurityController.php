@@ -82,7 +82,6 @@ class SecurityController extends MessageController
                     $this->_request->getParam($this->_sanity['data']));
             }
         }
-
         $this->_notification = new Notification();
     }
 

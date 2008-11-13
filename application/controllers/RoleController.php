@@ -71,7 +71,7 @@ class RoleController extends SecurityController
     }
     public function searchboxAction()
     {
-        Config_Fisma::requirePrivilege('admin_roles', 'read');
+        $this->_helper->requirePrivilege('admin_roles', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -93,7 +93,7 @@ class RoleController extends SecurityController
     }
     public function listAction()
     {
-        Config_Fisma::requirePrivilege('admin_roles', 'read');
+        $this->_helper->requirePrivilege('admin_roles', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -110,7 +110,7 @@ class RoleController extends SecurityController
     }
     public function createAction()
     {
-        Config_Fisma::requirePrivilege('admin_roles', 'create');
+        $this->_helper->requirePrivilege('admin_roles', 'create');
         
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
@@ -132,7 +132,7 @@ class RoleController extends SecurityController
     }
     public function deleteAction()
     {
-        Config_Fisma::requirePrivilege('admin_roles', 'delete');
+        $this->_helper->requirePrivilege('admin_roles', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -160,7 +160,7 @@ class RoleController extends SecurityController
     }
     public function viewAction()
     {
-        Config_Fisma::requirePrivilege('admin_roles', 'read');
+        $this->_helper->requirePrivilege('admin_roles', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -174,7 +174,7 @@ class RoleController extends SecurityController
     }
     public function updateAction()
     {
-        Config_Fisma::requirePrivilege('admin_roles', 'update');
+        $this->_helper->requirePrivilege('admin_roles', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -195,7 +195,7 @@ class RoleController extends SecurityController
     }
     public function rightAction()
     {
-        Config_Fisma::requirePrivilege('admin_roles', 'definition');
+        $this->_helper->requirePrivilege('admin_roles', 'definition');
         
         $req = $this->getRequest();
         $do = $req->getParam('do');

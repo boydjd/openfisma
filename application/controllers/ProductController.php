@@ -66,7 +66,7 @@ class ProductController extends SecurityController
      */
     public function searchAction()
     {
-        Config_Fisma::requirePrivilege('admin_products', 'read');
+        $this->_helper->requirePrivilege('admin_products', 'read');
         
         $product = new Product();
         $req = $this->getRequest();
@@ -93,7 +93,7 @@ class ProductController extends SecurityController
     }
     public function searchboxAction()
     {
-        Config_Fisma::requirePrivilege('admin_products', 'read');
+        $this->_helper->requirePrivilege('admin_products', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -115,7 +115,7 @@ class ProductController extends SecurityController
     }
     public function listAction()
     {
-        Config_Fisma::requirePrivilege('admin_products', 'read');
+        $this->_helper->requirePrivilege('admin_products', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -132,7 +132,7 @@ class ProductController extends SecurityController
     }
     public function createAction()
     {
-        Config_Fisma::requirePrivilege('admin_products', 'create');
+        $this->_helper->requirePrivilege('admin_products', 'create');
         
         $req = $this->getRequest();
         if ('save' == $req->getParam('s')) {
@@ -160,7 +160,7 @@ class ProductController extends SecurityController
     }
     public function deleteAction()
     {
-        Config_Fisma::requirePrivilege('admin_products', 'delete');
+        $this->_helper->requirePrivilege('admin_products', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -188,7 +188,7 @@ class ProductController extends SecurityController
     }
     public function viewAction()
     {
-        Config_Fisma::requirePrivilege('admin_products', 'read');
+        $this->_helper->requirePrivilege('admin_products', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -204,7 +204,7 @@ class ProductController extends SecurityController
     }
     public function updateAction()
     {
-        Config_Fisma::requirePrivilege('admin_products', 'update');
+        $this->_helper->requirePrivilege('admin_products', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');

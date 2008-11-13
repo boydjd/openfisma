@@ -77,7 +77,7 @@ class FindingController extends PoamBaseController
      */
     public function viewAction()
     {
-        Config_Fisma::requirePrivilege('finding', 'read');
+        $this->_helper->requirePrivilege('finding', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id', 0);
@@ -97,7 +97,7 @@ class FindingController extends PoamBaseController
      */
     public function editAction()
     {
-        Config_Fisma::requirePrivilege('finding', 'update');
+        $this->_helper->requirePrivilege('finding', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -127,7 +127,7 @@ class FindingController extends PoamBaseController
      */
     public function injectionAction()
     {
-        Config_Fisma::requirePrivilege('finding', 'inject');
+        $this->_helper->requirePrivilege('finding', 'inject');
         
         if (Config_Fisma::isAllow('finding', 'create')) {
             $csvFile = isset($_FILES['csv']) ? $_FILES['csv'] : array();
@@ -208,7 +208,7 @@ template. Please update your CSV file and try again.<br />";
      */
     public function createAction()
     {
-        Config_Fisma::requirePrivilege('finding', 'create');
+        $this->_helper->requirePrivilege('finding', 'create');
         
         if ("new" == $this->_request->getParam('is')) {
             $poam = $this->_request->getPost('poam');
@@ -272,7 +272,7 @@ template. Please update your CSV file and try again.<br />";
      */
     public function deleteAction()
     {
-        Config_Fisma::requirePrivilege('finding', 'delete');
+        $this->_helper->requirePrivilege('finding', 'delete');
         
         $req = $this->getRequest();
         $post = $req->getPost();
@@ -398,7 +398,7 @@ template. Please update your CSV file and try again.<br />";
      */
     public function templateAction()
     {
-        Config_Fisma::requirePrivilege('finding', 'inject');
+        $this->_helper->requirePrivilege('finding', 'inject');
         
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addContext('xls', array(
@@ -453,7 +453,7 @@ template. Please update your CSV file and try again.<br />";
      */
     public function pluginAction()
     {       
-        Config_Fisma::requirePrivilege('finding', 'inject');
+        $this->_helper->requirePrivilege('finding', 'inject');
 
         // Load the finding plugin form
         $uploadForm = Form_Manager::loadForm('finding_upload');
@@ -544,7 +544,7 @@ template. Please update your CSV file and try again.<br />";
      * @todo Use Zend_Pager
      */
     public function approveAction() {
-        Config_Fisma::requirePrivilege('finding', 'approve');
+        $this->_helper->requirePrivilege('finding', 'approve');
         
         $db = Zend_Registry::get('db');
         $findings = $db->fetchAll("SELECT p.id, 
@@ -566,7 +566,7 @@ template. Please update your CSV file and try again.<br />";
      * @todo Add audit logging
      */
     public function processApprovalAction() {
-        Config_Fisma::requirePrivilege('finding', 'approve');
+        $this->_helper->requirePrivilege('finding', 'approve');
         
         $db = Zend_Registry::get('db');
         $post = $this->getRequest()->getPost();
