@@ -114,7 +114,8 @@ class Inject_AppDetective extends Inject_Abstract
         // Remaining mappings
         $asset['network_id'] = $this->_networkId;
         $asset['system_id'] = $this->_systemId;
-        $asset['create_ts'] = new Zend_Date();
+        $now = new Zend_Date();
+        $asset['create_ts'] = $now->toString('Y-m-d H:i:s');
         $asset['source'] = 'SCAN';
         
         // Verify whether asset exists or not
