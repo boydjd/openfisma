@@ -35,6 +35,9 @@ class ReportController extends PoamBaseController
 {
     /**
      * init() - Create the additional pdf and xls contexts for this class.
+     *
+     * @todo Why are the contexts duplicated in init() and predispatch()? I think the init() method is the right place
+     * for it.
      */
     public function init()
     {
@@ -73,7 +76,7 @@ class ReportController extends PoamBaseController
               ->addActionContext('swdisc', array('pdf', 'xls'))
               ->addActionContext('total', array('pdf', 'xls'))
               ->addActionContext('overdue', array('pdf', 'xls'))
-              ->addActionContext('pluginreport', array('pdf', 'xls'))
+              ->addActionContext('plugin-report', array('pdf', 'xls'))
               ->initContext();
     }
 
@@ -687,7 +690,7 @@ class ReportController extends PoamBaseController
             $role = $role[0]['nickname'];
             if (!in_array($role, $reportRoles)) {
                 throw new Exception_General("User \"{$this->_me->account}\" does not have permission to view"
-                                         . " the \"$reportName\" plug-in report.");
+                                          . " the \"$reportName\" plug-in report.");
             }
         }
         
