@@ -235,16 +235,6 @@ template. Please update your CSV file and try again.<br />";
                 $poam['create_ts'] = self::$now->toString("Y-m-d H:i:s");
                 $poam['created_by'] = $this->_me->id;
                 $poamId = $this->_poam->insert($poam);
-                $logContent = "a new finding was created";
-                $this->_poam->writeLogs($poamId, $this->_me->id,
-                     self::$now->toString('Y-m-d H:i:s'), 'CREATION',
-                        $logContent);
-
-                $this->_notification
-                     ->add(Notification::FINDING_CREATED,
-                           $this->_me->account,
-                           "PoamID: $poamId",
-                           $poam['system_id']);
 
                 $message = "Finding created successfully";
                 $model = self::M_NOTICE;
@@ -383,11 +373,7 @@ template. Please update your CSV file and try again.<br />";
             'finding_data' => $row[6]
         );
         $ret = $poam->insert($poamData);
-        $this->_notification
-             ->add(Notification::FINDING_INJECT,
-                   $this->_me->account,
-                   "PoamId: $ret",
-                   $poamData['system_id']);
+
         return $ret;
     }
     /** 

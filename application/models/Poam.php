@@ -809,4 +809,42 @@ class Poam extends Zend_Db_Table
     public static function htmlFields() {
         return self::$_htmlFields;
     }
+
+    /**
+     * insert() - This function overrides the parent in order to write the creation event to the audit log, and create
+     * user notification events.
+     *
+     * @param array $findingData An associative array of column data for the finding
+     * @return int The id for the new finding
+     */
+    public function insert($findingData) {
+        // I'm not sure if anybody would call this function with an array of arrays, but for now to be safe I'm
+        // explicitly checking for that condition. -Mark
+        if (array_key_exists(0, $findingData)) {
+            throw new Exception_General('The $findingData parameter should be an associative array containing key/value
+                                         pairs, but it appears to be a linear array.');
+        }
+
+        // Call the parent's insert() to do the actual insertion work
+        $id = parent::insert($findingData);
+
+        // Write audit log
+        $now = new Zend_Date();
+        $auth = Zend_Auth::getInstance();
+        $user = $auth->getIdentity();
+        $this->writeLogs($id,
+                         $user->id, // @todo fix this, put the real user id
+                         $now->toString('Y-m-d H:i:s'),
+                         'CREATION',
+                         'New finding created');
+
+        // Create user notification
+        $notification = new Notification();
+        $notification->add(Notification::FINDING_CREATED,
+                           $user->account,
+                           "PoamID: $id",
+                           $findingData['system_id']);
+
+        return $id;
+    }
 }
