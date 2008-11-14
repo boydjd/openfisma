@@ -225,7 +225,7 @@ class SystemController extends SecurityController
                  */
                 $errorString = '';
                 foreach ($form->getMessages() as $field => $fieldErrors) {
-                    if (count($fieldErrors>0)) {
+                    if (count($fieldErrors)>0) {
                         foreach ($fieldErrors as $error) {
                             $label = $form->getElement($field)->getLabel();
                             $errorString .= "$label: $error<br>";
@@ -358,7 +358,7 @@ class SystemController extends SecurityController
         } else {
             $errorString = '';
             foreach ($form->getMessages() as $field => $fieldErrors) {
-                if (count($fieldErrors>0)) {
+                if (count($fieldErrors)>0) {
                     foreach ($fieldErrors as $error) {
                         $label = $form->getElement($field)->getLabel();
                         $errorString .= "$label: $error<br>";

@@ -504,7 +504,7 @@ template. Please update your CSV file and try again.<br />";
                  */
                 $errorString = '';
                 foreach ($uploadForm->getMessages() as $field => $fieldErrors) {
-                    if (count($fieldErrors>0)) {
+                    if (count($fieldErrors)>0) {
                         foreach ($fieldErrors as $error) {
                             $label = $uploadForm->getElement($field)->getLabel();
                             $errorString .= "$label: $error<br>";
