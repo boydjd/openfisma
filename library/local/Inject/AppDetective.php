@@ -203,7 +203,8 @@ class Inject_AppDetective extends Inject_Abstract
                 $finding['source_id'] = $this->_findingSourceId;
                 $finding['system_id'] = $this->_systemId;
                 $finding['action_suggested'] = $reportFinding->fix;
-                $finding['threat_level'] = $reportFinding->overview;
+                $finding['threat_level'] = strtoupper($reportFinding->risk);
+                $finding['threat_source'] = $reportFinding->overview;
 
                 // The mapping for finding_data is a little more complicated
                 // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
