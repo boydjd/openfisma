@@ -138,7 +138,7 @@ class ReportController extends PoamBaseController
                 $dateEnd = new Zend_Date($enddate, Zend_Date::DATES);
             }
             $systemArray = array(
-                'system_id' => $systemId
+                'systemId' => $systemId
             );
             $aawArray = array(
                 'createdDateEnd' => $dateBegin,
