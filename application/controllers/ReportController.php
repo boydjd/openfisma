@@ -95,6 +95,7 @@ class ReportController extends PoamBaseController
         $criteria['enddate'] = $req->getParam('enddate');
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('criteria', $criteria);
+        $this->view->assign('year', empty($criteria['year'])?date('Y'):$criteria['year']);
         $dateBegin = '';
         $dateEnd = '';
         if ('search' == $req->getParam('s') || 

@@ -212,8 +212,6 @@ $(document).ready(function(){
             }
         }
     });
-    date = new Date();
-    $("span[name=year]").html( date.getFullYear() );
     shortcut(0);
 
 });
@@ -222,7 +220,7 @@ function shortcut(step){
     if( !isFinite(step) ){
         step = 0;
     }
-    var year = $("span[name=year]").html();
+    var year = $("span[name=gen_shortcut]").attr('year');
     year = Number(year) + Number(step);
     var url = $("span[name=gen_shortcut]").attr('url')+year+'/';
     $("span[name=year]").html( year );
