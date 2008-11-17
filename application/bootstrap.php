@@ -32,21 +32,11 @@ defined('APPLICATION_ROOT')
 defined('APPLICATION_PATH')
     or define('APPLICATION_PATH', dirname(__FILE__));
 
-defined('APPLICATION_CONFIGS')
-    or define('APPLICATION_CONFIGS', dirname(__FILE__) . '/config');
-
-defined('MODELS')
-    or define('MODELS', APPLICATION_PATH . '/models');
-
-defined('APPLICATION_LOGS')
-    or define('APPLICATION_LOGS', APPLICATION_ROOT . '/data/logs');
-
-defined('LOCAL')
-    or define('LOCAL', APPLICATION_ROOT . '/library/local');
-
-defined('PEAR')
-    or define('PEAR', APPLICATION_ROOT . '/library/Pear');
-
+// APPLICATION ENVIRONMENT - This sets the operating environment for OpenFISMA.
+// This should be set to either development, test, or production. The application will use the 
+// config settings for the respective environment setting. For example, if development is
+// currently set, OpenFISMA will utilize the development settings in the app.ini file under
+// the config directory. 
 defined('APPLICATION_ENVIRONMENT')
     or define('APPLICATION_ENVIRONMENT', 'development');
 
@@ -56,9 +46,9 @@ defined('APPLICATION_ENVIRONMENT')
 // puts together a list of directories to add to the include path
 $includeDirectories = array(
     APPLICATION_ROOT . '/library',
-    LOCAL,
-    PEAR,
-    MODELS,
+    APPLICATION_ROOT . '/library/local',
+    APPLICATION_ROOT . '/library/Pear',
+    APPLICATION_ROOT . '/application/models',
 );
 
 // APPLICATION_PATH is a constant pointing to our application/ subdirectory.
@@ -98,7 +88,7 @@ Zend_Layout::startMvc(APPLICATION_PATH . '/layouts/scripts');
 // The Zend_Config_Ini component will parse the ini file, and resolve all of
 // the values for the given section.  Here we will be using the section name
 // that corresponds to the APP's Environment
-$configuration = new Zend_Config_Ini(APPLICATION_CONFIGS . '/app.ini', APPLICATION_ENVIRONMENT);
+$configuration = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/app.ini', APPLICATION_ENVIRONMENT);
 
 // REGISTRY - setup the application registry
 // An application registry allows the application to store application

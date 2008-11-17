@@ -29,9 +29,8 @@
  */
 define('COMMAND_LINE', true);
 
-require_once dirname(__FILE__) . '/../application/bootstrap.php';
-
-require_once (APPLICATION_CONFIGS . '/setting.php');
+require_once (APPLICATION_ROOT . '/application/bootstrap.php');
+require_once (APPLICATION_ROOT . '/application/config/setting.php');
 
 // Kick off the main routine:
 ECDNotifier::run();

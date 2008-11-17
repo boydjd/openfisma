@@ -29,9 +29,8 @@
  */
 define('COMMAND_LINE', true);
 
-require_once dirname(__FILE__) . '/../application/bootstrap.php';
-
-require_once (APPLICATION_CONFIGS . '/setting.php');
+require_once (APPLICATION_ROOT . '/application/bootstrap.php');
+require_once (APPLICATION_ROOT . '/application/config/setting.php');
 
 // Kick off the main routine:
 Notify::processNotificationQueue();
@@ -132,7 +131,7 @@ class Notify
         // This will only execute one per script execution.
         static $hostUrl;
         if (!isset($hostUrl)) {
-            $config = new Zend_Config_Ini(APPLICATION_CONFIGS . '/install.conf', 'general');
+            $config = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/install.conf', 'general');
             $hostUrl = $config->hostUrl;
         }
         

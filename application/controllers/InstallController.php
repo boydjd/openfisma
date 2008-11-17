@@ -65,7 +65,7 @@ class InstallController extends Zend_Controller_Action
             APPLICATION_ROOT . '/public/temp',
             APPLICATION_ROOT . '/data/logs',
             APPLICATION_ROOT . '/public/evidence',
-            APPLICATION_CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME
+            APPLICATION_ROOT . '/application/config/'. Config_Fisma::CONFIGFILE_NAME
         );
         $notwritables = array();
         foreach ($wDirectories as $k => $wok) {
@@ -203,7 +203,7 @@ class InstallController extends Zend_Controller_Action
                 );
                 try {
                     $db = Zend_Db::factory(new Zend_Config($zendDsn));
-                    $initFiles = array(APPLICATION_CONFIGS . '/db/base.sql');
+                    $initFiles = array(APPLICATION_ROOT . '/application/config/db/base.sql');
                     if ($ret = $this->importSql($db, $initFiles)) {
                         $checklist['schema'] = 'ok';
                     }
@@ -218,7 +218,7 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->dsn = $dsn;
         if ($ret) {
-            if (is_writable(APPLICATION_CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME)) {
+            if (is_writable(APPLICATION_ROOT .'/application/config/'. Config_Fisma::CONFIGFILE_NAME)) {
                 $confTpl = $this->_helper->viewRenderer
                                          ->getViewScript('config');
 
@@ -240,7 +240,7 @@ class InstallController extends Zend_Controller_Action
                 }
 
                 $dbconfig = $this->view->render($confTpl);
-                if (0 < file_put_contents(APPLICATION_CONFIGS .'/'. Config_Fisma::CONFIGFILE_NAME,
+                if (0 < file_put_contents(APPLICATION_ROOT .'/application/config/'. Config_Fisma::CONFIGFILE_NAME,
                     $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
                 } else {

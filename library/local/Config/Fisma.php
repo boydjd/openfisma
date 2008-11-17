@@ -73,8 +73,8 @@ class Config_Fisma
         //assuming not installed first unless it is
         Zend_Registry::set('installed', false);
 
-        if (is_file(APPLICATION_CONFIGS . '/' . self::CONFIGFILE_NAME)) {
-            $config = new Zend_Config_Ini(APPLICATION_CONFIGS . '/' . self::CONFIGFILE_NAME);
+        if (is_file(APPLICATION_ROOT . '/application/config/' . self::CONFIGFILE_NAME)) {
+            $config = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/' . self::CONFIGFILE_NAME);
             if (!empty($config->database)) {
                 Zend_Registry::set('datasource', $config->database);
                 Zend_Registry::set('installed', true);
@@ -82,7 +82,7 @@ class Config_Fisma
             
             self::addSysConfig($config->general);
             //Customized helpers
-            Zend_Controller_Action_HelperBroker::addPath(LOCAL . '/Action/Helper', 'Action_Helper');
+            Zend_Controller_Action_HelperBroker::addPath(APPLICATION_ROOT . '/library/local/Action/Helper', 'Action_Helper');
             // Debug setting
             if (!empty($config->debug)) {
                 if ($config->debug->level > 0) {
@@ -166,7 +166,7 @@ class Config_Fisma
     public function getLogInstance()
     {
         if ( null === self::$_log ) {
-            $write = new Zend_Log_Writer_Stream(APPLICATION_LOGS . '/' . self::ERROR_LOG);
+            $write = new Zend_Log_Writer_Stream(APPLICATION_ROOT . '/data/logs/' . self::ERROR_LOG);
             $auth = Zend_Auth::getInstance();
             if ($auth->hasIdentity()) {
                 $me = $auth->getIdentity();
@@ -289,7 +289,7 @@ class Config_Fisma
      */
     public function getForm ($formConfigSection)
     {
-        $formIni = new Zend_Config_Ini(APPLICATION_CONFIGS . '/' . FORMCONFIGFILE,
+        $formIni = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/' . FORMCONFIGFILE,
             $formConfigSection);
         $form = new Zend_Form($formIni);
         return $form;
