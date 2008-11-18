@@ -124,7 +124,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                     <b target="threat" <?php 
                         if(Config_Fisma::isAllow('remediation','update_threat')){ 
                             echo ' class="editable"';
-                        } ?> >Level:&nbsp;</b>
+                        } ?> >Threat Level:&nbsp;</b>
                     <br><span id ="threat" type="select" name="poam[threat_level]"
                             href="/metainfo/list/o/threat_level/format/html/">
                         <?php echo $this->poam['threat_level']; ?>
@@ -136,23 +136,12 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                      <b target="threat_source" <?php 
                         if(Config_Fisma::isAllow('remediation','update_threat')){ 
                             echo 'class="editable"';
-                        } ?> >Source:&nbsp;</b>
+                        } ?> >Threat Description:&nbsp;</b>
                      <br><span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
                      <?php echo nl2br($this->poam['threat_source']); ?>
                      </span>
                      </td>
                  </tr>
-                 <tr>
-                    <td>
-                    <b target="justification" <?php 
-                       if(Config_Fisma::isAllow('remediation','update_threat')){ 
-                           echo 'class="editable"';
-                       }?> >Justification:&nbsp;</b>
-                    <br><span type="textarea" id="justification" name="poam[threat_justification]" rows="5" cols="160">
-                    <?php echo nl2br($this->poam['threat_justification']); ?>
-                    </span>
-                    </td>
-                  </tr>
                 </table>
                  <!-- END THREATS TABLE -->
             <!-- COUNTERMEASURE TABLE -->
@@ -168,7 +157,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                             <b target="effectiveness" <?php 
                                 if(Config_Fisma::isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
-                                }?> >Effectiveness:&nbsp;</b>
+                                }?> >Countermeasure Effectiveness:&nbsp;</b>
                             <br><span type="select" name="poam[cmeasure_effectiveness]"
                             id="effectiveness" href="/metainfo/list/o/cmeasure_effectiveness/format/html/">
                             <?php echo $this->poam['cmeasure_effectiveness']; ?>
@@ -180,21 +169,9 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                             <b target="cmeasure" <?php 
                                 if(Config_Fisma::isAllow('remediation','update_countermeasures')){
                                     echo 'class="editable"';
-                                } ?> >Countermeasure:&nbsp;</b>
+                                } ?> >Countermeasure Description:&nbsp;</b>
                             <br><span type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
                             <?php echo nl2br($this->poam['cmeasure']); ?>
-                            </span>
-                        </td>
-                    </tr>
-                     <tr>
-                        <td>
-                            <b target="cm_justification" <?php 
-                                if(Config_Fisma::isAllow('remediation','update_countermeasures')){
-                                    echo 'class="editable"';
-                                }
-                            ?> >Justification:&nbsp;</b>
-                            <br><span id="cm_justification" type="textarea" name="poam[cmeasure_justification]" rows="5" cols="160">
-                            <?php echo nl2br($this->poam['cmeasure_justification']); ?>
                             </span>
                         </td>
                     </tr>
