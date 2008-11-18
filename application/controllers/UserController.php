@@ -212,7 +212,8 @@ class UserController extends MessageController
                                 . '">Administrator</a>.');
                 }
             } else if (32 == strlen($whologin['password'])) {
-                $message = 'You need to upgrade your password for a higher encrypt level';
+                $message = 'This version of the application uses an improved password storage scheme.'
+                         . ' You will need to change your password in order to upgrade your account.';
                 $this->message($message, self::M_WARNING);
                 $this->_helper->_actionStack('header', 'Panel');
                 $this->_forward('password');
