@@ -204,10 +204,10 @@ sub dumpSchema {
     &error("Command did not execute successfully. See previous output for more info.");
   }
   print DUMPFILE <<NOTICE;
---------------------------------------------------------------------
+--
 -- WARNING This file is created automatically and should not be
 -- edited by hand.
---------------------------------------------------------------------
+--
 NOTICE
   print DUMPFILE $schemaDump;
   close DUMPFILE;
