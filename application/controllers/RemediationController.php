@@ -184,14 +184,6 @@ class RemediationController extends PoamBaseController
         $statusArray = array_keys($summaryTmp);
         $statusArray = array_slice($statusArray, 0, -2);
         foreach ($statusArray as $status) {
-            $ontimeCount = $this->_poam->search($this->_me->systems, array(
-                'count' => 'system_id',
-                'system_id'
-            ), array_merge($criteria, array('ontime'=>'ontime', 'status'=>$status)));
-            foreach ($ontimeCount as $row) {
-                $summary[$row['system_id']][$status] = $row['count'];
-            }
-
             $overdueCount = $this->_poam->search($this->_me->systems, array(
                 'count' => 'system_id',
                 'system_id'

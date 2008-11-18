@@ -404,22 +404,22 @@ class Poam extends Zend_Db_Table
             }
         } else if ('overdue' == $criteria['ontime']) {
             if (in_array($status, array('NEW', 'OPEN'))) {
-                $time->sub($openOverduePeriod, Zend_Date::DAY);
+                $time->sub($openOverduePeriod+1, Zend_Date::DAY);
                 $criteria['createdDateEnd'] = $time;
             }
             if (array_key_exists($status, $mpStatus)) {
                 unset($criteria['status']);
-                $time->sub($mpOverduePeriod, Zend_Date::DAY);
+                $time->sub($mpOverduePeriod+1, Zend_Date::DAY);
                 $criteria['mp'] = $mpStatus[$status];
                 $criteria['mssDateEnd'] = $time;
             }
             if ('EN' == $status) {
-                $time->sub($enOverduePeriod, Zend_Date::DAY);
+                $time->sub($enOverduePeriod+1, Zend_Date::DAY);
                 $criteria['estDateEnd'] = $time;
             }
             if (array_key_exists($status, $epStatus)) {
                 unset($criteria['status']);
-                $time->sub($epOverduePeriod, Zend_Date::DAY);
+                $time->sub($epOverduePeriod+1, Zend_Date::DAY);
                 $criteria['ep'] = $epStatus[$status];
                 $criteria['estDateEnd'] = $time;
             }

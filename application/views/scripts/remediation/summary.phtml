@@ -83,7 +83,8 @@
             if ($flag) {
                 echo '<table width="100%" cellspacing="0" cellpadding="0"><tr bgcolor="#d9ead3" align="center"><td>';
                 if (isset($row[$status.'overdue'])) {
-                    echo $row[$status] == ''?'-':'<a href="'.$normalHref.'">'.$row[$status].'</a>';
+                    $normalCount = $row[$status] - $row[$status.'overdue'];
+                    echo $normalCount == ''?'-':'<a href="'.$normalHref.'">'.$normalCount.'</a>';
                     echo '</td></tr>';
                     echo '<tr bgcolor="#f4cccc" align="center"><td><em><a href="'.$overdueHref.'">'.$row[$status."overdue"].'</a></em>';
                 } else {
