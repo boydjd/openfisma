@@ -52,9 +52,6 @@ displayGroups.system.elements.desc = "desc"
 
 elements.confidentiality.type = "select"
 elements.confidentiality.options.label = "Type"
-elements.confidentiality.options.multiOptions.HIGH = "High"
-elements.confidentiality.options.multiOptions.MODERATE = "Moderate"
-elements.confidentiality.options.multiOptions.LOW = "Low"
 elements.confidentiality.options.validators.alnum.validator = "NotEmpty"
 elements.confidentiality.options.validators.strlen.validator = "StringLength"
 elements.confidentiality.options.required = true
@@ -71,9 +68,6 @@ displayGroups.system.elements.confidentiality_justification = "confidentiality_j
 
 elements.integrity.type = "select"
 elements.integrity.options.label = "Integrity"
-elements.integrity.options.multiOptions.HIGH = "High"
-elements.integrity.options.multiOptions.MODERATE = "Moderate"
-elements.integrity.options.multiOptions.LOW = "Low"
 elements.integrity.options.validators.alnum.validator = "NotEmpty"
 elements.integrity.options.validators.strlen.validator = "StringLength"
 elements.integrity.options.required = true
@@ -90,9 +84,6 @@ displayGroups.system.elements.integrity_justification = "integrity_justification
 
 elements.availability.type = "select"
 elements.availability.options.label = "Availability"
-elements.availability.options.multiOptions.HIGH = "High"
-elements.availability.options.multiOptions.MODERATE = "Moderate"
-elements.availability.options.multiOptions.LOW = "Low"
 elements.availability.options.validators.alnum.validator = "NotEmpty"
 elements.availability.options.validators.strlen.validator = "StringLength"
 elements.availability.options.required = true

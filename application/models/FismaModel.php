@@ -111,4 +111,23 @@ class FismaModel extends Zend_Db_Table
         $row = $this->fetchRow($countQuery);
         return $row->count;
     }
+    /**
+     * get the types of an enum column
+     *
+     * @param string $column field name
+     * @param string $callback function name, use this function to rebuild indices of the array
+     *          default, the indices will according to the order in database
+     * @return array 
+     */
+    function getEnumColumns($column, $callback=null) {
+        $columns = $this->_metadata;
+        assert(isset($columns[$column]));
+        assert(is_int(strpos($columns[$column]['DATA_TYPE'],'enum')));
+        $sTypes = substr($columns[$column]['DATA_TYPE'],6,-2);
+        $aTypes = explode("','",$sTypes);
+        if ($callback !== null) {
+            $aTypes = call_user_func($callback,$aTypes);
+        }
+        return $aTypes;
+    }
 }

@@ -106,18 +106,19 @@ class SystemController extends SecurityController
                 $form->getElement('organization_id')->addMultiOptions(array($row['id'] => $row['name']));
             }
         }
-        $array = array('HIGH'=>'High', 'MODERATE'=>'Moderate', 'LOW'=>'Low');
-        foreach ($array as $k=>$v) {
-            $form->getElement('confidentiality')->addMultiOptions(array($k=>$v));
-            $form->getElement('integrity')->addMultiOptions(array($k=>$v));
-            $form->getElement('availability')->addMultiOptions(array($k=>$v));
-        }
-        $type = array('GENERAL SUPPORT SYSTEM'=>'GENERAL SUPPORT SYSTEM',
-                      'MINOR APPLICATION'=>'MINOR APPLICATION',
-                      'MAJOR APPLICATION'=>'MAJOR APPLICATION');
-        foreach ($type as $k=>$v) {
-            $form->getElement('type')->addMultiOptions(array($k=>$v));
-        }
+        
+        $array = $this->_system->getEnumColumns('confidentiality');
+        $form->getElement('confidentiality')->addMultiOptions($array);
+        
+        $array = $this->_system->getEnumColumns('integrity');
+        $form->getElement('integrity')->addMultiOptions($array);
+        
+        $array = $this->_system->getEnumColumns('availability');
+        $form->getElement('availability')->addMultiOptions($array);
+        
+        $type = $this->_system->getEnumColumns('type');
+        $form->getElement('type')->addMultiOptions($type);
+        
         return Form_Manager::prepareForm($form);
     }
 
@@ -189,18 +190,23 @@ class SystemController extends SecurityController
                 unset($system['submit']);
                 unset($system['reset']);
                 
-                $array = array('LOW'=>1, 'MODERATE'=>2, 'HIGH'=>3);
-                $max = $array[$system['confidentiality']];
-                $system['security_categorization'] = $system['confidentiality'];
-                if ($max < $array[$system['integrity']]) {
-                    $max = $array[$system['integrity']];
-                    $system['security_categorization'] = $system['integrity'];
-                }
-                if ($max < $array[$system['availability']]) {
-                    $max = $array[$system['availability']];
-                    $system['security_categorization'] = $system['availability'];
-                }               
-                    
+                $array = $this->_system->getEnumColumns('security_categorization');
+                $index = max((int)$system['confidentiality'],
+                             (int)$system['integrity'],(int)$system['type']);
+                $system['security_categorization'] = $array[$index];
+                
+                $array = $this->_system->getEnumColumns('confidentiality');
+                $system['confidentiality'] = $array[$system['confidentiality']];
+                
+                $array = $this->_system->getEnumColumns('integrity');
+                $system['integrity'] = $array[$system['integrity']];
+                
+                $array = $this->_system->getEnumColumns('availability');
+                $system['availability'] = $array[$system['availability']];
+                
+                $type = $this->_system->getEnumColumns('type');
+                $system['type'] = $array[$system['type']];
+                
                 $systemId = $this->_system->insert($system);
                 if (! $systemId) {
                     //@REVIEW 3 lines
@@ -296,6 +302,19 @@ class SystemController extends SecurityController
 
         $res = $this->_system->find($id)->toArray();
         $system = $res[0];
+
+        $array = $this->_system->getEnumColumns('confidentiality');
+        $system['confidentiality'] = array_search($system['confidentiality'] ,$array);
+        
+        $array = $this->_system->getEnumColumns('integrity');
+        $system['integrity'] = array_search($system['integrity'] ,$array);
+        
+        $array = $this->_system->getEnumColumns('availability');
+        $system['availability'] = array_search($system['availability'] ,$array);
+        
+        $type = $this->_system->getEnumColumns('type');
+        $system['type'] = array_search($system['type'] ,$type);
+        
         $organization = new Organization();
         $res = $organization->find($system['organization_id'])->toArray();
         if (!empty($res)) {
@@ -340,6 +359,26 @@ class SystemController extends SecurityController
         if ($formValid) {
             unset($system['submit']);
             unset($system['reset']);
+            
+            $array = $this->_system->getEnumColumns('security_categorization');
+            $index = max((int)$system['confidentiality'],
+                         (int)$system['integrity'],(int)$system['type']);
+            $system['security_categorization'] = $array[$index];
+            
+            $array = $this->_system->getEnumColumns('confidentiality');
+            $system['confidentiality'] = $array[$system['confidentiality']];
+            
+            $array = $this->_system->getEnumColumns('integrity');
+            $system['integrity'] = $array[$system['integrity']];
+            
+            $array = $this->_system->getEnumColumns('availability');
+            $system['availability'] = $array[$system['availability']];
+            
+            unset($array);
+            $type = $this->_system->getEnumColumns('type');
+            $system['type'] = $type[$system['type']];
+            unset($type);
+            
             $res = $this->_system->update($system, 'id = ' . $id);
             if ($res) {
                 //@REVIEW 3 lines
