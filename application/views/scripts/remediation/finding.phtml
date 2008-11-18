@@ -86,12 +86,20 @@
         </td>
     </tr>
 </table>
-<table border="0" cellpadding="5" cellspacing="1" class="tipframe" >
-    <th align="left">Finding Description</th>
+<table cellpadding="5" width="100%" class="tipframe">
+    <th align='left' ><span target='finding_description' <?php 
+                if ('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status']
+                    && Config_Fisma::isAllow('remediation','update_finding_description')) {
+                    echo 'class="editable"';
+                }
+            ?> colspan='2'>Finding Description</span></th>
     <tr>
-        <td><?php 
-            echo isset($this->poam['finding_data'])?$this->poam['finding_data']:'(none given)'; 
-        ?></td>
+        <td colspan='2'>
+            <span name="poam[finding_data]" id="finding_description"
+                  type="textarea" rows="3" cols="160"> <?php 
+                      echo nl2br($this->poam['finding_data']);
+                  ?> </span>
+        </td>
     </tr>
 </table>
 <?php if( !empty($this->poam['vuln']) ) { ?>

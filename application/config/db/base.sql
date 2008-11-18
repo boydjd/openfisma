@@ -457,6 +457,7 @@ INSERT INTO `functions` VALUES (93,'Mitigation Strategy submit','remediation','m
 INSERT INTO `functions` VALUES (94,'Mitigation Strategy revise','remediation','mitigation_strategy_revise','','1');
 INSERT INTO `functions` VALUES (95,'Approve Injected Findings','finding','approve','','1');
 INSERT INTO `functions` VALUES (96,'Inject Findings','finding','inject','','1');
+INSERT INTO `functions` VALUES (97,'Edit Finding Description','remediation','update_finding_description','','1');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `ldap_config` (
@@ -866,7 +867,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (35);
+INSERT INTO `schema_version` VALUES (36);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -993,4 +994,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (36);
+INSERT INTO schema_version (schema_version) VALUES (37);

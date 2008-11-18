@@ -16,7 +16,8 @@ function delok()
 <!-- BEGIN MITIGATION STRATEGY APPROVAL TABLE -->
 <?php
     $postAction = "/remediation/msa/id/".$this->poam['id'];
-    $array = array('recommendation'=>$this->poam['action_suggested'],
+    $array = array('description'   =>$this->poam['finding_data'],
+                   'recommendation'=>$this->poam['action_suggested'],
                    'desciption'    =>$this->poam['action_planned'],
                    'resources'     =>$this->poam['action_resources'],
                    'blscr'         =>$this->poam['blscr_id'],
