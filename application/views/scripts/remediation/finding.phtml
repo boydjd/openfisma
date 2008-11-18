@@ -88,8 +88,7 @@
 </table>
 <table cellpadding="5" width="100%" class="tipframe">
     <th align='left' ><span target='finding_description' <?php 
-                if ('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status']
-                    && Config_Fisma::isAllow('remediation','update_finding_description')) {
+                if (Config_Fisma::isAllow('remediation','update_finding_description')) {
                     echo 'class="editable"';
                 }
             ?> colspan='2'>Finding Description</span></th>
