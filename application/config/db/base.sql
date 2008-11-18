@@ -1,7 +1,7 @@
---------------------------------------------------------------------
+--
 -- WARNING This file is created automatically and should not be
 -- edited by hand.
---------------------------------------------------------------------
+--
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `account_logs` (
@@ -9,7 +9,7 @@ CREATE TABLE `account_logs` (
   `timestamp` datetime NOT NULL,
   `priority` tinyint(3) unsigned NOT NULL,
   `priority_name` varchar(10) NOT NULL,
-  `event` enum('ACCOUNT_CREATED', 'ACCOUNT_MODIFICATION', 'ACCOUNT_DELETED','ACCOUNT_LOCKOUT', 'DISABLING', 'LOGINFAILURE', 'LOGIN', 'LOGOUT', 'ROB_ACCEPT') NOT NULL,
+  `event` enum('ACCOUNT_CREATED','ACCOUNT_MODIFICATION','ACCOUNT_DELETED','ACCOUNT_LOCKOUT','DISABLING','LOGINFAILURE','LOGIN','LOGOUT','ROB_ACCEPT') NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   `message` text NOT NULL,
   PRIMARY KEY  (`id`)
@@ -361,7 +361,8 @@ CREATE TABLE `evidences` (
   `submission` varchar(128) NOT NULL default '',
   `submitted_by` int(10) unsigned NOT NULL default '0',
   `submit_ts` date NOT NULL default '0000-00-00',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `poam_id` (`poam_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -529,7 +530,8 @@ CREATE TABLE `poam_evaluations` (
   `user_id` int(10) NOT NULL,
   `decision` enum('APPROVED','DENIED','EST_CHANGED') default NULL,
   `date` date NOT NULL default '0000-00-00',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `group_id` (`group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -867,7 +869,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (36);
+INSERT INTO `schema_version` VALUES (37);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -994,4 +996,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (37);
+INSERT INTO schema_version (schema_version) VALUES (38);
