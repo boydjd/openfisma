@@ -14,10 +14,10 @@
     foreach ($this->logList as $row) {
 ?>
     <tr>
-        <td class="tdc"><?php echo $row['timestamp'];?></td>
-        <td class="tdc"><?php echo $row['account'];?></td>
-        <td class="tdc"><?php echo $row['event'];?></td>
-        <td class="tdc"><?php echo $row['message']; ?></td>
+        <td class="tdc"><?php echo $row->timestamp;?></td>
+        <td class="tdc"><?php echo $row->account;?></td>
+        <td class="tdc"><?php echo $row->event;?></td>
+        <td class="tdc"><?php echo $row->message; ?></td>
     </tr>
 <?php } ?>
 </table>

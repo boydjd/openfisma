@@ -241,8 +241,7 @@ class ReportController extends PoamBaseController
             if (!empty($criteria['year'])) {
                 $criteria['createdDateBegin'] = new 
                     Zend_Date($criteria['year'], Zend_Date::YEAR);
-                $criteria['createdDateEnd'] = clone 
-                    $criteria['created_date_begin'];
+                $criteria['createdDateEnd'] = clone $criteria['createdDateBegin'];
                 $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
                 unset($criteria['year']);
             }

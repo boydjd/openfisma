@@ -136,20 +136,6 @@ class AccountController extends PoamBaseController
         $this->_paging['totalItems'] = $userCount;
         $this->_paging['fileName'] = "/panel/account/sub/list/p/%d";
 
-        if ('log' == $this->_request->getParam('sub')) {
-            $criteria = array(
-                'event'=>'Event Name',
-                'account'=>'Account Name');
-            $postAction = "/panel/account/sub/log";
-
-            $query = $user->getAdapter()->select()->from('account_logs',
-                         array('count'=>'count(*)'));
-            $ret = $user->getAdapter()->fetchRow($query);
-            $logCount = $ret['count'];
-            $this->_paging['totalItems'] = $logCount;
-            $this->_paging['fileName'] = "/panel/account/sub/log/p/%d";
-        }
-
         $pager = &Pager::factory($this->_paging);
         
         // Assign view outputs
@@ -365,7 +351,7 @@ class AccountController extends PoamBaseController
                     self::$now->toString("Y-m-d H:i:s");
             } elseif ($accountData['is_active'] == 1) {
                 $accountData['failure_count'] = 0;
-                $accountData['last_login_ts'] = new Zend_Db_Expr('NOW()');
+                $accountData['last_login_ts'] = '0000-00-00 00:00:00';
                 $accountData['termination_ts'] = NULL;
             }
 
@@ -827,36 +813,6 @@ class AccountController extends PoamBaseController
         $this->view->assign('available_privileges', $availablePrivileges);
         $this->_helper->layout->setLayout('ajax');
         $this->render('availableprivi');
-    }
-
-    /**
-     * logAction() - List all the users log message.
-     */
-    public function logAction()
-    {
-        $this->_helper->requirePrivilege('admin_users', 'read');
-        
-        // Set up the query to get the full list of user logs
-        $db = $this->_user->getAdapter();
-        $qry = $db->select()
-                  ->from(array('al' => 'account_logs'),
-                         array('timestamp', 'event', 'user_id', 'message'))
-                  ->joinLeft(array('u'=>'users'),
-                             'al.user_id = u.id',
-                             'account');
-
-        $qv = $this->_request->getParam('qv');
-        if (!empty($qv)) {
-            $fid = $this->_request->getParam('fid');
-            $qry->where("$fid = '$qv'");
-        }
-        $qry->order("timestamp DESC");
-        $qry->limitPage($this->_paging['currentPage'], 
-                        $this->_paging['perPage']);
-        $logList = $db->fetchAll($qry);
-        
-        // Assign view outputs
-        $this->view->assign('logList', $logList);
     }
 
     /**

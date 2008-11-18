@@ -16,7 +16,7 @@
         </tr>
         <tr>
             <td width="254">
-                <select multiple size="20" id="function_screen" name="function_screen" style="width:200px" url="/role/right/id/<?php echo $this->role['id'];?>">
+                <select size="20" id="function_screen" name="function_screen" style="width:200px" url="/role/right/id/<?php echo $this->role['id'];?>">
                 <?php foreach($this->screen_list as $row){ ?>
                     <option value="<?php echo $row['screen_name'];?>" title="<?php echo $row['screen_name'];?>">
                         <?php echo $row['screen_name'];?>
