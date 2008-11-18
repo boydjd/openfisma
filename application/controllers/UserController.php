@@ -152,7 +152,7 @@ class UserController extends MessageController
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
 
-                        // At this point, the user is authenticated.
+            // At this point, the user is authenticated.
             // Now check if the account has expired.
             $_me = (object)$whologin;
             $period = Config_Fisma::readSysConfig('max_absent_time');
@@ -211,6 +211,11 @@ class UserController extends MessageController
                                 . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
                                 . '">Administrator</a>.');
                 }
+            } else if (32 == strlen($whologin['password'])) {
+                $message = 'You need to upgrade your password for a higher encrypt level';
+                $this->message($message, self::M_WARNING);
+                $this->_helper->_actionStack('header', 'Panel');
+                $this->_forward('password');
             } else {
                 // Check to see if the user needs to review the rules of behavior.
                 // If they do, then send them to that page. Otherwise, send them to
@@ -487,7 +492,7 @@ class UserController extends MessageController
                 $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;
             } else {
-                $newPass = Config_Fisma::encrypt($req->newPassword);
+                $newPass = $this->_user->encrypt($req->newPassword);
                 $ret = $this->_user->find($this->_me->id)->current();
                 $historyPass = $ret->historyPassword;
                 if (strpos($historyPass, $ret->password) > 0) {
@@ -540,7 +545,7 @@ class UserController extends MessageController
             $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
         } else if ($type == 'database') {
             $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
-            $encryptPass = Config_Fisma::encrypt($password);
+            $encryptPass = $this->_user->encrypt($password, $username);
             $authAdapter->setIdentity($username)->setCredential($encryptPass);
         }
         

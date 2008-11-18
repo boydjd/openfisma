@@ -219,4 +219,33 @@ class User extends FismaModel
         }
         return $ret;
     }
+
+   /**
+    * Generate the desired hash of a password
+    *
+    * @param string $password password
+    * @param string $account account name
+    * @return string encrypted password
+    */
+    public function encrypt($password, $account=null) {
+        if ($account !== null) {
+            $row = $this->fetchRow("account = '$account'");
+            assert(count($row)==1);
+            if (32 == strlen($row->password)) {  //md5 hash always get 128 bits,i.e. 32 hex digits
+                //keep the old hash algorithm
+                return md5($password);
+            }
+        }
+        $encryptType = Config_Fisma::readSysConfig('encrypt');
+        if ('sha1' == $encryptType) {
+            return sha1($password);
+        }
+        if ('sha256' == $encryptType) {
+            $key = self::readSysConfig('encryptKey');
+            $cipher_alg = MCRYPT_TWOFISH;
+            $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
+            $encryptedPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            return $encryptedPassword;
+        }
+    }
 }
