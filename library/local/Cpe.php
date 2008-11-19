@@ -97,7 +97,8 @@ class Cpe
         if ($fieldName == 'cpeName') {
             return $this->_cpeName;
         } elseif (isset($this->_cpeDetails[$fieldName])) {
-            return $this->_cpeDetails[$fieldName];
+            // Do some pretty formatting for field values. E.g. turn "database_server" into "Database Server"
+            return ucwords(str_replace('_', ' ', $this->_cpeDetails[$fieldName]));
         } else {
             return null;
         }

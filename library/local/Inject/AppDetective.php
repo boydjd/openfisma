@@ -91,7 +91,14 @@ class Inject_AppDetective extends Inject_Abstract
         } else {
             throw new Exception_InvalidFileFormat('Expected 1 appName field, but found ' . count($reportAppName));
         }
-        $asset['name'] = $reportAppName;
+        $appName = array();
+        if (preg_match('/\((.*?)\)/', $reportAppName, $appName)) {
+            // If a parenthesized expression is found, then use the parenthesized expression.
+            $asset['name'] = $appName[1];
+        } else {
+            // If a parenthesized expression is NOT found, then use the entire appName field
+            $asset['name'] = $reportAppName;
+        }
         
         // Parse out IP Address
         $ipAddress = array();
@@ -145,11 +152,11 @@ class Inject_AppDetective extends Inject_Abstract
         } else {
             throw new Exception_InvalidFileFormat('Expected 1 cpe-item field, but found ' . count($reportCpeItem));
         }
-        $product['name'] = $reportCpeItem->title;
-        $product['cpe_name'] = $reportCpeItem->attributes()->name;
 
-        // Create a CPE object and use that to map the remaining fields
-        $cpe = new Cpe($product['cpe_name']);
+        // Create a CPE object and use that to map the fields
+        $cpe = new Cpe($reportCpeItem->attributes()->name);
+        $product['name'] = $cpe->product;
+        $product['cpe_name'] = $cpe->cpeName;
         $product['vendor'] = $cpe->vendor;
         $product['version'] = $cpe->version;
 
