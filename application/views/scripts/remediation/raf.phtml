@@ -154,11 +154,9 @@ table.rafImpact td {
     <?php
         if ($act_owner['security_categorization'] == 'HIGH') {
             $effect = 'severe or catastrophic';
-        }
-        if ($act_owner['security_categorization'] == 'MODERATE') {
+        } elseif ($act_owner['security_categorization'] == 'MODERATE') {
             $effect = 'serious';
-        }
-        if ($act_owner['security_categorization'] == 'LOW') {
+        } elseif ($act_owner['security_categorization'] == 'LOW') {
             $effect = 'limited';
         }
     ?>
