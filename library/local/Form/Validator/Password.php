@@ -73,10 +73,16 @@ class Form_Validator_Password extends Zend_Validate_Abstract
             $errno++;
             $this->_error(self::PASS_NOTCONFIRM);
         }
-        if (isset($context['oldPassword'])
-            && Config_Fisma::encrypt($context['oldPassword']) != $ret->password) {
-            $errno++;
-            $this->_error(self::PASS_NOTINCORRECT);
+        if (isset($context['oldPassword'])) {
+            if (32 == strlen($ret->password)) {
+                $encryptPassword = md5($context['oldPassword']);
+            } else {
+                $encryptPassword = Config_Fisma::encrypt($context['oldPassword']);
+            }
+            if ($encryptPassword != $ret->password) {
+                $errno++;
+                $this->_error(self::PASS_NOTINCORRECT);
+            }
         }
         if (strlen($pass) < Config_Fisma::readSysConfig('pass_min')) {
             $errno++;
