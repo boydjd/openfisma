@@ -192,7 +192,7 @@ class SystemController extends SecurityController
                 
                 $array = $this->_system->getEnumColumns('security_categorization');
                 $index = max((int)$system['confidentiality'],
-                             (int)$system['integrity'],(int)$system['type']);
+                             (int)$system['integrity'], (int)$system['type']);
                 $system['security_categorization'] = $array[$index];
                 
                 $array = $this->_system->getEnumColumns('confidentiality');
@@ -304,16 +304,16 @@ class SystemController extends SecurityController
         $system = $res[0];
 
         $array = $this->_system->getEnumColumns('confidentiality');
-        $system['confidentiality'] = array_search($system['confidentiality'] ,$array);
+        $system['confidentiality'] = array_search($system['confidentiality'], $array);
         
         $array = $this->_system->getEnumColumns('integrity');
-        $system['integrity'] = array_search($system['integrity'] ,$array);
+        $system['integrity'] = array_search($system['integrity'], $array);
         
         $array = $this->_system->getEnumColumns('availability');
-        $system['availability'] = array_search($system['availability'] ,$array);
+        $system['availability'] = array_search($system['availability'], $array);
         
         $type = $this->_system->getEnumColumns('type');
-        $system['type'] = array_search($system['type'] ,$type);
+        $system['type'] = array_search($system['type'], $type);
         
         $organization = new Organization();
         $res = $organization->find($system['organization_id'])->toArray();
@@ -362,7 +362,7 @@ class SystemController extends SecurityController
             
             $array = $this->_system->getEnumColumns('security_categorization');
             $index = max((int)$system['confidentiality'],
-                         (int)$system['integrity'],(int)$system['type']);
+                         (int)$system['integrity'], (int)$system['type']);
             $system['security_categorization'] = $array[$index];
             
             $array = $this->_system->getEnumColumns('confidentiality');

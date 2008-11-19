@@ -70,7 +70,7 @@ class RemediationController extends PoamBaseController
      */
     public function summaryAction()
     {
-        $this->_helper->requirePrivilege('remediation','read');
+        $this->_helper->requirePrivilege('remediation', 'read');
         $criteria['sourceId'] = $this->_request->getParam('source_id', 0);
         $criteria['type'] = $this->_request->getParam('type');
         $criteria['notStatus'] = 'PEND'; //exclude pending findings from the search criteria

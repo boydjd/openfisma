@@ -56,23 +56,23 @@ class LogController extends PoamBaseController
             'event'=>'Event Name',
             'account'=>'Account Name');
         
-        $account_log = $this->_log->select();
-        $query = $account_log
-                      ->from(array('al'=>'account_logs'),array('count'=>'COUNT(al.user_id)'));
+        $accountLog = $this->_log->select();
+        $query = $accountLog
+                      ->from(array('al'=>'account_logs'), array('count'=>'COUNT(al.user_id)'));
 
         $fid = $this->_request->getParam('fid');
         $qv = $this->_request->getParam('qv');
-        $url_link = '';
-        if (!empty($qv) && in_array($fid,array('event','account'))) {
+        $urlLink = '';
+        if (!empty($qv) && in_array($fid, array('event', 'account'))) {
             $query->setIntegrityCheck(false)
-                  ->joinLeft(array('u'=>'users'),'al.user_id = u.id',array())
+                  ->joinLeft(array('u'=>'users'), 'al.user_id = u.id', array())
                   ->where("$fid = '$qv'");
-            $url_link = "/fid/$fid/qv/$qv";
+            $urlLink = "/fid/$fid/qv/$qv";
         }
         $ret = $this->_log->fetchRow($query);
         $logCount = $ret->count;
         $this->_paging['totalItems'] = $logCount;
-        $this->_paging['fileName'] = "/panel/log/sub/view/p/%d".$url_link;
+        $this->_paging['fileName'] = "/panel/log/sub/view/p/%d".$urlLink;
         $pager = &Pager::factory($this->_paging);
         $temp = $pager->getLinks();
 
@@ -103,7 +103,7 @@ class LogController extends PoamBaseController
 
         $qv = $this->_request->getParam('qv');
         $fid = $this->_request->getParam('fid');
-        if (!empty($qv) && in_array($fid,array('event','account'))) {
+        if (!empty($qv) && in_array($fid, array('event', 'account'))) {
             $qry->where("$fid = '$qv'");
         }
         $qry->order("timestamp DESC");

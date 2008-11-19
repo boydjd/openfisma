@@ -122,11 +122,11 @@ class FismaModel extends Zend_Db_Table
     function getEnumColumns($column, $callback=null) {
         $columns = $this->_metadata;
         assert(isset($columns[$column]));
-        assert(is_int(strpos($columns[$column]['DATA_TYPE'],'enum')));
-        $sTypes = substr($columns[$column]['DATA_TYPE'],6,-2);
-        $aTypes = explode("','",$sTypes);
+        assert(is_int(strpos($columns[$column]['DATA_TYPE'], 'enum')));
+        $sTypes = substr($columns[$column]['DATA_TYPE'], 6, -2);
+        $aTypes = explode("','", $sTypes);
         if ($callback !== null) {
-            $aTypes = call_user_func($callback,$aTypes);
+            $aTypes = call_user_func($callback, $aTypes);
         }
         return $aTypes;
     }
