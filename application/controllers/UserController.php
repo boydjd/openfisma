@@ -87,7 +87,7 @@ class UserController extends MessageController
 
             // If the username isn't found, throw an exception
             if (empty($whologin)) {
-                $this->_user->log(User::LOGINFAILURE, '','Failure');
+                $this->_user->log(User::LOGINFAILURE, '', 'Failure');
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             
@@ -204,7 +204,9 @@ class UserController extends MessageController
                     $this->_helper->_actionStack('header', 'Panel');   
                     $this->_forward('password');
                 } else {
-                    $this->_user->log(User::ACCOUNT_LOCKOUT, $_me->id, "User Account $_me->account Successfully Locked");
+                    $this->_user->log(User::ACCOUNT_LOCKOUT,
+                                      $_me->id,
+                                      "User Account $_me->account Successfully Locked");
                     throw new Zend_Auth_Exception('Your user account has been locked because you have not'
                                 . " changed your password for $passExpirePeriod or more days."
                                 . ' Please contact the'
@@ -380,7 +382,9 @@ class UserController extends MessageController
             $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
             if ($ret == 1) {
                 $this->_user
-                     ->log(User::ACCOUNT_MODIFICATION, $this->_me->id, "User Account {$this->_me->account} Successfully Modified");
+                     ->log(User::ACCOUNT_MODIFICATION,
+                           $this->_me->id,
+                           "User Account {$this->_me->account} Successfully Modified");
                 $msg = "Profile modified successfully.";
 
                 if ($originalEmail != $profileData['email']
@@ -467,12 +471,15 @@ class UserController extends MessageController
     public function pwdchangeAction()
     {
         $req = $this->getRequest();
+        $userRow = $this->_user->find($this->_me->id)->current();
         if ('save' == $req->getParam('s')) {
             $post = $req->getPost();
             $passwordForm = Form_Manager::loadForm('change_password');
             $passwordForm = Form_Manager::prepareForm($passwordForm);
+            $oldPassword = $passwordForm->getElement('oldPassword');
+            $oldPassword->addValidator(new Form_Validator_PasswdMatch($userRow));
             $password = $passwordForm->getElement('newPassword');
-            $password->addValidator(new Form_Validator_Password());
+            $password->addValidator(new Form_Validator_Password($userRow));
             $formValid = $passwordForm->isValid($post);
             if (!$formValid) {
                 /**
@@ -494,14 +501,12 @@ class UserController extends MessageController
                 $model = self::M_WARNING;
             } else {
                 $newPass = $this->_user->encrypt($req->newPassword);
-                $ret = $this->_user->find($this->_me->id)->current();
-                $historyPass = $ret->historyPassword;
-                if (strpos($historyPass, $ret->password) > 0) {
-                    $historyPass = ':' . $newPass . $historyPass;
-                } else {
-                    $historyPass = ':' . $newPass . ':' . $ret->password . $historyPass;
+                $historyPass = $userRow->historyPassword;
+                $count = substr_count($historyPass, ':');
+                if (3 == $count) {
+                    $historyPass = substr($historyPass, 0, -strlen(strrchr($historyPass, ':')));
                 }
-                $historyPass = substr($historyPass, 0, 99);
+                $historyPass = ':' . $userRow->password . $historyPass;
                 $now = date('Y-m-d H:i:s');
                 $data = array(
                     'password' => $newPass,

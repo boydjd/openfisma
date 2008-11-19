@@ -43,8 +43,20 @@ class Form_Validator_Password extends Zend_Validate_Abstract
     const PASS_NOTSAMEOLD = "pass_notsameold";
     const PASS_NOTCONFIRM = "pass_notconfirm";
     const PASS_NOTINCORRECT = "pass_notincorrect";
+    
+    /**
+     * The user row object
+     */
+    protected $_userRow = null;
 
-        
+    public function __construct($user = null)
+    {
+        if ($user !== null) {
+            assert($user instanceof Zend_Db_Table_Row_Abstract);
+            $this->_userRow = $user;
+        }
+    }
+
     public function isValid($pass, $context=null)
     {
         $this->_messageTemplates = array(
@@ -55,34 +67,18 @@ class Form_Validator_Password extends Zend_Validate_Abstract
             self::PASS_NUMERICAL=>'must contain at least 1 numeric digit (0-9)',
             self::PASS_SPECIAL  =>'must contain at least 1 special character (!@#$%^&*-=+~`_)',
             self::PASS_INCLUDE  =>'The new password can not include your first name or last name',
-            self::PASS_HISTORY  =>'Your password must be different from the last three passwords you have used. Please pick a different password',
-            self::PASS_NOTSAMEOLD =>'Your new password cannot be the same as your old password.',
-            self::PASS_NOTCONFIRM =>'The new password does not match the confirm password, please try again.',
-            self::PASS_NOTINCORRECT=>'The old password supplied is incorrect, please try again.'
+            self::PASS_HISTORY  =>'Your password must be different from the last three passwords you have used.'
+                                  .' Please pick a different password',
+            self::PASS_NOTSAMEOLD =>'must not be the same as your old password.',
+            self::PASS_NOTCONFIRM =>'mismatch.'
         );
-
-        $user = new User();
-        $me = Zend_Auth::getInstance()->getIdentity();
-        $userId = $me->id;
-        $ret = $user->find($me->id)->current();
-
+        
         $errno = 0;
         $this->_setValue($pass);
 
-        if (isset($context['confirmPassword']) && $pass != $context['confirmPassword']){
+        if (isset($context['confirmPassword']) && $pass != $context['confirmPassword']) {
             $errno++;
             $this->_error(self::PASS_NOTCONFIRM);
-        }
-        if (isset($context['oldPassword'])) {
-            if (32 == strlen($ret->password)) {
-                $encryptPassword = md5($context['oldPassword']);
-            } else {
-                $encryptPassword = Config_Fisma::encrypt($context['oldPassword']);
-            }
-            if ($encryptPassword != $ret->password) {
-                $errno++;
-                $this->_error(self::PASS_NOTINCORRECT);
-            }
         }
         if (strlen($pass) < Config_Fisma::readSysConfig('pass_min')) {
             $errno++;
@@ -117,32 +113,32 @@ class Form_Validator_Password extends Zend_Validate_Abstract
             }
         }
         
-        $nameincluded = true;
-        // check last name
-        if (empty($ret->name_last)
-            || strpos($pass, $ret->name_last) === false) {
-            $nameincluded = false;
-        }
-        if (!$nameincluded) {
-            // check first name
-            if (empty($ret->name_first)
-                || strpos($pass, $ret->name_first) === false) {
+        // password change
+        if ($this->_userRow !== null) {
+            $user = $this->_userRow->getTable();
+            $nameincluded = true;
+            // check last name
+            if (empty($this->_userRow->name_last)
+                || strpos($pass, $this->_userRow->name_last) === false) {
                 $nameincluded = false;
-            } else {
-                $nameincluded = true;
             }
-        }
-        if ($nameincluded) {
-            $errno++;
-            $this->_error(self::PASS_INCLUDE);
-        }
-        if (isset($context['oldPassword']) && Config_Fisma::encrypt($pass) == $ret->password) {
-            $errno++;
-            $this->_error(self::PASS_NOTSAMEOLD);
-        }
-        if (strpos($ret->history_password, $pass) > 0) {
-            $errno++;
-            $this->_error(self::PASS_HISTORY);
+            if (!$nameincluded) {
+                // check first name
+                if (empty($this->_userRow->name_first)
+                    || strpos($pass, $this->_userRow->name_first) === false) {
+                    $nameincluded = false;
+                } else {
+                    $nameincluded = true;
+                }
+            }
+            if ($nameincluded) {
+                $errno++;
+                $this->_error(self::PASS_INCLUDE);
+            }
+            if (strpos($this->_userRow->history_password . $this->_userRow->password, $user->encrypt($pass)) > 0) {
+                $errno++;
+                $this->_error(self::PASS_HISTORY);
+            }
         }
 
         if ($errno > 0) {
