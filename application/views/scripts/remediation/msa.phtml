@@ -23,10 +23,8 @@ function delok()
                    'blscr'         =>$this->poam['blscr_id'],
                    'threat_level'  =>$this->poam['threat_level'],
                    'threat_source' =>$this->poam['threat_source'],
-                   'threat_justification'=>$this->poam['threat_justification'],
                    'cmeasure_effectiveness'=>$this->poam['cmeasure_effectiveness'],
-                   'cmeasure'=>$this->poam['cmeasure'],
-                   'cmeasure_justification'=>$this->poam['cmeasure_justification']);
+                   'cmeasure'=>$this->poam['cmeasure']);
     $complete = 0;
     foreach($array as $row){
         if($row == '' || $row == 'NONE'){
