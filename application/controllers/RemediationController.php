@@ -305,7 +305,7 @@ class RemediationController extends PoamBaseController
             'type',
             'status',
             'finding_data',
-            'action_est_date',
+            'action_current_date',
             'count' => 'count(*)'
         ), $internalCrit, $this->_paging['currentPage'],
             $this->_paging['perPage'], $html);
