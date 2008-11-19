@@ -29,12 +29,13 @@
 // Run the application bootstrap in command line mode
 define('COMMAND_LINE', true);
 require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php")); 
+define('TEST', APPLICATION_ROOT . '/tests');
 
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
-set_include_path(get_include_path() .
-                 PATH_SEPARATOR . VENDORS .
-                 PATH_SEPARATOR . TEST);
+// set_include_path(get_include_path() .
+//                  PATH_SEPARATOR . VENDORS .
+//                  PATH_SEPARATOR . TEST);
 require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 

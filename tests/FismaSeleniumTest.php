@@ -27,8 +27,10 @@
  */
 
 // Run the application bootstrap in command line mode
-define('COMMAND_LINE', true);
-require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php"));
+if (!defined('COMMAND_LINE')) {
+    define('COMMAND_LINE', true);
+    require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php"));
+}
 
 // Load the base class
 require_once 'PHPUnit/Extensions/SeleniumTestCase.php';
@@ -148,7 +150,7 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
         $userId = $userTable->insert(
             array(
                 'account' => self::USER_NAME,
-                'password' => Config_Fisma::encrypt(self::PASSWORD),
+                'password' => $userTable->encrypt(self::PASSWORD),
                 'is_active' => 1,
                 'password_ts' => new Zend_Db_Expr('now()'),
                 'last_rob' => new Zend_Db_Expr('now()')
