@@ -31,38 +31,8 @@
     $filter_status['NOUP-60']   = '(NOUP-60) 60+ Days Since Last Update';
     $filter_status['NOUP-90']   = '(NOUP-90) 90+ Days Since Last Update';
 
-
-    
     $this->systems[0] ='--Any--';
     $this->sources[0] ='--Any--';
-    if (!isset($this->criteria['sourceId'])) {
-        $this->criteria["sourceId"]=0;
-    }
-    if (!isset($this->criteria['type'])) {
-        $this->criteria["type"]='0';
-    }
-    if (!isset($this->criteria['status'])) {
-        $this->criteria["status"]='0';
-    }
-    if (!isset($this->criteria['assetOwner'])) {
-        $this->criteria["assetOwner"]='0';
-    }
-    if (!isset($this->criteria['systemId'])) {
-        $this->criteria["systemId"]='0';
-    }
-    if (!isset($this->criteria['estDateBegin'])) {
-        $this->criteria["estDateBegin"]='';
-    }
-    if (!isset($this->criteria['estDateEnd'])) {
-        $this->criteria["estDateEnd"]='';
-    }
-    if (!isset($this->criteria['createdDateBegin'])) {
-        $this->criteria["createdDateBegin"]='';
-    }
-    if (!isset($this->criteria['createdDateEnd'])) {
-        $this->criteria["createdDateEnd"]='';
-    }
-
 ?>
 <div class="barleft">
 <div class="barright">
@@ -76,25 +46,25 @@
     <tr>
         <td><b>Finding Source: </b><br>
             <?php echo $this->formSelect('source_id',
-                                         $this->criteria['sourceId'],
+                                         $this->params['source_id'],
                                          null,
                                          $this->sources);?>
         </td>
         <td>
         <b>ID: </b><i>(You may select multiple IDs by using a comma separated list - x,y,z)</i><br>
-        <input type="text" size="70" name="ids" value="<?php echo $this->criteria['ids'];?>">
+        <input type="text" size="70" name="ids" value="<?php echo $this->params['ids'];?>">
         </td>
     </tr>
     <tr>
         <td ><b> Mitigation Strategy:</b><br>
         <?php echo $this->formSelect('type',
-                                     $this->criteria['type'],
+                                     $this->params['type'],
                                      null,
                                      $filter_type);?>
         </td>
         <td width="318" valign="top"><b> Finding Status:</b><br>
         <?php echo $this->formSelect('status', 
-                                     $this->criteria['status'], 
+                                     $this->params['status'], 
                                      array('id'=>'poamSearchStatus'),
                                      $filter_status);?>
         </td>
@@ -102,13 +72,13 @@
     <tr>
         <td ><b>Asset Owners: </b> <br/>
             <?php echo $this->formSelect('asset_owner',
-                                         $this->criteria['assetOwner'],
+                                         $this->params['asset_owner'],
                                          null,
                                          $this->systems);?>
         </td>
         <td ><b>Action Owners: </b><br>
             <?php echo $this->formSelect('system_id',
-                                         $this->criteria['systemId'],
+                                         $this->params['system_id'],
                                          null,
                                          $this->systems);?>
         </td>
@@ -116,7 +86,7 @@
     <tr>
         <td ><b>OnTime:</b><br>
             <?php echo $this->formSelect('ontime',
-                                         $this->criteria['ontime'],
+                                         $this->params['ontime'],
                                          array('disabled'=>'disabled', 'id'=>'poamSearchOnTime'),
                                          $onTimes);?>
         </td>
@@ -129,17 +99,17 @@
                 <tr>
                     <td ><b>Estimated Completion Date:</b></td>
                     <td > From: <input type="text" class="date" name="est_date_begin" value="<?php
-                        echo isset($this->criteria['est_date_begin'])?$this->criteria['est_date_begin']:'';
+                        echo isset($this->params['est_date_begin'])?$this->params['est_date_begin']:'';
                         ?>" size="12" maxlength="10"></td>
                     <td > To: <input type="text" class="date" name="est_date_end" value="<?php
-                        echo isset($this->criteria['est_date_end'])?$this->criteria['est_date_end']:'';
+                        echo isset($this->params['est_date_end'])?$this->params['est_date_end']:'';
                         ?>" size="12" maxlength="10"></td>
                     <td ><b>Date Created: </b></td>
                     <td > From: <input type="text" class="date" name="created_date_begin" value="<?php
-                       echo isset($this->criteria['created_date_begin'])?$this->criteria['created_date_begin']:'';
+                       echo isset($this->params['created_date_begin'])?$this->params['created_date_begin']:'';
                         ?>" size="12" maxlength="10"></td>
                     <td > To: <input type="text" class="date" name="created_date_end" value="<?php
-                        echo isset($this->criteria['created_date_end'])?$this->criteria['created_date_end']:'';
+                        echo isset($this->params['created_date_end'])?$this->params['created_date_end']:'';
                         ?>" size="12" maxlength="10"></td>
                 </tr>
             </table>

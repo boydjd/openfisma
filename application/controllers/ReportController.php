@@ -217,33 +217,42 @@ class ReportController extends PoamBaseController
         $this->_helper->requirePrivilege('report', 'generate_poam_report');
         
         $req = $this->getRequest();
-        $params = array(
-            'systemId' => 'system_id',
-            'sourceId' => 'source_id',
-            'type' => 'type',
-            'year' => 'year',
-            'status' => 'status'
-        );
-        $criteria = $this->retrieveParam($req, $params);
+        $params['system_id'] = $req->getParam('system_id');
+        $params['source_id'] = $req->getParam('source_id');
+        $params['type'] = $req->getParam('type');
+        $params['year'] = $req->getParam('year');
+        $params['status'] = $req->getParam('status');
         $this->view->assign('source_list', $this->_sourceList);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('criteria', $criteria);
+        $this->view->assign('params', $params);
         $isExport = $req->getParam('format');
 
         if ('search' == $req->getParam('s') || isset($isExport)) {
+            $criteria = array();
+            if (!empty($params['system_id'])) {
+                $criteria['systemId'] = $params['system_id'];
+            }
+            if (!empty($params['source_id'])) {
+                $criteria['sourceId'] = $params['source_id'];
+            }
+            if (!empty($params['type'])) {
+                $criteria['type'] = $params['type'];
+            }
+            if (!empty($params['status'])) {
+                $criteria['status'] = $params['status'];
+            }
             $this->_pagingBasePath.= '/panel/report/sub/poam/s/search';
             if (isset($isExport)) {
                 $this->_paging['currentPage'] = 
                     $this->_pagging['perPage'] = null;
             }
-            $this->makeUrl($criteria);
-            if (!empty($criteria['year'])) {
+            $this->makeUrl($params);
+            if (!empty($params['year'])) {
                 $criteria['createdDateBegin'] = new 
-                    Zend_Date($criteria['year'], Zend_Date::YEAR);
+                    Zend_Date($params['year'], Zend_Date::YEAR);
                 $criteria['createdDateEnd'] = clone $criteria['createdDateBegin'];
                 $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
-                unset($criteria['year']);
             }
             $list = & $this->_poam->search($this->_me->systems, array(
                 'id',
@@ -290,54 +299,57 @@ class ReportController extends PoamBaseController
         
         // Get request variables
         $req = $this->getRequest();
-        $params = array(
-            'systemId' => 'system_id',
-            'sourceId' => 'source_id',
-            'overdueType' => 'overdue_type',
-            'overdueDay' => 'overdue_day',
-            'year' => 'year'
-        );
-        $criteria = $this->retrieveParam($req, $params);
+        $params['system_id'] = $req->getParam('system_id');
+        $params['source_id'] = $req->getParam('source_id');
+        $params['overdue_type'] = $req->getParam('overdue_type');
+        $params['overdue_day'] = $req->getParam('overdue_day');
+        $params['year'] = $req->getParam('year');
+
         $this->view->assign('source_list', $this->_sourceList);
         $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('criteria', $criteria);
+        $this->view->assign('params', $params);
         $isExport = $req->getParam('format');
         
         if ('search' == $req->getParam('s') || isset($isExport)) {
+            $criteria = array();
+            if (!empty($params['system_id'])) {
+                $criteria['systemId'] = $params['system_id'];
+            }
+            if (!empty($params['source_id'])) {
+                $criteria['sourceId'] = $params['source_id'];
+            }
             // Setup the paging if necessary
             $this->_pagingBasePath.= '/panel/report/sub/overdue/s/search';
             if (isset($isExport)) {
                 $this->_paging['currentPage'] = null;
                 $this->_paging['perPage'] = null;
             }
-            $this->makeUrl($criteria);
+            $this->makeUrl($params);
             $this->view->assign('url', $this->_pagingBasePath);
             
             // Interpret the search criteria
-            if (!empty($criteria['year'])) {
-                $criteria['createdDateBegin'] = new Zend_Date($criteria['year'], Zend_Date::YEAR);
+            if (!empty($params['year'])) {
+                $criteria['createdDateBegin'] = new Zend_Date($params['year'], Zend_Date::YEAR);
                 $criteria['createdDateEnd']   = clone $criteria['createdDateBegin'];
                 $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
-                unset($criteria['year']);
             }
-            if (!empty($criteria['overdueType'])) {
+            if (!empty($params['overdue_type'])) {
                 $dateEnd = clone self::$now;
-                $dateEnd->sub(($criteria['overdueDay'] -1) * 30, Zend_Date::DAY);
+                $dateEnd->sub(($params['overdue_day'] -1) * 30, Zend_Date::DAY);
                 $dateBegin = clone $dateEnd;
                 $dateBegin->sub(30, Zend_Date::DAY);
 
-                if ('sso' == $criteria['overdueType']) {
-                    if ($criteria['overdueDay'] != 5) {
+                if ('sso' == $params['overdue_type']) {
+                    if ($params['overdue_day'] != 5) {
                         $criteria['actualDateBegin'] = $dateBegin;
                     }
                     $criteria['actualDateEnd'] = $dateEnd;
-                } else if ('action' == $criteria['overdueType']) {
-                    if ($criteria['overdueDay'] != 5) {
+                } else if ('action' == $params['overdue_type']) {
+                    if ($params['overdue_day'] != 5) {
                         $criteria['estDateBegin'] = $dateBegin;
                     }
                     $criteria['estDateEnd'] = $dateEnd;
                 }
-                unset($criteria['overdueType'], $criteria['overdueDay']);
             }
             
             // Search for overdue items according to the criteria

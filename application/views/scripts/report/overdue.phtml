@@ -27,30 +27,30 @@
         <td width="6%" height="47"><b>System </b></td>
         <td width="21%">
         <?php echo $this->formSelect('system_id',
-                                     isset($this->criteria['systemId'])?$this->criteria['systemId']:0, 
+                                     isset($this->params['system_id'])?$this->params['system_id']:0, 
                                      null,$this->system_list);
-              if( !empty($this->criteria['systemId']) ) {
-                  $url .= '/system_id/'.$this->criteria['systemId'];
+              if( !empty($this->params['system_id']) ) {
+                  $url .= '/system_id/'.$this->params['system_id'];
               }
         ?>
         </td>
         <td width="6%"><b>Source</b></td>
         <td width="18%">
         <?php echo $this->formSelect('source_id',
-                                     isset($this->criteria['sourceId'])?$this->criteria['sourceId']:0, 
+                                     isset($this->params['source_id'])?$this->params['source_id']:0, 
                                      null,$this->source_list);
-              if( !empty($this->criteria['sourceId']) ) {
-                  $url .= '/source_id/'.$this->criteria['sourceId'];
+              if( !empty($this->params['source_id']) ) {
+                  $url .= '/source_id/'.$this->params['source_id'];
               }
         ?>
         </td>
         <td width="9%"><b>Fiscal Year</b></td>
         <td width="40%">
         <?php echo $this->formSelect('year',
-                                     isset($this->criteria['year'])?$this->criteria['year']:0, 
+                                     isset($this->params['year'])?$this->params['year']:0, 
                                      null,$year_list);
-              if( !empty($this->criteria['year']) ) {
-                  $url .= '/year/'.$this->criteria['year'];
+              if( !empty($this->params['year']) ) {
+                  $url .= '/year/'.$this->params['year'];
               }
         ?>
         </td>
@@ -59,14 +59,14 @@
         <td><b>Overdue type</b></td>
         <td >
         <?php echo $this->formSelect('overdue_type',
-                                    isset($this->criteria['overdueType'])?$this->criteria['overdueType']:0,
+                                    isset($this->params['overdue_type'])?$this->params['overdue_type']:0,
                                     null,$overdue['type']);
         ?>
         </td>
         <td><b>Overdue </b></td>
         <td> 
         <?php echo $this->formSelect('overdue_day',
-                                    isset($this->criteria['overdueDay'])?$this->criteria['overdueDay']:0,
+                                    isset($this->params['overdue_day'])?$this->params['overdue_day']:0,
                                     null,$overdue['day']);
         ?>
         </td>

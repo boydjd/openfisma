@@ -330,59 +330,65 @@ class RemediationController extends PoamBaseController
         $req = $this->getRequest();
         $this->_pagingBasePath.= '/panel/remediation/sub/searchbox/s/search';
         // parse the params of search
-        $criteria['systemId'] = $req->getParam('system_id');
-        $criteria['sourceId'] = $req->getParam('source_id');
-        $criteria['type'] = $req->getParam('type');
-        $criteria['status'] = $req->getParam('status');
-        $criteria['ids'] = $req->getParam('ids');
-        $criteria['assetOwner'] = $req->getParam('asset_owner', 0);
-        $criteria['est_date_begin'] = $req->getParam('est_date_begin');
-        $criteria['est_date_end'] = $req->getParam('est_date_end');
-        $criteria['created_date_begin'] = $req->getParam('created_date_begin');
-        $criteria['created_date_end'] = $req->getParam('created_date_end');
-        $criteria['ontime'] = $req->getParam('ontime');
-        $criteria['order'] = array();
-        if ($req->getParam('sortby') != null
-            && $req->getParam('order') != null) {
-            array_push($criteria['order'], $req->getParam('sortby'));
-            array_push($criteria['order'], $req->getParam('order'));
-        }
+        $params['system_id'] = $req->getParam('system_id', '0');
+        $params['source_id'] = $req->getParam('source_id', '0');
+        $params['type'] = $req->getParam('type');
+        $params['status'] = $req->getParam('status');
+        $params['ids'] = $req->getParam('ids');
+        $params['asset_owner'] = $req->getParam('asset_owner', 0);
+        $params['est_date_begin'] = $req->getParam('est_date_begin');
+        $params['est_date_end'] = $req->getParam('est_date_end');
+        $params['created_date_begin'] = $req->getParam('created_date_begin');
+        $params['created_date_end'] = $req->getParam('created_date_end');
+        $params['ontime'] = $req->getParam('ontime');
 
-        $this->makeUrl($criteria);
         $this->view->assign('url', $this->_pagingBasePath);
-        $this->view->assign('criteria', $criteria);
+        $this->view->assign('params', $params);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
         $this->render();
         if ('search' == $req->getParam('s')) {
-            if (!empty($criteria['est_date_begin'])) {
-                $criteria['estDateBegin'] = new Zend_Date($criteria['est_date_begin'], 'Y-m-d');
+            $criteria = array();
+            if (!empty($params['system_id'])) {
+                $criteria['systemId'] = $params['system_id'];
             }
-            if (!empty($criteria['est_date_end'])) {
-                $criteria['estDateEnd'] = new Zend_Date($criteria['est_date_end'], 'Y-m-d');
+            if (!empty($params['source_id'])) {
+                $criteria['sourceId'] = $params['source_id'];
+            }            
+            if (!empty($params['type'])) {
+                $criteria['type'] = $params['type'];
             }
-            if (!empty($criteria['created_date_begin'])) {
-                $criteria['createdDateBegin'] = new Zend_Date($criteria['created_date_begin'], 'Y-m-d');
+            if (!empty($params['status'])) {
+                $criteria['status'] = $params['status'];
             }
-            if (!empty($criteria['created_date_end'])) {
-                $criteria['createdDateEnd'] = new Zend_Date($criteria['created_date_end'], 'Y-m-d');
+            if (!empty($params['ids'])) {
+                $criteria['ids'] = $params['ids'];
+            }            
+            if (!empty($params['asset_owner'])) {
+                $criteria['assetOwner'] = $params['asset_owner'];
             }
-            unset($criteria['est_date_begin'], $criteria['est_date_end'],
-                $criteria['created_date_begin'], $criteria['created_date_end']);
-            $this->_pagingBasePath = $req->getBaseUrl()
-                . '/panel/remediation/sub/searchbox/s/search';
+            if (!empty($params['est_date_begin'])) {
+                $criteria['estDateBegin'] = new Zend_Date($params['est_date_begin'], 'Y-m-d');
+            }
+            if (!empty($params['est_date_end'])) {
+                $criteria['estDateEnd'] = new Zend_Date($params['est_date_end'], 'Y-m-d');
+            }
+            if (!empty($params['created_date_begin'])) {
+                $criteria['createdDateBegin'] = new Zend_Date($params['created_date_begin'], 'Y-m-d');
+            }
+            if (!empty($params['created_date_end'])) {
+                $criteria['createdDateEnd'] = new Zend_Date($params['created_date_end'], 'Y-m-d');
+            }
+            if (!empty($params['ontime'])) {
+                $criteria['ontime'] = $params['ontime'];
+            }
+            if ($req->getParam('sortby') != null && $req->getParam('order') != null) {
+                $criteria['order'] = array();
+                array_push($criteria['order'], $req->getParam('sortby'));
+                array_push($criteria['order'], $req->getParam('order'));
+            }
+            $this->makeUrl($params);
             $this->_paging['currentPage'] = $req->getParam('p', 1);
-            foreach ($criteria as $key => $value) {
-                if (!empty($value)) {
-                    if ($value instanceof Zend_Date) {
-                        $this->_pagingBasePath.=
-                            '/' . $key . '/' . $value->toString('Ymd') . '';
-                    } else {
-                        $this->_pagingBasePath.=
-                            '/' . $key . '/' . $value . '';
-                    }
-                }
-            }
             $this->_search($criteria, false);
         }
     }
