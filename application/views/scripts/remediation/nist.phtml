@@ -85,10 +85,8 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
         <?php 
             if( $this->poam['threat_source'] != '' &&
                 $this->poam['threat_level'] != 'NONE' &&
-                $this->poam['threat_justification'] != '' &&
                 $this->poam['cmeasure'] != '' &&
-                $this->poam['cmeasure_effectiveness'] != 'NONE' &&
-                $this->poam['cmeasure_justification'] != '' ){
+                $this->poam['cmeasure_effectiveness'] != 'NONE'){
         ?>
                 <ul class='linwise' >
                     <li> 
