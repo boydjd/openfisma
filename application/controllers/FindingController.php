@@ -184,19 +184,18 @@ class FindingController extends PoamBaseController
                         fputcsv($fp, $fail);
                     }
                     fclose($fp);
-                    $summaryMsg.= count($failedArray) . " line(s) cannot be 
-parsed successfully. This is likely due to an unexpected datatype or the use of
-a datafield which is not currently in the database. Please ensure your csv file
-matches the data rows contained <a href='/$tempFile'>here</a> in the spreadsheet
-template. Please update your CSV file and try again.<br />";
+                    $summaryMsg.= count($failedArray) . " line(s) cannot be parsed successfully. This is likely due to
+                                                          an unexpected datatype or the use of a datafield which is not
+                                                          currently in the database. Please download the template again
+                                                          and re-try.";
                 }
                 if (count($succeedArray) > 0) {
                     $summaryMsg.= count($succeedArray) . " line(s) parsed and
                          injected successfully. <br />";
                 }
                 if (count($succeedArray) == $row) {
-                    $summaryMsg.= " Congratulations! All of the lines contained
-                        in the CSV were parsed and injected successfully.";
+                    $summaryMsg .= "Congratulations! All of the lines contained in the CSV were parsed and injected
+                                    successfully.";
                 }
                 
                 $this->view->assign('error_msg', $summaryMsg);
@@ -301,10 +300,11 @@ template. Please update your CSV file and try again.<br />";
     {
         $asset = new Asset();
         $poam = new poam();
-        if (!is_array($row) || (count($row) < 7)) {
+
+        if (!is_array($row) || (count($row) < 10)) {
             return false;
         }
-        if (strlen($row[3]) > 63 || (!is_numeric($row[4]) && !empty($row[4]))) {
+        if (strlen($row[3]) > 63 || !is_numeric($row[4])) {
             return false;
         }
         if (in_array('', array(
@@ -312,12 +312,15 @@ template. Please update your CSV file and try again.<br />";
             $row[1],
             $row[2],
             $row[5],
-            $row[6]
+            $row[6],
+            $row[7],
+            $row[8],
+            $row[9]
         ))) {
             return false;
         }
-        $row[2] = date('Y-m-d', strtotime($row[2]));
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $row[2])) {
+        $row[1] = date('Y-m-d', strtotime($row[1]));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $row[1])) {
             return false;
         }
         $db = Zend_Registry::get('db');
@@ -328,9 +331,9 @@ template. Please update your CSV file and try again.<br />";
 
         $query->reset();
         $query = $db->select()->from('networks', 'id')
-                    ->where('nickname = ?', $row[1]);
+                    ->where('nickname = ?', $row[2]);
         $result = $db->fetchRow($query);
-        $row[1] = !empty($result) ? $result['id'] : false;
+        $row[2] = !empty($result) ? $result['id'] : false;
 
         $query->reset();
         $query = $db->select()->from('sources', 'id')
@@ -338,7 +341,7 @@ template. Please update your CSV file and try again.<br />";
         $result = $db->fetchRow($query);
         $row[5] = !empty($result) ? $result['id'] : false;
 
-        if (!$row[0] || !$row[1] || !$row[5]) {
+        if (!$row[0] || !$row[2] || !$row[5]) {
             return false;
         }
         $assetName = ':' . $row[3] . ':' . $row[4];
@@ -370,7 +373,10 @@ template. Please update your CSV file and try again.<br />";
             'status' => 'NEW',
             'create_ts' => self::$now->toString('Y-m-d h:i:s') ,
             'discover_ts' => $row[2],
-            'finding_data' => $row[6]
+            'finding_data' => $row[6],
+            'action_suggested' => $row[7],
+            'blscr_id' => $row[8],
+            'threat_level' => $row[9]
         );
         $ret = $poam->insert($poamData);
 
@@ -422,6 +428,16 @@ template. Please update your CSV file and try again.<br />";
                      not be prepared because there are no finding sources
                      defined.");
             }
+            $blscr = new Blscr();
+            $blscrs = array_keys($blscr->getList('class'));
+            $this->view->blscrs = $blscrs;
+            if (count($this->view->blscrs) == 0) {
+                 throw new Exception_General("The spreadsheet template can not be prepared because there are no security
+                                              controls defined.");
+            }
+            $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
+            //var_dump($this->view->blscrs);die;
+
             // Context switch is called only after the above code executes 
             // successfully. Otherwise if there is an error,
             // the error handler will be confused by context switch and will 
