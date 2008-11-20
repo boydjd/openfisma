@@ -148,29 +148,62 @@ class DashboardController extends SecurityController
         ))) {
             $type = 'pie';
         }
-        $ret = $poam->search($this->_allSystems, array(
-            'count' => 'status',
-            'status'
-        ));
-        $eoCount = $poam->search($this->_allSystems, array(
-            'count' => 'count(*)'
-        ), array(
-            'status' => 'EN',
-            'est_date_end' => parent::$now
-        ));
-        $this->view->summary = array(
-            'NEW' => 0,
-            'OPEN' => 0,
-            'EN' => 0,
-            'EP' => 0,
-            'ES' => 0,
-            'CLOSED' => 0
-        );
-        foreach ($ret as $s) {
-            $this->view->summary["{$s['status']}"] = $s['count'];
-        }
-        $this->view->summary["EO"] = $eoCount;
         $this->view->chart_type = $type;
+        
+        //count normal status ( new, open, en, closed)
+        $arrPoamInfo = $this->_poam->search($this->_me->systems, array(
+            'count' => array(
+                'status'
+            ) ,
+            'status',
+            'type',
+            'system_id'
+        ));
+
+        $arrTotal = array('NEW'=>0, 'OPEN'=>0, 'EN'=>0, 'CLOSED'=>0);
+        foreach ($arrPoamInfo as $arrPoam) {
+            if (in_array($arrPoam['status'], array_keys($arrTotal))) {
+                $arrTotal[$arrPoam['status']] = $arrPoam['count'];
+            }
+        }
+        $arrTmpTotal = array('NEW'=>$arrTotal['NEW'], 'OPEN'=>$arrTotal['OPEN']);
+        $objEval = new Evaluation();
+        //count mitigation strategy status 
+        $arrMsaEvalList = $objEval->getEvalList('ACTION');
+        foreach ($arrMsaEvalList as $arrMsaEvalRow) {
+            $arrMsaPoam = $this->_poam->search($this->_me->systems,
+                array('count' => 'nickname'),
+                array('mp' => $arrMsaEvalRow['precedence_id'], 'name')
+            );
+            $description[$arrMsaEvalRow['nickname']] = $arrMsaEvalRow['name'];
+            if (!empty($arrMsaPoam)) {
+                $arrTmpTotal = array_merge($arrTmpTotal,
+                               array($arrMsaEvalRow['nickname']=>$arrMsaPoam[0]['count']));
+            } else {
+                $arrTmpTotal = array_merge($arrTmpTotal,array($arrMsaEvalRow['nickname']=>0));
+            }
+        }
+        $arrTmpTotal = array_merge($arrTmpTotal,array('EN'=>$arrTotal['EN']));
+        //count evidence status
+        $arrEpEvalList = $objEval->getEvalList('EVIDENCE');
+        foreach ($arrEpEvalList as $arrEpEvalRow) {
+            $arrEpPoam = $this->_poam->search($this->_me->systems,
+                array('count' => 'nickname'), 
+                array('mp' => $arrEpEvalRow['precedence_id'], 'name')
+            );
+            $description[$arrEpEvalRow['nickname']] = $arrEpEvalRow['name'];
+            if (!empty($arrEpPoam)) {
+                $arrTmpTotal = array_merge($arrTmpTotal,
+                               array($arrEpEvalRow['nickname']=>$arrEpPoam[0]['count']));
+            } else {
+                $arrTmpTotal = array_merge($arrTmpTotal,array($arrEpEvalRow['nickname']=>0));
+            }
+        }
+        $arrTmpTotal = array_merge($arrTmpTotal,array('CLOSED'=>$arrTotal['CLOSED']));
+        $this->view->summary = $arrTmpTotal;
+        
+        $description['EN'] = 'Evidence Needed';
+        $this->view->description = $description;
         // Headers Required for IE+SSL (see bug #2039290) to stream XML
         header('Pragma:private');
         header('Cache-Control:private');
