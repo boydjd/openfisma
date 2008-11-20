@@ -129,7 +129,7 @@ class DashboardController extends SecurityController
         }
         $idString = urlencode(implode(',', $ids));
         $this->view->dismissUrl = "/panel/dashboard/dismiss/$idString";
-        
+
     }
     
     /**
@@ -150,7 +150,7 @@ class DashboardController extends SecurityController
         }
         $this->view->chart_type = $type;
         
-        //count normal status ( new, open, en, closed)
+        //count normal status ( new, open, en)
         $arrPoamInfo = $this->_poam->search($this->_me->systems, array(
             'count' => array(
                 'status'
@@ -160,7 +160,7 @@ class DashboardController extends SecurityController
             'system_id'
         ));
 
-        $arrTotal = array('NEW'=>0, 'OPEN'=>0, 'EN'=>0, 'CLOSED'=>0);
+        $arrTotal = array('NEW'=>0, 'OPEN'=>0, 'EN'=>0);
         foreach ($arrPoamInfo as $arrPoam) {
             if (in_array($arrPoam['status'], array_keys($arrTotal))) {
                 $arrTotal[$arrPoam['status']] = $arrPoam['count'];
@@ -199,9 +199,8 @@ class DashboardController extends SecurityController
                 $arrTmpTotal = array_merge($arrTmpTotal,array($arrEpEvalRow['nickname']=>0));
             }
         }
-        $arrTmpTotal = array_merge($arrTmpTotal,array('CLOSED'=>$arrTotal['CLOSED']));
         $this->view->summary = $arrTmpTotal;
-        
+
         $description['EN'] = 'Evidence Needed';
         $this->view->description = $description;
         // Headers Required for IE+SSL (see bug #2039290) to stream XML

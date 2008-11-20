@@ -1,5 +1,5 @@
-  <chart>
-	<chart_data>
+<chart>
+    <chart_data>
 		<row>
 			<null/>
 			<string></string>
@@ -13,28 +13,68 @@
 	</chart_data>
 
 	<chart_type><?php echo $this->chart_type; ?></chart_type>
+                
+	<chart_rect  width='150'
+                 height='200' />
+                 
+	<chart_value color='000000'
+                 alpha='90'
+                 font='arial'
+                 bold='true'
+                 size='10'
+                 position='over' />
 
-	<chart_grid_h alpha='10' color='ffffff' thickness='0' type='solid' />
-	<chart_pref rotation_x='0' rotation_y='0'  /> 
-	<chart_rect  width='150' y='50' height='200' positive_color='ffffff' positive_alpha='10' negative_color='ff0000' negative_alpha='10' />
-	<chart_value color='ffffff' alpha='90' font='arial' bold='true' size='10' position='over' prefix='' suffix='' decimals='0' separator='' as_percentage='true'   />
-
-	
-	<draw>
-		<text color='000000' alpha='10' font='arial' rotation='45' bold='true' size='30' x='0' y='140' width='400' height='150' h_align='center' v_align='bottom'></text>
-	</draw>
-	<legend_label layout='horizontal' bullet='circle' font='arial' bold='true' size='9' color='000000' alpha='100' />
-	<legend_rect y='240' fill_color='ffffff' fill_alpha='10' line_color='000000' line_alpha='0' line_thickness='0' />
+	<legend_label layout='vertical'
+                  bullet='square'
+                  font='arial'
+                  bold='true'
+                  size='9'
+                  color='000000'
+                  alpha='100' />
+                  
+	<legend_rect y='190' />
 
 	<series_color>
-		<color>ddaa41</color>
-		<color>88dd11</color>
-		<color>4e62dd</color>
-		<color>ff8811</color>
-		<color>4d4d4d</color>
-		<color>5a4b6e</color>
-		<color>ff0000</color>
-		<color>00ff00</color>
-		<color>000000</color>
+<?php
+    // Figure out which colors are MSA colors and which are EP colors
+    unset($this->summary['NEW']);
+    unset($this->summary['OPEN']);
+    $msaColors = array();
+    foreach ($this->summary as $status => $filler) {
+        if ($status == 'EN') {
+            break;
+        }
+        $msaColors[] = $status;
+        unset($this->summary[$status]);
+    }
+    unset($this->summary['EN']);
+    $epColors = array();
+    foreach ($this->summary as $status => $filler) {
+        $epColors[] = $status;
+    }
+    
+    // Colors for NEW & OPEN
+    print '<!-- NEW --><color>cccccc</color>';
+    print '<!-- OPEN --><color>66ff66</color>';
+    
+    // Colors for MSA
+    define('START_COLOR', 200); // These constants are used for creating a gradient
+    define('STOP_COLOR', 25); // The range of these constants sets the high and low gradient value
+    $colorStep = (STOP_COLOR - START_COLOR) / (count($msaColors) - 1);
+	for ($i = 0; $i < count($msaColors); $i++) {
+        $hex = dechex(START_COLOR + ($colorStep * $i));
+        print "<!-- MSA --><color>ff{$hex}{$hex}</color>";
+	}
+	
+	// Color for EN
+	print '<!-- EN --><color>ff9933</color>';
+	
+	// Colors for EP
+    $colorStep = (STOP_COLOR - START_COLOR) / (count($epColors) - 1);
+	for ($i = 0; $i < count($epColors); $i++) {
+        $hex = dechex(START_COLOR + ($colorStep * $i));
+        print "<!-- EP --><color>{$hex}{$hex}ff</color>";
+	}
+?>
 	</series_color>
 </chart>
