@@ -314,31 +314,30 @@ class ReportController extends PoamBaseController
             $this->view->assign('url', $this->_pagingBasePath);
             
             // Interpret the search criteria
-            if (isset($criteria['overdueType'])) {
-                $criteria['overdue']['type'] = $criteria['overdueType'];
-            }
-            if (isset($criteria['overdueDay'])) {
-                $criteria['overdue']['day'] = $criteria['overdueDay'];
-            }
             if (!empty($criteria['year'])) {
-                $criteria['createdDateBegin'] =
-                    new Zend_Date($criteria['year'], Zend_Date::YEAR);
-                $criteria['createdDateEnd'] = 
-                    clone $criteria['createdDateBegin'];
+                $criteria['createdDateBegin'] = new Zend_Date($criteria['year'], Zend_Date::YEAR);
+                $criteria['createdDateEnd']   = clone $criteria['createdDateBegin'];
                 $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
                 unset($criteria['year']);
             }
-            if (!empty($criteria['overdue'])) {
-                $date = clone self::$now;
-                $date->sub(($criteria['overdue']['day'] - 1) * 30,
-                    Zend_Date::DAY);
-                $criteria['overdue']['end_date'] = clone $date;
-                $date->sub(30, Zend_Date::DAY);
-                $criteria['overdue']['begin_date'] = $date;
-                if ($criteria['overdue']['day'] == 5) {
-                    ///@todo hardcode greater than 120
-                    unset($criteria['overdue']['begin_date']);
+            if (!empty($criteria['overdueType'])) {
+                $dateEnd = clone self::$now;
+                $dateEnd->sub(($criteria['overdueDay'] -1) * 30, Zend_Date::DAY);
+                $dateBegin = clone $dateEnd;
+                $dateBegin->sub(30, Zend_Date::DAY);
+
+                if ('sso' == $criteria['overdueType']) {
+                    if ($criteria['overdueDay'] != 5) {
+                        $criteria['actualDateBegin'] = $dateBegin;
+                    }
+                    $criteria['actualDateEnd'] = $dateEnd;
+                } else if ('action' == $criteria['overdueType']) {
+                    if ($criteria['overdueDay'] != 5) {
+                        $criteria['estDateBegin'] = $dateBegin;
+                    }
+                    $criteria['estDateEnd'] = $dateEnd;
                 }
+                unset($criteria['overdueType'], $criteria['overdueDay']);
             }
             
             // Search for overdue items according to the criteria

@@ -99,11 +99,11 @@ class RemediationController extends PoamBaseController
             $criteriaUrl .='/created_date_end/'.$criteria['created_date_end'];
         }
         if (!empty($criteria['aging'])) {
-            $now = self::$now;
-            $now->sub($criteria['aging'], Zend_Date::DAY);
-            $criteriaUrl .='/created_date_end/'.$now->toString('Ymd');
+            $endDate = self::$now;
+            $endDate->sub($criteria['aging'], Zend_Date::DAY);
+            $criteriaUrl .='/created_date_end/'.$endDate->toString('Ymd');
+            $criteria['createdDateEnd'] = $endDate;
         }
-
 
         $eval = new Evaluation();
         $mpEvalList = $eval->getEvalList('ACTION');
@@ -287,12 +287,11 @@ class RemediationController extends PoamBaseController
                 if (!empty($ret)) {
                     $precedenceId = $ret['precedence_id'];
                     $group = $ret['group'];
+                    $internalCrit['status'] = $criteria['status'];
                     if ('ACTION' == $group) {
-                        $internalCrit['status'] = 'MSA';
                         $internalCrit['mp']     = $precedenceId;
                     }
                     if ('EVIDENCE' == $group) {
-                        $internalCrit['status'] = 'EP';
                         $internalCrit['ep']     = $precedenceId;
                     }
                 }
@@ -339,9 +338,6 @@ class RemediationController extends PoamBaseController
         $criteria['assetOwner'] = $req->getParam('asset_owner', 0);
         $criteria['est_date_begin'] = $req->getParam('est_date_begin');
         $criteria['est_date_end'] = $req->getParam('est_date_end');
-        // mitigation strategy submit date
-        $criteria['mss_date_begin'] = $req->getParam('mss_date_begin');
-        $criteria['mss_date_end'] = $req->getParam('mss_date_end');
         $criteria['created_date_begin'] = $req->getParam('created_date_begin');
         $criteria['created_date_end'] = $req->getParam('created_date_end');
         $criteria['ontime'] = $req->getParam('ontime');
@@ -370,12 +366,6 @@ class RemediationController extends PoamBaseController
             }
             if (!empty($criteria['created_date_end'])) {
                 $criteria['createdDateEnd'] = new Zend_Date($criteria['created_date_end'], 'Y-m-d');
-            }
-            if (!empty($criteria['mss_date_begin'])) {
-                $criteria['mssDateBegin'] = new Zend_Date($criteria['mss_date_begin'], 'Y-m-d');
-            }
-            if (!empty($criteria['mss_date_end'])) {
-                $criteria['mssDateEnd'] = new Zend_Date($criteria['mss_date_end'], 'Y-m-d');
             }
             unset($criteria['est_date_begin'], $criteria['est_date_end'],
                 $criteria['created_date_begin'], $criteria['created_date_end']);

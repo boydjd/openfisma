@@ -47,6 +47,53 @@ class Poam extends Zend_Db_Table
                                           'threat_source',
                                           'threat_justification');
     
+    /**
+     * Parse the criterias and return the query object
+     *
+     * @param Object $query Zend_Db_Select
+     * @param array $where the criteria
+     *        The format are:
+     *        <dl>
+     *          <dt>'id'=>(int)</dt><dd> a poam id</dd>
+     *          <dt>'sourceId'=>(int)</dt><dd> a source by id</dd>
+     *          <dt>'systemId'=>(int)</dt><dd> a system by id</dd>
+     *          <dt>'assetOwner'=>(int)</dt><dd> the asset's owner(a system id)</dd>
+     *          <dt>'ids'=>(array)</dt><dd> some poam ids, in CSV format</dd>
+     *          <dt>'actualDateBegin'=>(Zend_Date)</dt>
+     *          <dd>The lower bound of date when a poam exiting EN and entering EP(EA) status.</dd>
+     *          <dt>'actualDateEnd'=>(Zend_Date)</dt>
+     *          <dd>The upper bound of date when a poam exiting EN and entering EP(EA) status.</dd>
+     *          <dt>'estDateBegin'=>(Zend_Date)</dt>
+     *          <dd>The lower bound of date to complete the mitigation strategy, i.e. uploading an evidence.</dd>
+     *          <dt>'estDateEnd'=>(Zend_Date)</dt>
+     *          <dd>The upper bound of date to complete the mitigation strategy, i.e. uploading an evidence.</dd>
+     *          <dt>'createdDateBegin'=>(Zend_Date)</dt>
+     *          <dd>The lower bound of date when a poam is created.</dd>
+     *          <dt>'createdDateEnd'=>(Zend_Date)</dt>
+     *          <dd>The upper bound of date when a poam is created.</dd>
+     *          <dt>'discoveredDateBegin'=>(Zend_Date)</dt>
+     *          <dd>The lower bound of discovering date of a finding(poam)</dd>
+     *          <dt>'discoveredDateEnd'=>(Zend_Date)</dt><dd> an end date for poam discover_ts</dd>
+     *          <dd>The upper bound of discovering date of a finding(poam)</dd>
+     *          <dt>'mssDateBegin'=>(Zend_Date)</dt>
+     *          <dd>The lower bound of date when a poam's mitigation strategy is submitted.</dd>
+     *          <dt>'mssDateEnd'=>(Zend_Date)</dt><dd> an end date for poam mss_ts</dd>
+     *          <dd>The upper bound of date when a poam's mitigation strategy is submitted.</dd>
+     *          <dt>'closedDateBegin'=>(Zend_Date)</dt>
+     *          <dd>The lower bound of closing a poam date</dd>
+     *          <dt>'closedDateEnd'=>(Zend_Date)</dt><dd> an end date for poam close_ts</dd>
+     *          <dd>The upper bound of closing a poam date</dd>
+     *          <dt>'type'=>(string|array)</dt><dd>poam type(s), namely 'CAP', 'AR', 'FP'.</dd>
+     *          <dt>'mp'=>precedence_id(int)</dt><dd>a Mitigation Strategy Evaluation noted by precedence_id </dd>
+     *          <dt>'ep'=>(int)</dt><dd>an Evidence Evaluationnoted by precedence_id </dd>
+     *          <dt>'status'=>(string|array)</dt><dd>poam status(s), namely 'NEW', 'OPEN', 'MSA', 'EN', 'EP', 'CLOSED'</dd>
+     *          <dt>'ip'=>(string)</dt><dd>an asset's ip address</dd>
+     *          <dt>'port'=>(int)</dt><dd> a service port of the asset</dd>
+     *          <dt>'group'=>(string)</dt><dd>similar with SQL's GROUP BY. used in counting</dd>
+     *          <dt>'dateModified'=>(Zend_Date)</dt><dd>The date when modifying a poam</dd>
+     *        </dl>
+     * @return Object Zend_Db_Select
+     */
     protected function _parseWhere ($query, $where)
     {
         assert($query instanceof Zend_Db_Select);
@@ -70,39 +117,9 @@ class Poam extends Zend_Db_Table
                   ->where('assets.system_id = ?', $assetOwner);
         }
 
-        if (! empty($aging)) {
-            $agingTime = new Zend_Date();
-            $agingTime->sub($aging, Zend_Date::DAY);
-            $query->where("DATE(p.create_ts) <= ?", $agingTime->toString('Y-m-d'));
-        }
         /// @todo sanitize the $ids
         if (! empty($ids)) {
             $query->where("p.id IN (" . $ids . ")");
-        }
-        if (! empty($overdue)) {
-            $query->where("status != 'CLOSED'");
-            if ($overdue['type'] == 'sso') {
-                if (isset($overdue['begin_date'])) {
-                    $query->where("p.action_actual_date > ?",
-                        $overdue['begin_date']->toString('Ymd'));
-                }
-                if (isset($overdue['end_date'])) {
-                    $query->where("p.action_actual_date < ?",
-                        $overdue['end_date']->toString('Ymd'));
-                }
-            } else if ($overdue['type'] == 'action') {
-                if (isset($overdue['begin_date'])) {
-                    $query->where("p.action_est_date > ?",
-                                    $overdue['begin_date']->toString('Ymd'));
-                }
-                if (isset($overdue['end_date'])) {
-                    $query->where("p.action_est_date < ?",
-                                    $overdue['end_date']->toString('Ymd'));
-                }
-            } else {
-                throw new Exception_General('Parameters wrong in overdue '
-                    . var_export($overdue, true));
-            }
         }
         if (! empty($actualDateBegin)) {
             $query->where("DATE(p.action_actual_date) >= ?",
@@ -158,7 +175,12 @@ class Poam extends Zend_Db_Table
             }
         }
         if (isset($mp)) {
-            $query->where("p.status='MSA'");
+            if (!empty($status)) {
+                $status = (array)$status;
+                $status[] = 'MSA';
+            } else {
+                $status = 'MSA';
+            }
             if ($mp > 0) {
                 $mp --;
                 $query->joinLeft(array('pev'=>'poam_evaluations'), 'p.id = pev.group_id', array())
@@ -177,7 +199,12 @@ class Poam extends Zend_Db_Table
             }
         }
         if (isset($ep)) {
-            $query->where("p.status='EP'");
+            if (!empty($status)) {
+                $status = (array)$status;
+                $status[] = 'EP';
+            } else {
+                $status = 'EP';
+            }
             if ($ep > 0) {
                 $ep --;
                 $query->join(array('e' => new Zend_Db_Expr("(SELECT MAX(id) as last_eid, poam_id ".
@@ -229,26 +256,23 @@ class Poam extends Zend_Db_Table
         return $query;
     }
     /** 
-     *  search poam records.
-     *  @param $sysIds array system id that limit the searching agency
-     *  @param $fields array information contained in the return.
-     *         array('key' => 'value'). $fields follow the sytax of
-               Zend_Db_Select with 
-              exception of 'count'. Here 'count' is an keyword.
-              There are 3 cases for fields: 
-              1.  $fields = array( 'count'=>'status' ...)
-                  It means count and groupby status. 
-                  The returned value contains 'count'... and more
-
-     *)' )
-                  It return the exact value of count.
-
-     *)' , 'key'=> 'value' , ... ) 
-           the count of the result is array_push into the returned variable;
-     *  @param $criteria array 
-     *  @param $limit integer results number.
-     *  @param $pageno integer search start shift
-     * @param boolean $html If set to false, then strip HTML from returned data.
+     *  search poam records using varous criteria
+     *
+     *  @param array $sysIds system id that limit the searching agency range
+     *  @param array $fields fields information interested by the caller.
+     *      The fields should be as following format:
+     *          basic:   array('key' => 'value'). @see Zend_Db_Select
+     *          count:   array('count') calc the count only (count is a reserved word).
+     *                   array('count' => 'a_field') calc the count group by the a_field
+     *                   array('count' => 'count(*)') 
+     *          the count of the result is array_push into the returned variable;
+     *          ontime:  array('status'=>'string',
+                               'ontime'=>'overdue') @see Poam::_parseOnTime()
+     *
+     *  @param array $criteria @see Poam::_parseWhere
+     *  @param integer $limit results number.
+     *  @param integer $pageno search start shift
+     *  @param boolean $html If set to false, then strip HTML from returned data.
      *  @return a list of record.
      */
     public function search ($sysIds,
@@ -283,7 +307,7 @@ class Poam extends Zend_Db_Table
                     $criteria['group'] = $fields['count'];
                     $fields['count'] = 'count(*)';
                 } else {
-                    //array_push count
+                    //The count will be calc separately
                     unset($fields['count']);
                 }
             }
@@ -357,8 +381,17 @@ class Poam extends Zend_Db_Table
     }
 
     /**
-     * return poam search params
+     * Parse the ontime searching criteria.
+     * 
+     * This requires the combination of status and ontime. These date range 
+     * deducded from this function would overlap the date range explicitly set
+     * in date criterias.
+     * 
      * @param array $overdue
+     *              $overdue = array ( ...
+     *               'status'=>'my_status' should be string
+     *               'overdue'=>'ontime'   could be either 'ontime' or 'overdue'.
+     *              )
      * @return array
      */
     protected function _parseOnTime($criteria)
@@ -369,59 +402,63 @@ class Poam extends Zend_Db_Table
         foreach ($mpEvalList as $row) {
             $mpStatus[$row['nickname']] = $row['precedence_id'];
         }
-        $overduePeriod['EN'] = 0;
         foreach ($epEvalList as $row) {
             $epStatus[$row['nickname']] = $row['precedence_id'];
         }
 
-        $openOverduePeriod = 30;
-        $mpOverduePeriod = 21;
-        $enOverduePeriod = 0;
-        $epOverduePeriod = 14;
+        //Threshold of overdue for various status
+        $overdue = array('open'=>30, 'mp'=>21, 'en'=>0, 'ep'=>14);
         
         $time = new Zend_Date();
         $status = $criteria['status'];
+        assert(is_string($status));
         if ('ontime' == $criteria['ontime']) {
             if (in_array($status, array('NEW', 'OPEN'))) {
-            $time->sub($openOverduePeriod, Zend_Date::DAY);
-            $criteria['createdDateBegin'] = $time;
-            }
-            if (array_key_exists($status, $mpStatus)) {
-                unset($criteria['status']);
-                $time->sub($mpOverduePeriod, Zend_Date::DAY);
+                $time->sub($overdue['open'], Zend_Date::DAY);
+                if (!isset($criteria['createdDateBegin']) || $time->isLater($criteria['createdDateBegin'])) {
+                    $criteria['createdDateBegin'] = $time;
+                }
+            } else if (array_key_exists($status, $mpStatus)) {
+                $time->sub($overdue['mp'], Zend_Date::DAY);
                 $criteria['mp'] = $mpStatus[$status];
                 $criteria['mssDateBegin'] = $time;
-            }
-            if ('EN' == $status) {
-                $time->sub($enOverduePeriod, Zend_Date::DAY);
-                $criteria['estDateBegin'] = $time;
-            }
-            if (array_key_exists($status, $epStatus)) {
                 unset($criteria['status']);
-                $time->sub($epOverduePeriod, Zend_Date::DAY);
+            } else if ('EN' == $status) {
+                $time->sub($overdue['en'], Zend_Date::DAY);
+                if (!isset($criteria['estDateBegin']) || $time->isLater($criteria['estDateBegin'])) {
+                    $criteria['estDateBegin'] = $time;
+                }
+            } else if (array_key_exists($status, $epStatus)) {
+                $time->sub($overdue['ep'], Zend_Date::DAY);
+                if (!isset($criteria['estDateBegin']) || $time->isLater($criteria['estDateBegin'])) {
+                    $criteria['estDateBegin'] = $time;
+                }
                 $criteria['ep'] = $epStatus[$status];
-                $criteria['estDateBegin'] = $time;
+                unset($criteria['status']);
             }
         } else if ('overdue' == $criteria['ontime']) {
             if (in_array($status, array('NEW', 'OPEN'))) {
-                $time->sub($openOverduePeriod+1, Zend_Date::DAY);
-                $criteria['createdDateEnd'] = $time;
-            }
-            if (array_key_exists($status, $mpStatus)) {
-                unset($criteria['status']);
-                $time->sub($mpOverduePeriod+1, Zend_Date::DAY);
+                $time->sub($overdue['open']+1, Zend_Date::DAY);
+                if (!isset($criteria['createdDateEnd']) || $time->isEarlier($criteria['createdDateEnd'])) {
+                    $criteria['createdDateEnd'] = $time;
+                }
+            } else if (array_key_exists($status, $mpStatus)) {
+                $time->sub($overdue['mp']+1, Zend_Date::DAY);
                 $criteria['mp'] = $mpStatus[$status];
                 $criteria['mssDateEnd'] = $time;
-            }
-            if ('EN' == $status) {
-                $time->sub($enOverduePeriod+1, Zend_Date::DAY);
-                $criteria['estDateEnd'] = $time;
-            }
-            if (array_key_exists($status, $epStatus)) {
                 unset($criteria['status']);
-                $time->sub($epOverduePeriod+1, Zend_Date::DAY);
+            } else if ('EN' == $status) {
+                $time->sub($overdue['en']+1, Zend_Date::DAY);
+                if (!isset($criteria['estDateEnd']) || $time->isEarlier($criteria['estDateEnd'])) {
+                    $criteria['estDateEnd'] = $time;
+                }
+            } else if (array_key_exists($status, $epStatus)) {
+                $time->sub($overdue['ep']+1, Zend_Date::DAY);
+                if (!isset($criteria['estDateEnd']) || $time->isEarlier($criteria['estDateEnd'])) {
+                    $criteria['estDateEnd'] = $time;
+                }
                 $criteria['ep'] = $epStatus[$status];
-                $criteria['estDateEnd'] = $time;
+                unset($criteria['status']);
             }
         } else {
             throw new Exception_General('Parameters wrong in ontime ' . var_export($ontime, true));
