@@ -135,7 +135,7 @@ class Form_Validator_Password extends Zend_Validate_Abstract
                 $errno++;
                 $this->_error(self::PASS_INCLUDE);
             }
-            if (strpos($this->_userRow->history_password . $this->_userRow->password, $user->encrypt($pass)) > 0) {
+            if (strpos($this->_userRow->history_password . $this->_userRow->password, $user->digest($pass)) > 0) {
                 $errno++;
                 $this->_error(self::PASS_HISTORY);
             }

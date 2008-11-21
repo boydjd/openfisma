@@ -934,6 +934,7 @@ CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `account` varchar(32) NOT NULL,
   `password` varchar(256) NOT NULL default '',
+  `hash` enum('md5','sha1','sha256') NOT NULL default 'sha1',
   `title` varchar(64) default NULL,
   `name_last` varchar(32) NOT NULL default '',
   `name_middle` char(1) default NULL,
@@ -960,7 +961,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `account` (`account`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','admin','Application',NULL,'Admin','2008-11-06 16:19:55','2008-11-06 16:19:55','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00');
+INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','sha1','admin','Application',NULL,'Admin','2008-11-06 16:19:55','2008-11-06 16:19:55','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `validate_emails` (

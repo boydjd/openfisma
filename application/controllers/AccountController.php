@@ -331,7 +331,8 @@ class AccountController extends PoamBaseController
                     ));
                     return;
                 }
-                $accountData['password'] = $this->_user->encrypt($accountData['password']);
+                $accountData['password'] = $this->_user->digest($accountData['password']);
+                $accountData['hash']     = Config_Fisma::readSysConfig('encrypt');
             } else {
                 unset($accountData['password']);
             }
@@ -542,7 +543,8 @@ class AccountController extends PoamBaseController
                 $accountData['account'] = $accountData['ldap_dn'];
             } else if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
                 $password = $accountData['password'];
-                $accountData['password'] = $this->_user->encrypt($accountData['password']);
+                $accountData['password'] = $this->_user->digest($accountData['password']);
+                $accountData['hash'] = Config_Fisma::readSysConfig('encrypt');
             }
             $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');
             $accountData['auto_role'] = $accountData['account'].'_r';

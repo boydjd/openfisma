@@ -225,27 +225,27 @@ class User extends FismaModel
     *
     * @param string $password password
     * @param string $account account name
-    * @return string encrypted password
+    * @return string digest password
     */
-    public function encrypt($password, $account=null) {
+    public function digest($password, $account=null) {
         if ($account !== null) {
             $row = $this->fetchRow("account = '$account'");
             assert(count($row)==1);
-            if (32 == strlen($row->password)) {  //md5 hash always get 128 bits,i.e. 32 hex digits
+            if ('md5' == $row->hash) {  //md5 hash always get 128 bits,i.e. 32 hex digits
                 //keep the old hash algorithm
                 return md5($password);
             }
         }
-        $encryptType = Config_Fisma::readSysConfig('encrypt');
-        if ('sha1' == $encryptType) {
+        $digestType = Config_Fisma::readSysConfig('encrypt');
+        if ('sha1' == $digestType) {
             return sha1($password);
         }
-        if ('sha256' == $encryptType) {
+        if ('sha256' == $digestType) {
             $key = self::readSysConfig('encryptKey');
             $cipher_alg = MCRYPT_TWOFISH;
             $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
-            $encryptedPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
-            return $encryptedPassword;
+            $digestPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            return $digestPassword;
         }
     }
 }

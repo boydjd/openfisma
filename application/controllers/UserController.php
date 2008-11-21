@@ -216,7 +216,7 @@ class UserController extends MessageController
                                 . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
                                 . '">Administrator</a>.');
                 }
-            } else if (32 == strlen($whologin['password'])) {
+            } else if ('md5' == $whologin['hash']) {
                 $message = 'This version of the application uses an improved password storage scheme.'
                          . ' You will need to change your password in order to upgrade your account.';
                 $this->message($message, self::M_WARNING);
@@ -503,7 +503,7 @@ class UserController extends MessageController
                 $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;
             } else {
-                $newPass = $this->_user->encrypt($req->newPassword);
+                $newPass = $this->_user->digest($req->newPassword);
                 $historyPass = $userRow->historyPassword;
                 $count = substr_count($historyPass, ':');
                 if (3 == $count) {
@@ -513,6 +513,7 @@ class UserController extends MessageController
                 $now = date('Y-m-d H:i:s');
                 $data = array(
                     'password' => $newPass,
+                    'hash'     => Config_Fisma::readSysConfig('encrypt'),
                     'history_password' => $historyPass,
                     'password_ts' => $now
                 );
@@ -554,8 +555,8 @@ class UserController extends MessageController
             $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
         } else if ($type == 'database') {
             $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
-            $encryptPass = $this->_user->encrypt($password, $username);
-            $authAdapter->setIdentity($username)->setCredential($encryptPass);
+            $digestPass = $this->_user->digest($password, $username);
+            $authAdapter->setIdentity($username)->setCredential($digestPass);
         }
         
         $auth = Zend_Auth::getInstance();

@@ -51,7 +51,7 @@ class Form_Validator_PasswdMatch extends Zend_Validate_Abstract
     {
         $user = $this->_userRow->getTable();
         $this->_setValue($pass);
-        if ($user->encrypt($pass, $this->_userRow->account) != $this->_userRow->password) {
+        if ($user->digest($pass, $this->_userRow->account) != $this->_userRow->password) {
             $this->_error(self::PASS_MISMATCH);
             return false;
         }
