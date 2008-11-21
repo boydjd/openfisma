@@ -226,11 +226,6 @@ class RemediationController extends PoamBaseController
 
             case 'OPEN':
                 $internalCrit['status'] = 'OPEN';
-                $internalCrit['type'] = array(
-                    'CAP',
-                    'FP',
-                    'AR'
-                );
                 break;
 
             case 'EN':
