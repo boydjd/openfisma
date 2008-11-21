@@ -255,8 +255,8 @@ INSERT INTO `configurations` VALUES (8,'smtp_username','','Username for smtp Aut
 INSERT INTO `configurations` VALUES (9,'smtp_password','','Password for smtp Authenticate');
 INSERT INTO `configurations` VALUES (10,'send_type','sendmail','Notification email send type');
 INSERT INTO `configurations` VALUES (11,'smtp_port','25','Smtp server port');
-INSERT INTO `configurations` VALUES (12,'unlock_enabled','0','Enable Automated Account Unlock');
-INSERT INTO `configurations` VALUES (13,'unlock_duration','15','Automated Account Unlock Duration (hour)');
+INSERT INTO `configurations` VALUES (12,'unlock_enabled','1','Enable Automated Account Unlock');
+INSERT INTO `configurations` VALUES (13,'unlock_duration','300','Automated Account Unlock Duration (In Seconds)');
 INSERT INTO `configurations` VALUES (14,'contact_name','','Technical support Contact name');
 INSERT INTO `configurations` VALUES (15,'contact_phone','','Technical support Contact phone number');
 INSERT INTO `configurations` VALUES (16,'contact_email','','Technical support Contact Email Address');
@@ -869,7 +869,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (37);
+INSERT INTO `schema_version` VALUES (38);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -996,4 +996,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (38);
+INSERT INTO schema_version (schema_version) VALUES (39);
