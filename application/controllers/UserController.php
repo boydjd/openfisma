@@ -76,6 +76,9 @@ class UserController extends MessageController
         $this->_helper->layout->setLayout('login');
         if ( empty($username) ) {
             return $this->render();
+        } else {
+            $this->view->username = $username;
+            $this->view->password = $password;
         }
 
         try {
@@ -116,8 +119,8 @@ class UserController extends MessageController
                                     . $threshold['failure']
                                     . " or more unsuccessful login attempts. Your account will be"
                                     . " unlocked in ".ceil($terminationTs->getTimestamp()/60)
-                                    . " minutes. Please try again at that"
-                                    . " time.");
+                                    . " minutes. Please try again at that time.<br>"
+                                    . " You may also contact the Administrator for further assistance.");
                             } else {
                                 $array = array('is_active'=>1, 'failure_count'=>0);
                                 $this->_user->update($array, 'id = '.$whologin['id']);

@@ -7,8 +7,10 @@
 </p>
 <form method="post" action="/user/login">
     <ul id="login">
-	<li>Username: <input type="text" name="username" value="" ></li>
-	<li>Password: <input type="password" name="userpass" value=""></li>
+	<li>Username: <input type="text" name="username"
+        value="<?php echo isset($this->username)?$this->username:'';?>" ></li>
+	<li>Password: <input type="password" name="userpass"
+         value="<?php echo isset($this->password)?$this->password:'';?>" ></li>
 	<li class='submit'><input type="submit" value="Login" ></li>
     </ul>
 </form>
