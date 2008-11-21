@@ -58,9 +58,9 @@ class FindingController extends PoamBaseController
         if ($criteria['status'] == 'REMEDIATION') {
             $criteria['status'] = array(
                 'OPEN',
+                'MSA',
                 'EN',
-                'EP',
-                'ES'
+                'EP'
             );
         }
         $result = $this->_poam->search($this->_me->systems, $fields, $criteria,

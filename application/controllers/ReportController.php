@@ -531,7 +531,7 @@ class ReportController extends PoamBaseController
             'NumoOV' => 'count(prod.id)'
         ))->join(array(
             'p' => 'poams'
-        ), 'p.status IN ("OPEN","EN","UP","ES")', array())->join(array(
+        ), 'p.status IN ("OPEN","MSA", "EN","EP")', array())->join(array(
             'a' => 'assets'
         ), 'a.id = p.asset_id AND a.prod_id = prod.id', array())
             ->group("prod.vendor")->group("prod.name")->group("prod.version");
@@ -578,7 +578,7 @@ class ReportController extends PoamBaseController
         ))->join(array(
             'p' => 'poams'
         ), 'p.type IN ("CAP","AR","FP") AND
-            p.status IN ("OPEN","EN","EP","ES") AND p.system_id = sys.id',
+            p.status IN ("OPEN", "MSA", "EN", "EP") AND p.system_id = sys.id',
             array())->join(array(
             'a' => 'assets'
         ), 'a.id = p.asset_id', array())->group("p.system_id");

@@ -1,19 +1,6 @@
 <?php
     require_once( 'local/rafutil.php');
 
-    $type_name = array('NONE'=>'None',
-                       'CAP'=>'Corrective Action Plan',
-                       'AR' =>'Accepted Risk',
-                       'FP' =>'False Positive');
-    $status_name = array('NEW' => 'New',
-                         'OPEN' =>'Open',
-                         'EN' => 'Evidence Needed',
-                         'EO' => 'Evidence Overdue',
-                         'EP(SSO)' =>'Evidence Provided to SSO',
-                         'EP(S&P)' => 'Evidence Provided to S&P',
-                         'ES' => 'Evidence Submitted',
-                         'CLOSED' => 'Closed' );
-
     $cellidx_lookup['HIGH']['LOW']          = 0;
     $cellidx_lookup['HIGH']['MODERATE']     = 1;
     $cellidx_lookup['HIGH']['HIGH']         = 2;

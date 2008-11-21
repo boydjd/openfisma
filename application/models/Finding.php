@@ -62,8 +62,8 @@ class Finding extends Poam
                 $ret[$s] = 0;
             }
         } else {
-            $ret = array('NEW' => 0, 'OPEN' => 0, 'EN' => 0, 'EP' => 0,
-                         'ES' => 0 , 'CLOSED' => 0 , 'DELETED' => 0);
+            $ret = array('NEW' => 0, 'OPEN' => 0, 'MSA'=>0, 'EN' => 0,
+                         'EP' => 0, 'CLOSED' => 0 , 'DELETED' => 0);
         }
         $raw = $this->search($systems, array('status' => 'status',
                                 'count' => 'status'), $criteria);
