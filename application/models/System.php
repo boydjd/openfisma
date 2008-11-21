@@ -72,4 +72,66 @@ class System extends FismaModel
             return parent::getList($fields, $primaryKey, $order);
         }
     }
+    
+    /**
+     * Inserts a new system row.
+     *
+     * @param  array  $data  Column-value pairs.
+     * @return mixed         The primary key of the row inserted.
+     * @see calculateSecurity()
+     */
+    public function insert(array $data)
+    {
+        $this->calculateSecurity($data);
+        return parent::insert($data);
+    }
+    
+    /**
+     * Updates existing system rows.
+     *
+     * @param  array        $data  Column-value pairs.
+     * @param  array|string $where An SQL WHERE clause, or an array of SQL WHERE clauses.
+     * @return int          The number of rows updated.
+     * @see calculateSecurity()
+     */
+    public function update(array $data, $where)
+    {
+        $this->calculateSecurity($data);
+        return parent::update($data, $where);
+    }
+    
+    /**
+     * calculate Security categorization.
+     *
+     * @param  array        $data  Column-value pairs.
+     */
+    private function calculateSecurity(array &$data)
+    {
+        if (!isset($data['confidentiality'])) {
+            assert(false);
+            $data['confidentiality'] = 'NONE';
+        }
+        if (!isset($data['integrity'])) {
+            assert(false);
+            $data['integrity'] = 'NONE';
+        }
+        if (!isset($data['availability'])) {
+            assert(false);
+            $data['availability'] = 'NONE';
+        }
+        
+        $array = $this->getEnumColumns('confidentiality');
+        $confidentiality = array_search($data['confidentiality'], $array);
+        
+        $array = $this->getEnumColumns('integrity');
+        $integrity = array_search($data['integrity'], $array);
+        
+        $array = $this->getEnumColumns('availability');
+        $availability = array_search($data['availability'], $array);
+
+        $index = max((int)$confidentiality, (int)$integrity, (int)$availability);
+                     
+        $array = $this->getEnumColumns('security_categorization');
+        $data['security_categorization'] = $array[$index];
+    }
 }
