@@ -1,11 +1,18 @@
-<object type="application/x-shockwave-flash"
-        data="/flash/charts.swf?license=I1XFXZQRXRQL.NS5T4Q79KLYCK07EK&amp;xml_source=<?php echo $this->source_url?>"
-        width="<?php echo $this->width?>"
-        height="<?php echo $this->height?>">
-    <param name="movie" value="/flash/charts.swf?license=I1XFXZQRXRQL.NS5T4Q79KLYCK07EK&amp;xml_source=<?php echo $this->source_url?>">
-    <param name="quality" value="high">
-    <param name="bgcolor" value="#666666">
-    <param name="wmode" value="transparent">
-    <param name="scale" value="showAll">
-    <param name="menu" value="false">
-</object>
+<embed scale="noscale"
+       salign="TL"
+       bgcolor="#ffffff"
+       wmode="opaque"
+       src="/flash/charts.swf"
+       flashvars="license=I1XFXZQRXRQL.NS5T4Q79KLYCK07EK&amp;library_path=/flash/charts_library&amp;xml_source=<?php echo $this->source_url?>"
+       name="my_chart"
+       menu="true"
+       allowfullscreen="true"
+       allowscriptaccess="sameDomain"
+       quality="high"
+       pluginspage="http://www.macromedia.com/go/getflashplayer"
+       play="true"
+       devicefont="false"
+       type="application/x-shockwave-flash"
+       width="<?php echo $this->width?>"
+       height="<?php echo $this->height?>"
+       align="middle">

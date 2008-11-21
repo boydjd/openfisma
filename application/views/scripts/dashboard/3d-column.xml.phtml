@@ -7,32 +7,45 @@
 		<?php foreach ($this->summary AS $status=>$statusCount) { ?>
 		<row>
 			<string><?php echo $status; ?></string>
-			<number><?php echo $statusCount; ?></number>
+			<number tooltip='<?php echo $statusCount; ?> findings'><?php echo $statusCount; ?></number>
 		</row>
 		<?php } ?>
 	</chart_data>
 
 	<chart_type><?php echo $this->chart_type; ?></chart_type>
-                
-	<chart_rect  width='150'
-                 height='200' />
-                 
-	<chart_value color='000000'
-                 alpha='90'
-                 font='arial'
+
+    <chart_grid_h thickness='0' />
+
+	<axis_value alpha='0' />
+
+	<chart_label font='arial'
                  bold='true'
-                 size='10'
+                 size='12'
                  position='over' />
 
-	<legend_label layout='vertical'
-                  bullet='square'
-                  font='arial'
-                  bold='true'
-                  size='9'
-                  color='000000'
-                  alpha='100' />
-                  
-	<legend_rect y='190' />
+	<chart_pref rotation_x='30'
+                rotation_y='40'
+                min_x='20'
+                max_x='70'
+                min_y='30'
+                max_y='80' />
+
+	<chart_rect x='0' y='0' width='480' height='240' positive_alpha='0' negative_alpha='25' />
+
+	<filter>
+		<shadow id='low' distance='2' angle='45' alpha='50' blurX='2' blurY='2' />
+	</filter>
+
+    <legend layout='vertical'
+            bullet='square'
+            font='arial'
+            bold='true'
+            size='10'
+            x='0'
+            y='50'
+            width='100'
+            height='150' />
+
 
 	<series_color>
 <?php
