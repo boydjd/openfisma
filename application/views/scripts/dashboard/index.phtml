@@ -66,30 +66,35 @@ if (isset($this->notifications)) {
 ?>
 
 <?php if ( !empty( $this->alert['TOTAL'] ) ) { ?>
-<table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tipframe">
-    <tr><td colspan="2"  align="left"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
-    <tr>
-      <td width="34%"  align="center">
-        <?php echo $this->partial('/dashboard/chart.phtml', array(
-                    'source_url'=> urlencode(
-                        '/dashboard/totalstatus/format/xml/type/3d column'),
-                    'width'=>380,
-                    'height'=>275) );
-        ?>
-      </td>
-      <td width="33%"  align="center">
-        <?php echo $this->partial('/dashboard/chart.phtml', array(
-                    'source_url'=> '/dashboard/totaltype/format/xml',
-                    'width'=>380,
-                    'height'=>275 ));
-        ?>
-      </td>
-    </tr>
-    <tr>
-      <td width="34%"  align="center"><b>Finding Status<br>Distribution</b></td>
-      <td width="33%"  align="center"><b>Mitigation Strategy<br>Distribution</b></td>
-    </tr>
-</table>
+<div style='position: relative; width: 100%;'>
+    <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tipframe">
+        <tr><td colspan="2"  align="left"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
+        <tr>
+          <td width="34%"  align="center">
+            <?php echo $this->partial('/dashboard/chart.phtml', array(
+                        'source_url'=> urlencode(
+                            '/dashboard/totalstatus/format/xml/type/3d column'),
+                        'width'=>380,
+                        'height'=>275) );
+            ?>
+          </td>
+          <td width="33%"  align="center">
+            <?php echo $this->partial('/dashboard/chart.phtml', array(
+                        'source_url'=> '/dashboard/totaltype/format/xml',
+                        'width'=>380,
+                        'height'=>275 ));
+            ?>
+          </td>
+        </tr>
+        <tr>
+          <td width="34%"  align="center"><b>Finding Status<br>Distribution</b></td>
+          <td width="33%"  align="center"><b>Mitigation Strategy<br>Distribution</b></td>
+        </tr>
+    </table>
+
+    <!-- This div blocks click through on the swf charts -->
+    <div class='shield'>&nbsp;</div>
+</div>
 
 <?php } ?>
 
