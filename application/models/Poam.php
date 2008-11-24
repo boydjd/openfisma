@@ -588,9 +588,9 @@ class Poam extends Zend_Db_Table
                 array('prod_id' => 'pr.id', 'prod_vendor' => 'pr.vendor',
                       'prod_name' => 'pr.name', 'prod_version' => 'pr.version'))
                   ->where("pr.id = ?", $ret['prod_id']);
-            $products = $this->_db->fetchRow($query);
+            $product = $this->_db->fetchRow($query);
             if (! empty($product)) {
-                $ret['product'] = $products;
+                $ret['product'] = $product;
             }
         }
         if (! empty($ret['blscr_id'])) {

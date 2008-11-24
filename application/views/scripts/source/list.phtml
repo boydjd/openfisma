@@ -23,7 +23,7 @@
 <tr>
     <td class="tdc">&nbsp;<?php echo $source['name'];?></td>
     <td class="tdc">&nbsp;<?php echo $source['nickname'];?></td>
-    <td class="tdc">&nbsp;<?php echo $source['desc'];?></td>
+    <td class="tdc">&nbsp;<?php echo strip_tags($source['desc']);?></td>
     <?php if(Config_Fisma::isAllow('admin_sources','update')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/source/sub/view/v/edit/id/<?php echo $source['id'];?>" title="edit the Sources">

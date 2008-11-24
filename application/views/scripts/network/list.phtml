@@ -23,7 +23,7 @@
 <tr>
     <td class="tdc">&nbsp;<?php echo $network['name'];?></td>
     <td class="tdc">&nbsp;<?php echo $network['nickname'];?></td>
-    <td class="tdc">&nbsp;<?php echo $network['desc'];?></td>
+    <td class="tdc">&nbsp;<?php echo strip_tags($network['desc']);?></td>
     <?php if(Config_Fisma::isAllow('admin_networks','update')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/network/sub/view/v/edit/id/<?php echo $network['id'];?>" title="edit the Networks">

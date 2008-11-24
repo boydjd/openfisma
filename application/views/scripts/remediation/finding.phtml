@@ -73,8 +73,8 @@
                 <tr>
                     <td><b>Product Information:&nbsp;</b> <i>
                         <?php  if( !empty($this->poam['product']) ){
-                            echo $this->poam['product']['prod_vendor'].
-                                 $this->poam['product']['prod_name'].
+                            echo $this->poam['product']['prod_vendor'].' '.
+                                 $this->poam['product']['prod_name'].' '.
                                  $this->poam['product']['prod_version'];
                         }else{
                             echo '(not given)';
