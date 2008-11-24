@@ -106,6 +106,7 @@
         <th class="tdc">Description</th>
         <th class="tdc">Type</th>
         <th class="tdc">Status</th>
+        <th class="tdc">On Time?</th>
         <th class="tdc">Source</th>
         <th class="tdc">Server/Database</th>
         <th class="tdc">Location</th>
@@ -125,6 +126,12 @@
         <td class="tdc"><?php echo $row['finding_data'];?></td>
         <td class="tdc" ><?php echo $row['type'];?></td>
         <td align='center' class='tdc'><?php echo $row['status'];?></td>
+        <td align='center' class='tdc'>
+        <?php 
+            $this->poam->isOnTime($row['id']) ? $onTime = 'On Time' : $onTime = 'Overdue';
+            echo $onTime;
+        ?>
+        </td>
         <td class="tdc" align="center">
         <?php $id = &$row['source_id'];
             if( empty($id) ){

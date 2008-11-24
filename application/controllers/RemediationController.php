@@ -311,6 +311,8 @@ class RemediationController extends PoamBaseController
         $urlNamespace = new Zend_Session_Namespace('urlNamespace');
         $urlNamespace->lastSearch = $lastSearchUrl;
         $pager = & Pager::factory($this->_paging);
+        
+        $this->view->assign('poam', $this->_poam);
         $this->view->assign('list', $list);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);

@@ -285,6 +285,7 @@ class ReportController extends PoamBaseController
             $this->_paging['totalItems'] = $total;
             $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
+            $this->view->assign('poam', $this->_poam);
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());
         }

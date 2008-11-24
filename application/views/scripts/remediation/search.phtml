@@ -16,6 +16,7 @@
         <th nowrap>System </th>
         <th nowrap>Type </th>
         <th nowrap>Status </th>
+        <th nowrap>On Time? </th>
         <th nowrap>Finding </th>
         <th nowrap>ECD 
            <a href="<?php echo $this->url;?>/sortby/action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
@@ -42,6 +43,12 @@
             <td align='center' class='tdc'><?php echo $this->systems[$row['system_id']];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['type'];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>
+            <td align='center' class='tdc' nowrap>
+            <?php 
+                $this->poam->isOnTime($row['id']) ? $onTime = 'On Time' : $onTime = 'Overdue';
+                echo $onTime;
+            ?>
+            </td>
             <td align='left'   class='tdc'><?php echo $finding_data;?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['action_current_date'];?></td> 
             <td align="center" valign='middle' class='tdc'><a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
