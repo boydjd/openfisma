@@ -53,13 +53,6 @@ class OrganizationController extends SecurityController
         $this->_pagingBasePath = $req->getBaseUrl()
                                    . '/panel/organization/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
-        if (!in_array($req->getActionName(), array(
-            'login',
-            'logout'
-        ))) {
-            // by pass the authentication when login
-            parent::preDispatch();
-        }
     }
 
     /**

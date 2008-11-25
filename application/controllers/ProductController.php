@@ -53,13 +53,6 @@ class ProductController extends SecurityController
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('search', 'html')
                     ->initContext();
-        if (!in_array($req->getActionName(), array(
-            'login',
-            'logout'
-        ))) {
-            // by pass the authentication when login
-            parent::preDispatch();
-        }
     }
     /**
      Get Product List

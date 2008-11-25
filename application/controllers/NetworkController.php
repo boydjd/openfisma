@@ -69,13 +69,6 @@ class NetworkController extends SecurityController
         $this->_pagingBasePath = $this->_request->getBaseUrl() .
             '/panel/network/sub/list';
         $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
-        if (!in_array($this->_request->getActionName(), array(
-            'login',
-            'logout'
-        ))) {
-            // by pass the authentication when login
-            parent::preDispatch();
-        }
     }
     /**
      *  render the searching boxes and keep the searching criteria

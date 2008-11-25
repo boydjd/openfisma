@@ -50,13 +50,6 @@ class SourceController extends SecurityController
         $req = $this->getRequest();
         $this->_pagingBasePath = $req->getBaseUrl() . '/panel/source/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
-        if (!in_array($req->getActionName(), array(
-            'login',
-            'logout'
-        ))) {
-            // by pass the authentication when login
-            parent::preDispatch();
-        }
     }
     public function searchboxAction()
     {
