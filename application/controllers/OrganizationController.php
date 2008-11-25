@@ -98,6 +98,10 @@ class OrganizationController extends SecurityController
         ), array(
             'count' => 'COUNT(o.id)'
         ));
+        if (!empty($qv)) {
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+        }
         $res = $this->_organization->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;

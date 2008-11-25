@@ -70,6 +70,10 @@ class SourceController extends SecurityController
         ), array(
             'count' => 'COUNT(s.id)'
         ))->order('s.name ASC');
+        if (!empty($qv)) {
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+        }
         $res = $this->_source->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;

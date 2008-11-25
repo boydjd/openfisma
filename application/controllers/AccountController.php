@@ -31,14 +31,19 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class AccountController extends PoamBaseController
+class AccountController extends SecurityController
 {
     private $_user;
-    
-    protected $_sanity = array(
-        // @todo remove this array
+
+    private $_paging = array(
+        'mode' => 'Sliding',
+        'append' => false,
+        'urlVar' => 'p',
+        'path' => '',
+        'currentPage' => 1,
+        'perPage' => 20
     );
-    
+
     /**
      * init() - Initialize internal members.
      */
@@ -49,6 +54,20 @@ class AccountController extends PoamBaseController
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('checkdn', 'html')
                     ->initContext();
+    }
+
+    public function preDispatch()
+    {
+        $req = $this->getRequest();
+        $this->_pagingBasePath = $req->getBaseUrl() . '/panel/account/sub/list';
+        $this->_paging['currentPage'] = $req->getParam('p', 1);
+        if (!in_array($req->getActionName(), array(
+            'login',
+            'logout'
+        ))) {
+            // by pass the authentication when login
+            parent::preDispatch();
+        }
     }
 
     /**
@@ -114,37 +133,28 @@ class AccountController extends PoamBaseController
     public function searchboxAction()
     {
         $this->_helper->RequirePrivilege('admin_users', 'read');
-        
-        // These are the fields which can be searched, the key is the physical
-        // name and the value is the logical name which is displayed in the
-        // interface.
-        $criteria = array(
-            'name_last' => 'Last Name',
-            'name_first' => 'First Name',
-            'account' => 'Username',
-            'email' => 'Email',
-            'title' => 'Title',
-            'phone_office' => 'Office Phone',
-            'phone_mobile' => 'Mobile Phone'
-        );
-        $postAction = "/panel/account/sub/list";
 
-        // Count the total number of users and configure the pager
-        $user = new User();
-        $userCount = $user->count();
-        $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
-        $this->_paging['totalItems'] = $userCount;
-        $this->_paging['fileName'] = "/panel/account/sub/list/p/%d";
-
-        $pager = &Pager::factory($this->_paging);
-        
-        // Assign view outputs
-        $this->view->assign('criteria', $criteria);
-        $this->view->assign('fid', $this->_request->getParam('fid'));
-        $this->view->assign('qv', $this->_request->getParam('qv'));
-        $this->view->assign('postAction', $postAction);
-        $this->view->assign('total', $userCount);
+        $fid = $this->_request->getParam('fid');
+        $qv  = $this->_request->getParam('qv');
+        $query = $this->_user->select()->from(array(
+            'u' => 'users'
+        ), array(
+            'count' => 'COUNT(u.id)'
+        ))->order('u.account ASC');
+        if (!empty($qv)) {
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+        }
+        $res = $this->_user->fetchRow($query)->toArray();
+        $count = $res['count'];
+        $this->_paging['totalItems'] = $count;
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
+        $pager = & Pager::factory($this->_paging);
+        $this->view->assign('fid', $fid);
+        $this->view->assign('qv', $qv);
+        $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
+
     }
     
     /**

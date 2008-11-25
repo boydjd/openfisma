@@ -1,3 +1,19 @@
+<?php
+    /**
+     * These are the fields which can be searched, the key is the physical
+     * name and the value is the logical name which is displayed in the
+     * interface.
+     */
+     $fid_array = array(
+         'name_last' => 'Last Name',
+         'name_first' => 'First Name',
+         'account' => 'Username',
+         'email' => 'Email',
+         'title' => 'Title',
+         'phone_office' => 'Office Phone',
+         'phone_mobile' => 'Mobile Phone'
+     );
+?>
 <div class="barleft">
 <div class="barright">
 <p><b>User Account Administration</b>
@@ -21,22 +37,11 @@
             </th>
             <th>
                 
-                <form name="query" method="post" action="<?php echo $this->postAction;?>">
+                <form name="query" method="post" action="/panel/account/sub/list">
                     <table align="center">
                         <tr>
                             <td><b>Query:&nbsp;</b></td>
-                            <td><select name="fid">
-                            <?php foreach($this->criteria as $k=>$v){
-                                if($k == $this->fid){
-                                    $selected = " selected";
-                                }
-                                else {
-                                    $selected = "";
-                                }
-                                echo'<option value="'.$k.'" '.$selected.'>'.$v.'</option>';
-                            }
-                            ?>
-                            </select></td>
+                            <td><?php echo $this->formSelect('fid', $this->fid, null, $fid_array);?></td>
                             <td><input name="qv" value="<?php echo $this->qv;?>" size="10" maxlength="40" type="text"></td>
 
                              <td><input value="Search" type="submit"></td>

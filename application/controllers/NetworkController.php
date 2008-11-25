@@ -91,6 +91,10 @@ class NetworkController extends SecurityController
         ), array(
             'count' => 'COUNT(n.id)'
         ))->order('n.name ASC');
+        if (!empty($qv)) {
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+        }
         $res = $this->_network->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;

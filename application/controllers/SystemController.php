@@ -164,6 +164,10 @@ class SystemController extends SecurityController
         ), array(
             'count' => 'COUNT(s.id)'
         ));
+        if (!empty($qv)) {
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+        }
         $res = $this->_system->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;

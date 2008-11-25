@@ -103,6 +103,10 @@ class ProductController extends SecurityController
         ), array(
             'count' => 'COUNT(p.id)'
         ));
+        if (!empty($qv)) {
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+        }
         $res = $this->_product->fetchRow($query)->toArray();
         $count = $res['count'];
         $this->_paging['totalItems'] = $count;
