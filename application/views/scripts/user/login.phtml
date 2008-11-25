@@ -1,10 +1,8 @@
-<p class="message">   
-<?php 
+<p class="message"><?php 
     if(isset($this->error) ) {
         echo $this->error; 
     }
-?>
-</p>
+?></p>
 <form method="post" action="/user/login">
     <ul id="login">
 	<li>Username: <input type="text" name="username"

@@ -94,6 +94,11 @@ class Config_Fisma
         } else {
             self::$_root = realpath(dirname(__FILE__) . '/../../../');
         }
+        // APPLICATION CONSTANTS - Set the constants to use in this application.
+        // These constants are accessible throughout the application, even in ini 
+        // files. 
+        define('APPLICATION_ROOT', self::$_root);
+        define('APPLICATION_PATH', $this->_path['application']);
         $this->initSetting();
     }
 
@@ -115,6 +120,8 @@ class Config_Fisma
         $incPaths[] = "{$incPaths['lib']}/local";
         $incPaths[] = "{$incPaths['lib']}/Pear";
         $incPaths[] = $this->getPath('application') . '/models';
+
+    
         set_include_path(implode(PATH_SEPARATOR, $incPaths) . PATH_SEPARATOR . get_include_path());
 
         require_once 'Zend/Loader.php';
@@ -134,9 +141,15 @@ class Config_Fisma
             // happends in the global scope, the registry will contain the objects it
             // needs.
             $registry = Zend_Registry::getInstance();
-            $registry->configuration = $config->development;
+            
+            if (!isset($config->envirement)) {
+                $config->envirement = 'production';
+            }
+            $configuration = $config->{$config->envirement};
+            self::addSysConfig($configuration);
             // Start Session Handling using Zend_Session 
-            Zend_Session::start($config->development);
+            Zend_Session::start($configuration->session);
+
         } catch(Zend_Config_Exception $e) {
             //using default configuration
             $config = new Zend_Config(array());
@@ -210,12 +223,17 @@ class Config_Fisma
             }
         }
         $frontController->registerPlugin($initPlugin);
-        // APPLICATION ENVIRONMENT - Set the current environment
-        // Set a variable in the front controller indicating the current environment --
-        // commonly one of development, staging, testing, production, but wholly
-        // dependent on your organization and site's needs.
-        $frontController->setParam('env', APPLICATION_ENVIRONMENT);
+
             
+    }
+    
+    /**
+     * start the bootstrap for unit test
+     *
+     */
+    public function unitBootstrap()
+    {
+        $this->bootstrap(self::TEST_MODE);
     }
 
 

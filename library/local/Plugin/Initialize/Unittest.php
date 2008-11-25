@@ -6,7 +6,7 @@ class Plugin_Initialize_Unittest extends Plugin_Initialize_Webapp
         parent::initDb();
         try {
             $config = new Zend_Config_Ini(
-                $this->_root."/tests/unit/data/db.ini"
+                $this->_root."/tests/unit/data/database.ini"
             );
             if (!empty($config->database)) {
                 Zend_Registry::set('datasource', $config->database);

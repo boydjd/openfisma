@@ -23,23 +23,6 @@
  * @version   $Id$
  */
 
-// APPLICATION CONSTANTS - Set the constants to use in this application.
-// These constants are accessible throughout the application, even in ini 
-// files. 
-defined('APPLICATION_ROOT')
-    or define('APPLICATION_ROOT', realpath(dirname(__FILE__) . '/..'));
-
-defined('APPLICATION_PATH')
-    or define('APPLICATION_PATH', dirname(__FILE__));
-
-// APPLICATION ENVIRONMENT - This sets the operating environment for OpenFISMA.
-// This should be set to either development, test, or production. The application will use the 
-// config settings for the respective environment setting. For example, if development is
-// currently set, OpenFISMA will utilize the development settings in the app.ini file under
-// the config directory. 
-defined('APPLICATION_ENVIRONMENT')
-    or define('APPLICATION_ENVIRONMENT', 'development');
-
 
 require_once dirname(__FILE__) . "/../library/local/Config/Fisma.php";
 $fisma = Config_Fisma::getInstance();
