@@ -364,7 +364,7 @@ class AccountController extends SecurityController
                 $this->_notification
                      ->add(Notification::ACCOUNT_MODIFIED,
                         $this->_me->account, $id);
-                $this->_user->log(User::ACCOUNT_MODIFICATION,
+                $this->_user->log('ACCOUNT_MODIFICATION',
                                    $this->_me->id,
                                    "User Account {$accountData['account']} Successfully Modified");
             }
@@ -455,7 +455,7 @@ class AccountController extends SecurityController
                 $this->_me->account, $id);
             $msg = "User " . $userName . " deleted successfully.";
             $model = self::M_NOTICE;
-            $this->_user->log(USER::ACCOUNT_DELETED,
+            $this->_user->log('ACCOUNT_DELETED',
                                $this->_me->id,
                                'User Account ' . $userName . ' Successfully Deleted');
         } else {
@@ -568,7 +568,7 @@ class AccountController extends SecurityController
                 
             // Log the new account creation and display a success message to the
             // user.
-            $this->_user->log(User::ACCOUNT_CREATED, $this->_me->id,
+            $this->_user->log('ACCOUNT_CREATED', $this->_me->id,
                              'User Account '.$accountData['account'].' Successfully Created');
             $this->message("User ({$accountData['account']}) added, and a validation email has been sent to this user.",
                            self::M_NOTICE);

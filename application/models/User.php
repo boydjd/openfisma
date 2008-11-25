@@ -49,15 +49,7 @@ class User extends FismaModel
                                                 'field' => 'role_id'));
     const SYS = 'SYSTEM';
     const ROLE = 'ROLE';
-    const ACCOUNT_CREATED = 'ACCOUNT_CREATED';
-    const ACCOUNT_MODIFICATION = 'ACCOUNT_MODIFICATION';
-    const ACCOUNT_LOCKOUT = 'ACCOUNT_LOCKOUT';
-    const ACCOUNT_DELETED = 'ACCOUNT_DELETED';
-    const DISABLING = 'DISABLING';
-    const LOGINFAILURE = 'LOGINFAILURE';
-    const LOGIN = 'LOGIN';
-    const LOGOUT = 'LOGOUT';
-    const ROB_ACCEPT = 'ROB_ACCEPT';
+
     public function init ()
     {
         $writer = new Zend_Log_Writer_Db($this->_db, $this->_logName,
@@ -128,15 +120,9 @@ class User extends FismaModel
      * function. It is completely unmaintainable.
      */
     public function log ($type, $uid, $msg = null) {
-        assert(in_array($type, array(self::ACCOUNT_CREATED,
-                                     self::ACCOUNT_MODIFICATION,
-                                     self::ACCOUNT_LOCKOUT,
-                                     self::ACCOUNT_DELETED,
-                                     self::DISABLING,
-                                     self::LOGINFAILURE,
-                                     self::LOGIN,
-                                     self::LOGOUT,
-                                     self::ROB_ACCEPT)));
+        $log = new Log();
+        $types = $log->getEnumColumns('event');
+        assert(in_array($type, $types));
         assert(is_string($msg));
         assert($this->_logger);
         if ( !empty($uid) ) {
@@ -148,7 +134,7 @@ class User extends FismaModel
             $notification = new Notification();
             $nowSqlString = $now->get('Y-m-d H:i:s');
             
-             if ($type == self::LOGIN) {
+             if ($type == 'LOGIN') {
                 $row->failureCount = 0;
                 $row->lastLoginTs = $nowSqlString;
                 $row->lastLoginIp = $_SERVER["REMOTE_ADDR"];
@@ -157,7 +143,7 @@ class User extends FismaModel
                 $row->save();
                 $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
                    $account, "UserId: {$uid}");
-            } else if ($type == self::LOGINFAILURE) {
+            } else if ($type == 'LOGINFAILURE') {
                 $type = 'LOGIN';
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
                                    null, "User: {$account}");
@@ -173,7 +159,7 @@ class User extends FismaModel
                     $this->_logger->info("User Account $account Successfully Locked");
                 }
                 $row->save();
-            } else if ($type == self::ACCOUNT_LOCKOUT) {
+            } else if ($type == 'ACCOUNT_LOCKOUT') {
                 $row->terminationTs = $nowSqlString;
                 $row->isActive = 0;
                 $row->failureCount = 0;
