@@ -33,12 +33,26 @@ class Config_Fisma
      *
      * @todo Remove these.. no point in having constants which are the same name as the value that they represent.
      */ 
-    const SYSCONFIG = 'sysconf';
-    const LDAPCONFIG = 'ldapconf';
-    const CONFIGFILE_NAME = 'install.conf';
-    const ERROR_LOG = 'error.log';
-    const FORMCONFIGFILE  = 'form.conf';
+    const PATH_CONFIG = 'application/config/';
 
+    const SYS_CONFIG = 'app.ini';
+    const INSTALL_CONFIG = 'install.conf';
+    const ERROR_LOG = 'error.log';
+    const FORM_CONFIGFILE  = 'form.conf';
+
+    const TEST_MODE = 'test';
+
+    /** 
+     * The relative paths that makes the layout
+     *
+     * @var _path
+     */
+    private $_path = array(
+            'library'=>'library',
+            'data'=>'data',
+            'application'=>'application',
+            'config'=>'application/config'
+        );
     /**
      * Singleton instance
      *
@@ -60,6 +74,11 @@ class Config_Fisma
      */
     protected static $_log = null;
 
+    /** 
+     * The root path of the installed application
+     */
+    protected static $_root = null;
+
     /**
      * Constructor
      *
@@ -70,33 +89,70 @@ class Config_Fisma
      */
     private function __construct()
     {
-        //assuming not installed first unless it is
-        Zend_Registry::set('installed', false);
+        if (isset($root) && is_dir($root)) {
+            self::$_root = $root;
+        } else {
+            self::$_root = realpath(dirname(__FILE__) . '/../../../');
+        }
+        $this->initSetting();
+    }
 
-        if (is_file(APPLICATION_ROOT . '/application/config/' . self::CONFIGFILE_NAME)) {
-            $config = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/' . self::CONFIGFILE_NAME);
-            if (!empty($config->database)) {
-                Zend_Registry::set('datasource', $config->database);
-                Zend_Registry::set('installed', true);
-            }
-            
-            self::addSysConfig($config->general);
-            //Customized helpers
-            Zend_Controller_Action_HelperBroker::addPath(APPLICATION_ROOT . '/library/local/Action/Helper', 'Action_Helper');
-            // Debug setting
-            if (!empty($config->debug)) {
-                if ($config->debug->level > 0) {
-                    self::$_debug = true;
-                    error_reporting(E_ALL);
-                    ini_set('display_errors', 1);
-                    foreach ($config->debug->xdebug as $k => $v) {
-                        if ($k == 'start_trace') {
-                            if (1 == $v && function_exists('xdebug_start_trace')) {
-                                xdebug_start_trace();
-                            }
-                        } else {
-                            @ini_set('xdebug.' . $k, $v);
+    /**
+     * Application setting initialization
+     *
+     * Read settings from the ini file and make them effective
+     *
+     * @return void
+     */
+    public function initSetting()
+    {
+        //initialize path
+        // INCLUDE PATH - Several libraries and files need to be available to our application when
+        // searching for their location. We need to include these directories in the include path
+        // so the application automatically searches these directories looking for files. This array
+        // puts together a list of directories to add to the include path
+        $incPaths['lib'] = $this->getPath('library');
+        $incPaths[] = "{$incPaths['lib']}/local";
+        $incPaths[] = "{$incPaths['lib']}/Pear";
+        $incPaths[] = $this->getPath('application') . '/models';
+        set_include_path(implode(PATH_SEPARATOR, $incPaths) . PATH_SEPARATOR . get_include_path());
+
+        require_once 'Zend/Loader.php';
+        Zend_Loader::registerAutoload();
+
+        $sysfile = self::$_root."/" . self::PATH_CONFIG . self::SYS_CONFIG;
+        try {
+            // CONFIGURATION - Setup the configuration object
+            // The Zend_Config_Ini component will parse the ini file, and resolve all of
+            // the values for the given section.  Here we will be using the section name
+            // that corresponds to the APP's Environment
+            $config = new Zend_Config_Ini($sysfile);
+            // REGISTRY - setup the application registry
+            // An application registry allows the application to store application
+            // necessary objects into a safe and consistent (non global) place for future
+            // retrieval.  This allows the application to ensure that regardless of what
+            // happends in the global scope, the registry will contain the objects it
+            // needs.
+            $registry = Zend_Registry::getInstance();
+            $registry->configuration = $config->development;
+            // Start Session Handling using Zend_Session 
+            Zend_Session::start($config->development);
+        } catch(Zend_Config_Exception $e) {
+            //using default configuration
+            $config = new Zend_Config(array());
+        }
+        if (!empty($config->debug)) {
+            if ($config->debug->level > 0) {
+                self::$_debug = true;
+                error_reporting(E_ALL);
+                ini_set('display_errors', 1);
+                foreach ($config->debug->xdebug as $k => $v) {
+                    if ($k == 'start_trace') {
+                        if (1 == $v && function_exists('xdebug_start_trace')) {
+                            xdebug_start_trace();
                         }
+                    } else {
+                        @ini_set('xdebug.' . $k, $v);
                     }
                 }
             }
@@ -133,6 +189,53 @@ class Config_Fisma
      */
     static function debug() {
         return self::$_debug;
+    }
+
+    /**
+     * start the bootstrap
+     *
+     * @param string $mode to bootstrap different configurations
+     */
+    public function bootstrap($mode=null)
+    {
+        $frontController = Zend_Controller_Front::getInstance();
+
+        if ($mode == self::TEST_MODE) {
+            $initPlugin = new Plugin_Initialize_Unittest(self::$_root);
+        } else {
+            if (self::isInstall()) {
+                $initPlugin = new Plugin_Initialize_Webapp(self::$_root);
+            } else {
+                $initPlugin = new Plugin_Initialize_Install(self::$_root);
+            }
+        }
+        $frontController->registerPlugin($initPlugin);
+        // APPLICATION ENVIRONMENT - Set the current environment
+        // Set a variable in the front controller indicating the current environment --
+        // commonly one of development, staging, testing, production, but wholly
+        // dependent on your organization and site's needs.
+        $frontController->setParam('env', APPLICATION_ENVIRONMENT);
+            
+    }
+
+
+    /**
+     * Returns the encrypted password
+     * @param $password string password
+     * @return string encrypted password
+     */
+    public function encrypt($password) {
+        $encryptType = self::readSysConfig('encrypt');
+        if ('sha1' == $encryptType) {
+            return sha1($password);
+        }
+        if ('sha256' == $encryptType) {
+            $key = self::readSysConfig('encryptKey');
+            $cipher_alg = MCRYPT_TWOFISH;
+            $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
+            $encryptedPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            return $encryptedPassword;
+        }
     }
 
     /**
@@ -202,8 +305,8 @@ class Config_Fisma
     function readSysConfig($key, $isFresh = false)
     {
         assert(!empty($key) && is_bool($isFresh));
-        if (!Zend_Registry::isRegistered(self::SYSCONFIG) || 
-                !Zend_Registry::get(self::SYSCONFIG)->isFresh) {
+        if (!Zend_Registry::isRegistered('FISMA_REG') || 
+                !Zend_Registry::get('FISMA_REG')->isFresh) {
             $m = new Config();
             $pairs = $m->fetchAll();
             $configs = array();
@@ -217,12 +320,12 @@ class Config_Fisma
             $configs['isFresh'] = true;
             self::addSysConfig(new Zend_Config($configs));
         }
-        if ( !isset(Zend_Registry::get(self::SYSCONFIG)->$key) ) {
+        if ( !isset(Zend_Registry::get('FISMA_REG')->$key) ) {
             throw new Exception_General(
             "$key does not exist in system configuration");
         }
 
-        return Zend_Registry::get(self::SYSCONFIG)->$key;
+        return Zend_Registry::get('FISMA_REG')->$key;
     }
 
     /**
@@ -232,16 +335,18 @@ class Config_Fisma
      */
     function readLdapConfig()
     {
-        if ( ! Zend_Registry::isRegistered(LDAPCONFIG) ) {
+        $ldap = $this->readSysConfig('ldap');
+        if (empty($ldap)) {
             $db = Zend_Registry::get('db');
             $query = $db->select()->from('ldap_config', '*');
             $result = $db->fetchAll($query);
             foreach ($result as $row) {
                 $multiOptions[$row['group']][$row['key']] = $row['value'];
             }
-            Zend_Registry::set(self::LDAPCONFIG, $multiOptions);
+            $ldap = new Zend_Config(array('ldap'=>$multiOptions));
+            $this->addSysConfig($ldap);
         }
-        return Zend_Registry::get(self::LDAPCONFIG);
+        return $ldap->toArray();
     }
 
 
@@ -253,11 +358,22 @@ class Config_Fisma
     public function isInstall()
     {
         $reg = Zend_Registry::getInstance();
-        $ret = false;           
-        if ( $reg->isRegistered('installed') ) {
-            $ret = $reg->get('installed');
+        if ( $reg->isRegistered('datasource') ) {
+            return true;
+        } 
+
+        try {
+            $config = new Zend_Config_Ini(self::$_root."/" . 
+                self::PATH_CONFIG . self::INSTALL_CONFIG);
+            if (!empty($config->database)) {
+                Zend_Registry::set('datasource', $config->database); 
+                self::addSysConfig($config->general);
+                return true;
+            }
+        } catch (Zend_Config $e) {
+            //logging
         }
-        return $ret;
+        return false;
     }
 
     /*
@@ -282,13 +398,30 @@ class Config_Fisma
      */
     public function addSysConfig($config)
     {
-        if (Zend_Registry::isRegistered(self::SYSCONFIG)) {
-            $sysconfig = Zend_Registry::get(self::SYSCONFIG);
+        if (Zend_Registry::isRegistered('FISMA_REG')) {
+            $sysconfig = Zend_Registry::get('FISMA_REG');
             $sysconfig = new Zend_Config($sysconfig->toArray(), $allowModifications = true);
             $sysconfig->merge($config);
-            Zend_Registry::set(self::SYSCONFIG, $sysconfig);
+            Zend_Registry::set('FISMA_REG', $sysconfig);
         } else {
-            Zend_Registry::set(self::SYSCONFIG, $config);
+            Zend_Registry::set('FISMA_REG', $config);
         } 
+    }
+
+    /**
+     * Get real paths of the installed application
+     *
+     * @param string $part the component of the path
+     * @return string the path
+     */ 
+    public function getPath($part='root')
+    {
+        $ret = self::$_root;
+        if (!isset($this->_path[$part])) {
+            assert(false);
+        } else {
+            $ret .= "/{$this->_path[$part]}";
+        }
+        return $ret;
     }
 }
