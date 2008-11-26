@@ -182,7 +182,6 @@ class UserController extends MessageController
             if (empty( $_me->roleArray )) {
                 $_me->roleArray[] = $_me->account . '_r';
             }
-            $_me->systems = $this->_user->getMySystems($_me->id);
 
             // Set up the session timeout
             $store = $auth->getStorage();

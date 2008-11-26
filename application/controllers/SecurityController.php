@@ -76,6 +76,8 @@ class SecurityController extends MessageController
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(Config_Fisma::readSysConfig('expiring_seconds'));
             $this->initializeAcl($this->_me->id);
+            $user = new User();
+            $this->_me->systems = $user->getMySystems($this->_me->id);
             if (isset($this->_sanity['data'])) {
                 $this->_validator = new Zend_Filter_Input(
                     $this->_sanity['filter'], $this->_sanity['validator'],
