@@ -98,7 +98,7 @@ class Config_Fisma
         // These constants are accessible throughout the application, even in ini 
         // files. 
         define('APPLICATION_ROOT', self::$_root);
-        define('APPLICATION_PATH', $this->_path['application']);
+        define('APPLICATION_PATH', self::$_root . '/' . $this->_path['application']);
         $this->initSetting();
     }
 

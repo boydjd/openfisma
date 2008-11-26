@@ -150,7 +150,7 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
         $userId = $userTable->insert(
             array(
                 'account' => self::USER_NAME,
-                'password' => $userTable->encrypt(self::PASSWORD),
+                'password' => $userTable->digest(self::PASSWORD),
                 'is_active' => 1,
                 'password_ts' => new Zend_Db_Expr('now()'),
                 'last_rob' => new Zend_Db_Expr('now()')
