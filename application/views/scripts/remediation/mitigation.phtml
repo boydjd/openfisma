@@ -9,7 +9,7 @@
                 <tr>
                     <td align="left">
                         <b target="type" <?php
-        if(('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status'])&& Config_Fisma::isAllow('remediation','update_finding_course_of_action')){
+        if(('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status'])&& $this->isAllow('remediation','update_finding_course_of_action')){
             echo 'class="editable"';
         }?> >Type:&nbsp;</b>
                     <span name="poam[type]" id="type" type="select" 
@@ -22,7 +22,7 @@
                     <td>
                         <b target="action_planned" <?php 
            if(in_array($this->poam['status'],array('NEW','OPEN'))
-                && Config_Fisma::isAllow('remediation','update_finding_course_of_action')){
+                && $this->isAllow('remediation','update_finding_course_of_action')){
                echo 'class="editable"';
            }?> >Description:&nbsp;</b>
                         <span name="poam[action_planned]" id="action_planned" 
@@ -39,7 +39,7 @@
                 <th align="left">
                 <span target="action_resources" <?php
         if(in_array($this->poam['status'],array('NEW','OPEN'))
-           && Config_Fisma::isAllow('remediation','update_finding_resources')){
+           && $this->isAllow('remediation','update_finding_resources')){
             echo 'class="editable"';
         } ?> >Resources Required for Course of Action</span></th>
                 <tr>
@@ -73,7 +73,7 @@
                     <td>
                         <b target="action_est_date"
                         <?php 
-                            if(Config_Fisma::isAllow('remediation','update_finding_course_of_action')
+                            if($this->isAllow('remediation','update_finding_course_of_action')
                                 && in_array($this->poam['status'], array('NEW', 'OPEN'))){
                                 echo 'class="editable"';
                             }

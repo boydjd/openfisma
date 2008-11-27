@@ -34,9 +34,9 @@ function delok()
     if (0 == $complete) {
 ?>
 
-<?php if ('OPEN' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_submit')) { ?>
+<?php if ('OPEN' == $this->poam['status'] && $this->isAllow('remediation', 'mitigation_strategy_submit')) { ?>
     <a class="button" href="<?php echo $postAction;?>/is_msa/1">Submit Mitigation Strategy</a><br><br>
-<?php } if ('EN' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_revise')) { ?>
+<?php } if ('EN' == $this->poam['status'] && $this->isAllow('remediation', 'mitigation_strategy_revise')) { ?>
     <a class="button" href="<?php echo $postAction;?>/is_msa/0" onclick="return delok();">Revise Mitigation Strategy</a><br><br>
 <?php }  } else { ?>
     <p><i>The mitigation strategy, security control, and risk analysis sections must
@@ -61,7 +61,7 @@ function delok()
         }
         echo "<tr><td><b>".$row['name']."&nbsp;</b>";
         if ('NONE' == $value && $editable) {
-            if(Config_Fisma::isAllow('remediation', $row['function'])){
+            if($this->isAllow('remediation', $row['function'])){
                 echo '<input type="hidden" name="eval_id" value="'.$row['id'].'"/>';
                 echo '<input type="hidden" name="topic" value="" />';
                 echo '<input type="hidden" name="decision" value="APPROVED" />';

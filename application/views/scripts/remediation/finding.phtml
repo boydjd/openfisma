@@ -34,7 +34,7 @@
                     <td>
                         <b target="action_owner" <?php
         if('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status']
-            && Config_Fisma::isAllow('remediation','update_finding_assignment')){
+            && $this->isAllow('remediation','update_finding_assignment')){
             echo ' class="editable"'; 
         }
         ?> >Responsible System:&nbsp;</b>
@@ -88,7 +88,7 @@
 </table>
 <table cellpadding="5" width="100%" class="tipframe">
     <th align='left' ><span target='finding_description' <?php 
-                if (Config_Fisma::isAllow('remediation','update_finding_description')) {
+                if ($this->isAllow('remediation','update_finding_description')) {
                     echo 'class="editable"';
                 }
             ?> colspan='2'>Finding Description</span></th>
@@ -125,7 +125,7 @@
 <table cellpadding="5" width="100%" class="tipframe">
     <th align='left' ><span target='recommendation' <?php 
                 if ('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status']
-                    && Config_Fisma::isAllow('remediation','update_finding_recommendation')) {
+                    && $this->isAllow('remediation','update_finding_recommendation')) {
                     echo 'class="editable"';
                 }
             ?> colspan='2'>Recommendation</span></th>

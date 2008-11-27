@@ -289,34 +289,6 @@ class Config_Fisma
         }
         return $this->_log;
     }
-    
-    /** 
-        Exam the Acl of the existing logon user to decide permission or denial.
-
-        @param $resource resources
-        @param $action actions
-        @return bool permit or not
-    */
-    function isAllow($resource, $action)
-    {
-        $auth = Zend_Auth::getInstance();
-        $me = $auth->getIdentity();
-        if ( $me->account == "root" ) {
-            return true;
-        }
-        $roleArray = &$me->roleArray;
-        $acl = Zend_Registry::get('acl');
-        try{
-            foreach ($roleArray as $role) {
-                if ( true == $acl->isAllowed($role, $resource, $action) ) {
-                    return true;
-                }
-            }
-        } catch(Zend_Acl_Exception $e){
-            /// @todo acl log information
-        }
-        return false;
-    }
 
     /** 
         Read configurations of any sections.
