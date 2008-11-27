@@ -52,7 +52,7 @@
         }
         echo  "<tr><td><b>$name:&nbsp;</b>";
         if($value=='NONE' && $editable){
-            if($this->isAllow('remediation',$v['function'])){
+            if(Config_Fisma::isAllow('remediation',$v['function'])){
                 echo '<input type="hidden" name="evaluation" value="'.$v['id'].'"/>';
                 echo '<input type="hidden" name="precedence" value="'.$v['precedence_id'].'"/>';
                 echo '<input type="hidden" name="topic" value="" />';

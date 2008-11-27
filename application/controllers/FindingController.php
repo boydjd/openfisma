@@ -83,11 +83,14 @@ class FindingController extends PoamBaseController
         $id = $req->getParam('id', 0);
         assert($id);
         $this->view->assign('id', $id);
-        $sys = new System();
-        $poam = new Poam();
-        $detail = $poam->find($id)->current();
-        $this->view->finding = $poam->getDetail($id);
-        $this->view->finding['system_name'] = $this->_systemList[$this->view->finding['system_id']];
+        if (Config_Fisma::isAllow('finding', 'read')) {
+            $sys = new System();
+            $poam = new Poam();
+            $detail = $poam->find($id)->current();
+            $this->view->finding = $poam->getDetail($id);
+            $this->view->finding['system_name'] = 
+                    $this->_systemList[$this->view->finding['system_id']];
+        }
     }
     /**
      Edit finding infomation

@@ -45,11 +45,8 @@
             <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>
             <td align='center' class='tdc' nowrap>
             <?php 
-                if (isset($this->dueTime[$row['id']])) {
-                    echo $this->isOnTime($this->dueTime[$row['id']]);
-                } else {
-                    echo 'N/A';
-                }
+                $this->poam->isOnTime($row['id']) ? $onTime = 'On Time' : $onTime = 'Overdue';
+                echo $onTime;
             ?>
             </td>
             <td align='left'   class='tdc'><?php echo $finding_data;?></td>

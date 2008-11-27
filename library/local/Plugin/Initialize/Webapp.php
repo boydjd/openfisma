@@ -118,11 +118,7 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         // view instance from the layout object, and specify the doctype we wish to
         // use -- in this case, HTML4 Strict.
         $view = Zend_Layout::getMvcInstance()->getView();
-        $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
-        $view->addHelperPath("{$this->_root}/{$this->_path['VIEW']}/helpers", 'View_Helper');
         $view->doctype('HTML4_STRICT');
-        $viewRenderer->setView($view);
-
     }
 
     /**
