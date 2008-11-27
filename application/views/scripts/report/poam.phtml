@@ -127,10 +127,13 @@
         <td class="tdc" ><?php echo $row['type'];?></td>
         <td align='center' class='tdc'><?php echo $row['status'];?></td>
         <td align='center' class='tdc'>
-        <?php 
-            $this->poam->isOnTime($row['id']) ? $onTime = 'On Time' : $onTime = 'Overdue';
-            echo $onTime;
-        ?>
+            <?php 
+                if (isset($this->dueTime[$row['id']])) {
+                    echo $this->isOnTime($this->dueTime[$row['id']]);
+                } else {
+                    echo 'N/A';
+                }
+            ?>
         </td>
         <td class="tdc" align="center">
         <?php $id = &$row['source_id'];

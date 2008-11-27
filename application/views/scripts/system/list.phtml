@@ -12,13 +12,13 @@
     <th>Integrity</th>
     <th>Availability</th>
     <th>Type</th>
-    <?php if(Config_Fisma::isAllow('admin_systems','update')){
+    <?php if($this->requirePrivilege('admin_systems','update')){
               echo'<th>Edit</th>';
           } 
-          if(Config_Fisma::isAllow('admin_systems','read')){
+          if($this->requirePrivilege('admin_systems','read')){
               echo'<th>View</th>';
           }
-          if(Config_Fisma::isAllow('admin_systems','delete')){
+          if($this->requirePrivilege('admin_systems','delete')){
               echo'<th>Del</th>';
           }
     ?>
@@ -32,17 +32,17 @@
     <td class="tdc">&nbsp;<?php echo $system['integrity'];?></td>
     <td class="tdc">&nbsp;<?php echo $system['availability'];?></td>
     <td class="tdc">&nbsp;<?php echo $system['type'];?></td>
-    <?php if(Config_Fisma::isAllow('admin_systems','update')){ ?>
+    <?php if($this->requirePrivilege('admin_systems','update')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/system/sub/view/v/edit/id/<?php echo $system['id'];?>" title="edit the Systems">
         <img src="/images/edit.png" border="0"></a>
     </td>
-    <?php } if(Config_Fisma::isAllow('admin_systems','read')){ ?>
+    <?php } if($this->requirePrivilege('admin_systems','read')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/system/sub/view/id/<?php echo $system['id'];?>" title="display the Systems">
         <img src="/images/view.gif" border="0"></a>
     </td>
-    <?php } if(Config_Fisma::isAllow('admin_systems','delete')){ ?>
+    <?php } if($this->requirePrivilege('admin_systems','delete')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('System');">
         <img src="/images/del.png" border="0"></a>

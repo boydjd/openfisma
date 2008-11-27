@@ -1,20 +1,21 @@
 <?php
 $output_cols = array(
-"System",
-"ID#",
-"Description",
-"Type",
-"Status",
-"Source",
-"Asset",
-"Location",
-"Risk Level",
-"Recommendation",
-"Corrective Action",
-"ECD",
-"Control Y/N",
-"Threats Y/N",
-"Countermeasures Y/N"
+'System',
+'ID#',
+'Description',
+'Type',
+'Status',
+'On Time?',
+'Source',
+'Asset',
+'Location',
+'Risk Level',
+'Recommendation',
+'Corrective Action',
+'ECD',
+'Control Y/N',
+'Threats Y/N',
+'Countermeasures Y/N'
 );
 $count_cols = count($output_cols);
 
@@ -57,12 +58,18 @@ $worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
 foreach( $this->poam_list as $p ) {
+    if (isset($this->dueTime[$p['id']])) {
+        $p['on_time'] = $this->isOnTime($this->dueTime[$p['id']]);
+    } else {
+        $p['on_time'] = 'N/A';
+    }
     $data = array(
         $this->system_list[$p['system_id']],
         $p['id'],
         $p['finding_data'],
         $p['type'],
         $p['status'],
+        $p['on_time'],
         $p['source_id'] != 0 ? $this->source_list[$p['source_id']] : 'n/a',
         $p['asset_id'],
         !empty($p['network_id'])?$this->network_list[$p['network_id']]:'',
