@@ -134,4 +134,39 @@ class System extends FismaModel
         $array = $this->getEnumColumns('security_categorization');
         $data['security_categorization'] = $array[$index];
     }
+
+    /**
+     * Calculate min level
+     *
+     * @param string $levelA
+     * @param string $levelB
+     * @param return string min of $levelA and $levelB
+     */
+    public function calcMin($levelA, $levelB)
+    {
+        $cloumns = $this->getEnumColumns('security_categorization');
+        assert(in_array($levelA, $cloumns));
+        assert(in_array($levelB, $cloumns));
+        $senseMap = array_flip($cloumns);
+        $ret = min($senseMap[$levelA], $senseMap[$levelB]);
+        return $cloumns[$ret];
+    }
+    
+    /**
+     * Calcuate overall threat level
+     *
+     * @param string $threat threat level
+     * @param string $countermeasure countermeasure level
+     * @return string overall threat
+     */
+    public function calcThreat($threat, $countermeasure)
+    {
+        $cloumns = $this->getEnumColumns('security_categorization');
+        assert(in_array($threat, $cloumns));
+        assert(in_array($countermeasure, $cloumns));
+        $cloumnsMap = array_flip($cloumns);
+        $max = max(count($cloumnsMap) - $cloumnsMap[$threat], $cloumnsMap[$countermeasure]);
+        $ret = count($cloumns) - $max;
+        return $cloumns[$ret];
+    }
 }

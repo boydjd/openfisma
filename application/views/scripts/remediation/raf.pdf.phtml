@@ -1,6 +1,5 @@
 <?php
     include_once ( 'pdf/class.ezpdf.php');
-    require_once('local/rafutil.php');
 
     $headerOptions = array('showHeadings'=>0,
                            'width'=>500);
@@ -14,16 +13,6 @@
                           'width'=>500
                           );
 
-    $cellidx_lookup['HIGH']['LOW']          = 0;
-    $cellidx_lookup['HIGH']['MODERATE']     = 1;
-    $cellidx_lookup['HIGH']['HIGH']         = 2;
-    $cellidx_lookup['MODERATE']['LOW']      = 3;
-    $cellidx_lookup['MODERATE']['MODERATE'] = 4;
-    $cellidx_lookup['MODERATE']['HIGH']     = 5;
-    $cellidx_lookup['LOW']['LOW']           = 6;
-    $cellidx_lookup['LOW']['MODERATE']      = 7;
-    $cellidx_lookup['LOW']['HIGH']          = 8;
-
     $p = &$this->poam ; //alias
     $sys = new System();
     $rows = $sys->find($p['system_id']);
@@ -33,13 +22,19 @@
     $ret = $organization->find($act_owner['organization_id']);
     $organization = $ret->current()->toArray();
 
-    $sensitivity = calSensitivity(array($act_owner['confidentiality'],
-                                        $act_owner['availability'],
-                                        $act_owner['integrity']));
+    $columns = $sys->getEnumColumns('security_categorization');
+    array_shift($columns);
+    $columnsCols = array_reverse($columns);
+    $i = 0;
+    foreach ($columnsCols as $col) {
+        foreach ($columns as $row) {
+            $cellidx_lookup[$col][$row] = $i++;
+        }
+    }
 
     $availability = &$act_owner['availability'];
-    $impact = calcImpact($sensitivity, $availability);
-    $threat_likelihood = calcThreat($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
+    $impact = $sys->calcMin($act_owner['security_categorization'], $availability);
+    $threat_likelihood = $sys->calcThreat($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
 
     $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
     $risk_index = $cellidx_lookup[$threat_likelihood][$impact];
@@ -84,18 +79,18 @@
     $data = array(array('<b>Risk Analysis</b>'));
     $pdf->ezTable($data, null, null, $headerOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
-    if ($act_owner['security_categorization'] == 'HIGH') {
+    if ($act_owner['security_categorization'] == $columns['2']) {
         $effect = 'severe or catastrophic';
-    }
-    if ($act_owner['security_categorization'] == 'MODERATE') {
+    } elseif ($act_owner['security_categorization'] == $columns['1']) {
         $effect = 'serious';
-    }
-    if ($act_owner['security_categorization'] == 'LOW') {
+    } elseif ($act_owner['security_categorization'] == $columns['0']) {
         $effect = 'limited';
+    } else {
+        $effect = '';
     }
     $data = array(array("", "<b><i>Security Categorization</i></b>"),
                   array("<b>Security Categorization:</b>", $act_owner['security_categorization']),
-                  array("<b>Security Categorization Description:</b>", "The loss of confidentiality, integrity, or availability could be expected to have a ".$effect." adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data."));
+                  array("<b>Security Categorization Description:</b>", !empty($effect)?"The loss of confidentiality, integrity, or availability could be expected to have a ".$effect." adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data.":"This system's Confidentiality, Integrity, and Availability are not defined; therefore, the system security categorization is also undefined."));
     $pdf->ezTable($data, null, null, $labelOptions);
 
     $data = array(array("", "<b><i>Overall likelihood Rating</i></b>"));
@@ -113,22 +108,29 @@
                   array("<b>                                                                       Countermeasure</b>")
 );
     $pdf->ezTable($data, null, null, $tableOptions);
-    $cell[0] = $threat_index == 0?'<b>high</b>':'high';
-    $cell[1] = $threat_index == 1?'<b>moderate</b>':'moderate';
-    $cell[2] = $threat_index == 2?'<b>low</b>':'low';
-    $cell[3] = $threat_index == 3?'<b>moderate</b>':'moderate';
-    $cell[4] = $threat_index == 4?'<b>moderate</b>':'moderate';
-    $cell[5] = $threat_index == 5?'<b>low</b>':'low';
-    $cell[6] = $threat_index == 6?'<b>low</b>':'low';
-    $cell[7] = $threat_index == 7?'<b>low</b>':'low';
-    $cell[8] = $threat_index == 8?'<b>low</b>':'low';
-    $data = array(array("<b>THREAT SOURCE</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
-                  array("<b>HIGH</b>", $cell[0], $cell[1], $cell[2]),
-                  array("<b>MODERATE</b>", $cell[3], $cell[4], $cell[5]),
-                  array("<b>LOW</b>", $cell[6], $cell[7], $cell[8]));    
+    
+    $data = array();
+    $i = 0;
+    $data[0][0] = "<b>THREAT SOURCE</b>";
+    foreach ($columns as $countermeasures) {
+        $i++;
+        $data[0][$i] = "<b>$countermeasures</b>";
+    }
+    $j = 0;
+    $k = 0;
+    $i = 0;
+    foreach (array_reverse($columns) as $threat) {
+        $i++;
+        $data[$i][] = $threat;
+        foreach ($columns as $countermeasures) {
+            $value = $sys->calcThreat($threat, $countermeasures);
+            $data[$i][] = $threat_index == $k++?'<b>'.$value.'</b>':$value;
+        }
+    }
+    
     $pdf->ezTable($data, null, null, $tableOptions);
-    $overall_impact = calcImpact($p['threat_level'], $p['cmeasure_effectiveness']);
-    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_impact."</b> level of risk to agency operations. "));
+    $overall_threat = $sys->calcMin($p['threat_level'], $p['cmeasure_effectiveness']);
+    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_threat."</b> level of risk to agency operations. "));
     $pdf->ezTable($data, null, null, $labelOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
 
@@ -139,31 +141,36 @@
                   array("<b>                                                            Security Categorization of Information System</b>")
 );
     $pdf->ezTable($data, null, null, $tableOptions);
+
+    $data = array();
+    $i = 0;
+    $data[0][0] = "<b>THREAT Likelihood</b>";
+    foreach ($columns as $security) {
+        $i++;
+        $data[0][$i] = "<b>$security</b>";
+    }
+    $j = 0;
+    $k = 0;
+    $i = 0;
+    foreach (array_reverse($columns) as $threat) {
+        $i++;
+        $data[$i][] = $threat;
+        foreach ($columns as $security) {
+            $value = $sys->calcMin($threat, $security);
+            $data[$i][] = $risk_index == $k++?'<b>'.$value.'</b>':$value;
+        }
+    }
      
-    $cell[0] = $risk_index == 0?'<b>low</b>':'low';
-    $cell[1] = $risk_index == 1?'<b>moderate</b>':'moderate';
-    $cell[2] = $risk_index == 2?'<b>high</b>':'high';
-    $cell[3] = $risk_index == 3?'<b>low</b>':'low';
-    $cell[4] = $risk_index == 4?'<b>moderate</b>':'moderate';
-    $cell[5] = $risk_index == 5?'<b>moderate</b>':'moderate';
-    $cell[6] = $risk_index == 6?'<b>low</b>':'low';
-    $cell[7] = $risk_index == 7?'<b>low</b>':'low';
-    $cell[8] = $risk_index == 8?'<b>low</b>':'low';
-                                                
-    $data = array(array("<b>Threat Likelihood</b>","<b>LOW</b>","<b>MODERATE</b>","<b>HIGH</b>"),
-                  array("<b>HIGH</b>", $cell[0], $cell[1], $cell[2]),
-                  array("<b>MODERATE</b>", $cell[3], $cell[4], $cell[5]),
-                  array("<b>LOW</b>", $cell[6], $cell[7], $cell[8]));    
     $pdf->ezTable($data, null, null, $tableOptions);
-    $overall_impact = calcImpact($threat_likelihood, $impact);
-    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_impact."</b> level of risk to agency operations. "));
+    $overall_risk = $sys->calcMin($threat_likelihood, $impact);
+    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_risk."</b> level of risk to agency operations. "));
     $pdf->ezTable($data, null, null, $labelOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
 
     $data = array(array('<b>Risk Level</b>', 'Risk Description and Necessary Actions'),
-                  array('<b>High:</b>', 'If an observation or finding is evaluated as a high risk, there is a strong need for corrective measures. An existing system may continue to operate, but a corrective action plan must be put in place as soon as possible.'),
-                  array('<b>Moderate:</b>', 'If an observation is rated as medium risk, corrective actions are needed and a plan must be developed to incorporate these actions within a reasonable period of time.'),
-                  array('<b>Low:</b>', 'If an observation is described as low risk, the system’s AO must determine whether corrective actions are still required or decide to accept the risk.'));
+                  array('<b>'.$columns[2].'</b>', 'If an observation or finding is evaluated as a high risk, there is a strong need for corrective measures. An existing system may continue to operate, but a corrective action plan must be put in place as soon as possible.'),
+                  array('<b>'.$columns[1].'</b>', 'If an observation is rated as medium risk, corrective actions are needed and a plan must be developed to incorporate these actions within a reasonable period of time.'),
+                  array('<b>'.$columns[0].'</b>', 'If an observation is described as low risk, the system’s AO must determine whether corrective actions are still required or decide to accept the risk.'));
 
     $pdf->ezTable($data, null, null, $tableOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));

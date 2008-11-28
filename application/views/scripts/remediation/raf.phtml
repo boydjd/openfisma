@@ -1,16 +1,4 @@
 <?php
-    require_once( 'local/rafutil.php');
-
-    $cellidx_lookup['HIGH']['LOW']          = 0;
-    $cellidx_lookup['HIGH']['MODERATE']     = 1;
-    $cellidx_lookup['HIGH']['HIGH']         = 2;
-    $cellidx_lookup['MODERATE']['LOW']      = 3;
-    $cellidx_lookup['MODERATE']['MODERATE'] = 4;
-    $cellidx_lookup['MODERATE']['HIGH']     = 5;
-    $cellidx_lookup['LOW']['LOW']           = 6;
-    $cellidx_lookup['LOW']['MODERATE']      = 7;
-    $cellidx_lookup['LOW']['HIGH']          = 8;
-
     $sys = new System();
     $rows = $sys->find($this->poam['system_id']);
     $act_owner = $rows->current()->toArray();
@@ -18,6 +6,18 @@
     $organization = new Organization();
     $ret = $organization->find($act_owner['organization_id']);
     $organization = $ret->current()->toArray();
+
+    $columns = $sys->getEnumColumns('security_categorization');
+    if (in_array('NONE', $columns)) {
+        array_shift($columns);
+    }
+    $columnsCols = array_reverse($columns);
+    $i = 0;
+    foreach ($columnsCols as $col) {
+        foreach ($columns as $row) {
+            $cellidx_lookup[$col][$row] = $i++;
+        }
+    }
 ?>
 <html>
 <head>
@@ -139,11 +139,11 @@ table.rafImpact td {
         <td width="40%">Security Categorization:</td><td width="60%"><?php echo $act_owner['security_categorization'];?></td>
     </tr>
     <?php
-        if ($act_owner['security_categorization'] == 'HIGH') {
+        if ($act_owner['security_categorization'] == $columns[2]) {
             $effect = 'severe or catastrophic';
-        } elseif ($act_owner['security_categorization'] == 'MODERATE') {
+        } elseif ($act_owner['security_categorization'] == $columns[1]) {
             $effect = 'serious';
-        } elseif ($act_owner['security_categorization'] == 'LOW') {
+        } elseif ($act_owner['security_categorization'] == $columns[0]) {
             $effect = 'limited';
         } else {
             $effect = '';
@@ -180,20 +180,19 @@ table.rafImpact td {
         <td>Countermeasures Effectiveness:</td><td><?php echo $this->poam['cmeasure_effectiveness'];?></td>
     </tr>
     <?php
-        $sensitivity = calSensitivity(array($act_owner['confidentiality'],
-                                            $act_owner['availability'],
-                                            $act_owner['integrity']));
-
         $availability = &$act_owner['availability'];
 
-        $impact = calcImpact($sensitivity, $availability);
+        $impact = $sys->calcMin($act_owner['security_categorization'], $availability);
 
-        $threat_likelihood = calcThreat($this->poam['threat_level'], 
-                                         $this->poam['cmeasure_effectiveness']);
+        $threat_likelihood = $sys->calcThreat($this->poam['threat_level'],
+                                              $this->poam['cmeasure_effectiveness']);
+
         echo $this->partial('remediation/raf_tl.phtml', array('act_owner'=>$act_owner,
                                                             'poam'=>&$this->poam,
                                                             'table_lookup'=>&$cellidx_lookup,
-                                                            'threat_likelihood'=>&$threat_likelihood));
+                                                            'threat_likelihood'=>&$threat_likelihood,
+                                                            'columns'=>$columns,
+                                                            'sys'=>$sys));
     ?>
     <tr>
        <td colspan="2" align="center"><b><i>Overall Risk Level</i></b></td>
@@ -203,7 +202,9 @@ table.rafImpact td {
         echo $this->partial('remediation/raf_risk.phtml', array('act_owner'=>$act_owner,
                                                               'impact'=>&$impact,
                                                               'table_lookup'=>&$cellidx_lookup,
-                                                              'threat_likelihood'=>&$threat_likelihood));
+                                                              'threat_likelihood'=>&$threat_likelihood,
+                                                              'columns'=>$columns,
+                                                              'sys'=>$sys));
     ?>
     <tr><td colspan="2">Agency Recommendations based on Risk Levels:</td></tr>
     <tr><td colspan="2">
@@ -213,15 +214,15 @@ table.rafImpact td {
                 <td>Risk Description and Necessary Actions</td>
             </tr>
             <tr>
-                <td>High</td>
+                <td><?php echo $columns[2];?></td>
                 <td>If an observation or finding is evaluated as a high risk, there is a strong need for corrective measures. An existing system may continue to operate, but a corrective action plan must be put in place as soon as possible.</td>
             </tr>
             <tr>
-                <td>Moderate</td>
+                <td><?php echo $columns[1];?></td>
                 <td>If an observation is rated as medium risk, corrective actions are needed and a plan must be developed to incorporate these actions within a reasonable period of time.</td>
             </tr>
             <tr>
-                <td>Low</td>
+                <td><?php echo $columns[0];?></td>
                 <td>If an observation is described as low risk, the system’s AO must determine whether corrective actions are still required or decide to accept the risk.</td>
             </tr>
         </table>
