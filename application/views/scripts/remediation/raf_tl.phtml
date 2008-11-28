@@ -3,7 +3,6 @@
                                        [$this->poam['cmeasure_effectiveness']]; 
     $cell_colors_tl = array_fill(0, 9, 'FFFFFF');
     $cell_colors_tl[$threat_index] = 'CCCCCC';
-    $overall_threat = $this->sys->calcMin($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
 ?>
 <tr>
     <td colspan='2'>
@@ -39,6 +38,6 @@
 </tr>
 <tr>
     <td colspan="2">
-        Based on the threat level and countermeasures currently in place, the finding presents a <b><?php echo $overall_threat;?></b> level of risk to the information system.
+        Based on the threat level and countermeasures currently in place, the finding presents a <b><?php echo $this->threat_likelihood;?></b> level of risk to the information system.
     </td>
 </tr>

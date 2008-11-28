@@ -17,17 +17,17 @@
             <?php
                 echo '<tr>';
                 echo '<td width="25%"><b>Threat Likelihood</b></td>';
-                foreach ($this->columns as $countermeasures) {
-                    echo '<td width="25%"><b>'.$countermeasures.'</b></td>';
+                foreach ($this->columns as $security_categorization) {
+                    echo '<td width="25%"><b>'.$security_categorization.'</b></td>';
                 }
                 echo '</tr>';
                 $i = 0;
-                foreach (array_reverse($this->columns) as $threat) {
+                foreach (array_reverse($this->columns) as $threat_likelihood) {
                     echo '<tr>';
-                    echo '<td><b>'.$threat.'</b></td>';
-                    foreach ($this->columns as $countermeasures) {
+                    echo '<td><b>'.$threat_likelihood.'</b></td>';
+                    foreach ($this->columns as $security_categorization) {
                         echo '<td bgcolor= '.$cell_colors_rl[$i++].'>';
-                        echo $this->sys->calcMin($threat, $countermeasures);
+                        echo $this->sys->calcMin($threat_likelihood, $security_categorization);
                         echo '</td>';
                     }
                     echo '</tr>';

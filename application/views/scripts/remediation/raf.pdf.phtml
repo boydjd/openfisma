@@ -23,7 +23,9 @@
     $organization = $ret->current()->toArray();
 
     $columns = $sys->getEnumColumns('security_categorization');
-    array_shift($columns);
+    if (in_array('NONE', $columns)) {
+        array_shift($columns);
+    }
     $columnsCols = array_reverse($columns);
     $i = 0;
     foreach ($columnsCols as $col) {
@@ -129,7 +131,7 @@
     }
     
     $pdf->ezTable($data, null, null, $tableOptions);
-    $overall_threat = $sys->calcMin($p['threat_level'], $p['cmeasure_effectiveness']);
+    $overall_threat = $sys->calcThreat($p['threat_level'], $p['cmeasure_effectiveness']);
     $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_threat."</b> level of risk to agency operations. "));
     $pdf->ezTable($data, null, null, $labelOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
@@ -145,18 +147,18 @@
     $data = array();
     $i = 0;
     $data[0][0] = "<b>THREAT Likelihood</b>";
-    foreach ($columns as $security) {
+    foreach ($columns as $security_categorization) {
         $i++;
         $data[0][$i] = "<b>$security</b>";
     }
     $j = 0;
     $k = 0;
     $i = 0;
-    foreach (array_reverse($columns) as $threat) {
+    foreach (array_reverse($columns) as $threat_likelihood) {
         $i++;
-        $data[$i][] = $threat;
-        foreach ($columns as $security) {
-            $value = $sys->calcMin($threat, $security);
+        $data[$i][] = $threat_likelihood;
+        foreach ($columns as $security_categorization) {
+            $value = $sys->calcMin($threat_likelihood, $security_categorization);
             $data[$i][] = $risk_index == $k++?'<b>'.$value.'</b>':$value;
         }
     }

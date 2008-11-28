@@ -182,8 +182,6 @@ table.rafImpact td {
     <?php
         $availability = &$act_owner['availability'];
 
-        $impact = $sys->calcMin($act_owner['security_categorization'], $availability);
-
         $threat_likelihood = $sys->calcThreat($this->poam['threat_level'],
                                               $this->poam['cmeasure_effectiveness']);
 
@@ -198,6 +196,7 @@ table.rafImpact td {
        <td colspan="2" align="center"><b><i>Overall Risk Level</i></b></td>
     </tr>
     <?php
+        $impact = $sys->calcMin($act_owner['security_categorization'], $availability);
 
         echo $this->partial('remediation/raf_risk.phtml', array('act_owner'=>$act_owner,
                                                               'impact'=>&$impact,
