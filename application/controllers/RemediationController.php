@@ -805,6 +805,40 @@ class RemediationController extends PoamBaseController
         $this->_helper->requirePrivilege('report', 'generate_system_rafs');
         
         $id = $this->_req->getParam('id');
+        $poamDetail = $this->_poam->getDetail($id);
+        try {
+            if (empty($poamDetail)) {
+                throw new Exception_General(
+                    "Not able to get details for this POAM ID ($id)");
+            }
+            $system = new System();
+            $ret = $system->find($poamDetail['system_id']);
+            $actOwner = $ret->current()->toArray();
+
+            $securityCategorization = $system->calcSecurityCategory($actOwner['confidentiality'],
+                                                                    $actOwner['integrity'],
+                                                                    $actOwner['availability']);        
+
+            if ('NONE' == $securityCategorization) {
+                throw new Exception_General('The security categorization for ('.$actOwner['id'].')'.
+                    $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
+                    'unless these values are defined.');
+            }
+
+            if ('NONE' == $actOwner['availability']) {
+                throw new Exception_General('The availability for ('.$actOwner['id'].')'.
+                    $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
+                    'unless these values are defined.');
+            }
+        } catch (Exception_General $e) {
+            if ($e instanceof Exception_General) {
+                $message = $e->getMessage();
+            }
+            $this->message($message, self::M_WARNING);
+            $this->_forward('remediation', 'Panel', null, array('id' => $id, 'sub'=>'view'));
+        }
+
+
         $this->_helper->layout->disableLayout(true);
         $this->_helper->contextSwitch()->addContext('pdf', array(
             'suffix' => 'pdf',
@@ -816,12 +850,9 @@ class RemediationController extends PoamBaseController
         ))->addActionContext('raf', array(
             'pdf'
         ))->initContext();
-        $poamDetail = $this->_poam->getDetail($id);
-        if (empty($poamDetail)) {
-            throw new Exception_General(
-                "Not able to get details for this POAM ID ($id)");
-        }
+
         $this->view->assign('poam', $poamDetail);
+        $this->view->assign('securityCategorization', $securityCategorization);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('source_list', $this->_sourceList);
     }

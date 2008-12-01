@@ -869,7 +869,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (40);
+INSERT INTO `schema_version` VALUES (41);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -894,7 +894,6 @@ CREATE TABLE `systems` (
   `confidentiality` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
   `integrity` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
   `availability` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
-  `security_categorization` enum('NONE','LOW','MODERATE','HIGH') NOT NULL,
   `tier` int(10) unsigned NOT NULL default '0',
   `confidentiality_justification` text NOT NULL,
   `integrity_justification` text NOT NULL,
@@ -997,4 +996,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (41);
+INSERT INTO schema_version (schema_version) VALUES (42);

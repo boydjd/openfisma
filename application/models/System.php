@@ -74,65 +74,29 @@ class System extends FismaModel
     }
     
     /**
-     * Inserts a new system row.
-     *
-     * @param  array  $data  Column-value pairs.
-     * @return mixed         The primary key of the row inserted.
-     * @see calculateSecurity()
-     */
-    public function insert(array $data)
-    {
-        $this->calculateSecurity($data);
-        return parent::insert($data);
-    }
-    
-    /**
-     * Updates existing system rows.
-     *
-     * @param  array        $data  Column-value pairs.
-     * @param  array|string $where An SQL WHERE clause, or an array of SQL WHERE clauses.
-     * @return int          The number of rows updated.
-     * @see calculateSecurity()
-     */
-    public function update(array $data, $where)
-    {
-        $this->calculateSecurity($data);
-        return parent::update($data, $where);
-    }
-    
-    /**
      * calculate Security categorization.
      *
-     * @param  array        $data  Column-value pairs.
+     * @param string $confidentiality confidentiality
+     * @param string $integrity integrity
+     * @param string $availability availability
+     * @return string security_categorization
      */
-    private function calculateSecurity(array &$data)
+    public function calcSecurityCategory($confidentiality, $integrity, $availability)
     {
-        if (!isset($data['confidentiality'])) {
-            assert(false);
-            $data['confidentiality'] = 'NONE';
-        }
-        if (!isset($data['integrity'])) {
-            assert(false);
-            $data['integrity'] = 'NONE';
-        }
-        if (!isset($data['availability'])) {
-            assert(false);
-            $data['availability'] = 'NONE';
-        }
-        
         $array = $this->getEnumColumns('confidentiality');
-        $confidentiality = array_search($data['confidentiality'], $array);
+        assert(in_array($confidentiality, $array));
+        $confidentiality = array_search($confidentiality, $array);
         
         $array = $this->getEnumColumns('integrity');
-        $integrity = array_search($data['integrity'], $array);
+        assert(in_array($integrity, $array));
+        $integrity = array_search($integrity, $array);
         
         $array = $this->getEnumColumns('availability');
-        $availability = array_search($data['availability'], $array);
+        assert(in_array($availability, $array));
+        $availability = array_search($availability, $array);
 
         $index = max((int)$confidentiality, (int)$integrity, (int)$availability);
-                     
-        $array = $this->getEnumColumns('security_categorization');
-        $data['security_categorization'] = $array[$index];
+        return $array[$index];
     }
 
     /**

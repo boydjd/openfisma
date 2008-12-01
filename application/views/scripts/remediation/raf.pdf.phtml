@@ -22,7 +22,7 @@
     $ret = $organization->find($act_owner['organization_id']);
     $organization = $ret->current()->toArray();
 
-    $columns = $sys->getEnumColumns('security_categorization');
+    $columns = $sys->getEnumColumns('availability');
     if (in_array('NONE', $columns)) {
         array_shift($columns);
     }
@@ -34,8 +34,8 @@
         }
     }
 
-    $availability = &$act_owner['availability'];
-    $impact = $sys->calcMin($act_owner['security_categorization'], $availability);
+    $impact = $sys->calcMin($this->securityCategorization, $act_owner['availability']);
+
     $threat_likelihood = $sys->calcThreat($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
 
     $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
@@ -81,17 +81,17 @@
     $data = array(array('<b>Risk Analysis</b>'));
     $pdf->ezTable($data, null, null, $headerOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
-    if ($act_owner['security_categorization'] == $columns['2']) {
+    if ($this->securityCategorization == $columns['2']) {
         $effect = 'severe or catastrophic';
-    } elseif ($act_owner['security_categorization'] == $columns['1']) {
+    } elseif ($this->securityCategorization == $columns['1']) {
         $effect = 'serious';
-    } elseif ($act_owner['security_categorization'] == $columns['0']) {
+    } elseif ($this->securityCategorization == $columns['0']) {
         $effect = 'limited';
     } else {
         $effect = '';
     }
     $data = array(array("", "<b><i>Security Categorization</i></b>"),
-                  array("<b>Security Categorization:</b>", $act_owner['security_categorization']),
+                  array("<b>Security Categorization:</b>", $this->securityCategorization),
                   array("<b>Security Categorization Description:</b>", !empty($effect)?"The loss of confidentiality, integrity, or availability could be expected to have a ".$effect." adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data.":"This system's Confidentiality, Integrity, and Availability are not defined; therefore, the system security categorization is also undefined."));
     $pdf->ezTable($data, null, null, $labelOptions);
 
@@ -149,7 +149,7 @@
     $data[0][0] = "<b>THREAT Likelihood</b>";
     foreach ($columns as $security_categorization) {
         $i++;
-        $data[0][$i] = "<b>$security</b>";
+        $data[0][$i] = "<b>$security_categorization</b>";
     }
     $j = 0;
     $k = 0;
