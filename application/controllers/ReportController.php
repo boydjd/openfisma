@@ -374,7 +374,8 @@ class ReportController extends PoamBaseController
                 ),
                 $criteria,
                 $this->_paging['currentPage'],
-                $this->_paging['perPage']);
+                $this->_paging['perPage'],
+                false);
                 
             // Last result is the total
             $total = array_pop($list);
