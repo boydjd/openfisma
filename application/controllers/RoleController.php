@@ -57,11 +57,13 @@ class RoleController extends SecurityController
         ) ,
         'flag' => TRUE
     );
+
     public function init()
     {
         parent::init();
         $this->_role = new Role();
     }
+
     public function preDispatch()
     {
         parent::preDispatch();
@@ -69,6 +71,21 @@ class RoleController extends SecurityController
         $this->_pagingBasePath = $req->getBaseUrl() . '/panel/role/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
+
+    /**
+     * Returns the standard form for creating, reading, and updating roles.
+     *
+     * @return Zend_Form
+     */
+    public function getRoleForm()
+    {
+        $form = Form_Manager::loadForm('role');
+        return Form_Manager::prepareForm($form);
+    }
+
+    /**
+     *  render the searching boxes and keep the searching criteria
+     */
     public function searchboxAction()
     {
         $this->_helper->requirePrivilege('admin_roles', 'read');
@@ -95,6 +112,10 @@ class RoleController extends SecurityController
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
     }
+
+    /**
+     * List the roles according to search criterias.
+     */
     public function listAction()
     {
         $this->_helper->requirePrivilege('admin_roles', 'read');
@@ -112,29 +133,107 @@ class RoleController extends SecurityController
         $roleList = $this->_role->fetchAll($query)->toArray();
         $this->view->assign('role_list', $roleList);
     }
+
+    /**
+     * Display a single role record with all details.
+     */
+    public function viewAction()
+    {
+        $this->_helper->requirePrivilege('admin_roles', 'read');
+        
+        $form = $this->getRoleForm();
+        $id = $this->_request->getParam('id');
+        $v = $this->_request->getParam('v');
+
+        $res = $this->_role->find($id)->toArray();
+        $role = $res[0];
+        if ($v == 'edit') {
+            $this->view->assign('viewLink', "/panel/role/sub/view/id/$id");
+            $form->setAction("/panel/role/sub/update/id/$id");
+        } else {
+            // In view mode, disable all of the form controls
+            $this->view->assign('editLink', "/panel/role/sub/view/id/$id/v/edit");
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
+        }
+        $form->setDefaults($role);
+        $this->view->form = $form;
+        $this->view->assign('id', $id);
+        $this->render($v);
+    }
+
+     /**
+     * Display the form for creating a new role.
+     */
     public function createAction()
     {
         $this->_helper->requirePrivilege('admin_roles', 'create');
+
+        // Get the role form
+        $form = $this->getRoleForm();
+        $form->setAction('/panel/role/sub/save');
+
+        // If there is data in the _POST variable, then use that to
+        // pre-populate the form.
+        $post = $this->_request->getPost();
+        $form->setDefaults($post);
+
+        // Assign view outputs.
+        $this->view->form = Form_Manager::prepareForm($form);
+    }
+
+
+    /**
+     * Saves information for a newly created role.
+     */
+    public function saveAction()
+    {
+        $this->_helper->requirePrivilege('admin_roles', 'update');
         
-        $req = $this->getRequest();
-        if ('save' == $req->getParam('s')) {
-            $role = $req->getPost('role');
+        $form = $this->getRoleForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        if ($form->isValid($post)) {
+            $role = $form->getValues();
+            unset($role['submit']);
+            unset($role['reset']);
             $roleId = $this->_role->insert($role);
-            if (!$roleId) {
-                $msg = "Error Create Role";
+            if (! $roleId) {
+                $msg = "Failure in creation";
                 $model = self::M_WARNING;
             } else {
                 $this->_notification
-                     ->add(Notification::ROLE_CREATED,
-                         $this->_me->account, $roleId);
-
-                $msg = "Successfully Create a Role.";
+                     ->add(Notification::ROLE_CREATED, $this->_me->account, $roleId);
+                $msg = "The role is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
-            $this->render('create');
+            $this->_forward('view', null, null, array('id' => $roleId));
+        } else {
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            // Error message
+            $this->message("Unable to create role:<br>$errorString", self::M_WARNING);
+            $this->_forward('create');
         }
     }
+
+    /**
+     * Delete a role
+     */
     public function deleteAction()
     {
         $this->_helper->requirePrivilege('admin_roles', 'delete');
@@ -163,41 +262,58 @@ class RoleController extends SecurityController
         $this->message($msg, $model);
         $this->_forward('list');
     }
-    public function viewAction()
-    {
-        $this->_helper->requirePrivilege('admin_roles', 'read');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $result = $this->_role->find($id)->toArray();
-        $roleList = $result[0];
-        $this->view->assign('id', $id);
-        $this->view->assign('role', $roleList);
-        if ('edit' == $req->getParam('v')) {
-            $this->render('edit');
-        }
-    }
-    public function updateAction()
+    
+    /**
+     * Updates role information after submitting an edit form.
+     */
+    public function updateAction ()
     {
         $this->_helper->requirePrivilege('admin_roles', 'update');
         
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $role = $req->getPost('role');
-        $res = $this->_role->update($role, 'id = ' . $id);
-        if (!$res) {
-            $msg = "Edit Role Failed";
-            $model = self::M_WARNING;
-        } else {
-            $this->_notification->add(Notification::ROLE_MODIFIED,
-                $this->_me->account, $id);
+        $form = $this->getRoleForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        $role = $form->getValues();
 
-            $msg = "Successfully Edit Role.";
-            $model = self::M_NOTICE;
+        $id = $this->_request->getParam('id');
+        if ($formValid) {
+            unset($role['submit']);
+            unset($role['reset']);
+            $res = $this->_role->update($role, 'id = ' . $id);
+            if ($res) {
+                $this->_notification
+                     ->add(Notification::ROLE_MODIFIED, $this->_me->account, $id);
+
+                $msg = "The role is saved";
+                $model = self::M_NOTICE;
+            } else {
+                $msg = "Nothing changes";
+                $model = self::M_WARNING;
+            }
+            $this->message($msg, $model);
+            $this->_forward('view', null, null, array('id' => $id));
+        } else {
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
+            // Error message
+            $this->message("Unable to update role<br>$errorString", self::M_WARNING);
+            // On error, redirect back to the edit action.
+            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
-        $this->message($msg, $model);
-        $this->_forward('view', null, 'id = ' . $id);
     }
+
+    /**
+     * assign privileges to a single role
+     */
     public function rightAction()
     {
         $this->_helper->requirePrivilege('admin_roles', 'definition');

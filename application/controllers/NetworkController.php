@@ -42,6 +42,7 @@ class NetworkController extends SecurityController
         'currentPage' => 1,
         'perPage' => 20
     );
+
     protected $_sanity = array(
         'data' => 'network',
         'filter' => array(
@@ -59,17 +60,31 @@ class NetworkController extends SecurityController
         ) ,
         'flag' => TRUE
     );
+
     public function init()
     {
         parent::init();
         $this->_network = new Network();
     }
+
     public function preDispatch()
     {
         $this->_pagingBasePath = $this->_request->getBaseUrl() .
             '/panel/network/sub/list';
         $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
     }
+
+    /**
+     * Returns the standard form for creating, reading, and updating networks.
+     *
+     * @return Zend_Form
+     */
+    public function getNetworkForm()
+    {
+        $form = Form_Manager::loadForm('network');
+        return Form_Manager::prepareForm($form);
+    }
+
     /**
      *  render the searching boxes and keep the searching criteria
      */
@@ -98,9 +113,9 @@ class NetworkController extends SecurityController
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
     }
+
     /**
-     * List all the Networks
-     *
+     * List the networks according to search criterias.
      */
     public function listAction()
     {
@@ -117,31 +132,104 @@ class NetworkController extends SecurityController
         $networkList = $this->_network->fetchAll($query)->toArray();
         $this->view->assign('network_list', $networkList);
     }
+
     /**
-     * Create a network
+     * Display a single network record with all details.
+     */
+    public function viewAction()
+    {
+        $this->_helper->requirePrivilege('admin_networks', 'read');
+        
+        $form = $this->getNetworkForm();
+        $id = $this->_request->getParam('id');
+        $v = $this->_request->getParam('v');
+
+        $res = $this->_network->find($id)->toArray();
+        $network = $res[0];
+        if ($v == 'edit') {
+            $this->view->assign('viewLink', "/panel/network/sub/view/id/$id");
+            $form->setAction("/panel/network/sub/update/id/$id");
+        } else {
+            // In view mode, disable all of the form controls
+            $this->view->assign('editLink', "/panel/network/sub/view/id/$id/v/edit");
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
+        }
+        $form->setDefaults($network);
+        $this->view->form = $form;
+        $this->view->assign('id', $id);
+        $this->render($v);
+    }
+
+     /**
+     * Display the form for creating a new network.
      */
     public function createAction()
     {
         $this->_helper->requirePrivilege('admin_networks', 'create');
+
+        // Get the network form
+        $form = $this->getNetworkForm();
+        $form->setAction('/panel/network/sub/save');
+
+        // If there is data in the _POST variable, then use that to
+        // pre-populate the form.
+        $post = $this->_request->getPost();
+        $form->setDefaults($post);
+
+        // Assign view outputs.
+        $this->view->form = Form_Manager::prepareForm($form);
+    }
+
+
+    /**
+     * Saves information for a newly created network.
+     */
+    public function saveAction()
+    {
+        $this->_helper->requirePrivilege('admin_networks', 'update');
         
-        if ('save' == $this->_request->getParam('s')) {
-            $networkData = $this->_request->getParam('network');
-            $networkId = $this->_network->insert($networkData);
-            if (!$networkId) {
-                $msg = "Failed to create the network";
+        $form = $this->getNetworkForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        if ($form->isValid($post)) {
+            $network = $form->getValues();
+            unset($network['submit']);
+            unset($network['reset']);
+            $networkId = $this->_network->insert($network);
+            if (! $networkId) {
+                $msg = "Failure in creation";
                 $model = self::M_WARNING;
             } else {
                 $this->_notification
-                     ->add(Notification::NETWORK_CREATED,
-                         $this->_me->account, $networkId);
-
-                $msg = "network successfully created";
+                     ->add(Notification::NETWORK_CREATED, $this->_me->account, $networkId);
+                $msg = "The network is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
-            $this->render('create');
+            $this->_forward('view', null, null, array('id' => $networkId));
+        } else {
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            // Error message
+            $this->message("Unable to create network:<br>$errorString", self::M_WARNING);
+            $this->_forward('create');
         }
     }
+
     /**
      * Delete a network
      */
@@ -174,45 +262,52 @@ class NetworkController extends SecurityController
         $this->message($msg, $model);
         $this->_forward('list');
     }
+
     /**
-     *  view the network's detail information
+     * Updates network information after submitting an edit form.
      */
-    public function viewAction()
-    {
-        $this->_helper->requirePrivilege('admin_networks', 'read');
-        
-        $id = $this->_request->getParam('id');
-        $result = $this->_network->find($id)->toArray();
-        foreach ($result as $v) {
-            $networkList = $v;
-        }
-        $this->view->assign('id', $id);
-        $this->view->assign('network', $networkList);
-        if ('edit' == $this->_request->getParam('v')) {
-            $this->render('edit');
-        }
-    }
-    /**
-     *  update network
-     */
-    public function updateAction()
+    public function updateAction ()
     {
         $this->_helper->requirePrivilege('admin_networks', 'update');
         
-        $id = $this->_request->getParam('id');
-        $networkData = $this->_request->getParam('network');
-        $res = $this->_network->update($networkData, 'id = ' . $id);
-        if (0 == $res) {
-            $msg = "Network has no updated";
-            $model = self::M_NOTICE;
-        } else {
-            $this->_notification->add(Notification::NETWORK_MODIFIED,
-                $this->_me->account, $id);
+        $form = $this->getNetworkForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        $network = $form->getValues();
 
-            $msg = "Network edited successfully";
-            $model = self::M_NOTICE;
+        $id = $this->_request->getParam('id');
+        if ($formValid) {
+            unset($network['submit']);
+            unset($network['reset']);
+            $res = $this->_network->update($network, 'id = ' . $id);
+            if ($res) {
+                $this->_notification
+                     ->add(Notification::NETWORK_MODIFIED, $this->_me->account, $id);
+
+                $msg = "The network is saved";
+                $model = self::M_NOTICE;
+            } else {
+                $msg = "Nothing changes";
+                $model = self::M_WARNING;
+            }
+            $this->message($msg, $model);
+            $this->_forward('view', null, null, array('id' => $id));
+        } else {
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
+            // Error message
+            $this->message("Unable to update network<br>$errorString", self::M_WARNING);
+            // On error, redirect back to the edit action.
+            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
-        $this->message($msg, $model);
-        $this->_forward('view', null, 'id = ' . $id);
     }
 }

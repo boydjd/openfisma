@@ -40,11 +40,13 @@ class ProductController extends SecurityController
         'currentPage' => 1,
         'perPage' => 20
     );
+
     public function init()
     {
         parent::init();
         $this->_product = new Product();
     }
+
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -54,8 +56,20 @@ class ProductController extends SecurityController
         $ajaxContext->addActionContext('search', 'html')
                     ->initContext();
     }
+
     /**
-     Get Product List
+     * Returns the standard form for creating, reading, and updating products.
+     *
+     * @return Zend_Form
+     */
+    public function getProductForm()
+    {
+        $form = Form_Manager::loadForm('product');
+        return Form_Manager::prepareForm($form);
+    }
+
+    /**
+     * Render the form for searching the products
      */
     public function searchAction()
     {
@@ -84,6 +98,10 @@ class ProductController extends SecurityController
         $qry->limit(100, 0);
         $this->view->prod_list = $product->fetchAll($qry)->toArray();
     }
+
+    /**
+     * List the products from the search, if search none, it list all products
+     */
     public function searchboxAction()
     {
         $this->_helper->requirePrivilege('admin_products', 'read');
@@ -110,6 +128,10 @@ class ProductController extends SecurityController
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
     }
+    
+    /**
+     * List the products according to search criterias.
+     */
     public function listAction()
     {
         $this->_helper->requirePrivilege('admin_products', 'read');
@@ -127,35 +149,107 @@ class ProductController extends SecurityController
         $this->view->assign('product_list', $productList);
         $this->render('sublist');
     }
+
+    /**
+     * Display a single product record with all details.
+     */
+    public function viewAction()
+    {
+        $this->_helper->requirePrivilege('admin_products', 'read');
+        
+        $form = $this->getProductForm();
+        $id = $this->_request->getParam('id');
+        $v = $this->_request->getParam('v');
+
+        $res = $this->_product->find($id)->toArray();
+        $product = $res[0];
+        if ($v == 'edit') {
+            $this->view->assign('viewLink', "/panel/product/sub/view/id/$id");
+            $form->setAction("/panel/product/sub/update/id/$id");
+        } else {
+            // In view mode, disable all of the form controls
+            $this->view->assign('editLink', "/panel/product/sub/view/id/$id/v/edit");
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
+        }
+        $form->setDefaults($product);
+        $this->view->form = $form;
+        $this->view->assign('id', $id);
+        $this->render($v);
+    }
+
+     /**
+     * Display the form for creating a new product.
+     */
     public function createAction()
     {
         $this->_helper->requirePrivilege('admin_products', 'create');
+
+        // Get the product form
+        $form = $this->getProductForm();
+        $form->setAction('/panel/product/sub/save');
+
+        // If there is data in the _POST variable, then use that to
+        // pre-populate the form.
+        $post = $this->_request->getPost();
+        $form->setDefaults($post);
+
+        // Assign view outputs.
+        $this->view->form = Form_Manager::prepareForm($form);
+    }
+
+
+    /**
+     * Saves information for a newly created product.
+     */
+    public function saveAction()
+    {
+        $this->_helper->requirePrivilege('admin_products', 'update');
         
-        $req = $this->getRequest();
-        if ('save' == $req->getParam('s')) {
-            $post = $req->getPost();
-            foreach ($post as $k => $v) {
-                if ('prod_' == substr($k, 0, 5)) {
-                    $k = substr($k, 5);
-                    $data[$k] = $v;
-                }
-            }
-            $data['meta'] = $data['vendor'] . ' ' . $data['name'] . ' '
-                . $data['version'];
-            $productId = $this->_product->insert($data);
-            if (!$productId) {
-                $msg = "Failed to create the product";
+        $form = $this->getProductForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        if ($form->isValid($post)) {
+            $product = $form->getValues();
+            unset($product['submit']);
+            unset($product['reset']);
+            $productId = $this->_product->insert($product);
+            if (! $productId) {
+                $msg = "Failure in creation";
+                $model = self::M_WARNING;
             } else {
                 $this->_notification
-                     ->add(Notification::PRODUCT_CREATED,
-                         $this->_me->account, $productId);
-
-                $msg = "Product successfully created";
+                     ->add(Notification::PRODUCT_CREATED, $this->_me->account, $productId);
+                $msg = "The product is created";
+                $model = self::M_NOTICE;
             }
-            $this->message($msg, self::M_NOTICE);
-            $this->render('create');
+            $this->message($msg, $model);
+            $this->_forward('view', null, null, array('id' => $productId));
+        } else {
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            // Error message
+            $this->message("Unable to create product:<br>$errorString", self::M_WARNING);
+            $this->_forward('create');
         }
     }
+
+    /**
+     *  Delete a specified product.
+     */
     public function deleteAction()
     {
         $this->_helper->requirePrivilege('admin_products', 'delete');
@@ -184,50 +278,52 @@ class ProductController extends SecurityController
         $this->message($msg, $model);
         $this->_forward('list');
     }
-    public function viewAction()
-    {
-        $this->_helper->requirePrivilege('admin_products', 'read');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $result = $this->_product->find($id)->toArray();
-        foreach ($result as $v) {
-            $productList = $v;
-        }
-        $this->view->assign('id', $id);
-        $this->view->assign('product', $productList);
-        if ('edit' == $req->getParam('v')) {
-            $this->render('edit');
-        }
-    }
-    public function updateAction()
+
+    /**
+     * Updates product information after submitting an edit form.
+     */
+    public function updateAction ()
     {
         $this->_helper->requirePrivilege('admin_products', 'update');
         
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $post = $req->getPost();
-        foreach ($post as $k => $v) {
-            if ('prod_' == substr($k, 0, 5)) {
-                $k = substr($k, 5);
-                $data[$k] = $v;
-            }
-        }
-        $data['meta'] = $data['vendor'] . ' ' . $data['name'] . ' '
-            . $data['version'];
-        $res = $this->_product->update($data, 'id = ' . $id);
-        if (!$res) {
-            $msg = "Failed to edit the product";
-            $model = self::M_WARNING;
-        } else {
-             $this->_notification
-                  ->add(Notification::PRODUCT_MODIFIED,
-                      $this->_me->account, $id);
+        $form = $this->getProductForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        $product = $form->getValues();
 
-            $msg = "Product edited successfully";
-            $model = self::M_NOTICE;
+        $id = $this->_request->getParam('id');
+        if ($formValid) {
+            unset($product['submit']);
+            unset($product['reset']);
+            $res = $this->_product->update($product, 'id = ' . $id);
+            if ($res) {
+                $this->_notification
+                     ->add(Notification::PRODUCT_MODIFIED, $this->_me->account, $id);
+
+                $msg = "The product is saved";
+                $model = self::M_NOTICE;
+            } else {
+                $msg = "Nothing changes";
+                $model = self::M_WARNING;
+            }
+            $this->message($msg, $model);
+            $this->_forward('view', null, null, array('id' => $id));
+        } else {
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
+            // Error message
+            $this->message("Unable to update product<br>$errorString", self::M_WARNING);
+            // On error, redirect back to the edit action.
+            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
-        $this->message($msg, $model);
-        $this->_forward('view', null, 'id = ' . $id);
     }
 }

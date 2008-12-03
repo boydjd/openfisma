@@ -40,17 +40,34 @@ class SourceController extends SecurityController
         'currentPage' => 1,
         'perPage' => 20
     );
+
     public function init()
     {
         parent::init();
         $this->_source = new Source();
     }
+
     public function preDispatch()
     {
         $req = $this->getRequest();
         $this->_pagingBasePath = $req->getBaseUrl() . '/panel/source/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
+
+    /**
+     * Returns the standard form for creating, reading, and updating sources.
+     *
+     * @return Zend_Form
+     */
+    public function getSourceForm()
+    {
+        $form = Form_Manager::loadForm('source');
+        return Form_Manager::prepareForm($form);
+    }
+
+    /**
+     * Render the form for searching the sources.
+     */
     public function searchboxAction()
     {
         $this->_helper->requirePrivilege('admin_sources', 'read');
@@ -77,6 +94,10 @@ class SourceController extends SecurityController
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
     }
+
+   /**
+    * List the sources according to search criterias.
+    */
     public function listAction()
     {
         $this->_helper->requirePrivilege('admin_sources', 'read');
@@ -93,35 +114,104 @@ class SourceController extends SecurityController
         $sourceList = $this->_source->fetchAll($query)->toArray();
         $this->view->assign('source_list', $sourceList);
     }
+
+    /**
+     * Display a single source record with all details.
+     */
+    public function viewAction()
+    {
+        $this->_helper->requirePrivilege('admin_sources', 'read');
+        
+        $form = $this->getSourceForm();
+        $id = $this->_request->getParam('id');
+        $v = $this->_request->getParam('v');
+
+        $res = $this->_source->find($id)->toArray();
+        $source = $res[0];
+        if ($v == 'edit') {
+            $this->view->assign('viewLink', "/panel/source/sub/view/id/$id");
+            $form->setAction("/panel/source/sub/update/id/$id");
+        } else {
+            // In view mode, disable all of the form controls
+            $this->view->assign('editLink', "/panel/source/sub/view/id/$id/v/edit");
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
+        }
+        $form->setDefaults($source);
+        $this->view->form = $form;
+        $this->view->assign('id', $id);
+        $this->render($v);
+    }
+
+     /**
+     * Display the form for creating a new source.
+     */
     public function createAction()
     {
         $this->_helper->requirePrivilege('admin_sources', 'create');
+
+        // Get the source form
+        $form = $this->getSourceForm();
+        $form->setAction('/panel/source/sub/save');
+
+        // If there is data in the _POST variable, then use that to
+        // pre-populate the form.
+        $post = $this->_request->getPost();
+        $form->setDefaults($post);
+
+        // Assign view outputs.
+        $this->view->form = Form_Manager::prepareForm($form);
+    }
+
+
+    /**
+     * Saves information for a newly created source.
+     */
+    public function saveAction()
+    {
+        $this->_helper->requirePrivilege('admin_sources', 'update');
         
-        $req = $this->getRequest();
-        if ('save' == $req->getParam('s')) {
-            $post = $req->getPost();
-            foreach ($post as $k => $v) {
-                if ('source_' == substr($k, 0, 7)) {
-                    $k = substr($k, 7);
-                    $data[$k] = $v;
-                }
-            }
-            $sourceId = $this->_source->insert($data);
-            if (!$sourceId) {
-                $msg = "Failed to create the finding source";
+        $form = $this->getSourceForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        if ($form->isValid($post)) {
+            $source = $form->getValues();
+            unset($source['submit']);
+            unset($source['reset']);
+            $sourceId = $this->_source->insert($source);
+            if (! $sourceId) {
+                $msg = "Failure in creation";
                 $model = self::M_WARNING;
             } else {
-                 $this->_notification
-                      ->add(Notification::SOURCE_CREATED,
-                          $this->_me->account, $sourceId);
-
-                $msg = "Finding source successfully created";
+                $this->_notification
+                     ->add(Notification::SOURCE_CREATED, $this->_me->account, $sourceId);
+                $msg = "The source is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
-            $this->render('create');
+            $this->_forward('view', null, null, array('id' => $sourceId));
+        } else {
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            // Error message
+            $this->message("Unable to create source:<br>$errorString", self::M_WARNING);
+            $this->_forward('create');
         }
     }
+
     public function deleteAction()
     {
         $this->_helper->requirePrivilege('admin_sources', 'delete');
@@ -152,47 +242,52 @@ class SourceController extends SecurityController
         $this->message($msg, $model);
         $this->_forward('list');
     }
-    public function viewAction()
-    {
-        $this->_helper->requirePrivilege('admin_sources', 'read');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $result = $this->_source->find($id)->toArray();
-        foreach ($result as $v) {
-            $sourceList = $v;
-        }
-        $this->view->assign('id', $id);
-        $this->view->assign('source', $sourceList);
-        if ('edit' == $req->getParam('v')) {
-            $this->render('edit');
-        }
-    }
-    public function updateAction()
+
+    /**
+     * Updates source information after submitting an edit form.
+     */
+    public function updateAction ()
     {
         $this->_helper->requirePrivilege('admin_sources', 'update');
         
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $post = $req->getPost();
-        foreach ($post as $k => $v) {
-            if ('source_' == substr($k, 0, 7)) {
-                $k = substr($k, 7);
-                $data[$k] = $v;
-            }
-        }
-        $res = $this->_source->update($data, 'id = ' . $id);
-        if (!$res) {
-            $msg = "Failed to edit the finding source";
-            $model = self::M_WARNING;
-        } else {
-            $this->_notification->add(Notification::SOURCE_MODIFIED,
-                $this->_me->account, $id);
+        $form = $this->getSourceForm();
+        $post = $this->_request->getPost();
+        $formValid = $form->isValid($post);
+        $source = $form->getValues();
 
-            $msg = "Finding source edited successfully";
-            $model = self::M_NOTICE;
+        $id = $this->_request->getParam('id');
+        if ($formValid) {
+            unset($source['submit']);
+            unset($source['reset']);
+            $res = $this->_source->update($source, 'id = ' . $id);
+            if ($res) {
+                $this->_notification
+                     ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
+
+                $msg = "The source is saved";
+                $model = self::M_NOTICE;
+            } else {
+                $msg = "Nothing changes";
+                $model = self::M_WARNING;
+            }
+            $this->message($msg, $model);
+            $this->_forward('view', null, null, array('id' => $id));
+        } else {
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
+            // Error message
+            $this->message("Unable to update source<br>$errorString", self::M_WARNING);
+            // On error, redirect back to the edit action.
+            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
-        $this->message($msg, $model);
-        $this->_forward('view', null, 'id = ' . $id);
     }
 }

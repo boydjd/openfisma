@@ -1,0 +1,49 @@
+; This is the form for network.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Ryan yang <ryan.yang@reyosoft.com
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[network]
+method = "post"
+elementFilters.trim = "StringTrim"
+elementFilters.tags = "StripTags"
+
+elements.name.type = "text"
+elements.name.options.label = "Network Name"
+elements.name.options.validators.alnum.validator = "NotEmpty"
+elements.name.options.required = true
+displayGroups.network.elements.name = "name"
+
+elements.nickname.type = "text"
+elements.nickname.options.label = "Network nickname"
+elements.nickname.options.validators.alnum.validator = "NotEmpty"
+elements.nickname.options.required = true
+displayGroups.network.elements.nickname = "nickname"
+
+elements.desc.type = "textarea"
+elements.desc.options.label = "Description"
+elements.desc.options.validators.strlen.validator = "StringLength"
+elements.desc.options.cols = "70%"
+elements.desc.options.rows = "7"
+elements.desc.options.validators.alnum.validator = "NotEmpty"
+elements.desc.options.required = true
+displayGroups.network.elements.desc = "desc"
+
+elements.submit.type = "submit"
+elements.submit.options.value = "Save"
+elements.submit.options.decorators.options.decorator = "ViewHelper"
+elements.submit.options.decorators.opt.decorator = "HtmlTag"
+elements.submit.options.decorators.opt.options.tag = "span"
+displayGroups.network.elements.submit = "submit"
+
+; I'm disabling this temporarily because it doesn't work quite right...
+; After you click submit, the value of this input is changed to "Reset" so the
+; name changes...
+;elements.reset.type = "reset"
+;elements.reset.options.value = "Clear Changes"
+;displayGroups.network.elements.reset = "reset"
