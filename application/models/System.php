@@ -108,7 +108,7 @@ class System extends FismaModel
      */
     public function calcMin($levelA, $levelB)
     {
-        $cloumns = $this->getEnumColumns('security_categorization');
+        $cloumns = $this->getEnumColumns('availability');
         assert(in_array($levelA, $cloumns));
         assert(in_array($levelB, $cloumns));
         $senseMap = array_flip($cloumns);
@@ -125,7 +125,7 @@ class System extends FismaModel
      */
     public function calcThreat($threat, $countermeasure)
     {
-        $cloumns = $this->getEnumColumns('security_categorization');
+        $cloumns = $this->getEnumColumns('availability');
         assert(in_array($threat, $cloumns));
         assert(in_array($countermeasure, $cloumns));
         $cloumnsMap = array_flip($cloumns);
