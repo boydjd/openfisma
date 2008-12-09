@@ -23,9 +23,6 @@
     $organization = $ret->current()->toArray();
 
     $columns = $sys->getEnumColumns('availability');
-    if (in_array('NONE', $columns)) {
-        array_shift($columns);
-    }
     $columnsCols = array_reverse($columns);
     $i = 0;
     foreach ($columnsCols as $col) {
@@ -34,12 +31,10 @@
         }
     }
 
-    $impact = $sys->calcMin($this->securityCategorization, $act_owner['availability']);
-
     $threat_likelihood = $sys->calcThreat($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
 
     $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
-    $risk_index = $cellidx_lookup[$threat_likelihood][$impact];
+    $risk_index = $cellidx_lookup[$threat_likelihood][$this->securityCategorization];
 
     define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts');
 
@@ -58,12 +53,14 @@
 
     $data = array(array("<b>Finding Number:</b>", $p['id'],
                         "<b>Finding Source:</b>", strip_tags($p['source_name'])),
-                  array("<b>Date Opened</b>", $p['create_ts'],
+                  array("<b>Date Opened:</b>", $p['create_ts'],
                         "<b>Date Discovered:</b>", $p['discover_ts']),
-                  array("<b>Organization</b>", $organization['name'],
+                  array("<b>Organization:</b>", $organization['name'],
                         "<b>Infomation System:</b>", $this->system_list[$p['system_id']]),
-                  array("<b>Asset(s) Affected:</b>", $p['asset_name'],"",""),
-                  array("<b>Finding Description:</b>", strip_tags($p['finding_data']),"",""),
+                  array("<b>Asset(s) Affected:</b>", $p['asset_name'],"",""));
+    $pdf->ezTable($data, null, null, $labelOptions);
+
+    $data = array(array("<b>Finding Description:</b>", strip_tags($p['finding_data']),"",""),
                   array("<b>Recommendation:</b>",  strip_tags($p['action_suggested']),"",""),
                   array("<b>Risk Level:</b>",  $p['threat_level'],"",""));
     $pdf->ezTable($data, null, null, $labelOptions);
@@ -72,8 +69,8 @@
     $data = array(array('<b>Mitigation Strategy</b>'));
     $pdf->ezTable($data, null, null, $headerOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
-    $data = array(array("<b>Course of Action:</b>", strip_tags($p['action_planned']), "", ""),
-                  array("<b>Course of Description:</b>", strip_tags($p['action_resources']), "", ""),
+    $data = array(array("<b>Type:</b>", strip_tags($p['type']), "", ""),
+                  array("<b>Description:</b>", strip_tags($p['action_resources']), "", ""),
                   array("<b>Estimated Completion Date:</b>", $p['action_current_date'], "", "")); 
     $pdf->ezTable($data, null, null, $labelOptions);
 
@@ -95,19 +92,19 @@
                   array("<b>Security Categorization Description:</b>", !empty($effect)?"The loss of confidentiality, integrity, or availability could be expected to have a ".$effect." adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data.":"This system's Confidentiality, Integrity, and Availability are not defined; therefore, the system security categorization is also undefined."));
     $pdf->ezTable($data, null, null, $labelOptions);
 
-    $data = array(array("", "<b><i>Overall likelihood Rating</i></b>"));
+    $data = array(array("", "<b><i>LIKELIHOOD DETERMINATION</i></b>"));
     $pdf->ezTable($data, null, null, $labelOptions);
-    $data = array(array("To derive an overall likelihood rating that indicates the probability that a potential vulnerability may be exercised within the construct of the associated threat environment, the following governing factors must be considered: Threat-source motivation and capability, Nature of the vulnerability, and Existence and effectiveness of current controls."));
+    $data = array(array("The likelihood determination defines the likelihood or frequency of a harmful event occurring. The likelihood determination evaluates the severity of the vulnerability along with the existence and effectiveness of current controls."));
     $pdf->ezTable($data, null, null, $labelOptions);
 
-    $data = array(array("<b>Threat:</b>", strip_tags($p['threat_source']), "", ""),
-                  array("<b>Threat Level:</b>", $p['threat_level'], "", ""),
-                  array("<b>Countermeasures:</b>", strip_tags($p['cmeasure']), "", ""),
+    $data = array(array("<b>Severity Description:</b>", strip_tags($p['threat_source']), "", ""),
+                  array("<b>Serverity Level:</b>", $p['threat_level'], "", ""),
+                  array("<b>Description of Countermeasures:</b>", strip_tags($p['cmeasure']), "", ""),
                   array("<b>Countermeasures Effectiveness:</b>", strip_tags($p['cmeasure_effectiveness']), "", ""));
     $pdf->ezTable($data, null, null, $labelOptions);
 
     $data = array(array("<b>                                               Overall Threat Likelihood Table</b>"),
-                  array("<b>                                                                       Countermeasure</b>")
+                  array("<b>                                                                Countermeasure Effectiveness</b>")
 );
     $pdf->ezTable($data, null, null, $tableOptions);
     
@@ -132,17 +129,18 @@
     
     $pdf->ezTable($data, null, null, $tableOptions);
     $overall_threat = $sys->calcThreat($p['threat_level'], $p['cmeasure_effectiveness']);
-    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_threat."</b> level of risk to agency operations. "));
+    $data = array(array("Based on the threat level and countermeasures currently in place, the finding presents a <b>".$overall_threat."</b> level of risk to the information system. "));
     $pdf->ezTable($data, null, null, $labelOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
 
     $data = array(array("", "<b><i>Overall Risk Level</i></b>"));
     $pdf->ezTable($data, null, null, $labelOptions);
 
-    $data = array(array("<b>                                                Overall Risk Level Analysis</b>"),
-                  array("<b>                                                            Security Categorization of Information System</b>")
+    $data = array(array("<b>                                             Overall Risk Level Analysis</b>"),
+                  array("<b>                                                                       Security Categorization of Information System</b>")
 );
     $pdf->ezTable($data, null, null, $tableOptions);
+    $overall_risk = $sys->calcMin($threat_likelihood, $this->securityCategorization);
 
     $data = array();
     $i = 0;
@@ -164,15 +162,16 @@
     }
      
     $pdf->ezTable($data, null, null, $tableOptions);
-    $overall_risk = $sys->calcMin($threat_likelihood, $impact);
     $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_risk."</b> level of risk to agency operations. "));
     $pdf->ezTable($data, null, null, $labelOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
-
+    
+    $data = array(array("Agency Recommendations based on Risk Levels:"));
+    $pdf->ezTable($data, null, null, $labelOptions);
     $data = array(array('<b>Risk Level</b>', 'Risk Description and Necessary Actions'),
                   array('<b>'.$columns[2].'</b>', 'If an observation or finding is evaluated as a high risk, there is a strong need for corrective measures. An existing system may continue to operate, but a corrective action plan must be put in place as soon as possible.'),
                   array('<b>'.$columns[1].'</b>', 'If an observation is rated as medium risk, corrective actions are needed and a plan must be developed to incorporate these actions within a reasonable period of time.'),
-                  array('<b>'.$columns[0].'</b>', 'If an observation is described as low risk, the system’s AO must determine whether corrective actions are still required or decide to accept the risk.'));
+                  array('<b>'.$columns[0].'</b>', 'If an observation is described as low risk, the system\'s AO must determine whether corrective actions are still required or decide to accept the risk.'));
 
     $pdf->ezTable($data, null, null, $tableOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));

@@ -811,25 +811,30 @@ class RemediationController extends PoamBaseController
                 throw new Exception_General(
                     "Not able to get details for this POAM ID ($id)");
             }
+
+            if ($poamDetail['threat_source'] == '' ||
+                $poamDetail['threat_level'] == 'NONE' ||
+                $poamDetail['cmeasure'] == '' ||
+                $poamDetail['cmeasure_effectiveness'] == 'NONE'){
+                /** @todo english */
+                throw new Exception_General("The Threat or Countermeasures Information is not "
+                    ."completed. An analysis of risk cannot be generated, unless these values are defined.");
+            }
+
             $system = new System();
             $ret = $system->find($poamDetail['system_id']);
             $actOwner = $ret->current()->toArray();
 
             $securityCategorization = $system->calcSecurityCategory($actOwner['confidentiality'],
                                                                     $actOwner['integrity'],
-                                                                    $actOwner['availability']);        
+                                                                    $actOwner['availability']);
 
-            if ('NONE' == $securityCategorization) {
+            if (NULL == $securityCategorization) {
                 throw new Exception_General('The security categorization for ('.$actOwner['id'].')'.
                     $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
                     'unless these values are defined.');
             }
-
-            if ('NONE' == $actOwner['availability']) {
-                throw new Exception_General('The availability for ('.$actOwner['id'].')'.
-                    $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
-                    'unless these values are defined.');
-            }
+            $this->view->assign('securityCategorization', $securityCategorization);
         } catch (Exception_General $e) {
             if ($e instanceof Exception_General) {
                 $message = $e->getMessage();
@@ -852,7 +857,6 @@ class RemediationController extends PoamBaseController
         ))->initContext();
 
         $this->view->assign('poam', $poamDetail);
-        $this->view->assign('securityCategorization', $securityCategorization);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('source_list', $this->_sourceList);
     }

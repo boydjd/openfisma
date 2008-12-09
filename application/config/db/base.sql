@@ -872,6 +872,7 @@ SET character_set_client = @saved_cs_client;
 INSERT INTO `schema_version` VALUES (41);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+INSERT INTO `schema_version` VALUES (42);
 CREATE TABLE `sources` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -891,9 +892,9 @@ CREATE TABLE `systems` (
   `organization_id` int(10) NOT NULL,
   `desc` text,
   `type` enum('GENERAL SUPPORT SYSTEM','MINOR APPLICATION','MAJOR APPLICATION') default NULL,
-  `confidentiality` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
-  `integrity` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
-  `availability` enum('NONE','LOW','MODERATE','HIGH') NOT NULL default 'NONE',
+  `confidentiality` enum('NA','LOW','MODERATE','HIGH') default NULL,
+  `integrity` enum('LOW','MODERATE','HIGH') default NULL,
+  `availability` enum('LOW','MODERATE','HIGH') default NULL,
   `tier` int(10) unsigned NOT NULL default '0',
   `confidentiality_justification` text NOT NULL,
   `integrity_justification` text NOT NULL,
@@ -996,4 +997,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (42);
+INSERT INTO schema_version (schema_version) VALUES (43);

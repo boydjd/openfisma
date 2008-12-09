@@ -74,8 +74,18 @@ class System extends FismaModel
     }
     
     /**
-     * calculate Security categorization.
+     * Calculate Security categorization.
      *
+     * The calculation over enumeration fields {LOW, MODERATE, HIGH} is tricky here. The algorithm 
+     * is up to their mapping value, which is decided by the appear consequence in TABLE definition.
+     * For example, in case `confidentiality` ENUM('NA','LOW','MODERATE','HIGH') it turns out the 
+     * mapping value: LOW=0, MODERATE=1, HIGH=2. The value calculated is the maximun of C, I, A. And 
+     * is transferred back to enumeration name again.
+     *
+     * As the C(Confidentiality) has the additional value 'NA', which is absent from the other two
+     * I,A, it's necessary to remove it before calculating the security categorization. Due to the
+     * design, we have to hard code it, say array_shift($confidentiality).
+     * 
      * @param string $confidentiality confidentiality
      * @param string $integrity integrity
      * @param string $availability availability
@@ -83,8 +93,12 @@ class System extends FismaModel
      */
     public function calcSecurityCategory($confidentiality, $integrity, $availability)
     {
+        if (NULL == $confidentiality || NULL == $integrity || NULL == $availability) {
+            return NULL;
+        }
         $array = $this->getEnumColumns('confidentiality');
         assert(in_array($confidentiality, $array));
+        array_shift($array);
         $confidentiality = array_search($confidentiality, $array);
         
         $array = $this->getEnumColumns('integrity');
@@ -102,6 +116,8 @@ class System extends FismaModel
     /**
      * Calculate min level
      *
+     * @see calcSecurityCategory
+     *
      * @param string $levelA
      * @param string $levelB
      * @param return string min of $levelA and $levelB
@@ -118,6 +134,8 @@ class System extends FismaModel
     
     /**
      * Calcuate overall threat level
+     *
+     * @see calcSecurityCategory
      *
      * @param string $threat threat level
      * @param string $countermeasure countermeasure level

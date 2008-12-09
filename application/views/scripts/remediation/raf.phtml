@@ -8,9 +8,6 @@
     $organization = $ret->current()->toArray();
 
     $columns = $sys->getEnumColumns('availability');
-    if (in_array('NONE', $columns)) {
-        array_shift($columns);
-    }
     $columnsCols = array_reverse($columns);
     $i = 0;
     foreach ($columnsCols as $col) {
@@ -84,59 +81,77 @@ table.rafImpact td {
         <td colspan="4"><p class="pageHeader">Risk Analysis Form (RAF)</p></td>
     </tr>
     <tr>
-        <td colspan="4"><b>Finding Information</b></td>
+        <td colspan="4">
+            <table class="rafImpact">
+                <tr>
+                    <td><b>Finding Information</b></td>
+                </tr>
+            </table>
+        </td>
     </tr>
     <tr>
-        <td width="25%">Finding Number:</td><td width="25%"><?php echo $this->poam['id'];?></td>
-        <td width="25%">Finding Source:</td><td width="25%"><?php echo $this->poam['source_name'];?></td>
+        <td width="25%"><b>Finding Number:</b></td><td width="25%"><?php echo $this->poam['id'];?></td>
+        <td width="25%"><b>Finding Source:</b></td><td width="25%"><?php echo $this->poam['source_name'];?></td>
     </tr>
     <tr>
-        <td>Date Opened:</td><td ><?php echo $this->poam['create_ts'];?></td>
-        <td>Date Discovered:</td><td ><?php echo $this->poam['discover_ts'];?></td>
+        <td><b>Date Opened:</b></td><td ><?php echo $this->poam['create_ts'];?></td>
+        <td><b>Date Discovered:</b></td><td ><?php echo $this->poam['discover_ts'];?></td>
     </tr>
     <tr>
-        <td >Organization:</td><td><?php echo $organization['name'];?></td>
-        <td >Information System:</td><td><?php echo $this->system_list[$this->poam['system_id']];?></td>
-    </tr>
-</table>
-
-<table class="rafContent">
-    <tr>
-        <td width="25%">Asset Affected:</td><td width="75%"><?php echo $this->poam['asset_name'];?></td>
-    </tr>
-    <tr>
-        <td >Finding Description:</td><td colspan="2"><?php echo $this->poam['finding_data'];?></td>
-    </tr>
-    <tr>
-        <td >Recommendation:</td><td colspan="2"><?php echo $this->poam['action_suggested'];?></td>
-    </tr>
-    <tr>
-        <td >Risk Level:</td><td colspan="2"><?php echo $this->poam['threat_level'];?></td>
-    </tr>
-
-    <tr>
-        <td colspan="2"><b>Mitigation Strategy</b></td>
-    </tr>
-    <tr>
-        <td >Course of Action:</td><td ><?php echo $this->poam['action_planned'];?></td>
-    </tr>
-    <tr>
-        <td >Course of Description:</td><td><?php echo $this->poam['action_resources'];?></td>
-    </tr>
-    <tr>
-        <td >Estimated Completion Date:</td><td><?php echo $this->poam['action_current_date'];?></td>
+        <td ><b>Organization:</b></td><td><?php echo $organization['name'];?></td>
+        <td ><b>Information System:</b></td><td><?php echo $this->system_list[$this->poam['system_id']];?></td>
     </tr>
 </table>
 
 <table class="rafContent">
     <tr>
-        <td colspan="2"><b>Risk Analysis</b></td>
+        <td width="25%"><b>Asset Affected:</b></td><td width="75%"><?php echo $this->poam['asset_name'];?></td>
     </tr>
     <tr>
-        <td colspan="2" align="center"><b><i>Security Categorization</i></b></td>
+        <td ><b>Finding Description:</b></td><td colspan="2"><?php echo $this->poam['finding_data'];?></td>
     </tr>
     <tr>
-        <td width="40%">Security Categorization:</td><td width="60%"><?php echo $this->securityCategorization;?></td>
+        <td ><b>Recommendation:</b></td><td colspan="2"><?php echo $this->poam['action_suggested'];?></td>
+    </tr>
+    <tr>
+        <td ><b>Risk Level:</b></td><td colspan="2"><?php echo $this->poam['threat_level'];?></td>
+    </tr>
+
+    <tr>
+        <td colspan="2">
+            <table class="rafImpact">
+                <tr>
+                    <td><b>Mitigation Strategy</b></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td ><b>Type:</b></td><td ><?php echo $this->poam['type'];?></td>
+    </tr>
+    <tr>
+        <td ><b>Description:</b></td><td><?php echo $this->poam['action_resources'];?></td>
+    </tr>
+    <tr>
+        <td ><b>Estimated Completion Date:</b></td><td><?php echo $this->poam['action_current_date'];?></td>
+    </tr>
+</table>
+
+<table class="rafContent">
+    <tr>
+        <td colspan="2">
+            <table class="rafImpact">
+                <tr>
+                    <td><b>Risk Analysis</b></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center"><b><i><b>Security Categorization</b></i></b></td>
+    </tr>
+    <tr>
+        <td width="33%"><b>Security Categorization:</b></td><td width="67%"><?php echo $this->securityCategorization;?></td>
     </tr>
     <?php
         if ($this->securityCategorization == $columns[2]) {
@@ -150,7 +165,7 @@ table.rafImpact td {
         }
     ?>
     <tr>
-        <td>Security Categorization Description:</td>
+        <td><b>Security Categorization Description:</b></td>
         <td>
         <?php if (!empty($effect)) { ?>
         The loss of confidentiality, integrity, or availability could be expected to have a <?php echo $effect;?> adverse effect on organizational operations,
@@ -162,22 +177,22 @@ table.rafImpact td {
         </td>
     </tr>
     <tr>
-        <td colspan="2" align="center"><b><i>Overall likelihood Rating</i></b></td>
+        <td colspan="2" align="center"><b><i>LIKELIHOOD DETERMINATION</i></b></td>
     </tr>
     <tr>
-        <td colspan="2">To derive an overall likelihood rating that indicates the probability that a potential vulnerability may be exercised within the construct of the associated threat environment, the following governing factors must be considered: Threat-source motivation and capability, Nature of the vulnerability, and Existence and effectiveness of current controls.</td>
+        <td colspan="2">The likelihood determination defines the likelihood or frequency of a harmful event occurring. The likelihood determination evaluates the severity of the vulnerability along with the existence and effectiveness of current controls.</td>
     </tr>
     <tr>
-        <td>Threat:</td><td><?php echo $this->poam['threat_source'];?></td>
+        <td><b>Severity Description:</b></td><td><?php echo $this->poam['threat_source'];?></td>
     </tr>
     <tr>
-        <td>Threat Level:</td><td><?php echo $this->poam['threat_level'];?></td>
+        <td><b>Severity Level:</b></td><td><?php echo $this->poam['threat_level'];?></td>
     </tr></p>
     <tr>
-        <td>Countermeasures:</td><td><?php echo $this->poam['cmeasure'];?></td>
+        <td><b>Description of Countermeasures:</b></td><td><?php echo $this->poam['cmeasure'];?></td>
     </tr>
     <tr>
-        <td>Countermeasures Effectiveness:</td><td><?php echo $this->poam['cmeasure_effectiveness'];?></td>
+        <td><b>Countermeasures Effectiveness:</b></td><td><?php echo $this->poam['cmeasure_effectiveness'];?></td>
     </tr>
     <?php
         $threat_likelihood = $sys->calcThreat($this->poam['threat_level'],
@@ -194,10 +209,8 @@ table.rafImpact td {
        <td colspan="2" align="center"><b><i>Overall Risk Level</i></b></td>
     </tr>
     <?php
-        $impact = $sys->calcMin($this->securityCategorization, $act_owner['availability']);
-
         echo $this->partial('remediation/raf_risk.phtml', array('act_owner'=>$act_owner,
-                                                              'impact'=>&$impact,
+                                                              'impact'=>&$this->securityCategorization,
                                                               'table_lookup'=>&$cellidx_lookup,
                                                               'threat_likelihood'=>&$threat_likelihood,
                                                               'columns'=>$columns,
@@ -207,7 +220,7 @@ table.rafImpact td {
     <tr><td colspan="2">
         <table class="rafImpact">
             <tr>
-                <td width="20%">Risk Level</td>
+                <td width="20%"><b>Risk Level</b></td>
                 <td>Risk Description and Necessary Actions</td>
             </tr>
             <tr>
@@ -220,7 +233,7 @@ table.rafImpact td {
             </tr>
             <tr>
                 <td><?php echo $columns[0];?></td>
-                <td>If an observation is described as low risk, the system’s AO must determine whether corrective actions are still required or decide to accept the risk.</td>
+                <td>If an observation is described as low risk, the system's AO must determine whether corrective actions are still required or decide to accept the risk.</td>
             </tr>
         </table>
     </td></tr>
