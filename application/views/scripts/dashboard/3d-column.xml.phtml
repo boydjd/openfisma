@@ -51,7 +51,7 @@
 <?php
     // Figure out which colors are MSA colors and which are EP colors
     unset($this->summary['NEW']);
-    unset($this->summary['OPEN']);
+    unset($this->summary['DRAFT']);
     $msaColors = array();
     foreach ($this->summary as $status => $filler) {
         if ($status == 'EN') {
@@ -66,9 +66,9 @@
         $epColors[] = $status;
     }
     
-    // Colors for NEW & OPEN
+    // Colors for NEW & DRAFT
     print '<!-- NEW --><color>cccccc</color>';
-    print '<!-- OPEN --><color>66ff66</color>';
+    print '<!-- DRAFT --><color>66ff66</color>';
     
     // Colors for MSA
     define('START_COLOR', 200); // These constants are used for creating a gradient

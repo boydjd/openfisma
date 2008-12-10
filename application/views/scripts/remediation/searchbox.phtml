@@ -21,7 +21,7 @@
 
     $filter_status = array(  0   =>'--- Any Status ---',
                            'NEW' =>'(NEW) Awaiting Mitigation Type and Approval',
-                           'OPEN'=>'(OPEN) Awaiting Mitigation Approval');
+                           'DRAFT'=>'(DRAFT) Awaiting Mitigation Approval');
     $filter_status = array_merge($filter_status, $mpStatus);
     $filter_status['EN'] = '(EN) Evidence Needed';
     $filter_status = array_merge($filter_status, $epStatus);

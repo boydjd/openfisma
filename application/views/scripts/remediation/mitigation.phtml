@@ -9,7 +9,7 @@
                 <tr>
                     <td align="left">
                         <b target="type" <?php
-        if(('NEW' == $this->poam['status'] || 'OPEN' == $this->poam['status'])&& Config_Fisma::isAllow('remediation','update_finding_course_of_action')){
+        if(('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status'])&& Config_Fisma::isAllow('remediation','update_finding_course_of_action')){
             echo 'class="editable"';
         }?> >Type:&nbsp;</b>
                     <span name="poam[type]" id="type" type="select" 
@@ -21,7 +21,7 @@
                 <tr>
                     <td>
                         <b target="action_planned" <?php 
-           if(in_array($this->poam['status'],array('NEW','OPEN'))
+           if(in_array($this->poam['status'],array('NEW','DRAFT'))
                 && Config_Fisma::isAllow('remediation','update_finding_course_of_action')){
                echo 'class="editable"';
            }?> >Description:&nbsp;</b>
@@ -38,7 +38,7 @@
             <table width="100%" cellpadding="5" class="tipframe">
                 <th align="left">
                 <span target="action_resources" <?php
-        if(in_array($this->poam['status'],array('NEW','OPEN'))
+        if(in_array($this->poam['status'],array('NEW','DRAFT'))
            && Config_Fisma::isAllow('remediation','update_finding_resources')){
             echo 'class="editable"';
         } ?> >Resources Required for Course of Action</span></th>
@@ -74,7 +74,7 @@
                         <b target="action_est_date"
                         <?php 
                             if(Config_Fisma::isAllow('remediation','update_finding_course_of_action')
-                                && in_array($this->poam['status'], array('NEW', 'OPEN'))){
+                                && in_array($this->poam['status'], array('NEW', 'DRAFT'))){
                                 echo 'class="editable"';
                             }
                         ?> >Current Expected Completion Date:&nbsp;</b>

@@ -17,7 +17,7 @@
 </form>
 <?php echo $this->partial('remediation/msa.phtml', array('poam'=>&$this->poam, 'ms_evals'=>$this->ms_evals));?>
 
-     <?php if($this->poam['status'] != 'NEW' || $this->poam['status'] != 'OPEN' ) { ?>
+     <?php if($this->poam['status'] != 'NEW' || $this->poam['status'] != 'DRAFT' ) { ?>
      <!-- Heading Block -->
      <div class="barleft">
      <div class="barright">

@@ -118,7 +118,7 @@ class RemediationController extends PoamBaseController
             $epSummaryTmp[$row['nickname']] = 0;
         }
     
-        $summaryTmp = array_merge(array('NEW'=>0, 'OPEN'=>0), $mpSummaryTmp);
+        $summaryTmp = array_merge(array('NEW'=>0, 'DRAFT'=>0), $mpSummaryTmp);
         $summaryTmp = array_merge($summaryTmp, array('EN'=>0));
         $summaryTmp = array_merge($summaryTmp, $epSummaryTmp);
         $summaryTmp = array_merge($summaryTmp, array('CLOSED'=>0, 'TOTAL'=>0));
@@ -147,12 +147,12 @@ class RemediationController extends PoamBaseController
         foreach ($sum as $id => & $s) {
             $summary[$id] = $summaryTmp;
             $summary[$id]['NEW'] = isset($s['NEW'])?$s['NEW']: 0;
-            $summary[$id]['OPEN'] = isset($s['OPEN'])?$s['OPEN']: 0;
+            $summary[$id]['DRAFT'] = isset($s['DRAFT'])?$s['DRAFT']: 0;
             $summary[$id]['EN'] = isset($s['EN'])?$s['EN']: 0;
             $summary[$id]['CLOSED'] = isset($s['CLOSED'])?$s['CLOSED']: 0;
             $summary[$id]['TOTAL'] = array_sum($s);
             $total['NEW']+= $summary[$id]['NEW'];
-            $total['OPEN']+= $summary[$id]['OPEN'];
+            $total['DRAFT']+= $summary[$id]['DRAFT'];
             $total['EN']+= $summary[$id]['EN'];
             $total['CLOSED']+= $summary[$id]['CLOSED'];
             $total['TOTAL']+= $summary[$id]['TOTAL'];
@@ -224,8 +224,8 @@ class RemediationController extends PoamBaseController
                 $internalCrit['status'] = 'NEW';
                 break;
 
-            case 'OPEN':
-                $internalCrit['status'] = 'OPEN';
+            case 'DRAFT':
+                $internalCrit['status'] = 'DRAFT';
                 break;
 
             case 'EN':
@@ -238,7 +238,7 @@ class RemediationController extends PoamBaseController
 
             case 'NOT-CLOSED':
                 $internalCrit['status'] = array(
-                    'OPEN',
+                    'DRAFT',
                     'MSA',
                     'EN',
                     'EP'
@@ -247,7 +247,7 @@ class RemediationController extends PoamBaseController
 
             case 'NOUP-30':
                 $internalCrit['status'] = array(
-                    'OPEN',
+                    'DRAFT',
                     'MSA',
                     'EN',
                     'EP'
@@ -257,7 +257,7 @@ class RemediationController extends PoamBaseController
 
             case 'NOUP-60':
                 $internalCrit['status'] = array(
-                    'OPEN',
+                    'DRAFT',
                     'MSA',
                     'EN',
                     'EP'
@@ -267,7 +267,7 @@ class RemediationController extends PoamBaseController
 
             case 'NOUP-90':
                 $internalCrit['status'] = array(
-                    'OPEN',
+                    'DRAFT',
                     'MSA',
                     'EN',
                     'EP'
@@ -505,7 +505,7 @@ class RemediationController extends PoamBaseController
                 foreach ($poam as $k => $v) {
                     if ($k == 'type' && $oldpoam['status'] == 'NEW') {
                         assert(empty($poam['status']));
-                        $poam['status'] = 'OPEN';
+                        $poam['status'] = 'DRAFT';
                         $poam['modify_ts'] = self::$now->toString('Y-m-d H:i:s');
                     }
                     ///@todo SSO can only approve the action after all the required
@@ -577,7 +577,7 @@ class RemediationController extends PoamBaseController
             } else {
                 $this->_poam->getAdapter()->delete('poam_evaluations', 'group_id = '.$poamId.' AND eval_id IN '.
                     '(SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
-                $poam['status'] = 'OPEN';
+                $poam['status'] = 'DRAFT';
             }
         }
 
@@ -606,7 +606,7 @@ class RemediationController extends PoamBaseController
                 }
             } 
             if ('DENIED' == $decision) {
-                $poam['status'] = 'OPEN';
+                $poam['status'] = 'DRAFT';
                 $topic = $this->_request->getParam('topic');
                 $body = $this->_request->getParam('reject');
                 $comm = new Comments();
@@ -614,7 +614,7 @@ class RemediationController extends PoamBaseController
                                     'user_id' => $this->_me->id,
                                     'date' => self::$now->toString('Y-m-d H:i:s'),
                                     'topic' => $topic));
-                $logContent .=" Status: OPEN. Justification: $topic";
+                $logContent .=" Status: DRAFT. Justification: $topic";
             }
 
             if (!empty($logContent)) {

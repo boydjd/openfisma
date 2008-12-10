@@ -34,7 +34,7 @@ function delok()
     if (0 == $complete) {
 ?>
 
-<?php if ('OPEN' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_submit')) { ?>
+<?php if ('DRAFT' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_submit')) { ?>
     <a class="button" href="<?php echo $postAction;?>/is_msa/1">Submit Mitigation Strategy</a><br><br>
 <?php } if ('EN' == $this->poam['status'] && Config_Fisma::isAllow('remediation', 'mitigation_strategy_revise')) { ?>
     <a class="button" href="<?php echo $postAction;?>/is_msa/0" onclick="return delok();">Revise Mitigation Strategy</a><br><br>
@@ -43,7 +43,7 @@ function delok()
     be fully completed before this can be submitted for approval.</i></p>
     <p></p>
 <?php }
-    if ($this->poam['status']!= 'NEW' && $this->poam['status']!= 'OPEN') {
+    if ($this->poam['status']!= 'NEW' && $this->poam['status']!= 'DRAFT') {
         $i = 0;
         foreach ($this->ms_evals as $v) {
             $k = $i++;

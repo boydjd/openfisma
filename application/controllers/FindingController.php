@@ -57,7 +57,7 @@ class FindingController extends PoamBaseController
         );
         if ($criteria['status'] == 'REMEDIATION') {
             $criteria['status'] = array(
-                'OPEN',
+                'DRAFT',
                 'MSA',
                 'EN',
                 'EP'

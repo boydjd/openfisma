@@ -86,7 +86,7 @@ class Poam extends Zend_Db_Table
      *          <dt>'type'=>(string|array)</dt><dd>poam type(s), namely 'CAP', 'AR', 'FP'.</dd>
      *          <dt>'mp'=>precedence_id(int)</dt><dd>a Mitigation Strategy Evaluation noted by precedence_id </dd>
      *          <dt>'ep'=>(int)</dt><dd>an Evidence Evaluationnoted by precedence_id </dd>
-     *          <dt>'status'=>(string|array)</dt><dd>poam status(s), namely 'NEW', 'OPEN', 'MSA', 'EN', 'EP', 'CLOSED'</dd>
+     *          <dt>'status'=>(string|array)</dt><dd>poam status(s), namely 'NEW', 'DRAFT', 'MSA', 'EN', 'EP', 'CLOSED'</dd>
      *          <dt>'ip'=>(string)</dt><dd>an asset's ip address</dd>
      *          <dt>'port'=>(int)</dt><dd> a service port of the asset</dd>
      *          <dt>'group'=>(string)</dt><dd>similar with SQL's GROUP BY. used in counting</dd>
@@ -407,14 +407,14 @@ class Poam extends Zend_Db_Table
         }
 
         //Threshold of overdue for various status
-        $overdue = array('open'=>30, 'mp'=>21, 'en'=>0, 'ep'=>14);
+        $overdue = array('draft'=>30, 'mp'=>21, 'en'=>0, 'ep'=>14);
         
         $time = new Zend_Date();
         $status = $criteria['status'];
         assert(is_string($status));
         if ('ontime' == $criteria['ontime']) {
-            if (in_array($status, array('NEW', 'OPEN'))) {
-                $time->sub($overdue['open'], Zend_Date::DAY);
+            if (in_array($status, array('NEW', 'DRAFT'))) {
+                $time->sub($overdue['draft'], Zend_Date::DAY);
                 if (!isset($criteria['createdDateBegin']) || $time->isLater($criteria['createdDateBegin'])) {
                     $criteria['createdDateBegin'] = $time;
                 }
@@ -437,8 +437,8 @@ class Poam extends Zend_Db_Table
                 unset($criteria['status']);
             }
         } else if ('overdue' == $criteria['ontime']) {
-            if (in_array($status, array('NEW', 'OPEN'))) {
-                $time->sub($overdue['open']+1, Zend_Date::DAY);
+            if (in_array($status, array('NEW', 'DRAFT'))) {
+                $time->sub($overdue['draft']+1, Zend_Date::DAY);
                 if (!isset($criteria['createdDateEnd']) || $time->isEarlier($criteria['createdDateEnd'])) {
                     $criteria['createdDateEnd'] = $time;
                 }

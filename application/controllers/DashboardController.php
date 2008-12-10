@@ -81,8 +81,8 @@ class DashboardController extends SecurityController
         
         $newCount  = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'), array('status' => 'NEW'));
-        $openCount = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'), array('status' => 'OPEN'));
+        $draftCount = $this->_poam->search($this->_allSystems, array(
+            'count' => 'count(*)'), array('status' => 'DRAFT'));
         $enCount = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'
         ), array(
@@ -100,7 +100,7 @@ class DashboardController extends SecurityController
         $alert = array();
         $alert['TOTAL'] = $total;
         $alert['NEW']  = $newCount;
-        $alert['OPEN'] = $openCount;
+        $alert['DRAFT'] = $draftCount;
         $alert['EN'] = $enCount;
         $alert['EO'] = $eoCount;
         $url = '/panel/remediation/sub/searchbox/s/search/status/';
@@ -150,7 +150,7 @@ class DashboardController extends SecurityController
         }
         $this->view->chart_type = $type;
         
-        //count normal status ( new, open, en)
+        //count normal status ( NEW, DRAFT, EN )
         $arrPoamInfo = $this->_poam->search($this->_me->systems, array(
             'count' => array(
                 'status'
@@ -160,13 +160,13 @@ class DashboardController extends SecurityController
             'system_id'
         ));
 
-        $arrTotal = array('NEW'=>0, 'OPEN'=>0, 'EN'=>0);
+        $arrTotal = array('NEW'=>0, 'DRAFT'=>0, 'EN'=>0);
         foreach ($arrPoamInfo as $arrPoam) {
             if (in_array($arrPoam['status'], array_keys($arrTotal))) {
                 $arrTotal[$arrPoam['status']] = $arrPoam['count'];
             }
         }
-        $arrTmpTotal = array('NEW'=>$arrTotal['NEW'], 'OPEN'=>$arrTotal['OPEN']);
+        $arrTmpTotal = array('NEW'=>$arrTotal['NEW'], 'DRAFT'=>$arrTotal['DRAFT']);
         $objEval = new Evaluation();
         //count mitigation strategy status 
         $arrMsaEvalList = $objEval->getEvalList('ACTION');

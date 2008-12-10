@@ -558,7 +558,7 @@ CREATE TABLE `poams` (
   `mss_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `close_ts` datetime default '0000-00-00 00:00:00',
   `type` enum('NONE','CAP','FP','AR') NOT NULL default 'NONE',
-  `status` enum('PEND','NEW','OPEN','MSA','EN','EP','CLOSED','DELETED') NOT NULL default 'NEW',
+  `status` enum('PEND','NEW','DRAFT','MSA','EN','EP','CLOSED','DELETED') NOT NULL default 'NEW',
   `is_repeat` tinyint(1) default NULL,
   `finding_data` text NOT NULL,
   `previous_audits` text,
@@ -869,10 +869,9 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (41);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-INSERT INTO `schema_version` VALUES (42);
+INSERT INTO `schema_version` VALUES (43);
 CREATE TABLE `sources` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -997,4 +996,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (43);
+INSERT INTO schema_version (schema_version) VALUES (44);
