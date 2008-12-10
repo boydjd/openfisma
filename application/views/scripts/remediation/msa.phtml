@@ -63,7 +63,7 @@ function delok()
         if ('NONE' == $value && $editable) {
             if(Config_Fisma::isAllow('remediation', $row['function'])){
                 echo '<input type="hidden" name="eval_id" value="'.$row['id'].'"/>';
-                echo '<input type="hidden" name="topic" value="" />';
+                echo '<input type="hidden" name="comment" value="" />';
                 echo '<input type="hidden" name="decision" value="APPROVED" />';
                 echo '<input type="submit" value="APPROVE" />';
                 echo '<input type="button" value="DENY" onclick="ms_comment(document.ms_approval_'.$k.');" />';
@@ -77,7 +77,7 @@ function delok()
                 $ret = $comment->fetchRow('poam_evaluation_id = '.$row['pev_id']);
                 echo "<td>";
                 if (!empty($ret)) {
-                    echo "<b>{$ret->topic}</b>";
+                    echo "<b>{$ret->content}</b>";
                 }
                 echo " -- <i> by {$row['username']} ON {$row['date']}</i></td>";
             }
@@ -89,9 +89,4 @@ function delok()
 </form>
 <?php } }?>
 
-<div id='ms_dialog' style="display:none">
-Topic:
-<input type="text" name="topic" size=80 value="" />
-</div>
 <!-- END MITIGATION STRATEGY APPROVAL TABLE -->
-

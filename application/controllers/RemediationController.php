@@ -607,14 +607,15 @@ class RemediationController extends PoamBaseController
             } 
             if ('DENIED' == $decision) {
                 $poam['status'] = 'DRAFT';
-                $topic = $this->_request->getParam('topic');
+                $comment = $this->_request->getParam('comment');
                 $body = $this->_request->getParam('reject');
                 $comm = new Comments();
                 $comm->insert(array('poam_evaluation_id' => $poamEvalId,
                                     'user_id' => $this->_me->id,
                                     'date' => self::$now->toString('Y-m-d H:i:s'),
-                                    'topic' => $topic));
-                $logContent .=" Status: DRAFT. Justification: $topic";
+                                    'content' => $comment,
+                                    'date' => new Zend_Db_Expr('NOW()')));
+                $logContent .=" Status: DRAFT. Justification: $comment";
             }
 
             if (!empty($logContent)) {
@@ -769,15 +770,16 @@ class RemediationController extends PoamBaseController
                 }
             } else {
                 $this->_poam->update(array('status' => 'EN'), 'id=' . $poamId);
-                $topic = $req->getParam('topic');
+                $content = $req->getParam('comment');
                 $body = $req->getParam('reject');
                 $comm = new Comments();
                 $comm->insert(array('poam_evaluation_id' => $evvId,
                                     'user_id' => $this->_me->id,
                                     'date' => 'CURDATE()',
-                                    'topic' => $topic));
+                                    'content' => $content,
+                                    'date' => new Zend_Db_Expr('NOW()')));
 
-                $logContent .= " Status: EN. Justification: $topic";
+                $logContent .= " Status: EN. Justification: $comment";
                 $this->_notification->add(Notification::EVIDENCE_DENIED,
                                           $this->_me->account,
                                           "PoamId: $poamId",

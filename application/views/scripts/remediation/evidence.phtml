@@ -57,10 +57,11 @@
                 echo '<input type="hidden" name="precedence" value="'.$v['precedence_id'].'"/>';
                 echo '<input type="hidden" name="topic" value="" />';
                 echo '<input type="hidden" name="reject" value="" />';
+                echo '<input type="hidden" name="comment" value="" />';
                 echo '<input type="hidden" name="decision" value="APPROVE" />';
                 echo '<input type="submit" value="APPROVE" />';
                 echo '<input type="button" value="DENY" '.
-                    'onclick="comment(document.eval_ev'.$evidence['id'].');" />';
+                    'onclick="ev_deny(document.eval_ev'.$evidence['id'].');" />';
             }else{
                 echo "$value </td>";
             }
@@ -73,7 +74,7 @@
                 $row = $comment->fetchRow('poam_evaluation_id = '.$evaluation[$name]['eval_id']);
                 echo "<td>";
                 if( !empty($row) ) {
-                    echo "<b>{$row->topic}</b>";
+                    echo "<b>{$row->content}</b>";
                 }
                 echo " -- <i> by $username ON $date </i></td>";
             }
@@ -83,8 +84,3 @@
     ?>
     </table>
 </form>
-
-<div id='comment_dialog' style="display:none">
-Justification:
-<input type="text" name="topic" size=80 value="" />
-</div>
