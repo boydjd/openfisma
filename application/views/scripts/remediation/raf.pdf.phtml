@@ -94,11 +94,11 @@
 
     $data = array(array("", "<b><i>LIKELIHOOD DETERMINATION</i></b>"));
     $pdf->ezTable($data, null, null, $labelOptions);
-    $data = array(array("The likelihood determination defines the likelihood or frequency of a harmful event occurring. The likelihood determination evaluates the severity of the vulnerability along with the existence and effectiveness of current controls."));
+    $data = array(array("The likelihood determination defines the likelihood or frequency of a harmful event occurring. The likelihood determination evaluates the threat level along with the existence and effectiveness of current controls."));
     $pdf->ezTable($data, null, null, $labelOptions);
 
-    $data = array(array("<b>Severity Description:</b>", strip_tags($p['threat_source']), "", ""),
-                  array("<b>Serverity Level:</b>", $p['threat_level'], "", ""),
+    $data = array(array("<b>Threat Description:</b>", strip_tags($p['threat_source']), "", ""),
+                  array("<b>Threat Level:</b>", $p['threat_level'], "", ""),
                   array("<b>Description of Countermeasures:</b>", strip_tags($p['cmeasure']), "", ""),
                   array("<b>Countermeasures Effectiveness:</b>", strip_tags($p['cmeasure_effectiveness']), "", ""));
     $pdf->ezTable($data, null, null, $labelOptions);
@@ -133,10 +133,10 @@
     $pdf->ezTable($data, null, null, $labelOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
 
-    $data = array(array("", "<b><i>Overall Risk Level</i></b>"));
+    $data = array(array("", "<b><i>Organizational Risk Level</i></b>"));
     $pdf->ezTable($data, null, null, $labelOptions);
 
-    $data = array(array("<b>                                             Overall Risk Level Analysis</b>"),
+    $data = array(array("<b>                                             Organizational Risk Level Analysis</b>"),
                   array("<b>                                                                       Security Categorization of Information System</b>")
 );
     $pdf->ezTable($data, null, null, $tableOptions);
@@ -144,7 +144,7 @@
 
     $data = array();
     $i = 0;
-    $data[0][0] = "<b>THREAT Likelihood</b>";
+    $data[0][0] = "<b>Threat Likelihood</b>";
     foreach ($columns as $security_categorization) {
         $i++;
         $data[0][$i] = "<b>$security_categorization</b>";
@@ -162,7 +162,7 @@
     }
      
     $pdf->ezTable($data, null, null, $tableOptions);
-    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_risk."</b> level of risk to agency operations. "));
+    $data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_risk."</b> level of risk to the organization. "));
     $pdf->ezTable($data, null, null, $labelOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
     

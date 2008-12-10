@@ -78,30 +78,25 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                 </tr>
                 <tr>
                     <td >
-                        Based on the guidance provided by NIST Special Publication 800-37, to derive an overall likelihood rating that indicates the probability that a potential vulnerability may be exercised, we must first define the threat-source motivation and capability while considering the nature of the vulnerability and the existence and effectiveness of current controls or countermeasures. The following two sections on Threat Information and Countermeasure Information will help us define the information required to generate a threat likelihood risk level which will be used to generate the overall risk level of this vulnerability as it pertains to your information system.
+                        The following section will be used to generate the overall risk level of this finding as it pertains to the organization. Risk is calculated by evaluating the security categorization of the information system along with the threat and existence of current countermeasures. 
                     </td>
                 </tr>
                 <tr><td>
         <?php 
+            // Check to see if the threat level/description and countermeasure level/description is set. If so, allow the user to generate a RAF
             if( $this->poam['threat_source'] != '' &&
                 $this->poam['threat_level'] != 'NONE' &&
                 $this->poam['cmeasure'] != '' &&
                 $this->poam['cmeasure_effectiveness'] != 'NONE'){
         ?>
                 <ul class='linwise' >
-                    <li> 
-                    <a class="button" target="_blank" 
-                    href="/remediation/raf/id/<?php echo $this->poam['id'];?>">
-                    View RAF
-                    </a>
-                    </li>
                     <li>
                     <a class='button' target='_blank' 
-                    href="/remediation/raf/format/pdf/id/<?php echo $this->poam['id'];?>")>Export to PDF</a>
+                    href="/remediation/raf/format/pdf/id/<?php echo $this->poam['id'];?>")>View Risk Analysis Form</a>
                     </li>
                 </ul>
         <?php } else { ?>
-            <i>(Threat and Countermeasure information must be completed to generate a RAF)</i>
+            <i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>
         <?php } ?>
             </td>
                 </tr>
@@ -114,15 +109,16 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
             <table cellpadding="5" cellspacing="1" class="tipframe" >
                 <tr><th align='left'>Threat Information</th></tr>
                 <tr>
-                    <td> A threat is the potential for a particular threat-source to successfully exercise a particular vulnerability. A vulnerability is a weakness that can be accidentally triggered or intentionally exploited. A threat-source does not present a risk when there is no vulnerability that can be exercised. In determining the likelihood of a threat, one must consider threat-sources, potential vulnerabilities, and existing controls. Common threat sources are: (1) Natural Threats: Floods, earthquakes, tornadoes, landslides, avalanches, electrical storms, and other such events, (2) Human Threats: Events that are either enabled by or caused by human beings, such as unintentional acts (inadvertent data entry) or deliberate actions (network based attacks, malicious software upload, unauthorized access to confidential information), and (3) Environmental Threats: Long-term power failure, pollution, chemicals, liquid leakage.
-                        </td>
+                    <td>
+                        A threat is the potential for a particular threat-source to successfully exercise a particular vulnerability. A vulnerability is a bug, flaw, weakness, or exposure of an application, system, device, or service that could lead to a failure of confidentiality, integrity, or availability. The threat level allows the organization to prioritize security weaknesses based on their level of threat to the information system. Usually, the security level and description are pre-populated from vulnerability scan data, however, manual findings need an assigned threat level and description.   
+                    </td>
                 </tr>
                 <tr>
                     <td>
                     <b target="threat" <?php 
                         if(Config_Fisma::isAllow('remediation','update_threat')){ 
                             echo ' class="editable"';
-                        } ?> >Serverity Level:&nbsp;</b>
+                        } ?> >Threat Level:&nbsp;</b>
                     <br><span id ="threat" type="select" name="poam[threat_level]"
                             href="/metainfo/list/o/threat_level/format/html/">
                         <?php echo $this->poam['threat_level']; ?>
@@ -134,7 +130,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                      <b target="threat_source" <?php 
                         if(Config_Fisma::isAllow('remediation','update_threat')){ 
                             echo 'class="editable"';
-                        } ?> >Severity Description:&nbsp;</b>
+                        } ?> >Threat Description:&nbsp;</b>
                      <br><span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
                      <?php echo nl2br($this->poam['threat_source']); ?>
                      </span>
@@ -147,7 +143,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                 <th align="left" colspan="2">Countermeasure Information</th>
                     <tr>
                         <td>
-                            The goal of this step is to analyze the controls that have been implemented, or are planned for implementation, by the organization to minimize or eliminate the likelihood (or probability) of a threat's exercising a system vulnerability. Countermeasures or Security controls encompass the use of technical and nontechnical methods. Technical controls are safeguards that are incorporated into computer hardware, software, or firmware (e.g., access control mechanisms, identification and authentication mechanisms, encryption methods, intrusion detection software). Nontechnical controls are management and operational controls, such as security policies; operational procedures; and personnel, physical, and environmental security.
+                            The goal of this step is to analyze the controls that are currently implemented by the organization to minimize or eliminate the likelihood (or probability) of the vulnerability being exercised or exploited. This should not include countermeasures that are planned and are not currently in place. Countermeasures or Security controls can be technical and nontechnical methods. Examples of technical controls would be; access control mechanisms, identification and authentication mechanisms, encryption methods, intrusion detection software, etc. Examples of nontechnical controls would be management and operational controls, such as; security policies, operational procedures, personnel, physical, and environmental security.
                         </td>
                     </tr>
                     <tr>
