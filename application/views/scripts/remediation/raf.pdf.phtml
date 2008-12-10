@@ -70,7 +70,7 @@
     $pdf->ezTable($data, null, null, $headerOptions);
     $pdf->ezText('', 12, array('justification'=>'center'));
     $data = array(array("<b>Type:</b>", strip_tags($p['type']), "", ""),
-                  array("<b>Description:</b>", strip_tags($p['action_resources']), "", ""),
+                  array("<b>Description:</b>", strip_tags($p['action_planned']), "", ""),
                   array("<b>Estimated Completion Date:</b>", $p['action_current_date'], "", "")); 
     $pdf->ezTable($data, null, null, $labelOptions);
 
@@ -90,11 +90,13 @@
     $data = array(array("", "<b><i>Security Categorization</i></b>"),
                   array("<b>Security Categorization:</b>", $this->securityCategorization),
                   array("<b>Security Categorization Description:</b>", !empty($effect)?"The loss of confidentiality, integrity, or availability could be expected to have a ".$effect." adverse effect on organizational operations, organizational assets, or individuals. This is the maximum level of risk exposure based on the Information System Security Categorization data.":"This system's Confidentiality, Integrity, and Availability are not defined; therefore, the system security categorization is also undefined."));
+
+    $pdf->ezText('', 12, array('justification'=>'center')); //vertical blank
     $pdf->ezTable($data, null, null, $labelOptions);
 
-    $data = array(array("", "<b><i>LIKELIHOOD DETERMINATION</i></b>"));
+    $data = array(array("", "<b><i>Threat Likelihood</i></b>"));
     $pdf->ezTable($data, null, null, $labelOptions);
-    $data = array(array("The likelihood determination defines the likelihood or frequency of a harmful event occurring. The likelihood determination evaluates the threat level along with the existence and effectiveness of current controls."));
+    $data = array(array("The threat likelihood defines the likelihood or frequency of a harmful event occurring. The likelihood determination evaluates the threat level along with the existence and effectiveness of current controls."));
     $pdf->ezTable($data, null, null, $labelOptions);
 
     $data = array(array("<b>Threat Description:</b>", strip_tags($p['threat_source']), "", ""),
@@ -103,14 +105,14 @@
                   array("<b>Countermeasures Effectiveness:</b>", strip_tags($p['cmeasure_effectiveness']), "", ""));
     $pdf->ezTable($data, null, null, $labelOptions);
 
-    $data = array(array("<b>                                               Overall Threat Likelihood Table</b>"),
+    $data = array(array("<b>                                                               Threat Likelihood Calculation</b>"),
                   array("<b>                                                                Countermeasure Effectiveness</b>")
 );
     $pdf->ezTable($data, null, null, $tableOptions);
     
     $data = array();
     $i = 0;
-    $data[0][0] = "<b>THREAT SOURCE</b>";
+    $data[0][0] = "<b>Threat Level</b>";
     foreach ($columns as $countermeasures) {
         $i++;
         $data[0][$i] = "<b>$countermeasures</b>";
