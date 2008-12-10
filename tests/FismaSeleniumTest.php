@@ -23,7 +23,7 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id:$
+ * @version   $Id$
  */
 
 // Run the application bootstrap in command line mode
@@ -46,7 +46,6 @@ define('SELENIUM_CONFIG_FILE', APPLICATION_ROOT . '/application/config/selenium.
  * sets up the server information for accessing Selenium RC.
  *
  * @package Test
- * @version $Id:$
  */
 abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCase
 {

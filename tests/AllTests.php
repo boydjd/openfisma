@@ -23,7 +23,7 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id:$
+ * @version   $Id$
  */
 
 // Run the application bootstrap in command line mode
@@ -45,7 +45,6 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
  * process.
  *
  * @package Test
- * @version $Id:$
  */
 class AllTests
 {

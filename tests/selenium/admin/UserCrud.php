@@ -23,7 +23,7 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id:$
+ * @version   $Id$
  */
 
 require_once(realpath(dirname(__FILE__) . '/../../FismaSeleniumTest.php'));
@@ -33,7 +33,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaSeleniumTest.php'));
  *
  * @package    Test
  * @subpackage Test_Admin
- * @version    $Id:$
+ * @version    $Id$
  */
 class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest
 {
