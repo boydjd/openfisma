@@ -120,7 +120,7 @@ class SystemController extends SecurityController
      */     
     public function listAction()
     {
-        $this->_helper->requirePrivilege('admin_systems', 'read');
+        $this->_acl->requirePrivilege('admin_systems', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -147,7 +147,7 @@ class SystemController extends SecurityController
      */
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('admin_systems', 'read');
+        $this->_acl->requirePrivilege('admin_systems', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -177,7 +177,7 @@ class SystemController extends SecurityController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('admin_systems', 'create');
+        $this->_acl->requirePrivilege('admin_systems', 'create');
         
         $form = $this->getSystemForm('system');
         $system = $this->_request->getPost();
@@ -231,7 +231,7 @@ class SystemController extends SecurityController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('admin_systems', 'delete');
+        $this->_acl->requirePrivilege('admin_systems', 'delete');
         
         $errno = 0;
         $req = $this->getRequest();
@@ -274,7 +274,7 @@ class SystemController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_systems', 'read');
+        $this->_acl->requirePrivilege('admin_systems', 'read');
         
         $form = $this->getSystemForm();
         $id = $this->_request->getParam('id');
@@ -317,7 +317,7 @@ class SystemController extends SecurityController
      */
     public function updateAction ()
     {
-        $this->_helper->requirePrivilege('admin_systems', 'update');
+        $this->_acl->requirePrivilege('admin_systems', 'update');
         
         $form = $this->getSystemForm();
         $formValid = $form->isValid($_POST);

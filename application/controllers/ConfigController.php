@@ -63,7 +63,7 @@ class ConfigController extends SecurityController
 
     public function indexAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         $this->_helper->viewRenderer->setNoRender();
         $this->_helper->actionStack('password');
         $this->_helper->actionStack('notification');
@@ -75,7 +75,7 @@ class ConfigController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         // Fill up with data
         $form = $this->getConfigForm('general_config');
@@ -150,7 +150,7 @@ class ConfigController extends SecurityController
      */
     public function contactAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         $config = new Config();
         $form = $this->getConfigForm('contact_config');
@@ -189,7 +189,7 @@ class ConfigController extends SecurityController
      */
     public function ldapupdateAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         $form = $this->getForm('ldap');
         $id = $this->_request->getParam('id');
@@ -220,7 +220,7 @@ class ConfigController extends SecurityController
      */
     public function ldapdelAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         $id = $this->_request->getParam('id');
         $this->_config->delLdap($id);
@@ -237,7 +237,7 @@ class ConfigController extends SecurityController
      */
     public function ldapvalidAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         $form = $this->getForm('ldap');
         if ($this->_request->isPost()) {
@@ -266,7 +266,7 @@ class ConfigController extends SecurityController
      */
     public function notificationAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         $config = new Config();
         $form = $this->getConfigForm('notification_config');
@@ -303,7 +303,7 @@ class ConfigController extends SecurityController
      */
     public function privacyAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         $config = new Config();
         $form = $this->getConfigForm('privacy_policy_config');
@@ -337,7 +337,7 @@ class ConfigController extends SecurityController
      */
     public function passwordAction()
     {
-        $this->_helper->requirePrivilege('app_configuration', 'update');
+        $this->_acl->requirePrivilege('app_configuration', 'update');
         
         $config = new Config();
         $form = $this->getConfigForm('password_config');

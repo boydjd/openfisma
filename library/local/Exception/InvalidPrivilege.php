@@ -20,7 +20,7 @@
  * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: FindingController.php 1054 2008-10-21 23:34:58Z ford_james $
+ * @version   $Id$
  */
 
 /**
@@ -29,6 +29,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Exception_PrivilegeViolation extends Exception_General
+class Exception_InvalidPrivilege extends Zend_Acl_Exception
 {
 }

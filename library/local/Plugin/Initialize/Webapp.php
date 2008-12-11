@@ -126,16 +126,6 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
      */
     public function initPlugins()
     {
-        /*
-        // The installer has its own error handler which is registered here:
-        $this->_front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
-            array(
-                'model' => null,
-                'controller' => 'Install',
-                'action' => 'error'
-                )
-            ));
-        */
     }
 
     /**
@@ -182,6 +172,5 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         // instead of standard ISO format. This is convenient for interfacing Zend_Date
         // with legacy PHP code.
         Zend_Date::setOptions(array('format_type' => 'php'));
-        $this->_front->throwExceptions(true);
     }
 }

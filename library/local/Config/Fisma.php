@@ -154,6 +154,7 @@ class Config_Fisma
             //using default configuration
             $config = new Zend_Config(array());
         }
+
         if (!empty($config->debug)) {
             if ($config->debug->level > 0) {
                 self::$_debug = true;
@@ -223,8 +224,8 @@ class Config_Fisma
             }
         }
         $frontController->registerPlugin($initPlugin);
-
-            
+        $flag = self::readSysConfig('throw_exception');
+        $frontController->throwExceptions('1'===$flag);
     }
     
     /**
@@ -283,34 +284,6 @@ class Config_Fisma
         }
         return $this->_log;
     }
-    
-    /** 
-        Exam the Acl of the existing logon user to decide permission or denial.
-
-        @param $resource resources
-        @param $action actions
-        @return bool permit or not
-    */
-    function isAllow($resource, $action)
-    {
-        $auth = Zend_Auth::getInstance();
-        $me = $auth->getIdentity();
-        if ( $me->account == "root" ) {
-            return true;
-        }
-        $roleArray = &$me->roleArray;
-        $acl = Zend_Registry::get('acl');
-        try{
-            foreach ($roleArray as $role) {
-                if ( true == $acl->isAllowed($role, $resource, $action) ) {
-                    return true;
-                }
-            }
-        } catch(Zend_Acl_Exception $e){
-            /// @todo acl log information
-        }
-        return false;
-    }
 
     /** 
         Read configurations of any sections.
@@ -323,9 +296,11 @@ class Config_Fisma
     function readSysConfig($key, $isFresh = false)
     {
         assert(!empty($key) && is_bool($isFresh));
-        if (!Zend_Registry::isRegistered('FISMA_REG') || 
-                !Zend_Registry::get('FISMA_REG')->isFresh) {
-            $m = new Config();
+        if (self::isInstall() && 
+            (!Zend_Registry::isRegistered('FISMA_REG') 
+             || !Zend_Registry::get('FISMA_REG')->isFresh)) {         
+            $db = Zend_Db::factory(Zend_Registry::get('datasource'));
+            $m = new Config($db);
             $pairs = $m->fetchAll();
             $configs = array();
             foreach ($pairs as $v) {

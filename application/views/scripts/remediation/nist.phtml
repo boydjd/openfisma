@@ -7,7 +7,7 @@
         <table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
             <tr>
                 <th align="left" ><span target="blscr" <?php
-                    if(Config_Fisma::isAllow('remediation','update_control_assignment')){
+                    if($this->acl->isAllowed('remediation','update_control_assignment')){
                         echo ' class="editable"';
                     }
                 ?> >Security Control:&nbsp;</span>
@@ -70,7 +70,7 @@
 </div>
 </div>
 <?
-if (Config_Fisma::isAllow('report','generate_system_rafs')) {
+if ($this->acl->isAllowed('report','generate_system_rafs')) {
 ?>
             <table class="tipframe">
                 <tr>
@@ -116,7 +116,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                 <tr>
                     <td>
                     <b target="threat" <?php 
-                        if(Config_Fisma::isAllow('remediation','update_threat')){ 
+                        if($this->acl->isAllowed('remediation','update_threat')){ 
                             echo ' class="editable"';
                         } ?> >Threat Level:&nbsp;</b>
                     <br><span id ="threat" type="select" name="poam[threat_level]"
@@ -128,7 +128,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                  <tr>
                      <td>
                      <b target="threat_source" <?php 
-                        if(Config_Fisma::isAllow('remediation','update_threat')){ 
+                        if($this->acl->isAllowed('remediation','update_threat')){ 
                             echo 'class="editable"';
                         } ?> >Threat Description:&nbsp;</b>
                      <br><span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
@@ -149,7 +149,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                     <tr>
                         <td>
                             <b target="effectiveness" <?php 
-                                if(Config_Fisma::isAllow('remediation','update_countermeasures')){
+                                if($this->acl->isAllowed('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 }?> >Countermeasures Effectiveness:&nbsp;</b>
                             <br><span type="select" name="poam[cmeasure_effectiveness]"
@@ -161,7 +161,7 @@ if (Config_Fisma::isAllow('report','generate_system_rafs')) {
                     <tr>
                         <td>
                             <b target="cmeasure" <?php 
-                                if(Config_Fisma::isAllow('remediation','update_countermeasures')){
+                                if($this->acl->isAllowed('remediation','update_countermeasures')){
                                     echo 'class="editable"';
                                 } ?> >Description of Countermeasures:&nbsp;</b>
                             <br><span type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">

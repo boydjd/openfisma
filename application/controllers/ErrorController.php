@@ -44,7 +44,6 @@ class ErrorController extends Zend_Controller_Action
         // If an error occurs in any context other than the default, then the view suffix will have changed; therefore,
         // we should always reset the view suffix before rendering an error message.
         $this->_helper->viewRenderer->setViewSuffix('phtml');
-
         $content = null;
         $errors = $this->_getParam('error_handler');
         $this->_helper->layout->setLayout('error');
@@ -58,7 +57,14 @@ class ErrorController extends Zend_Controller_Action
         $logger = Config_Fisma::getLogInstance();
         $logger->log($content, Zend_Log::ERR);
         $this->view->content = $content;
-        $this->_helper->actionStack('header', 'panel');
+
+        $front = Zend_Controller_Front::getInstance();
+        if ($front->hasPlugin('Zend_Controller_Plugin_ActionStack')) {
+            //clear the action stack to prevent additional exceptions would be throwed
+            $stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack');
+            while($stack->popStack());
+            $this->_helper->actionStack('header', 'panel');
+        }
     }
     /**
      * Error handler for input validation error

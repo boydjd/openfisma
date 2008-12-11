@@ -72,7 +72,7 @@ class AssetController extends PoamBaseController
      */
     public function searchAction()
     {
-        $this->_helper->requirePrivilege('asset', 'read');
+        $this->_acl->requirePrivilege('asset', 'read');
         
         $req = $this->getRequest();
         $systemId = $req->getParam('sid');
@@ -104,7 +104,7 @@ class AssetController extends PoamBaseController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('asset', 'create');
+        $this->_acl->requirePrivilege('asset', 'create');
         
         $systems = new System();
         $user = new User();
@@ -157,7 +157,7 @@ class AssetController extends PoamBaseController
      */
     public function detailAction()
     {
-        $this->_helper->requirePrivilege('asset', 'read');
+        $this->_acl->requirePrivilege('asset', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -195,8 +195,7 @@ class AssetController extends PoamBaseController
      */
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('asset', 'read');
-        
+        $this->_acl->requirePrivilege('asset', 'read');
         $req = $this->getRequest();
         $criteria['system_id'] = $req->get('system_id');
         $criteria['product'] = $req->get('product');
@@ -276,7 +275,7 @@ class AssetController extends PoamBaseController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('asset', 'read');
+        $this->_acl->requirePrivilege('asset', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -323,7 +322,7 @@ class AssetController extends PoamBaseController
      */
     public function updateAction()
     {
-        $this->_helper->requirePrivilege('asset', 'update');
+        $this->_acl->requirePrivilege('asset', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -363,7 +362,7 @@ class AssetController extends PoamBaseController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('asset', 'delete');
+        $this->_acl->requirePrivilege('asset', 'delete');
         
         $req = $this->getRequest();
         $post = $req->getPost();

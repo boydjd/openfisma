@@ -85,7 +85,7 @@ class ReportController extends PoamBaseController
      */
     public function fismaAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_fisma_report');
+        $this->_acl->requirePrivilege('report', 'generate_fisma_report');
 
         $req = $this->getRequest();
         $criteria['year'] = $req->getParam('y');
@@ -214,7 +214,7 @@ class ReportController extends PoamBaseController
      */
     public function poamAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_poam_report');
+        $this->_acl->requirePrivilege('report', 'generate_poam_report');
         
         $req = $this->getRequest();
         $params['system_id'] = $req->getParam('system_id');
@@ -300,7 +300,7 @@ class ReportController extends PoamBaseController
      */
     public function overdueAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_overdue_report');
+        $this->_acl->requirePrivilege('report', 'generate_overdue_report');
         
         // Get request variables
         $req = $this->getRequest();
@@ -398,7 +398,7 @@ class ReportController extends PoamBaseController
      */
     public function generalAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_general_report');
+        $this->_acl->requirePrivilege('report', 'generate_general_report');
         
         $req = $this->getRequest();
         $type = $req->getParam('type', '');
@@ -433,7 +433,7 @@ class ReportController extends PoamBaseController
      * blscrAction() - Generate BLSCR report
      */
     public function blscrAction() {
-        $this->_helper->requirePrivilege('report', 'generate_general_report');
+        $this->_acl->requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $system = new system();
@@ -478,7 +478,7 @@ class ReportController extends PoamBaseController
      */
     public function fipsAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_general_report');
+        $this->_acl->requirePrivilege('report', 'generate_general_report');
         
         require_once('RiskAssessment.php');
         $system = new system();
@@ -525,7 +525,7 @@ class ReportController extends PoamBaseController
      */
     public function prodsAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_general_report');
+        $this->_acl->requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
@@ -550,7 +550,7 @@ class ReportController extends PoamBaseController
      */
     public function swdiscAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_general_report');
+        $this->_acl->requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
@@ -571,7 +571,7 @@ class ReportController extends PoamBaseController
      */
     public function totalAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_general_report');
+        $this->_acl->requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $system = new system();
@@ -618,7 +618,7 @@ class ReportController extends PoamBaseController
      */
     public function rafsAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_system_rafs');
+        $this->_acl->requirePrivilege('report', 'generate_system_rafs');
         
         $sid = $this->_req->getParam('system_id');
         $this->view->assign('system_list', $this->_systemList);
@@ -669,7 +669,7 @@ class ReportController extends PoamBaseController
      */         
     public function pluginAction() 
     {
-        $this->_helper->requirePrivilege('report', 'read');
+        $this->_acl->requirePrivilege('report', 'read');
         
         // Build up report menu
         $reportsConfig = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/reports.conf');
@@ -684,7 +684,7 @@ class ReportController extends PoamBaseController
      */         
     public function pluginReportAction()
     {
-        $this->_helper->requirePrivilege('report', 'read');
+        $this->_acl->requirePrivilege('report', 'read');
         
         // Verify a plugin report name was passed to this action
         $reportName = $this->_req->getParam('name');

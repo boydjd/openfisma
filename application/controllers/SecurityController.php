@@ -40,6 +40,11 @@ class SecurityController extends MessageController
      */
     protected $_me = null;
     /**
+     * role instance
+     *
+     */
+    protected $_acl = null;
+    /**
      * rules to sanity check the data
      */
     protected $_validator = null;
@@ -75,7 +80,7 @@ class SecurityController extends MessageController
             // refresh the expiring timer
             $exps = new Zend_Session_Namespace($store->getNamespace());
             $exps->setExpirationSeconds(Config_Fisma::readSysConfig('expiring_seconds'));
-            $this->initializeAcl($this->_me->id);
+            $this->_acl = $this->initializeAcl($this->_me->id);
             $user = new User();
             $this->_me->systems = $user->getMySystems($this->_me->id);
             if (isset($this->_sanity['data'])) {
@@ -85,6 +90,7 @@ class SecurityController extends MessageController
             }
         }
         $this->_notification = new Notification();
+        $this->view->assign('acl', $this->_acl);
     }
 
     public function preDispatch()
@@ -104,7 +110,7 @@ class SecurityController extends MessageController
     protected function initializeAcl($uid)
     {
         if (!Zend_Registry::isRegistered('acl')) {
-            $acl = new Zend_Acl();
+            $acl = new Fismacl();
             $db = Zend_Registry::get('db');
             $query = $db->select()->from(array(
                 'r' => 'roles'

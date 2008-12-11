@@ -70,7 +70,7 @@ class SourceController extends SecurityController
      */
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('admin_sources', 'read');
+        $this->_acl->requirePrivilege('admin_sources', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -100,7 +100,7 @@ class SourceController extends SecurityController
     */
     public function listAction()
     {
-        $this->_helper->requirePrivilege('admin_sources', 'read');
+        $this->_acl->requirePrivilege('admin_sources', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -120,7 +120,7 @@ class SourceController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_sources', 'read');
+        $this->_acl->requirePrivilege('admin_sources', 'read');
         
         $form = $this->getSourceForm();
         $id = $this->_request->getParam('id');
@@ -149,7 +149,7 @@ class SourceController extends SecurityController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('admin_sources', 'create');
+        $this->_acl->requirePrivilege('admin_sources', 'create');
 
         // Get the source form
         $form = $this->getSourceForm();
@@ -170,7 +170,7 @@ class SourceController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_helper->requirePrivilege('admin_sources', 'update');
+        $this->_acl->requirePrivilege('admin_sources', 'update');
         
         $form = $this->getSourceForm();
         $post = $this->_request->getPost();
@@ -214,7 +214,7 @@ class SourceController extends SecurityController
 
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('admin_sources', 'delete');
+        $this->_acl->requirePrivilege('admin_sources', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -248,7 +248,7 @@ class SourceController extends SecurityController
      */
     public function updateAction ()
     {
-        $this->_helper->requirePrivilege('admin_sources', 'update');
+        $this->_acl->requirePrivilege('admin_sources', 'update');
         
         $form = $this->getSourceForm();
         $post = $this->_request->getPost();

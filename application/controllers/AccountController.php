@@ -58,6 +58,7 @@ class AccountController extends SecurityController
 
     public function preDispatch()
     {
+        parent::preDispatch();
         $req = $this->getRequest();
         $this->_pagingBasePath = $req->getBaseUrl() . '/panel/account/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
@@ -125,7 +126,7 @@ class AccountController extends SecurityController
      */
     public function searchboxAction()
     {
-        $this->_helper->RequirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('admin_users', 'read');
 
         $fid = $this->_request->getParam('fid');
         $qv  = $this->_request->getParam('qv');
@@ -155,7 +156,7 @@ class AccountController extends SecurityController
      */
     public function listAction()
     {
-        $this->_helper->RequirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('admin_users', 'read');
         
         // Set up the query to get the full list of users
         $user = new User();
@@ -205,7 +206,7 @@ class AccountController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('admin_users', 'read');
         $form = $this->getAccountForm();
         
         // $id is the user id of the record that should be displayed
@@ -289,7 +290,7 @@ class AccountController extends SecurityController
      */
     public function updateAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'update');
+        $this->_acl->requirePrivilege('admin_users', 'update');
         
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
@@ -437,7 +438,7 @@ class AccountController extends SecurityController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'delete');
+        $this->_acl->requirePrivilege('admin_users', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -471,7 +472,7 @@ class AccountController extends SecurityController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'create');
+        $this->_acl->requirePrivilege('admin_users', 'create');
         
         // Get the account form
         $form = $this->getAccountForm();
@@ -502,7 +503,7 @@ class AccountController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'update');
+        $this->_acl->requirePrivilege('admin_users', 'update');
         
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
@@ -611,7 +612,7 @@ class AccountController extends SecurityController
      */
     public function checkdnAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('admin_users', 'read');
         
         $config = new Config();
         $data = $config->getLdap();
@@ -647,7 +648,7 @@ class AccountController extends SecurityController
      */
     public function assignroleAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'update');
+        $this->_acl->requirePrivilege('admin_users', 'update');
         
         $req = $this->getRequest();
         $userId = $req->getParam('id');
@@ -761,7 +762,7 @@ class AccountController extends SecurityController
      */
     public function searchprivilegeAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('admin_users', 'read');
         
         $req = $this->_request;
         $db = $this->_user->getAdapter();

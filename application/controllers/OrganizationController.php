@@ -81,7 +81,7 @@ class OrganizationController extends SecurityController
      */
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('admin_organizations', 'read');
+        $this->_acl->requirePrivilege('admin_organizations', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -111,7 +111,7 @@ class OrganizationController extends SecurityController
      */     
     public function listAction()
     {
-        $this->_helper->requirePrivilege('admin_organizations', 'read');
+        $this->_acl->requirePrivilege('admin_organizations', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -131,7 +131,7 @@ class OrganizationController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_organizations', 'read');
+        $this->_acl->requirePrivilege('admin_organizations', 'read');
         
         $form = $this->getOrganizationForm();
         $id = $this->_request->getParam('id');
@@ -170,7 +170,7 @@ class OrganizationController extends SecurityController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('admin_organizations', 'create');
+        $this->_acl->requirePrivilege('admin_organizations', 'create');
         
         $form = $this->getOrganizationForm();
         $organization = $this->_request->getPost();
@@ -223,7 +223,7 @@ class OrganizationController extends SecurityController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('admin_organizations', 'delete');
+        $this->_acl->requirePrivilege('admin_organizations', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -259,7 +259,7 @@ class OrganizationController extends SecurityController
      */
     public function updateAction ()
     {
-        $this->_helper->requirePrivilege('admin_organizations', 'update');
+        $this->_acl->requirePrivilege('admin_organizations', 'update');
         
         $form = $this->getOrganizationForm();
         $formValid = $form->isValid($_POST);

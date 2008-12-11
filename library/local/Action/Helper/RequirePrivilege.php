@@ -64,7 +64,7 @@ class Action_Helper_RequirePrivilege extends Zend_Controller_Action_Helper_Abstr
             }
         } catch (Zend_Acl_Exception  $e) {
             $request = $this->getRequest();
-    
+
             if ($request instanceof Zend_Controller_Request_Abstract === false){
                 /**
                  * @see Zend_Controller_Action_Exception

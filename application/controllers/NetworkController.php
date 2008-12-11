@@ -90,7 +90,7 @@ class NetworkController extends SecurityController
      */
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('admin_networks', 'read');
+        $this->_acl->requirePrivilege('admin_networks', 'read');
         
         $fid = $this->_request->getParam('fid');
         $qv = $this->_request->getParam('qv');
@@ -119,7 +119,7 @@ class NetworkController extends SecurityController
      */
     public function listAction()
     {
-        $this->_helper->requirePrivilege('admin_networks', 'read');
+        $this->_acl->requirePrivilege('admin_networks', 'read');
         
         $field = $this->_request->getParam('fid');
         $value = trim($this->_request->getParam('qv'));
@@ -138,7 +138,7 @@ class NetworkController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_networks', 'read');
+        $this->_acl->requirePrivilege('admin_networks', 'read');
         
         $form = $this->getNetworkForm();
         $id = $this->_request->getParam('id');
@@ -167,7 +167,7 @@ class NetworkController extends SecurityController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('admin_networks', 'create');
+        $this->_acl->requirePrivilege('admin_networks', 'create');
 
         // Get the network form
         $form = $this->getNetworkForm();
@@ -188,7 +188,7 @@ class NetworkController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_helper->requirePrivilege('admin_networks', 'update');
+        $this->_acl->requirePrivilege('admin_networks', 'update');
         
         $form = $this->getNetworkForm();
         $post = $this->_request->getPost();
@@ -235,7 +235,7 @@ class NetworkController extends SecurityController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('admin_networks', 'delete');
+        $this->_acl->requirePrivilege('admin_networks', 'delete');
         
         $id = $this->_request->getParam('id');
         $db = $this->_network->getAdapter();
@@ -268,7 +268,7 @@ class NetworkController extends SecurityController
      */
     public function updateAction ()
     {
-        $this->_helper->requirePrivilege('admin_networks', 'update');
+        $this->_acl->requirePrivilege('admin_networks', 'update');
         
         $form = $this->getNetworkForm();
         $post = $this->_request->getPost();

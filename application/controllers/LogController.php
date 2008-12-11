@@ -45,7 +45,7 @@ class LogController extends PoamBaseController
      */
     public function searchboxAction()
     {
-        $this->_helper->RequirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('admin_users', 'read');
         
         $user = new User();
         $userCount = $user->count();
@@ -90,7 +90,7 @@ class LogController extends PoamBaseController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('admin_users', 'read');
         
         // Set up the query to get the full list of user logs
         $qry = $this->_log->select()

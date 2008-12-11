@@ -77,27 +77,24 @@ class FindingController extends PoamBaseController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('finding', 'read');
-        
+        $this->_acl->requirePrivilege('finding', 'read');
         $req = $this->getRequest();
         $id = $req->getParam('id', 0);
         assert($id);
         $this->view->assign('id', $id);
-        if (Config_Fisma::isAllow('finding', 'read')) {
-            $sys = new System();
-            $poam = new Poam();
-            $detail = $poam->find($id)->current();
-            $this->view->finding = $poam->getDetail($id);
-            $this->view->finding['system_name'] = 
-                    $this->_systemList[$this->view->finding['system_id']];
-        }
+        $sys = new System();
+        $poam = new Poam();
+        $detail = $poam->find($id)->current();
+        $this->view->finding = $poam->getDetail($id);
+        $this->view->finding['system_name'] = 
+                $this->_systemList[$this->view->finding['system_id']];
     }
     /**
      Edit finding infomation
      */
     public function editAction()
     {
-        $this->_helper->requirePrivilege('finding', 'update');
+        $this->_acl->requirePrivilege('finding', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -126,7 +123,7 @@ class FindingController extends PoamBaseController
      */
     public function injectionAction()
     {
-        $this->_helper->requirePrivilege('finding', 'inject');
+        $this->_acl->requirePrivilege('finding', 'inject');
 
         // If the form isn't submitted, then there is no work to do
         if (!isset($_POST['submit'])) {
@@ -287,7 +284,7 @@ class FindingController extends PoamBaseController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('finding', 'create');
+        $this->_acl->requirePrivilege('finding', 'create');
         
         if ("new" == $this->_request->getParam('is')) {
             $poam = $this->_request->getPost('poam');
@@ -341,7 +338,7 @@ class FindingController extends PoamBaseController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('finding', 'delete');
+        $this->_acl->requirePrivilege('finding', 'delete');
         
         $req = $this->getRequest();
         $post = $req->getPost();
@@ -382,7 +379,7 @@ class FindingController extends PoamBaseController
      */
     public function templateAction()
     {
-        $this->_helper->requirePrivilege('finding', 'inject');
+        $this->_acl->requirePrivilege('finding', 'inject');
         
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addContext('xls', array(
@@ -447,7 +444,7 @@ class FindingController extends PoamBaseController
      */
     public function pluginAction()
     {       
-        $this->_helper->requirePrivilege('finding', 'inject');
+        $this->_acl->requirePrivilege('finding', 'inject');
 
         // Load the finding plugin form
         $uploadForm = Form_Manager::loadForm('finding_upload');
@@ -537,7 +534,7 @@ class FindingController extends PoamBaseController
      * @todo Use Zend_Pager
      */
     public function approveAction() {
-        $this->_helper->requirePrivilege('finding', 'approve');
+        $this->_acl->requirePrivilege('finding', 'approve');
         
         $db = Zend_Registry::get('db');
         $findings = $db->fetchAll("SELECT new_poam.id,
@@ -564,7 +561,7 @@ class FindingController extends PoamBaseController
      * @todo Add audit logging
      */
     public function processApprovalAction() {
-        $this->_helper->requirePrivilege('finding', 'approve');
+        $this->_acl->requirePrivilege('finding', 'approve');
         
         $db = Zend_Registry::get('db');
         $post = $this->getRequest()->getPost();

@@ -60,7 +60,7 @@ class DashboardController extends SecurityController
      */
     public function indexAction()
     {
-        $this->_helper->requirePrivilege('dashboard', 'read');
+        $this->_acl->requirePrivilege('dashboard', 'read');
         
         // Check to see if we got passed a "dismiss" parameter to dismiss
         // notifications
@@ -137,7 +137,7 @@ class DashboardController extends SecurityController
      */
     public function totalstatusAction()
     {
-        $this->_helper->requirePrivilege('dashboard', 'read');
+        $this->_acl->requirePrivilege('dashboard', 'read');
         
         $poam = $this->_poam;
         $req = $this->getRequest();
@@ -214,7 +214,7 @@ class DashboardController extends SecurityController
      */
     public function totaltypeAction()
     {
-        $this->_helper->requirePrivilege('dashboard', 'read');
+        $this->_acl->requirePrivilege('dashboard', 'read');
         
         $ret = $this->_poam->search($this->_allSystems, array(
             'count' => 'type',

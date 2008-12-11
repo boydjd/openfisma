@@ -73,7 +73,7 @@ class ProductController extends SecurityController
      */
     public function searchAction()
     {
-        $this->_helper->requirePrivilege('admin_products', 'read');
+        $this->_acl->requirePrivilege('admin_products', 'read');
         
         $product = new Product();
         $req = $this->getRequest();
@@ -104,7 +104,7 @@ class ProductController extends SecurityController
      */
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('admin_products', 'read');
+        $this->_acl->requirePrivilege('admin_products', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -134,7 +134,7 @@ class ProductController extends SecurityController
      */
     public function listAction()
     {
-        $this->_helper->requirePrivilege('admin_products', 'read');
+        $this->_acl->requirePrivilege('admin_products', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -155,7 +155,7 @@ class ProductController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_products', 'read');
+        $this->_acl->requirePrivilege('admin_products', 'read');
         
         $form = $this->getProductForm();
         $id = $this->_request->getParam('id');
@@ -183,8 +183,8 @@ class ProductController extends SecurityController
      * Display the form for creating a new product.
      */
     public function createAction()
-    {
-        $this->_helper->requirePrivilege('admin_products', 'create');
+    {   
+        $this->_acl->requirePrivilege('admin_products', 'create');
 
         // Get the product form
         $form = $this->getProductForm();
@@ -205,7 +205,7 @@ class ProductController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_helper->requirePrivilege('admin_products', 'update');
+        $this->_acl->requirePrivilege('admin_products', 'update');
         
         $form = $this->getProductForm();
         $post = $this->_request->getPost();
@@ -252,7 +252,7 @@ class ProductController extends SecurityController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('admin_products', 'delete');
+        $this->_acl->requirePrivilege('admin_products', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -284,7 +284,7 @@ class ProductController extends SecurityController
      */
     public function updateAction ()
     {
-        $this->_helper->requirePrivilege('admin_products', 'update');
+        $this->_acl->requirePrivilege('admin_products', 'update');
         
         $form = $this->getProductForm();
         $post = $this->_request->getPost();

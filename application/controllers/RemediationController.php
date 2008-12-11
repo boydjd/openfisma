@@ -59,7 +59,7 @@ class RemediationController extends PoamBaseController
     
     public function indexAction()
     {
-        $this->_helper->requirePrivilege('remediation', 'read');
+        $this->_acl->requirePrivilege('remediation', 'read');
         
         $this->_helper->actionStack('searchbox', 'Remediation');
         $this->_helper->actionStack('summary', 'Remediation');
@@ -70,7 +70,7 @@ class RemediationController extends PoamBaseController
      */
     public function summaryAction()
     {
-        $this->_helper->requirePrivilege('remediation', 'read');
+        $this->_acl->requirePrivilege('remediation', 'read');
         $criteria['sourceId'] = $this->_request->getParam('source_id', 0);
         $criteria['type'] = $this->_request->getParam('type');
         $criteria['notStatus'] = 'PEND'; //exclude pending findings from the search criteria
@@ -322,7 +322,7 @@ class RemediationController extends PoamBaseController
     }
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('remediation', 'read');
+        $this->_acl->requirePrivilege('remediation', 'read');
         
         $req = $this->getRequest();
         $this->_pagingBasePath.= '/panel/remediation/sub/searchbox/s/search';
@@ -395,7 +395,7 @@ class RemediationController extends PoamBaseController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('remediation', 'read');
+        $this->_acl->requirePrivilege('remediation', 'read');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -460,6 +460,7 @@ class RemediationController extends PoamBaseController
             if (!isset($evs[$evid]['ev'])) {
                 $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
             }
+            $evs[$evid]['acl'] = $this->_acl;
             $evs[$evid]['eval'][$evEval['eval_name']] =
                 array_slice($evEval, 5);
         }
@@ -478,7 +479,7 @@ class RemediationController extends PoamBaseController
      */
     public function modifyAction()
     {
-        $this->_helper->requirePrivilege('remediation', 'update_finding');
+        $this->_acl->requirePrivilege('remediation', 'update_finding');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -635,7 +636,7 @@ class RemediationController extends PoamBaseController
 
     public function uploadevidenceAction()
     {
-        $this->_helper->requirePrivilege('remediation', 'update_evidence');
+        $this->_acl->requirePrivilege('remediation', 'update_evidence');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -804,7 +805,7 @@ class RemediationController extends PoamBaseController
      */
     public function rafAction()
     {
-        $this->_helper->requirePrivilege('report', 'generate_system_rafs');
+        $this->_acl->requirePrivilege('report', 'generate_system_rafs');
         
         $id = $this->_req->getParam('id');
         $poamDetail = $this->_poam->getDetail($id);

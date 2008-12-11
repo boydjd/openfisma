@@ -88,7 +88,7 @@ class RoleController extends SecurityController
      */
     public function searchboxAction()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'read');
+        $this->_acl->requirePrivilege('admin_roles', 'read');
         
         $req = $this->getRequest();
         $fid = $req->getParam('fid');
@@ -118,7 +118,7 @@ class RoleController extends SecurityController
      */
     public function listAction()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'read');
+        $this->_acl->requirePrivilege('admin_roles', 'read');
         
         $req = $this->getRequest();
         $field = $req->getParam('fid');
@@ -139,7 +139,7 @@ class RoleController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'read');
+        $this->_acl->requirePrivilege('admin_roles', 'read');
         
         $form = $this->getRoleForm();
         $id = $this->_request->getParam('id');
@@ -168,7 +168,7 @@ class RoleController extends SecurityController
      */
     public function createAction()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'create');
+        $this->_acl->requirePrivilege('admin_roles', 'create');
 
         // Get the role form
         $form = $this->getRoleForm();
@@ -189,7 +189,7 @@ class RoleController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'update');
+        $this->_acl->requirePrivilege('admin_roles', 'update');
         
         $form = $this->getRoleForm();
         $post = $this->_request->getPost();
@@ -236,7 +236,7 @@ class RoleController extends SecurityController
      */
     public function deleteAction()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'delete');
+        $this->_acl->requirePrivilege('admin_roles', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -268,7 +268,7 @@ class RoleController extends SecurityController
      */
     public function updateAction ()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'update');
+        $this->_acl->requirePrivilege('admin_roles', 'update');
         
         $form = $this->getRoleForm();
         $post = $this->_request->getPost();
@@ -316,7 +316,7 @@ class RoleController extends SecurityController
      */
     public function rightAction()
     {
-        $this->_helper->requirePrivilege('admin_roles', 'definition');
+        $this->_acl->requirePrivilege('admin_roles', 'definition');
         
         $req = $this->getRequest();
         $do = $req->getParam('do');

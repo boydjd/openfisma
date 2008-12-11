@@ -37,7 +37,6 @@
         $name = &$v['name'];
         if(isset($evaluation[$name])) {
             if( $evaluation[$name]['group'] != 'EVIDENCE' ) {
-                var_dump($evaluation[$name]);
                 continue;
             }
             $value = &$evaluation[$v['name']]['decision'];
@@ -52,7 +51,7 @@
         }
         echo  "<tr><td><b>$name:&nbsp;</b>";
         if($value=='NONE' && $editable){
-            if(Config_Fisma::isAllow('remediation',$v['function'])){
+            if($this->acl->isAllowed('remediation',$v['function'])){
                 echo '<input type="hidden" name="evaluation" value="'.$v['id'].'"/>';
                 echo '<input type="hidden" name="precedence" value="'.$v['precedence_id'].'"/>';
                 echo '<input type="hidden" name="topic" value="" />';
