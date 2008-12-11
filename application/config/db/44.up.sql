@@ -6,3 +6,5 @@
 --
 
  ALTER TABLE `poams` CHANGE `status` `status` ENUM( 'PEND', 'NEW', 'DRAFT', 'MSA', 'EN', 'EP', 'CLOSED', 'DELETED' ) NOT NULL DEFAULT 'NEW';
+
+ UPDATE `poams` SET `status` = 'DRAFT' WHERE `status` = '';
