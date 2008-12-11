@@ -575,10 +575,12 @@ class RemediationController extends PoamBaseController
             if (1 == $isMsa) {
                 $poam['status'] = 'MSA';
                 $poam['mss_ts'] = self::$now->toString('Y-m-d H:i:s');
+                $poam['action_est_date'] = $oldpoam['action_current_date'];
             } else {
                 $this->_poam->getAdapter()->delete('poam_evaluations', 'group_id = '.$poamId.' AND eval_id IN '.
                     '(SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
                 $poam['status'] = 'DRAFT';
+                $poam['action_est_date'] = null;
             }
         }
 
@@ -599,9 +601,6 @@ class RemediationController extends PoamBaseController
                         $oldpoam['system_id']);
 
             if ('APPROVED' == $decision) {
-                if (empty($oldpoam['action_est_date'])) {
-                    $poam['action_est_date'] = $oldpoam['action_current_date'];
-                }                
                 if ($evalId == $msEvalList[count($msEvalList)-1]['id']) {
                     $poam['status'] = 'EN';
                 }
