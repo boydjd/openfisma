@@ -25,7 +25,6 @@
  * @todo This class should be renamed. "Fisma" doesn't mean anything. Also this class serves multiple purposes. It
  * should be split up into separate classes that each serve a single purpose.
  */
-
 class Config_Fisma
 {
     /**
@@ -78,6 +77,11 @@ class Config_Fisma
      * The root path of the installed application
      */
     protected static $_root = null;
+    
+    /**
+     * The application wide current time stamp
+     */
+    protected static $_now = null;
 
     /**
      * Constructor
@@ -100,6 +104,8 @@ class Config_Fisma
         define('APPLICATION_ROOT', self::$_root);
         define('APPLICATION_PATH', self::$_root . '/' . $this->_path['application']);
         $this->initSetting();
+        //freeze the NOW, minimize the impact of running time cost.
+        self::$_now = time(); 
     }
 
     /**
@@ -416,5 +422,16 @@ class Config_Fisma
             $ret .= "/{$this->_path[$part]}";
         }
         return $ret;
+    }
+    
+
+    /**
+     * Retrieve the current time
+     *
+     * @return unix timestamp
+     */
+    public static function now()
+    {
+        return self::$_now;
     }
 }

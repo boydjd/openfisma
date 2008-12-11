@@ -27,7 +27,7 @@
                 </tr>
                 <?php if ($this->poam['status'] != 'CLOSED') { ?>
                 <tr>
-                    <td><b>On Time:&nbsp;</b><?php echo $this->poam['isontime'];?></td>
+                    <td><b>On Time:&nbsp;</b><?php echo $this->isOnTime($this->poam['isontime']);?></td>
                 </tr>
                 <?php } ?>
                 <tr>

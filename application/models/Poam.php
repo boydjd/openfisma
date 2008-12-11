@@ -523,26 +523,66 @@ class Poam extends Zend_Db_Table
             return $ret->current()->status;
         }
     }
-
     
     /**
-     *return the poam wheather is on time
-     * @param int $id primary key of poam
-     * @return true of false
+     * Get the due time of the poams
+     *
+     * The overdue threshold is hard coded in days
+     * <code>
+        $overdue = array('new'=>30 ,'draft'=>30, 'mp'=>21, 'ep'=>14);
+     * </code>
+     *
+     * @param array $id poam id
+     * @return array of due time
      */
-    public function isOnTime($id)
+    public function getDueTime($id)
     {
-        if (! is_numeric($id)) {
-            throw new Exception_General('Make sure a valid ID is inputed');
-        }
-        $status = $this->getStatus($id);
-        $criteria = array('id' => $id, 'status' => $status, 'ontime' => 'ontime');
-        $ret = $this->search(null, '*', $criteria);
-        if (!empty($ret)) {
-            return true;
+        $overdue = array('new'=>30 ,'draft'=>30, 'mp'=>21, 'ep'=>14);
+        $query = "SELECT (
+                CASE `status`
+                WHEN 'NEW'
+                THEN ADDDATE( p.create_ts, ".$overdue['new']." )
+                WHEN 'DRAFT'
+                THEN ADDDATE( p.create_ts, ".$overdue['draft']." )
+                WHEN 'EN'
+                THEN p.action_current_date
+                WHEN 'MSA'
+                THEN (
+                SELECT IFNULL(ADDDATE( MAX( pev.date ), ".$overdue['mp']."), ADDDATE(p.mss_ts, ".$overdue['mp']."))
+                FROM poams AS p2
+                LEFT JOIN poam_evaluations AS pev ON pev.group_id=p2.id
+                LEFT JOIN evaluations AS el ON el.id = pev.eval_id
+                AND el.group = 'ACTION' 
+                WHERE p2.id =p.id
+                GROUP BY p2.id)
+                WHEN 'EP'
+                THEN (
+                SELECT IFNULL(ADDDATE( MAX( pev.date ), ".$overdue['ep'].") , ADDDATE(MAX( e.submit_ts ),".$overdue['ep'].") )
+                FROM evidences AS e
+                LEFT JOIN poam_evaluations AS pev ON e.id = pev.group_id
+                LEFT JOIN evaluations AS el ON pev.eval_id = el.id
+                AND el.group = 'EVIDENCE'
+                WHERE e.poam_id = p.id
+                GROUP BY p.id)
+                ELSE 'N/A'
+                END) AS time, p.id
+                FROM poams AS p
+                WHERE p.id ";
+        if (is_numeric($id)) {
+            $query .= " = ".$id;
+        } elseif(is_array($id)) {
+            $query .= " IN (".implode(',',$id).")";
         } else {
-            return false;
+            assert(false);
         }
+        $poamIsOnTime = array();
+        if (!empty($id)) {
+            $rst = $this->_db->fetchAll($query);
+            foreach($rst as $val){
+                $poamIsOnTime[$val['id']] = $val['time'];
+            }
+        }
+        return $poamIsOnTime;
     }
 
     /** 
@@ -602,12 +642,7 @@ class Poam extends Zend_Db_Table
                 $ret['blscr'] = &$blscr;
             }
         }
-
-        if ($this->isOnTime($id)) {
-            $ret['isontime'] = 'On Time';
-        } else {
-            $ret['isontime'] = 'Overdue';
-        }
+        $ret['isontime'] = $this->getDueTime($id);
         return $ret;
     }
 
