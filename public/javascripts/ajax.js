@@ -315,7 +315,7 @@ function ev_deny(formname){
     var dt = document.createElement('textarea');
     dt.rows = 5;
     dt.cols = 60;
-    dt.name = 'comments';
+    dt.name = 'comment';
     content.appendChild(dt);
 
     $('<div title="Provide Justification"></div>').append(content).

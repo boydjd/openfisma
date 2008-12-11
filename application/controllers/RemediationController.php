@@ -784,7 +784,7 @@ class RemediationController extends PoamBaseController
                                     'content' => $content,
                                     'date' => new Zend_Db_Expr('NOW()')));
 
-                $logContent .= " Status: EN. Justification: $comment";
+                $logContent .= " Status: EN. Justification: $content";
                 $this->_notification->add(Notification::EVIDENCE_DENIED,
                                           $this->_me->account,
                                           "PoamId: $poamId",
