@@ -501,9 +501,8 @@ class RemediationController extends PoamBaseController
                 if (!empty($oldpoam['action_est_date'])
                     && !empty($poam['action_current_date'])
                     && empty($poam['ecd_justification'])) {
-                    // English check
-                    throw new Exception_General("Please input your ECD change justification, ".
-                        "and the ECD data is not changed");
+                    throw new Exception_General("The ECD date cannot be changed unless you".
+                        " provide a justification in the field below the date.");
                 }
                 $where = $this->_poam->getAdapter()->quoteInto('id = ?', $id);
                 $logContent = "Changed:";
@@ -834,7 +833,6 @@ class RemediationController extends PoamBaseController
                 $poamDetail['threat_level'] == 'NONE' ||
                 $poamDetail['cmeasure'] == '' ||
                 $poamDetail['cmeasure_effectiveness'] == 'NONE'){
-                /** @todo english */
                 throw new Exception_General("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
