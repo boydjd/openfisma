@@ -473,6 +473,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('logs', $this->_poam->getLogs($id));
         $this->view->assign('ev_evals', $evs);
         $this->view->assign('ms_evals', $mss);
+        $this->view->assign('ms_evaluation', $msEvaluation);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('network_list', $this->_networkList);
     }
@@ -577,15 +578,24 @@ class RemediationController extends PoamBaseController
             if (!in_array($isMsa, array(0, 1))) {
                 throw new Exception_General('incorrect mitigation strategy operate');
             }
+            //Submit Mitiagtion Strategy
             if (1 == $isMsa) {
                 $poam['status'] = 'MSA';
                 $poam['mss_ts'] = self::$now->toString('Y-m-d H:i:s');
+
+                $msEvaluation = $this->_poam->getActEvaluation($poamId);
+                /** @todo english 
+                 * Delete old approval logs while the mitigation strategy was submit after revised.
+                 */
+                if (!empty($msEvaluation) && 'APPROVED' == $msEvaluation[count($msEvaluation)-1]['decision']) {
+                    $this->_poam->getAdapter()->delete('poam_evaluations', 'group_id = '.$poamId.' AND '.
+                    ' eval_id IN (SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
+                }
                 if (empty($oldpoam['action_est_date'])) {
                     $poam['action_est_date'] = $oldpoam['action_current_date'];
                 }
+            //Revise Mitigation Strategy
             } else {
-                $this->_poam->getAdapter()->delete('poam_evaluations', 'group_id = '.$poamId.' AND eval_id IN '.
-                    '(SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
                 $poam['status'] = 'DRAFT';
             }
         }

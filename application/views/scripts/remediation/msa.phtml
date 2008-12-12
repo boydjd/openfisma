@@ -43,7 +43,7 @@ function delok()
     be fully completed before this can be submitted for approval.</i></p>
     <p></p>
 <?php }
-    if ($this->poam['status']!= 'NEW' && $this->poam['status']!= 'DRAFT') {
+    if ($this->poam['status']!='NEW' && ($this->poam['status']!='DRAFT' || !empty($this->ms_evaluation))) {
         $i = 0;
         foreach ($this->ms_evals as $v) {
             $k = $i++;
