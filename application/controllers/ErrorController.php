@@ -59,13 +59,13 @@ class ErrorController extends Zend_Controller_Action
         $this->view->content = $content;
 
         $front = Zend_Controller_Front::getInstance();
-        if ($front->hasPlugin('Zend_Controller_Plugin_ActionStack')) {
+        if ($stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack')) {
             //clear the action stack to prevent additional exceptions would be throwed
-            $stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack');
             while($stack->popStack());
-            $this->_helper->actionStack('header', 'panel');
         }
+        $this->_helper->actionStack('header', 'panel');
     }
+
     /**
      * Error handler for input validation error
      */
