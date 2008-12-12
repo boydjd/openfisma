@@ -271,6 +271,7 @@ class ReportController extends PoamBaseController
                 'status',
                 'action_suggested',
                 'action_planned',
+                'action_current_date',
                 'action_est_date',
                 'cmeasure',
                 'threat_source',
@@ -378,6 +379,7 @@ class ReportController extends PoamBaseController
                     'action_suggested',
                     'action_planned',
                     'threat_level',
+                    'action_current_date',
                     'action_est_date',
                     'count' => 'count(*)'
                 ),

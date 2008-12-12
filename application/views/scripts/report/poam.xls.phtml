@@ -72,7 +72,7 @@ foreach( $this->poam_list as $p ) {
         $p['threat_level'],
         $p['action_suggested'],
         $p['action_planned'],
-        $p['action_est_date'],
+        $p['action_current_date'],
         NULL == $p['blscr_id'] ? 'N' : 'Y',
         $p['threat_level'] != 'NONE' && trim($p['threat_source']) != '' && trim($p['threat_justification']) != '' ? 'Y' : 'N',
         $p['cmeasure_effectiveness'] != 'NONE' && trim($p['cmeasure_effectiveness']) != '' && trim($p['cmeasure_justification']) != '' ? 'Y' : 'N');

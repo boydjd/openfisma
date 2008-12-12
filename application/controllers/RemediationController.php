@@ -580,12 +580,13 @@ class RemediationController extends PoamBaseController
             if (1 == $isMsa) {
                 $poam['status'] = 'MSA';
                 $poam['mss_ts'] = self::$now->toString('Y-m-d H:i:s');
-                $poam['action_est_date'] = $oldpoam['action_current_date'];
+                if (empty($oldpoam['action_est_date'])) {
+                    $poam['action_est_date'] = $oldpoam['action_current_date'];
+                }
             } else {
                 $this->_poam->getAdapter()->delete('poam_evaluations', 'group_id = '.$poamId.' AND eval_id IN '.
                     '(SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
                 $poam['status'] = 'DRAFT';
-                $poam['action_est_date'] = null;
             }
         }
 
@@ -609,7 +610,7 @@ class RemediationController extends PoamBaseController
                 if ($evalId == $msEvalList[count($msEvalList)-1]['id']) {
                     $poam['status'] = 'EN';
                 }
-            } 
+            }
             if ('DENIED' == $decision) {
                 $poam['status'] = 'DRAFT';
                 $comment = $this->_request->getParam('comment');
@@ -774,7 +775,7 @@ class RemediationController extends PoamBaseController
                                          "PoamId: $poamId", $poam['system_id']);
                 }
             } else {
-                $this->_poam->update(array('status' => 'EN'), 'id=' . $poamId);
+                $this->_poam->update(array('status' => 'EN', 'action_actual_date' => null), 'id=' . $poamId);
                 $content = $req->getParam('comment');
                 $body = $req->getParam('reject');
                 $comm = new Comments();
