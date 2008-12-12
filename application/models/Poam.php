@@ -407,7 +407,7 @@ class Poam extends Zend_Db_Table
         }
 
         //Threshold of overdue for various status
-        $overdue = array('draft'=>30, 'mp'=>21, 'en'=>0, 'ep'=>14);
+        $overdue = array('draft'=>30, 'mp'=>14, 'en'=>0, 'ep'=>21);
         
         $time = new Zend_Date();
         $status = $criteria['status'];
@@ -537,35 +537,28 @@ class Poam extends Zend_Db_Table
      */
     public function getDueTime($id)
     {
-        $overdue = array('new'=>30 ,'draft'=>30, 'mp'=>21, 'ep'=>14);
-        $query = "SELECT (
-                CASE `status`
-                WHEN 'NEW'
-                THEN ADDDATE( p.create_ts, ".$overdue['new']." )
-                WHEN 'DRAFT'
-                THEN ADDDATE( p.create_ts, ".$overdue['draft']." )
-                WHEN 'EN'
-                THEN p.action_current_date
-                WHEN 'MSA'
-                THEN (
-                SELECT IFNULL(ADDDATE( MAX( pev.date ), ".$overdue['mp']."), ADDDATE(p.mss_ts, ".$overdue['mp']."))
-                FROM poams AS p2
-                LEFT JOIN poam_evaluations AS pev ON pev.group_id=p2.id
-                LEFT JOIN evaluations AS el ON el.id = pev.eval_id
-                AND el.group = 'ACTION' 
-                WHERE p2.id =p.id
-                GROUP BY p2.id)
-                WHEN 'EP'
-                THEN (
-                SELECT IFNULL(ADDDATE( MAX( pev.date ), ".$overdue['ep'].") , ADDDATE(MAX( e.submit_ts ),".$overdue['ep'].") )
-                FROM evidences AS e
-                LEFT JOIN poam_evaluations AS pev ON e.id = pev.group_id
-                LEFT JOIN evaluations AS el ON pev.eval_id = el.id
-                AND el.group = 'EVIDENCE'
-                WHERE e.poam_id = p.id
-                GROUP BY p.id)
-                ELSE 'N/A'
-                END) AS time, p.id
+        $overdue = array('new'=>30 ,'draft'=>30, 'mp'=>14, 'ep'=>21);
+
+        $query = "SELECT (CASE `status`
+                            WHEN 'NEW'
+                                THEN ADDDATE( p.create_ts, {$overdue['new']} )
+                            WHEN 'DRAFT'
+                                THEN ADDDATE( p.create_ts, {$overdue['draft']} )
+                            WHEN 'EN'
+                                THEN p.action_current_date
+                            WHEN 'MSA'
+                                THEN ADDDATE(
+                                    IFNULL(p.action_est_date, p.action_current_date),
+                                    INTERVAL {$overdue['mp']} DAY
+                                )
+                            WHEN 'EP'
+                                THEN ADDDATE(
+                                    IFNULL(p.action_est_date, p.action_current_date),
+                                    INTERVAL {$overdue['ep']} DAY
+                                )
+                            ELSE 'N/A'
+                        END) AS time,
+                        p.id
                 FROM poams AS p
                 WHERE p.id ";
         if (is_numeric($id)) {
