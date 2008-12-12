@@ -77,24 +77,7 @@ class ConfigController extends SecurityController
     {
         $this->_acl->requirePrivilege('app_configuration', 'update');
         
-        // Fill up with data
         $form = $this->getConfigForm('general_config');
-        $ret = $this->_config->getList(array('key', 'value', 'description'));
-        $configs = NULL;
-        foreach ($ret as $item) {
-            if (in_array($item['key'], array(Config::EXPIRING_TS, Config::UNLOCK_DURATION))) {
-                $item['value'] /= 60; //convert to minute from second
-            }
-            if (in_array($item['key'], array(Config::USE_NOTIFICATION,
-                Config::BEHAVIOR_RULE))) {
-                $item['value'] = $item['description'];
-            }
-
-            $configs[$item['key']] = $item['value'];
-        }
-
-        // Update the change
-        $form->setDefaults($configs);
         if ($this->_request->isPost()) {
             $configPost = $this->_request->getPost();
             if (isset($configPost[Config::MAX_ABSENT])) {
@@ -133,10 +116,39 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $form->populate($configPost);
+                    /**
+                     * @todo this error display code needs to go into the decorator,
+                     * but before that can be done, the function it calls needs to be
+                     * put in a more convenient place
+                     */
+                    $errorString = '';
+                    foreach ($form->getMessages() as $field => $fieldErrors) {
+                        if (count($fieldErrors)>0) {
+                            foreach ($fieldErrors as $error) {
+                                $label = $form->getElement($field)->getLabel();
+                                $errorString .= "$label: $error<br>";
+                            }
+                        }
+                    }
+                    // Error message
+                    $this->message("Unable to save general policies:<br>$errorString", self::M_WARNING);
                 }
             }
         }
+        $ret = $this->_config->getList(array('key', 'value', 'description'));
+        $configs = NULL;
+        foreach ($ret as $item) {
+            if (in_array($item['key'], array(Config::EXPIRING_TS, Config::UNLOCK_DURATION))) {
+                $item['value'] /= 60; //convert to minute from second
+            }
+            if (in_array($item['key'], array(Config::USE_NOTIFICATION,
+                Config::BEHAVIOR_RULE))) {
+                $item['value'] = $item['description'];
+            }
+
+            $configs[$item['key']] = $item['value'];
+        }
+        $form->setDefaults($configs);
         
         //get ldap configuration
         $ldaps = $this->_config->getLdap();
@@ -169,7 +181,23 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $form->populate($data);
+                    /**
+                     * @todo this error display code needs to go into the decorator,
+                     * but before that can be done, the function it calls needs to be
+                     * put in a more convenient place
+                     */
+                    $errorString = '';
+                    foreach ($form->getMessages() as $field => $fieldErrors) {
+                        if (count($fieldErrors)>0) {
+                            foreach ($fieldErrors as $error) {
+                                $label = $form->getElement($field)->getLabel();
+                                $errorString .= "$label: $error<br>";
+                            }
+                        }
+                    }
+                    // Error message
+                    $this->message("Unable to save Technical Contact Information:<br>$errorString",
+                        self::M_WARNING);
                 }
             }
         }
@@ -285,7 +313,22 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $form->populate($data);
+                    /**
+                     * @todo this error display code needs to go into the decorator,
+                     * but before that can be done, the function it calls needs to be
+                     * put in a more convenient place
+                     */
+                    $errorString = '';
+                    foreach ($form->getMessages() as $field => $fieldErrors) {
+                        if (count($fieldErrors)>0) {
+                            foreach ($fieldErrors as $error) {
+                                $label = $form->getElement($field)->getLabel();
+                                $errorString .= "$label: $error<br>";
+                            }
+                        }
+                    }
+                    // Error message
+                    $this->message("Unable to save Notifciation Policies:<br>$errorString", self::M_WARNING);
                 }
             }
         } 
@@ -296,6 +339,7 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
+        $this->render();
     }
 
     /**
@@ -319,7 +363,22 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $form->populate($data);
+                    /**
+                     * @todo this error display code needs to go into the decorator,
+                     * but before that can be done, the function it calls needs to be
+                     * put in a more convenient place
+                     */
+                    $errorString = '';
+                    foreach ($form->getMessages() as $field => $fieldErrors) {
+                        if (count($fieldErrors)>0) {
+                            foreach ($fieldErrors as $error) {
+                                $label = $form->getElement($field)->getLabel();
+                                $errorString .= "$label: $error<br>";
+                            }
+                        }
+                    }
+                    // Error message
+                    $this->message("Unable to save privacy policies:<br>$errorString", self::M_WARNING);
                 }
             }
         }
@@ -330,6 +389,7 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
+        $this->render();
     }
      
     /**
@@ -359,7 +419,22 @@ class ConfigController extends SecurityController
                     $msg = 'Password Complexity Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $form->populate($data);
+                    /**
+                     * @todo this error display code needs to go into the decorator,
+                     * but before that can be done, the function it calls needs to be
+                     * put in a more convenient place
+                     */
+                    $errorString = '';
+                    foreach ($form->getMessages() as $field => $fieldErrors) {
+                        if (count($fieldErrors)>0) {
+                            foreach ($fieldErrors as $error) {
+                                $label = $form->getElement($field)->getLabel();
+                                $errorString .= "$label: $error<br>";
+                            }
+                        }
+                    }
+                    // Error message
+                    $this->message("Unable to save password policies:<br>$errorString", self::M_WARNING);
                 }
             }
         }
