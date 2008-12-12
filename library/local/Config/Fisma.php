@@ -148,10 +148,10 @@ class Config_Fisma
             // needs.
             $registry = Zend_Registry::getInstance();
             
-            if (!isset($config->envirement)) {
-                $config->envirement = 'production';
+            if (!isset($config->environment)) {
+                $config->environment = 'production';
             }
-            $configuration = $config->{$config->envirement};
+            $configuration = $config->{$config->environment};
             self::addSysConfig($configuration);
             // Start Session Handling using Zend_Session 
             Zend_Session::start($configuration->session);

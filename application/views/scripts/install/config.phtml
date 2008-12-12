@@ -1,4 +1,3 @@
-
 [database]
 adapter=mysqli 
 params.host=<?php echo $this->dsn['host']; ?> 
@@ -11,14 +10,3 @@ params.dbname=<?php echo $this->dsn['dbname'];?>
 hostUrl=<?php echo "{$this->hostUrl}\n"; ?>
 encrypt=<?php echo "{$this->encrypt}\n"; ?>
 <?php echo isset($this->encryptKey)?'encryptKey='.$this->encryptKey:'';?>
-
-[debug]
-; DBG=1, RELEASE=0
-level=0
-; Following takes effect only if level>0
-xdebug.collect_params=0
-xdebug.collect_return=1
-xdebug.trace_options=1
-xdebug.trace_output_name="sws.%u"
-xdebug.auto_trace=0
-
