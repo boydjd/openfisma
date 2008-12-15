@@ -53,9 +53,6 @@ function delok()
     <th align='left' colspan="2">Approval</th>
 <?php
     $editable = true;
-    if ('DRAFT' == $this->poam['status']) {
-        $editable = false; // Mitigation strategy can not be approved while in DRAFT status
-    }
     $comment = new Comments();
     foreach ($v as $precedenceId=>$row) {
         $value = 'NONE';

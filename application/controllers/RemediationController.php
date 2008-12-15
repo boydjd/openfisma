@@ -433,19 +433,17 @@ class RemediationController extends PoamBaseController
                 $mss[$i][] = $row;
                 if ($k == count($msEvaluation)-1) {
                     if ($row['decision'] == 'DENIED') {
-                        $mss[$i+1] = $msEvallist;
+                        //If denied, it should start a new round of evaluation 
+                        //however, none of this happens in DRAFT
+                        if ($poamDetail['status']!= 'DRAFT') {
+                            $mss[$i+1] = $msEvallist;
+                        }
                     } else {
-                        if ($row['precedence_id'] < count($msEvallist)-1 ) {
-                            // count($msEvallist)-1 is the max precedence_id
-                            $flag = count($msEvallist)-1-$row['precedence_id'];
-                            if ($flag == 1) {
-                                $lastEval = array_slice($msEvallist, -1);
-                            } else {
-                                $lastEval = array_slice($msEvallist, $flag-1);
-                            }
-                            foreach ($lastEval as $v) {
-                                $mss[$i][] = $v;
-                            }
+                        // Get the list of remaining evaluation 
+                        $remainingEval = array_slice($msEvallist, $row['precedence_id']+1);
+                        // To keep the evaluation in the same round,re-organization the index
+                        foreach ($remainingEval as $v) {
+                            $mss[$i][] = $v;
                         }
                     }
                 }
