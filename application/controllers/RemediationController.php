@@ -241,7 +241,7 @@ class RemediationController extends PoamBaseController
                     'DRAFT',
                     'MSA',
                     'EN',
-                    'EP'
+                    'EA'
                 );
                 break;
 
@@ -250,7 +250,7 @@ class RemediationController extends PoamBaseController
                     'DRAFT',
                     'MSA',
                     'EN',
-                    'EP'
+                    'EA'
                 );
                 $internalCrit['modify_ts'] = $now->sub(30, Zend_Date::DAY);
                 break;
@@ -260,7 +260,7 @@ class RemediationController extends PoamBaseController
                     'DRAFT',
                     'MSA',
                     'EN',
-                    'EP'
+                    'EA'
                 );
                 $internalCrit['modify_ts'] = $now->sub(60, Zend_Date::DAY);
                 break;
@@ -270,7 +270,7 @@ class RemediationController extends PoamBaseController
                     'DRAFT',
                     'MSA',
                     'EN',
-                    'EP'
+                    'EA'
                 );
                 $internalCrit['modify_ts'] = $now->sub(90, Zend_Date::DAY);
                 break;
@@ -704,12 +704,12 @@ class RemediationController extends PoamBaseController
                 $poam['system_id']);
 
             $updateData = array(
-                'status' => 'EP',
+                'status' => 'EA',
                 'action_actual_date' => $today
             );
             $result = $this->_poam->update($updateData, "id = $id");
             if ($result > 0) {
-                $logContent = "Changed: status: EP . Upload evidence:"
+                $logContent = "Changed: status: EA . Upload evidence:"
                               ." $filename OK";
                 $this->_poam->writeLogs($id, $userId,
                     self::$now->toString('Y-m-d H:i:s'),
