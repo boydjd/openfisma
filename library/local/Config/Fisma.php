@@ -40,18 +40,7 @@ class Config_Fisma
     const FORM_CONFIGFILE  = 'form.conf';
 
     const TEST_MODE = 'test';
-    /**
-     * Default system configuration. This is a default for app.ini configuration
-     * 
-     * @var $_defaultSysConf
-     */
-    static private $_defaultSysConf = array(
-            'session' => array(
-                        'name' =>'OpenFISMA',
-                        'save_path' => '/data/sessions'),
-            'throw_exception' => false,
-            'show_trace' => false
-    );
+
     /** 
      * The relative paths that makes the layout
      *
@@ -145,31 +134,36 @@ class Config_Fisma
         Zend_Loader::registerAutoload();
 
         $sysfile = self::$_root."/" . self::PATH_CONFIG . self::SYS_CONFIG;
-        // Default configuration
-        $configuration = new Zend_Config(self::$_defaultSysConf, true);
-        // CONFIGURATION - Setup the configuration object
-        // The Zend_Config_Ini component will parse the ini file, and resolve all of
-        // the values for the given section.  Here we will be using the section name
-        // that corresponds to the APP's Environment
-        $config = new Zend_Config_Ini($sysfile);
-        // REGISTRY - setup the application registry
-        // An application registry allows the application to store application
-        // necessary objects into a safe and consistent (non global) place for future
-        // retrieval.  This allows the application to ensure that regardless of what
-        // happends in the global scope, the registry will contain the objects it
-        // needs.
-        $registry = Zend_Registry::getInstance();
-        // 'environment' in app.ini presents       
-        if (isset($config->environment)) {
-            // The section specified by 'environment' is absent.
-            if (!isset($config->{$config->environment})) {
-                throw new Exception_General("Environment '{$config->environment}' is not found");
-            } else {
-                // Take the app.ini section into effect
-                $configuration = $configuration->merge($config->get($config->environment));
+        try {
+            // CONFIGURATION - Setup the configuration object
+            // The Zend_Config_Ini component will parse the ini file, and resolve all of
+            // the values for the given section.  Here we will be using the section name
+            // that corresponds to the APP's Environment
+            $config = new Zend_Config_Ini($sysfile);
+            // REGISTRY - setup the application registry
+            // An application registry allows the application to store application
+            // necessary objects into a safe and consistent (non global) place for future
+            // retrieval.  This allows the application to ensure that regardless of what
+            // happends in the global scope, the registry will contain the objects it
+            // needs.
+            $registry = Zend_Registry::getInstance();
+            
+            if (!isset($config->environment)) {
+                $config->environment = 'production';
             }
-            self::$_debug = $configuration->get('debug_enable', false); //default false
-            if (self::$_debug) {
+            $configuration = $config->{$config->environment};
+            self::addSysConfig($configuration);
+            // Start Session Handling using Zend_Session 
+            Zend_Session::start($configuration->session);
+
+        } catch(Zend_Config_Exception $e) {
+            //using default configuration
+            $config = new Zend_Config(array());
+        }
+
+        if (!empty($config->debug)) {
+            if ($config->debug->level > 0) {
+                self::$_debug = true;
                 error_reporting(E_ALL);
                 ini_set('display_errors', 1);
                 foreach ($config->debug->xdebug as $k => $v) {
@@ -182,12 +176,7 @@ class Config_Fisma
                     }
                 }
             }
-        } else {
-            throw new Exception_General('No environment is set, make sure the application is not tempered!');
         }
-        // Start Session Handling using Zend_Session 
-        Zend_Session::start($configuration->session);
-        self::addSysConfig($configuration);
     }
 
     /**
@@ -415,7 +404,7 @@ class Config_Fisma
             Zend_Registry::set('FISMA_REG', $sysconfig);
         } else {
             Zend_Registry::set('FISMA_REG', $config);
-        }
+        } 
     }
 
     /**
