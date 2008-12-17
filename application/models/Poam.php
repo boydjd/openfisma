@@ -60,9 +60,9 @@ class Poam extends Zend_Db_Table
      *          <dt>'assetOwner'=>(int)</dt><dd> the asset's owner(a system id)</dd>
      *          <dt>'ids'=>(array)</dt><dd> some poam ids, in CSV format</dd>
      *          <dt>'actualDateBegin'=>(Zend_Date)</dt>
-     *          <dd>The lower bound of date when a poam exiting EN and entering EA status.</dd>
+     *          <dd>The lower bound of date when a poam exiting EN and entering EP(EA) status.</dd>
      *          <dt>'actualDateEnd'=>(Zend_Date)</dt>
-     *          <dd>The upper bound of date when a poam exiting EN and entering EA status.</dd>
+     *          <dd>The upper bound of date when a poam exiting EN and entering EP(EA) status.</dd>
      *          <dt>'estDateBegin'=>(Zend_Date)</dt>
      *          <dd>The lower bound of date to complete the mitigation strategy, i.e. uploading an evidence.</dd>
      *          <dt>'estDateEnd'=>(Zend_Date)</dt>
@@ -86,7 +86,7 @@ class Poam extends Zend_Db_Table
      *          <dt>'type'=>(string|array)</dt><dd>poam type(s), namely 'CAP', 'AR', 'FP'.</dd>
      *          <dt>'mp'=>precedence_id(int)</dt><dd>a Mitigation Strategy Evaluation noted by precedence_id </dd>
      *          <dt>'ep'=>(int)</dt><dd>an Evidence Evaluationnoted by precedence_id </dd>
-     *          <dt>'status'=>(string|array)</dt><dd>poam status(s), namely 'NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'</dd>
+     *          <dt>'status'=>(string|array)</dt><dd>poam status(s), namely 'NEW', 'DRAFT', 'MSA', 'EN', 'EP', 'CLOSED'</dd>
      *          <dt>'ip'=>(string)</dt><dd>an asset's ip address</dd>
      *          <dt>'port'=>(int)</dt><dd> a service port of the asset</dd>
      *          <dt>'group'=>(string)</dt><dd>similar with SQL's GROUP BY. used in counting</dd>
@@ -201,9 +201,9 @@ class Poam extends Zend_Db_Table
         if (isset($ep)) {
             if (!empty($status)) {
                 $status = (array)$status;
-                $status[] = 'EA';
+                $status[] = 'EP';
             } else {
-                $status = 'EA';
+                $status = 'EP';
             }
             if ($ep > 0) {
                 $ep --;
@@ -497,7 +497,7 @@ class Poam extends Zend_Db_Table
             } else {
                 return $msEvalList[0]['nickname'];
             }
-        } else if ('EA' == $ret->current()->status) {
+        } else if ('EP' == $ret->current()->status) {
              $query = $this->_db->select()
                           ->from(array('pev'=>'poam_evaluations'), 'pev.*')
                           ->join(array('ev'=>'evidences'), 'pev.group_id = ev.id', array())
@@ -551,7 +551,7 @@ class Poam extends Zend_Db_Table
                                     IFNULL(p.action_est_date, p.action_current_date),
                                     INTERVAL {$overdue['mp']} DAY
                                 )
-                            WHEN 'EA'
+                            WHEN 'EP'
                                 THEN ADDDATE(
                                     IFNULL(p.action_est_date, p.action_current_date),
                                     INTERVAL {$overdue['ep']} DAY

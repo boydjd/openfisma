@@ -241,7 +241,7 @@ class ReportController extends PoamBaseController
             }
             if (!empty($params['status'])) {
                 if ('OPEN' == $params['status']) {
-                    $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
+                    $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EP');
                 } else {
                     $criteria['status'] = $params['status'];
                 }
@@ -544,7 +544,7 @@ class ReportController extends PoamBaseController
             'NumoOV' => 'count(prod.id)'
         ))->join(array(
             'p' => 'poams'
-        ), 'p.status IN ("DRAFT","MSA", "EN","EA")', array())->join(array(
+        ), 'p.status IN ("DRAFT","MSA", "EN","EP")', array())->join(array(
             'a' => 'assets'
         ), 'a.id = p.asset_id AND a.prod_id = prod.id', array())
             ->group("prod.vendor")->group("prod.name")->group("prod.version");
@@ -591,7 +591,7 @@ class ReportController extends PoamBaseController
         ))->join(array(
             'p' => 'poams'
         ), 'p.type IN ("CAP","AR","FP") AND
-            p.status IN ("DRAFT", "MSA", "EN", "EA") AND p.system_id = sys.id',
+            p.status IN ("DRAFT", "MSA", "EN", "EP") AND p.system_id = sys.id',
             array())->join(array(
             'a' => 'assets'
         ), 'a.id = p.asset_id', array())->group("p.system_id");
