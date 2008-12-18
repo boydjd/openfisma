@@ -299,6 +299,7 @@ class RemediationController extends PoamBaseController
             'type',
             'status',
             'finding_data',
+            'duetime',
             'action_current_date',
             'count' => 'count(*)'
         ), $internalCrit, $this->_paging['currentPage'],
@@ -311,12 +312,8 @@ class RemediationController extends PoamBaseController
         $urlNamespace = new Zend_Session_Namespace('urlNamespace');
         $urlNamespace->lastSearch = $lastSearchUrl;
         $pager = & Pager::factory($this->_paging);
-        $poamIds = array();
-        foreach($list as $val) {
-            $poamIds[] = $val['id'];
-        }
+
         $this->view->assign('list', $list);
-        $this->view->assign('dueTime', $this->_poam->getDueTime($poamIds));
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
         $this->view->assign('total_pages', $total);
@@ -465,8 +462,7 @@ class RemediationController extends PoamBaseController
             $evs[$evid]['eval'][$evEval['eval_name']] =
                 array_slice($evEval, 5);
         }
-        $tmpTime = $this->_poam->getDueTime($id);
-        $poamDetail['isontime'] = $tmpTime[$id];
+
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('logs', $this->_poam->getLogs($id));
         $this->view->assign('ev_evals', $evs);

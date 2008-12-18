@@ -282,6 +282,7 @@ class ReportController extends PoamBaseController
                 'cmeasure_effectiveness',
                 'cmeasure_justification',
                 'blscr_id',
+                'duetime',
                 'count' => 'count(*)'), 
                 $criteria, $this->_paging['currentPage'], 
                 $this->_paging['perPage'],
@@ -290,11 +291,7 @@ class ReportController extends PoamBaseController
             $this->_paging['totalItems'] = $total;
             $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
-            $poamIds = array();
-            foreach($list as $val) {
-                $poamIds[] = $val['id'];
-            }
-            $this->view->assign('dueTime', $this->_poam->getDueTime($poamIds));
+
             $this->view->assign('poam', $this->_poam);
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());

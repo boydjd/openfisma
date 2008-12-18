@@ -46,7 +46,8 @@ class Poam extends Zend_Db_Table
                                           'cmeasure_justification',
                                           'threat_source',
                                           'threat_justification');
-    
+    //Threshold of overdue for various status
+    private $_overdue = array('new' => 30, 'draft'=>30, 'mp'=>14, 'en'=>0, 'ep'=>21);
     /**
      * Parse the criterias and return the query object
      *
@@ -294,9 +295,24 @@ class Poam extends Zend_Db_Table
         $ret = array();
         $count = 0;
         $countFields = false;
+        $dueTimeColumn = "( CASE p.status
+                        WHEN 'NEW'
+                            THEN ADDDATE( p.create_ts, ".$this->_overdue['new']." )
+                        WHEN 'DRAFT'
+                            THEN ADDDATE( p.create_ts, ".$this->_overdue['draft']." )
+                        WHEN 'EN'
+                            THEN p.action_current_date
+                        WHEN 'MSA'
+                            THEN (
+                               ADDDATE(p.mss_ts, ".$this->_overdue['mp']."))
+                        WHEN 'EP'
+                            THEN (
+                               ADDDATE(p.action_current_date, ".$this->_overdue['ep']."))
+                        ELSE 'N/A' END) AS duetime ";
+        
         if ($fields == '*') {
-            $fields = array_merge($this->_cols, $extraFields['asset'],
-                                  $extraFields['source']);
+            $fields = array_merge(  $this->_cols, $extraFields['asset'],$extraFields['source']);
+            array_push($fields, $dueTimeColumn);
         } else if (isset($fields['count'])) {
             $countFields = true;
             if ($fields == 'count' || $fields == array('count' => 'count(*)')) {
@@ -312,12 +328,17 @@ class Poam extends Zend_Db_Table
                 }
             }
         }
+        
         assert(is_array($fields));
         $tableFields = array_values($fields);
         $pFields = array_diff($fields, $extraFields['asset'],
                               $extraFields['source']);
         $asFields = array_flip(array_intersect($extraFields['asset'], $tableFields));
         $srcFields = array_flip(array_intersect($extraFields['source'], $tableFields));
+        if (in_array('duetime', $fields)) {
+            unset($pFields[array_search('duetime', $pFields)]);
+            array_push($pFields, $dueTimeColumn);
+        }
         $query = $this->_db->select()
                       ->from(array('p' => $this->_name), $pFields);
         if (! empty($sysIds)) {
@@ -405,31 +426,28 @@ class Poam extends Zend_Db_Table
         foreach ($epEvalList as $row) {
             $epStatus[$row['nickname']] = $row['precedence_id'];
         }
-
-        //Threshold of overdue for various status
-        $overdue = array('draft'=>30, 'mp'=>14, 'en'=>0, 'ep'=>21);
         
         $time = new Zend_Date();
         $status = $criteria['status'];
         assert(is_string($status));
         if ('ontime' == $criteria['ontime']) {
             if (in_array($status, array('NEW', 'DRAFT'))) {
-                $time->sub($overdue['draft'], Zend_Date::DAY);
+                $time->sub($this->_overdue['draft'], Zend_Date::DAY);
                 if (!isset($criteria['createdDateBegin']) || $time->isLater($criteria['createdDateBegin'])) {
                     $criteria['createdDateBegin'] = $time;
                 }
             } else if (array_key_exists($status, $mpStatus)) {
-                $time->sub($overdue['mp'], Zend_Date::DAY);
+                $time->sub($this->_overdue['mp'], Zend_Date::DAY);
                 $criteria['mp'] = $mpStatus[$status];
                 $criteria['mssDateBegin'] = $time;
                 unset($criteria['status']);
             } else if ('EN' == $status) {
-                $time->sub($overdue['en'], Zend_Date::DAY);
+                $time->sub($this->_overdue['en'], Zend_Date::DAY);
                 if (!isset($criteria['estDateBegin']) || $time->isLater($criteria['estDateBegin'])) {
                     $criteria['estDateBegin'] = $time;
                 }
             } else if (array_key_exists($status, $epStatus)) {
-                $time->sub($overdue['ep'], Zend_Date::DAY);
+                $time->sub($this->_overdue['ep'], Zend_Date::DAY);
                 if (!isset($criteria['estDateBegin']) || $time->isLater($criteria['estDateBegin'])) {
                     $criteria['estDateBegin'] = $time;
                 }
@@ -438,22 +456,22 @@ class Poam extends Zend_Db_Table
             }
         } else if ('overdue' == $criteria['ontime']) {
             if (in_array($status, array('NEW', 'DRAFT'))) {
-                $time->sub($overdue['draft']+1, Zend_Date::DAY);
+                $time->sub($this->_overdue['draft']+1, Zend_Date::DAY);
                 if (!isset($criteria['createdDateEnd']) || $time->isEarlier($criteria['createdDateEnd'])) {
                     $criteria['createdDateEnd'] = $time;
                 }
             } else if (array_key_exists($status, $mpStatus)) {
-                $time->sub($overdue['mp']+1, Zend_Date::DAY);
+                $time->sub($this->_overdue['mp']+1, Zend_Date::DAY);
                 $criteria['mp'] = $mpStatus[$status];
                 $criteria['mssDateEnd'] = $time;
                 unset($criteria['status']);
             } else if ('EN' == $status) {
-                $time->sub($overdue['en']+1, Zend_Date::DAY);
+                $time->sub($this->_overdue['en']+1, Zend_Date::DAY);
                 if (!isset($criteria['estDateEnd']) || $time->isEarlier($criteria['estDateEnd'])) {
                     $criteria['estDateEnd'] = $time;
                 }
             } else if (array_key_exists($status, $epStatus)) {
-                $time->sub($overdue['ep']+1, Zend_Date::DAY);
+                $time->sub($this->_overdue['ep']+1, Zend_Date::DAY);
                 if (!isset($criteria['estDateEnd']) || $time->isEarlier($criteria['estDateEnd'])) {
                     $criteria['estDateEnd'] = $time;
                 }
@@ -523,60 +541,6 @@ class Poam extends Zend_Db_Table
             return $ret->current()->status;
         }
     }
-    
-    /**
-     * Get the due time of the poams
-     *
-     * The overdue threshold is hard coded in days
-     * <code>
-        $overdue = array('new'=>30 ,'draft'=>30, 'mp'=>21, 'ep'=>14);
-     * </code>
-     *
-     * @param array $id poam id
-     * @return array of due time
-     */
-    public function getDueTime($id)
-    {
-        $overdue = array('new'=>30 ,'draft'=>30, 'mp'=>14, 'ep'=>21);
-
-        $query = "SELECT (CASE `status`
-                            WHEN 'NEW'
-                                THEN ADDDATE( p.create_ts, {$overdue['new']} )
-                            WHEN 'DRAFT'
-                                THEN ADDDATE( p.create_ts, {$overdue['draft']} )
-                            WHEN 'EN'
-                                THEN p.action_current_date
-                            WHEN 'MSA'
-                                THEN ADDDATE(
-                                    IFNULL(p.action_est_date, p.action_current_date),
-                                    INTERVAL {$overdue['mp']} DAY
-                                )
-                            WHEN 'EP'
-                                THEN ADDDATE(
-                                    IFNULL(p.action_est_date, p.action_current_date),
-                                    INTERVAL {$overdue['ep']} DAY
-                                )
-                            ELSE 'N/A'
-                        END) AS time,
-                        p.id
-                FROM poams AS p
-                WHERE p.id ";
-        if (is_numeric($id)) {
-            $query .= " = ".$id;
-        } elseif(is_array($id)) {
-            $query .= " IN (".implode(',',$id).")";
-        } else {
-            assert(false);
-        }
-        $poamIsOnTime = array();
-        if (!empty($id)) {
-            $rst = $this->_db->fetchAll($query);
-            foreach($rst as $val){
-                $poamIsOnTime[$val['id']] = $val['time'];
-            }
-        }
-        return $poamIsOnTime;
-    }
 
     /** 
         Get detail information of a remediation by Id
@@ -635,7 +599,6 @@ class Poam extends Zend_Db_Table
                 $ret['blscr'] = &$blscr;
             }
         }
-        $ret['isontime'] = $this->getDueTime($id);
         return $ret;
     }
 

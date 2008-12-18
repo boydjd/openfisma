@@ -127,7 +127,7 @@
         <td class="tdc" ><?php echo $row['type'];?></td>
         <td align='center' class='tdc'><?php echo $row['status'];?></td>
         <td align='center' class='tdc'>
-            <?php echo $this->isOnTime($this->dueTime[$row['id']]);?>
+            <?php echo $this->isOnTime($row['duetime']);?>
         </td>
         <td class="tdc" align="center">
         <?php $id = &$row['source_id'];
