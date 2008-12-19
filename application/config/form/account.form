@@ -43,14 +43,12 @@ elements.name_first.type = "text"
 elements.name_first.options.label = "First Name"
 elements.name_first.options.required = true
 elements.name_first.options.attribs.size = 35
-elements.name_first.options.validators.alnum.validator = "alnum"
 displayGroups.accountInfo.elements.name_first = "name_first"
 
 elements.name_last.type = "text"
 elements.name_last.options.label = "Last Name"
 elements.name_last.options.required = true
 elements.name_last.options.attribs.size = 35
-elements.name_last.options.validators.alnum.validator = "alnum"
 displayGroups.accountInfo.elements.name_last = "name_last"
 
 elements.phone_office.type = "text"
