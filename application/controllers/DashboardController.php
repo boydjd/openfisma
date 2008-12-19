@@ -189,7 +189,7 @@ class DashboardController extends SecurityController
         foreach ($arrEpEvalList as $arrEpEvalRow) {
             $arrEpPoam = $this->_poam->search($this->_me->systems,
                 array('count' => 'nickname'), 
-                array('mp' => $arrEpEvalRow['precedence_id'], 'name')
+                array('ep' => $arrEpEvalRow['precedence_id'], 'name')
             );
             $description[$arrEpEvalRow['nickname']] = $arrEpEvalRow['name'];
             if (!empty($arrEpPoam)) {
