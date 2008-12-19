@@ -1,0 +1,95 @@
+; Author    Ryan yang <ryan.yang@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[ldap]
+method = "post"
+
+elements.host.type = "text"
+elements.host.options.label = "Host"
+elements.host.options.validators.strlen.validator = "StringLength"
+elements.host.options.validators.strlen.options.min = "1"
+elements.host.options.validators.strlen.options.max = "40"
+elements.host.options.required = true
+displayGroups.general.elements.host = "host"
+
+elements.port.type = "text"
+elements.port.options.label = "Port"
+elements.port.options.validators.alnum.validator = "Digits"
+elements.port.options.validators.strlen.validator = "StringLength"
+elements.port.options.validators.strlen.options.min = "1"
+elements.port.options.validators.strlen.options.max = "10"
+displayGroups.general.elements.port = "port"
+
+elements.useSsl.type = "checkbox"
+elements.useSsl.options.label = "Use Secure Sockets Layer (SSL)"
+displayGroups.general.elements.useSsl = "useSsl"
+
+elements.useStartTls.type = "checkbox"
+elements.useStartTls.options.label = "Use Transport Layer Security (TLS)"
+displayGroups.general.elements.useStartTls = "useStartTls"
+
+elements.bindRequiresDn.type = "checkbox"
+elements.bindRequiresDn.options.label = "bind Requires Dn"
+displayGroups.general.elements.bindRequiresDn = "bindRequiresDn"
+
+elements.accountFilterFormat.type = "text"
+elements.accountFilterFormat.options.label = "Search Filter"
+elements.accountFilterFormat.options.validators.strlen.validator = "StringLength"
+elements.accountFilterFormat.options.validators.strlen.options.min = "1"
+elements.accountFilterFormat.options.validators.strlen.options.max = "50"
+displayGroups.general.elements.accountCanonicalFormt = "accountFilterFormat"
+
+elements.username.type = "text"
+elements.username.options.label = "Username"
+;elements.username.options.validators.strlen.validator = "StringLength"
+;elements.username.options.validators.strlen.options.min = "1"
+;elements.username.options.validators.strlen.options.max = "20"
+displayGroups.general.elements.username = "username"
+
+elements.password.type = "text"
+elements.password.options.label = "Password"
+elements.password.options.validators.strlen.validator = "StringLength"
+elements.password.options.validators.strlen.options.min = "1"
+elements.password.options.validators.strlen.options.max = "20"
+displayGroups.general.elements.password = "password"
+
+elements.accountDomainName.type = "text"
+elements.accountDomainName.options.label = "Account Domain Name"
+elements.accountDomainName.options.validators.strlen.validator = "StringLength"
+elements.accountDomainName.options.validators.strlen.options.min = "1"
+elements.accountDomainName.options.validators.strlen.options.max = "50"
+elements.accountDomainName.options.required = true
+displayGroups.general.elements.accountDomainName = "accountDomainName"
+
+elements.baseDn.type = "text"
+elements.baseDn.options.label = "Base Distinguished Name"
+elements.baseDn.options.validators.strlen.validator = "StringLength"
+elements.baseDn.options.validators.strlen.options.min = "1"
+elements.baseDn.options.validators.strlen.options.max = "50"
+displayGroups.general.elements.baseDn = "baseDn"
+
+elements.accountCanonicalForm.type = "Select"
+elements.accountCanonicalForm.options.label = "account Canonical Form"
+elements.accountCanonicalForm.options.multiOptions.4 = "4-Principal"
+elements.accountCanonicalForm.options.multiOptions.3 = "3-BackSlash"
+elements.accountCanonicalForm.options.multiOptions.2 = "2-Username"
+elements.accountCanonicalForm.options.multiOptions.1 = "1-DN"
+elements.accountCanonicalForm.options.validators.strlen.validator = "StringLength"
+elements.accountCanonicalForm.options.validators.strlen.options.min = "1"
+elements.accountCanonicalForm.options.validators.strlen.options.max = "1"
+displayGroups.general.elements.accountCanonicalForm = "accountCanonicalForm"
+
+elements.SaveLdap.type = "submit"
+elements.SaveLdap.options.value = "submit"
+elements.SaveLdap.options.decorators.options.decorator = "ViewHelper"
+elements.SaveLdap.options.decorators.opt.decorator = "HtmlTag"
+elements.SaveLdap.options.decorators.opt.options.tag = "span"
+displayGroups.general.elements.SaveLdap = "SaveLdap"
+
+;elements.Reset.type = "reset"
+;elements.Reset.options.decorators.options.decorator = "ViewHelper"
+;elements.Reset.options.decorators.opt.decorator = "HtmlTag"
+;elements.Reset.options.decorators.opt.options.tag = "dd"
+;displayGroups.general.elements.reset = "reset"

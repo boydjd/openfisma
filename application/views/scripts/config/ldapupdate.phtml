@@ -3,7 +3,7 @@
 <script>
     $(document).ready(function(){
         $("#validateLDAP").click(function(){
-            $(".cform").ajaxSubmit({url:"/config/ldapvalid/format/html",
+            $("#ldapUpdate").ajaxSubmit({url:"/config/ldapvalid/format/html",
                                 success: ldapResult});
         });
     });
@@ -22,7 +22,7 @@
 
 <div class="block">
 <?php
-    $this->form->setAttrib('class','cform');
+    $this->form->setAttrib('id', 'ldapUpdate');
     echo $this->form;
 ?>
 </div>

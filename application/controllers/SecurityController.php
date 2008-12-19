@@ -184,19 +184,4 @@ class SecurityController extends MessageController
         }
         return $crit;
     }
-
-    /*
-     * Get form object from form config file section 
-     * 
-     * wrapper of Config_Fisma::getForm
-     *
-     * @param string $formConfigSection the forms name namely section of
-            the configuration
-     * 
-     * @return  Zend_Form
-     */
-    public function getForm ($formConfigSection)
-    {
-        return Config_Fisma::getForm($formConfigSection);
-    }
 }

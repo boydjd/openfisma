@@ -375,21 +375,7 @@ class Config_Fisma
         return false;
     }
 
-    /*
-     * Get form object from form config file section 
-     * @param string $formConfigSection the forms name namely section of
-            the configuration
-     * 
-     * @return  Zend_Form
-     */
-    public function getForm ($formConfigSection)
-    {
-        $formIni = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/' . FORMCONFIGFILE,
-            $formConfigSection);
-        $form = new Zend_Form($formIni);
-        return $form;
-    }
-    
+        
     /**
      * use Registry SYSCONFIG to merge other config
      * @param object @config  

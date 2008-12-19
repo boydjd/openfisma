@@ -116,9 +116,11 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             
         } else if ($element instanceof Zend_Form) {
             $enctype = $element->getAttrib('enctype');
+            $id      = $element->getAttrib('id');
             $render = "<form method='{$element->getMethod()}'"
                     . " action='{$element->getAction()}'"
                     . (isset($enctype) ? " enctype=\"$enctype\"" : '')
+                    . (isset($id) ? " id=\"$id\"" : '')
                     . '>'
                     . '<div class=\'form\'>'
                     . $content

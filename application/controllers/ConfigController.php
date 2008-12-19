@@ -219,7 +219,7 @@ class ConfigController extends SecurityController
     {
         $this->_acl->requirePrivilege('app_configuration', 'update');
         
-        $form = $this->getForm('ldap');
+        $form = $this->getConfigForm('ldap');
         $id = $this->_request->getParam('id');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
@@ -232,6 +232,23 @@ class ConfigController extends SecurityController
                 //$this->message($msg, self::M_NOTICE);
                 $this->_redirect('/panel/config/');
                 return;
+            } else {
+                /**
+                 * @todo this error display code needs to go into the decorator,
+                 * but before that can be done, the function it calls needs to be
+                 * put in a more convenient place
+                 */
+                 $errorString = '';
+                 foreach ($form->getMessages() as $field => $fieldErrors) {
+                     if (count($fieldErrors)>0) {
+                         foreach ($fieldErrors as $error) {
+                             $label = $form->getElement($field)->getLabel();
+                             $errorString .= "$label: $error<br>";
+                         }
+                     }
+                 }
+                 // Error message
+                 $this->message("Unable to save Ldap Configurations:<br>$errorString", self::M_WARNING);
             }
         } else {
             //only represent the view
@@ -241,6 +258,7 @@ class ConfigController extends SecurityController
             }
         }
         $this->view->form = $form;
+        $this->render();
     }
 
     /**
@@ -255,7 +273,7 @@ class ConfigController extends SecurityController
         // @REVIEW
         $msg = "Ldap Server deleted successfully.";
         $this->message($msg, self::M_NOTICE);
-        $this->_forward('view');
+        $this->_forward('index');
     }
 
     /**
@@ -267,7 +285,7 @@ class ConfigController extends SecurityController
     {
         $this->_acl->requirePrivilege('app_configuration', 'update');
         
-        $form = $this->getForm('ldap');
+        $form = $this->getConfigForm('ldap');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
             if ($form->isValid($data)) {
@@ -281,13 +299,32 @@ class ConfigController extends SecurityController
                     $ldapcn->bind();
                     echo "<b> Bind successfully! </b>";
                 }catch (Zend_Ldap_Exception $e) {
-                        echo "<b>". $e->getMessage(). "</b>";
+                    echo "<b>". $e->getMessage(). "</b>";
                 }
+            } else {
+                /**
+                 * @todo this error display code needs to go into the decorator,
+                 * but before that can be done, the function it calls needs to be
+                 * put in a more convenient place
+                 */
+                 $errorString = '';
+                 foreach ($form->getMessages() as $field => $fieldErrors) {
+                     if (count($fieldErrors)>0) {
+                         foreach ($fieldErrors as $error) {
+                             $label = $form->getElement($field)->getLabel();
+                             $errorString .= "$label: $error<br>";
+                         }
+                     }
+                 }
+                 echo $errorString;
             }
         } else {
             echo "<b>Invalid Parameters</b>";
         }
+        $this->_helper->viewRenderer->setNoRender();
+
     }
+
     /**
      * Notification event system base setting
      *
