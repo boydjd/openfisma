@@ -131,9 +131,9 @@ class SystemController extends SecurityController
                                    array('organization'=>'o.name'));
         if (!empty($value)) {
             if ('organization' == $field) {
-                $query->where("o.name = ?", $value);
+                $query->where("o.name like '%$value%'");
             } else {
-                $query->where("s.$field = ?", $value);
+                $query->where("s.$field like '%$value%'");
             }
         }
         $query->order('s.name ASC')->limitPage($this->_paging['currentPage'],
@@ -158,7 +158,12 @@ class SystemController extends SecurityController
             'count' => 'COUNT(s.id)'
         ));
         if (!empty($qv)) {
-            $query->where("$fid = ?", $qv);
+            if ('organization' == $fid) {
+                $query->join(array('o'=>'organizations'), 'o.id = s.organization_id', array())
+                      ->where("o.name like '%$qv%'");
+            } else {
+                $query->where("$fid like '%$qv%'");
+            }
             $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
         }
         $res = $this->_system->fetchRow($query)->toArray();
