@@ -187,8 +187,9 @@ class Poam extends Zend_Db_Table
                 $query->joinLeft(array('pev'=>'poam_evaluations'), 'p.id = pev.group_id', array())
                       ->joinLeft(array('el'=>'evaluations'), 'el.id=pev.eval_id', array())
                       ->where("el.precedence_id='$mp' AND pev.decision='APPROVED'")
-                      ->where('ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t '.
-                      ' WHERE t.group_id=p.id GROUP BY t.group_id)')
+                      ->where('ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t, evaluations AS t2 '.
+                      ' WHERE t2.id = t.eval_id AND t.group_id=p.id AND t.eval_id = el.id AND t2.group = "ACTION"'.
+                      ' GROUP BY t.group_id)')
                       ->where('pev.eval_id IN (SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
             } else { //$mp == 0
                 $query->joinLeft(array('pev' => 'poam_evaluations'), null, array())
