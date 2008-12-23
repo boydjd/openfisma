@@ -96,6 +96,9 @@ class SecurityController extends MessageController
     public function preDispatch()
     {
         if (empty($this->_me)) {
+            // throw exception and redirect the page to login.
+            ///@todo English
+            throw new Exception_InvalidAuthentication('not login or the session expire');
             $this->_forward('login', 'User');
         } else {
             $this->view->identity = $this->_me->account;

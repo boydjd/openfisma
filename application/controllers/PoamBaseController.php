@@ -52,9 +52,9 @@ class PoamBaseController extends SecurityController
         'currentPage' => 1,
         'perPage' => 20
     );
-    public function init()
+    public function preDispatch()
     {
-        parent::init();
+        parent::preDispatch();
         $this->_poam = new Poam();
         $src = new Source();
         $net = new Network();
@@ -68,10 +68,6 @@ class PoamBaseController extends SecurityController
         foreach ($tmpList as $k => $v) {
             $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
         }
-    }
-    public function preDispatch()
-    {
-        parent::preDispatch();
         $this->_req = $this->getRequest();
         $req = $this->_req;
         $this->_pagingBasePath = $req->getBaseUrl();
