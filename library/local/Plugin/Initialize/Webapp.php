@@ -156,7 +156,7 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         // already installed application.
         $route['no_install'] = new
             Zend_Controller_Router_Route_Regex(
-            'install/.*',
+            'install.*',
             array(
                 'controller' => 'user',
                 'action' => 'logout'
