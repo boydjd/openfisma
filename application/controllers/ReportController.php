@@ -623,7 +623,6 @@ class ReportController extends PoamBaseController
     public function rafsAction()
     {
         $this->_acl->requirePrivilege('report', 'generate_system_rafs');
-        
         $sid = $this->_req->getParam('system_id');
         $this->view->assign('system_list', $this->_systemList);
         if (!empty($sid)) {
@@ -637,6 +636,7 @@ class ReportController extends PoamBaseController
             $count = count($poamIds);
             if ($count > 0) {
                 $this->_helper->layout->disableLayout(true);
+                $this->_helper->viewRenderer->setNoRender();
                 $fname = tempnam('/tmp/', "RAFs");
                 @unlink($fname);
                 $rafs = new Archive_Tar($fname, true);
@@ -662,6 +662,9 @@ class ReportController extends PoamBaseController
                 header("Pragma: public");
                 echo file_get_contents($fname);
                 @unlink($fname);
+            } else {
+                ///@todo English
+                $this->message('No finding', self::M_WARNING);
             }
         }
     }

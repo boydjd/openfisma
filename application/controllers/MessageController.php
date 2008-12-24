@@ -49,6 +49,8 @@ class MessageController extends Zend_Controller_Action
         $this->view->msg = $msg;
         $this->view->model = $model;
         $this->_helper->viewRenderer->renderScript('message.phtml');
+        // restore the auto rendering
+        $this->_helper->viewRenderer->setNoRender(false);
     }
 
     /**
