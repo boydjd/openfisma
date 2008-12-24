@@ -168,6 +168,13 @@ class FindingController extends PoamBaseController
             $rowArray = (array)$row;
             $rowData = $rowArray['Cell'];
 
+            /** @todo Remove magic number 10, this is the number of columns in the template */
+            // Verify that all columns are filled in
+            if (count($row) != 10) {
+                $error = "Row $rowNumber: Not all columns are filled in.";
+                continue;
+            }
+
             // Assign names to the row data
             $systemNickname  = $rowData[0]->Data;
             $dateDiscovered  = $rowData[1]->Data;
