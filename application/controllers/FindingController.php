@@ -60,7 +60,7 @@ class FindingController extends PoamBaseController
                 'DRAFT',
                 'MSA',
                 'EN',
-                'EP'
+                'EA'
             );
         }
         $result = $this->_poam->search($this->_me->systems, $fields, $criteria,
