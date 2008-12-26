@@ -484,9 +484,8 @@ class ReportController extends PoamBaseController
     {
         $this->_acl->requirePrivilege('report', 'generate_general_report');
         
-        require_once('RiskAssessment.php');
-        $system = new system();
-        $systems = $system->getList(array(
+        $sysObj = new System();
+        $systems = $sysObj->getList(array(
             'name' => 'name',
             'type' => 'type',
             'conf' => 'confidentiality',
@@ -500,9 +499,7 @@ class ReportController extends PoamBaseController
         $fipsTotals['n/a'] = 0;
         foreach ($systems as $sid => & $system) {
             if (strtolower($system['conf']) != 'none') {
-                $riskObj = new RiskAssessment($system['conf'],
-                    $system['avail'], $system['integ'], null, null, null);
-                $fips = $riskObj->get_data_sensitivity();
+                $fips = $sysObj->calcSecurityCategory($system['conf'], $system['integ'], $system['avail']);
             } else {
                 $fips = 'n/a';
             }
