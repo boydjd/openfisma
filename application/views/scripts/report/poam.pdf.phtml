@@ -20,7 +20,7 @@ $cols = array (
 foreach($this->poam_list as &$row) {
     $row['system_name']=empty($row['system_id'])? 'N/A':$this->system_list[$row['system_id']];
     $row['source_name']=empty($row['source_id'])? 'N/A':$this->source_list[$row['source_id']];
-    $row['on_time'] = $this->isOnTime($this->dueTime[$row['id']]);
+    $row['on_time'] = $this->isOnTime($row['duetime']);
     $row['network_name']=empty($row['network_id'])? 'N/A':$this->network_list[$row['network_id']];
     $row['blscr_id'] = (NULL == $row['blscr_id']) ? 'N' : 'Y';
     $row['threats'] = ($row['threat_level'] != 'NONE' && trim($row['threat_source']) != '' && trim($row['threat_justification']) != '') ? 'Y' : 'N';

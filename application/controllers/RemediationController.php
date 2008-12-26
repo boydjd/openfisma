@@ -299,6 +299,7 @@ class RemediationController extends PoamBaseController
             'type',
             'status',
             'finding_data',
+            'duetime',
             'action_current_date',
             'count' => 'count(*)'
         ), $internalCrit, $this->_paging['currentPage'],
@@ -311,12 +312,8 @@ class RemediationController extends PoamBaseController
         $urlNamespace = new Zend_Session_Namespace('urlNamespace');
         $urlNamespace->lastSearch = $lastSearchUrl;
         $pager = & Pager::factory($this->_paging);
-        $poamIds = array();
-        foreach($list as $val) {
-            $poamIds[] = $val['id'];
-        }
+
         $this->view->assign('list', $list);
-        $this->view->assign('dueTime', $this->_poam->getDueTime($poamIds));
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
         $this->view->assign('total_pages', $total);
@@ -433,19 +430,17 @@ class RemediationController extends PoamBaseController
                 $mss[$i][] = $row;
                 if ($k == count($msEvaluation)-1) {
                     if ($row['decision'] == 'DENIED') {
-                        $mss[$i+1] = $msEvallist;
+                        //If denied, it should start a new round of evaluation 
+                        //however, none of this happens in DRAFT
+                        if ($poamDetail['status']!= 'DRAFT') {
+                            $mss[$i+1] = $msEvallist;
+                        }
                     } else {
-                        if ($row['precedence_id'] < count($msEvallist)-1 ) {
-                            // count($msEvallist)-1 is the max precedence_id
-                            $flag = count($msEvallist)-1-$row['precedence_id'];
-                            if ($flag == 1) {
-                                $lastEval = array_slice($msEvallist, -1);
-                            } else {
-                                $lastEval = array_slice($msEvallist, $flag-1);
-                            }
-                            foreach ($lastEval as $v) {
-                                $mss[$i][] = $v;
-                            }
+                        // Get the list of remaining evaluation 
+                        $remainingEval = array_slice($msEvallist, $row['precedence_id']+1);
+                        // To keep the evaluation in the same round,re-organization the index
+                        foreach ($remainingEval as $v) {
+                            $mss[$i][] = $v;
                         }
                     }
                 }
@@ -467,8 +462,7 @@ class RemediationController extends PoamBaseController
             $evs[$evid]['eval'][$evEval['eval_name']] =
                 array_slice($evEval, 5);
         }
-        $tmpTime = $this->_poam->getDueTime($id);
-        $poamDetail['isontime'] = $tmpTime[$id];
+
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('logs', $this->_poam->getLogs($id));
         $this->view->assign('ev_evals', $evs);

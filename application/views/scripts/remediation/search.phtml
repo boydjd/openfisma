@@ -44,7 +44,7 @@
             <td align='center' class='tdc' nowrap><?php echo $row['type'];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>
             <td align='center' class='tdc' nowrap>
-                <?php echo $this->isOnTime($this->dueTime[$row['id']]);?>
+                <?php echo $this->isOnTime($row['duetime']);?>
             </td>
             <td align='left'   class='tdc'><?php echo $finding_data;?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['action_current_date'];?></td> 

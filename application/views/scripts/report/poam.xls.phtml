@@ -58,7 +58,7 @@ $worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
 foreach( $this->poam_list as $p ) {
-    $p['on_time'] = $this->isOnTime($this->dueTime[$p['id']]);
+    $p['on_time'] = $this->isOnTime($p['duetime']);
     $data = array(
         $this->system_list[$p['system_id']],
         $p['id'],

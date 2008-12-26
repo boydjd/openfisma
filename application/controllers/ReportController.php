@@ -282,6 +282,7 @@ class ReportController extends PoamBaseController
                 'cmeasure_effectiveness',
                 'cmeasure_justification',
                 'blscr_id',
+                'duetime',
                 'count' => 'count(*)'), 
                 $criteria, $this->_paging['currentPage'], 
                 $this->_paging['perPage'],
@@ -290,11 +291,7 @@ class ReportController extends PoamBaseController
             $this->_paging['totalItems'] = $total;
             $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
-            $poamIds = array();
-            foreach($list as $val) {
-                $poamIds[] = $val['id'];
-            }
-            $this->view->assign('dueTime', $this->_poam->getDueTime($poamIds));
+
             $this->view->assign('poam', $this->_poam);
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());
@@ -487,14 +484,13 @@ class ReportController extends PoamBaseController
     {
         $this->_acl->requirePrivilege('report', 'generate_general_report');
         
-        require_once('RiskAssessment.php');
-        $system = new system();
-        $systems = $system->getList(array(
+        $sysObj = new System();
+        $systems = $sysObj->getList(array(
             'name' => 'name',
             'type' => 'type',
             'conf' => 'confidentiality',
             'avail' => 'availability',
-            'integ' => 'availability'
+            'integ' => 'integrity'
         ));
         $fipsTotals = array();
         $fipsTotals['LOW'] = 0;
@@ -503,9 +499,7 @@ class ReportController extends PoamBaseController
         $fipsTotals['n/a'] = 0;
         foreach ($systems as $sid => & $system) {
             if (strtolower($system['conf']) != 'none') {
-                $riskObj = new RiskAssessment($system['conf'],
-                    $system['avail'], $system['integ'], null, null, null);
-                $fips = $riskObj->get_data_sensitivity();
+                $fips = $sysObj->calcSecurityCategory($system['conf'], $system['integ'], $system['avail']);
             } else {
                 $fips = 'n/a';
             }
@@ -626,7 +620,6 @@ class ReportController extends PoamBaseController
     public function rafsAction()
     {
         $this->_acl->requirePrivilege('report', 'generate_system_rafs');
-        
         $sid = $this->_req->getParam('system_id');
         $this->view->assign('system_list', $this->_systemList);
         if (!empty($sid)) {
@@ -640,6 +633,7 @@ class ReportController extends PoamBaseController
             $count = count($poamIds);
             if ($count > 0) {
                 $this->_helper->layout->disableLayout(true);
+                $this->_helper->viewRenderer->setNoRender();
                 $fname = tempnam('/tmp/', "RAFs");
                 @unlink($fname);
                 $rafs = new Archive_Tar($fname, true);
@@ -665,6 +659,9 @@ class ReportController extends PoamBaseController
                 header("Pragma: public");
                 echo file_get_contents($fname);
                 @unlink($fname);
+            } else {
+                ///@todo English
+                $this->message('No finding', self::M_WARNING);
             }
         }
     }
