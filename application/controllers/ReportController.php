@@ -490,7 +490,7 @@ class ReportController extends PoamBaseController
             'type' => 'type',
             'conf' => 'confidentiality',
             'avail' => 'availability',
-            'integ' => 'availability'
+            'integ' => 'integrity'
         ));
         $fipsTotals = array();
         $fipsTotals['LOW'] = 0;
