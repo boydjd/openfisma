@@ -638,6 +638,7 @@ class AccountController extends SecurityController
             }
         }
         echo $msg;
+        $this->_helper->viewRenderer->setNoRender();
     }
 
     /**
