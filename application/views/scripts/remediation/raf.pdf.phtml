@@ -2,9 +2,10 @@
 require_once ( 'pdf/class.ezpdf.php');
 
 // These constants define the font size for various parts of the document.
-define('TITLE_TEXT_SIZE', 18);
-define('BODY_TEXT_SIZE', 10);
-define('FOOTER_TEXT_SIZE', 8);
+!defined('TITLE_TEXT_SIZE') ? define('TITLE_TEXT_SIZE', 18) : true;
+!defined('BODY_TEXT_SIZE') ? define('BODY_TEXT_SIZE', 10) : true;
+!defined('FOOTER_TEXT_SIZE') ? define('FOOTER_TEXT_SIZE', 8) : true;
+!defined('FONTS') ? define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts') : true;
 
 // These options are used repeatedly throughout the document for consistent formatting.
 $headerOptions = array('showHeadings'=>0,
@@ -47,8 +48,6 @@ $threat_likelihood = $sys->calcThreat($this->poam['threat_level'], $this->poam['
 
 $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
 $risk_index = $cellidx_lookup[$threat_likelihood][$this->securityCategorization];
-
-define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts');
 
 // This is the "letter" page size
 $pdf = new Cezpdf('letter');
