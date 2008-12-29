@@ -315,6 +315,7 @@ class ReportController extends PoamBaseController
 
         $this->view->assign('source_list', $this->_sourceList);
         $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('params', $params);
         $isExport = $req->getParam('format');
         

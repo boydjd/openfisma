@@ -7,7 +7,7 @@ $cols = array (
     'status'=>"Status",
     'on_time'=>'On Time?',
     'source_name'=>"Source",
-//    'asset_id'=>"Asset",
+    'ip'=>"Server/Database",
     'network_name'=>"Location",
     'threat_level'=>"Risk Level",
     'action_suggested'=>"Recommendation",
@@ -35,7 +35,7 @@ define('PGWIDTH', 'pgwidth');
 define('PGHEIGHT', 'pgheight');
 define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts');
 
-$poam_config = array( ORIENTATION => 'landscape', PAPERTYPE => 'LETTER', PGWIDTH => 792);
+$poam_config = array( ORIENTATION => 'landscape', PAPERTYPE => 'LEGAL', PGWIDTH => 1000);
 
 require_once( 'pdf/class.ezpdf.php');
 
@@ -96,7 +96,7 @@ if( isset($this->criteria['source_id']) ) {
 
 $pdf->ezText('Plans of Actions And Milestones Report Administration',16,array('justification'=>'center'));
 $pdf->ezTable($this->poam_list,$cols,$title,
-    array('fontSize'=>8,'maxWidth'=>690, 'titleFontSize'=>'12' ));
+    array('fontSize'=>8,'maxWidth'=>$content_width, 'titleFontSize'=>'12' ));
 
 header('Pragma: private');
 header('Cache-control: private');
