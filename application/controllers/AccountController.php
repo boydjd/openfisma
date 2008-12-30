@@ -101,6 +101,7 @@ class AccountController extends SecurityController
             $form->removeElement('account');
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
+            $form->removeElement('generate_password');
         } else if ($systemAuthType == 'database') {
             $form->removeElement('ldap_dn');
             $form->removeElement('checkdn');
@@ -341,6 +342,7 @@ class AccountController extends SecurityController
                 unset($accountData['password']);
             }
             unset($accountData['confirmPassword']);
+            unset($accountData['generate_password']);
             $roleId = $accountData['role'];
             unset($accountData['role']);
             unset($accountData['submit']);
@@ -483,8 +485,6 @@ class AccountController extends SecurityController
         if (Config_Fisma::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirmPassword')->setRequired(true);
-            $form->getElement('password')->setValue($this->_randomPassword());
-            $form->getElement('confirmPassword')->setValue($this->_randomPassword());
              // Prepare the password requirements explanation:
             $requirements = $this->_getPasswordRequirements();
             $this->view->assign('requirements', $requirements);
@@ -541,6 +541,7 @@ class AccountController extends SecurityController
             $systems = $accountData['systems'];
             unset($accountData['systems']);
             unset($accountData['checkdn']);
+            unset($accountData['generate_password']);
             
             // Create the user's main record.
             if ( 'ldap' == Config_Fisma::readSysConfig('auth_type') ) {
@@ -823,12 +824,12 @@ class AccountController extends SecurityController
     }
 
     /**
-     * random a complexity password when created a user
+     * generate a password that meet the application's password complexity requirements.
      */
-    protected function _randomPassword()
+    public function generatepasswordAction()
     {
         $passLengthMin = Config_Fisma::readSysConfig('pass_min');
-        $passLengthMax = $passLengthMin+5;
+        $passLengthMax = Config_Fisma::readSysConfig('pass_max');
         $passNum = Config_Fisma::readSysConfig('pass_numerical');
         $passUpper = Config_Fisma::readSysConfig('pass_uppercase');
         $passLower = Config_Fisma::readSysConfig('pass_lowercase');
@@ -859,11 +860,15 @@ class AccountController extends SecurityController
                 $password .= rand();
             } else {
                 foreach ($possibleCharactors as $row) {
-                    $password .= substr($row, (rand()%(strlen($row))), 1);
+                    if (strlen($password) < $length) {
+                        $password .= substr($row, (rand()%(strlen($row))), 1);
+                    }
                 }
             }
         }
-        return $password;
+        echo $password;
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
     }
 
     protected function _getPasswordRequirements()

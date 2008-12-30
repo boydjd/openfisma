@@ -166,6 +166,17 @@ $(document).ready(function(){
         $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
     });
 
+    $("#generate_password").click(function(){
+        var url = "/account/generatepassword/format/html";
+        $.ajax({ url:url, type:"GET",dataType:"html",
+            success:function(password){
+                $("#password").attr("value", password);
+                $("#confirmPassword").attr("value", password);
+            }
+        });
+    });
+
+
     $(".confirm").click(function(){
         var str = "DELETING COMFIRMATION!";
         if(confirm(str) == true){

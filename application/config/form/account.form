@@ -29,6 +29,10 @@ elements.confirmPassword.options.label = "Confirm Password"
 elements.confirmPassword.options.attribs.size = 35
 displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
+elements.generate_password.type = "button"
+elements.generate_password.options.value = "Generate Password"
+displayGroups.accountInfo.elements.generate_password = "generate_password"
+
 elements.ldap_dn.type = "text"
 elements.ldap_dn.options.label = "LDAP DN"
 elements.ldap_dn.options.required = true
