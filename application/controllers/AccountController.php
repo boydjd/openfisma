@@ -336,6 +336,7 @@ class AccountController extends SecurityController
                     ));
                     return;
                 }
+                $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
                 $accountData['hash']     = Config_Fisma::readSysConfig('encrypt');
             } else {
@@ -364,12 +365,22 @@ class AccountController extends SecurityController
 
             $n = $this->_user->update($accountData, "id=$id");
             if ($n > 0) {
+                $message = "User ({$accountData['account']}) modified";
+
                 $this->_notification
                      ->add(Notification::ACCOUNT_MODIFIED,
                         $this->_me->account, $id);
                 $this->_user->log('ACCOUNT_MODIFICATION',
                                    $this->_me->id,
                                    "User Account {$accountData['account']} Successfully Modified");
+
+                if (!empty($password)) {
+                    $this->sendPassword($id, $password);
+                    // On success, redirect to read view
+                    $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
+                    /** @todo english */
+                    $message .= ", an email include the new password has sent to this user";
+                }
             }
 
             $mySystems = $this->_user->getMySystems($id);
@@ -403,8 +414,7 @@ class AccountController extends SecurityController
                     Exception_General('The user has more than 1 role.');
             }
 
-            $this->message("User ({$accountData['account']}) modified",
-                           self::M_NOTICE);
+            $this->message($message, self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
             /**

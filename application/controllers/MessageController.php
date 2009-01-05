@@ -92,6 +92,37 @@ class MessageController extends Zend_Controller_Action
     }
 
     /**
+     * Send the new password to the user whom password has been changed by administrator
+     *
+     * @param int $userId a special user id
+     * @param string $password new password for this user
+     */
+    public function sendPassword($userId, $password)
+    {
+        $user = new User();
+        $ret = $user->find($userId)->current();
+
+        $sender = Config_Fisma::readSysConfig('sender');
+        $systemName = Config_Fisma::readSysConfig('system_name');
+
+        $mail = new Zend_Mail();
+
+        $mail->setFrom($sender, $systemName);
+        $mail->addTo($ret->email);
+        $mail->setSubject("Your password for $systemName has been changed");
+
+        $contentTpl = $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts/mail');
+        $contentTpl = $this->view;
+        $contentTpl->hostUrl = Config_Fisma::readSysConfig('hostUrl');
+        $contentTpl->password = $password;
+        $content = $contentTpl->render('sendpassword.phtml');
+        $mail->setBodyText($content);
+        $mail->send($this->_getTransport());
+    }
+
+
+
+    /**
      * _getTransport() - Return the appropriate Zend_Mail_Transport subclass,
      * based on the system's configuration.
      *
