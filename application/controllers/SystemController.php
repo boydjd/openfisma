@@ -209,20 +209,7 @@ class SystemController extends SecurityController
                 $this->_forward('view', null, null, array('id' => $systemId));
                 return;
             } else {
-                /**
-                 * @todo this error display code needs to go into the decorator,
-                 * but before that can be done, the function it calls needs to be
-                 * put in a more convenient place
-                 */
-                $errorString = '';
-                foreach ($form->getMessages() as $field => $fieldErrors) {
-                    if (count($fieldErrors)>0) {
-                        foreach ($fieldErrors as $error) {
-                            $label = $form->getElement($field)->getLabel();
-                            $errorString .= "$label: $error<br>";
-                        }
-                    }
-                }
+                $errorString = Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to create system:<br>$errorString", self::M_WARNING);
             }
@@ -349,17 +336,7 @@ class SystemController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = '';
-            foreach ($form->getMessages() as $field => $fieldErrors) {
-                if (count($fieldErrors)>0) {
-                    foreach ($fieldErrors as $error) {
-                        $label = $form->getElement($field)->getLabel();
-                        $errorString .= "$label: $error<br>";
-                    }
-                }
-            }
-            $errorString = addslashes($errorString);
-
+            $errorString = Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update system:<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.

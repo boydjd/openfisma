@@ -82,4 +82,26 @@ class Form_Manager
         
         return $form;
     }
+
+    /**
+     * Get form errors if form validate false
+     *
+     * @param Zend_From $form
+     * @return string form errors
+     * @todo this error display code needs to go into the decorator,
+     */
+    static function getErrors($form)
+    {
+        $errorString = '';
+        foreach ($form->getMessages() as $field => $fieldErrors) {
+            if (count($fieldErrors) > 0) {
+                foreach ($fieldErrors as $error) {
+                    $label = $form->getElement($field)->getLabel();
+                    $errorString .= "$label: $error<br>";
+                }
+            }
+        }
+        return addslashes($errorString);
+    }
+
 }

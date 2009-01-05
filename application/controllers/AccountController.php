@@ -417,22 +417,7 @@ class AccountController extends SecurityController
             $this->message($message, self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            /**
-             * @todo this error display code needs to go into the decorator,
-             * but before that can be done, the function it calls needs to be
-             * put in a more convenient place
-             */
-            $errorString = '';
-            foreach ($form->getMessages() as $field => $fieldErrors) {
-                if (count($fieldErrors)>0) {
-                    foreach ($fieldErrors as $error) {
-                        $label = $form->getElement($field)->getLabel();
-                        $errorString .= "$label: $error<br>";
-                    }
-                }
-            }
-            $errorString = addslashes($errorString);
-
+            $errorString = Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update account:<br>$errorString",
                            self::M_WARNING);
@@ -593,21 +578,7 @@ class AccountController extends SecurityController
             $this->_forward('view', null, null, array('id' => $userId));
             $this->_forward('create');
         } else {
-            /**
-             * @todo this error display code needs to go into the decorator,
-             * but before that can be done, the function it calls needs to be
-             * put in a more convenient place
-             */
-            $errorString = '';
-            foreach ($form->getMessages() as $field => $fieldErrors) {
-                if (count($fieldErrors)>0) {
-                    foreach ($fieldErrors as $error) {
-                        $label = $form->getElement($field)->getLabel();
-                        $errorString .= "$label: $error<br>";
-                    }
-                }
-            }
-
+            $errorString = Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to create account:<br>$errorString",
                            self::M_WARNING);

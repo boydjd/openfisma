@@ -403,22 +403,8 @@ class UserController extends MessageController
                 self::M_WARNING);
             }
         } else {
-            /**
-             * @todo this error display code needs to go into the decorator,
-             * but before that can be done, the function it calls needs to be
-             * put in a more convenient place
-             */
-            $errorString = '';
-            foreach ($form->getMessages() as $field => $fieldErrors) {
-                if (count($fieldErrors) > 0) {
-                    foreach ($fieldErrors as $error) {
-                        $label = $form->getElement($field)->getLabel();
-                        $errorString .="$label: $error<br>";
-                    }
-                }
-            }
-
-            $this->message("Unable to update account:<br>" . addslashes($errorString), self::M_WARNING);
+            $errorString = Form_Manager::getErrors($form);
+            $this->message("Unable to update account:<br>" . $errorString, self::M_WARNING);
         }
         $this->_forward('profile');
     }
@@ -485,20 +471,7 @@ class UserController extends MessageController
             $password->addValidator(new Form_Validator_Password($userRow));
             $formValid = $passwordForm->isValid($post);
             if (!$formValid) {
-                /**
-                * @todo this error display code needs to go into the decorator,
-                * but before that can be done, the function it calls needs to be
-                * put in a more convenient place
-                */
-                $errorString = '';
-                foreach ($passwordForm->getMessages() as $field => $fieldErrors) {
-                    if (count($fieldErrors)>0) {
-                        foreach ($fieldErrors as $error) {
-                            $label = $passwordForm->getElement($field)->getLabel();
-                            $errorString .= "$label: $error<br>";
-                        }
-                    }
-                }
+                $errorString = Form_Manager::getErrors($passwordForm);
                 // Error message
                 $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;

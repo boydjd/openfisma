@@ -509,20 +509,7 @@ class FindingController extends PoamBaseController
                                    self::M_WARNING);
                 }
             } else {
-                /**
-                 * @todo this error display code needs to go into the decorator,
-                 * but before that can be done, the function it calls needs to be
-                 * put in a more convenient place
-                 */
-                $errorString = '';
-                foreach ($uploadForm->getMessages() as $field => $fieldErrors) {
-                    if (count($fieldErrors)>0) {
-                        foreach ($fieldErrors as $error) {
-                            $label = $uploadForm->getElement($field)->getLabel();
-                            $errorString .= "$label: $error<br>";
-                        }
-                    }
-                }
+                $errorString = Form_Manager::getErrors($uploadForm);
 
                 if (!$fileReceived) {
                     $errorString .= "File not received<br>";

@@ -116,20 +116,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    /**
-                     * @todo this error display code needs to go into the decorator,
-                     * but before that can be done, the function it calls needs to be
-                     * put in a more convenient place
-                     */
-                    $errorString = '';
-                    foreach ($form->getMessages() as $field => $fieldErrors) {
-                        if (count($fieldErrors)>0) {
-                            foreach ($fieldErrors as $error) {
-                                $label = $form->getElement($field)->getLabel();
-                                $errorString .= "$label: $error<br>";
-                            }
-                        }
-                    }
+                    $errorString = Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save general policies:<br>$errorString", self::M_WARNING);
                 }
@@ -181,20 +168,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    /**
-                     * @todo this error display code needs to go into the decorator,
-                     * but before that can be done, the function it calls needs to be
-                     * put in a more convenient place
-                     */
-                    $errorString = '';
-                    foreach ($form->getMessages() as $field => $fieldErrors) {
-                        if (count($fieldErrors)>0) {
-                            foreach ($fieldErrors as $error) {
-                                $label = $form->getElement($field)->getLabel();
-                                $errorString .= "$label: $error<br>";
-                            }
-                        }
-                    }
+                    $errorString = Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save Technical Contact Information:<br>$errorString",
                         self::M_WARNING);
@@ -233,22 +207,9 @@ class ConfigController extends SecurityController
                 $this->_redirect('/panel/config/');
                 return;
             } else {
-                /**
-                 * @todo this error display code needs to go into the decorator,
-                 * but before that can be done, the function it calls needs to be
-                 * put in a more convenient place
-                 */
-                 $errorString = '';
-                 foreach ($form->getMessages() as $field => $fieldErrors) {
-                     if (count($fieldErrors)>0) {
-                         foreach ($fieldErrors as $error) {
-                             $label = $form->getElement($field)->getLabel();
-                             $errorString .= "$label: $error<br>";
-                         }
-                     }
-                 }
-                 // Error message
-                 $this->message("Unable to save Ldap Configurations:<br>$errorString", self::M_WARNING);
+                $errorString = Form_Manager::getErrors($form);
+                // Error message
+                $this->message("Unable to save Ldap Configurations:<br>$errorString", self::M_WARNING);
             }
         } else {
             //only represent the view
@@ -302,21 +263,8 @@ class ConfigController extends SecurityController
                     echo "<b>". $e->getMessage(). "</b>";
                 }
             } else {
-                /**
-                 * @todo this error display code needs to go into the decorator,
-                 * but before that can be done, the function it calls needs to be
-                 * put in a more convenient place
-                 */
-                 $errorString = '';
-                 foreach ($form->getMessages() as $field => $fieldErrors) {
-                     if (count($fieldErrors)>0) {
-                         foreach ($fieldErrors as $error) {
-                             $label = $form->getElement($field)->getLabel();
-                             $errorString .= "$label: $error<br>";
-                         }
-                     }
-                 }
-                 echo $errorString;
+                $errorString = Form_Manager::getErrors($form);
+                echo $errorString;
             }
         } else {
             echo "<b>Invalid Parameters</b>";
@@ -350,20 +298,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    /**
-                     * @todo this error display code needs to go into the decorator,
-                     * but before that can be done, the function it calls needs to be
-                     * put in a more convenient place
-                     */
-                    $errorString = '';
-                    foreach ($form->getMessages() as $field => $fieldErrors) {
-                        if (count($fieldErrors)>0) {
-                            foreach ($fieldErrors as $error) {
-                                $label = $form->getElement($field)->getLabel();
-                                $errorString .= "$label: $error<br>";
-                            }
-                        }
-                    }
+                    $errorString = Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save Notifciation Policies:<br>$errorString", self::M_WARNING);
                 }
@@ -400,20 +335,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    /**
-                     * @todo this error display code needs to go into the decorator,
-                     * but before that can be done, the function it calls needs to be
-                     * put in a more convenient place
-                     */
-                    $errorString = '';
-                    foreach ($form->getMessages() as $field => $fieldErrors) {
-                        if (count($fieldErrors)>0) {
-                            foreach ($fieldErrors as $error) {
-                                $label = $form->getElement($field)->getLabel();
-                                $errorString .= "$label: $error<br>";
-                            }
-                        }
-                    }
+                    $errorString = Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save privacy policies:<br>$errorString", self::M_WARNING);
                 }
@@ -456,20 +378,7 @@ class ConfigController extends SecurityController
                     $msg = 'Password Complexity Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    /**
-                     * @todo this error display code needs to go into the decorator,
-                     * but before that can be done, the function it calls needs to be
-                     * put in a more convenient place
-                     */
-                    $errorString = '';
-                    foreach ($form->getMessages() as $field => $fieldErrors) {
-                        if (count($fieldErrors)>0) {
-                            foreach ($fieldErrors as $error) {
-                                $label = $form->getElement($field)->getLabel();
-                                $errorString .= "$label: $error<br>";
-                            }
-                        }
-                    }
+                    $errorString = Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save password policies:<br>$errorString", self::M_WARNING);
                 }
