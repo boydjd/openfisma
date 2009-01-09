@@ -184,20 +184,23 @@ class Poam extends Zend_Db_Table
             }
             if ($mp > 0) {
                 $mp --;
-                $query->joinLeft(array('pev'=>'poam_evaluations'), 'p.id = pev.group_id', array())
-                      ->joinLeft(array('el'=>'evaluations'), 'el.id=pev.eval_id', array())
-                      ->where("el.precedence_id='$mp' AND pev.decision='APPROVED'")
-                      ->where('ROW(p.id,pev.id)=(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t, evaluations AS t2 '.
-                      ' WHERE t2.id = t.eval_id AND t.group_id=p.id AND t.eval_id = el.id AND t2.group = "ACTION"'.
-                      ' GROUP BY t.group_id)')
-                      ->where('pev.eval_id IN (SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
+                $query->join(array('pev' => 'poam_evaluations'), 
+                        "p.id=pev.group_id AND pev.decision='APPROVED'", array())
+                    ->join(array('el' => 'evaluations'), 
+                            "el.id=pev.eval_id AND el.precedence_id='$mp' ", array())
+                    ->join(array('ev' => new Zend_Db_Expr("(
+                          SELECT pe.group_id, MAX(pe.id) level
+                          FROM `poam_evaluations` AS pe, `evaluations` AS eval
+                          WHERE ( eval.id = pe.eval_id AND eval.group='ACTION' )
+                          GROUP BY pe.group_id)")), "pev.id = ev.level", array());
             } else { //$mp == 0
                 $query->joinLeft(array('pev' => 'poam_evaluations'), null, array())
                       ->join(array('el' => 'evaluations'), '(el.id=pev.eval_id AND el.group="ACTION")
                            ON pev.group_id = p.id', array())
                       ->where("ISNULL(pev.id) OR (pev.decision='DENIED' AND ROW(p.id,pev.id)= ".
-                      "(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t WHERE t.group_id=p.id ".
-                      "GROUP BY t.group_id))");
+                              "(SELECT t.group_id,MAX(t.id) FROM poam_evaluations AS t, evaluations AS el ".
+                              " WHERE t.group_id=p.id AND t.eval_id = el.id AND el.group='ACTION'".
+                              " GROUP BY t.group_id))");
             }
         }
         if (isset($ep)) {

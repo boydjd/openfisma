@@ -2,9 +2,10 @@
 require_once ( 'pdf/class.ezpdf.php');
 
 // These constants define the font size for various parts of the document.
-define('TITLE_TEXT_SIZE', 18);
-define('BODY_TEXT_SIZE', 10);
-define('FOOTER_TEXT_SIZE', 8);
+!defined('TITLE_TEXT_SIZE') ? define('TITLE_TEXT_SIZE', 18) : true;
+!defined('BODY_TEXT_SIZE') ? define('BODY_TEXT_SIZE', 10) : true;
+!defined('FOOTER_TEXT_SIZE') ? define('FOOTER_TEXT_SIZE', 8) : true;
+!defined('FONTS') ? define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts') : true;
 
 // These options are used repeatedly throughout the document for consistent formatting.
 $headerOptions = array('showHeadings'=>0,
@@ -48,8 +49,6 @@ $threat_likelihood = $sys->calcThreat($this->poam['threat_level'], $this->poam['
 $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
 $risk_index = $cellidx_lookup[$threat_likelihood][$this->securityCategorization];
 
-define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts');
-
 // This is the "letter" page size
 $pdf = new Cezpdf('letter');
 $pdf->selectFont(FONTS . "/Helvetica.afm");
@@ -70,8 +69,8 @@ $data = array(array("<b>Finding Number:</b>", $p['id'],
               array("<b>Asset(s) Affected:</b>", $p['asset_name'],"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
-$data = array(array("<b>Finding Description:</b>", strip_tags($p['finding_data']),"",""),
-              array("<b>Recommendation:</b>",  strip_tags($p['action_suggested']),"",""));
+$data = array(array("<b>Finding Description:</b>", html_entity_decode(strip_tags($p['finding_data'])),"",""),
+              array("<b>Recommendation:</b>",  html_entity_decode(strip_tags($p['action_suggested'])),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
@@ -79,7 +78,7 @@ $data = array(array('<b>Mitigation Strategy</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 $data = array(array("<b>Type:</b>", strip_tags($p['type']), "", ""),
-              array("<b>Description:</b>", strip_tags($p['action_planned']), "", ""),
+              array("<b>Description:</b>", html_entity_decode(strip_tags($p['action_planned'])), "", ""),
               array("<b>Estimated Completion Date:</b>", $p['action_current_date'], "", "")); 
 $pdf->ezTable($data, null, null, $labelOptions);
 
@@ -117,9 +116,9 @@ $pdf->ezText('The threat likelihood defines the likelihood or frequency of a har
            . ' determination evaluates the threat level along with the existence and effectiveness of current'
            . ' controls.', BODY_TEXT_SIZE, $bodyTextOptions);
 
-$data = array(array("<b>Threat Description:</b>", strip_tags($p['threat_source']), "", ""),
+$data = array(array("<b>Threat Description:</b>", html_entity_decode(strip_tags($p['threat_source'])), "", ""),
               array("<b>Threat Level:</b>", $p['threat_level'], "", ""),
-              array("<b>Description of Countermeasures:</b>", strip_tags($p['cmeasure']), "", ""),
+              array("<b>Description of Countermeasures:</b>", html_entity_decode(strip_tags($p['cmeasure'])), "", ""),
               array("<b>Countermeasures Effectiveness:</b>", strip_tags($p['cmeasure_effectiveness']), "", ""));
 $pdf->ezTable($data, null, null, $labelOptions);
 

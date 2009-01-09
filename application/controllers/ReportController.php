@@ -315,6 +315,7 @@ class ReportController extends PoamBaseController
 
         $this->view->assign('source_list', $this->_sourceList);
         $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('params', $params);
         $isExport = $req->getParam('format');
         
@@ -632,36 +633,53 @@ class ReportController extends PoamBaseController
             $poamIds = $this->_poam->getAdapter()->fetchCol($query);
             $count = count($poamIds);
             if ($count > 0) {
-                $this->_helper->layout->disableLayout(true);
-                $this->_helper->viewRenderer->setNoRender();
                 $fname = tempnam('/tmp/', "RAFs");
                 @unlink($fname);
                 $rafs = new Archive_Tar($fname, true);
-                $this->view->assign('source_list', $this->_sourceList);
                 $path = $this->_helper->viewRenderer
-                    ->getViewScript('raf', array(
-                    'controller' => 'remediation',
-                    'suffix' => 'pdf.phtml'
-                ));
-                foreach ($poamIds as $id) {
-                    $poamDetail = & $this->_poam->getDetail($id);
-                    $this->view->assign('poam', $poamDetail);
-                    $rafs->addString("raf_{$id}.pdf",
-                        $this->view->render($path));
+                        ->getViewScript('raf', array(
+                                        'controller' => 'remediation',
+                                        'suffix' => 'pdf.phtml'));
+                try {
+                    $system = new System();
+                    foreach ($poamIds as $id) {
+                        $poamDetail = & $this->_poam->getDetail($id);
+                        $this->view->assign('poam', $poamDetail);
+                        $ret = $system->find($poamDetail['system_id']);
+                        $actOwner = $ret->current()->toArray();
+                        $securityCategorization = $system->calcSecurityCategory($actOwner['confidentiality'],
+                                                                                $actOwner['integrity'],
+                                                                                $actOwner['availability']);
+                        if (NULL == $securityCategorization) {
+                            throw new Exception_General('The security categorization for ('.$actOwner['id'].')'.
+                                $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
+                                'unless these values are defined.');
+                        }
+                        $this->view->assign('securityCategorization', $securityCategorization);
+                        $rafs->addString("raf_{$id}.pdf", $this->view->render($path));
+                    }
+                    $this->_helper->layout->disableLayout(true);
+                    $this->_helper->viewRenderer->setNoRender();
+                    header("Content-type: application/octetstream");
+                    header('Content-Length: ' . filesize($fname));
+                    header("Content-Disposition: attachment; filename=RAFs.tgz");
+                    header("Content-Transfer-Encoding: binary");
+                    header("Expires: 0");
+                    header("Cache-Control: must-revalidate, post-check=0,".
+                        " pre-check=0");
+                    header("Pragma: public");
+                    echo file_get_contents($fname);
+                    @unlink($fname);
+                } catch (Exception_General $e) {
+                    if ($e instanceof Exception_General) {
+                        $message = $e->getMessage();
+                    }
+                    $this->message($message, self::M_WARNING);
                 }
-                header("Content-type: application/octetstream");
-                header('Content-Length: ' . filesize($fname));
-                header("Content-Disposition: attachment; filename=RAFs.tgz");
-                header("Content-Transfer-Encoding: binary");
-                header("Expires: 0");
-                header("Cache-Control: must-revalidate, post-check=0,".
-                    " pre-check=0");
-                header("Pragma: public");
-                echo file_get_contents($fname);
-                @unlink($fname);
             } else {
-                ///@todo English
+                /** @todo english */
                 $this->message('No finding', self::M_WARNING);
+                $this->_forward('report','panel',null,array('sub' => 'rafs', 'system_id' => ''));
             }
         }
     }
