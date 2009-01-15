@@ -309,7 +309,7 @@ class Poam extends Zend_Db_Table
                         WHEN 'MSA'
                             THEN (
                                ADDDATE(p.mss_ts, ".$this->_overdue['mp']."))
-                        WHEN 'EP'
+                        WHEN 'EA'
                             THEN (
                                ADDDATE(p.action_current_date, ".$this->_overdue['ep']."))
                         ELSE 'N/A' END) AS duetime ";
