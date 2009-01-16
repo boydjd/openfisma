@@ -292,17 +292,7 @@ class RemediationController extends PoamBaseController
                 }
             }
         }
-        $list = $this->_poam->search($this->_me->systems, array(
-            'id',
-            'source_id',
-            'system_id',
-            'type',
-            'status',
-            'finding_data',
-            'duetime',
-            'action_current_date',
-            'count' => 'count(*)'
-        ), $internalCrit, $this->_paging['currentPage'],
+        $list = $this->_poam->search($this->_me->systems,'*', $internalCrit, $this->_paging['currentPage'],
             $this->_paging['perPage'], $html);
         $total = array_pop($list);
         $this->_paging['totalItems'] = $total;

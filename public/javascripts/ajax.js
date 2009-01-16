@@ -2,6 +2,19 @@ String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
 }
 
+var ie6SelectsShowing = true;
+function toggleIE6Selects(){
+    if($.browser.msie && $.browser.version == '6.0'){
+        if(ie6SelectsShowing){
+            $('select').hide();
+            ie6SelectsShowing = false;
+        } else {
+            $('select').show();
+            ie6SelectsShowing = true;
+        }
+    }
+}
+
 $(document).ready(function(){
 
    $("a[@name=select_all]").click(function(){
@@ -225,6 +238,11 @@ $(document).ready(function(){
     });
     shortcut(0);
 
+    jQuery('.pop').cluetip({sticky: true, titleAttribute: 'title', local:true, cursor: 'pointer', dropShadow: true, activation: 'click' });
+    jQuery('.jt').cluetip({cluetipClass: 'jtip', positionBy: false, arrows: false, dropShadow: true, local:true, mouseOutClose: true});
+    jQuery('.jt_sticky').cluetip({cluetipClass: 'jtip', positionBy: false, arrows: false, dropShadow: true, local:true, closePosition: 'title', sticky:true});
+    jQuery('.ph_sticky').click(toggleIE6Selects).cluetip({cluetipClass: 'default', arrows: false, cursor: 'pointer', dropShadow: true, local:true, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);}});
+    jQuery('.ajax_sticky').cluetip({cluetipClass: 'default', width: '400', cursor: 'pointer', positionBy: 'mouse', arrows: false, dropShadow: true, closePosition: 'title', sticky:true, ajaxSettings: {success: function(msg){alert( "Data Saved: " + msg );}}});
 });
 
 function shortcut(step){

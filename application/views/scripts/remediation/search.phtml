@@ -1,33 +1,62 @@
+<?php
+    $url = "/panel/remediation/sub/view";
+    if (!empty($this->keywords)) {
+        $url .= "/keywords/".$this->keywords;
+    }
+?>
 <div class="barleft">
 <div class="barright">
     <p><b>Remediation Search Results</b>
         <span>
             <?php echo $this->links['all'];?>
         </span>
+        <span>
+            <a href="#options" class="ph_sticky options" rel="#options" title="Show/Hide Columns">
+                <img style="margin-top:2px;" border="0" src="/images/emblem-system.png"/>
+            </a>
+            <div id="options" style="display:none" />
+        </span>
     </p>
 </div>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        jQuery('.tbframe').columnManager({listTargetID:'cluetip', onClass: 'accept', offClass: 'blank', hideInList: [$(".tbframe tr th").length], saveState: true, cookiePath: '/panel/remediation/sub/searchbox/'}); 
+        jQuery('#cluetip ul').css('background','#fff').css('margin','0').css('padding','0 2em 2em').css('z-index','100');
+        jQuery('#cluetip-inner').css('border','none');
+        jQuery('#cluetip li').css('list-style','none').css('position','relative');
+    });
+</script>
 </div>
     <table width="100%" class="tbframe">
-        <th nowrap>ID 
-            <a href="<?php echo $this->url;?>/sortby/id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-            <a href="<?php echo $this->url;?>/sortby/id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-        </th>
-        <th nowrap>Source </th>
-        <th nowrap>System </th>
-        <th nowrap>Type </th>
-        <th nowrap>Status </th>
-        <th nowrap>On Time? </th>
-        <th nowrap>Finding </th>
-        <th nowrap>ECD 
-           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-        </th>
-        <th nowrap>View</th>
+        <tr>
+            <th nowrap>ID 
+                <a href="<?php echo $this->url;?>/sortby/id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
+            <th nowrap>Source </th>
+            <th nowrap>System </th>
+            <th nowrap>Asset </th>
+            <th nowrap>Type </th>
+            <th nowrap>Status </th>
+            <th nowrap>On Time? </th>
+            <th nowrap>Finding </th>
+            <th nowrap>Recomendation </th>
+            <th nowrap>Course of Action </th>
+            <th nowrap>Blscr </th>
+            <th nowrap>Threat Level </th>
+            <th nowrap>Threat Description </th>
+            <th nowrap>Cmeasures Effectiveness </th>
+            <th nowrap>Cmeasures Description </th>
+            <th nowrap>Attachments </th>
+            <th nowrap>ECD 
+               <a href="<?php echo $this->url;?>/sortby/action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+               <a href="<?php echo $this->url;?>/sortby/action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
+            <th nowrap>View</th>
         </tr>
         <!-- REMEDIATION ROWS -->
         <?php
             foreach($this->list as $row){
-            $finding_data = strlen($row['finding_data'])>120?substr($row['finding_data'],0,120)."...":$row['finding_data'];
         ?>
         <tr>
             <td align='center' class='tdc'><?php echo $row['id'];?></td>
@@ -41,14 +70,23 @@
             ?>
             </td>
             <td align='center' class='tdc'><?php echo $this->systems[$row['system_id']];?></td>
+            <td align='center' class='tdc' nowrap><?php echo $row['asset_name'];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['type'];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>
             <td align='center' class='tdc' nowrap>
                 <?php echo $this->isOnTime($row['duetime']);?>
             </td>
-            <td align='left'   class='tdc'><?php echo $finding_data;?></td>
+            <td align='left'   class='tdc'><?php echo $this->ShowLongText($row['finding_data']);?></td>
+            <td align='left'   class='tdc'><?php echo $this->ShowLongText($row['action_suggested']);?></td>
+            <td align='left'   class='tdc'><?php echo $this->ShowLongText($row['action_planned']);?></td>
+            <td align='left'   class='tdc'><?php echo $row['blscr_id'];?></td>
+            <td align='left'   class='tdc'><?php echo $row['threat_level'];?></td>
+            <td align='left'   class='tdc'><?php echo $row['threat_source'];?></td>
+            <td align='left'   class='tdc'><?php echo $row['cmeasure_effectiveness'];?></td>
+            <td align='left'   class='tdc'><?php echo $this->ShowLongText($row['cmeasure']);?></td>
+            <td align='left'   class='tdc'>n/a</td>
             <td align='center' class='tdc' nowrap><?php echo $row['action_current_date'];?></td> 
-            <td align="center" valign='middle' class='tdc'><a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
+            <td align="center" valign='middle' class='tdc'><a href="<?php echo $url;?>/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
     </table>

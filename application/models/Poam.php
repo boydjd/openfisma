@@ -298,7 +298,7 @@ class Poam extends Zend_Db_Table
                                               's.name' => 'source_name'));
         $ret = array();
         $count = 0;
-        $countFields = false;
+        $countFields = true;
         $dueTimeColumn = "( CASE p.status
                         WHEN 'NEW'
                             THEN ADDDATE( p.create_ts, ".$this->_overdue['new']." )
@@ -318,7 +318,6 @@ class Poam extends Zend_Db_Table
             $fields = array_merge(  $this->_cols, $extraFields['asset'],$extraFields['source']);
             array_push($fields, $dueTimeColumn);
         } else if (isset($fields['count'])) {
-            $countFields = true;
             if ($fields == 'count' || $fields == array('count' => 'count(*)')) {
                 $fields = array(); //count only
             } else {
