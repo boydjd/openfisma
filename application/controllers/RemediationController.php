@@ -74,6 +74,18 @@ class RemediationController extends PoamBaseController
              ->addActionContext('search', array('pdf'))
              ->setAutoDisableLayout(true);
         }
+        if (!$attach->hasContext('xls')) {
+             $attach->addContext('xls',
+                array('suffix' => 'xls',
+                   'headers' => array(
+                        'Content-Disposition' => "attachement;filename=export.xls",
+                        'Content-Type' => 'application/xls'
+                    )
+                )
+             )
+             ->addActionContext('search', array('xls'))
+             ->setAutoDisableLayout(true);
+        }
     }
     
     /**
@@ -373,7 +385,7 @@ class RemediationController extends PoamBaseController
 
         $this->_helper->contextSwitch()->initContext();
         $format = $this->_helper->contextSwitch()->getCurrentContext();
-        if ($format == 'pdf') {
+        if ($format == 'pdf' || $format == 'xls') {
             foreach($list as $k => &$v) {
                 $v['finding_data'] = trim(html_entity_decode($v['finding_data']));
                 $v['action_suggested'] = trim(html_entity_decode($v['action_suggested']));
