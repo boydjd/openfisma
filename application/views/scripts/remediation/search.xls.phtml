@@ -59,19 +59,19 @@ $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 foreach( $this->list as $p ) {
     $p['on_time'] = $this->isOnTime($p['duetime']);
     $data = array(
-        $this->system_list[$p['system_id']],
         $p['id'],
-        $p['finding_data'],
+        $p['source_id'] != 0 ? $this->source_list[$p['source_id']] : 'n/a',
+        $this->system_list[$p['system_id']],
         $p['type'],
         $p['status'],
         $p['on_time'],
-        $p['source_id'] != 0 ? $this->source_list[$p['source_id']] : 'n/a',
+        $p['finding_data'],
+        $p['action_current_date'],
         $p['ip'],
         !empty($p['network_id'])?$this->network_list[$p['network_id']]:'',
         $p['threat_level'],
         $p['action_suggested'],
         $p['action_planned'],
-        $p['action_current_date'],
         NULL == $p['blscr_id'] ? 'N' : 'Y',
         $p['threat_level'] != 'NONE' && $p['threat_source'] != '' && $p['threat_justification'] != '' ? 'Y' : 'N',
         $p['cmeasure_effectiveness'] != 'NONE' && $p['cmeasure_effectiveness'] != '' && $p['cmeasure_justification'] != '' ? 'Y' : 'N');
