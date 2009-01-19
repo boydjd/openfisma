@@ -51,6 +51,31 @@ class RemediationController extends PoamBaseController
               'blscr_id'=>Notification::UPDATE_CONTROL_ASSIGNMENT,
               'action_status'=>Notification::MITIGATION_STRATEGY_APPROVED,
               'action_resources'=>Notification::UPDATE_FINDING_RESOURCES);
+              
+              
+    /**
+    * init() - Create the additional pdf and xls contexts for this class.
+    *
+    */
+    public function init()
+    {
+        parent::init();
+        $attach = $this->_helper->contextSwitch();
+        if (!$attach->hasContext('pdf')) {
+             $attach->addContext('pdf',
+                array('suffix' => 'pdf',
+                   'headers' => array(
+                        'Content-Disposition' => "attachement;filename=export.pdf",
+                        'Content-Type' => 'application/pdf'
+                    )
+                )
+             )
+             ->addActionContext('raf', array('pdf'))
+             ->addActionContext('search', array('pdf'))
+             ->setAutoDisableLayout(true);
+        }
+    }
+    
     /**
      *  Default action.
      *
@@ -292,9 +317,10 @@ class RemediationController extends PoamBaseController
     */
     public function searchAction()
     {
-        $baseUrl = $this->_pagingBasePath . '/panel/remediation/sub/searchbox';
-        $pageUrl = $baseUrl . $this->makeUrlParams($this->parseCriteria());
-
+        $link = $this->makeUrlParams($this->parseCriteria());
+        $pageUrl = '/panel/remediation/sub/searchbox' . $link;
+        $attachUrl = '/remediation/search' . $link;
+        
         $params = $this->parseCriteria(true);
         if (!empty($params['status'])) {
             $now = clone parent::$now;
@@ -344,7 +370,10 @@ class RemediationController extends PoamBaseController
                 $params, $this->_paging['currentPage'],
                 $this->_paging['perPage'], false);
         $total = array_pop($list);
-        if ($this->getRequest()->getParam('sub') != 'searchbox') {
+
+        $this->_helper->contextSwitch()->initContext();
+        $format = $this->_helper->contextSwitch()->getCurrentContext();
+        if ($format == 'pdf') {
             foreach($list as $k => &$v) {
                 $v['finding_data'] = trim(html_entity_decode($v['finding_data']));
                 $v['action_suggested'] = trim(html_entity_decode($v['action_suggested']));
@@ -369,6 +398,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('total_pages', $total);
         $this->view->assign('links', $pager->getLinks());
+        $this->view->assign('attachUrl', $attachUrl);
         $this->render();
     }
     
@@ -858,19 +888,10 @@ class RemediationController extends PoamBaseController
             $this->_forward('remediation', 'Panel', null, array('id' => $id, 'sub'=>'view'));
         }
 
-
-        $this->_helper->layout->disableLayout(true);
-        $this->_helper->contextSwitch()->addContext('pdf', array(
-            'suffix' => 'pdf',
-            'headers' => array(
-                'Content-Disposition' =>
-                    "attachement;filename=\"{$id}_raf.pdf\"",
-                'Content-Type' => 'application/pdf'
-            )
-        ))->addActionContext('raf', array(
-            'pdf'
-        ))->initContext();
-
+        $this->_helper->contextSwitch()
+               ->setHeader('pdf', 'Content-Disposition', "attachement;filename={$id}_raf.pdf")
+               ->initContext();
+        
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('source_list', $this->_sourceList);
