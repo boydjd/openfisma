@@ -208,176 +208,191 @@ class RemediationController extends PoamBaseController
         //$this->_helper->actionStack('searchbox', 'Remediation', null,
         //    array('action'=>'summary'));
     }
-
+    
+    
     /**
-     *  Do the real searching work. It's a thin wrapper
-     *  of poam model's search method.
+     * parse and translate the URL to criterias
+     * which can be used by searchBoxAction method and searchAction method.
+     *
+     * @param boolean $isSearch default false
+     *    switch the searching condition between searchbox and search
+     * @return array $params the criterias dealt
      */
-    protected function _search($criteria, $html=true)
+    protected function parseCriteria($isSearch = false)
     {
-        //refer to searchbox.tpl for a complete status list
-        $internalCrit = & $criteria;
-        if (!empty($criteria['status'])) {
-            $now = clone parent::$now;
-            switch ($criteria['status']) {
-            case 'NEW':
-                $internalCrit['status'] = 'NEW';
-                break;
-
-            case 'DRAFT':
-                $internalCrit['status'] = 'DRAFT';
-                break;
-
-            case 'EN':
-                $internalCrit['status'] = 'EN';
-                break;
-
-            case 'CLOSED':
-                $internalCrit['status'] = 'CLOSED';
-                break;
-
-            case 'NOT-CLOSED':
-                $internalCrit['status'] = array(
-                    'DRAFT',
-                    'MSA',
-                    'EN',
-                    'EA'
-                );
-                break;
-
-            case 'NOUP-30':
-                $internalCrit['status'] = array(
-                    'DRAFT',
-                    'MSA',
-                    'EN',
-                    'EA'
-                );
-                $internalCrit['modify_ts'] = $now->sub(30, Zend_Date::DAY);
-                break;
-
-            case 'NOUP-60':
-                $internalCrit['status'] = array(
-                    'DRAFT',
-                    'MSA',
-                    'EN',
-                    'EA'
-                );
-                $internalCrit['modify_ts'] = $now->sub(60, Zend_Date::DAY);
-                break;
-
-            case 'NOUP-90':
-                $internalCrit['status'] = array(
-                    'DRAFT',
-                    'MSA',
-                    'EN',
-                    'EA'
-                );
-                $internalCrit['modify_ts'] = $now->sub(90, Zend_Date::DAY);
-                break;
-            default :
-                $evaluation = new Evaluation();
-                $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
-                                              ->where('nickname = ?', $criteria['status']);
-                $ret = $evaluation->fetchRow($query)->toArray();
-                if (!empty($ret)) {
-                    $precedenceId = $ret['precedence_id'];
-                    $group = $ret['group'];
-                    $internalCrit['status'] = $criteria['status'];
-                    if ('ACTION' == $group) {
-                        $internalCrit['mp']     = $precedenceId;
-                    }
-                    if ('EVIDENCE' == $group) {
-                        $internalCrit['ep']     = $precedenceId;
-                    }
-                }
+        $this->_acl->requirePrivilege('remediation', 'read');
+         
+        $params = array('system_id' => 0, 'source_id' => 0, 'type' => '',
+                        'status' => '', 'ids' => '', 'asset_owner' => 0,
+                        'est_date_begin' => '', 'est_date_end' => '',
+                        'created_date_begin' => '', 'created_date_end' => '',
+                        'ontime' => '', 'sortby' => '', 'order'=> '', 'keywords' => '');
+        $req = $this->getRequest();
+        $tmp = $req->getParams();
+        foreach($params as $k => &$v) {
+            if (isset($tmp[$k])) {
+                $v = $tmp[$k];
             }
         }
-        $list = $this->_poam->search($this->_me->systems,'*', $internalCrit, $this->_paging['currentPage'],
-            $this->_paging['perPage'], $html);
+        if ($isSearch) {
+            $this->_paging['currentPage'] = $req->getParam('p', 1);
+            if (is_numeric($params['system_id'])) {
+                $params['systemId'] = $params['system_id'];
+            }
+            unset($params['system_id']);
+            
+            if (is_numeric($params['source_id'])) {
+                $params['sourceId'] = $params['source_id'];
+            }
+            unset($params['source_id']);
+ 
+            if (is_numeric($params['asset_owner'])) {
+                $params['assetOwner'] = $params['asset_owner'];
+            }
+            unset($params['asset_owner']);
+            
+            if (!empty($params['est_date_begin'])) {
+                $params['estDateBegin'] = new Zend_Date($params['est_date_begin'], 'Y-m-d');
+            }
+            unset($params['est_date_begin']);
+            
+            if (!empty($params['est_date_end'])) {
+                $params['estDateEnd'] = new Zend_Date($params['est_date_end'], 'Y-m-d');
+            }
+            unset($params['est_date_end']);
+            
+            if (!empty($params['created_date_begin'])) {
+                $params['createdDateBegin'] = new Zend_Date($params['created_date_begin'], 'Y-m-d');
+            }
+            unset($params['created_date_begin']);
+            
+            if (!empty($params['created_date_end'])) {
+                $params['createdDateEnd'] = new Zend_Date($params['created_date_end'], 'Y-m-d');
+            }
+            unset($params['created_date_end']);
+
+            if (!empty($params['order']) && !empty($params['sortby'])) {
+                $order = array();
+                array_push($order, $params['sortby']);
+                array_push($order, $params['order']);
+                $params['order'] = $order;
+                unset($order);
+            } else {
+                unset($params['order']);
+                unset($params['sortby']);
+            }
+            return $params;
+        }
+        return $params;
+    }
+    
+    /**
+    * Do the real searching work. It's a thin wrapper
+    * of poam model's search method.
+    */
+    public function searchAction()
+    {
+        $baseUrl = $this->_pagingBasePath . '/panel/remediation/sub/searchbox';
+        $pageUrl = $baseUrl . $this->makeUrlParams($this->parseCriteria());
+
+        $params = $this->parseCriteria(true);
+        if (!empty($params['status'])) {
+            $now = clone parent::$now;
+            switch ($params['status']) {
+                case 'NEW':
+                     $params['status'] = 'NEW'; break;
+                case 'DRAFT':
+                     $params['status'] = 'DRAFT'; break;
+                case 'EN':
+                     $params['status'] = 'EN'; break;
+                case 'CLOSED':
+                     $params['status'] = 'CLOSED'; break;
+                case 'NOT-CLOSED':
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                     break;
+                case 'NOUP-30':
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                     $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);
+                     break;
+                case 'NOUP-60':
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                     $params['modify_ts'] = $now->sub(60, Zend_Date::DAY);
+                     break;
+                case 'NOUP-90':
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                     $params['modify_ts'] = $now->sub(90, Zend_Date::DAY);
+                     break;
+                default :
+                     $evaluation = new Evaluation();
+                     $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
+                                                   ->where('nickname = ?', $params['status']);
+                     $ret = $evaluation->fetchRow($query)->toArray();
+                     if (!empty($ret)) {
+                         $precedenceId = $ret['precedence_id'];
+                         $group = $ret['group'];
+                         if ('ACTION' == $group) {
+                             $params['mp']     = $precedenceId;
+                         }
+                         if ('EVIDENCE' == $group) {
+                             $params['ep']     = $precedenceId;
+                         }
+                     }
+                     break;
+            }
+        }
+        $list = $this->_poam->search($this->_me->systems, '*',
+                $params, $this->_paging['currentPage'],
+                $this->_paging['perPage'], false);
         $total = array_pop($list);
+        if ($this->getRequest()->getParam('sub') != 'searchbox') {
+            foreach($list as $k => &$v) {
+                $v['finding_data'] = trim(html_entity_decode($v['finding_data']));
+                $v['action_suggested'] = trim(html_entity_decode($v['action_suggested']));
+                $v['action_planned'] = trim(html_entity_decode($v['action_planned']));
+                $v['threat_justification'] = trim(html_entity_decode($v['threat_justification']));
+                $v['threat_source'] = trim(html_entity_decode($v['threat_source']));
+                $v['cmeasure_effectiveness'] = trim(html_entity_decode($v['cmeasure_effectiveness']));
+            }
+        }
+        
         $this->_paging['totalItems'] = $total;
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
+        $this->_paging['fileName'] = "$pageUrl/p/%d";
         $lastSearchUrl = str_replace('%d', $this->_paging['currentPage'],
-            $this->_paging['fileName']);
+                                     $this->_paging['fileName']);
         $urlNamespace = new Zend_Session_Namespace('urlNamespace');
         $urlNamespace->lastSearch = $lastSearchUrl;
         $pager = & Pager::factory($this->_paging);
-
+ 
         $this->view->assign('list', $list);
-        $this->view->assign('systems', $this->_systemList);
-        $this->view->assign('sources', $this->_sourceList);
+        $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('source_list', $this->_sourceList);
+        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('total_pages', $total);
         $this->view->assign('links', $pager->getLinks());
-        $this->render('search');
+        $this->render();
     }
+    
+    /**
+     * Accept the criterias dealt by parseCriteria method,
+     * return the values to advance search page or basic search page.
+     * when the criterias cantain the param 'keywords',
+     * then this method will render the basic search box,
+     * else render the advance search box
+     *
+     */
     public function searchboxAction()
     {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        
-        $req = $this->getRequest();
-        $this->_pagingBasePath.= '/panel/remediation/sub/searchbox/s/search';
-        // parse the params of search
-        $params['system_id'] = $req->getParam('system_id', '0');
-        $params['source_id'] = $req->getParam('source_id', '0');
-        $params['type'] = $req->getParam('type');
-        $params['status'] = $req->getParam('status');
-        $params['ids'] = $req->getParam('ids');
-        $params['asset_owner'] = $req->getParam('asset_owner', 0);
-        $params['est_date_begin'] = $req->getParam('est_date_begin');
-        $params['est_date_end'] = $req->getParam('est_date_end');
-        $params['created_date_begin'] = $req->getParam('created_date_begin');
-        $params['created_date_end'] = $req->getParam('created_date_end');
-        $params['ontime'] = $req->getParam('ontime');
+        $params = $this->parseCriteria();
+        $pageUrl = $this->_pagingBasePath
+           .'/panel/remediation/sub/searchbox'
+           .$this->makeUrlParams($params);
 
-        $this->view->assign('url', $this->_pagingBasePath);
+        $this->view->assign('url', $pageUrl);
         $this->view->assign('params', $params);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
+        $this->_helper->actionStack('search', 'Remediation');
         $this->render();
-        if ('search' == $req->getParam('s')) {
-            $criteria = array();
-            if (!empty($params['system_id'])) {
-                $criteria['systemId'] = $params['system_id'];
-            }
-            if (!empty($params['source_id'])) {
-                $criteria['sourceId'] = $params['source_id'];
-            }            
-            if (!empty($params['type'])) {
-                $criteria['type'] = $params['type'];
-            }
-            if (!empty($params['status'])) {
-                $criteria['status'] = $params['status'];
-            }
-            if (!empty($params['ids'])) {
-                $criteria['ids'] = $params['ids'];
-            }            
-            if (!empty($params['asset_owner'])) {
-                $criteria['assetOwner'] = $params['asset_owner'];
-            }
-            if (!empty($params['est_date_begin'])) {
-                $criteria['estDateBegin'] = new Zend_Date($params['est_date_begin'], 'Y-m-d');
-            }
-            if (!empty($params['est_date_end'])) {
-                $criteria['estDateEnd'] = new Zend_Date($params['est_date_end'], 'Y-m-d');
-            }
-            if (!empty($params['created_date_begin'])) {
-                $criteria['createdDateBegin'] = new Zend_Date($params['created_date_begin'], 'Y-m-d');
-            }
-            if (!empty($params['created_date_end'])) {
-                $criteria['createdDateEnd'] = new Zend_Date($params['created_date_end'], 'Y-m-d');
-            }
-            if (!empty($params['ontime'])) {
-                $criteria['ontime'] = $params['ontime'];
-            }
-            if ($req->getParam('sortby') != null && $req->getParam('order') != null) {
-                $criteria['order'] = array();
-                array_push($criteria['order'], $req->getParam('sortby'));
-                array_push($criteria['order'], $req->getParam('order'));
-            }
-            $this->makeUrl($params);
-            $this->_paging['currentPage'] = $req->getParam('p', 1);
-            $this->_search($criteria, false);
-        }
     }
     /**
      Get remediation detail info

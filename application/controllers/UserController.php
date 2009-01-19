@@ -80,7 +80,6 @@ class UserController extends MessageController
             $this->view->username = $username;
             $this->view->password = $password;
         }
-
         try {
             /**
              * @todo Fix this SQL injection
@@ -228,6 +227,12 @@ class UserController extends MessageController
                 $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
                 $nextRobReview->add(Config_Fisma::readSysConfig('rob_duration'), Zend_Date::DAY);
                 if ($now->isEarlier($nextRobReview)) {
+                    $redirectInfo = new Zend_Session_Namespace('redirect_page');
+                    if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
+                        $path = $redirectInfo->page;
+                        unset($redirectInfo->page);
+                        $this->_response->setRedirect($path);
+                    }
                     $this->_forward('index', 'Panel');
                 } else {
                     $this->_helper->layout->setLayout('notice');

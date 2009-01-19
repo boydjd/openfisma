@@ -74,7 +74,11 @@ class SecurityController extends MessageController
             self::$now = Zend_Date::now();
         }
         $this->_auth = Zend_Auth::getInstance();
+        $redirectInfo = new Zend_Session_Namespace('redirect_page');
         if ($this->_auth->hasIdentity()) {
+            if (isset($redirectInfo->page)) {
+                unset($redirectInfo->page);
+            }
             $this->_me = $this->_auth->getIdentity();
             $store = $this->_auth->getStorage();
             // refresh the expiring timer
@@ -88,6 +92,8 @@ class SecurityController extends MessageController
                     $this->_sanity['filter'], $this->_sanity['validator'],
                     $this->_request->getParam($this->_sanity['data']));
             }
+        } else {
+            $redirectInfo->page = $_SERVER['REQUEST_URI'];
         }
         $this->_notification = new Notification();
         $this->view->assign('acl', $this->_acl);

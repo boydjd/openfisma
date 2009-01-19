@@ -73,17 +73,24 @@ class PoamBaseController extends SecurityController
         $this->_pagingBasePath = $req->getBaseUrl();
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
+    
     public function makeUrl($criteria)
     {
-        foreach ($criteria as $key => $value) {
-            if (!empty($value)) {
-                if ($value instanceof Zend_Date) {
-                    $this->_pagingBasePath.= 
-                        '/' . $key . '/' . $value->toString('Ymd') . '';
-                } else {
-                    $this->_pagingBasePath.= '/' . $key . '/' . $value . '';
-                }
-            }
-        }
+        $this->_pagingBasePath.= $this->makeUrlParams($criteria);
     }
+
+    public function makeUrlParams($criteria)
+    {
+        $urlPart = '';
+         foreach ($criteria as $key => $value) {
+             if (!empty($value)) {
+                 if ($value instanceof Zend_Date) {
+                    $urlPart .= '/' . $key . '/' . $value->toString('Ymd') . '';
+                 } else {
+                    $urlPart .= '/' . $key . '/' . $value . '';
+                 }
+             }
+         }
+        return $urlPart;
+     }
 }

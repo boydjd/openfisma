@@ -6,7 +6,10 @@
 ?>
 <div class="barleft">
 <div class="barright">
-    <p><b>Remediation Search Results</b>
+    <p><img style="cursor:pointer" src="/images/favor.gif" title="add to bookmark"
+            onclick="addBookmark('OpenFisma Finding Result',
+            '<?php echo Config_Fisma::readSysConfig('hostUrl').$this->url; ?>')"/>&nbsp;&nbsp;
+    <b>Remediation Search Results</b>
         <span>
             <?php echo $this->links['all'];?>
         </span>
