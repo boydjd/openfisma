@@ -1,3 +1,12 @@
+<script language="javascript">
+$(document).ready(function(){
+    var advanced_flag = $("#advanced_searchbox").attr("flag");
+    if (advanced_flag == 'true') {
+        $("#advanced_searchbox").show();
+        $("#basic_searchbox").hide();
+    }
+});
+</script>
 <?php
     $filter_type = array(0  =>'--- Any Type ---',
                     'NONE' =>'(NONE) Unclassified',
@@ -39,8 +48,37 @@
 <p><b>Remediation Search</b><span></p>
 </div>
 </div>
+<!-- Begin Zend_Search_Lucene search Table -->
+<div id="basic_searchbox">
+<input type="button" id="advanced_search" value="Advanced Search"><p>
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
+<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
+    <tr>
+        <td><b>Keywords: </b><input type="text" name="keywords" size="50"
+            value="<?php echo $this->params['keywords'];?>">
+        <input type="submit" value="Search">
+        </td>
+    </tr>
+    <?php if (!is_dir(APPLICATION_ROOT . '/data/index/findings')) { ?>
+    <tr>
+        <td><i>It maybe spends more time for the first searching.</i></td>
+    </tr>
+    <?php } ?>
+</table>
+<p>
+</div>
 
+<?php
+    $flag = '';
+    unset($this->params['keywords'], $this->params['evidence_include']);
+    foreach ($this->params as $value) {
+        if (!empty($value)) {
+            $flag = 'true';
+        }
+    }
+?>
+<div id="advanced_searchbox" style="display:none" flag="<?php echo $flag;?>">
+<input type="button" id="basic_search" value="Basic Search"><p>
 <!-- Begin Filter Table -->
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
     <tr>
@@ -92,7 +130,6 @@
         </td>
         <td></td>
     </tr>
-
     <tr>
         <td colspan='2'>
             <table border="0" cellpadding="3" cellspacing="1" width="98%">
@@ -119,3 +156,6 @@
         <td align="left"><input type='submit' value='Search'></td>
     </tr>
 </table>
+</form>
+</div>
+

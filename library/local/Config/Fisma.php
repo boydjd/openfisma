@@ -41,6 +41,8 @@ class Config_Fisma
 
     const TEST_MODE = 'test';
 
+    const cacheLifeTime = 7200;
+
     /** 
      * The relative paths that makes the layout
      *
@@ -155,6 +157,29 @@ class Config_Fisma
             self::addSysConfig($configuration);
             // Start Session Handling using Zend_Session 
             Zend_Session::start($configuration->session);
+
+            if (!Zend_Registry::isRegistered('cache')) {
+                //initialize Zend_Cache
+                $frontendOptions = array(
+                    'caching'  => true,
+                    'lifetime' => self::cacheLifeTime,
+                    'automatic_serialization' => true
+                );
+
+                $backendOptions = array(
+                    'cache_dir' => APPLICATION_ROOT . '/data/cache'
+                );
+                if (!is_writable($backendOptions['cache_dir'])) {
+                    echo $backendOptions['cache_dir'] . ' is not writable';
+                }
+                $cache = Zend_Cache::factory('Core',
+                                             'File',
+                                             $frontendOptions,
+                                             $backendOptions);
+                if (!empty($cache)) {
+                    Zend_Registry::set('cache', $cache);
+                }
+            }
 
         } catch(Zend_Config_Exception $e) {
             //using default configuration
@@ -419,5 +444,73 @@ class Config_Fisma
     public static function now()
     {
         return self::$_now;
+    }
+
+    /**
+     * @todo english
+     * Update one Zend_Search_Lucene index
+     *
+     * @param string index $directory under the "data/index/" folder
+     * @param string|array $id
+     *           string specific a table primary key
+     *           array  specific index docuement ids
+     * @param array $data fields need to update
+     */
+    public static function updateIndex($directory, $id, $data)
+    {
+        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$directory)) {
+            return false;
+        }
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$directory);
+        if (is_array($id)) {
+            //Update many indexes
+            foreach ($id as $oneId) {
+                $doc = $index->getDocument($oneId);
+                foreach ($data as $field=>$value) {
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+                }
+                $index->addDocument($doc);
+            }
+        } else {
+            $hits = $index->find('key:'.md5($id));
+            if (!empty($hits)) {
+                //Update one index
+                $doc = $index->getDocument($hits[0]);
+                foreach ($data as $field=>$value) {
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+                }
+                $index->addDocument($doc);
+            } else {
+                //Create one index
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+                foreach ($data as $field=>$value) {
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+                }
+                $index->addDocument($doc);
+            }
+        }
+        $index->commit();
+    }
+
+    /**
+     * @todo english
+     * Delete Zend_Search_Lucene index
+     *
+     * @param string index directory under the "data/index/" folder
+     * @param integer $id row id
+     */
+    public static function deleteIndex($directory, $id)
+    {
+        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$directory)) {
+            return false;
+        }
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$directory);
+        $hits = $index->find('key:'.md5($id));
+        foreach ($hits as $hit) {
+            $index->delete($hit->id);
+        }
+        $index->commit();
     }
 }

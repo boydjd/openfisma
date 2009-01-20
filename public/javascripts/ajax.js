@@ -189,6 +189,14 @@ $(document).ready(function(){
         });
     });
 
+    $("#advanced_search").click(function() {
+        $("#advanced_searchbox").show();
+        $("#basic_searchbox").hide();
+    })
+    $("#basic_search").click(function() {
+        $("#advanced_searchbox").hide();
+        $("#basic_searchbox").show();
+    })
 
     $(".confirm").click(function(){
         var str = "DELETING COMFIRMATION!";

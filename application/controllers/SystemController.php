@@ -316,6 +316,11 @@ class SystemController extends SecurityController
         $system = $form->getValues();
 
         $id = $this->_request->getParam('id');
+        $ret = $this->_system->find($id)->current();
+        if (!empty($ret)) {
+            $query = $ret->name . ' ' . $ret->nickname;
+        }
+
         if ($formValid) {
             unset($system['submit']);
             unset($system['reset']);
@@ -326,6 +331,18 @@ class SystemController extends SecurityController
                 $this->_notification
                      ->add(Notification::SYSTEM_MODIFIED,
                          $this->_me->account, $id);
+
+                //Update findings index
+                if (is_dir(APPLICATION_ROOT . '/data/index/findings')) {
+                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/findings');
+                    $hits = $index->find('system:'.$query);
+                    foreach ($hits as $hit) {
+                        $ids[] = $hit->id;
+                        $x[] = $hit->rowId;
+                    }
+                    $data['system'] = $system['name'] . ' ' . $system['nickname'];
+                    Config_Fisma::updateIndex('findings', $ids, $data);
+                }
 
                 $msg = "The system is saved";
                 $model = self::M_NOTICE;

@@ -319,8 +319,29 @@ class FindingController extends PoamBaseController
                 $poam['created_by'] = $this->_me->id;
                 $poamId = $this->_poam->insert($poam);
 
-                $message = "Finding created successfully";
-                $model = self::M_NOTICE;
+                if ($poamId > 0) {
+                    $system = new System();
+                    $source = new Source();
+                    $asset = new Asset();
+                    $ret = $system->find($poam['system_id'])->current();
+                    if (!empty($ret)) {
+                        $indexData['system'] = $ret->name . ' ' . $ret->nickname;
+                    }
+                    $ret = $source->find($poam['source_id'])->current();
+                    if (!empty($ret)) {
+                        $indexData['source'] = $ret->name . ' ' . $ret->nickname;
+                    }
+                    $ret = $asset->find($poam['source_id'])->current();
+                    if (!empty($ret)) {
+                        $indexData['asset'] = $ret->name;
+                    }
+                    $indexData['finding_data'] = $poam['finding_data'];
+                    $indexData['action_suggested'] = $poam['action_suggested'];
+                    Config_Fisma::updateIndex('findings', $poamId, $indexData);
+
+                    $message = "Finding created successfully";
+                    $model = self::M_NOTICE;
+                }
             }
             catch(Zend_Exception $e) {
                 if ($e instanceof Exception_General) {

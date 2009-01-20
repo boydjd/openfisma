@@ -378,6 +378,18 @@ class RemediationController extends PoamBaseController
                      break;
             }
         }
+
+        //Basic Search
+        if (!empty($params['keywords'])) {
+            $poamIds = $this->searchQuery($params['keywords']);
+            if (!empty($poamIds)) {
+                $params['ids'] = implode(',', $poamIds);
+                $this->view->assign('keywords', $params['keywords']);
+            } else {
+                $params['ids'] = -1;
+            }
+        }
+
         $list = $this->_poam->search($this->_me->systems, '*',
                 $params, $this->_paging['currentPage'],
                 $this->_paging['perPage'], false);
@@ -415,11 +427,17 @@ class RemediationController extends PoamBaseController
     }
     
     /**
+     * @todo english
      * Accept the criterias dealt by parseCriteria method,
      * return the values to advance search page or basic search page.
      * when the criterias cantain the param 'keywords',
      * then this method will render the basic search box,
      * else render the advance search box
+     *
+     * Basic search url would be /panel/remediation/sub/searchbox/s/search/system_id/1/type/CAP/status/DRAFT...
+     * Advanced search url would be /panel/remediation/sub/searchbox/s/search/keywords/firewal
+     * User use advanced search to search the basic search results,the url would be 
+     *  /panel/remediation/sub/searchbox/s/search/keywords/firewal/system_id/1/type/CAP...
      *
      */
     public function searchboxAction()
@@ -584,6 +602,13 @@ class RemediationController extends PoamBaseController
                             self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION',
                             $logContent);
                     }
+
+                    //Update finding index
+                    if (!empty($poam['system_id'])) {
+                            $poam['system'] = $this->_systemList[$poam['system_id']];
+                            unset($poam['system_id']);
+                    }
+                    Config_Fisma::updateIndex('findings', $id, $poam);
                 }
             } catch (Exception_General $e) {
                 if ($e instanceof Exception_General) {
@@ -907,5 +932,83 @@ class RemediationController extends PoamBaseController
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('source_list', $this->_sourceList);
+    }
+
+    /**
+     * Create findings Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function getIndex()
+    {
+        if (is_dir(APPLICATION_ROOT . '/data/index/findings')) {
+            $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/findings');
+        } else {
+            $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/findings', true);
+            $list = $this->_poam->search($this->_me->systems, '*');
+            set_time_limit(0);
+            if (!empty($list)) {
+                foreach ($list as $row) {
+                    $doc = new Zend_Search_Lucene_Document();
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
+                    $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('finding_data', $row['finding_data']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('action_planned', $row['action_planned']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('action_suggested',
+                                $row['action_suggested']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('action_resources',
+                                $row['action_resources']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure', $row['cmeasure']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure_justification',
+                                $row['cmeasure_justification']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_source', $row['threat_source']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_justification',
+                                $row['threat_justification']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('system',
+                                $row['system_name'] . ' ' . $row['system_nickname']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('source',
+                                $row['source_name'] . ' ' . $row['source_nickname']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('asset', $row['asset_name']));
+                    $index->addDocument($doc);
+                }
+                $index->optimize();
+            }
+        }
+        return $index;
+    }
+
+    /**
+     * Fuzzy Search by Zend_Search_Lucene
+     *
+     * @param string $keywords the search conditions
+     *      The keywords should be as following format:
+     *              a.   keyword (search keyword in all fields)
+     *              b.   field:keyword (search keyword in field)
+     *              c.   keyword1 field:keyword2 -keyword3 (required keyword1 in all fields,
+     *                   required keyword2 in field, not required keyword3 in all fields)
+     *              d.   keywor*  (to search for keywor, keyword, keywords, etc.)
+     *              e.   keywo?d  (to search for keyword, keywoaed ,etc.)
+     *              f.   mod_date:[20080101 TO 20080130] (search mod_date fields between 20080101 and 20080130)
+     *              g.   title:{Aida To Carmen} (search whose titles would be sorted between Aida and Carmen)
+     *              h.   keywor~  (fuzzy search, search like keyword, leyword, etc.)
+     *              i.   keyword1 AND keyword2 (search documents that contain keyword1 and keyword2)
+     *              j.   keyword1 OR keyword2 (search docuements that contain keyword1 or keyword2)
+     *              k.   keyword1 AND NOT keyword2 (search documents that contain keyword1 but not keywords2)
+     *              ... see Zend_Search_Lucene for more format
+     * @return array search finding ids
+     */
+    protected function searchQuery($keywords)
+    {
+        $cache = Zend_Registry::get('cache');
+        $index = $this->getIndex();
+        if (!$cache->load('keywords') || $keywords != $cache->load('keywords')) {
+            $hits = $index->find($keywords);
+            foreach ($hits as $row) {
+                $poamIds[] = $row->rowId;
+            }
+            $cache->save($poamIds, 'poam_ids');
+            $cache->save($keywords, 'keywords');
+        }
+        return $cache->load('poam_ids');
     }
 }

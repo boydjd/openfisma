@@ -243,6 +243,11 @@ class SourceController extends SecurityController
         $source = $form->getValues();
 
         $id = $this->_request->getParam('id');
+        $ret = $this->_source->find($id)->current();
+        if (!empty($ret)) {
+            $query = $ret->name . ' ' . $ret->nickname;
+        }
+
         if ($formValid) {
             unset($source['submit']);
             unset($source['reset']);
@@ -250,6 +255,17 @@ class SourceController extends SecurityController
             if ($res) {
                 $this->_notification
                      ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
+
+                //Update findings index
+                if (is_dir(APPLICATION_ROOT . '/data/index/findings')) {
+                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/findings');
+                    $hits = $index->find('source:'.$query);
+                    foreach ($hits as $hit) {
+                        $ids[] = $hit->id;
+                    }
+                    $data['source'] = $source['name'] . ' ' . $source['nickname'];
+                    Config_Fisma::updateIndex('findings', $ids, $data);
+                }
 
                 $msg = "The source is saved";
                 $model = self::M_NOTICE;
