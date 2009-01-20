@@ -395,6 +395,16 @@ class RemediationController extends PoamBaseController
                 $this->_paging['perPage'], false);
         $total = array_pop($list);
 
+        //select poams whether have attachments
+        foreach ($list as &$row) {
+            $query = $this->_poam->getAdapter()->select()->from('evidences', 'id')
+                                               ->where('poam_id = '.$row['id']);
+            $result = $this->_poam->getAdapter()->fetchRow($query);
+            if (!empty($result)) {
+                $row['attachments'] = 'Y';
+            }
+        }
+
         $this->_helper->contextSwitch()->initContext();
         $format = $this->_helper->contextSwitch()->getCurrentContext();
         if ($format == 'pdf' || $format == 'xls') {
