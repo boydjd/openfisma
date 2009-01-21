@@ -42,27 +42,51 @@ jQuery(document).ready(function(){
     <table width="100%" class="tbframe" id="poam_rst">
         <tr>
             <th nowrap>ID 
-                <a href="<?php echo $this->url;?>/sortby/id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/p.id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/p.id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Source </th>
-            <th nowrap>System </th>
-            <th nowrap>Asset </th>
-            <th nowrap>Type </th>
-            <th nowrap>Status </th>
+            <th nowrap>Source 
+                <a href="<?php echo $this->url;?>/sortby/s.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/s.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
+            <th nowrap>System 
+                <a href="<?php echo $this->url;?>/sortby/sys.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/sys.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
+            <th nowrap>Asset 
+                <a href="<?php echo $this->url;?>/sortby/as.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/as.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
+            <th nowrap>Type 
+                <a href="<?php echo $this->url;?>/sortby/p.type/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/p.type/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
+            <th nowrap>Status 
+                <a href="<?php echo $this->url;?>/sortby/p.status/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/p.status/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
             <th nowrap>On Time? </th>
             <th nowrap>Finding </th>
-            <th nowrap>Recomendation </th>
+            <th nowrap>Recommendation </th>
             <th nowrap>Course of Action </th>
-            <th nowrap>Blscr </th>
-            <th nowrap>Threat Level </th>
+            <th nowrap>Blscr 
+                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
+            <th nowrap>Threat Level 
+                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
             <th nowrap>Threat Description </th>
-            <th nowrap>Cmeasures Effectiveness </th>
+            <th nowrap>Cmeasures Effectiveness 
+                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+            </th>
             <th nowrap>Cmeasures Description </th>
             <th nowrap>Attachments </th>
             <th nowrap>ECD 
-               <a href="<?php echo $this->url;?>/sortby/action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-               <a href="<?php echo $this->url;?>/sortby/action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
             <th nowrap>View</th>
         </tr>
@@ -74,14 +98,14 @@ jQuery(document).ready(function(){
             <td align='center' class='tdc'><?php echo $row['id'];?></td>
             <td align='center' class='tdc' nowrap>
             <?php 
-                    if (!isset($this->sources[$row['source_id']])) {
+                    if (!isset($row['source_name'])) {
                         echo 'Missing Source id';
                     } else {
-                        echo $this->sources[$row['source_id']];
+                        echo $row['source_name'];
                     }
             ?>
             </td>
-            <td align='center' class='tdc'><?php echo $this->systems[$row['system_id']];?></td>
+            <td align='center' class='tdc'><?php echo '(' . $row['system_nickname'] . ')' . $row['system_name'];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['asset_name'];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['type'];?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>

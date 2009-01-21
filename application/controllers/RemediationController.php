@@ -307,18 +307,11 @@ class RemediationController extends PoamBaseController
                 $params['createdDateEnd'] = new Zend_Date($params['created_date_end'], 'Y-m-d');
             }
             unset($params['created_date_end']);
-
-            if (!empty($params['order']) && !empty($params['sortby'])) {
-                $order = array();
-                array_push($order, $params['sortby']);
-                array_push($order, $params['order']);
-                $params['order'] = $order;
-                unset($order);
-            } else {
-                unset($params['order']);
-                unset($params['sortby']);
-            }
+            
             return $params;
+        } else {
+            unset($params['sortby']);
+            unset($params['order']);
         }
         return $params;
     }
@@ -330,10 +323,19 @@ class RemediationController extends PoamBaseController
     public function searchAction()
     {
         $link = $this->makeUrlParams($this->parseCriteria());
-        $pageUrl = '/panel/remediation/sub/searchbox' . $link;
+        $url = $pageUrl = '/panel/remediation/sub/searchbox' . $link;
         $attachUrl = '/remediation/search' . $link;
+        unset($link);
         
         $params = $this->parseCriteria(true);
+        if (!empty($params['order']) && !empty($params['sortby'])) {
+            $params['order'] = array('sortby' => $params['sortby'],
+                                     'order' => $params['order']);
+            unset($params['sortby']);
+            $pageUrl .= $this->makeUrlParams($params['order']);
+            $attachUrl .= $this->makeUrlParams($params['order']);
+        }
+        
         if (!empty($params['status'])) {
             $now = clone parent::$now;
             switch ($params['status']) {
@@ -433,6 +435,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('total_pages', $total);
         $this->view->assign('links', $pager->getLinks());
         $this->view->assign('attachUrl', $attachUrl);
+        $this->view->assign('url', $url);
         $this->render();
     }
     
@@ -453,11 +456,6 @@ class RemediationController extends PoamBaseController
     public function searchboxAction()
     {
         $params = $this->parseCriteria();
-        $pageUrl = $this->_pagingBasePath
-           .'/panel/remediation/sub/searchbox'
-           .$this->makeUrlParams($params);
-
-        $this->view->assign('url', $pageUrl);
         $this->view->assign('params', $params);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
