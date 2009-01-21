@@ -35,18 +35,43 @@ require_once 'Zend/View/Helper/Abstract.php';
 class View_Helper_ShowLongText extends Zend_View_Helper_Abstract
 {
     /**
-     * get only 120 characters form a long text,if the text contain search keywords,
-     * then highlight the keywords
+     * A helper which intercept 120 characters from a long text
+     * 
+     * If the text contain keywords, then target the keywords
+     * and output the words around the keywords.
      *
      * @param string $text
+     * @param string $keywords split with ',' only deal the first keywords
+     * @return string $result the text intercepted
      */
-    public function ShowLongText($text)
+    public function ShowLongText($text, $keywords = null)
     {
-        if (strlen($text) > 120) {
-            $result = substr($text, 0, 120)."...";
+        $limitLength = 120;
+        // filter the words with HTML encode
+        // so as to use 'substr' method to deal easily later
+        $text = html_entity_decode($text);
+        $text = trim($text);
+        // if the text's length over the limitation,
+        // than output the text with the specify length
+        if (strlen($text) > $limitLength) {
+            if (!empty($keywords)) {
+                // get the first keywords
+                $keywords = array_shift(explode(',', $keywords));
+                $pos = stripos($text, $keywords);
+                // if the keywords is in the middle of the text
+                // then cut the words around the keywords to output
+                if ($pos > ($limitLength - strlen($keywords))) {
+                    $result = '...' . substr($text, $pos - $limitLength/2, $limitLength) . '...';
+                } else {
+                    $result = substr($text, 0, $limitLength) . '...';
+                }
+            } else {
+                $result = substr($text, 0, $limitLength) . '...';
+            }
         } else {
             $result = $text;
         }
+        $result = htmlentities($result);
         return $result;
-    } 
+    }
 }

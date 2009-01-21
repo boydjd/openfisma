@@ -88,14 +88,14 @@ jQuery(document).ready(function(){
             <td align='center' class='tdc' nowrap>
                 <?php echo $this->isOnTime($row['duetime']);?>
             </td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['finding_data']);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_suggested']);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_planned']);?></td>
+            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['finding_data'], $this->keywords);?></td>
+            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_suggested'], $this->keywords);?></td>
+            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_planned'], $this->keywords);?></td>
             <td align='left' class='tdc'><?php echo $row['blscr_id'];?></td>
             <td align='left' class='tdc'><?php echo $row['threat_level'];?></td>
-            <td align='left' class='tdc'><?php echo $this->showLongText($row['threat_source']);?></td>
+            <td align='left' class='tdc'><?php echo $this->showLongText($row['threat_source'], $this->keywords);?></td>
             <td align='left' class='tdc'><?php echo $row['cmeasure_effectiveness'];?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure']);?></td>
+            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure'], $this->keywords);?></td>
             <td align='center' class='tdc'><?php echo $row['attachments']?'Y':'N';?></td>
             <td align='center' class='tdc' nowrap><?php echo $row['action_current_date'];?></td> 
             <td align="center" valign='middle' class='tdc'><a href="<?php echo $url;?>/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
