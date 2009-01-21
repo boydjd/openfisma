@@ -257,14 +257,14 @@ class SourceController extends SecurityController
                      ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
 
                 //Update findings index
-                if (is_dir(APPLICATION_ROOT . '/data/index/findings')) {
-                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/findings');
+                if (is_dir(APPLICATION_ROOT . '/data/index/finding')) {
+                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/finding');
                     $hits = $index->find('source:'.$query);
                     foreach ($hits as $hit) {
                         $ids[] = $hit->id;
                     }
                     $data['source'] = $source['name'] . ' ' . $source['nickname'];
-                    Config_Fisma::updateIndex('findings', $ids, $data);
+                    Config_Fisma::updateIndex('finding', $ids, $data);
                 }
 
                 $msg = "The source is saved";
@@ -282,5 +282,34 @@ class SourceController extends SecurityController
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
+    }
+
+    /**
+     * Create finding sources Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function getIndex()
+    {
+        if (is_dir(APPLICATION_ROOT . '/data/index/sources')) {
+            $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/sources');
+        } else {
+            $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/sources', true);
+            $list = $this->_source->getList(array('name', 'nickname'));
+            set_time_limit(0);
+            if (!empty($list)) {
+                foreach ($list as $id=>$row) {
+                    $doc = new Zend_Search_Lucene_Document();
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+                    $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
+                    $index->addDocument($doc);
+                }
+                $index->optimize();
+            }
+        }
+        return $index;
     }
 }

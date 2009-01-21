@@ -337,7 +337,7 @@ class FindingController extends PoamBaseController
                     }
                     $indexData['finding_data'] = $poam['finding_data'];
                     $indexData['action_suggested'] = $poam['action_suggested'];
-                    Config_Fisma::updateIndex('findings', $poamId, $indexData);
+                    Config_Fisma::updateIndex('finding', $poamId, $indexData);
 
                     $message = "Finding created successfully";
                     $model = self::M_NOTICE;

@@ -333,15 +333,15 @@ class SystemController extends SecurityController
                          $this->_me->account, $id);
 
                 //Update findings index
-                if (is_dir(APPLICATION_ROOT . '/data/index/findings')) {
-                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/findings');
+                if (is_dir(APPLICATION_ROOT . '/data/index/finding')) {
+                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/finding');
                     $hits = $index->find('system:'.$query);
                     foreach ($hits as $hit) {
                         $ids[] = $hit->id;
                         $x[] = $hit->rowId;
                     }
                     $data['system'] = $system['name'] . ' ' . $system['nickname'];
-                    Config_Fisma::updateIndex('findings', $ids, $data);
+                    Config_Fisma::updateIndex('finding', $ids, $data);
                 }
 
                 $msg = "The system is saved";

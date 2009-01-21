@@ -1,6 +1,6 @@
 <script language="javascript">
     $(document).ready(function(){
-        highLight("poam_rst", '<?php echo $this->keywords;?>');
+        highLight('poam_list', '<?php echo $this->keywords;?>');
     });
 </script>
 <?php
@@ -91,6 +91,7 @@ jQuery(document).ready(function(){
             <th nowrap>View</th>
         </tr>
         <!-- REMEDIATION ROWS -->
+        <tbody id = "poam_list">
         <?php
             foreach($this->list as $row){
         ?>
@@ -125,4 +126,5 @@ jQuery(document).ready(function(){
             <td align="center" valign='middle' class='tdc'><a href="<?php echo $url;?>/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
+        </tbody>
     </table>

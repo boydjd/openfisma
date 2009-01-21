@@ -450,18 +450,18 @@ class Config_Fisma
      * @todo english
      * Update one Zend_Search_Lucene index
      *
-     * @param string index $directory under the "data/index/" folder
+     * @param string index $indexName under the "data/index/" folder
      * @param string|array $id
      *           string specific a table primary key
      *           array  specific index docuement ids
      * @param array $data fields need to update
      */
-    public static function updateIndex($directory, $id, $data)
+    public static function updateIndex($indexName, $id, $data)
     {
-        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$directory)) {
+        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$indexName)) {
             return false;
         }
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$directory);
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$indexName);
         if (is_array($id)) {
             //Update many indexes
             foreach ($id as $oneId) {
@@ -498,19 +498,62 @@ class Config_Fisma
      * @todo english
      * Delete Zend_Search_Lucene index
      *
-     * @param string index directory under the "data/index/" folder
+     * @param string index indexName under the "data/index/" folder
      * @param integer $id row id
      */
-    public static function deleteIndex($directory, $id)
+    public static function deleteIndex($indexName, $id)
     {
-        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$directory)) {
+        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$indexName)) {
             return false;
         }
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$directory);
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$indexName);
         $hits = $index->find('key:'.md5($id));
         foreach ($hits as $hit) {
             $index->delete($hit->id);
         }
         $index->commit();
+    }
+
+    /**
+     * Fuzzy Search by Zend_Search_Lucene
+     *
+     * @param string $keywords the search conditions
+     *      The keywords should be as following format:
+     *              a.   keyword (search keyword in all fields)
+     *              b.   field:keyword (search keyword in field)
+     *              c.   keyword1 field:keyword2 -keyword3 (required keyword1 in all fields,
+     *                   required keyword2 in field, not required keyword3 in all fields)
+     *              d.   keywor*  (to search for keywor, keyword, keywords, etc.)
+     *              e.   keywo?d  (to search for keyword, keywoaed ,etc.)
+     *              f.   mod_date:[20080101 TO 20080130] (search mod_date fields between 20080101 and 20080130)
+     *              g.   title:{Aida To Carmen} (search whose titles would be sorted between Aida and Carmen)
+     *              h.   keywor~  (fuzzy search, search like keyword, leyword, etc.)
+     *              i.   keyword1 AND keyword2 (search documents that contain keyword1 and keyword2)
+     *              j.   keyword1 OR keyword2 (search docuements that contain keyword1 or keyword2)
+     *              k.   keyword1 AND NOT keyword2 (search documents that contain keyword1 but not keywords2)
+     *              ... see Zend_Search_Lucene for more format
+     * @param string $indexName index name
+     * @return array table ids
+     */
+    public function searchQuery($keywords, $indexName)
+    {
+        if (!is_dir(APPLICATION_ROOT . '/data/index/' . $indexName)) {
+            return false;
+        }
+        $cache = Zend_Registry::get('cache');
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/' . $indexName);
+        if (!$cache->load('keywords') || $keywords != $cache->load('keywords')) {
+            $hits = $index->find($keywords);
+            $ids = array();
+            foreach ($hits as $row) {
+                $id = $row->rowId;
+                if (!empty($id)) {
+                    $ids[] = $id;
+                }
+            }
+            $cache->save($ids, $indexName);
+            $cache->save($keywords, 'keywords');
+        }
+        return $cache->load($indexName);
     }
 }
