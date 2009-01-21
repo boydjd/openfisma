@@ -871,7 +871,7 @@ CREATE TABLE `schema_version` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-INSERT INTO `schema_version` VALUES (45);
+INSERT INTO `schema_version` VALUES (46);
 CREATE TABLE `sources` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -997,4 +997,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (46);
+INSERT INTO schema_version (schema_version) VALUES (47);
