@@ -384,7 +384,7 @@ class RemediationController extends PoamBaseController
             $poamIds = $this->searchQuery($params['keywords']);
             if (!empty($poamIds)) {
                 $params['ids'] = implode(',', $poamIds);
-                $this->view->assign('keywords', $params['keywords']);
+                $this->view->assign('keywords', $this->getKeywords($params['keywords']));
             } else {
                 $params['ids'] = -1;
             }
@@ -545,6 +545,7 @@ class RemediationController extends PoamBaseController
         $this->view->assign('ms_evaluation', $msEvaluation);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('network_list', $this->_networkList);
+        $this->view->assign('keywords', $req->getParam('keywords'));
     }
     
     /**
@@ -1020,5 +1021,39 @@ class RemediationController extends PoamBaseController
             $cache->save($keywords, 'keywords');
         }
         return $cache->load('poam_ids');
+    }
+
+    /**
+     * @todo english
+     * Get keywords from basic search query for highlight
+     *
+     * Basic search query is a complicated format string, system should pick-up available keywords to highlight
+     */
+    protected function getKeywords($query)
+    {
+        $keywords = '';
+        $keywords = strtolower($query);
+
+        //delete not contain keyword (-keyword, NOT keyword)
+        $keywords = preg_replace('/-[A-Za-z0-9]+$/', '', $keywords);
+        $keywords = preg_replace('/not\s+[A-Za-z0-9]+$/', '', $keywords);
+
+        //delete Zend_Search_Lucene query keywords
+        $searchKeys = array('and', 'or', 'not', 'to', '+', '-', '&&', '~', '||', '!');
+        foreach ($searchKeys as $row) {
+            $keywords = str_replace($row, '', $keywords);
+        }
+        
+        //delete multi-spaces
+        $keywords = preg_replace('/\s{2,}/', ' ', $keywords);
+
+        //delete search field
+        $keywords = explode(' ', trim($keywords));
+        foreach ($keywords as &$word) {
+            $word = preg_replace('/^.+:/', '', $word);
+        }
+        
+        $keywords = implode(',', $keywords);
+        return $keywords;
     }
 }

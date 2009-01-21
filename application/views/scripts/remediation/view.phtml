@@ -1,3 +1,8 @@
+<script language="javascript">
+    $(document).ready(function(){
+        highLight("poam_detail", '<?php echo $this->keywords;?>');
+    });
+</script>
 <?php
     $urlNamespace = new Zend_Session_Namespace('urlNamespace');
 ?>
@@ -6,7 +11,8 @@
     <input type="submit" value="Back">
 </form>
 
-<form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" method="post" class="button_link">
+<form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" method="post" class="button_link"
+ id="poam_detail">
 <input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
 <?php 
      echo $this->partial('remediation/finding.phtml', array('poam'=>&$this->poam, 'system_list'=>&$this->system_list, 'network_list'=>&$this->network_list, 'acl'=> $this->acl));

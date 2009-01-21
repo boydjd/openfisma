@@ -450,9 +450,6 @@ function showJustification(){
     $("div#ecd_justification").show()
 }
 
-
-
-
 function addBookmark(title, url){
     if(window.sidebar){ // Firefox
         window.sidebar.addPanel(title, url,'');
@@ -468,3 +465,16 @@ function addBookmark(title, url){
     }
 }
 
+function highLight(obj,keywords) {
+    if (!keywords) {
+        return;
+    }
+    
+    var keyword = new Array();
+    keyword = keywords.split(',');
+    for(var i=0;i<keyword.length;i++){
+        var reg = new RegExp(keyword[i]+"(?=[^<>]*<)","ig");
+        var data=document.getElementById(obj).innerHTML;
+        document.getElementById(obj).innerHTML=data.replace(reg,'<span class="searchword">'+keyword[i]+'</span>');
+    } 
+} 
