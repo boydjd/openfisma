@@ -234,4 +234,28 @@ class User extends FismaModel
             return $digestPassword;
         }
     }
+    
+   /**
+    * Set the preference value for JQuery Plugin 'columnManager'
+    * if the value is null, then set a default value '11101111000000001'
+    *
+    * @param string $value a preference value default null
+    * @return string $value a preference value
+    *
+    */
+    public function setColumnPreference($uid, $value = null)
+    {
+        if (empty($uid)) {
+            return ;
+        }
+        if (empty($value)) {
+            $value = '11101111000000001';
+        }
+        $db = $this->_db;
+        $where = $db->quoteInto('id = ?', $uid);
+        $db->update($this->_name,
+                           array('column_habit' => $value),
+                           $where);
+        return $value;
+    }
 }

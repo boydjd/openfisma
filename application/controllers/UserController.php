@@ -52,7 +52,12 @@ class UserController extends MessageController
     const VALIDATION_MESSAGE = "<br />Because you changed your e-mail address, we have sent you a confirmation message.
                                 <br />You will need to confirm the validity of your new e-mail address before you will
                                 receive any e-mail notifications.";
-
+    /**
+     * a cookie name will be used in Jquery Plugin 'Column Manager'
+     * 
+     */
+    const COOKIE_NAME = 'column_poam_rst';
+    
     /**
      * init() - Initialize internal data structures.
      */         
@@ -173,6 +178,10 @@ class UserController extends MessageController
 
             // If we get this far, then the login is totally successful.
             $this->_user->log('LOGIN', $_me->id, "Success");
+            // get the default preference value from database
+            $value = empty($_me->column_habit) ? $this->_user->setColumnPreference($_me->id) : $_me->column_habit;
+            // set cookie for 'column manager' to control the columns whether visible
+            setcookie(self::COOKIE_NAME, $value, false, '/');
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
             foreach ($nickname as $n) {
@@ -593,5 +602,22 @@ class UserController extends MessageController
             $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
         }
         $this->view->msg = $msg;
+    }
+    
+    
+    /**
+     * This function is callback function.
+     * When you selected a option, 
+     * the values of options is not only saved in cookie
+     * but also saved in database.
+     * This part deals saving in database.
+     * 
+     */
+    public function preferenceAction()
+    {
+        $user = new User();
+        $user->setColumnPreference($this->_me->id, $_COOKIE[self::COOKIE_NAME]);
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
     }
 }

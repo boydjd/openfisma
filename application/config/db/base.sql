@@ -956,11 +956,12 @@ CREATE TABLE `users` (
   `ldap_dn` varchar(64) NOT NULL,
   `notify_email` varchar(64) NOT NULL,
   `last_rob` datetime NOT NULL,
+  `column_habit` varchar(17) NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `account` (`account`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','sha1','admin','Application',NULL,'Admin','2008-11-06 16:19:55','2008-11-06 16:19:55','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00');
+INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','sha1','admin','Application',NULL,'Admin','2008-11-06 16:19:55','2008-11-06 16:19:55','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00','11101111000000001');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `validate_emails` (

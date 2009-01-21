@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `column_habit` VARCHAR( 17 ) NULL AFTER `last_rob` ;
