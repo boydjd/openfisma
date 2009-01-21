@@ -51,6 +51,7 @@ $risk_index = $cellidx_lookup[$threat_likelihood][$this->securityCategorization]
 
 // This is the "letter" page size
 $pdf = new Cezpdf('letter');
+$pdf->ezSetMargins(50,70,50,50);
 $pdf->selectFont(FONTS . "/Helvetica.afm");
 
 // Create footer -- this contains the required sensitivity marking
@@ -58,7 +59,6 @@ $all = $pdf->openObject();
 $pdf->saveState();
 $pdf->setStrokeColor(0,0,0,1);
 $pdf->line(20,65,578,65);
-//$pdf->line(20,822,578,822);
 $pdf->addText(70,54,6,'WARNING: This report is for internal, official use only.  This report contains sensitive computer security related information. Public disclosure of this information would risk');
 $pdf->addText(70,44,6,'circumvention of the law. Recipients of this report must not, under any circumstances, show or release its contents for purposes other than official action. This report must be');
 $pdf->addText(70,34,6,'safeguarded to prevent improper disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.');
