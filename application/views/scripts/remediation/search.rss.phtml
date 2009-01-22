@@ -1,0 +1,56 @@
+<?php
+$cols = array (
+    'source_name' => 'Source',
+    'system_name' => 'System',
+    'asset_name' => 'Asset',
+    'type' => 'Type',
+    'status' => 'Status',
+    'on_time' => 'On Time?',
+    'finding_data' => 'Finding',
+    'action_suggested' => 'Recommendation',
+    'action_planned' => 'Corrective Action',
+    'blscr_id' => 'NIST 800-53 Security Control',
+    'threat_level' => 'Threat Level',
+    'threat_source' => 'Threat Description',
+    'cmeasure_effectiveness' => 'Countermeasures',
+    'cmeasure' => 'Countermeasures effectiveness',
+    'attachments' => 'Evidence',
+    'action_current_date' => 'ECD');
+
+$host = Config_Fisma::readSysConfig('hostUrl');
+$feed = array(
+    'title'       => 'Finding Feed', //required
+    'link'        => $host . '/remediation/search/format/rss', //required
+    'charset'     => 'UTF-8', // required
+    'author'      => 'OpenFisma', //optional
+    'copyright'   => '(c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)', //optional
+    'generator'   => 'OpenFisma', // optional
+    'entries'     => array());
+
+$i = 0;
+foreach($this->list as &$row) {
+    $row['system_name']=empty($row['system_id'])? 'N/A':$this->system_list[$row['system_id']];
+    $row['source_name']=empty($row['source_id'])? 'N/A':$this->source_list[$row['source_id']];
+    $row['on_time'] = $this->isOnTime($row['duetime']);
+    $row['attachments'] = $row['attachments']?'Yes':'No';
+    if (strtotime($row['action_current_date']) != false) {
+        $row['action_current_date'] = Date('m/d/Y', strtotime($row['action_current_date']));
+    } else {
+        $row['action_current_date'] = 'N/A';
+    }
+    $feed['entries'][$i]['title'] = 'Finding ID: '.$row['id'];
+    $feed['entries'][$i]['link'] = $host . '/panel/remediation/sub/view/id/' . $row['system_id'];
+    $feed['entries'][$i]['lastUpdate'] = 
+        strtotime($row['modify_ts']) ? strtotime($row['modify_ts']) : strtotime($row['create_ts']);
+    $description = '';
+    foreach ($cols as $k =>$v) {
+        $description .= $v . ': ' . html_entity_decode($row[$k], null, 'utf-8') . '<br/>';
+    }
+    $feed['entries'][$i]['description'] = $description;
+    $i ++;
+}
+
+$rssFeedFromArray = Zend_Feed::importArray($feed, 'rss');
+$feedString = $rssFeedFromArray->saveXML();
+echo $feedString;
+?>

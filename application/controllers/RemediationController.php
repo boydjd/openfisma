@@ -54,7 +54,7 @@ class RemediationController extends PoamBaseController
               
               
     /**
-    * init() - Create the additional pdf and xls contexts for this class.
+    * init() - Create the additional PDF, XLS and RSS contexts for this class.
     *
     */
     public function init()
@@ -62,29 +62,30 @@ class RemediationController extends PoamBaseController
         parent::init();
         $attach = $this->_helper->contextSwitch();
         if (!$attach->hasContext('pdf')) {
-             $attach->addContext('pdf',
+            $attach->addContext('pdf',
                 array('suffix' => 'pdf',
                    'headers' => array(
                         'Content-Disposition' => "attachement;filename=export.pdf",
-                        'Content-Type' => 'application/pdf'
-                    )
-                )
-             )
-             ->addActionContext('raf', array('pdf'))
-             ->addActionContext('search', array('pdf'))
-             ->setAutoDisableLayout(true);
+                        'Content-Type' => 'application/pdf')))
+                   ->addActionContext('raf', array('pdf'))
+                   ->addActionContext('search', array('pdf'))
+                   ->setAutoDisableLayout(true);
         }
         if (!$attach->hasContext('xls')) {
-             $attach->addContext('xls',
+            $attach->addContext('xls',
                 array('suffix' => 'xls',
                    'headers' => array(
                         'Content-Disposition' => "attachement;filename=export.xls",
-                        'Content-Type' => 'application/xls'
-                    )
-                )
-             )
-             ->addActionContext('search', array('xls'))
-             ->setAutoDisableLayout(true);
+                        'Content-Type' => 'application/xls')))
+                   ->addActionContext('search', array('xls'))->setAutoDisableLayout(true);
+        }
+        if (!$attach->hasContext('rss')) {
+             $attach->addContext('rss', 
+                array('suffix' => 'rss',
+                    'headers' => array(
+                    'Content-Type' => 'application/rss+xml; charset=UTF-8')))
+                    ->addActionContext('search', array('rss'))
+                    ->setAutoDisableLayout(true);
         }
     }
     
