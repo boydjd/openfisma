@@ -508,9 +508,7 @@ class Config_Fisma
         }
         $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$indexName);
         $hits = $index->find('key:'.md5($id));
-        foreach ($hits as $hit) {
-            $index->delete($hit->id);
-        }
+        $index->delete($hits[0]);
         $index->commit();
     }
 

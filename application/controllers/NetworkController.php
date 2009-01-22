@@ -92,23 +92,20 @@ class NetworkController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_networks', 'read');
         
-        $fid = $this->_request->getParam('fid');
-        $qv = $this->_request->getParam('qv');
-        $query = $this->_network->select()->from(array(
-            'n' => 'networks'
-        ), array(
-            'count' => 'COUNT(n.id)'
-        ))->order('n.name ASC');
-        if (!empty($qv)) {
-            $query->where("$fid = ?", $qv);
-            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+        $qv = trim($this->_request->getParam('qv'));
+         if (!empty($qv)) {
+            if (!is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+                $this->createIndex();
+            }
+            $ret = Config_Fisma::searchQuery($qv, 'network');
+        } else {
+            $ret = $this->_network->getList('name');
         }
-        $res = $this->_network->fetchRow($query)->toArray();
-        $count = $res['count'];
+
+        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -121,14 +118,23 @@ class NetworkController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_networks', 'read');
         
-        $field = $this->_request->getParam('fid');
         $value = trim($this->_request->getParam('qv'));
-        $query = $this->_network->select()->from('networks', '*');
+
+        $query = $this->_network->select()->from('networks', '*')
+                                         ->order('name ASC')
+                                         ->limitPage($this->_paging['currentPage'],
+                                                     $this->_paging['perPage']);
+
         if (!empty($value)) {
-            $query->where("$field = ?", $value);
+            $cache = Zend_Registry::get('cache');
+            $networkIds = $cache->load('network');
+            if (!empty($networkIds)) {
+                $ids = implode(',', $networkIds);
+            } else {
+                $ids = -1;
+            }
+            $query->where('id IN (' . $ids . ')');
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
-            $this->_paging['perPage']);
         $networkList = $this->_network->fetchAll($query)->toArray();
         $this->view->assign('network_list', $networkList);
     }
@@ -204,6 +210,12 @@ class NetworkController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::NETWORK_CREATED, $this->_me->account, $networkId);
+
+                //Create a network index
+                if (is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+                    Config_Fisma::updateIndex('network', $networkId, $network);
+                }
+
                 $msg = "The network is created";
                 $model = self::M_NOTICE;
             }
@@ -238,6 +250,11 @@ class NetworkController extends SecurityController
                 $msg = "Failed to delete the network";
                 $model = self::M_WARNING;
             } else {
+                //Delete network index
+                if (is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+                    Config_Fisma::deleteIndex('network', $id);
+                }
+
                 $this->_notification
                      ->add(Notification::NETWORK_DELETED,
                          $this->_me->account, $id);
@@ -271,6 +288,11 @@ class NetworkController extends SecurityController
                 $this->_notification
                      ->add(Notification::NETWORK_MODIFIED, $this->_me->account, $id);
 
+                //Update network index
+                if (is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+                    Config_Fisma::updateIndex('network', $id, $network);
+                }
+
                 $msg = "The network is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -285,6 +307,30 @@ class NetworkController extends SecurityController
             $this->message("Unable to update network<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+        }
+    }
+
+    /**
+     * Create Networks Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function createIndex()
+    {
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/network', true);
+        $list = $this->_network->getList(array('name', 'nickname', 'desc'));
+        set_time_limit(0);
+        if (!empty($list)) {
+            foreach ($list as $id=>$row) {
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
+                $index->addDocument($doc);
+            }
+            $index->optimize();
         }
     }
 }
