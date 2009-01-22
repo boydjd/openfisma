@@ -122,22 +122,23 @@ class SystemController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_systems', 'read');
         
-        $req = $this->getRequest();
-        $field = $req->getParam('fid');
-        $value = trim($req->getParam('qv'));
+        $value = trim($this->_request->getParam('qv'));
         $db = $this->_system->getAdapter();
         $query = $db->select()->from(array('s'=>'systems'), 's.*')
                                ->join(array('o'=>'organizations'), 's.organization_id = o.id',
-                                   array('organization'=>'o.name'));
+                                   array('organization'=>'o.name'))
+                               ->order('s.name ASC')
+                               ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
-            if ('organization' == $field) {
-                $query->where("o.name like '%$value%'");
+            $cache = Zend_Registry::get('cache');
+            $systemIds = $cache->load('system');
+            if (!empty($systemIds)) {
+                $ids = implode(',', $systemIds);
             } else {
-                $query->where("s.$field like '%$value%'");
+                $ids = -1;
             }
+            $query->where('s.id IN (' . $ids . ')');
         }
-        $query->order('s.name ASC')->limitPage($this->_paging['currentPage'],
-            $this->_paging['perPage']);
         $systemList = $db->fetchAll($query);
         $this->view->assign('system_list', $systemList);
     }
@@ -149,29 +150,20 @@ class SystemController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_systems', 'read');
         
-        $req = $this->getRequest();
-        $fid = $req->getParam('fid');
-        $qv = $req->getParam('qv');
-        $query = $this->_system->select()->from(array(
-            's' => 'systems'
-        ), array(
-            'count' => 'COUNT(s.id)'
-        ));
+        $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            if ('organization' == $fid) {
-                $query->join(array('o'=>'organizations'), 'o.id = s.organization_id', array())
-                      ->where("o.name like '%$qv%'");
-            } else {
-                $query->where("$fid like '%$qv%'");
+            if (!is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+                $this->createIndex();
             }
-            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+            $ret = Config_Fisma::searchQuery($qv, 'system');
+        } else {
+            $ret = $this->_system->getList('name');
         }
-        $res = $this->_system->fetchRow($query)->toArray();
-        $count = $res['count'];
+
+        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -201,6 +193,17 @@ class SystemController extends SecurityController
                     $this->_notification
                          ->add(Notification::SYSTEM_CREATED,
                              $this->_me->account, $systemId);
+
+                    //Create a system index
+                    if (is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+                        $organization = new Organization();
+                        $ret = $organization->find($system['organization_id'])->current();
+                        if (!empty($ret)) {
+                            $system['organization'] = $ret->name . ' ' . $ret->nickname;
+                            unset($system['organization_id']);
+                            Config_Fisma::updateIndex('system', $systemId, $system);
+                        }
+                    }
 
                     $msg = "The system is created";
                     $model = self::M_NOTICE;
@@ -252,6 +255,11 @@ class SystemController extends SecurityController
                 $this->_notification
                      ->add(Notification::SYSTEM_DELETED,
                         $this->_me->account, $id);
+
+                //Delete this system index
+                if (is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+                    Config_Fisma::deleteIndex('system', $id);
+                }
 
                 $msg = "System deleted successfully";
                 $model = self::M_NOTICE;
@@ -344,6 +352,17 @@ class SystemController extends SecurityController
                     Config_Fisma::updateIndex('finding', $ids, $data);
                 }
 
+                //Update this system index
+                if (is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+                    $organization = new Organization();
+                    $ret = $organization->find($system['organization_id'])->current();
+                    if (!empty($ret)) {
+                        $system['organization'] = $ret->name . ' ' . $ret->nickname;
+                        unset($system['organization_id']);
+                        Config_Fisma::updateIndex('system', $id, $system);
+                    }
+                }
+
                 $msg = "The system is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -358,6 +377,45 @@ class SystemController extends SecurityController
             $this->message("Unable to update system:<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+        }
+    }
+
+    /**
+     * Create systems Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function createIndex()
+    {
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/system', true);
+        $query = $this->_system->getAdapter()->select()->from(array('s'=>'systems'), 's.*')
+                              ->join(array('o'=>'organizations'), 's.organization_id = o.id',
+                                     array('org_name'=>'o.name', 'org_nickname'=>'o.nickname'));
+        $list = $this->_system->getAdapter()->fetchAll($query);
+        set_time_limit(0);
+        if (!empty($list)) {
+            foreach ($list as $row) {
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('organization',
+                            $row['org_name'] . ' ' . $row['org_nickname']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('type', $row['type']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('confidentiality', $row['confidentiality']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('integrity', $row['integrity']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('availability', $row['availability']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('confidentiality_justification',
+                            $row['confidentiality_justification']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('integrity_justification',
+                            $row['integrity_justification']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('availability_justification',
+                            $row['availability_justification']));
+                $index->addDocument($doc);
+            }
+            $index->optimize();
         }
     }
 }
