@@ -1,21 +1,21 @@
 <?php
 $cols = array (
-    'id'=>"ID#",
-    'source_name'=>"Source",
-    'system_name'=>'System',
-    'type'=>"Type",
-    'status'=>"Status",
-    'on_time'=>'On Time?',
-    'finding_data'=>"Description",
-    'action_current_date' => "ECD",
-    'ip'=>"Server/Database",
-    'network_name'=>"Location",
-    'threat_level'=>"Risk Level",
-    'action_suggested'=>"Recommendation",
-    'action_planned'=>"Corrective Action",
-    'blscr_id' => "Control Y/N",
-    'threats' => "Threats Y/N",
-    'cmeasure_effectiveness' => "Countermeasures Y/N");
+    'id' => 'ID#',
+    'source_name' => 'Source',
+    'system_name' => 'System',
+    'type' => 'Type',
+    'status' => 'Status',
+    'on_time' => 'On Time?',
+    'finding_data' => 'Description',
+    'action_current_date' => 'ECD',
+    'ip' => 'Server/Database',
+    'network_name' => 'Location',
+    'threat_level' => 'Threat Level',
+    'action_suggested' => 'Recommendation',
+    'action_planned' =>'Corrective Action',
+    'blscr_id' => 'Control Y/N',
+    'threats' => 'Threats Y/N',
+    'cmeasure_effectiveness' => 'Countermeasures Y/N');
 
 foreach($this->list as &$row) {
     $row['system_name']=empty($row['system_id'])? 'N/A':$this->system_list[$row['system_id']];
