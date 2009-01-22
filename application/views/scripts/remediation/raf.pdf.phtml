@@ -44,7 +44,7 @@ foreach ($columnsCols as $col) {
     }
 }
 
-$threat_likelihood = $sys->calcThreat($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
+$threat_likelihood = $sys->calculateThreatLikelihood($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
 
 $threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
 $risk_index = $cellidx_lookup[$threat_likelihood][$this->securityCategorization];
@@ -145,13 +145,13 @@ foreach (array_reverse($columns) as $threat) {
     $i++;
     $data[$i][] = "<b>$threat</b>";
     foreach ($columns as $countermeasures) {
-        $value = $sys->calcThreat($threat, $countermeasures);
+        $value = $sys->calculateThreatLikelihood($threat, $countermeasures);
         $data[$i][] = $threat_index == $k++?'<b><i>'.$value.'</i></b>':$value;
     }
 }
 
 $pdf->ezTable($data, null, null, $tableOptions);
-$overall_threat = $sys->calcThreat($p['threat_level'], $p['cmeasure_effectiveness']);
+$overall_threat = $sys->calculateThreatLikelihood($p['threat_level'], $p['cmeasure_effectiveness']);
 $data = array(array("Based on the threat level and countermeasures currently in place, the threat likelihood is <b>".$overall_threat."</b>".'.'));
 $pdf->ezTable($data, null, null, $labelOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
