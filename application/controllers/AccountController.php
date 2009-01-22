@@ -129,23 +129,20 @@ class AccountController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
 
-        $fid = $this->_request->getParam('fid');
-        $qv  = $this->_request->getParam('qv');
-        $query = $this->_user->select()->from(array(
-            'u' => 'users'
-        ), array(
-            'count' => 'COUNT(u.id)'
-        ))->order('u.account ASC');
+        $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            $query->where("$fid = ?", $qv);
-            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+            if (!is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+                $this->createIndex();
+            }
+            $ret = Config_Fisma::searchQuery($qv, 'account');
+        } else {
+            $ret = $this->_user->getList('account');
         }
-        $res = $this->_user->fetchRow($query)->toArray();
-        $count = $res['count'];
+
+        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -159,6 +156,7 @@ class AccountController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
         
+        $value = trim($this->_request->getParam('qv'));
         // Set up the query to get the full list of users
         $user = new User();
         $qry = $user->select()
@@ -170,17 +168,19 @@ class AccountController extends SecurityController
                                  'name_first',
                                  'phone_office',
                                  'phone_mobile',
-                                 'email'));
-
-        $qv = $this->_request->getParam('qv');
-        if (!empty($qv)) {
-            $fid = $this->_request->getParam('fid');
-            $qry->where("$fid = '$qv'");
+                                 'email'))
+                    ->order('name_last ASC')
+                    ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
+        if (!empty($value)) {
+            $cache = Zend_Registry::get('cache');
+            $accountIds = $cache->load('account');
+            if (!empty($accountIds)) {
+                $ids = implode(',', $accountIds);
+            } else {
+                $ids = -1;
+            }
+            $qry->where('id IN (' . $ids . ')');
         }
-
-        $qry->order("name_last ASC");
-        $qry->limitPage($this->_paging['currentPage'], 
-                        $this->_paging['perPage']);
         $data = $user->fetchAll($qry);
         
         // Format the query results appropriately for passing to the view script
@@ -373,6 +373,28 @@ class AccountController extends SecurityController
                 $this->_user->log('ACCOUNT_MODIFICATION',
                                    $this->_me->id,
                                    "User Account {$accountData['account']} Successfully Modified");
+    
+                if (is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+                    if (!empty($roleId)) {
+                        $role = new Role();
+                        $ret = $role->find($roleId)->current();
+                        if (!empty($ret)) {
+                            $data['role'] = $ret->name . ' ' . $ret->nickname;
+                        }
+                    }
+                    if (!empty($accountData['name_last'])) {
+                        $data['lastname'] = $accountData['name_last'];
+                    }
+                    if (!empty($accountData['name_first'])) {
+                        $data['firstname'] = $accountData['name_first'];
+                    }
+                    if (!empty($accountData['email'])) {
+                        $data['email'] = $accountData['email'];
+                    }
+                    if (!empty($data)) {
+                        Config_Fisma::updateIndex('account', $id, $data);
+                    }
+                }
 
                 if (!empty($password)) {
                     $this->sendPassword($id, $password);
@@ -451,6 +473,11 @@ class AccountController extends SecurityController
         if ($res) {
             $this->_notification->add(Notification::ACCOUNT_DELETED,
                 $this->_me->account, $id);
+
+            if (is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+                Config_Fisma::deleteIndex('account', $id);
+            }
+
             $msg = "User " . $userName . " deleted successfully.";
             $model = self::M_NOTICE;
             $this->_user->log('ACCOUNT_DELETED',
@@ -558,6 +585,20 @@ class AccountController extends SecurityController
             // Create the user's system associations.
             if ( !empty($systems) ) {
                 $this->_user->associate($userId, User::SYS, $systems);
+            }
+
+            //Create this account index
+            if (is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+                $data = array('username'   => $accountData['account'],
+                              'lastname'  => $accountData['name_last'],
+                              'firstname' => $accountData['name_first'],
+                              'email'      => $accountData['email']);
+
+                $role = new Role();
+                $ret = $role->find($roleId)->current();
+                $data['role'] = $ret->name . ' ' . $ret->nickname;
+                                
+                Config_Fisma::updateIndex('account', $userId, $data);
             }
 
             $this->_notification->add(Notification::ACCOUNT_CREATED,
@@ -872,5 +913,37 @@ class AccountController extends SecurityController
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
         return $requirements;
+    }
+
+    /**
+     * Create products Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function createIndex()
+    {
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/account', true);
+        $query = $this->_user->getAdapter()->select()->from(array('u'=>'users'),
+                                             array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
+                                          ->join(array('ur'=>'user_roles'), 'u.id = ur.user_id', array())
+                                          ->join(array('r'=>'roles'), 'ur.role_id = r.id',
+                                                  array('role_name'=>'r.name', 'role_nickname'=>'r.nickname'));
+        $list = $this->_user->getAdapter()->fetchAll($query);
+        set_time_limit(0);
+        if (!empty($list)) {
+            foreach ($list as $row) {
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['account']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('lastname', $row['name_last']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('firstname', $row['name_first']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('email', $row['email']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('role',
+                            $row['role_name'] . ' ' . $row['role_nickname']));
+                $index->addDocument($doc);
+            }
+            $index->optimize();
+        }
     }
 }
