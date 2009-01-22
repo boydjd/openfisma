@@ -31,7 +31,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Product extends Zend_Db_Table
+class Product extends FismaModel
 {
     protected $_name = 'products';
     protected $_primary = 'id';

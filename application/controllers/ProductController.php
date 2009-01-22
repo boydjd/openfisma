@@ -106,24 +106,20 @@ class ProductController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
         
-        $req = $this->getRequest();
-        $fid = $req->getParam('fid');
-        $qv = $req->getParam('qv');
-        $query = $this->_product->select()->from(array(
-            'p' => 'products'
-        ), array(
-            'count' => 'COUNT(p.id)'
-        ));
+        $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            $query->where("$fid = ?", $qv);
-            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+            if (!is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+                $this->createIndex();
+            }
+            $ret = Config_Fisma::searchQuery($qv, 'product');
+        } else {
+            $ret = $this->_product->getList('name');
         }
-        $res = $this->_product->fetchRow($query)->toArray();
-        $count = $res['count'];
+
+        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -136,15 +132,23 @@ class ProductController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
         
-        $req = $this->getRequest();
-        $field = $req->getParam('fid');
-        $value = trim($req->getParam('qv'));
-        $query = $this->_product->select()->from('products', '*');
+        $value = trim($this->_request->getParam('qv'));
+
+        $query = $this->_product->select()->from('products', '*')
+                                         ->order('name ASC')
+                                         ->limitPage($this->_paging['currentPage'],
+                                                     $this->_paging['perPage']);
+
         if (!empty($value)) {
-            $query->where("$field = ?", $value);
+            $cache = Zend_Registry::get('cache');
+            $productIds = $cache->load('product');
+            if (!empty($productIds)) {
+                $ids = implode(',', $productIds);
+            } else {
+                $ids = -1;
+            }
+            $query->where('id IN (' . $ids . ')');
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
-            $this->_paging['perPage']);
         $productList = $this->_product->fetchAll($query)->toArray();
         $this->view->assign('product_list', $productList);
         $this->render('sublist');
@@ -221,6 +225,12 @@ class ProductController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::PRODUCT_CREATED, $this->_me->account, $productId);
+
+                //Create a product index
+                if (is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+                    Config_Fisma::updateIndex('product', $productId, $product);
+                }
+
                 $msg = "The product is created";
                 $model = self::M_NOTICE;
             }
@@ -258,6 +268,12 @@ class ProductController extends SecurityController
                 $this->_notification
                      ->add(Notification::PRODUCT_DELETED,
                          $this->_me->account, $id);
+
+                //Delete this product index
+                if (is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+                    Config_Fisma::deleteIndex('product', $id);
+                }
+
                 $msg = "Product deleted successfully";
                 $model = self::M_NOTICE;
             }
@@ -287,6 +303,11 @@ class ProductController extends SecurityController
                 $this->_notification
                      ->add(Notification::PRODUCT_MODIFIED, $this->_me->account, $id);
 
+                //Update this product index
+                if (is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+                    Config_Fisma::updateIndex('product', $id, $product);
+                }
+
                 $msg = "The product is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -301,6 +322,31 @@ class ProductController extends SecurityController
             $this->message("Unable to update product<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+        }
+    }
+
+    /**
+     * Create products Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function createIndex()
+    {
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/product', true);
+        $list = $this->_product->getList(array('meta', 'vendor', 'name', 'version', 'desc'));
+        set_time_limit(0);
+        if (!empty($list)) {
+            foreach ($list as $id=>$row) {
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('vendor', $row['vendor']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('version', $row['version']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
+                $index->addDocument($doc);
+            }
+            $index->optimize();
         }
     }
 }
