@@ -29,8 +29,8 @@ $feed = array(
 
 $i = 0;
 foreach($this->list as &$row) {
-    $row['system_name']=empty($row['system_id'])? 'N/A':$this->system_list[$row['system_id']];
-    $row['source_name']=empty($row['source_id'])? 'N/A':$this->source_list[$row['source_id']];
+    $row['system_name']=empty($row['system_id'])? 'N/A':$row['system_name'];
+    $row['source_name']=empty($row['source_id'])? 'N/A':$row['source_name'];
     $row['on_time'] = $this->isOnTime($row['duetime']);
     $row['attachments'] = $row['attachments']?'Yes':'No';
     if (strtotime($row['action_current_date']) != false) {
@@ -39,7 +39,7 @@ foreach($this->list as &$row) {
         $row['action_current_date'] = 'N/A';
     }
     $feed['entries'][$i]['title'] = 'Finding ID: '.$row['id'];
-    $feed['entries'][$i]['link'] = $host . '/panel/remediation/sub/view/id/' . $row['system_id'];
+    $feed['entries'][$i]['link'] = $host . '/panel/remediation/sub/view/id/' . $row['id'];
     $feed['entries'][$i]['lastUpdate'] = 
         strtotime($row['modify_ts']) ? strtotime($row['modify_ts']) : strtotime($row['create_ts']);
     $description = '';
