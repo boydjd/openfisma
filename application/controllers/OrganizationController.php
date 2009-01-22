@@ -83,24 +83,20 @@ class OrganizationController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
         
-        $req = $this->getRequest();
-        $fid = $req->getParam('fid');
-        $qv = $req->getParam('qv');
-        $query = $this->_organization->select()->from(array(
-            'o' => 'organizations'
-        ), array(
-            'count' => 'COUNT(o.id)'
-        ));
+        $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            $query->where("$fid = ?", $qv);
-            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+            if (!is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+                $this->createIndex();
+            }
+            $ret = Config_Fisma::searchQuery($qv, 'organization');
+        } else {
+            $ret = $this->_organization->getList('name');
         }
-        $res = $this->_organization->fetchRow($query)->toArray();
-        $count = $res['count'];
+
+        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -113,15 +109,23 @@ class OrganizationController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
         
-        $req = $this->getRequest();
-        $field = $req->getParam('fid');
-        $value = trim($req->getParam('qv'));
-        $query = $this->_organization->select()->from('organizations', '*');
+        $value = trim($this->_request->getParam('qv'));
+
+        $query = $this->_organization->select()->from('organizations', '*')
+                                         ->order('name ASC')
+                                         ->limitPage($this->_paging['currentPage'],
+                                                     $this->_paging['perPage']);
+
         if (!empty($value)) {
-            $query->where("$field = ?", $value);
+            $cache = Zend_Registry::get('cache');
+            $organizationIds = $cache->load('organization');
+            if (!empty($organizationIds)) {
+                $ids = implode(',', $organizationIds);
+            } else {
+                $ids = -1;
+            }
+            $query->where('id IN (' . $ids . ')');
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
-                                             $this->_paging['perPage']);
         $organizationList = $this->_organization->fetchAll($query)->toArray();
         $this->view->assign('organization_list', $organizationList);
     }
@@ -189,6 +193,11 @@ class OrganizationController extends SecurityController
                          ->add(Notification::ORGANIZATION_CREATED,
                              $this->_me->account, $organizationId);
 
+                    //Create a organization index
+                    if (is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+                        Config_Fisma::updateIndex('organization', $organizationId, $organization);
+                    }
+
                     $msg = "The organization is created";
                     $model = self::M_NOTICE;
                 }
@@ -231,6 +240,11 @@ class OrganizationController extends SecurityController
                      ->add(Notification::ORGANIZATION_DELETED,
                         $this->_me->account, $id);
 
+                //Delete a organization index
+                if (is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+                    Config_Fisma::deleteIndex('organization', $id);
+                }
+
                 $msg = "The organization is deleted";
                 $model = self::M_NOTICE;
             }
@@ -263,6 +277,11 @@ class OrganizationController extends SecurityController
                      ->add(Notification::ORGANIZATION_MODIFIED,
                          $this->_me->account, $id);
 
+                //Update this organization index
+                if (is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+                    Config_Fisma::updateIndex('organization', $id, $organization);
+                }
+
                 $msg = "The organization is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -279,4 +298,29 @@ class OrganizationController extends SecurityController
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
     }
+
+    /**
+     * Create organizations Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function createIndex()
+    {
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/organization', true);
+        $list = $this->_organization->getList(array('name', 'nickname'));
+        set_time_limit(0);
+        if (!empty($list)) {
+            foreach ($list as $id=>$row) {
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
+                $index->addDocument($doc);
+            }
+            $index->optimize();
+        }
+    }
+
+
 }
