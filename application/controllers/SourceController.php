@@ -72,24 +72,20 @@ class SourceController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_sources', 'read');
         
-        $req = $this->getRequest();
-        $fid = $req->getParam('fid');
-        $qv = $req->getParam('qv');
-        $query = $this->_source->select()->from(array(
-            's' => 'sources'
-        ), array(
-            'count' => 'COUNT(s.id)'
-        ))->order('s.name ASC');
+        $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            $query->where("$fid = ?", $qv);
-            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+            if (!is_dir(APPLICATION_ROOT . '/data/index/source/')) {
+                $this->createIndex();
+            }
+            $ret = Config_Fisma::searchQuery($qv, 'source');
+        } else {
+            $ret = $this->_source->getList('name');
         }
-        $res = $this->_source->fetchRow($query)->toArray();
-        $count = $res['count'];
+
+        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -103,14 +99,23 @@ class SourceController extends SecurityController
         $this->_acl->requirePrivilege('admin_sources', 'read');
         
         $req = $this->getRequest();
-        $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
-        $query = $this->_source->select()->from('sources', '*');
+
+        $query = $this->_source->select()->from('sources', '*')
+                                         ->order('name ASC')
+                                         ->limitPage($this->_paging['currentPage'],
+                                                     $this->_paging['perPage']);
+
         if (!empty($value)) {
-            $query->where("$field = ?", $value);
+            $cache = Zend_Registry::get('cache');
+            $sourceIds = $cache->load('source');
+            if (!empty($sourceIds)) {
+                $ids = implode(',', $sourceIds);
+            } else {
+                $ids = -1;
+            }
+            $query->where('id IN (' . $ids . ')');
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
-            $this->_paging['perPage']);
         $sourceList = $this->_source->fetchAll($query)->toArray();
         $this->view->assign('source_list', $sourceList);
     }
@@ -186,6 +191,12 @@ class SourceController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::SOURCE_CREATED, $this->_me->account, $sourceId);
+
+                //Update source index
+                if (is_dir(APPLICATION_ROOT . '/data/index/source/')) {
+                    Config_Fisma::updateIndex('source', $sourceId, $source);
+                }
+
                 $msg = "The source is created";
                 $model = self::M_NOTICE;
             }
@@ -267,6 +278,11 @@ class SourceController extends SecurityController
                     Config_Fisma::updateIndex('finding', $ids, $data);
                 }
 
+                //Update Source index
+                if (is_dir(APPLICATION_ROOT . '/data/index/source')) {
+                    Config_Fisma::updateIndex('source', $id, $source);
+                }
+
                 $msg = "The source is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -289,27 +305,22 @@ class SourceController extends SecurityController
      *
      * @return Object Zend_Search_Lucene
      */
-    protected function getIndex()
+    protected function createIndex()
     {
-        if (is_dir(APPLICATION_ROOT . '/data/index/sources')) {
-            $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/sources');
-        } else {
-            $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/sources', true);
-            $list = $this->_source->getList(array('name', 'nickname'));
-            set_time_limit(0);
-            if (!empty($list)) {
-                foreach ($list as $id=>$row) {
-                    $doc = new Zend_Search_Lucene_Document();
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                    $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                    $index->addDocument($doc);
-                }
-                $index->optimize();
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/source', true);
+        $list = $this->_source->getList(array('name', 'nickname', 'desc'));
+        set_time_limit(0);
+        if (!empty($list)) {
+            foreach ($list as $id=>$row) {
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
+                $index->addDocument($doc);
             }
+            $index->optimize();
         }
-        return $index;
     }
 }
