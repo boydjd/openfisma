@@ -54,14 +54,45 @@ $(document).ready(function(){
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
     <tr>
-        <td><b>Keywords: </b><input type="text" name="keywords" size="50"
+        <td colspan="2"><b>Simple search syntaxes</b></td>
+    </tr>
+    <tr>
+        <td width="25%">Contain keyword:</td>
+        <td width="75%"><i>keyword</i></td>
+    </tr>
+    <tr>
+        <td>Contain keyword1 or keyword2:</td>
+        <td><i>keyword1 keyword2</i></td>
+    </tr>
+    <tr>
+        <td>Contain keyword1 and keyword2:</td>
+        <td><i>keyword1 && keyword2</i></td>
+    </tr>
+    <tr>
+        <td>Contain keyword1 but not keyword2:</td>
+        <td><i>keyword1 -keyword2</i> </td>
+    </tr>
+    <tr>
+        <td>Contain keyword in one field:</td>
+        <td><i>fieldname:keyword</i></td>
+    </tr>
+    <tr>
+        <td>Contain Multiple character wildcard:</td>
+        <td><i>keywo*  ,  *eyword  ,  key?ord   ,  key?or*</i></td>
+    </tr>
+    <tr>
+        <td>Fuzzy searches:</td>
+        <td><i>keyword~</i></td>
+    </tr>
+    <tr>
+        <td colspan="2"><b>Keywords: </b><input type="text" name="keywords" size="50"
             value="<?php echo $this->params['keywords'];?>">
         <input type="submit" value="Search">
         </td>
     </tr>
     <?php if (!is_dir(APPLICATION_ROOT . '/data/index/finding')) { ?>
     <tr>
-        <td><i>It maybe spends more time for the first searching.</i></td>
+        <td colspan="2"><i>It maybe spends more time for the first searching.</i></td>
     </tr>
     <?php } ?>
 </table>
