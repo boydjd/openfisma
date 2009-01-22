@@ -90,24 +90,20 @@ class RoleController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_roles', 'read');
         
-        $req = $this->getRequest();
-        $fid = $req->getParam('fid');
-        $qv = $req->getParam('qv');
-        $query = $this->_role->select()->from(array(
-            'r' => 'roles'
-        ), array(
-            'count' => 'COUNT(r.id)'
-        ));
+        $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            $query->where("$fid = ?", $qv);
-            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
+            if (!is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+                $this->createIndex();
+            }
+            $ret = Config_Fisma::searchQuery($qv, 'role');
+        } else {
+            $ret = $this->_role->getList('name');
         }
-        $res = $this->_role->fetchRow($query)->toArray();
-        $count = $res['count'];
+
+        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
-        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -120,16 +116,23 @@ class RoleController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_roles', 'read');
         
-        $req = $this->getRequest();
-        $field = $req->getParam('fid');
-        $value = trim($req->getParam('qv'));
+        $value = trim($this->_request->getParam('qv'));
+
         $query = $this->_role->select()->from('roles', '*')
-                                       ->where('nickname != "auto_role"');
+                                         ->order('name ASC')
+                                         ->limitPage($this->_paging['currentPage'],
+                                                     $this->_paging['perPage']);
+
         if (!empty($value)) {
-            $query->where("$field = ?", $value);
+            $cache = Zend_Registry::get('cache');
+            $roleIds = $cache->load('role');
+            if (!empty($roleIds)) {
+                $ids = implode(',', $roleIds);
+            } else {
+                $ids = -1;
+            }
+            $query->where('id IN (' . $ids . ')');
         }
-        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
-            $this->_paging['perPage']);
         $roleList = $this->_role->fetchAll($query)->toArray();
         $this->view->assign('role_list', $roleList);
     }
@@ -205,6 +208,12 @@ class RoleController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::ROLE_CREATED, $this->_me->account, $roleId);
+
+                //Create a role index
+                if (is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+                    Config_Fisma::updateIndex('role', $roleId, $role);
+                }
+
                 $msg = "The role is created";
                 $model = self::M_NOTICE;
             }
@@ -242,6 +251,11 @@ class RoleController extends SecurityController
                      ->add(Notification::ROLE_DELETED,
                          $this->_me->account, $id);
 
+                //Delete this role index
+                if (is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+                    Config_Fisma::deleteIndex('role', $id);
+                }
+
                 $msg = "Successfully Delete a Role.";
                 $model = self::M_NOTICE;
             }
@@ -270,6 +284,11 @@ class RoleController extends SecurityController
             if ($res) {
                 $this->_notification
                      ->add(Notification::ROLE_MODIFIED, $this->_me->account, $id);
+
+                //Update this role index
+                if (is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+                    Config_Fisma::updateIndex('role', $id, $role);
+                }
 
                 $msg = "The role is saved";
                 $model = self::M_NOTICE;
@@ -369,4 +388,29 @@ class RoleController extends SecurityController
             $this->view->assign('exist_functions', $existFunctions);
         }
     }
+
+    /**
+     * Create roles Lucene Index
+     *
+     * @return Object Zend_Search_Lucene
+     */
+    protected function createIndex()
+    {
+        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/role', true);
+        $list = $this->_role->getList(array('name', 'nickname', 'desc'));
+        set_time_limit(0);
+        if (!empty($list)) {
+            foreach ($list as $id=>$row) {
+                $doc = new Zend_Search_Lucene_Document();
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
+                $index->addDocument($doc);
+            }
+            $index->optimize();
+        }
+    }
+
 }
