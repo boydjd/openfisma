@@ -246,11 +246,20 @@ $(document).ready(function(){
     });
     shortcut(0);
 
-    jQuery('.pop').cluetip({sticky: true, titleAttribute: 'title', local:true, cursor: 'pointer', dropShadow: true, activation: 'click' });
-    jQuery('.jt').cluetip({cluetipClass: 'jtip', positionBy: false, arrows: false, dropShadow: true, local:true, mouseOutClose: true});
-    jQuery('.jt_sticky').cluetip({cluetipClass: 'jtip', positionBy: false, arrows: false, dropShadow: true, local:true, closePosition: 'title', sticky:true});
-    jQuery('.ph_sticky').click(toggleIE6Selects).cluetip({cluetipClass: 'default', arrows: false, cursor: 'pointer', dropShadow: true, local:true, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);}});
-    jQuery('.ajax_sticky').cluetip({cluetipClass: 'default', width: '400', cursor: 'pointer', positionBy: 'mouse', arrows: false, dropShadow: true, closePosition: 'title', sticky:true, ajaxSettings: {success: function(msg){alert( "Data Saved: " + msg );}}});
+
+    $('a#help_tips').click(toggleIE6Selects).cluetip({width: 280, dropShadow: false, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);}});
+    $('a#help_tips').click(function (){
+        $('#cluetip ul').css('display', 'none');
+    });
+    
+    $('.ph_sticky').click(function (){jQuery('#cluetip ul').css('display', '');});
+    $('.ph_sticky').click(toggleIE6Selects).cluetip({dropShadow: false, arrows: false, cursor: 'pointer', local:true, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);$('#cluetip ul').css('display', '');}});
+    jQuery('.tbframe').columnManager({listTargetID:'cluetip', onClass: 'accept', offClass: 'blank', 
+                                  hideInList: [$(".tbframe tr th").length], saveState: true, 
+                                  cookiePath: '/', onToggle: function(index, state){$.get('/user/preference');}});
+    $('#cluetip-inner').css('border','none');
+    $('#cluetip li').css('list-style','none').css('position','relative');
+    $('#cluetip ul').css('background','#fff').css('margin','0').css('padding','0 2em 2em').css('z-index','100');
 });
 
 function shortcut(step){

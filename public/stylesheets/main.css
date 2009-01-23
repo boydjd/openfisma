@@ -149,4 +149,10 @@ div.notice p {
 
 .searchword {
     background-color: yellow;
-} 
+}
+
+#help_tips{
+    cursor:help;
+    position:relative;
+    top:4px;
+}
