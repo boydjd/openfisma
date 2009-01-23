@@ -189,14 +189,15 @@ $(document).ready(function(){
         });
     });
 
-    $("#advanced_search").click(function() {
-        $("#advanced_searchbox").show();
-        $("#basic_searchbox").hide();
-    })
-    $("#basic_search").click(function() {
-        $("#advanced_searchbox").hide();
-        $("#basic_searchbox").show();
-    })
+    $("#advanced_search").click(function (){
+        if ($("#advanced_searchbox").css('display') == 'none') {
+            $("#advanced_searchbox").fadeIn();
+            $(this).attr('value', 'Basic Search');
+        } else {
+            $("#advanced_searchbox").fadeOut();
+            $(this).attr('value', 'Advanced Search');
+        }
+    });
 
     $(".confirm").click(function(){
         var str = "DELETING COMFIRMATION!";

@@ -1,12 +1,3 @@
-<script language="javascript">
-$(document).ready(function(){
-    var advanced_flag = $("#advanced_searchbox").attr("flag");
-    if (advanced_flag == 'true') {
-        $("#advanced_searchbox").show();
-        $("#basic_searchbox").hide();
-    }
-});
-</script>
 <?php
     $filter_type = array(0  =>'--- Any Type ---',
                     'NONE' =>'(NONE) Unclassified',
@@ -48,9 +39,16 @@ $(document).ready(function(){
 <p><b>Remediation Search</b><span></p>
 </div>
 </div>
+<?php
+    $flag = '';
+    foreach ($this->params as $k => $value) {
+        if (!empty($value) && $k != 'keywords' && $k != 'evidence_include') {
+            $flag = 'true';
+        }
+    }
+?>
 <!-- Begin Zend_Search_Lucene search Table -->
-<div id="basic_searchbox">
-<input type="button" id="advanced_search" value="Advanced Search"><p>
+<?php if ($flag == '') { ?><input type="button" id="advanced_search" value="Advanced Search"><p><?php } ?>
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
     <tr>
@@ -69,19 +67,8 @@ $(document).ready(function(){
      </tr>
  </table>
 <p>
-</div>
 
-<?php
-    $flag = '';
-    unset($this->params['keywords'], $this->params['evidence_include']);
-    foreach ($this->params as $value) {
-        if (!empty($value)) {
-            $flag = 'true';
-        }
-    }
-?>
-<div id="advanced_searchbox" style="display:none" flag="<?php echo $flag;?>">
-<input type="button" id="basic_search" value="Basic Search"><p>
+<div id="advanced_searchbox" <?php if ($flag == '') { ?>style="display:none" <?php } ?>>
 <!-- Begin Filter Table -->
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
     <tr>
@@ -154,9 +141,6 @@ $(document).ready(function(){
                 </tr>
             </table>
         </td>
-    </tr>
-    <tr>
-        <td align="left"><input type='submit' value='Search'></td>
     </tr>
 </table>
 </form>
