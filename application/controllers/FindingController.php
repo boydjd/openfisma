@@ -460,6 +460,14 @@ class FindingController extends PoamBaseController
             // the error handler will be confused by context switch and will 
             // look for error.xls.tpl instead of error.tpl
             $contextSwitch->initContext('xls');
+            
+            /* Bug fix #2507318 - 'OVMS Unable to open Spreadsheet upload file'
+             * This fixes a bug in IE6 where some mime types get deleted if IE
+             * has caching enabled with SSL. By setting the cache to 'private' 
+             * we can tell IE not to cache this file.
+             */                                       
+            $this->getResponse()->setHeader('Pragma', 'private', true);
+            $this->getResponse()->setHeader('Cache-Control', 'private', true);
         } catch(Exception_General $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);

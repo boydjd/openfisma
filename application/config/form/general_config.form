@@ -22,18 +22,12 @@ displayGroups.general.elements.system_name = "system_name"
 elements.max_absent_time.type = "text"
 elements.max_absent_time.options.label = "Inactive Account Expiration (days)"
 elements.max_absent_time.options.validators.alnum.validator = "Digits"
-elements.max_absent_time.options.validators.strlen.validator = "StringLength"
-elements.max_absent_time.options.validators.strlen.options.min = "1"
-elements.max_absent_time.options.validators.strlen.options.max = "10"
 elements.max_absent_time.options.required = true
 displayGroups.general.elements.max_absent_time = "max_absent_time"
 
 elements.expiring_seconds.type = "text"
 elements.expiring_seconds.options.label = "Session Timeout (minutes)"
 elements.expiring_seconds.options.validators.alnum.validator = "Digits"
-elements.expiring_seconds.options.validators.strlen.validator = "StringLength"
-elements.expiring_seconds.options.validators.strlen.options.min = "1"
-elements.expiring_seconds.options.validators.strlen.options.max = "10"
 elements.expiring_seconds.options.required = true
 displayGroups.general.elements.expiring_seconds = "expiring_seconds"
 
@@ -42,18 +36,12 @@ elements.auth_type.options.label = "Authentication Method"
 elements.auth_type.options.multiOptions.database = "database"
 elements.auth_type.options.multiOptions.ldap = "ldap"
 elements.auth_type.options.validators.alnum.validator = "NotEmpty"
-elements.auth_type.options.validators.strlen.validator = "StringLength"
-elements.auth_type.options.validators.strlen.options.min = "1"
-elements.auth_type.options.validators.strlen.options.max = "10"
 elements.auth_type.options.required = true
 displayGroups.general.elements.auth_type = "auth_type"
 
 elements.rob_duration.type = "text"
 elements.rob_duration.options.label = "Rules Of Behavior Period (days)"
 elements.rob_duration.options.validators.alnum.validator = "Digits"
-elements.rob_duration.options.validators.strlen.validator = "StringLength"
-elements.rob_duration.options.validators.strlen.options.min = "1"
-elements.rob_duration.options.validators.strlen.options.max = "10"
 elements.rob_duration.options.required = true
 displayGroups.general.elements.rob_duration = "rob_duration"
 

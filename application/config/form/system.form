@@ -43,43 +43,29 @@ displayGroups.system.elements.type = "type"
 
 elements.desc.type = "textarea"
 elements.desc.options.label = "System Description"
-elements.desc.options.validators.strlen.validator = "StringLength"
-elements.desc.options.validators.strlen.options.min = "1"
 elements.desc.options.cols = "70%"
 elements.desc.options.rows = "7"
-elements.desc.options.required = true
 displayGroups.system.elements.desc = "desc"
 
 elements.confidentiality.type = "select"
 elements.confidentiality.options.label = "Confidentiality"
-elements.confidentiality.options.validators.alnum.validator = "NotEmpty"
-elements.confidentiality.options.validators.strlen.validator = "StringLength"
-elements.confidentiality.options.required = true
 displayGroups.system.elements.confidentiality = "confidentiality"
 
 elements.confidentiality_justification.type = "textarea"
 elements.confidentiality_justification.options.label = "Confidentiality Justification and Data Type"
-elements.confidentiality_justification.options.validators.strlen.validator = "StringLength"
-elements.confidentiality_justification.options.validators.strlen.options.min = "1"
 elements.confidentiality_justification.options.cols = "70%"
 elements.confidentiality_justification.options.rows = "7"
-elements.confidentiality_justification.options.required = true
 displayGroups.system.elements.confidentiality_justification = "confidentiality_justification"
 
 elements.integrity.type = "select"
 elements.integrity.options.label = "Integrity"
 elements.integrity.options.validators.alnum.validator = "NotEmpty"
-elements.integrity.options.validators.strlen.validator = "StringLength"
 elements.integrity.options.required = true
 displayGroups.system.elements.integrity = "integrity"
 
 elements.integrity_justification.type = "textarea"
-elements.integrity_justification.options.label = "Integrity Justification and Data Type"
-elements.integrity_justification.options.validators.strlen.validator = "StringLength"
-elements.integrity_justification.options.validators.strlen.options.min = "1"
 elements.integrity_justification.options.cols = "70%"
 elements.integrity_justification.options.rows = "7"
-elements.integrity_justification.options.required = true
 displayGroups.system.elements.integrity_justification = "integrity_justification"
 
 elements.availability.type = "select"
@@ -91,11 +77,8 @@ displayGroups.system.elements.availability = "availability"
 
 elements.availability_justification.type = "textarea"
 elements.availability_justification.options.label = "Availability Justification and Data Type"
-elements.availability_justification.options.validators.strlen.validator = "StringLength"
-elements.availability_justification.options.validators.strlen.options.min = "1"
 elements.availability_justification.options.cols = "70%"
 elements.availability_justification.options.rows = "7"
-elements.availability_justification.options.required = true
 displayGroups.system.elements.availability_justification = "availability_justification"
 
 elements.submit.type = "submit"

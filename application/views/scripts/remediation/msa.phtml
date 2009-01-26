@@ -59,16 +59,18 @@ function delok()
         if (isset($row['decision'])) {
             $value = $row['decision'];
         }
-        echo "<tr><td><b>".$row['name']."&nbsp;</b>";
+        echo "<tr><td><b>" . $row['name'] . "&nbsp;</b>";
         if ('NONE' == $value && $editable) {
-            if($this->acl->isAllowed('remediation', $row['function'])){
+            if ($this->acl->isAllowed('remediation', $row['function'])) {
                 echo '<input type="hidden" name="eval_id" value="'.$row['id'].'"/>';
                 echo '<input type="hidden" name="comment" value="" />';
                 echo '<input type="hidden" name="decision" value="APPROVED" />';
                 echo '<input type="submit" value="APPROVE" />';
                 echo '<input type="button" value="DENY" onclick="ms_comment(document.ms_approval_'.$k.');" />';
-                $editable = false;
+            } else {
+                echo 'PENDING...';
             }
+            $editable = false;
         } else {
             echo $value."</td>";
             if ($value == 'APPROVED') {

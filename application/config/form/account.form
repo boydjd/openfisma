@@ -21,7 +21,6 @@ displayGroups.accountInfo.elements.account = "account"
 elements.password.type = "password"
 elements.password.options.label = "Password"
 elements.password.options.attribs.size = 35
-elements.password.options.validators.strlen.validator = "StringLength"
 displayGroups.accountInfo.elements.password = "password"
 
 elements.confirmPassword.type = "password"
@@ -82,7 +81,6 @@ displayGroups.accountInfo.elements.roles = "role"
 elements.title.type = "text"
 elements.title.options.label = "Title"
 elements.title.options.attribs.size = 35
-elements.title.options.validators.alnum.validator = "alnum"
 displayGroups.accountInfo.elements.title = "title"
 
 ; The values in the status menu are populated dynamically. I don't think that
