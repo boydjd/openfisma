@@ -14,29 +14,22 @@ method = "post"
 elements.contact_name.type = "text"
 elements.contact_name.options.label = "Technical Support Name"
 elements.contact_name.options.validators.strlen.validator = "StringLength"
-elements.contact_name.options.validators.strlen.options.min = "1"
-elements.contact_name.options.validators.strlen.options.max = "30"
 elements.contact_name.options.required = true
 displayGroups.general.elements.contact_name = "contact_name"
 
 elements.contact_phone.type = "text"
 elements.contact_phone.options.label = "Technical Support Phone Number"
 elements.contact_phone.options.validators.strlen.validator = "StringLength"
-elements.contact_phone.options.validators.strlen.options.min = "1"
-elements.contact_phone.options.validators.strlen.options.max = "15"
 displayGroups.general.elements.contact_phone = "contact_phone"
 
 elements.contact_email.type = "text"
 elements.contact_email.options.label = "Technical Support Email Address"
-elements.contact_email.options.validators.alnum.validator = "EmailAddress"
+elements.contact_email.options.validators.email.validator = "EmailAddress"
 elements.contact_email.options.required = true
 displayGroups.general.elements.contact_email = "contact_email"
 
 elements.contact_subject.type = "text"
 elements.contact_subject.options.label = "Technical Support Email Subject Text"
-elements.contact_subject.options.validators.strlen.validator = "StringLength"
-elements.contact_subject.options.validators.strlen.options.min = "1"
-elements.contact_subject.options.validators.strlen.options.max = "30"
 elements.contact_subject.options.required = true
 displayGroups.general.elements.contact_subject = "contact_subject"
 

@@ -33,11 +33,8 @@ displayGroups.product.elements.version = "version"
 
 elements.desc.type = "textarea"
 elements.desc.options.label = "Description"
-elements.desc.options.validators.strlen.validator = "StringLength"
 elements.desc.options.cols = "70%"
 elements.desc.options.rows = "7"
-elements.desc.options.validators.alnum.validator = "NotEmpty"
-elements.desc.options.required = true
 displayGroups.product.elements.desc = "desc"
 
 elements.submit.type = "submit"
