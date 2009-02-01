@@ -410,6 +410,8 @@ class RemediationController extends PoamBaseController
             $result = $this->_poam->getAdapter()->fetchRow($query);
             if (!empty($result)) {
                 $row['attachments'] = 'Y';
+            } else {
+                $row['attachments'] = 'N';
             }
         }
 

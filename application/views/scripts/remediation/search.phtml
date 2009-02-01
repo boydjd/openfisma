@@ -113,7 +113,7 @@
             <td align='left' class='tdc'><?php echo $this->showLongText($row['threat_source'], $this->keywords);?></td>
             <td align='left' class='tdc'><?php echo $row['cmeasure_effectiveness'];?></td>
             <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure'], $this->keywords);?></td>
-            <td align='center' class='tdc'><?php echo $row['attachments']?'Y':'N';?></td>
+            <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
             <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
             <td align="center" valign='middle' class='tdc'><a href="<?php echo $url;?>/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
