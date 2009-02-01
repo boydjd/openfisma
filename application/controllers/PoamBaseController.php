@@ -78,19 +78,27 @@ class PoamBaseController extends SecurityController
     {
         $this->_pagingBasePath.= $this->makeUrlParams($criteria);
     }
-
+    
+    /**
+     * Translate the criteria to a string which can be used in an URL
+     *
+     * The string can be parsed by the application to form the criteria again later.
+     *
+     * @param array $criteria
+     * @return string
+     */
     public function makeUrlParams($criteria)
     {
         $urlPart = '';
-         foreach ($criteria as $key => $value) {
-             if (!empty($value)) {
-                 if ($value instanceof Zend_Date) {
+        foreach ($criteria as $key => $value) {
+            if (!empty($value)) {
+                if ($value instanceof Zend_Date) {
                     $urlPart .= '/' . $key . '/' . $value->toString('Ymd') . '';
-                 } else {
+                } else {
                     $urlPart .= '/' . $key . '/' . $value . '';
-                 }
-             }
-         }
+                }
+            }
+        }
         return $urlPart;
-     }
+    }
 }

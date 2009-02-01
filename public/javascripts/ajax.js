@@ -1,7 +1,10 @@
 String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
 }
-
+// This is a fix for IE 6 borrowed from SF.net
+// All 'select' elements should hide in IE 6,
+// otherwise the 'ClueTips' could not be over the elements.
+// It will be called by 'ClueTips', when triggering the 'ClueTips'
 var ie6SelectsShowing = true;
 function toggleIE6Selects(){
     if($.browser.msie && $.browser.version == '6.0'){
@@ -247,17 +250,20 @@ $(document).ready(function(){
     });
     shortcut(0);
 
-
+    // show the 'ClueTips' which contain help info.
     $('a#help_tips').click(toggleIE6Selects).cluetip({width: 280, dropShadow: false, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);}});
+    // to fix the conflict caused by 'ColumnManager'
     $('a#help_tips').click(function (){
         $('#cluetip ul').css('display', 'none');
     });
-    
     $('.ph_sticky').click(function (){jQuery('#cluetip ul').css('display', '');});
+    // show the 'ClueTips' which contain columns
     $('.ph_sticky').click(toggleIE6Selects).cluetip({dropShadow: false, arrows: false, cursor: 'pointer', local:true, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);$('#cluetip ul').css('display', '');}});
+    // force to insert HTML code to the elements created by 'ClueTip'
     jQuery('.tbframe').columnManager({listTargetID:'cluetip', onClass: 'accept', offClass: 'blank', 
                                   hideInList: [$(".tbframe tr th").length], saveState: true, 
                                   cookiePath: '/', onToggle: function(index, state){$.get('/user/preference');}});
+    // force to change the style defined by 'ClueTips'
     $('#cluetip-inner').css('border','none');
     $('#cluetip li').css('list-style','none').css('position','relative');
     $('#cluetip ul').css('background','#fff').css('margin','0').css('padding','0 2em 2em').css('z-index','100');

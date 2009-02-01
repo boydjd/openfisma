@@ -54,7 +54,6 @@ class UserController extends MessageController
                                 receive any e-mail notifications.";
     /**
      * a cookie name will be used in Jquery Plugin 'Column Manager'
-     * 
      */
     const COOKIE_NAME = 'column_poam_rst';
     
@@ -68,7 +67,13 @@ class UserController extends MessageController
     }
 
     /**
-     * loginAction() - Handles user login, verifying the password, etc.
+     * Handling user login
+     * 
+     * The login process basically verifies the credential provided by the user. The authentication can also
+     * be performed against the database as well as it is delegated to third partypassword, such as LDAP, 
+     * according to the application's configuration. Besides, it enforeces the security policies set by the
+     * application. Relative behaviors are logged and the user's preference are initialized by cookie after the
+     * user successfully login.
      */
     public function loginAction()
     {
@@ -181,6 +186,8 @@ class UserController extends MessageController
             // get the default preference value from database
             $value = empty($_me->column_habit) ? $this->_user->setColumnPreference($_me->id) : $_me->column_habit;
             // set cookie for 'column manager' to control the columns whether visible
+            // Persistent cookies are prohibited on U.S. government web servers by federal law. 
+            // This cookie will expire at the end of the session."
             setcookie(self::COOKIE_NAME, $value, false, '/');
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);

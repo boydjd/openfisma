@@ -18,9 +18,9 @@ $output_cols = array(
 'Countermeasures Y/N');
 
 $count_cols = count($output_cols);
-
-require_once ('Spreadsheet/Excel/Writer.php'); // need fix 
-
+// Taking Spreadsheet_Excel_Writer to generate the excel file
+// Refer to http://pear.php.net/package/Spreadsheet_Excel_Writer
+require_once ('Spreadsheet/Excel/Writer.php');
 $workbook  = new Spreadsheet_Excel_Writer();
 $workbook->setVersion(8); // fixes 255 char truncation issue
 
@@ -37,8 +37,7 @@ $format_times =& $workbook->addFormat(array('Size' => 10,
     'Align' => 'center',
     'Color' => 'black',
     'BorderColor '=> 'blue',
-    'Bottom'=>1,'Top'=>1,'Left'=>1,'Right'=>1
-    ));
+    'Bottom'=>1,'Top'=>1,'Left'=>1,'Right'=>1));
 $format_times->setFontFamily('Times New Roman');
 $format_times->setAlign('left');
 $format_times->setAlign('top');
@@ -48,6 +47,7 @@ $headinfo="Report run time: ".date("Y-m-d H:i:s");
 $worksheet->write($rowi++, 0, $headinfo,$format_times);
 $worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);
 $worksheet->write($rowi++, 0, 'Results',$format_header);
+// Set the width of a single column or a range of columns.
 $worksheet->setColumn(0,0,30);
 $worksheet->setColumn(2,2,50);
 $worksheet->setColumn(3,8,10);
