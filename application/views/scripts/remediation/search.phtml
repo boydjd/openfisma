@@ -33,54 +33,54 @@
 </div>
     <table width="100%" class="tbframe" id="poam_rst">
         <tr>
-            <th nowrap>ID 
+            <th>ID 
                 <a href="<?php echo $this->url;?>/sortby/p.id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/p.id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Source 
+            <th>Source 
                 <a href="<?php echo $this->url;?>/sortby/s.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/s.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>System 
+            <th>System 
                 <a href="<?php echo $this->url;?>/sortby/sys.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/sys.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Asset 
+            <th>Asset 
                 <a href="<?php echo $this->url;?>/sortby/as.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/as.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Type 
+            <th>Type 
                 <a href="<?php echo $this->url;?>/sortby/p.type/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/p.type/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Status 
+            <th>Status 
                 <a href="<?php echo $this->url;?>/sortby/p.status/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/p.status/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>On Time? </th>
-            <th nowrap>Description </th>
-            <th nowrap>Recommendation </th>
-            <th nowrap>Corrective Action </th>
-            <th nowrap>Blscr 
+            <th>On Time? </th>
+            <th>Description </th>
+            <th>Recommendation </th>
+            <th>Corrective Action </th>
+            <th>Blscr 
                 <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Threat Level 
+            <th>Threat Level 
                 <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Threat Description </th>
-            <th nowrap>Cmeasures Effectiveness 
+            <th>Threat Description </th>
+            <th>Cmeasures Effectiveness 
                 <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                 <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>Cmeasures Description </th>
-            <th nowrap>Attachments </th>
-            <th nowrap>ECD 
+            <th>Cmeasures Description </th>
+            <th>Attachments </th>
+            <th>ECD 
                <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
                <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
             </th>
-            <th nowrap>View</th>
+            <th>View</th>
         </tr>
         <!-- REMEDIATION ROWS -->
         <tbody id = "poam_list">
@@ -89,7 +89,7 @@
         ?>
         <tr>
             <td align='center' class='tdc'><?php echo $row['id'];?></td>
-            <td align='center' class='tdc' nowrap>
+            <td align='center' class='tdc'>
             <?php 
                     if (!isset($row['source_name'])) {
                         echo 'Missing Source id';
@@ -99,10 +99,10 @@
             ?>
             </td>
             <td align='center' class='tdc'><?php echo '(' . $row['system_nickname'] . ')' . $row['system_name'];?></td>
-            <td align='center' class='tdc' nowrap><?php echo $row['asset_name'];?></td>
-            <td align='center' class='tdc' nowrap><?php echo $row['type'];?></td>
-            <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>
-            <td align='center' class='tdc' nowrap>
+            <td align='center' class='tdc'><?php echo $row['asset_name'];?></td>
+            <td align='center' class='tdc'><?php echo $row['type'];?></td>
+            <td align='center' class='tdc'><?php echo $row['status'];?></td>
+            <td align='center' class='tdc'>
                 <?php echo $this->isOnTime($row['duetime']);?>
             </td>
             <td align='left' class='tdc'><?php echo $this->ShowLongText($row['finding_data'], $this->keywords);?></td>
@@ -114,7 +114,7 @@
             <td align='left' class='tdc'><?php echo $row['cmeasure_effectiveness'];?></td>
             <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure'], $this->keywords);?></td>
             <td align='center' class='tdc'><?php echo $row['attachments']?'Y':'N';?></td>
-            <td align='center' class='tdc' nowrap><?php echo $row['action_current_date'];?></td> 
+            <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
             <td align="center" valign='middle' class='tdc'><a href="<?php echo $url;?>/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
