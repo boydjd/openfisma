@@ -245,11 +245,13 @@ class User extends FismaModel
     */
     public function setColumnPreference($uid, $value = null)
     {
+        $defaultColumnPreference = '11101111000000001';
+        
         if (empty($uid)) {
             return ;
         }
         if (empty($value)) {
-            $value = '11101111000000001';
+            $value = $defaultColumnPreference;
         }
         $db = $this->_db;
         $where = $db->quoteInto('id = ?', $uid);
