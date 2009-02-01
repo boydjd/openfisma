@@ -46,9 +46,7 @@ class HelpController extends Zend_Controller_Action
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
         $template = $this->getViewScript($script);
-        $split = DIRECTORY_SEPARATOR;
-        if (is_file(APPLICATION_ROOT . $split . 'application' . $split 
-                    . 'views' . $split . 'scripts' . $split . $template)) {
+        if (is_file(APPLICATION_ROOT . '/application/views/scripts/' . $template)) {
             $this->render($script);
         } else {
             $this->render('noclue');
