@@ -956,7 +956,7 @@ CREATE TABLE `users` (
   `ldap_dn` varchar(64) NOT NULL,
   `notify_email` varchar(64) NOT NULL,
   `last_rob` datetime NOT NULL,
-  `column_habit` varchar(17) NULL,
+  `search_columns_pref` varchar(50) NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `account` (`account`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;

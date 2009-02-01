@@ -1,1 +1,1 @@
-ALTER TABLE `users` DROP `column_habit`;
+ALTER TABLE `users` DROP `search_columns_pref`;

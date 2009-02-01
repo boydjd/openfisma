@@ -104,6 +104,7 @@ class UserController extends MessageController
             }
 
             $threshold['failure'] = Config_Fisma::readSysConfig("failure_threshold");
+            $searchColumnsPref = $whologin->searchColumnsPref;
             $whologin = $whologin->toArray();
 
             $failureCount = $whologin['failure_count'];
@@ -184,7 +185,7 @@ class UserController extends MessageController
             // If we get this far, then the login is totally successful.
             $this->_user->log('LOGIN', $_me->id, "Success");
             // get the default preference value from database
-            $value = empty($_me->column_habit) ? $this->_user->setColumnPreference($_me->id) : $_me->column_habit;
+            $value = empty($searchColumnsPref) ? $this->_user->setColumnPreference($_me->id) : $searchColumnsPref;
             // set cookie for 'column manager' to control the columns whether visible
             // Persistent cookies are prohibited on U.S. government web servers by federal law. 
             // This cookie will expire at the end of the session."

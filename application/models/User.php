@@ -256,7 +256,7 @@ class User extends FismaModel
         $db = $this->_db;
         $where = $db->quoteInto('id = ?', $uid);
         $db->update($this->_name,
-                           array('column_habit' => $value),
+                           array('search_columns_pref' => $value),
                            $where);
         return $value;
     }
