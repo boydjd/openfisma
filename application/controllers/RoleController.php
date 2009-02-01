@@ -92,6 +92,7 @@ class RoleController extends SecurityController
         
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
+            //@todo english  if role index dosen't exist, then create it.
             if (!is_dir(APPLICATION_ROOT . '/data/index/role/')) {
                 $this->createIndex();
             }
@@ -125,10 +126,12 @@ class RoleController extends SecurityController
 
         if (!empty($value)) {
             $cache = Zend_Registry::get('cache');
+            //@todo english  get search results in ids
             $roleIds = $cache->load('role');
             if (!empty($roleIds)) {
                 $ids = implode(',', $roleIds);
             } else {
+                //@todo english  set ids as a not exist value in database if search results is none.
                 $ids = -1;
             }
             $query->where('id IN (' . $ids . ')');
@@ -391,8 +394,6 @@ class RoleController extends SecurityController
 
     /**
      * Create roles Lucene Index
-     *
-     * @return Object Zend_Search_Lucene
      */
     protected function createIndex()
     {

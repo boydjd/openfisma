@@ -131,10 +131,12 @@ class SystemController extends SecurityController
                                ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
             $cache = Zend_Registry::get('cache');
+            //@todo english  get search results in ids
             $systemIds = $cache->load('system');
             if (!empty($systemIds)) {
                 $ids = implode(',', $systemIds);
             } else {
+                //@todo english  set ids as a not exist value in database if search results is none.
                 $ids = -1;
             }
             $query->where('s.id IN (' . $ids . ')');
@@ -152,6 +154,7 @@ class SystemController extends SecurityController
         
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
+            //@todo english  if system index dosen't exist, then create it.
             if (!is_dir(APPLICATION_ROOT . '/data/index/system/')) {
                 $this->createIndex();
             }
@@ -382,8 +385,6 @@ class SystemController extends SecurityController
 
     /**
      * Create systems Lucene Index
-     *
-     * @return Object Zend_Search_Lucene
      */
     protected function createIndex()
     {

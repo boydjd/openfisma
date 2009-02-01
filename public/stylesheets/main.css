@@ -147,6 +147,7 @@ div.notice p {
     height: 100%; 
 }
 
+/* This is the style for highlight the search keyword. */
 .searchword {
     background-color: yellow;
 }

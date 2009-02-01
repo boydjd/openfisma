@@ -481,6 +481,7 @@ function addBookmark(title, url){
     }
 }
 
+// Highlights search results according to the keywords which were used to search
 function highLight(obj,keywords) {
     if (!keywords) {
         return;

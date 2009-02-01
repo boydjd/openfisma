@@ -41,6 +41,10 @@ class Config_Fisma
 
     const TEST_MODE = 'test';
 
+    /**
+     * @todo english
+     * set the cache lifeTime in seconds
+     */
     const cacheLifeTime = 7200;
 
     /** 
@@ -158,8 +162,8 @@ class Config_Fisma
             // Start Session Handling using Zend_Session 
             Zend_Session::start($configuration->session);
 
+            //initialize Zend_Cache
             if (!Zend_Registry::isRegistered('cache')) {
-                //initialize Zend_Cache
                 $frontendOptions = array(
                     'caching'  => true,
                     'lifetime' => self::cacheLifeTime,
@@ -448,12 +452,16 @@ class Config_Fisma
 
     /**
      * @todo english
-     * Update one Zend_Search_Lucene index
+     * Update Zend_Search_Lucene index
+     *
+     * This function can create one, update one and update a number of Zend_Lucene indexes.
      *
      * @param string index $indexName under the "data/index/" folder
      * @param string|array $id
-     *           string specific a table primary key
+     *           string specific a table primary key   
+     *                      if the id exists in the index, then update it, else create a index.
      *           array  specific index docuement ids
+     *                      update a number of exist indexes
      * @param array $data fields need to update
      */
     public static function updateIndex($indexName, $id, $data)
@@ -499,7 +507,7 @@ class Config_Fisma
      * Delete Zend_Search_Lucene index
      *
      * @param string index indexName under the "data/index/" folder
-     * @param integer $id row id
+     * @param integer $id row id which is indexed by Zend_Lucene
      */
     public static function deleteIndex($indexName, $id)
     {
@@ -531,7 +539,7 @@ class Config_Fisma
      *              k.   keyword1 AND NOT keyword2 (search documents that contain keyword1 but not keywords2)
      *              ... see Zend_Search_Lucene for more format
      * @param string $indexName index name
-     * @return array table ids
+     * @return array table row ids
      */
     public function searchQuery($keywords, $indexName)
     {

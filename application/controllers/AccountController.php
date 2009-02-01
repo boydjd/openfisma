@@ -131,6 +131,7 @@ class AccountController extends SecurityController
 
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
+            //@todo english  if account index dosen't exist, then create it.
             if (!is_dir(APPLICATION_ROOT . '/data/index/account/')) {
                 $this->createIndex();
             }
@@ -173,10 +174,12 @@ class AccountController extends SecurityController
                     ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
             $cache = Zend_Registry::get('cache');
+            //@todo english  get search results in ids
             $accountIds = $cache->load('account');
             if (!empty($accountIds)) {
                 $ids = implode(',', $accountIds);
             } else {
+                //@todo english  set ids as a not exist value in database if search results is none.
                 $ids = -1;
             }
             $qry->where('id IN (' . $ids . ')');
@@ -916,9 +919,7 @@ class AccountController extends SecurityController
     }
 
     /**
-     * Create products Lucene Index
-     *
-     * @return Object Zend_Search_Lucene
+     * Create accounts Lucene Index
      */
     protected function createIndex()
     {
