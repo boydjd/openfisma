@@ -323,6 +323,8 @@ class RemediationController extends PoamBaseController
     */
     public function searchAction()
     {
+        $this->_acl->requirePrivilege('remediation', 'read');
+        
         $link = $this->makeUrlParams($this->parseCriteria());
         $url = $pageUrl = '/panel/remediation/sub/searchbox' . $link;
         $attachUrl = '/remediation/search' . $link;
@@ -459,6 +461,8 @@ class RemediationController extends PoamBaseController
      */
     public function searchboxAction()
     {
+        $this->_acl->requirePrivilege('remediation', 'read');
+        
         $params = $this->parseCriteria();
         $this->view->assign('params', $params);
         $this->view->assign('systems', $this->_systemList);
