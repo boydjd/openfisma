@@ -345,7 +345,7 @@ class FindingController extends PoamBaseController
                         if (!empty($ret)) {
                             $indexData['source'] = $ret->name . ' ' . $ret->nickname;
                         }
-                        $ret = $asset->find($poam['source_id'])->current();
+                        $ret = $asset->find($poam['asset_id'])->current();
                         if (!empty($ret)) {
                             $indexData['asset'] = $ret->name;
                         }
