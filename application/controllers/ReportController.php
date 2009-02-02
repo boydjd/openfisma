@@ -679,7 +679,7 @@ class ReportController extends PoamBaseController
             } else {
                 /** @todo english */
                 $this->message('No finding', self::M_WARNING);
-                $this->_forward('report','panel',null,array('sub' => 'rafs', 'system_id' => ''));
+                $this->_forward('report', 'panel', null, array('sub' => 'rafs', 'system_id' => ''));
             }
         }
     }

@@ -267,7 +267,7 @@ class RemediationController extends PoamBaseController
                         'ontime' => '', 'sortby' => '', 'order'=> '', 'keywords' => '');
         $req = $this->getRequest();
         $tmp = $req->getParams();
-        foreach($params as $k => &$v) {
+        foreach ($params as $k => &$v) {
             if (isset($tmp[$k])) {
                 $v = $tmp[$k];
             }
@@ -342,29 +342,27 @@ class RemediationController extends PoamBaseController
         if (!empty($params['status'])) {
             $now = clone parent::$now;
             switch ($params['status']) {
-                case 'NEW':
-                     $params['status'] = 'NEW'; break;
-                case 'DRAFT':
-                     $params['status'] = 'DRAFT'; break;
-                case 'EN':
-                     $params['status'] = 'EN'; break;
-                case 'CLOSED':
-                     $params['status'] = 'CLOSED'; break;
-                case 'NOT-CLOSED':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
-                     break;
-                case 'NOUP-30':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                case 'NEW':    $params['status'] = 'NEW';
+                    break;
+                case 'DRAFT':  $params['status'] = 'DRAFT';
+                    break;
+                case 'EN':     $params['status'] = 'EN';
+                    break;
+                case 'CLOSED': $params['status'] = 'CLOSED';
+                    break;
+                case 'NOT-CLOSED': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                    break;
+                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
                      $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);
-                     break;
+                    break;
                 case 'NOUP-60':
                      $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
                      $params['modify_ts'] = $now->sub(60, Zend_Date::DAY);
-                     break;
+                    break;
                 case 'NOUP-90':
                      $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
                      $params['modify_ts'] = $now->sub(90, Zend_Date::DAY);
-                     break;
+                    break;
                 default :
                      $evaluation = new Evaluation();
                      $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
@@ -380,7 +378,7 @@ class RemediationController extends PoamBaseController
                              $params['ep']     = $precedenceId;
                          }
                      }
-                     break;
+                    break;
             }
         }
 
@@ -418,7 +416,7 @@ class RemediationController extends PoamBaseController
         $this->_helper->contextSwitch()->initContext();
         $format = $this->_helper->contextSwitch()->getCurrentContext();
         if ($format == 'pdf' || $format == 'xls') {
-            foreach($list as $k => &$v) {
+            foreach ($list as $k => &$v) {
                 $v['finding_data'] = trim(html_entity_decode($v['finding_data']));
                 $v['action_suggested'] = trim(html_entity_decode($v['action_suggested']));
                 $v['action_planned'] = trim(html_entity_decode($v['action_planned']));
@@ -917,7 +915,7 @@ class RemediationController extends PoamBaseController
             if ($poamDetail['threat_source'] == '' ||
                 $poamDetail['threat_level'] == 'NONE' ||
                 $poamDetail['cmeasure'] == '' ||
-                $poamDetail['cmeasure_effectiveness'] == 'NONE'){
+                $poamDetail['cmeasure_effectiveness'] == 'NONE') {
                 throw new Exception_General("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }

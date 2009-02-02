@@ -87,7 +87,8 @@ class Poam extends Zend_Db_Table
      *          <dt>'type'=>(string|array)</dt><dd>poam type(s), namely 'CAP', 'AR', 'FP'.</dd>
      *          <dt>'mp'=>precedence_id(int)</dt><dd>a Mitigation Strategy Evaluation noted by precedence_id </dd>
      *          <dt>'ep'=>(int)</dt><dd>an Evidence Evaluationnoted by precedence_id </dd>
-     *          <dt>'status'=>(string|array)</dt><dd>poam status(s), namely 'NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'</dd>
+     *          <dt>'status'=>(string|array)</dt>
+     *          <dd>poam status(s), namely 'NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'</dd>
      *          <dt>'ip'=>(string)</dt><dd>an asset's ip address</dd>
      *          <dt>'port'=>(int)</dt><dd> a service port of the asset</dd>
      *          <dt>'group'=>(string)</dt><dd>similar with SQL's GROUP BY. used in counting</dd>
@@ -317,8 +318,8 @@ class Poam extends Zend_Db_Table
                         ELSE 'N/A' END) AS duetime ";
         
         if ($fields == '*') {
-            $fields = array_merge(  $this->_cols, $extraFields['asset'], $extraFields['source'],
-                                    $extraFields['system']);
+            $fields = array_merge($this->_cols, $extraFields['asset'], $extraFields['source'],
+                                  $extraFields['system']);
             array_push($fields, $dueTimeColumn);
         } else if (isset($fields['count'])) {
             if ($fields == 'count' || $fields == array('count' => 'count(*)')) {

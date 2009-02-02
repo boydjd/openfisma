@@ -145,9 +145,9 @@ abstract class Inject_Abstract
                 $findingTable->insert($finding);
                 $this->_totalFindings['reviewed']++;
                 break;
-
             default:
                 throw new Exception_General("\$action is not valid: \"$action\"");
+                break;
         }
     }
     

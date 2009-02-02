@@ -173,30 +173,28 @@ class DashboardController extends SecurityController
         foreach ($arrMsaEvalList as $arrMsaEvalRow) {
             $arrMsaPoam = $this->_poam->search($this->_me->systems,
                 array('count' => 'nickname'),
-                array('mp' => $arrMsaEvalRow['precedence_id'], 'name')
-            );
+                array('mp' => $arrMsaEvalRow['precedence_id'], 'name'));
             $description[$arrMsaEvalRow['nickname']] = $arrMsaEvalRow['name'];
             if (!empty($arrMsaPoam)) {
                 $arrTmpTotal = array_merge($arrTmpTotal,
                                array($arrMsaEvalRow['nickname']=>$arrMsaPoam[0]['count']));
             } else {
-                $arrTmpTotal = array_merge($arrTmpTotal,array($arrMsaEvalRow['nickname']=>0));
+                $arrTmpTotal = array_merge($arrTmpTotal, array($arrMsaEvalRow['nickname']=>0));
             }
         }
-        $arrTmpTotal = array_merge($arrTmpTotal,array('EN'=>$arrTotal['EN']));
+        $arrTmpTotal = array_merge($arrTmpTotal, array('EN'=>$arrTotal['EN']));
         //count evidence status
         $arrEpEvalList = $objEval->getEvalList('EVIDENCE');
         foreach ($arrEpEvalList as $arrEpEvalRow) {
             $arrEpPoam = $this->_poam->search($this->_me->systems,
                 array('count' => 'nickname'), 
-                array('ep' => $arrEpEvalRow['precedence_id'], 'name')
-            );
+                array('ep' => $arrEpEvalRow['precedence_id'], 'name'));
             $description[$arrEpEvalRow['nickname']] = $arrEpEvalRow['name'];
             if (!empty($arrEpPoam)) {
                 $arrTmpTotal = array_merge($arrTmpTotal,
                                array($arrEpEvalRow['nickname']=>$arrEpPoam[0]['count']));
             } else {
-                $arrTmpTotal = array_merge($arrTmpTotal,array($arrEpEvalRow['nickname']=>0));
+                $arrTmpTotal = array_merge($arrTmpTotal, array($arrEpEvalRow['nickname']=>0));
             }
         }
         $this->view->summary = $arrTmpTotal;

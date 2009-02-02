@@ -53,7 +53,7 @@ class Action_Helper_RequirePrivilege extends Zend_Controller_Action_Helper_Abstr
             $auth = Zend_Auth::getInstance();
             $me = $auth->getIdentity();
             $roleArray = &$me->roleArray;
-            if ( $me->account != "root" ) {
+            if ($me->account != "root" ) {
                 $acl = Zend_Registry::get('acl');
                 foreach ($roleArray as $role) {
                     if ( true == $acl->isAllowed($role, $resource, $operation) ) {
@@ -65,7 +65,7 @@ class Action_Helper_RequirePrivilege extends Zend_Controller_Action_Helper_Abstr
         } catch (Zend_Acl_Exception  $e) {
             $request = $this->getRequest();
 
-            if ($request instanceof Zend_Controller_Request_Abstract === false){
+            if ($request instanceof Zend_Controller_Request_Abstract === false) {
                 /**
                  * @see Zend_Controller_Action_Exception
                  */

@@ -93,7 +93,7 @@ class NetworkController extends SecurityController
         $this->_acl->requirePrivilege('admin_networks', 'read');
         
         $qv = trim($this->_request->getParam('qv'));
-         if (!empty($qv)) {
+        if (!empty($qv)) {
             //@todo english  if network index dosen't exist, then create it.
             if (!is_dir(APPLICATION_ROOT . '/data/index/network/')) {
                 $this->createIndex();

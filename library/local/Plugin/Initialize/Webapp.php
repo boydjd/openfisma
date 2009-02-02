@@ -169,8 +169,7 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
     {
         $this->_front->setControllerDirectory(array(
             'default'=>"{$this->_root}/{$this->_path['CONTROLLER']}"
-            )
-        );
+            ));
 
         // This configuration option tells Zend_Date to use the standard PHP date format
         // instead of standard ISO format. This is convenient for interfacing Zend_Date

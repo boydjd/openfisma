@@ -134,7 +134,7 @@ class User extends FismaModel
             $notification = new Notification();
             $nowSqlString = $now->get('Y-m-d H:i:s');
             
-             if ($type == 'LOGIN') {
+            if ($type == 'LOGIN') {
                 $row->failureCount = 0;
                 $row->lastLoginTs = $nowSqlString;
                 $row->lastLoginIp = $_SERVER["REMOTE_ADDR"];
@@ -143,7 +143,7 @@ class User extends FismaModel
                 $row->save();
                 $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
                    $account, "UserId: {$uid}");
-            } else if ($type == 'LOGINFAILURE') {
+            } elseif ($type == 'LOGINFAILURE') {
                 $type = 'LOGIN';
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
                                    null, "User: {$account}");
@@ -228,9 +228,9 @@ class User extends FismaModel
         }
         if ('sha256' == $digestType) {
             $key = self::readSysConfig('encryptKey');
-            $cipher_alg = MCRYPT_TWOFISH;
-            $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
-            $digestPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            $cipherAlg = MCRYPT_TWOFISH;
+            $iv = mcrypt_create_iv(mcrypt_get_iv_size($cipherAlg, MCRYPT_MODE_ECB), MCRYPT_RAND);
+            $digestPassword = mcrypt_encrypt($cipherAlg, $key, $password, MCRYPT_MODE_CBC, $iv);
             return $digestPassword;
         }
     }

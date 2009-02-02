@@ -32,8 +32,8 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 
-class Table_Rowlower extends Zend_Db_Table_Row_Abstract 
-{ 
+class Table_Rowlower extends Zend_Db_Table_Row_Abstract
+{
     protected function _transformColumn($columnName) { 
         if (!is_string($columnName)) { 
             require_once 'Zend/Db/Table/Row/Exception.php'; 

@@ -23,7 +23,7 @@
  * @version   $Id$
  *
  */
- 
+
 /**
  * Fismacl
  * get user's role by which to check privilege
@@ -36,7 +36,7 @@
  * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class Fismacl extends Zend_Acl
-{    
+{
     /** 
      * according to the role and decide whether or not to be displayed.
      * @param $resource resources

@@ -285,9 +285,9 @@ class Config_Fisma
         }
         if ('sha256' == $encryptType) {
             $key = self::readSysConfig('encryptKey');
-            $cipher_alg = MCRYPT_TWOFISH;
-            $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
-            $encryptedPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            $cipherAlg = MCRYPT_TWOFISH;
+            $iv = mcrypt_create_iv(mcrypt_get_iv_size($cipherAlg, MCRYPT_MODE_ECB), MCRYPT_RAND);
+            $encryptedPassword = mcrypt_encrypt($cipherAlg, $key, $password, MCRYPT_MODE_CBC, $iv);
             return $encryptedPassword;
         }
     }
