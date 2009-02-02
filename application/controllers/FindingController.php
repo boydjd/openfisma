@@ -195,6 +195,7 @@ class FindingController extends PoamBaseController
             $system = $systemTable->fetchRow("nickname = '$systemNickname'");
             if (isset($system)) {
                 $systemId = $system->id;
+                $systemName = $system->name;
             } else {
                 $error = "Row $rowNumber: Invalid System";
                 continue;
@@ -223,6 +224,7 @@ class FindingController extends PoamBaseController
             $source = $sourceTable->fetchRow("nickname = '$findingSource'");
             if (isset($source)) {
                 $sourceId = $source->id;
+                $sourceName = $source->name;
             } else {
                 $error = "Row $rowNumber: Invalid Finding Source";
                 continue;
@@ -246,14 +248,14 @@ class FindingController extends PoamBaseController
                                             address_port = '$ipPort'");
             if (!isset($asset)) {
                 // The asset does not exist, so create it.
-                $asset = array('name' => "$ipAddress:$ipPort",
+                $assetData = array('name' => "$ipAddress:$ipPort",
                                'create_ts' => $now->toString('Y-m-d H:i:s'),
                                'source' => 'MANUAL',
                                'system_id' => $systemId,
                                'network_id' => $networkId,
                                'address_ip' => $ipAddress,
                                'address_port' => $ipPort);
-                $assetId = $assetTable->insert($asset);
+                $assetId = $assetTable->insert($assetData);
             } else {
                 $assetId = $asset->id;
             }
@@ -268,7 +270,17 @@ class FindingController extends PoamBaseController
                              'discover_ts' => $dateDiscovered,
                              'finding_data' => $description,
                              'action_suggested' => $recommendation);
-            $poamTable->insert($finding);
+            $poamId = $poamTable->insert($finding);
+
+            //Create finding lucene index
+            if (is_dir(APPLICATION_ROOT . '/data/index/finding/')) {
+                $indexData = array('finding_data' => $finding['finding_data'],
+                                   'action_suggested' => $finding['action_suggested'],
+                                   'system' => $systemName . ' ' . $systemNickname,
+                                   'source' => $sourceName . ' ' . $sourceNickname,
+                                   'asset' => isset($assetData)?$assetData['name']:'');
+                Config_Fisma::updateIndex('finding', $poamId, $indexData);
+            }
             
             $rowNumber++;
         }
@@ -320,24 +332,27 @@ class FindingController extends PoamBaseController
                 $poamId = $this->_poam->insert($poam);
 
                 if ($poamId > 0) {
-                    $system = new System();
-                    $source = new Source();
-                    $asset = new Asset();
-                    $ret = $system->find($poam['system_id'])->current();
-                    if (!empty($ret)) {
-                        $indexData['system'] = $ret->name . ' ' . $ret->nickname;
+                    //Create finding lucene index
+                    if (is_dir(APPLICATION_ROOT . '/data/index/finding/')) {
+                        $system = new System();
+                        $source = new Source();
+                        $asset = new Asset();
+                        $ret = $system->find($poam['system_id'])->current();
+                        if (!empty($ret)) {
+                            $indexData['system'] = $ret->name . ' ' . $ret->nickname;
+                        }
+                        $ret = $source->find($poam['source_id'])->current();
+                        if (!empty($ret)) {
+                            $indexData['source'] = $ret->name . ' ' . $ret->nickname;
+                        }
+                        $ret = $asset->find($poam['source_id'])->current();
+                        if (!empty($ret)) {
+                            $indexData['asset'] = $ret->name;
+                        }
+                        $indexData['finding_data'] = $poam['finding_data'];
+                        $indexData['action_suggested'] = $poam['action_suggested'];
+                        Config_Fisma::updateIndex('finding', $poamId, $indexData);
                     }
-                    $ret = $source->find($poam['source_id'])->current();
-                    if (!empty($ret)) {
-                        $indexData['source'] = $ret->name . ' ' . $ret->nickname;
-                    }
-                    $ret = $asset->find($poam['source_id'])->current();
-                    if (!empty($ret)) {
-                        $indexData['asset'] = $ret->name;
-                    }
-                    $indexData['finding_data'] = $poam['finding_data'];
-                    $indexData['action_suggested'] = $poam['action_suggested'];
-                    Config_Fisma::updateIndex('finding', $poamId, $indexData);
 
                     $message = "Finding created successfully";
                     $model = self::M_NOTICE;
