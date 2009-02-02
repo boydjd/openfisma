@@ -95,7 +95,7 @@ class PoamBaseController extends SecurityController
                 if ($value instanceof Zend_Date) {
                     $urlPart .= '/' . $key . '/' . $value->toString('Ymd') . '';
                 } else {
-                    $urlPart .= '/' . $key . '/' . $value . '';
+                    $urlPart .= '/' . $key . '/' . urlencode($value) . '';
                 }
             }
         }

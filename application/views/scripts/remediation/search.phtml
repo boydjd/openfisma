@@ -3,12 +3,6 @@
         highLight('poam_list', '<?php echo $this->keywords;?>');
     });
 </script>
-<?php
-    $url = "/panel/remediation/sub/view";
-    if (!empty($this->keywords)) {
-        $url .= "/keywords/".$this->keywords;
-    }
-?>
 <div class="barleft">
 <div class="barright">
     <!-- @todo english -->
@@ -115,7 +109,10 @@
             <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure'], $this->keywords);?></td>
             <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
             <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
-            <td align="center" valign='middle' class='tdc'><a href="<?php echo $url;?>/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
+            <td align="center" valign='middle' class='tdc'>
+            <a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>">
+                <img src="/images/view.gif" border="0">
+            </a></td>
         </tr>
         <?php } ?>
         </tbody>
