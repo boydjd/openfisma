@@ -76,7 +76,7 @@ class RemediationController extends PoamBaseController
                 array('suffix' => 'xls',
                    'headers' => array(
                         'Content-Disposition' => "attachement;filename=export.xls",
-                        'Content-Type' => 'application/xls')))
+                        'Content-Type' => 'application/vnd.ms-excel')))
                    ->addActionContext('search', array('xls'))->setAutoDisableLayout(true);
         }
         if (!$attach->hasContext('rss')) {
