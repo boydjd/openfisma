@@ -155,7 +155,7 @@ class SystemController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if system index dosen't exist, then create it.
-            if (!is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'system');
@@ -198,7 +198,7 @@ class SystemController extends SecurityController
                              $this->_me->account, $systemId);
 
                     //Create a system index
-                    if (is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+                    if (is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
                         $organization = new Organization();
                         $ret = $organization->find($system['organization_id'])->current();
                         if (!empty($ret)) {
@@ -260,7 +260,7 @@ class SystemController extends SecurityController
                         $this->_me->account, $id);
 
                 //Delete this system index
-                if (is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
                     Config_Fisma::deleteIndex('system', $id);
                 }
 
@@ -344,8 +344,8 @@ class SystemController extends SecurityController
                          $this->_me->account, $id);
 
                 //Update findings index
-                if (is_dir(APPLICATION_ROOT . '/data/index/finding')) {
-                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/finding');
+                if (is_dir(Config_Fisma::getPath('data') . '/index/finding')) {
+                    $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/finding');
                     $hits = $index->find('system:'.$query);
                     foreach ($hits as $hit) {
                         $ids[] = $hit->id;
@@ -356,7 +356,7 @@ class SystemController extends SecurityController
                 }
 
                 //Update this system index
-                if (is_dir(APPLICATION_ROOT . '/data/index/system/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
                     $organization = new Organization();
                     $ret = $organization->find($system['organization_id'])->current();
                     if (!empty($ret)) {
@@ -388,7 +388,7 @@ class SystemController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/system', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/system', true);
         $query = $this->_system->getAdapter()->select()->from(array('s'=>'systems'), 's.*')
                               ->join(array('o'=>'organizations'), 's.organization_id = o.id',
                                      array('org_name'=>'o.name', 'org_nickname'=>'o.nickname'));

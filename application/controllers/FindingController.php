@@ -273,7 +273,7 @@ class FindingController extends PoamBaseController
             $poamId = $poamTable->insert($finding);
 
             //Create finding lucene index
-            if (is_dir(APPLICATION_ROOT . '/data/index/finding/')) {
+            if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
                 $indexData = array('finding_data' => $finding['finding_data'],
                                    'action_suggested' => $finding['action_suggested'],
                                    'system' => $systemName . ' ' . $systemNickname,
@@ -333,7 +333,7 @@ class FindingController extends PoamBaseController
 
                 if ($poamId > 0) {
                     //Create finding lucene index
-                    if (is_dir(APPLICATION_ROOT . '/data/index/finding/')) {
+                    if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
                         $system = new System();
                         $source = new Source();
                         $asset = new Asset();
@@ -518,7 +518,7 @@ class FindingController extends PoamBaseController
         
         // Configure the file select
         $uploadForm->setAttrib('enctype', 'multipart/form-data');
-        $uploadForm->selectFile->setDestination(APPLICATION_ROOT . '/data/uploads/scanreports');
+        $uploadForm->selectFile->setDestination(Config_Fisma::getPath('data') . '/uploads/scanreports');
 
         // Setup the view
         $this->view->assign('uploadForm', $uploadForm);

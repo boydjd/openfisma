@@ -86,7 +86,7 @@ class OrganizationController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if organization index dosen't exist, then create it.
-            if (!is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'organization');
@@ -197,7 +197,7 @@ class OrganizationController extends SecurityController
                              $this->_me->account, $organizationId);
 
                     //Create a organization index
-                    if (is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+                    if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
                         Config_Fisma::updateIndex('organization', $organizationId, $organization);
                     }
 
@@ -244,7 +244,7 @@ class OrganizationController extends SecurityController
                         $this->_me->account, $id);
 
                 //Delete a organization index
-                if (is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
                     Config_Fisma::deleteIndex('organization', $id);
                 }
 
@@ -281,7 +281,7 @@ class OrganizationController extends SecurityController
                          $this->_me->account, $id);
 
                 //Update this organization index
-                if (is_dir(APPLICATION_ROOT . '/data/index/organization/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
                     Config_Fisma::updateIndex('organization', $id, $organization);
                 }
 
@@ -307,7 +307,7 @@ class OrganizationController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/organization', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/organization', true);
         $list = $this->_organization->getList(array('name', 'nickname'));
         set_time_limit(0);
         if (!empty($list)) {

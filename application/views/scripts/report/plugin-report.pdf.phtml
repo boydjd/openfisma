@@ -8,7 +8,7 @@ define('REPORT_FOOTER_WARNING', 'WARNING: This report is for internal, official 
      . ' disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.');
 define('PAPER_SIZE', 'LETTER');
 define('ORIENTATION', 'landscape');
-define('FONTS', APPLICATION_ROOT . '/library/pdf/fonts');
+define('FONTS', Config_Fisma::getPath('library') . '/pdf/fonts');
 
 require_once('pdf/class.ezpdf.php');
 

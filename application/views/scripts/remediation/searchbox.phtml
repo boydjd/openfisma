@@ -60,7 +60,7 @@
         </td>
     </tr>
     <tr>
-        <td width="410"><?php if (!is_dir(APPLICATION_ROOT . '/data/index/finding')) { ?>
+        <td width="410"><?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
             <i>It maybe spends more time for the first searching.</i>
         <?php } ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <td><input type="submit" value="Search"></td>

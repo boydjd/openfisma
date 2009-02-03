@@ -52,7 +52,7 @@ class Config_Fisma
      *
      * @var _path
      */
-    private $_path = array(
+    private static $_path = array(
             'library'=>'library',
             'data'=>'data',
             'application'=>'application',
@@ -107,8 +107,6 @@ class Config_Fisma
         // APPLICATION CONSTANTS - Set the constants to use in this application.
         // These constants are accessible throughout the application, even in ini 
         // files. 
-        define('APPLICATION_ROOT', self::$_root);
-        define('APPLICATION_PATH', self::$_root . '/' . $this->_path['application']);
         $this->initSetting();
         //freeze the NOW, minimize the impact of running time cost.
         self::$_now = time(); 
@@ -159,8 +157,12 @@ class Config_Fisma
             }
             $configuration = $config->{$config->environment};
             self::addSysConfig($configuration);
+
+            //@todo english  set the absolute path to save session
+            $options['save_path'] = self::getPath('data') . $configuration->session->get('save_path');
+            $options['name'] = $configuration->session->get('name');
             // Start Session Handling using Zend_Session 
-            Zend_Session::start($configuration->session);
+            Zend_Session::start($options);
 
             //initialize Zend_Cache
             if (!Zend_Registry::isRegistered('cache')) {
@@ -171,7 +173,7 @@ class Config_Fisma
                 );
 
                 $backendOptions = array(
-                    'cache_dir' => APPLICATION_ROOT . '/data/cache'
+                    'cache_dir' => self::getPath('data') . '/cache'
                 );
                 if (!is_writable($backendOptions['cache_dir'])) {
                     echo $backendOptions['cache_dir'] . ' is not writable';
@@ -303,7 +305,7 @@ class Config_Fisma
     public function getLogInstance()
     {
         if ( null === self::$_log ) {
-            $write = new Zend_Log_Writer_Stream(APPLICATION_ROOT . '/data/logs/' . self::ERROR_LOG);
+            $write = new Zend_Log_Writer_Stream(self::getPath('data') . '/logs/' . self::ERROR_LOG);
             $auth = Zend_Auth::getInstance();
             if ($auth->hasIdentity()) {
                 $me = $auth->getIdentity();
@@ -428,13 +430,15 @@ class Config_Fisma
      * @param string $part the component of the path
      * @return string the path
      */ 
-    public function getPath($part='root')
+    public function getPath($part = null)
     {
         $ret = self::$_root;
-        if (!isset($this->_path[$part])) {
-            assert(false);
-        } else {
-            $ret .= "/{$this->_path[$part]}";
+        if (!empty($part)) {
+            if (!isset(self::$_path[$part])) {
+                assert(false);
+            } else {
+                $ret .= "/" . self::$_path[$part];
+            }
         }
         return $ret;
     }
@@ -466,12 +470,12 @@ class Config_Fisma
      */
     public static function updateIndex($indexName, $id, $data)
     {
-        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$indexName)) {
+        if (!is_dir(self::getPath('data') . '/index/'.$indexName)) {
             return false;
         }
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$indexName);
+        $index = new Zend_Search_Lucene(self::getPath('data') . '/index/'.$indexName);
         if (is_array($id)) {
-            //Update many indexes
+            //Update a number of indexes
             foreach ($id as $oneId) {
                 $doc = $index->getDocument($oneId);
                 foreach ($data as $field=>$value) {
@@ -511,10 +515,10 @@ class Config_Fisma
      */
     public static function deleteIndex($indexName, $id)
     {
-        if (!is_dir(APPLICATION_ROOT . '/data/index/'.$indexName)) {
+        if (!is_dir(self::getPath('data') . '/index/'.$indexName)) {
             return false;
         }
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/'.$indexName);
+        $index = new Zend_Search_Lucene(self::getPath('data') . '/index/'.$indexName);
         $hits = $index->find('key:'.md5($id));
         $index->delete($hits[0]);
         $index->commit();
@@ -543,11 +547,11 @@ class Config_Fisma
      */
     public function searchQuery($keywords, $indexName)
     {
-        if (!is_dir(APPLICATION_ROOT . '/data/index/' . $indexName)) {
+        if (!is_dir(self::getPath('data') . '/index/' . $indexName)) {
             return false;
         }
         $cache = Zend_Registry::get('cache');
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/' . $indexName);
+        $index = new Zend_Search_Lucene(self::getPath('data') . '/index/' . $indexName);
         if (!$cache->load('keywords') || $keywords != $cache->load('keywords')) {
             $hits = $index->find($keywords);
             $ids = array();

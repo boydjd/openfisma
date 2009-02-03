@@ -109,7 +109,7 @@ class ProductController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if product index dosen't exist, then create it.
-            if (!is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'product');
@@ -230,7 +230,7 @@ class ProductController extends SecurityController
                      ->add(Notification::PRODUCT_CREATED, $this->_me->account, $productId);
 
                 //Create a product index
-                if (is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
                     Config_Fisma::updateIndex('product', $productId, $product);
                 }
 
@@ -273,7 +273,7 @@ class ProductController extends SecurityController
                          $this->_me->account, $id);
 
                 //Delete this product index
-                if (is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
                     Config_Fisma::deleteIndex('product', $id);
                 }
 
@@ -307,7 +307,7 @@ class ProductController extends SecurityController
                      ->add(Notification::PRODUCT_MODIFIED, $this->_me->account, $id);
 
                 //Update this product index
-                if (is_dir(APPLICATION_ROOT . '/data/index/product/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
                     Config_Fisma::updateIndex('product', $id, $product);
                 }
 
@@ -333,7 +333,7 @@ class ProductController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/product', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/product', true);
         $list = $this->_product->getList(array('meta', 'vendor', 'name', 'version', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

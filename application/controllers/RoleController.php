@@ -93,7 +93,7 @@ class RoleController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if role index dosen't exist, then create it.
-            if (!is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'role');
@@ -213,7 +213,7 @@ class RoleController extends SecurityController
                      ->add(Notification::ROLE_CREATED, $this->_me->account, $roleId);
 
                 //Create a role index
-                if (is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
                     Config_Fisma::updateIndex('role', $roleId, $role);
                 }
 
@@ -255,7 +255,7 @@ class RoleController extends SecurityController
                          $this->_me->account, $id);
 
                 //Delete this role index
-                if (is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
                     Config_Fisma::deleteIndex('role', $id);
                 }
 
@@ -289,7 +289,7 @@ class RoleController extends SecurityController
                      ->add(Notification::ROLE_MODIFIED, $this->_me->account, $id);
 
                 //Update this role index
-                if (is_dir(APPLICATION_ROOT . '/data/index/role/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
                     Config_Fisma::updateIndex('role', $id, $role);
                 }
 
@@ -397,7 +397,7 @@ class RoleController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/role', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/role', true);
         $list = $this->_role->getList(array('name', 'nickname', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

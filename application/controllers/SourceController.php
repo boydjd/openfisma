@@ -75,7 +75,7 @@ class SourceController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if source index dosen't exist, then create it.
-            if (!is_dir(APPLICATION_ROOT . '/data/index/source/')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/source/')) {
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'source');
@@ -196,7 +196,7 @@ class SourceController extends SecurityController
                      ->add(Notification::SOURCE_CREATED, $this->_me->account, $sourceId);
 
                 //Update source index
-                if (is_dir(APPLICATION_ROOT . '/data/index/source/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/source/')) {
                     Config_Fisma::updateIndex('source', $sourceId, $source);
                 }
 
@@ -271,8 +271,8 @@ class SourceController extends SecurityController
                      ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
 
                 //Update findings index
-                if (is_dir(APPLICATION_ROOT . '/data/index/finding')) {
-                    $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/finding');
+                if (is_dir(Config_Fisma::getPath('data') . '/index/finding')) {
+                    $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/finding');
                     $hits = $index->find('source:'.$query);
                     foreach ($hits as $hit) {
                         $ids[] = $hit->id;
@@ -282,7 +282,7 @@ class SourceController extends SecurityController
                 }
 
                 //Update Source index
-                if (is_dir(APPLICATION_ROOT . '/data/index/source')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/source')) {
                     Config_Fisma::updateIndex('source', $id, $source);
                 }
 
@@ -308,7 +308,7 @@ class SourceController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/source', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/source', true);
         $list = $this->_source->getList(array('name', 'nickname', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

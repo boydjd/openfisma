@@ -62,10 +62,10 @@ class InstallController extends Zend_Controller_Action
     public function checkingAction()
     {
         $wDirectories = array(
-            APPLICATION_ROOT . '/public/temp',
-            APPLICATION_ROOT . '/data/logs',
-            APPLICATION_ROOT . '/public/evidence',
-            APPLICATION_ROOT . '/application/config/'. Config_Fisma::INSTALL_CONFIG
+            Config_Fisma::getPath() . '/public/temp',
+            Config_Fisma::getPath('data') . '/logs',
+            Config_Fisma::getPath() . '/public/evidence',
+            Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG
         );
         $notwritables = array();
         foreach ($wDirectories as $k => $wok) {
@@ -203,7 +203,7 @@ class InstallController extends Zend_Controller_Action
                 );
                 try {
                     $db = Zend_Db::factory(new Zend_Config($zendDsn));
-                    $initFiles = array(APPLICATION_ROOT . '/application/config/db/base.sql');
+                    $initFiles = array(Config_Fisma::getPath('application') . '/config/db/base.sql');
                     if ($ret = $this->importSql($db, $initFiles)) {
                         $checklist['schema'] = 'ok';
                     }
@@ -218,7 +218,7 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->dsn = $dsn;
         if ($ret) {
-            if (is_writable(APPLICATION_ROOT .'/application/config/'. Config_Fisma::INSTALL_CONFIG)) {
+            if (is_writable(Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG)) {
                 $confTpl = $this->_helper->viewRenderer
                                          ->getViewScript('config');
 
@@ -240,7 +240,7 @@ class InstallController extends Zend_Controller_Action
                 }
 
                 $dbconfig = $this->view->render($confTpl);
-                if (0 < file_put_contents(APPLICATION_ROOT .'/application/config/'. Config_Fisma::INSTALL_CONFIG,
+                if (0 < file_put_contents(Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG,
                     $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
                 } else {

@@ -95,7 +95,7 @@ class NetworkController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if network index dosen't exist, then create it.
-            if (!is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'network');
@@ -215,7 +215,7 @@ class NetworkController extends SecurityController
                      ->add(Notification::NETWORK_CREATED, $this->_me->account, $networkId);
 
                 //Create a network index
-                if (is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
                     Config_Fisma::updateIndex('network', $networkId, $network);
                 }
 
@@ -254,7 +254,7 @@ class NetworkController extends SecurityController
                 $model = self::M_WARNING;
             } else {
                 //Delete network index
-                if (is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
                     Config_Fisma::deleteIndex('network', $id);
                 }
 
@@ -292,7 +292,7 @@ class NetworkController extends SecurityController
                      ->add(Notification::NETWORK_MODIFIED, $this->_me->account, $id);
 
                 //Update network index
-                if (is_dir(APPLICATION_ROOT . '/data/index/network/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
                     Config_Fisma::updateIndex('network', $id, $network);
                 }
 
@@ -318,7 +318,7 @@ class NetworkController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/network', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/network', true);
         $list = $this->_network->getList(array('name', 'nickname', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

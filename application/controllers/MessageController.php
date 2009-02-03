@@ -74,7 +74,7 @@ class MessageController extends Zend_Controller_Action
         $db = Zend_Registry::get('db');
         $db->insert('validate_emails', $data);
 
-        $contentTpl = $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts/mail');
+        $contentTpl = $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts/mail');
         $contentTpl = $this->view;
 
         if (!empty($accountInfo)) {
@@ -111,7 +111,7 @@ class MessageController extends Zend_Controller_Action
         $mail->addTo($ret->email);
         $mail->setSubject("Your password for $systemName has been changed");
 
-        $contentTpl = $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts/mail');
+        $contentTpl = $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts/mail');
         $contentTpl = $this->view;
         $contentTpl->hostUrl = Config_Fisma::readSysConfig('hostUrl');
         $contentTpl->password = $password;

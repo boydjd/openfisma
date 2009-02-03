@@ -132,7 +132,7 @@ class AccountController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if account index dosen't exist, then create it.
-            if (!is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'account');
@@ -377,7 +377,7 @@ class AccountController extends SecurityController
                                    $this->_me->id,
                                    "User Account {$accountData['account']} Successfully Modified");
     
-                if (is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+                if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
                     if (!empty($roleId)) {
                         $role = new Role();
                         $ret = $role->find($roleId)->current();
@@ -402,7 +402,7 @@ class AccountController extends SecurityController
                 if (!empty($password)) {
                     $this->sendPassword($id, $password);
                     // On success, redirect to read view
-                    $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
+                    $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
                     /** @todo english */
                     $message .= ", an email include the new password has sent to this user";
                 }
@@ -477,7 +477,7 @@ class AccountController extends SecurityController
             $this->_notification->add(Notification::ACCOUNT_DELETED,
                 $this->_me->account, $id);
 
-            if (is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+            if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
                 Config_Fisma::deleteIndex('account', $id);
             }
 
@@ -591,7 +591,7 @@ class AccountController extends SecurityController
             }
 
             //Create this account index
-            if (is_dir(APPLICATION_ROOT . '/data/index/account/')) {
+            if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
                 $data = array('username'   => $accountData['account'],
                               'lastname'  => $accountData['name_last'],
                               'firstname' => $accountData['name_first'],
@@ -618,7 +618,7 @@ class AccountController extends SecurityController
                 array('account'=>$accountData['account'], 'password'=>$password));
                            
             // On success, redirect to read view
-            $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
+            $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
             $this->_forward('view', null, null, array('id' => $userId));
             $this->_forward('create');
         } else {
@@ -923,9 +923,9 @@ class AccountController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/account', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/account', true);
         $query = $this->_user->getAdapter()->select()->from(array('u'=>'users'),
-                                             array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
+                                        array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
                                           ->join(array('ur'=>'user_roles'), 'u.id = ur.user_id', array())
                                           ->join(array('r'=>'roles'), 'ur.role_id = r.id',
                                                   array('role_name'=>'r.name', 'role_nickname'=>'r.nickname'));

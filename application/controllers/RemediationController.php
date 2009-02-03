@@ -384,7 +384,7 @@ class RemediationController extends PoamBaseController
 
         //Basic Search
         if (!empty($params['keywords'])) {
-            if (!is_dir(APPLICATION_ROOT . '/data/index/finding')) {
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
                 $this->createIndex();
             }
             $poamIds = Config_Fisma::searchQuery($params['keywords'], 'finding');
@@ -737,7 +737,7 @@ class RemediationController extends PoamBaseController
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        define('EVIDENCE_PATH', APPLICATION_ROOT . '/public/evidence');
+        define('EVIDENCE_PATH', Config_Fisma::getPath() . '/public/evidence');
         if ($_FILES && $id > 0) {
             $poam = $this->_poam->find($id)->toArray();
             if (empty($poam)) {
@@ -953,12 +953,10 @@ class RemediationController extends PoamBaseController
 
     /**
      * Create findings Lucene Index
-     *
-     * @return Object Zend_Search_Lucene
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(APPLICATION_ROOT . '/data/index/finding', true);
+        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/finding', true);
         $list = $this->_poam->search($this->_me->systems, '*');
         set_time_limit(0);
         if (!empty($list)) {
@@ -1005,7 +1003,7 @@ class RemediationController extends PoamBaseController
         $keywords = preg_replace('/not\s+[A-Za-z0-9]+$/', '', $keywords);
 
         //delete Zend_Search_Lucene query keywords
-        $searchKeys = array('and', 'or', 'not', 'to', '+', '-', '&&', '~', '||', '!', '*');
+        $searchKeys = array('and', 'or', 'not', 'to', '+', '-', '&&', '~', '||', '!', '*', '?');
         foreach ($searchKeys as $row) {
             $keywords = str_replace($row, '', $keywords);
         }
