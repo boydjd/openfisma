@@ -29,8 +29,7 @@
  */
 define('COMMAND_LINE', true);
 
-require_once (APPLICATION_ROOT . '/application/bootstrap.php');
-require_once (APPLICATION_ROOT . '/application/config/setting.php');
+require_once (realpath(dirname(__FILE__)."/../../application/bootstrap.php"));
 
 // Kick off the main routine:
 Notify::processNotificationQueue();
