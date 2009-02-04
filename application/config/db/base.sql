@@ -869,9 +869,9 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
+INSERT INTO `schema_version` VALUES (47);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-INSERT INTO `schema_version` VALUES (46);
 CREATE TABLE `sources` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -953,15 +953,14 @@ CREATE TABLE `users` (
   `auto_role` varchar(20) NOT NULL,
   `notify_frequency` float NOT NULL default '12',
   `most_recent_notify_ts` datetime NOT NULL,
-  `ldap_dn` varchar(64) NOT NULL,
   `notify_email` varchar(64) NOT NULL,
   `last_rob` datetime NOT NULL,
-  `search_columns_pref` varchar(50) NULL,
+  `search_columns_pref` varchar(50) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `account` (`account`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','sha1','admin','Application',NULL,'Admin','2008-11-06 16:19:55','2008-11-06 16:19:55','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','','0000-00-00 00:00:00','11101111000000001');
+INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','sha1','admin','Application',NULL,'Admin','2008-11-06 16:19:55','2008-11-06 16:19:55','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',720,'0000-00-00 00:00:00','','0000-00-00 00:00:00','11101111000000001');
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `validate_emails` (
@@ -997,4 +996,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (47);
+INSERT INTO schema_version (schema_version) VALUES (48);

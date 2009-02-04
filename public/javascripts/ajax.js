@@ -175,10 +175,10 @@ $(document).ready(function(){
         $('input[@type=checkbox]').removeAttr('checked');
     });
 
-    $("#checkdn").click(function(){
-        var dn = $("input[name='ldap_dn']").val();
-        var dn = encodeURIComponent(dn);
-        var url = "/account/checkdn/format/html/dn/"+dn;
+    $("#checkaccount").click(function(){
+        var account = $("input[name='account']").val();
+        var account = encodeURIComponent(account);
+        var url = "/account/checkaccount/format/html/account/"+account;
         $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
     });
 

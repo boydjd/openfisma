@@ -52,7 +52,7 @@ class AccountController extends SecurityController
         parent::init();
         $this->_user = new User();
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('checkdn', 'html')
+        $ajaxContext->addActionContext('checkaccount', 'html')
                     ->initContext();
     }
 
@@ -98,13 +98,11 @@ class AccountController extends SecurityController
         // mode, then remove the database authentication fields.
         $systemAuthType = Config_Fisma::readSysConfig('auth_type');
         if ($systemAuthType == 'ldap') {
-            $form->removeElement('account');
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
             $form->removeElement('generate_password');
         } else if ($systemAuthType == 'database') {
-            $form->removeElement('ldap_dn');
-            $form->removeElement('checkdn');
+            $form->removeElement('checkaccount');
         } else {
             throw new Exception_General("The account form cannot handle"
                                     . " the current authentication type: "
@@ -233,8 +231,7 @@ class AccountController extends SecurityController
                                  'title',
                                  'is_active',
                                  'account',
-                                 'password',
-                                 'ldap_dn'))
+                                 'password'))
                     ->where("id = ?", $id);
 
         $userDetail = $user->fetchRow($qry)->toArray();
@@ -325,9 +322,6 @@ class AccountController extends SecurityController
                 ));
                 return;
             }
-            if ( Config_Fisma::readSysConfig('auth_type') == 'ldap' ) {
-                $accountData['account'] = $accountData['ldap_dn'];
-            }
             if ( !empty($accountData['password']) ) {
                 /// @todo validate the password complexity
                 if ($accountData['password'] !=
@@ -355,7 +349,7 @@ class AccountController extends SecurityController
                 $systems = array();
             }
             unset($accountData['systems']);
-            unset($accountData['checkdn']);
+            unset($accountData['checkaccount']);
 
             if ($accountData['is_active'] == 0) {
                 $accountData['termination_ts'] =
@@ -565,13 +559,11 @@ class AccountController extends SecurityController
             // @todo see
             $systems = $accountData['systems'];
             unset($accountData['systems']);
-            unset($accountData['checkdn']);
+            unset($accountData['checkaccount']);
             unset($accountData['generate_password']);
             
             // Create the user's main record.
-            if ( 'ldap' == Config_Fisma::readSysConfig('auth_type') ) {
-                $accountData['account'] = $accountData['ldap_dn'];
-            } else if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
+            if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
                 $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
                 $accountData['hash'] = Config_Fisma::readSysConfig('encrypt');
@@ -633,32 +625,32 @@ class AccountController extends SecurityController
     }
 
     /**
-     * checkDnAction() - Check to see if the specified LDAP
-     * distinguished name (DN) exists in the system's specified LDAP directory.
+     * checkaccountAction() - Check to see if the specified LDAP
+     * distinguished name (Account) exists in the system's specified LDAP directory.
      */
-    public function checkdnAction()
+    public function checkaccountAction()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
         
         $config = new Config();
         $data = $config->getLdap();
-        $dn = $this->_request->getParam('dn');
+        $account = $this->_request->getParam('account');
         $msg = '';
         foreach ($data as $opt) {
             unset($opt['id']);
             $srv = new Zend_Ldap($opt);
             try {
-                $dn = $srv->getCanonicalAccountName($dn,
+                $dn = $srv->getCanonicalAccountName($account,
                             Zend_Ldap::ACCTNAME_FORM_DN); 
-                $msg = "$dn exists";
+                $msg = "$account exists, the dn is: $dn";
             } catch (Zend_Ldap_Exception $e) {
                 // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
                 // DN does not exist.
                 if ($e->getErrorCode() ==
                     Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
-                    $msg = "$dn does NOT exist";
+                    $msg = "$account does NOT exist";
                 } else {
-                    $msg .= 'Unknown error while checking DN: '
+                    $msg .= 'Unknown error while checking Account: '
                           . $e->getMessage();
                 }
             }
