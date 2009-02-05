@@ -389,6 +389,9 @@ class RemediationController extends PoamBaseController
             }
             $poamIds = Config_Fisma::searchQuery($params['keywords'], 'finding');
             if (!empty($poamIds)) {
+                if (!empty($params['ids'])) {
+                    $poamIds = array_intersect($poamIds, explode(',', $params['ids']));
+                } 
                 $params['ids'] = implode(',', $poamIds);
                 $this->view->assign('keywords', $this->getKeywords($params['keywords']));
             } else {
@@ -620,12 +623,14 @@ class RemediationController extends PoamBaseController
                             $logContent);
                     }
 
-                    //Update finding index
-                    if (!empty($poam['system_id'])) {
-                            $poam['system'] = $this->_systemList[$poam['system_id']];
-                            unset($poam['system_id']);
+                    if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
+                        //Update finding index
+                        if (!empty($poam['system_id'])) {
+                                $poam['system'] = $this->_systemList[$poam['system_id']];
+                                unset($poam['system_id']);
+                        }
+                        Config_Fisma::updateIndex('finding', $id, $poam);
                     }
-                    Config_Fisma::updateIndex('finding', $id, $poam);
                 }
             } catch (Exception_General $e) {
                 if ($e instanceof Exception_General) {

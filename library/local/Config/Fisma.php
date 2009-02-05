@@ -41,12 +41,6 @@ class Config_Fisma
 
     const TEST_MODE = 'test';
 
-    /**
-     * @todo english
-     * set the cache lifeTime in seconds
-     */
-    const cacheLifeTime = 7200;
-
     /** 
      * The relative paths that makes the layout
      *
@@ -88,6 +82,11 @@ class Config_Fisma
      * The application wide current time stamp
      */
     protected static $_now = null;
+
+    /**
+     * Cache instance to cache search results and search keywords
+     */
+    protected static $_cache = null;
 
     /**
      * Constructor
@@ -150,8 +149,6 @@ class Config_Fisma
             // retrieval.  This allows the application to ensure that regardless of what
             // happends in the global scope, the registry will contain the objects it
             // needs.
-            $registry = Zend_Registry::getInstance();
-            
             if (!isset($config->environment)) {
                 $config->environment = 'production';
             }
@@ -163,30 +160,6 @@ class Config_Fisma
             $options['name'] = $configuration->session->get('name');
             // Start Session Handling using Zend_Session 
             Zend_Session::start($options);
-
-            //initialize Zend_Cache
-            if (!Zend_Registry::isRegistered('cache')) {
-                $frontendOptions = array(
-                    'caching'  => true,
-                    'lifetime' => self::cacheLifeTime,
-                    'automatic_serialization' => true
-                );
-
-                $backendOptions = array(
-                    'cache_dir' => self::getPath('data') . '/cache'
-                );
-                if (!is_writable($backendOptions['cache_dir'])) {
-                    echo $backendOptions['cache_dir'] . ' is not writable';
-                }
-                $cache = Zend_Cache::factory('Core',
-                                             'File',
-                                             $frontendOptions,
-                                             $backendOptions);
-                if (!empty($cache)) {
-                    Zend_Registry::set('cache', $cache);
-                }
-            }
-
         } catch(Zend_Config_Exception $e) {
             //using default configuration
             $config = new Zend_Config(array());
@@ -320,6 +293,36 @@ class Config_Fisma
             $this->_log = new Zend_Log($write);
         }
         return $this->_log;
+    }
+
+    /**
+     * @todo english
+     * Initialize the cache instance
+     *
+     * make the directory "/path/to/data/cache" writable
+     *
+     * @return Zend_Cache
+     */
+    public function getCacheInstance()
+    {
+        if (null == self::$_cache) {
+            $frontendOptions = array(
+                'caching'  => true,
+                //@todo english cache life same as system expiring period
+                'lifetime' => self::readSysConfig('expiring_seconds'), 
+                'automatic_serialization' => true
+            );
+
+            $backendOptions = array(
+                'cache_dir' => self::getPath('data') . '/cache'
+            );
+            $this->_cache = Zend_Cache::factory('Core',
+                                                'File',
+                                                $frontendOptions,
+                                                $backendOptions);
+
+        }
+        return $this->_cache;
     }
 
     /** 
@@ -550,9 +553,10 @@ class Config_Fisma
         if (!is_dir(self::getPath('data') . '/index/' . $indexName)) {
             return false;
         }
-        $cache = Zend_Registry::get('cache');
+        $cache = self::getCacheInstance();
+        $userId = Zend_Auth::getInstance()->getIdentity()->id;
         $index = new Zend_Search_Lucene(self::getPath('data') . '/index/' . $indexName);
-        if (!$cache->load('keywords') || $keywords != $cache->load('keywords')) {
+        if (!$cache->load($userId . '_keywords') || $keywords != $cache->load($userId . '_keywords')) {
             $hits = $index->find($keywords);
             $ids = array();
             foreach ($hits as $row) {
@@ -561,9 +565,9 @@ class Config_Fisma
                     $ids[] = $id;
                 }
             }
-            $cache->save($ids, $indexName);
-            $cache->save($keywords, 'keywords');
+            $cache->save($ids, $userId . '_' . $indexName);
+            $cache->save($keywords, $userId . '_keywords');
         }
-        return $cache->load($indexName);
+        return $cache->load($userId . '_' . $indexName);
     }
 }

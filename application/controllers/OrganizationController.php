@@ -118,9 +118,9 @@ class OrganizationController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Zend_Registry::get('cache');
+            $cache = Config_Fisma::getCacheInstance();
             //@todo english  get search results in ids
-            $organizationIds = $cache->load('organization');
+            $organizationIds = $cache->load($this->_me->id . '_organization');
             if (!empty($organizationIds)) {
                 $ids = implode(',', $organizationIds);
             } else {

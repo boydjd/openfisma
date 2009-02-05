@@ -130,9 +130,9 @@ class SystemController extends SecurityController
                                ->order('s.name ASC')
                                ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
-            $cache = Zend_Registry::get('cache');
+            $cache = Config_Fisma::getCacheInstance();
             //@todo english  get search results in ids
-            $systemIds = $cache->load('system');
+            $systemIds = $cache->load($this->_me->id . '_system');
             if (!empty($systemIds)) {
                 $ids = implode(',', $systemIds);
             } else {

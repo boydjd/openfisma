@@ -141,9 +141,9 @@ class ProductController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Zend_Registry::get('cache');
+            $cache = Config_Fisma::getCacheInstance();
             //@todo english  get search results in ids
-            $productIds = $cache->load('product');
+            $productIds = $cache->load($this->_me->id . '_product');
             if (!empty($productIds)) {
                 $ids = implode(',', $productIds);
             } else {

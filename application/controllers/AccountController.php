@@ -171,9 +171,9 @@ class AccountController extends SecurityController
                     ->order('name_last ASC')
                     ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
-            $cache = Zend_Registry::get('cache');
+            $cache = Config_Fisma::getCacheInstance();
             //@todo english  get search results in ids
-            $accountIds = $cache->load('account');
+            $accountIds = $cache->load($this->_me->id . '_account');
             if (!empty($accountIds)) {
                 $ids = implode(',', $accountIds);
             } else {

@@ -125,9 +125,9 @@ class RoleController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Zend_Registry::get('cache');
+            $cache = Config_Fisma::getCacheInstance();
             //@todo english  get search results in ids
-            $roleIds = $cache->load('role');
+            $roleIds = $cache->load($this->_me->id . '_role');
             if (!empty($roleIds)) {
                 $ids = implode(',', $roleIds);
             } else {

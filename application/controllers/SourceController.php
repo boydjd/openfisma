@@ -108,9 +108,9 @@ class SourceController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Zend_Registry::get('cache');
+            $cache = Config_Fisma::getCacheInstance();
             //@todo english  get search results in ids
-            $sourceIds = $cache->load('source');
+            $sourceIds = $cache->load($this->_me->id . '_source');
             if (!empty($sourceIds)) {
                 $ids = implode(',', $sourceIds);
             } else {
