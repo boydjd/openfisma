@@ -395,12 +395,17 @@ class RemediationController extends PoamBaseController
                 $params['ids'] = -1;
             }
         }
-
-        $list = $this->_poam->search($this->_me->systems, '*',
-                $params, $this->_paging['currentPage'],
-                $this->_paging['perPage'], false);
+        
+        $this->_helper->contextSwitch()->initContext();
+        $format = $this->_helper->contextSwitch()->getCurrentContext();
+        if (empty($format)) {
+            $list = $this->_poam->search($this->_me->systems, '*',
+                    $params, $this->_paging['currentPage'],
+                    $this->_paging['perPage'], false);
+        } else {
+            $list = $this->_poam->search($this->_me->systems, '*', $params, 0, 0, false);
+        }
         $total = array_pop($list);
-
         //select poams whether have attachments
         foreach ($list as &$row) {
             $query = $this->_poam->getAdapter()->select()->from('evidences', 'id')
@@ -411,18 +416,13 @@ class RemediationController extends PoamBaseController
             } else {
                 $row['attachments'] = 'N';
             }
-        }
-
-        $this->_helper->contextSwitch()->initContext();
-        $format = $this->_helper->contextSwitch()->getCurrentContext();
-        if ($format == 'pdf' || $format == 'xls') {
-            foreach ($list as $k => &$v) {
-                $v['finding_data'] = trim(html_entity_decode($v['finding_data']));
-                $v['action_suggested'] = trim(html_entity_decode($v['action_suggested']));
-                $v['action_planned'] = trim(html_entity_decode($v['action_planned']));
-                $v['threat_justification'] = trim(html_entity_decode($v['threat_justification']));
-                $v['threat_source'] = trim(html_entity_decode($v['threat_source']));
-                $v['cmeasure_effectiveness'] = trim(html_entity_decode($v['cmeasure_effectiveness']));
+            if ($format == 'pdf' || $format == 'xls') {
+                $row['finding_data'] = trim(html_entity_decode($row['finding_data']));
+                $row['action_suggested'] = trim(html_entity_decode($row['action_suggested']));
+                $row['action_planned'] = trim(html_entity_decode($row['action_planned']));
+                $row['threat_justification'] = trim(html_entity_decode($row['threat_justification']));
+                $row['threat_source'] = trim(html_entity_decode($row['threat_source']));
+                $row['cmeasure_effectiveness'] = trim(html_entity_decode($row['cmeasure_effectiveness']));
             }
         }
         
