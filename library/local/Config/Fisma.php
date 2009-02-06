@@ -155,9 +155,7 @@ class Config_Fisma
             self::addSysConfig($configuration);
 
             // Start Session Handling using Zend_Session 
-            $options['save_path'] = $configuration->session->get('save_path');
-            $options['name'] = $configuration->session->get('name');
-            Zend_Session::start($options);
+            Zend_Session::start($configuration->session->toArray());
 
         } catch(Zend_Config_Exception $e) {
             //using default configuration
