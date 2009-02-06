@@ -96,9 +96,6 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
      */
     public function initDb()
     {
-        if (!Config_Fisma::isInstall()) {
-            throw new Sws_Exception('Database setting missing! Is the application properly installed?');
-        }
         $db = Zend_Db::factory(Zend_Registry::get('datasource'));
         Zend_Db_Table::setDefaultAdapter($db);
         Zend_Registry::set('db', $db);
