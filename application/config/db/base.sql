@@ -353,6 +353,7 @@ INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
 INSERT INTO `events` VALUES (51,'Evidence Denied',91);
 INSERT INTO `events` VALUES (52,'Account Locked',89);
 INSERT INTO `events` VALUES (53,'Mitigation Strategy Approved to IVV',91);
+INSERT INTO `events` VALUES (54,'Mitigation Strategy Submit',91);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `evidences` (
@@ -869,7 +870,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (44);
+INSERT INTO `schema_version` VALUES (45);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -996,4 +997,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (45);
+INSERT INTO schema_version (schema_version) VALUES (49);
