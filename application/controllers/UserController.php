@@ -300,8 +300,7 @@ class UserController extends MessageController
         $form->removeElement('account');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
-        $form->removeElement('ldap_dn');
-        $form->removeElement('checkdn');
+        $form->removeElement('checkaccount');
         $form->removeElement('generate_password');
         $form->removeElement('role');
         $form->removeElement('is_active');
