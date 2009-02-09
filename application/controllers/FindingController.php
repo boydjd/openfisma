@@ -164,6 +164,7 @@ class FindingController extends PoamBaseController
         /**
          * @todo Perform these commits in a single transaction.
          */
+        set_time_limit(0);
         foreach ($findingData as $row) {
             $rowArray = (array)$row;
             $rowData = $rowArray['Cell'];
