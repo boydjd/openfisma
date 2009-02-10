@@ -1,38 +1,8 @@
 <?php
 class Plugin_Initialize_Install extends Plugin_Initialize_Webapp
 {
-
-    /**
-     * Constructor
-     *
-     * Initialize environment, root path, and configuration.
-     * 
-     * @param  string|null $root 
-     * @return void
-     */
-    public function __construct($root = null)
-    {
-        if (null === $root) {
-            $root = realpath(dirname(__FILE__) . '/../../../../');
-        }
-        $this->_root = $root;
-        $this->_front = Zend_Controller_Front::getInstance();
-    }
-
     public function initDb()
     {//overload the parent initDb doing nothing here
-    }
-
-    public function initPlugins()
-    {
-        // The installer has its own error handler which is registered here:
-        $this->_front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
-            array(
-                'model' => null,
-                'controller' => 'Install',
-                'action' => 'error'
-                )
-            ));
     }
 
     public function initRouters()

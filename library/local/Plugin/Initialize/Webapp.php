@@ -77,7 +77,6 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         $this->initDb();
         $this->initHelpers();
         $this->initView();
-        $this->initPlugins();
         $this->initRouters();
     }
 
@@ -123,13 +122,6 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         $view->doctype('HTML4_STRICT');
         $viewRenderer->setView($view);
 
-    }
-
-    /**
-     * Initialize plugins
-     */
-    public function initPlugins()
-    {
     }
 
     /**

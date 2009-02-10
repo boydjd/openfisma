@@ -223,16 +223,25 @@ class Config_Fisma
     public function bootstrap($mode=null)
     {
         $frontController = Zend_Controller_Front::getInstance();
-
+        $eHandler = new Zend_Controller_Plugin_ErrorHandler( array(
+                        'model' => null,
+                        'controller' => 'Error',
+                        'action' => 'error'));
+        
+        
         if ($mode == self::TEST_MODE) {
             $initPlugin = new Plugin_Initialize_Unittest(self::$_root);
         } else {
             if (self::isInstall()) {
                 $initPlugin = new Plugin_Initialize_Webapp(self::$_root);
             } else {
+                $eHandler->setErrorHandlerController('install');
+                //The ErrorHandler should be registered before dispatch.
                 $initPlugin = new Plugin_Initialize_Install(self::$_root);
             }
         }
+
+        $frontController->registerPlugin($eHandler);
         $frontController->registerPlugin($initPlugin);
         $flag = self::readSysConfig('throw_exception');
         $frontController->throwExceptions('1'===$flag);
