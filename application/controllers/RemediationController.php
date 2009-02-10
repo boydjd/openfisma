@@ -350,17 +350,17 @@ class RemediationController extends PoamBaseController
                     break;
                 case 'CLOSED': $params['status'] = 'CLOSED';
                     break;
-                case 'NOT-CLOSED': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                case 'NOT-CLOSED': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
                     break;
-                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
                      $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);
                     break;
                 case 'NOUP-60':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
                      $params['modify_ts'] = $now->sub(60, Zend_Date::DAY);
                     break;
                 case 'NOUP-90':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EP');
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
                      $params['modify_ts'] = $now->sub(90, Zend_Date::DAY);
                     break;
                 default :
