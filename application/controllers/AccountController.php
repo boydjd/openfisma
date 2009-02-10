@@ -361,6 +361,14 @@ class AccountController extends SecurityController
             }
 
             $n = $this->_user->update($accountData, "id=$id");
+            $mySystems = $this->_user->getMySystems($id);
+            $addSystems = array_diff($systems, $mySystems);
+            $removeSystems = array_diff($mySystems, $systems);
+            $n += $this->_user->associate($id, User::SYS, $addSystems);
+            // The last parameter "true" inverts the association, i.e. removes
+            // the specified systems from this user's account
+            $n += $this->_user->associate($id, User::SYS, $removeSystems, true);
+            
             if ($n > 0) {
                 $message = "User ({$accountData['account']}) modified";
 
@@ -370,7 +378,7 @@ class AccountController extends SecurityController
                 $this->_user->log('ACCOUNT_MODIFICATION',
                                    $this->_me->id,
                                    "User Account {$accountData['account']} Successfully Modified");
-    
+
                 if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
                     if (!empty($roleId)) {
                         $role = new Role();
@@ -400,15 +408,11 @@ class AccountController extends SecurityController
                     /** @todo english */
                     $message .= ", an email include the new password has sent to this user";
                 }
+                $this->message($message, self::M_NOTICE);
+            } else {
+                $message = 'Nothing changes';
+                $this->message($message, self::M_WARNING);
             }
-
-            $mySystems = $this->_user->getMySystems($id);
-            $addSystems = array_diff($systems, $mySystems);
-            $removeSystems = array_diff($mySystems, $systems);
-            $n = $this->_user->associate($id, User::SYS, $addSystems);
-            // The last parameter "true" inverts the association, i.e. removes
-            // the specified systems from this user's account
-            $n = $this->_user->associate($id, User::SYS, $removeSystems, true);
 
             $qry = $db->select()->from(array(
                 'ur' => 'user_roles'
@@ -433,7 +437,6 @@ class AccountController extends SecurityController
                     Exception_General('The user has more than 1 role.');
             }
 
-            $this->message($message, self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
             $errorString = Form_Manager::getErrors($form);
