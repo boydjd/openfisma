@@ -462,7 +462,7 @@ class UserController extends MessageController
         if ($originalEmail != $data['notify_email'] && $data['notify_email'] != '') {
             $this->_user
             ->update(array('email_validate'=>0), 'id = ' . $this->_me->id);
-            $this->_emailvalidate($this->_me->id, $data['notify_email'], 'update');
+            $this->emailvalidate($this->_me->id, $data['notify_email'], 'update');
             $msg .= self::VALIDATION_MESSAGE;
         }
 

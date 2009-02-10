@@ -338,6 +338,9 @@ class FindingController extends PoamBaseController
                 $poamId = $this->_poam->insert($poam);
 
                 if ($poamId > 0) {
+
+                    $this->_notification->add(Notification::FINDING_CREATED, $this->_me->account, $poamId);
+
                     //Create finding lucene index
                     if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
                         $system = new System();
