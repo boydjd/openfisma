@@ -331,7 +331,7 @@ class RoleController extends SecurityController
             'rf' => 'role_functions'
         ), 'f.id = rf.function_id', array())->where('rf.role_id = ?', $roleId);
         $existFunctions = $db->fetchAll($qry);
-        if ('search_function' == $do) {
+        if ('available_functions' == $do) {
             $qry->reset();
             $qry->from('functions', array(
                 'function_id' => 'id',
@@ -348,9 +348,13 @@ class RoleController extends SecurityController
                 }
             }
             $this->_helper->layout->setLayout('ajax');
-            $this->view->assign('available_functions', $availableFunctions);
-            $this->render('availablefunc');
-        } elseif ('update' == $do) {
+            $this->view->assign('functions', $availableFunctions);
+            $this->render('funcoptions');
+        } elseif ('exist_functions' == $do) {
+            $this->_helper->layout->setLayout('ajax');
+            $this->view->assign('functions', $existFunctions);
+            $this->render('funcoptions');
+         } elseif ('update' == $do) {
             $functionIds = $req->getParam('exist_functions');
             $errno = 0;
             $qry = "DELETE FROM `role_functions` WHERE role_id =" . $roleId;
