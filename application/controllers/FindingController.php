@@ -313,6 +313,11 @@ class FindingController extends PoamBaseController
                     $asset = new Asset();
                     $ret = $asset->find($poam['asset_id']);
                     $poam['system_id'] = $ret->current()->system_id;
+                // Validate that the user has selected a finding asset
+                } else {
+                    throw new Exception_General(
+                        "You must select a finding asset"
+                    );
                 }
                 // Validate that the user has selected a finding source
                 if ($poam['source_id'] == 0) {
