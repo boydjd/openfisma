@@ -291,7 +291,16 @@ class ReportController extends PoamBaseController
             $this->_paging['totalItems'] = $total;
             $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
             $pager = & Pager::factory($this->_paging);
-
+            if ($isExport) {
+                foreach ($list as $k => &$v) {
+                    $v['finding_data'] = trim(html_entity_decode($v['finding_data']));
+                    $v['action_suggested'] = trim(html_entity_decode($v['action_suggested']));
+                    $v['action_planned'] = trim(html_entity_decode($v['action_planned']));
+                    $v['threat_justification'] = trim(html_entity_decode($v['threat_justification']));
+                    $v['threat_source'] = trim(html_entity_decode($v['threat_source']));
+                    $v['cmeasure_effectiveness'] = trim(html_entity_decode($v['cmeasure_effectiveness']));
+                }
+            }
             $this->view->assign('poam', $this->_poam);
             $this->view->assign('poam_list', $list);
             $this->view->assign('links', $pager->getLinks());
