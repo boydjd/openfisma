@@ -734,7 +734,7 @@ class ReportController extends PoamBaseController
         }
         
         // Execute the report script
-        $reportScriptFile = Config_Fisma::getPath('application') . '/config/reports/$reportName.sql';
+        $reportScriptFile = Config_Fisma::getPath('application') . "/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         if (!$reportScriptFileHandle) {
             throw new Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");
@@ -754,7 +754,7 @@ class ReportController extends PoamBaseController
             $this->message($msg, self::M_WARNING);
             $this->_forward('plugin');
             return;
-        } 
+        }
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
