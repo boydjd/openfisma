@@ -353,6 +353,7 @@ INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
 INSERT INTO `events` VALUES (51,'Evidence Denied',91);
 INSERT INTO `events` VALUES (52,'Account Locked',89);
 INSERT INTO `events` VALUES (53,'Mitigation Strategy Approved to IVV',91);
+INSERT INTO `events` VALUES (54,'Mitigation Strategy Submit',91);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `evidences` (

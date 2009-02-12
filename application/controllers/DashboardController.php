@@ -172,12 +172,13 @@ class DashboardController extends SecurityController
         $arrMsaEvalList = $objEval->getEvalList('ACTION');
         foreach ($arrMsaEvalList as $arrMsaEvalRow) {
             $arrMsaPoam = $this->_poam->search($this->_me->systems,
-                array('count' => 'nickname'),
+                array('count' => 'count(*)'),
                 array('mp' => $arrMsaEvalRow['precedence_id'], 'name'));
+
             $description[$arrMsaEvalRow['nickname']] = $arrMsaEvalRow['name'];
             if (!empty($arrMsaPoam)) {
                 $arrTmpTotal = array_merge($arrTmpTotal,
-                               array($arrMsaEvalRow['nickname']=>$arrMsaPoam[0]['count']));
+                               array($arrMsaEvalRow['nickname']=>$arrMsaPoam));
             } else {
                 $arrTmpTotal = array_merge($arrTmpTotal, array($arrMsaEvalRow['nickname']=>0));
             }
@@ -187,12 +188,13 @@ class DashboardController extends SecurityController
         $arrEpEvalList = $objEval->getEvalList('EVIDENCE');
         foreach ($arrEpEvalList as $arrEpEvalRow) {
             $arrEpPoam = $this->_poam->search($this->_me->systems,
-                array('count' => 'nickname'), 
+                array('count' => 'count(*)'),
                 array('ep' => $arrEpEvalRow['precedence_id'], 'name'));
+
             $description[$arrEpEvalRow['nickname']] = $arrEpEvalRow['name'];
             if (!empty($arrEpPoam)) {
                 $arrTmpTotal = array_merge($arrTmpTotal,
-                               array($arrEpEvalRow['nickname']=>$arrEpPoam[0]['count']));
+                               array($arrEpEvalRow['nickname']=>$arrEpPoam));
             } else {
                 $arrTmpTotal = array_merge($arrTmpTotal, array($arrEpEvalRow['nickname']=>0));
             }
