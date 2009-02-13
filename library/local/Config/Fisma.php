@@ -485,6 +485,7 @@ class Config_Fisma
         if (!is_dir(self::getPath('data') . '/index/'.$indexName)) {
             return false;
         }
+        @ini_set("memory_limit",-1);
         $index = new Zend_Search_Lucene(self::getPath('data') . '/index/'.$indexName);
         if (is_array($id)) {
             //Update a number of indexes

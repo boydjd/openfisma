@@ -132,8 +132,13 @@ abstract class Inject_Abstract
         switch ($action) {
             case self::CREATE_FINDING:
                 $finding['status'] = 'NEW';
-                $findingTable->insert($finding);
+                $findingId = $findingTable->insert($finding);
                 $this->_totalFindings['created']++;
+
+                if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
+                    $this->createIndex($findingId, $finding);
+                }
+
                 break;
 
             case self::DELETE_FINDING:
@@ -142,8 +147,13 @@ abstract class Inject_Abstract
 
             case self::REVIEW_FINDING:
                 $finding['status'] = 'PEND';
-                $findingTable->insert($finding);
+                $findingId = $findingTable->insert($finding);
                 $this->_totalFindings['reviewed']++;
+
+                if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
+                    $this->createIndex($findingId, $finding);
+                }
+
                 break;
             default:
                 throw new Exception_General("\$action is not valid: \"$action\"");
@@ -167,7 +177,39 @@ abstract class Inject_Abstract
             return null;
         }
     }
-    
+
+    /**
+     * Create finding lucene index
+     *
+     * @param int $id a specific id
+     * @param array $finding finding data
+     */
+    private function createIndex($id, $finding)
+    {
+        set_time_limit(0);
+        $system = new System();
+        $source = new Source();
+        $asset = new Asset();
+        $ret = $system->find($finding['system_id'])->current();
+        if (!empty($ret)) {
+            $indexData['system'] = $ret->name . ' ' . $ret->nickname;
+        }
+        $ret = $source->find($finding['source_id'])->current();
+        if (!empty($ret)) {
+            $indexData['source'] = $ret->name . ' ' . $ret->nickname;
+        }
+        $ret = $asset->find($finding['asset_id'])->current();
+        if (!empty($ret)) {
+            $indexData['asset'] = $ret->name;
+        }
+        $indexData['finding_data'] = !empty($finding['finding_data'])?$finding['finding_data']:'';
+        $indexData['action_suggested'] = !empty($finding['action_suggested'])?$finding['action_suggested']:'';
+        $indexData['action_planned'] = !empty($finding['action_planned'])?$finding['action_planned']:'';
+        $indexData['action_resources'] = !empty($finding['action_resources'])?$finding['action_resources']:'';
+        $indexData['threat_source'] = !empty($finding['threat_source'])?$finding['threat_source']:'';
+        Config_Fisma::updateIndex('finding', $id, $indexData);
+    }
+
     /** 
      * parse() - Parse all the data from the specified file, and load it into the database.
      *
