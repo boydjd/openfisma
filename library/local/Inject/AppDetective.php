@@ -54,10 +54,28 @@ class Inject_AppDetective extends Inject_Abstract
      */
     public function parse()
     {
-        // Parse the XML file
+        // Parse the XML file and check for errors
+        libxml_use_internal_errors(true);
         $report = simplexml_load_file($this->_file);
         if ($report === false) {
-            throw new Exception_InvalidFileFormat('Invalid XML Format');
+            // libxml and simplexml are interoperable:
+            $errors = libxml_get_errors();
+            $errorHtml = '<p>Parse Errors:<br>';
+            foreach ($errors as $error) {
+                $errorHtml .= "\"{$error->message}\" at line {$error->line}, column {$error->column}<br>"; 
+            }
+            $errorHtml .= '</p>';
+            throw new Exception_InvalidFileFormat('This file is not a valid XML format. 
+                                                   Please ensure that you selected the correct file.'
+                                                . $errorHtml);
+        }
+        
+        // Bug 2596247 - "App Detective plug-in does not work with recent vrsn. of AD"        
+        // Make sure that this is an AppDetective report, not a Crystal report. (App Detective can generate both 
+        // kinds of report.)
+        $checkCrystalReport = $report->getNamespaces(true);
+        if (in_array('urn:crystal-reports:schemas', $checkCrystalReport)) {
+            throw new Exception_InvalidFileFormat('This is a Crystal Report, not an App Detective report.');
         }
         
         // Apply mapping rules
@@ -154,13 +172,23 @@ class Inject_AppDetective extends Inject_Abstract
         }
 
         // Create a CPE object and use that to map the fields
-        $cpe = new Cpe($reportCpeItem->attributes()->name);
+        try {
+            // Bug 2596247 - "App Detective plug-in does not work with recent vrsn. of AD"
+            // App Detective does not follow the CPE specification when it cannot identify the platform. It creates a
+            // CPE called "cpe:no-match", which is not valid and will cause the Cpe class to throw an exception.
+            $cpe = new Cpe($reportCpeItem->attributes()->name);
+        } catch (Exception_InvalidFileFormat $e) {
+            // If the CPE is not valid, then return NULL for the product object
+            return null;
+        }
+        
         $product['name'] = $cpe->product;
         $product['cpe_name'] = $cpe->cpeName;
         $product['vendor'] = $cpe->vendor;
         $product['version'] = $cpe->version;
 
         return $product;
+
     }
     
     /**
@@ -259,31 +287,33 @@ class Inject_AppDetective extends Inject_Abstract
         $assetTable = new Asset();
         $asset = $assetTable->fetchRow("id = $assetId")->toArray();
 
-        // If the asset does not have a product associated with it, then re-use an existing asset or create a new asset
-        // if necessary.
-        $productTable = new Product();
-        $quotedCpeName = $productTable->getAdapter()->quote($this->_product['cpe_name']);
-        if (empty($asset['prod_id'])) {
-            $productId;
-            $existingProduct = $productTable->fetchRow("cpe_name LIKE $quotedCpeName");
-            if ($existingProduct) {
-                // Use the existing product if one is found
-                $productId = $existingProduct->id;
+        if (isset($this->product)) {
+            // If the asset does not have a product associated with it, then re-use an existing asset or 
+            // create a new asset if necessary.
+            $productTable = new Product();
+            $quotedCpeName = $productTable->getAdapter()->quote($this->_product['cpe_name']);
+            if (empty($asset['prod_id'])) {
+                $productId;
+                $existingProduct = $productTable->fetchRow("cpe_name LIKE $quotedCpeName");
+                if ($existingProduct) {
+                    // Use the existing product if one is found
+                    $productId = $existingProduct->id;
+                } else {
+                    // If no existing product, create a new one
+                    $productId = $productTable->insert($this->_product);
+                }
+                $assetTable->update(array('prod_id' => $productId), "id = $assetId");
             } else {
-                // If no existing product, create a new one
-                $productId = $productTable->insert($this->_product);
-            }
-            $assetTable->update(array('prod_id' => $productId), "id = $assetId");
-        } else {
-            // If the asset does have a product, then do not modify it unless the CPE name is null, in which case update
-            // the CPE name.
-            $existingProduct = $productTable->fetchRow("id LIKE {$asset['prod_id']}")->toArray();
-            if ($existingProduct && empty($existingProduct['cpe_name'])) {
-                $tempProduct = array('cpe_name' => $this->_product['cpe_name']);
-                $productTable->update($tempProduct, "id = {$existingProduct['id']}");
+                // If the asset does have a product, then do not modify it unless the CPE name is null,
+                // in which case update the CPE name.
+                $existingProduct = $productTable->fetchRow("id LIKE {$asset['prod_id']}")->toArray();
+                if ($existingProduct && empty($existingProduct['cpe_name'])) {
+                    $tempProduct = array('cpe_name' => $this->_product['cpe_name']);
+                    $productTable->update($tempProduct, "id = {$existingProduct['id']}");
+                }
             }
         }
-
+        
         // Commit the findings
         foreach ($this->_findings as $finding) {
             // First set the asset ID
