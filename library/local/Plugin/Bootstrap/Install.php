@@ -1,5 +1,5 @@
 <?php
-class Plugin_Initialize_Install extends Plugin_Initialize_Webapp
+class Plugin_Bootstrap_Install extends Plugin_Bootstrap_Webapp
 {
 
     /**
@@ -26,13 +26,11 @@ class Plugin_Initialize_Install extends Plugin_Initialize_Webapp
     public function initPlugins()
     {
         // The installer has its own error handler which is registered here:
-        $this->_front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(
-            array(
-                'model' => null,
+        $this->_front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler(array(
+                'module' => null,
                 'controller' => 'Install',
                 'action' => 'error'
-                )
-            ));
+                )));
     }
 
     public function initRouters()

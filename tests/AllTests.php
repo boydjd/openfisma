@@ -27,10 +27,13 @@
  */
 
 // Run the application bootstrap in command line mode
-define('COMMAND_LINE', true);
-require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php")); 
-define('TEST', APPLICATION_ROOT . '/tests');
+require_once dirname(__FILE__) . "/../library/local/Config/Fisma.php";
+$fisma = Config_Fisma::getInstance();
+if (!$fisma->isInstall()) {
+    die('Please install!');
+}
 
+define('TEST', APPLICATION_ROOT . '/tests');
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
 // set_include_path(get_include_path() .
@@ -53,7 +56,7 @@ class AllTests
      */
     public static function main()
     {
-        PHPUnit_TextUI_TestRunner::run( self::suite() );
+        PHPUnit_TextUI_TestRunner::run(self::suite());
     }
 
     /**

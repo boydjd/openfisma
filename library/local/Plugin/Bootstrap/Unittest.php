@@ -1,13 +1,11 @@
 <?php
-class Plugin_Initialize_Unittest extends Plugin_Initialize_Webapp
+class Plugin_Bootstrap_Unittest extends Plugin_Bootstrap_Webapp
 {
     public function initDb()
     {
         parent::initDb();
         try {
-            $config = new Zend_Config_Ini(
-                $this->_root."/tests/unit/data/database.ini"
-            );
+            $config = new Zend_Config_Ini($this->_root."/tests/unit/data/database.ini");
             if (!empty($config->database)) {
                 Zend_Registry::set('datasource', $config->database);
                 $config = Zend_Registry::get('datasource');

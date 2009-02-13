@@ -27,13 +27,14 @@
  * Indicates that we're running a command line tool, not responding to an http
  * request. This prevents the interface from being rendered.
  */
-define('COMMAND_LINE', true);
-
-require_once (APPLICATION_ROOT . '/application/bootstrap.php');
-require_once (APPLICATION_ROOT . '/application/config/setting.php');
-
-// Kick off the main routine:
-Notify::processNotificationQueue();
+require_once dirname(__FILE__) . "/../../library/local/Config/Fisma.php";
+$fisma = Config_Fisma::getInstance();
+if ($fisma->isInstall()) {
+    // Kick off the main routine:
+    Notify::processNotificationQueue();
+} else {
+    die('Please install!');
+}
 
 /**
  * This static class is responsible for scanning for notifications which need to

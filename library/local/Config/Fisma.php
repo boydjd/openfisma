@@ -222,12 +222,12 @@ class Config_Fisma
         $frontController = Zend_Controller_Front::getInstance();
 
         if ($mode == self::TEST_MODE) {
-            $initPlugin = new Plugin_Initialize_Unittest(self::$_root);
+            $initPlugin = new Plugin_Bootstrap_Unittest(self::$_root);
         } else {
             if (self::isInstall()) {
-                $initPlugin = new Plugin_Initialize_Webapp(self::$_root);
+                $initPlugin = new Plugin_Bootstrap_Webapp(self::$_root);
             } else {
-                $initPlugin = new Plugin_Initialize_Install(self::$_root);
+                $initPlugin = new Plugin_Bootstrap_Install(self::$_root);
             }
         }
         $frontController->registerPlugin($initPlugin);
