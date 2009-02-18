@@ -104,7 +104,7 @@ class SecurityController extends MessageController
         if (empty($this->_me)) {
             // throw exception and redirect the page to login.
             ///@todo English
-            throw new Exception_InvalidAuthentication('not login or the session expire');
+            throw new Exception_InvalidAuthentication('Your session has expired. Please log in again to begin a new session.');
             $this->_forward('login', 'User');
         } else {
             $this->view->identity = $this->_me->account;
