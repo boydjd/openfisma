@@ -332,6 +332,7 @@ class RoleController extends SecurityController
         ), 'f.id = rf.function_id', array())->where('rf.role_id = ?', $roleId);
         $existFunctions = $db->fetchAll($qry);
         if ('available_functions' == $do) {
+            $existFunctionIds = explode(',', $req->getParam('exist_functions'));
             $qry->reset();
             $qry->from('functions', array(
                 'function_id' => 'id',
@@ -343,7 +344,7 @@ class RoleController extends SecurityController
             $allFunctions = $db->fetchAll($qry);
             $availableFunctions = array();
             foreach ($allFunctions as $v) {
-                if (!in_array($v, $existFunctions)) {
+                if (!in_array($v['function_id'], $existFunctionIds)) {
                     $availableFunctions[] = $v;
                 }
             }

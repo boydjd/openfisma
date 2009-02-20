@@ -17,9 +17,6 @@ function toggleIE6Selects(){
         }
     }
 }
-// set a flag, it means whether the role's functions were assinged or not.
-// used url://panel/role/sub/right/id/?
-var isChange = false;
 
 $(document).ready(function(){
 
@@ -98,11 +95,9 @@ $(document).ready(function(){
     }).trigger('change');
     
     $('#add_function').click(function() {
-        isChange = true;
         return !$('#available_functions option:selected').remove().appendTo('#exist_functions');  
     });  
     $('#remove_function').click(function() {  
-        isChange = true;
         return !$('#exist_functions option:selected').remove().appendTo('#available_functions');  
     }); 
 
@@ -318,23 +313,21 @@ function search_function() {
     var trigger = $("select[name='function_screen']");
     var param = '';
     var name = trigger.children("option:selected").attr('value');
-    
-    if (isChange == true) {
-         var ans;
-         ans = window.confirm('Do you want to save your changing?');                     
-         if (ans == true) {
-            $("form[name='assign_right']").submit();
-         } else {
-             isChange = false;
-            $("#exist_functions").load(trigger.attr("url") + '/do/exist_functions', null);
-         }
-        return false;
-    }
 
     if( null != name){
         param += '/screen_name/'+name;
     }
-    var url = trigger.attr("url") + '/do/available_functions' + param;
+    var kids = $("#exist_functions").children();
+    var exist_functions = '';
+    for (var i=0;i < kids.length;i++) {
+        if (i == 0) {
+            exist_functions += kids[i].value;
+        } else {
+            exist_functions += ',' + kids[i].value;
+        }
+    }
+    
+    var url = trigger.attr("url") + '/do/available_functions' + param + '/exist_functions/'+exist_functions;
     $("select[name='available_functions']").load(url,null);
 }
 
