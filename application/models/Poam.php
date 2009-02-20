@@ -301,17 +301,15 @@ class Poam extends Zend_Db_Table
         $countFields = false;
         $dueTimeColumn = "( CASE p.status
                         WHEN 'NEW'
-                            THEN ADDDATE( p.create_ts, ".$this->_overdue['new']." )
+                            THEN ADDDATE( p.create_ts, ".$this->_overdue['new']."+1 )
                         WHEN 'DRAFT'
-                            THEN ADDDATE( p.create_ts, ".$this->_overdue['draft']." )
+                            THEN ADDDATE( p.create_ts, ".$this->_overdue['draft']."+1 )
                         WHEN 'EN'
-                            THEN p.action_current_date
+                            THEN ADDDATE( p.action_current_date, ".$this->_overdue['en']."+1 )
                         WHEN 'MSA'
-                            THEN (
-                               ADDDATE(p.mss_ts, ".$this->_overdue['mp']."))
+                            THEN ADDDATE( p.mss_ts, ".$this->_overdue['mp']."+1 )
                         WHEN 'EP'
-                            THEN (
-                               ADDDATE(p.action_current_date, ".$this->_overdue['ep']."))
+                            THEN ADDDATE( p.action_current_date, ".$this->_overdue['ep']."+1 )
                         ELSE 'N/A' END) AS duetime ";
         
         if ($fields == '*') {
