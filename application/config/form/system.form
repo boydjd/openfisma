@@ -64,6 +64,7 @@ elements.integrity.options.required = true
 displayGroups.system.elements.integrity = "integrity"
 
 elements.integrity_justification.type = "textarea"
+elements.integrity_justification.options.label = "Integrity Justification and Data Type"
 elements.integrity_justification.options.cols = "70%"
 elements.integrity_justification.options.rows = "7"
 displayGroups.system.elements.integrity_justification = "integrity_justification"
