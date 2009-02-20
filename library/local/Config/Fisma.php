@@ -154,12 +154,14 @@ class Config_Fisma
             }
             $configuration = $config->{$config->environment};
             self::addSysConfig($configuration);
-
-            //@todo english  set the absolute path to save session
-            $options['save_path'] = self::getPath('data') . $configuration->session->get('save_path');
-            $options['name'] = $configuration->session->get('name');
-            // Start Session Handling using Zend_Session 
-            Zend_Session::start($options);
+            
+            if (is_writable(self::getPath('data') . $configuration->session->get('save_path'))) {
+                //@todo english  set the absolute path to save session
+                $options['save_path'] = self::getPath('data') . $configuration->session->get('save_path');
+                $options['name'] = $configuration->session->get('name');
+                // Start Session Handling using Zend_Session 
+                Zend_Session::start($options);
+            }
         } catch(Zend_Config_Exception $e) {
             //using default configuration
             $config = new Zend_Config(array());
@@ -485,7 +487,7 @@ class Config_Fisma
         if (!is_dir(self::getPath('data') . '/index/'.$indexName)) {
             return false;
         }
-        @ini_set("memory_limit",-1);
+        @ini_set("memory_limit", -1);
         $index = new Zend_Search_Lucene(self::getPath('data') . '/index/'.$indexName);
         if (is_array($id)) {
             //Update a number of indexes
