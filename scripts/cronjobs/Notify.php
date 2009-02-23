@@ -142,7 +142,7 @@ class Notify
         $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
 
         // Set the to: header
-        $receiveEmail = isset($notifications[0]['notify_email'])?
+        $receiveEmail = !empty($notifications[0]['notify_email'])?
             $notifications[0]['notify_email']:$notifications[0]['email'];
         $mail->addTo(
             $receiveEmail,
@@ -159,8 +159,13 @@ class Notify
         $mail->setBodyText($content);
         
         // Send the e-mail
-        $mail->send(Notify::getTransport());
-        print(new Zend_Date()." Email was sent to $receiveEmail\n");
+        try {
+            $mail->send(Notify::getTransport());
+            print(new Zend_Date()." Email was sent to $receiveEmail\n");
+        } catch (Exception $exception) {
+            print($exception->getMessage() . "\n");
+            exit();
+        }
     }
 
     /**

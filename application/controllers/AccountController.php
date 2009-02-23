@@ -402,11 +402,15 @@ class AccountController extends SecurityController
                 }
 
                 if (!empty($password)) {
-                    $this->sendPassword($id, $password);
+                    $result = $this->sendPassword($id, $password);
+                    if (true == $result) {
+                        /** @todo english */
+                        $message .= ", an email include the new password has sent to this user";
+                    } else {
+                        $message .= ", the email is unable to send, please configure your mail service";
+                    }
                     // On success, redirect to read view
                     $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
-                    /** @todo english */
-                    $message .= ", an email include the new password has sent to this user";
                 }
                 $this->message($message, self::M_NOTICE);
             } else {
@@ -606,14 +610,19 @@ class AccountController extends SecurityController
             // user.
             $this->_user->log('ACCOUNT_CREATED', $this->_me->id,
                              'User Account '.$accountData['account'].' Successfully Created');
-            $this->message("User ({$accountData['account']}) added, and a validation email has been sent to this user.",
-                           self::M_NOTICE);
+            $message = "User ({$accountData['account']}) added, ";
 
-            $this->emailvalidate($userId, $accountData['email'], 'create',
+            $result = $this->emailvalidate($userId, $accountData['email'], 'create',
                 array('account'=>$accountData['account'], 'password'=>$password));
+            if (true == $result) {
+                $message .= "and a validation email has been sent to this user.";
+            } else {
+                $message .= "but the validation email is unable to send, please configure your mail service";
+            }
                            
             // On success, redirect to read view
             $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
+            $this->message($message, self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $userId));
             $this->_forward('create');
         } else {

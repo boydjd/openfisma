@@ -58,6 +58,11 @@ class MessageController extends Zend_Controller_Action
      *
      * @todo Cleanup this method: comments and formatting
      * @todo This function is named incorrectly
+     * @param int $userId
+     * @param string $email recieved email
+     * @param string $type  
+     * @param string $accountInfo
+     * @return true|false
      */
     public function emailvalidate($userId, $email, $type, $accountInfo = null)
     {
@@ -88,7 +93,12 @@ class MessageController extends Zend_Controller_Action
         $contentTpl->hostUrl = Config_Fisma::readSysConfig('hostUrl');
         $content = $contentTpl->render('validate.phtml');
         $mail->setBodyText($content);
-        $mail->send($this->_getTransport());
+        try {
+            $mail->send($this->_getTransport());
+            return true;
+        } catch (Exception $excetpion) {
+            return false;
+        }
     }
 
     /**
@@ -96,6 +106,7 @@ class MessageController extends Zend_Controller_Action
      *
      * @param int $userId a special user id
      * @param string $password new password for this user
+     * @return true|false
      */
     public function sendPassword($userId, $password)
     {
@@ -117,7 +128,12 @@ class MessageController extends Zend_Controller_Action
         $contentTpl->password = $password;
         $content = $contentTpl->render('sendpassword.phtml');
         $mail->setBodyText($content);
-        $mail->send($this->_getTransport());
+        try {
+            $mail->send($this->_getTransport());
+            return true;
+        } catch (Exception $excetpion) {
+            return false;
+        }
     }
 
 

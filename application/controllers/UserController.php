@@ -52,6 +52,7 @@ class UserController extends MessageController
     const VALIDATION_MESSAGE = "<br />Because you changed your e-mail address, we have sent you a confirmation message.
                                 <br />You will need to confirm the validity of your new e-mail address before you will
                                 receive any e-mail notifications.";
+
     /**
      * a cookie name will be used in Jquery Plugin 'Column Manager'
      */
@@ -414,8 +415,10 @@ class UserController extends MessageController
                 if ($originalEmail != $profileData['email']
                 && empty($notifyEmail)) {
                     $this->_user->update(array('email_validate'=>0), 'id = '.$this->_me->id);
-                    $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
-                    $msg .= self::VALIDATION_MESSAGE;
+                    $result = $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
+                    if (true == $result) {
+                        $msg .= self::VALIDATION_MESSAGE;
+                    }
                 }
                 $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
                 $this->message($msg, self::M_NOTICE);
@@ -462,8 +465,10 @@ class UserController extends MessageController
         if ($originalEmail != $data['notify_email'] && $data['notify_email'] != '') {
             $this->_user
             ->update(array('email_validate'=>0), 'id = ' . $this->_me->id);
-            $this->emailvalidate($this->_me->id, $data['notify_email'], 'update');
-            $msg .= self::VALIDATION_MESSAGE;
+            $result = $this->emailvalidate($this->_me->id, $data['notify_email'], 'update');
+            if (true == $result) {
+                $msg .= self::VALIDATION_MESSAGE;
+            }
         }
 
         $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
