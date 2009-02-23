@@ -347,9 +347,10 @@ class Config_Fisma
     function readSysConfig($key, $isFresh = false)
     {
         assert(!empty($key) && is_bool($isFresh));
-        if (self::isInstall() && 
+        if ((self::isInstall() && 
             (!Zend_Registry::isRegistered('FISMA_REG') 
-             || !Zend_Registry::get('FISMA_REG')->isFresh)) {         
+             || !Zend_Registry::get('FISMA_REG')->isFresh))
+            || $isFresh) {
             $db = Zend_Db::factory(Zend_Registry::get('datasource'));
             $m = new Config($db);
             $pairs = $m->fetchAll();

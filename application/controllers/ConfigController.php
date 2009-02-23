@@ -136,11 +136,22 @@ class ConfigController extends SecurityController
             $configs[$item['key']] = $item['value'];
         }
         $form->setDefaults($configs);
-        
-        //get ldap configuration
+        $this->view->generalConfig = $form;
+
+        if ('ldap' == Config_Fisma::readSysConfig('auth_type', true)) {
+            $this->_helper->actionStack('ldaplist');
+        }
+
+        $this->render();
+    }
+
+    /**
+     * Get Ldap configuration list
+     */
+    public function ldaplistAction()
+    {
         $ldaps = $this->_config->getLdap();
         $this->view->assign('ldaps', $ldaps);
-        $this->view->generalConfig = $form;
         $this->render();
     }
 
