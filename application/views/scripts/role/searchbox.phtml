@@ -8,8 +8,10 @@
         <tr>
             <th>[<a href="/panel/role/sub/list">Roles List</a>] (total: <?php echo 
 $this->total;?>)</th>
+            <?php if($this->acl->isAllowed('admin_roles', 'create')) { ?>
             <th>[<a href="/panel/role/sub/create" title="Add New Role">Add 
 Role</a>]</th>
+            <?php } ?>
             <th>
                 <table align="center">
                     <tbody>

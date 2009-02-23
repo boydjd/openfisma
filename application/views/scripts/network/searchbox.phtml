@@ -7,8 +7,10 @@
     <tbody>
         <tr>
             <th>[<a id="network_list" href="/panel/network/sub/list"> Network List</a>] (total: <?php echo $this->total;?>)</th>
+            <?php if($this->acl->isAllowed('admin_networks', 'create')) { ?>
             <th>[<a id="add_network" href="/panel/network/sub/create" title="Add  Network">Add 
  Network</a>]</th>
+            <?php } ?>
             <th>
                 <table align="center">
                     <tbody>

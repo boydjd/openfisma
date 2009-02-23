@@ -7,7 +7,9 @@
     <tbody>
         <tr>
             <th>[<a id="user_list" href="/panel/account/sub/list">User List</a>] (total: <?php echo $this->total;?>)</th>
+            <?php if($this->acl->isAllowed('admin_users', 'create')) { ?>
             <th>[<a id="add_user" href="/panel/account/sub/create" title="add new Users">Add User</a>]</th>
+            <?php } ?>
             <th>[<a id="user_log" href="/panel/log/sub/view" title="Review user logs">User Logs</a>]</th>
             <th>
                 <table align="center">

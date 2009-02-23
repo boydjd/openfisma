@@ -8,7 +8,9 @@
     <tbody>
         <tr>
             <th>[<a id="system_list" href="/panel/system/sub/list">System List</a>] (total: <?php echo $this->total;?>)</th>
+            <?php if($this->acl->isAllowed('admin_systems', 'create')) { ?>
             <th>[<a id="add_system" href="/panel/system/sub/create" title="add new Systems">Add System</a>]</th>
+            <?php } ?>
             <th>
                 <table align="center">
                     <tbody>

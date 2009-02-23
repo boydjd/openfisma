@@ -12,8 +12,10 @@ $this->declareVars(array('fid'=>'name'));
         <tr>
             <th>[<a id="finding_source_list" href="/panel/source/sub/list">Finding Source List</a>] (total: <?php echo 
 $this->total;?>)</th>
+            <?php if($this->acl->isAllowed('admin_sources', 'create')) { ?>
             <th>[<a id="add_finding_source" href="/panel/source/sub/create" title="Add Finding Source">Add 
 Finding Source</a>]</th>
+            <?php } ?>
             <th>
                 <table align="center">
                     <tbody>

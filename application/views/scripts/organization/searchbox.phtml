@@ -8,8 +8,10 @@
         <tr>
             <th>[<a href="/panel/organization/sub/list">Organization List</a>] (total: <?php echo 
 $this->total;?>)</th>
+            <?php if($this->acl->isAllowed('admin_organizations', 'create')) { ?>
             <th>[<a href="/panel/organization/sub/create" title="add new Organizations">Add 
 Organization</a>]</th>
+            <?php } ?>
             <th>
                 <table align="center">
                     <tbody>

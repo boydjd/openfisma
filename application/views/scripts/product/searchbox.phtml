@@ -8,8 +8,10 @@
         <tr>
             <th>[<a href="/panel/product/sub/list">Products List</a>] (total: <?php echo 
 $this->total;?>)</th>
+            <?php if($this->acl->isAllowed('admin_products', 'create')) { ?>
             <th>[<a href="/panel/product/sub/create" title="Add New Product">Add 
 Product</a>]</th>
+            <?php } ?>
             <th>
                 <table align="center">
                     <tbody>
