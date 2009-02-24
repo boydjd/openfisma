@@ -592,10 +592,16 @@ class RemediationController extends PoamBaseController
                                           $this->_me->account,
                                           "PoamId: $poamId",
                                           $oldpoam['system_id']);
+                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
             //Revise Mitigation Strategy
             } else {
                 $poam['status'] = 'DRAFT';
+                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
             }
+            
+            $this->_poam->writeLogs($poamId, $this->_me->id, 
+                 self::$now->toString('Y-m-d H:i:s'), 
+                 'MODIFICATION', $logContent);
         }
 
         if (!empty($decision)) {
