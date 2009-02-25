@@ -1,6 +1,16 @@
 <?php
     $urlNamespace = new Zend_Session_Namespace('urlNamespace');
 ?>
+<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/highlight.js"></script>
+<script language="javascript">
+    $(document).ready(function(){
+        <?php
+            foreach (explode(',', $this->keywords) as $keyword) {
+        ?>
+        highlight(document.getElementById('poam_detail'), '<?php echo $keyword;?>');
+        <?php } ?>
+    });
+</script>
 <br>
 <form method="link" class="button_link" action="<?php echo $urlNamespace->lastSearch;?>">
     <input type="submit" value="Back">

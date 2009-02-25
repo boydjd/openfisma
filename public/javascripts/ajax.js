@@ -211,6 +211,7 @@ $(document).ready(function(){
     });
 
     $(".editable").click(function(){
+        removeHighlight(document.getElementById('poam_detail'));
         var t_name = $(this).attr('target');
         $(this).removeClass('editable');
         $(this).removeAttr('target');
@@ -492,17 +493,75 @@ function addBookmark(title, url){
     }
 }
 
-// Highlights search results according to the keywords which were used to search
-function highLight(obj,keywords) {
-    if (!keywords) {
-        return;
+/**
+ * Highlights search results according to the keywords which were used to search
+ *
+ * @param node object
+ * @param keyword string
+ */ 
+function highlight(node,keyword) {
+    if (!keyword) {
+        return true;
     }
-    
-    var keyword = new Array();
-    keyword = keywords.split(',');
-    for(var i=0;i<keyword.length;i++){
-        var reg = new RegExp(keyword[i]+"(?=[^<>]*<)","ig");
-        var data=document.getElementById(obj).innerHTML;
-        document.getElementById(obj).innerHTML=data.replace(reg,'<span class="searchword">'+keyword[i]+'</span>');
-    } 
-} 
+
+    	// Iterate into this nodes childNodes
+	if (node.hasChildNodes) {
+		var hi_cn;
+		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+			highlight(node.childNodes[hi_cn],keyword);
+		}
+	}
+
+	// And do this node itself
+    if (node.nodeType == 3) { // text node
+        tempNodeVal = node.nodeValue.toLowerCase();
+        tempWordVal = keyword.toLowerCase();
+        if (tempNodeVal.indexOf(tempWordVal) != -1) {
+            pn = node.parentNode;
+            if (pn.className != "highlight") {
+                // keyword has not already been highlighted!
+                nv = node.nodeValue;
+                ni = tempNodeVal.indexOf(tempWordVal);
+                // Create a load of replacement nodes
+                before = document.createTextNode(nv.substr(0,ni));
+                docWordVal = nv.substr(ni,keyword.length);
+                after = document.createTextNode(nv.substr(ni+keyword.length));
+                hiwordtext = document.createTextNode(docWordVal);
+                hiword = document.createElement("span");
+                hiword.className = "highlight";
+                hiword.appendChild(hiwordtext);
+                pn.insertBefore(before,node);
+                pn.insertBefore(hiword,node);
+                pn.insertBefore(after,node);
+                pn.removeChild(node);
+            }
+        }
+    }
+}
+
+/**
+ * Remove the highlight attribute from the editable textarea on remediation detail page
+ *
+ * @param node object 
+ */
+function removeHighlight(node) {
+	// Iterate into this nodes childNodes
+	if (node.hasChildNodes) {
+		var hi_cn;
+		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+			removeHighlight(node.childNodes[hi_cn]);
+		}
+	}
+
+	// And do this node itself
+	if (node.nodeType == 3) { // text node
+		pn = node.parentNode;
+		if( pn.className == "highlight" ) {
+			prevSib = pn.previousSibling;
+			nextSib = pn.nextSibling;
+			nextSib.nodeValue = prevSib.nodeValue + node.nodeValue + nextSib.nodeValue;
+			prevSib.nodeValue = '';
+			node.nodeValue = '';
+		}
+	}
+}

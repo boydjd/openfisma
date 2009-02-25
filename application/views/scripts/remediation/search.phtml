@@ -1,6 +1,11 @@
+<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/highlight.js"></script>
 <script language="javascript">
     $(document).ready(function(){
-        highLight('poam_list', '<?php echo $this->keywords;?>');
+        <?php
+            foreach (explode(',', $this->keywords) as $keyword) {
+        ?>
+        highlight(document.getElementById('poam_list'), '<?php echo $keyword;?>');            
+        <?php } ?>
     });
 </script>
 <div class="barleft">
@@ -110,7 +115,7 @@
             <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
             <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
             <td align="center" valign='middle' class='tdc'>
-            <a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>">
+            <a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>/keywords/<?php echo $this->keywords;?>">
                 <img src="/images/view.gif" border="0">
             </a></td>
         </tr>
