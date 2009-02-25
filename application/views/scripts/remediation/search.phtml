@@ -8,6 +8,12 @@
         <?php } ?>
     });
 </script>
+<?php
+    $baseUrl =  "/panel/remediation/sub/view";
+    if (!empty($this->keywords)) {
+        $baseUrl .= '/keywords/' . $this->keywords;
+    }
+?>
 <div class="barleft">
 <div class="barright">
     <!-- @todo english -->
@@ -115,7 +121,7 @@
             <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
             <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
             <td align="center" valign='middle' class='tdc'>
-            <a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>/keywords/<?php echo $this->keywords;?>">
+            <a href="<?php echo $baseUrl .'/id/' . $row['id'];?>">
                 <img src="/images/view.gif" border="0">
             </a></td>
         </tr>
