@@ -181,14 +181,13 @@ class Inject_AppDetective extends Inject_Abstract
             // If the CPE is not valid, then return NULL for the product object
             return null;
         }
-        
+                
         $product['name'] = $cpe->product;
         $product['cpe_name'] = $cpe->cpeName;
         $product['vendor'] = $cpe->vendor;
         $product['version'] = $cpe->version;
 
         return $product;
-
     }
     
     /**
@@ -287,7 +286,7 @@ class Inject_AppDetective extends Inject_Abstract
         $assetTable = new Asset();
         $asset = $assetTable->fetchRow("id = $assetId")->toArray();
 
-        if (isset($this->product)) {
+        if (isset($this->_product)) {
             // If the asset does not have a product associated with it, then re-use an existing asset or 
             // create a new asset if necessary.
             $productTable = new Product();
