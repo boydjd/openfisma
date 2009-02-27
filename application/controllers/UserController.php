@@ -270,7 +270,7 @@ class UserController extends MessageController
         $now = new Zend_Date();
         $nowSqlString = $now->toString('Y-m-d H:i:s');
         $this->_user->update(array('last_rob'=>$nowSqlString), 'id = '.$this->_me->id);
-        $this->_user->log('ROB_ACCEPT', $this->_me->id, 'accept ROB');
+        $this->_user->log('ROB_ACCEPT', $this->_me->id, 'Digitally accepted the Rules of Behavior');
         $this->_forward('index', 'Panel');
     }
 

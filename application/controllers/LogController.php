@@ -95,7 +95,7 @@ class LogController extends PoamBaseController
         // Set up the query to get the full list of user logs
         $qry = $this->_log->select()
                   ->from(array('al' => 'account_logs'),
-                         array('timestamp', 'event', 'user_id', 'message'))
+                         array('timestamp', 'ip', 'event', 'user_id', 'message'))
                   ->setIntegrityCheck(false)
                   ->joinLeft(array('u'=>'users'),
                              'al.user_id = u.id',

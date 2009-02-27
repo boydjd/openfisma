@@ -7,8 +7,7 @@ SET character_set_client = utf8;
 CREATE TABLE `account_logs` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `timestamp` datetime NOT NULL,
-  `priority` tinyint(3) unsigned NOT NULL,
-  `priority_name` varchar(10) NOT NULL,
+  `ip` varchar(32) NOT NULL,
   `event` enum('ACCOUNT_CREATED','ACCOUNT_MODIFICATION','ACCOUNT_DELETED','ACCOUNT_LOCKOUT','DISABLING','LOGINFAILURE','LOGIN','LOGOUT','ROB_ACCEPT') NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   `message` text NOT NULL,
@@ -882,7 +881,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (48);
+INSERT INTO `schema_version` VALUES (50);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -1009,4 +1008,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (50);
+INSERT INTO schema_version (schema_version) VALUES (51);

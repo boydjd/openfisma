@@ -37,12 +37,11 @@ class User extends FismaModel
     protected $_rowClass = 'Table_Rowlower';
     protected $_logName = 'account_logs';
     protected $_logger = null;
-    protected $_logMap = array('priority' => 'priority',
-                               'timestamp' => 'timestamp',
+    protected $_logMap = array('timestamp' => 'timestamp',
+                               'ip' => 'ip',
                                'user_id' => 'uid',
                                'event' => 'type',
-                               'message' => 'message',
-                               'priority_name' => 'priorityName');
+                               'message' => 'message');
     protected $_map = array(self::SYS => array('table' => 'user_systems',
                                                'field' => 'system_id'),
                             self::ROLE => array('table' => 'user_roles',
@@ -133,6 +132,9 @@ class User extends FismaModel
             $now = new Zend_Date();
             $notification = new Notification();
             $nowSqlString = $now->get('Y-m-d H:i:s');
+
+            $this->_logger->setEventItem('ip', $_SERVER['REMOTE_ADDR']);
+            $this->_logger->setEventItem('uid', $uid);
             
             if ($type == 'LOGIN') {
                 $row->failureCount = 0;
@@ -154,7 +156,6 @@ class User extends FismaModel
                     $row->isActive = 0;
                     $notification->add(Notification::ACCOUNT_LOCKED,
                         null, "User: {$account}");
-                    $this->_logger->setEventItem('uid', $uid);
                     $this->_logger->setEventItem('type', 'ACCOUNT_LOCKOUT');
                     $this->_logger->info("User Account $account Successfully Locked");
                 }
@@ -167,7 +168,6 @@ class User extends FismaModel
                         null, "User: {$account}");
                 $row->save();
             }
-            $this->_logger->setEventItem('uid', $uid);
             $this->_logger->setEventItem('type', $type); 
             $this->_logger->info($msg);
         }
