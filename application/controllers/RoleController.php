@@ -244,6 +244,7 @@ class RoleController extends SecurityController
         $result = $db->fetchCol($qry);
         if (!empty($result)) {
             $msg = 'This role have been used, You could not to delete';
+            $model = self::M_WARNING;
         } else {
             $res = $this->_role->delete('id = ' . $id);
             if (!$res) {
