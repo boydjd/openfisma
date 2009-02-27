@@ -565,3 +565,52 @@ function removeHighlight(node) {
 		}
 	}
 }
+
+function form_confirm (formname, action) {
+    var form = formname;
+    $(':text, :password, textarea', this).each(function() {    
+         $(this).attr('_value', $(this).val());    
+    });  
+   
+    $(':checkbox, :radio', this).each(function() {    
+        var _v = this.checked ? 'on' : 'off';    
+        $(this).attr('_value', _v);    
+    });  
+   
+    $('select', this).each(function() {    
+        $(this).attr('_value', this.options[this.selectedIndex].value);    
+    });    
+        
+    if(is_form_changed(form)) {
+        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save".') == true) {
+            return true;
+        }
+    } else {
+        if (confirm('WARNING: You are about to '+action+'. This action cannot be undone. Please click "Continue" to confirm your action or click "Cancel" to stop.') == true) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function is_form_changed(form) {    
+    var changed = false;    
+    $(':text, :password, textarea', form).each(function() {    
+        var _v = $(this).attr('_value');    
+        if(typeof(_v) == 'undefined')   _v = '';    
+        if(_v != $(this).val()) changed = true;    
+    });    
+   
+    $(':checkbox, :radio', form).each(function() {    
+        var _v = this.checked ? 'on' : 'off';  
+        if(_v != $(this).attr('_value')) changed = true;    
+    });    
+    
+    $('select', form).each(function() {    
+        var _v = $(this).attr('_value');    
+        if(typeof(_v) == 'undefined')   _v = '';    
+        if(_v != this.options[this.selectedIndex].value) changed = true;  
+    });    
+    return changed;    
+}  
+
