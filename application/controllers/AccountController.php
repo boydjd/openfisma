@@ -569,6 +569,7 @@ class AccountController extends SecurityController
             unset($accountData['checkaccount']);
             unset($accountData['generate_password']);
             
+            $password = '';
             // Create the user's main record.
             if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
                 $password = $accountData['password'];
