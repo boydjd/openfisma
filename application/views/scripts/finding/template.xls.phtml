@@ -29,16 +29,17 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="m77975580">
-   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+  <Style ss:ID="m43958186">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
-   <Font x:Family="Swiss" ss:Size="20" ss:Bold="1"/>
-   <Interior ss:Color="#CCFFFF" ss:Pattern="Solid"/>
+   <Font x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="00000"/>
   </Style>
   <Style ss:ID="s21">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
@@ -57,19 +58,40 @@
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
+   <NumberFormat ss:Format="@"/>
   </Style>
-  <Style ss:ID="s28">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
+  <Style ss:ID="s24">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
-   <Font x:Family="Swiss" ss:Bold="1"/>
-   <Interior ss:Color="#FFCC00" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s27">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Interior/>
   </Style>
   <Style ss:ID="s29">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font x:Family="Swiss" ss:Size="20" ss:Bold="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s39">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -78,9 +100,10 @@
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
    <Font x:Family="Swiss" ss:Bold="1"/>
-   <Interior ss:Color="#FFFF99" ss:Pattern="Solid"/>
+   <Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
   </Style>
-  <Style ss:ID="s30">
+  <Style ss:ID="s41">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -89,9 +112,10 @@
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
    <Font x:Family="Swiss" ss:Bold="1"/>
-   <Interior ss:Color="#FFCC00" ss:Pattern="Solid"/>
+   <Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
   </Style>
-  <Style ss:ID="s31">
+  <Style ss:ID="s46">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -99,76 +123,115 @@
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
-   <NumberFormat ss:Format="yyyy/mm/dd;@"/>
-  </Style>
-  <Style ss:ID="s32">
    <Font x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="yyyy\-mm\-dd"/>
+  </Style>
+  <Style ss:ID="s47">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <NumberFormat ss:Format="yyyy\-mm\-dd"/>
   </Style>
  </Styles>
  <Names>
   <NamedRange ss:Name="controls" ss:RefersTo="=ControlIDs!C1"/>
  </Names>
  <Worksheet ss:Name="Findings">
-  <Table ss:ExpandedColumnCount="10" ss:ExpandedRowCount="1000" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="21" ss:ExpandedRowCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s21">
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="49.5"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="60.75"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="92.25"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="121.5"/>
+   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="60.75"/>
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="92.25" ss:Span="1"/>
+   <Column ss:Index="5" ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="121.5"/>
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="43.5"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="78.75"/>
-   <Column ss:StyleID="s21" ss:AutoFitWidth="0" ss:Width="188.25"/>
-   <Column ss:StyleID="s21" ss:AutoFitWidth="0" ss:Width="135"/>
-   <Column ss:StyleID="s21" ss:AutoFitWidth="0" ss:Width="84.75"/>
-   <Column ss:StyleID="s21" ss:AutoFitWidth="0" ss:Width="92.25"/>
-   <Row ss:Height="26.25">
-    <Cell ss:MergeAcross="9" ss:StyleID="m77975580"><ss:Data ss:Type="String"
-      xmlns="http://www.w3.org/TR/REC-html40"><B><?php echo Config_Fisma::readSysConfig('system_name');?> Injection Template&#10;<Font
-        html:Size="10">Fill the work sheet with your finding data and save it as CSV format.</Font></B></ss:Data></Cell>
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="135.75" ss:Span="2"/>
+   <Column ss:Index="10" ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="78.75"/>
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="180" ss:Span="1"/>
+   <Column ss:Index="13" ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="49.5"/>
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="156"/>
+   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="78"/>
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="84.75"/>
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="90.75"/>
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="177"/>
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="90.75"/>
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="177"/>
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="126.75"/>
+   <Row ss:AutoFitHeight="0" ss:Height="26.25" ss:StyleID="s27">
+    <Cell ss:MergeAcross="20" ss:StyleID="s29"><Data ss:Type="String"><?php echo Config_Fisma::readSysConfig('system_name');?> - Injection Template</Data></Cell>
    </Row>
-   <Row ss:Height="38.25">
-    <Cell ss:StyleID="s28"><Data ss:Type="String">System</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty. Please select a value from the list.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s28"><Data ss:Type="String">Date Discovered</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty. Your date value must in be between  2000-01-01 and 2037-01-01.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s29"><Data ss:Type="String">Network</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty. Please select a value from the list.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s29"><Data ss:Type="String">IP Address</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;This Field may be empty.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s29"><Data ss:Type="String">Port</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;This field may be empty. Port must be an integer between 0 and 65535.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s28"><Data ss:Type="String">Audit Source</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty. Please select a value from the list.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s30"><Data ss:Type="String">Finding Description</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s30"><Data ss:Type="String">Finding Recommendation</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s30"><Data ss:Type="String">Security Control</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty.</Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s30"><Data ss:Type="String">Risk Level</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
-         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">Note:</Font></B><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Field cannot be empty.</Font></ss:Data></Comment></Cell>
+   <Row ss:AutoFitHeight="0" ss:Height="110.25" ss:StyleID="s27">
+    <Cell ss:MergeAcross="20" ss:StyleID="m43958186"><Data ss:Type="String">Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into OVMS. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
    </Row>
-
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s39"><Data ss:Type="String">System*</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The system that this finding affects.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s46"><Data ss:Type="String">Date Discovered*</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date that this finding was discovered.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Network</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The network which contains the affected asset.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Asset Name</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the affected asset.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Asset IP Address</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP address of the affected asset.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Asset Port</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP port of the affected asset.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Product Name</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Product Vendor</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The vendor of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Product Version</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The version of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Finding Source*</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The type of evaluation which was used to discover this finding.          </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Description*</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Description of the vulnerability or weakness.          </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Recommendation*</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Auditor's recommendation to remediate the finding.          </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Course of Action Type</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> AR = 'Accepted Risk', CAP = 'Corrective Action Plan', FP = 'False Positive'         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Course of Action&#10;Description</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The course of action planned to address a CAP; the business case justifying an AR.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s46"><Data ss:Type="String">Expected Completion Date</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date by which the course of action will be completed AND evidence uploaded         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">NIST 800-53 Security Control</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The related NIST 800-53 security control.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Threat Level</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The threat imposed by an exploit of this vulnerability.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Threat Description</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe the source and nature of the threat.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Countermeasures Effectiveness</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The effectiveness of in-place countermeasures for mitigating the threat.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Description of Countermeasures</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Point of Contact (Name, Number, Email)</Data><Comment
+      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
+        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
+   </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <Print>
@@ -182,72 +245,58 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>2</ActiveRow>
-     <ActiveCol>0</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C1:R65536C1</Range>
+   <Range>R4C17:R65536C17,R4C19:R65536C19</Range>
    <Type>List</Type>
    <CellRangeList/>
-   <Value>&quot;<?php echo implode(',',array_values($this->systems));?>&quot;</Value>
+   <Value>&quot;<?php echo implode(',', $this->risk) ;?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C2:R65536C2</Range>
-   <Type>Date</Type>
-   <Min>36526</Min>
-   <Max>50041</Max>
-  </DataValidation>
-  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C3:R65536C3</Range>
-   <Type>List</Type>
-   <CellRangeList/>
-   <Value>&quot;<?php echo implode(',',array_values($this->networks));?>&quot;</Value>
-  </DataValidation>
-  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C4:R1034C4</Range>
-   <Type>TextLength</Type>
-   <Min>0</Min>
-   <Max>63</Max>
-  </DataValidation>
-  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C5:R1034C5</Range>
-   <Type>Whole</Type>
-   <Min>0</Min>
-   <Max>65535</Max>
-  </DataValidation>
-  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C6:R65536C6</Range>
+   <Range>R4C10:R65536C10</Range>
    <Type>List</Type>
    <CellRangeList/>
    <Value>&quot;<?php echo implode(',',array_values($this->sources));?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C7:R1034C7,R3C8:R1034C8</Range>
-   <Type>TextLength</Type>
-   <Min>0</Min>
-   <Max>655535</Max>
+   <Range>R4C13:R65536C13</Range>
+   <Type>List</Type>
+   <CellRangeList/>
+   <Value>&quot;AR,CAP,FP&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C9:R65536C9</Range>
+   <Range>R4C16:R65536C16</Range>
    <Type>List</Type>
    <Value>controls</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R3C10:R65536C10</Range>
+   <Range>R4C3:R65536C3</Range>
    <Type>List</Type>
    <CellRangeList/>
-   <Value>&quot;<?php echo implode(',', $this->risk) ;?>&quot;</Value>
+   <Value>&quot;<?php echo implode(',',array_values($this->networks));?>&quot;</Value>
+  </DataValidation>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R4C1:R65536C1</Range>
+   <Type>List</Type>
+   <CellRangeList/>
+   <Value>&quot;<?php echo implode(',',array_values($this->systems));?>&quot;</Value>
+  </DataValidation>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R4C2:R65536C2</Range>
+   <Type>Date</Type>
+   <Min>36526</Min>
+   <Max>50041</Max>
   </DataValidation>
  </Worksheet>
  <Worksheet ss:Name="ControlIDs">
   <Names>
    <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=ControlIDs!C1" ss:Hidden="1"/>
   </Names>
-  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1000" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="167" x:FullColumns="1"
    x:FullRows="1">
    <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
 <?php
@@ -273,7 +322,6 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveCol>1</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>True</ProtectObjects>
