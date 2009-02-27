@@ -39,6 +39,54 @@ define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
 class FindingController extends PoamBaseController
 {
     /**
+     * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
+     * column's logical names. Excel starts indexes at 1 instead of 0.
+     *
+     * @todo Move this definition and related items into a separate classs... this is too much stuff to put into the
+     * controller
+     */
+    private $_excelTemplateColumns = array(
+        1 => 'system_nickname',
+        'date_discovered',
+        'network',
+        'asset_name',
+        'asset_ip',
+        'asset_port',
+        'product_name',
+        'product_vendor',
+        'product_version',
+        'finding_source',
+        'finding_description',
+        'finding_recommendation',
+        'course_of_action_type',
+        'course_of_action_description',
+        'expected_completion_date',
+        'security_control',
+        'threat_level',
+        'threat_description',
+        'countermeasure_effectiveness',
+        'countermeasure_description',
+        'contact_info'
+    );
+    
+    /**
+     * Indicates which columns are required in the excel template. Human readable names are included so that meaningful
+     * error messages can be provided for missing columns.
+     */
+    private $_requiredExcelTemplateColumns = array (
+        'system_nickname' => 'System',
+        'date_discovered' => 'Date Discovered',
+        'finding_source' => 'Finding Source',
+        'finding_description' => 'Finding Description',
+        'finding_recommendation' => 'Finding Recommendation'
+    );
+
+    /**
+     * The row to start on in the excel template. The template has 3 header rows, so start at the 4th row.
+     */
+    private $_excelTemplateStartRow = 4;
+    
+    /**
      Provide searching capability of findings
      Data is limited in legal systems.
      */
@@ -72,6 +120,7 @@ class FindingController extends PoamBaseController
         $this->view->assign('links', $pager->getLinks());
         $this->render('search');
     }
+    
     /**
      Get finding detail infomation
      */
@@ -153,137 +202,143 @@ class FindingController extends PoamBaseController
                            self::M_WARNING);
             return;
         }
-        // $findingData is an array of rows in the first worksheet. The first two rows on this worksheet contain
-        // column headers, so skip them.
+        // $findingData is an array of rows in the first worksheet. The first three rows on this worksheet contain
+        // headers, so skip them.
         array_shift($findingData);
         array_shift($findingData);
-        
-        // Now process each row
-        $error = '';
-        $rowNumber = 3;
-        /**
-         * @todo Perform these commits in a single transaction.
-         */
-        foreach ($findingData as $row) {
-            $rowArray = (array)$row;
-            $rowData = $rowArray['Cell'];
+        array_shift($findingData);
 
-            /** @todo Remove magic number 10, this is the number of columns in the template */
-            // Verify that all columns are filled in
-            if (count($row) != 10) {
-                $error = "Row $rowNumber: Not all columns are filled in.";
-                continue;
-            }
-
-            // Assign names to the row data
-            $systemNickname  = $rowData[0]->Data;
-            $dateDiscovered  = $rowData[1]->Data;
-            $networkNickname = $rowData[2]->Data;
-            $ipAddress       = $rowData[3]->Data;
-            $ipPort          = $rowData[4]->Data;
-            $findingSource   = $rowData[5]->Data;
-            $description     = $rowData[6]->Data;
-            $recommendation  = $rowData[7]->Data;
-            $securityControl = $rowData[8]->Data;
-            $risk            = $rowData[9]->Data;
-
-            // Validate row data
-            $systemTable = new System();
+        $rowNumber = $this->_excelTemplateStartRow;
+        try {
+            // Now process each remaining row
             /**
-             * @todo Multiple SQL injection attacks
+             * @todo Perform these commits in a single transaction.
              */
-            $system = $systemTable->fetchRow("nickname = '$systemNickname'");
-            if (isset($system)) {
-                $systemId = $system->id;
-            } else {
-                $error = "Row $rowNumber: Invalid System";
-                continue;
-            }
-            
-            $networkTable = new Network();
-            $network = $networkTable->fetchRow("nickname = '$networkNickname'");
-            if (isset($network)) {
-                $networkId = $network->id;
-            } else {
-                $error = "Row $rowNumber: Invalid Network";
-                continue;
-            }
+            foreach ($findingData as $row) {
+                // Copy the row data into a local array
+                $finding = array();
+                $column = 1;
+                foreach ($row as $cell) {
+                    // If Excel skips a cell that has no data, then the next cell that has data will contain an
+                    // 'ss:Index' attribute to indicate which column it is in.
+                    $cellAttributes = $cell->attributes('ss',true);
+                    if (isset($cellAttributes['Index'])) {
+                        $column = (int)$cellAttributes['Index'];
+                    }
+                    $finding[$this->_excelTemplateColumns[$column]] = (string)$cell->Data;
+                    $column++;
+                }
 
-            if (empty($ipAddress)) {
-                $error = "Row $rowNumber: Blank IP Address";
-                continue;
-            }
+                // Validate that required row attributes are filled in:
+                foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
+                    if (empty($finding[$columnName])) {
+                        throw new Exception_InvalidFileFormat("Required column \"$columnDescription\"
+                                                              is empty");
+                    }
+                }
 
-            if (empty($ipPort)) {
-                $error = "Row $rowNumber: Blank IP Port";
-                continue;
-            }
+                // Map the row data into logical objects. Notice suppression is used heavily here to keep the code
+                // from turning into spaghetti. When debugging this code, it will probably be helpful to remove these
+                // suppressions.
+                $poam = array();
+                $systemTable = new System();
+                $poam['system_id'] = @$systemTable->fetchRow("nickname = '{$finding['system_nickname']}'")->id;
+                if (empty($poam['system_id'])) {
+                    throw new Exception_InvalidFileFormat("Invalid system selected. Your template may
+                                                          be out of date. Please try downloading it again.");
+                }
+                $poam['discover_ts'] = $finding['date_discovered'];
+                $sourceTable = new Source();
+                $poam['source_id'] = @$sourceTable->fetchRow("nickname = '{$finding['finding_source']}'")->id;
+                if (empty($poam['source_id'])) {
+                    throw new Exception_InvalidFileFormat("Invalid finding source selected. Your
+                                                          template may
+                                                          be out of date. Please try downloading it again.");
+                }
+                $poam['finding_data'] = $finding['finding_description'];
+                if (isset($finding['contact_info'])) {
+                    $poam['finding_data'] .= "<br>Point of Contact: {$finding['contact_info']}";
+                }
+                $poam['action_suggested'] = $finding['finding_recommendation'];
+                $poam['type'] = @$finding['course_of_action_type'];
+                if (empty($poam['type'])) {
+                    $poam['type'] = 'NONE';
+                }
+                $poam['action_planned'] = @$finding['course_of_action_description'];
+                $poam['action_current_date'] = @$finding['expected_completion_date'];
+                $poam['blscr_id'] = @$finding['security_control'];
+                $poam['threat_level'] = @$finding['threat_level'];
+                if (empty($poam['threat_level'])) {
+                    $poam['threat_level'] = 'NONE';
+                }
+                $poam['threat_source'] = @$finding['threat_description'];
+                $poam['cmeasure_effectiveness'] = @$finding['countermeasure_effectiveness'];
+                if (empty($poam['cmeasure_effectiveness'])) {
+                    $poam['cmeasure_effectiveness'] = 'NONE';
+                }
+                $poam['cmeasure'] = @$finding['countermeasure_description'];
+                $poam['create_ts'] = new Zend_Db_Expr('NOW()');
+                $poam['action_resources'] = 'None';
 
-            $sourceTable = new Source();
-            $source = $sourceTable->fetchRow("nickname = '$findingSource'");
-            if (isset($source)) {
-                $sourceId = $source->id;
-            } else {
-                $error = "Row $rowNumber: Invalid Finding Source";
-                continue;
-            }
+                $asset = array();
+                $networkTable = new Network();
+                $asset['network_id'] = @$networkTable->fetchRow("nickname = '{$finding['network']}'")->id;
+                $asset['name'] = @$finding['asset_name'];
+                $asset['address_ip'] = @$finding['asset_ip'];
+                $asset['address_port'] = @$finding['asset_port'];
+                $asset['create_ts'] = new Zend_Db_Expr('NOW()');
+                $asset['system_id'] = $poam['system_id'];
 
-            if (empty($description)) {
-                $error = "Row $rowNumber: Blank Finding Description";
-                continue;
-            }
+                $product = array();
+                $product['name'] = @$finding['product_name'];
+                $product['vendor'] = @$finding['product_vendor'];
+                $product['version'] = @$finding['product_version'];
+                //var_dump($poam); var_dump($asset); var_dump($product); die;
+                // Now persist these objects. Check assets and products to see whether they exist before creating new
+                // ones.
+                if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
+                    /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
+                    $productTable = new Product();
+                    $productId = @$productTable->fetchRow("name LIKE '{$product['name']}' AND
+                                                           vendor LIKE '{$product['vendor']}' AND
+                                                           version LIKE '{$product['version']}'")->id;
+                    if (empty($productId) && !empty($product['name'])) {
+                        $productId = @$productTable->insert($product);
+                    }
+                }
 
-            if (empty($recommendation)) {
-                $error = "Row $rowNumber: Blank Finding Recommendation";
-                continue;
+                // Persist the asset, if necessary
+                if (!empty($asset['network_id']) && !empty($asset['address_ip']) && !empty($asset['address_port'])) {
+                    $asset['prod_id'] = @$productId;
+                    $assetTable = new Asset();
+                    $assetId = @$assetTable->fetchRow("network_id = {$asset['network_id']} AND
+                                                       address_ip like '{$asset['address_ip']}' AND
+                                                       address_port = {$asset['address_port']}")->id;
+                    if (empty($assetId)) {
+                        $assetId = $assetTable->insert($asset);
+                    }
+                }
+                
+                // Finally, create the finding
+                $poam['asset_id'] = @$assetId;
+                $poamTable = new Poam();
+                $poamTable->insert($poam);
+                /** @todo Add notifications, audit events */
+                
+                $rowNumber++;
             }
-            
-            $now = new Zend_Date();
-            // Check to see if the asset exists
-            $assetTable = new Asset();
-            $asset = $assetTable->fetchRow("network_id = '$networkId' AND
-                                            address_ip = '$ipAddress' AND
-                                            address_port = '$ipPort'");
-            if (!isset($asset)) {
-                // The asset does not exist, so create it.
-                $asset = array('name' => "$ipAddress:$ipPort",
-                               'create_ts' => $now->toString('Y-m-d H:i:s'),
-                               'source' => 'MANUAL',
-                               'system_id' => $systemId,
-                               'network_id' => $networkId,
-                               'address_ip' => $ipAddress,
-                               'address_port' => $ipPort);
-                $assetId = $assetTable->insert($asset);
-            } else {
-                $assetId = $asset->id;
-            }
-            
-            // Now insert the new finding
-            $poamTable = new Poam();
-            $finding = array('asset_id' => $assetId,
-                             'source_id' => $sourceId,
-                             'system_id' => $systemId,
-                             'blscr_id' => $securityControl,
-                             'create_ts' => $now->toString('Y-m-d H:i:s'),
-                             'discover_ts' => $dateDiscovered,
-                             'finding_data' => $description,
-                             'action_suggested' => $recommendation);
-            $poamTable->insert($finding);
-            
-            $rowNumber++;
-        }
-
-        if ($error != '') {
-            $this->message("The findings could not be inserted because one or more rows had errors:<br>$error",
+        } catch (Exception_InvalidFileFormat $e) {
+            $this->message("The file cannot be processed due to an error.<br>Row $rowNumber: {$e->getMessage()}",
                            self::M_WARNING);
             $this->render();
             // If this were a real transaction, we would roll back right here.
-        } else {
-            // Otherwise, we'd commit right here.
-            $rowsCommitted = $rowNumber - 3;
-            $this->message("$rowsCommitted findings were created.", self::M_NOTICE);
-            $this->render();
+            return;
         }
+
+        // If this were a real transaction, we'd commit right here.
+        $rowsCommitted = $rowNumber - $this->_excelTemplateStartRow;
+        $this->message("$rowsCommitted findings were created.", self::M_NOTICE);
+        $this->render();
     }
     
     /**
