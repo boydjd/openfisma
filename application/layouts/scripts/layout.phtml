@@ -54,10 +54,10 @@
 <div id="content">
 
 <div id='detail'>
-
-		<!-- This next call will now include any content that was generated in the
-		dispatching of a controllers action (or series of actions).  -->
-		<?php echo $this->layout()->content ?>
+        <?php echo $this->placeholder('prepend') ?>
+        <!-- This next call will now include any content that was generated in the
+        dispatching of a controllers action (or series of actions).  -->
+        <?php echo $this->layout()->content ?>
 
 </div><!--detail-->
 <div id='footer'>

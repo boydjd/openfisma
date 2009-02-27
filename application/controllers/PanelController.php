@@ -74,8 +74,8 @@ class PanelController extends SecurityController
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Account');
         $this->_helper->actionStack('searchbox', 'Account');
+        $this->_helper->actionStack($sub, 'Account');
         $this->_helper->actionStack('header');
     }
     public function searchAction()
@@ -106,39 +106,39 @@ class PanelController extends SecurityController
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'System');
         $this->_helper->actionStack('searchbox', 'System');
+        $this->_helper->actionStack($sub, 'System');
         $this->_helper->actionStack('header');
     }
     public function productAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Product');
         $this->_helper->actionStack('searchbox', 'Product');
+        $this->_helper->actionStack($sub, 'Product');
         $this->_helper->actionStack('header');
     }
     public function organizationAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Organization');
         $this->_helper->actionStack('searchbox', 'Organization');
+        $this->_helper->actionStack($sub, 'Organization');
         $this->_helper->actionStack('header');
     }
     public function sourceAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Source');
         $this->_helper->actionStack('searchbox', 'Source');
+        $this->_helper->actionStack($sub, 'Source');
         $this->_helper->actionStack('header');
     }
     public function networkAction()
     {
         $sub = $this->_request->getParam('sub');
-        $this->_helper->actionStack($sub, 'Network');
         $this->_helper->actionStack('searchbox', 'Network');
+        $this->_helper->actionStack($sub, 'Network');
         $this->_helper->actionStack('header');
     }
 
@@ -166,8 +166,8 @@ class PanelController extends SecurityController
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Role');
         $this->_helper->actionStack('searchbox', 'Role');
+        $this->_helper->actionStack($sub, 'Role');
         $this->_helper->actionStack('header');
     }
     public function logAction()

@@ -1,4 +1,5 @@
 <?php
+$this->placeholder('prepend')->captureStart();
 $fid_array = array('name'=>'Source Name','nickname'=>'Nickname');
 $this->declareVars(array('fid'=>'name'));
 ?>
@@ -44,3 +45,4 @@ Finding Source</a>]</th>
         </tr>
     </tbody>
 </table>
+<?php $this->placeholder('prepend')->captureEnd() ?>
