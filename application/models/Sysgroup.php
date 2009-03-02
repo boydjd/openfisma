@@ -21,6 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Model
  *
  * @todo This file doesn't fit into the OpenFISMA coding standards. It should be
  * refactored into a more fitting class, or else the comments should be

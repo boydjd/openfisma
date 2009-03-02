@@ -21,9 +21,18 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: basic.php 940 2008-09-27 13:40:22Z ryanyang $
+ * @package   Local
  *
  * @todo This class should be renamed. "Fisma" doesn't mean anything. Also this class serves multiple purposes. It
  * should be split up into separate classes that each serve a single purpose.
+ */
+
+/**
+ * The configuration of Fisma
+ *
+ * @package   Local
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class Config_Fisma
 {

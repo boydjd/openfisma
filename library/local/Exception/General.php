@@ -20,6 +20,7 @@
  * @author    Jim Chen <xhorse@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Local_Exception
  */
 
 /**
@@ -27,6 +28,7 @@
  *
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Local_Exception
  */
 class Exception_General extends Zend_Exception
 {
