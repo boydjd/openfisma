@@ -157,3 +157,14 @@ div.notice p {
     position:relative;
     top:4px;
 }
+
+/* add bgcolor to all row */
+tr.alt td { 
+    background:#ecf6fc;
+}
+    
+/* add bgcolor when mouseover */
+tr.over td { 
+    background:#bcd4ec;
+    cursor:pointer; 
+} 

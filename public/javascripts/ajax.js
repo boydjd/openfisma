@@ -20,6 +20,19 @@ function toggleIE6Selects(){
 
 $(document).ready(function(){
 
+   //Data Table Row Highlighting and Selection        
+   $(".tbframe tr").mouseover(function() {
+       $(this).addClass("over");}).mouseout(function() {
+            $(this).removeClass("over");})
+   $(".tbframe tr:even").addClass("alt");
+   //Click the table row to open the link
+   $(".tbframe tr").click(function() {
+       var link = $("#rowlink").attr("href");
+       if (link) {
+          window.location.href = link;
+       }
+   });
+
    $("a[@name=select_all]").click(function(){
        $(":checkbox").attr( 'checked','checked' );
    });
