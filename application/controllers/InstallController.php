@@ -340,7 +340,7 @@ class InstallController extends Zend_Controller_Action
         $this->getResponse()->clearBody();
     }
 
-    /*
+    /**
      * trim unnecessary comments or data from the input and output the pure sql
      *
      * @param string $data raw string mess with comments and unexcutable information
@@ -357,7 +357,7 @@ class InstallController extends Zend_Controller_Action
         return $execute;    
     }
 
-    /*
+    /**
      * Read from a sql dump file and execute then in a database.
      *
      * This function can handle a large data dump file. 

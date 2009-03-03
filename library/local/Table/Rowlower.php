@@ -35,6 +35,11 @@
 
 class Table_Rowlower extends Zend_Db_Table_Row_Abstract
 {
+    /**
+     * Transform the property name from fooBar to foo_bar .
+     *
+     * @param string $columnName 
+     */
     protected function _transformColumn($columnName) { 
         if (!is_string($columnName)) { 
             require_once 'Zend/Db/Table/Row/Exception.php'; 

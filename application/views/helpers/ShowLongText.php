@@ -21,6 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   View_Helper
  */
 
 /**
@@ -30,7 +31,7 @@ require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for determining if the content is more than 120 character. 
- *
+ * @package   View_Helper
  */
 class View_Helper_ShowLongText extends Zend_View_Helper_Abstract
 {

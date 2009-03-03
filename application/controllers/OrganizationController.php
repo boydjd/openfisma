@@ -112,7 +112,7 @@ class OrganizationController extends SecurityController
         $this->view->assign('links', $pager->getLinks());
     }
 
-    /*
+    /**
      * list the organizations from the search, if search none, it list all organizations
      */     
     public function listAction()

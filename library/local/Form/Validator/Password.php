@@ -50,6 +50,11 @@ class Form_Validator_Password extends Zend_Validate_Abstract
      */
     protected $_userRow = null;
 
+    /**
+     * @todo english
+     * Initialize $_userRow property
+     * @param Object $user 
+     */
     public function __construct($user = null)
     {
         if ($user !== null) {

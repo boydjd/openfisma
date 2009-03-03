@@ -24,8 +24,12 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Test_Model
  */
 
+/**
+ * Test_FismaUnitTest
+ */
 require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 
 /**

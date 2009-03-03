@@ -24,7 +24,9 @@
  * @package   Application
  */
 
-
+/**
+ * Config_Fisma
+ */
 require_once dirname(__FILE__) . "/../library/local/Config/Fisma.php";
 $fisma = Config_Fisma::getInstance();
 $fisma->bootstrap();
