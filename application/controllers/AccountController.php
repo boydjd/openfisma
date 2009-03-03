@@ -57,6 +57,9 @@ class AccountController extends SecurityController
                     ->initContext();
     }
 
+    /**
+     * preDispatch() - invoked before each Actions
+     */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -902,6 +905,10 @@ class AccountController extends SecurityController
         $this->_helper->viewRenderer->setNoRender();
     }
 
+    /**
+     * @todo english
+     * Fetch the password complexs requirements
+     */
     protected function _getPasswordRequirements()
     {
         $requirements[] = "Length must be between "

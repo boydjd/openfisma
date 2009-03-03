@@ -35,6 +35,10 @@ class LogController extends PoamBaseController
 {
     protected $_log = null;
 
+    /**
+     * @todo english
+     * init() - Initialize 
+     */
     function init()
     {
         parent::init();

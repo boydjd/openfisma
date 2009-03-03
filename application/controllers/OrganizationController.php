@@ -42,12 +42,20 @@ class OrganizationController extends SecurityController
         'perPage' => 20
     );
 
+    /**
+     * @todo english
+     * init() - Initialize 
+     */
     public function init()
     {
         parent::init();
         $this->_organization = new Organization();
     }
 
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         $req = $this->getRequest();

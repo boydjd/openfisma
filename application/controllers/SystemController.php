@@ -70,11 +70,21 @@ class SystemController extends SecurityController
         ) ,
         'flag' => TRUE
     );
+
+    /**
+     * @todo english
+     * Initialize this Class
+     */
     public function init()
     {
         parent::init();
         $this->_system = new System();
     }
+
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -116,7 +126,7 @@ class SystemController extends SecurityController
         return Form_Manager::prepareForm($form);
     }
 
-    /*
+    /**
      * list the systems from the search, if search none, it list all systems
      */     
     public function listAction()

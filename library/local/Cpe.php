@@ -91,7 +91,7 @@ class Cpe
     /**
      * __get() - Return the raw CPE name or one of the parsed CPE components
      *
-     * @param
+     * @param string field's name
      */
     public function __get($fieldName)
     {

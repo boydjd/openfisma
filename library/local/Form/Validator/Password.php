@@ -58,6 +58,13 @@ class Form_Validator_Password extends Zend_Validate_Abstract
         }
     }
 
+    /** 
+     * @todo english
+     * Check the password whether is suited for complex
+     * @param string $pass password
+     * @param array $context post data from client's form
+     * @return true|false
+     */
     public function isValid($pass, $context=null)
     {
         $this->_messageTemplates = array(

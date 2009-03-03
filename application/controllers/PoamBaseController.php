@@ -53,6 +53,11 @@ class PoamBaseController extends SecurityController
         'currentPage' => 1,
         'perPage' => 20
     );
+
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -75,6 +80,13 @@ class PoamBaseController extends SecurityController
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
     
+
+    /**
+     * parse the url form the search filter
+     *
+     * @param array $criteria
+     * @return string
+     */
     public function makeUrl($criteria)
     {
         $this->_pagingBasePath.= $this->makeUrlParams($criteria);

@@ -156,6 +156,10 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         $router->addRoute('no_install', $route['no_install']);
     }
 
+    /**
+     * @todo english
+     * Initialize the controller's directory
+     */
     public function initControllers()
     {
         $this->_front->setControllerDirectory(array(

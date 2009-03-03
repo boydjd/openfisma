@@ -59,12 +59,20 @@ class RoleController extends SecurityController
         'flag' => TRUE
     );
 
+    /**
+     * @todo english
+     * Initilize this Class
+     */
     public function init()
     {
         parent::init();
         $this->_role = new Role();
     }
 
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         parent::preDispatch();

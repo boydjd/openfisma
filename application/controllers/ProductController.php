@@ -42,12 +42,20 @@ class ProductController extends SecurityController
         'perPage' => 20
     );
 
+    /**
+     * @todo english
+     * Initilize Class
+     */
     public function init()
     {
         parent::init();
         $this->_product = new Product();
     }
 
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         $req = $this->getRequest();

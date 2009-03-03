@@ -48,6 +48,12 @@ class Form_Validator_PasswdMatch extends Zend_Validate_Abstract
         $this->_userRow = $user;
     }
 
+    /** 
+     * @todo english
+     * Validate the password
+     * @param string $pass password
+     * @return true|false
+     */
     public function isValid($pass)
     {
         $user = $this->_userRow->getTable();

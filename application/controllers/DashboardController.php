@@ -36,12 +36,20 @@ class DashboardController extends SecurityController
 {
     protected $_poam = null;
     protected $_allSystems = null;
+
+    /**
+     * init() - Initialize internal members.
+     */
     function init()
     {
         parent::init();
         $sys = new System();
         $this->_allSystems = $this->_me->systems;
     }
+
+    /**
+     * preDispatch() - invoked before each Actions
+     */
     function preDispatch()
     {
         parent::preDispatch();

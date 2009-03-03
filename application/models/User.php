@@ -50,6 +50,9 @@ class User extends FismaModel
     const SYS = 'SYSTEM';
     const ROLE = 'ROLE';
 
+    /**
+     * Initialize this Class
+     */
     public function init ()
     {
         $writer = new Zend_Log_Writer_Db($this->_db, $this->_logName,
@@ -59,10 +62,9 @@ class User extends FismaModel
         }
     }
     /**
-        Get specified user's roles
-
-        @param $id the user id
-        @return array of role nickname
+     * Get specified user's roles
+     * @param $id the user id
+     * @return array of role nickname
      */
     public function getRoles ($id, $fields = array('nickname'=>'nickname'))
     {
@@ -78,11 +80,9 @@ class User extends FismaModel
         return $db->fetchAll($qry);
     }
     /**
-        Retrieve the systems that the user belongs to
-
-        @param $id user id
-        @return array the system ids
-
+     * Retrieve the systems that the user belongs to
+     * @param $id user id
+     * @return array the system ids
      */
     public function getMySystems ($id)
     {

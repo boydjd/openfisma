@@ -34,12 +34,21 @@
  */
 class MetainfoController extends PoamBaseController
 {
+    /**
+     * @todo english
+     * init() - Initialize 
+     */
     public function init()
     {
         parent::init();
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('list', 'html')->initContext();
     }
+
+    /**
+     * @todo english
+     * List meta data on the remediation detail page
+     */
     public function listAction()
     {
         $req = $this->getRequest();

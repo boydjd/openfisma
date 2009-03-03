@@ -42,12 +42,20 @@ class SourceController extends SecurityController
         'perPage' => 20
     );
 
+    /**
+     * @todo english
+     * Initialize this Class
+     */
     public function init()
     {
         parent::init();
         $this->_source = new Source();
     }
 
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -214,6 +222,9 @@ class SourceController extends SecurityController
         }
     }
 
+    /**
+     * Delete a singal source
+     */
     public function deleteAction()
     {
         $this->_acl->requirePrivilege('admin_sources', 'delete');

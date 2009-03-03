@@ -691,6 +691,13 @@ class Poam extends Zend_Db_Table
         return $ret;
     }
 
+    /** 
+     * @todo english
+     * Insert decision to the poam_evaluations
+     * @param int $eid evidence id
+     * @param array $review post evaluation data
+     * @return int Last insert id
+     */
     public function reviewEv ($eid, $review)
     {
         $data = array_merge(array('group_id' => $eid), $review);
@@ -738,6 +745,10 @@ class Poam extends Zend_Db_Table
         $result = $this->_db->insert('audit_logs', $data);
     }
     
+    /**
+     * This method is not available
+     * @todo delete it
+     */
     public function fismasearch ($agency)
     {
         $flag = substr($agency, 0, 1);
@@ -751,6 +762,7 @@ class Poam extends Zend_Db_Table
                         array('system_id' => 'system_id'))
                     ->where("sgs.sysgroup_id = " . $fsaSysgroupId . "
                         AND sgs.system_id != " . $fpSystemId . "");
+       
         $result = $db->fetchCol($query);
         $systemIds = implode(',', $result);
         $query = $db->select()->distinct()

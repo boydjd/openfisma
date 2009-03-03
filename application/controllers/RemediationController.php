@@ -747,6 +747,9 @@ class RemediationController extends PoamBaseController
         ));
     }
 
+    /**
+     * Upload evidence 
+     */
     public function uploadevidenceAction()
     {
         $this->_acl->requirePrivilege('remediation', 'update_evidence');
@@ -819,6 +822,7 @@ class RemediationController extends PoamBaseController
         }
         $this->_redirect('/panel/remediation/sub/view/id/' . $id);
     }
+
     /**
      *  Handle the evidence evaluations
      */

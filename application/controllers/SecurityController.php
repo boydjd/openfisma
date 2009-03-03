@@ -100,6 +100,10 @@ class SecurityController extends MessageController
         $this->view->assign('acl', $this->_acl);
     }
 
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         if (empty($this->_me)) {
@@ -117,6 +121,12 @@ class SecurityController extends MessageController
             }
         }
     }
+
+    /**
+     * initialize access control to a singal user
+     * @param int $uid 
+     * @return object $acl
+     */
     protected function initializeAcl($uid)
     {
         if (!Zend_Registry::isRegistered('acl')) {

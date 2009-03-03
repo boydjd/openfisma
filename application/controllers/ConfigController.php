@@ -39,6 +39,9 @@ class ConfigController extends SecurityController
      */
     private $_config = null;
 
+    /**
+     * init() - Initialize internal members.
+     */
     public function init()
     {
         parent::init();
@@ -62,6 +65,10 @@ class ConfigController extends SecurityController
         return $form;
     }
 
+    /**
+     * @todo english
+     * The default Action
+     */
     public function indexAction()
     {
         $this->_acl->requirePrivilege('app_configuration', 'update');

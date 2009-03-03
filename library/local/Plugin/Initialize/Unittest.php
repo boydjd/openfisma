@@ -33,6 +33,9 @@
  */
 class Plugin_Initialize_Unittest extends Plugin_Initialize_Webapp
 {
+    /**
+     * Initialize the datebase resource
+     */
     public function initDb()
     {
         parent::initDb();

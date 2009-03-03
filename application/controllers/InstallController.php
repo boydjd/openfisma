@@ -33,17 +33,32 @@
  */
 class InstallController extends Zend_Controller_Action
 {
+
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         $this->_helper->layout->setLayout('install');
         //Judge if there is necessary to install
         
     }
+
+    /**
+     * @todo english
+     * Default Action
+     */
     public function indexAction()
     {
         $this->view->back = '';
         $this->view->next = '/install/envcheck';
     }
+
+    /**
+     * @todo english
+     * Check the current environment for installing system
+     */
     public function envcheckAction()
     {
         define('REQUEST_PHP_VERSION', '5');
@@ -60,6 +75,11 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '';
         }
     }
+
+    /**
+     * @todo english
+     * Check the the dir whether is writable
+     */
     public function checkingAction()
     {
         $wDirectories = array(
@@ -89,6 +109,11 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '';
         }
     }
+
+    /**
+     * @todo english
+     * Configurate the database
+     */
     public function dbsettingAction()
     {
         $this->view->installpath = dirname(dirname(dirname(__FILE__)));
@@ -100,6 +125,11 @@ class InstallController extends Zend_Controller_Action
         $this->view->back = '/install/checking';
         $this->view->next = '/install/dbreview';
     }
+
+    /**
+     * @todo english
+     * Review the database's configuration
+     */
     public function dbreviewAction()
     {
         $dsn = $this->_getParam('dsn');
@@ -157,6 +187,11 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '/install/initial';
         }
     }
+
+    /**
+     * @todo english
+     * Initilize the system
+     */
     public function initialAction()
     {
         $dsn = $this->_getParam('dsn');
@@ -270,11 +305,21 @@ class InstallController extends Zend_Controller_Action
         $this->view->back = '/install/dbsetting';
         $this->render('initial');
     }
+
+    /**
+     * @todo english
+     * Completing the installation
+     */
     public function completeAction()
     {
         $this->view->title = 'Install complete';
         $this->view->next = '/user/login';
     }
+
+    /**
+     * @todo english
+     * Handling the error
+     */
     public function errorAction()
     {
         $content = null;

@@ -62,12 +62,20 @@ class NetworkController extends SecurityController
         'flag' => TRUE
     );
 
+    /**
+     * @todo english
+     * init() - Initialize 
+     */
     public function init()
     {
         parent::init();
         $this->_network = new Network();
     }
 
+    /**
+     * @todo english
+     * Invoked before each Action
+     */
     public function preDispatch()
     {
         $this->_pagingBasePath = $this->_request->getBaseUrl() .

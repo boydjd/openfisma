@@ -40,6 +40,10 @@
 class AssetController extends PoamBaseController
 {
     protected $_asset = null;
+
+    /**
+     * init() - Initialize internal members.
+     */
     function init()
     {
         parent::init();
@@ -60,6 +64,10 @@ class AssetController extends PoamBaseController
             ));
         }
     }
+
+    /**
+     * preDispatch() - invoked before each Actions
+     */
     public function preDispatch()
     {
         parent::preDispatch();

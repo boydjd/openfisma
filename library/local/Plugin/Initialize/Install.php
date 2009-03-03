@@ -32,10 +32,19 @@
  */
 class Plugin_Initialize_Install extends Plugin_Initialize_Webapp
 {
+
+    /**
+     * @todo english
+     * Set database resource
+     */
     public function initDb()
     {//overload the parent initDb doing nothing here
     }
 
+    /**
+     * @todo english
+     * Initialize Zend_Controller's Router Object
+     */
     public function initRouters()
     {
         $router = $this->_front->getRouter();
