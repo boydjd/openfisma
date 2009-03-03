@@ -27,7 +27,9 @@
  * @package   Test
  */
 
-// Run the application bootstrap in command line mode
+/**
+ * Run the application bootstrap in command line mode
+ */
 define('COMMAND_LINE', true);
 require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php")); 
 define('TEST', Config_Fisma::getPath() . '/tests');

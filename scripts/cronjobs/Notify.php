@@ -25,6 +25,7 @@
  */
 
 /**
+ * @ignore
  * Indicates that we're running a command line tool, not responding to an http
  * request. This prevents the interface from being rendered.
  */

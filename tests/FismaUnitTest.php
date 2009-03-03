@@ -24,9 +24,13 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Test
  */
 
-// Run the application bootstrap in command line mode
+/**
+ * @ignore
+ * Run the application bootstrap in command line mode
+ */
 if (!defined('COMMAND_LINE')) {
     define('COMMAND_LINE', true);
     require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php"));

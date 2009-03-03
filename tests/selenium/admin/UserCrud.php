@@ -27,6 +27,9 @@
  * @package    Test
  */
 
+/**
+ * Test_FismaSeleniumTest
+ */
 require_once(realpath(dirname(__FILE__) . '/../../FismaSeleniumTest.php'));
 
 /**

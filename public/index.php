@@ -24,13 +24,15 @@
  * @package   Application
  */
 
-// REQUIRE APPLICATION BOOTSTRAP: Perform application-specific setup
-// This allows you to setup the MVC environment to utilize. Later you 
-// can re-use this file for testing your applications.
-// The try-catch block below demonstrates how to handle bootstrap 
-// exceptions. In this application, if defined a different 
-// APPLICATION_ENVIRONMENT other than 'production', we will output the 
-// exception and stack trace to the screen to aid in fixing the issue
+/**
+ * REQUIRE APPLICATION BOOTSTRAP: Perform application-specific setup
+ * This allows you to setup the MVC environment to utilize. Later you 
+ * can re-use this file for testing your applications.
+ * The try-catch block below demonstrates how to handle bootstrap 
+ * exceptions. In this application, if defined a different 
+ * APPLICATION_ENVIRONMENT other than 'production', we will output the
+ * exception and stack trace to the screen to aid in fixing the issue 
+ */
 try {
     require '../application/bootstrap.php';
 } catch (Exception $exception) {
