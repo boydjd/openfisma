@@ -132,21 +132,23 @@ class FindingController extends PoamBaseController
         if (!is_array($file)) {
             $this->message("The file upload failed.", self::M_WARNING);
             return;
-        }
-
-        // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
-        try {
-            $injectExcel = new Inject_Excel();
-            $rowsProcessed = $injectExcel->inject($file['tmp_name']);
-            // If this were a real transaction, we'd commit right here.
-            /** @todo use database transaction */
-            $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
-        } catch (Exception_InvalidFileFormat $e) {
-            $this->message("The file cannot be processed due to an error.<br>{$e->getMessage()}",
+        } elseif (empty($file['name'])) {
+            $this->message('You did not select a file to upload. Please select a file and try again.', 
                            self::M_WARNING);
-            // If this were a real transaction, we would roll back right here.
+        } else {
+            // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
+            try {
+                $injectExcel = new Inject_Excel();
+                $rowsProcessed = $injectExcel->inject($file['tmp_name']);
+                // If this were a real transaction, we'd commit right here.
+                /** @todo use database transaction */
+                $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
+            } catch (Exception_InvalidFileFormat $e) {
+                $this->message("The file cannot be processed due to an error.<br>{$e->getMessage()}",
+                               self::M_WARNING);
+                // If this were a real transaction, we would roll back right here.
+            }
         }
-        
         $this->render();
     }
     
@@ -349,11 +351,20 @@ class FindingController extends PoamBaseController
         $this->view->assign('uploadForm', $uploadForm);
 
         // Handle the file upload, if necessary
-        $fileReceived = false;
         $postValues = $this->_request->getPost();
 
         if (isset($_POST['submit'])) {
-            if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
+            $isValid = $uploadForm->isValid($postValues);
+            $fileReceived = $uploadForm->selectFile->receive();
+            $fileName = $uploadForm->selectFile->getFileName();
+            // For some reason, Zend_Form will validate a file upload even if the user didn't select a file. So it is 
+            // necessary to check that the file actually exists before trying to use it.
+            $errorString = '';
+            if (!is_file($fileName)) {
+                $errorString = 'You did not select a file to upload. Please select a file and try again.<br>';
+            }
+
+            if ($isValid && $fileReceived && empty($errorString)) {
                 // Get information about the plugin, and then create a new instance of the plugin.
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
                 $pluginTable = new Plugin();
@@ -383,7 +394,6 @@ class FindingController extends PoamBaseController
                  * but before that can be done, the function it calls needs to be
                  * put in a more convenient place
                  */
-                $errorString = '';
                 foreach ($uploadForm->getMessages() as $field => $fieldErrors) {
                     if (count($fieldErrors)>0) {
                         foreach ($fieldErrors as $error) {
@@ -391,10 +401,6 @@ class FindingController extends PoamBaseController
                             $errorString .= "$label: $error<br>";
                         }
                     }
-                }
-
-                if (!$fileReceived) {
-                    $errorString .= "File not received<br>";
                 }
 
                 // Error message
