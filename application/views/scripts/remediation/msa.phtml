@@ -34,7 +34,7 @@ function delok()
     if (0 == $complete) {
 ?>
 
-<?php if ('DRAFT' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) { ?>
+<?php if (('DRAFT' == $this->poam['status'] || 'NEW' == $this->poam['status']) && $this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) { ?>
     <a class="button" href="<?php echo $postAction;?>/is_msa/1">Submit Mitigation Strategy</a><br><br>
 <?php } if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_revise')) { ?>
     <a class="button" href="<?php echo $postAction;?>/is_msa/0" onclick="return delok();">Revise Mitigation Strategy</a><br><br>
