@@ -56,8 +56,9 @@ class Notification extends FismaModel
     const UPDATE_FINDING_RECOMMENDATION = 12;
     const UPDATE_FINDING_RESOURCES = 13;
     const UPDATE_EST_COMPLETION_DATE = 14;
-    
+
     const MITIGATION_STRATEGY_APPROVED = 15;
+    const MITIGATION_STRATEGY_SUBMIT = 54;
     const POAM_CLOSED = 16;
     
     const EVIDENCE_UPLOAD = 17;
