@@ -31,6 +31,7 @@ displayGroups.finding_upload.elements.network = "network"
 
 elements.selectFile.type = "file"
 elements.selectFile.options.label = "Select File"
+elements.selectFile.options.required = true
 displayGroups.finding_upload.elements.selectFile = "selectFile"
 ; Validators for the file input:
 ; 1) File count must be 1

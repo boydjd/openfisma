@@ -49,6 +49,7 @@ displayGroups.system.elements.desc = "desc"
 
 elements.confidentiality.type = "select"
 elements.confidentiality.options.label = "Confidentiality"
+elements.confidentiality.options.required = true
 displayGroups.system.elements.confidentiality = "confidentiality"
 
 elements.confidentiality_justification.type = "textarea"
