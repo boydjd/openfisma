@@ -26,7 +26,7 @@ $(document).ready(function(){
             $(this).removeClass("over");})
    $(".tbframe tr:even").addClass("alt");
    //Click the table row to open the link
-   $(".tbframe tr").click(function() {
+   $("#poam_list tr").click(function() {
        var link = $(this).find("td:last-child a").attr('href');
        window.location.href = link
    });

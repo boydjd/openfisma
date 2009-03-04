@@ -3,19 +3,29 @@ $output_cols = array(
 'ID#',
 'Source',
 'System',
+'Asset',
 'Type',
 'Status',
 'On Time?',
 'Description',
-'ECD',
-'Server/Database',
-'Location',
-'Threat Level',
 'Recommendation',
 'Corrective Action',
-'Control Y/N',
-'Threats Y/N',
-'Countermeasures Y/N');
+'Blscr',
+'Threat Level',
+'Threat Description',
+'Cmeasures Effectiveness',
+'Cmeasures Description',
+'Attachments',
+'ECD');
+
+
+$columnsArray = str_split($this->columnPreference);
+$i = 0;
+foreach ($output_cols as $key=>$row) {
+    if ($columnsArray[$i++] == '0') {
+        unset($output_cols[$key]);
+    }
+}
 
 $count_cols = count($output_cols);
 // Taking Spreadsheet_Excel_Writer to generate the excel file
@@ -43,17 +53,22 @@ $format_times->setAlign('left');
 $format_times->setAlign('top');
 $format_times->setTextWrap();
 $rowi=0;
+$worksheet->setColumn(0,0,20);
+$worksheet->mergeCells($rowi, 0, $rowi, $count_cols-1);
 $headinfo="Report run time: ".date("Y-m-d H:i:s");
 $worksheet->write($rowi++, 0, $headinfo,$format_times);
+
 $worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);
 $worksheet->write($rowi++, 0, 'Results',$format_header);
 // Set the width of a single column or a range of columns.
-$worksheet->setColumn(0,0,30);
+$worksheet->setColumn(0,0,10);
 $worksheet->setColumn(2,2,50);
 $worksheet->setColumn(3,8,10);
 $worksheet->setColumn(9,10,50);
 $worksheet->setColumn(11,14,15);
 //inject the titles
+
+
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
 foreach( $this->list as $p ) {
@@ -62,19 +77,27 @@ foreach( $this->list as $p ) {
         $p['id'],
         $p['source_id'] != 0 ? $this->source_list[$p['source_id']] : 'n/a',
         $this->system_list[$p['system_id']],
+        $p['asset_name'],
         $p['type'],
         $p['status'],
         $p['on_time'],
         $p['finding_data'],
-        $p['action_current_date'],
-        $p['ip'],
-        !empty($p['network_id'])?$this->network_list[$p['network_id']]:'',
-        $p['threat_level'],
         $p['action_suggested'],
         $p['action_planned'],
-        NULL == $p['blscr_id'] ? 'N' : 'Y',
-        $p['threat_level'] != 'NONE' && $p['threat_source'] != '' && $p['threat_justification'] != '' ? 'Y' : 'N',
-        $p['cmeasure_effectiveness'] != 'NONE' && $p['cmeasure_effectiveness'] != '' && $p['cmeasure_justification'] != '' ? 'Y' : 'N');
+        $p['blscr_id'],
+        $p['threat_level'],
+        $p['threat_source'],
+        $p['cmeasure_effectiveness'],
+        $p['cmeasure'],
+        $p['attachments'],
+        $p['action_current_date']);
+
+    $i = 0;
+    foreach ($data as $key=>$row) {
+        if ($columnsArray[$i++] == '0') {
+            unset($data[$key]);
+        }
+    }
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
 $workbook->close();

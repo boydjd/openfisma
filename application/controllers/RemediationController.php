@@ -80,14 +80,6 @@ class RemediationController extends PoamBaseController
                         'Content-Type' => 'application/vnd.ms-excel')))
                    ->addActionContext('search', array('xls'))->setAutoDisableLayout(true);
         }
-        if (!$attach->hasContext('rss')) {
-             $attach->addContext('rss', 
-                array('suffix' => 'rss',
-                    'headers' => array(
-                    'Content-Type' => 'application/rss+xml; charset=UTF-8')))
-                    ->addActionContext('search', array('rss'))
-                    ->setAutoDisableLayout(true);
-        }
     }
     
     /**
@@ -427,6 +419,11 @@ class RemediationController extends PoamBaseController
                 $row['threat_justification'] = trim(html_entity_decode($row['threat_justification']));
                 $row['threat_source'] = trim(html_entity_decode($row['threat_source']));
                 $row['cmeasure_effectiveness'] = trim(html_entity_decode($row['cmeasure_effectiveness']));
+
+                $user = new User();
+                $ret = $user->find($this->_me->id)->current();
+                $columnPreference = $ret->search_columns_pref;
+                $this->view->columnPreference = $columnPreference;
             }
         }
         

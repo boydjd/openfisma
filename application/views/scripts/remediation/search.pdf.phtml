@@ -3,28 +3,24 @@ $cols = array (
     'id' => 'ID#',
     'source_name' => 'Source',
     'system_name' => 'System',
+    'asset_name'  => 'Asset',
     'type' => 'Type',
     'status' => 'Status',
     'on_time' => 'On Time?',
     'finding_data' => 'Description',
-    'action_current_date' => 'ECD',
-    'ip' => 'Server/Database',
-    'network_name' => 'Location',
-    'threat_level' => 'Threat Level',
     'action_suggested' => 'Recommendation',
     'action_planned' =>'Corrective Action',
-    'blscr_id' => 'Control Y/N',
-    'threats' => 'Threats Y/N',
-    'cmeasure_effectiveness' => 'Countermeasures Y/N');
+    'blscr_id' => 'Blscr',
+    'threat_level' => 'Threat Level',
+    'threat_source' => 'Threat Description',
+    'cmeasure_effectiveness' => 'Cmeasures Effectiveness',
+    'cmeasure' => 'Cmeasures Description',
+    'attachments' => 'Attachments',
+    'action_current_date' => 'ECD'
+    );
 
-foreach($this->list as &$row) {
-    $row['system_name']=empty($row['system_id'])? 'N/A':$this->system_list[$row['system_id']];
-    $row['source_name']=empty($row['source_id'])? 'N/A':$this->source_list[$row['source_id']];
-    $row['on_time'] = $this->isOnTime($row['duetime']);
-    $row['network_name']=empty($row['network_id'])? 'N/A':$this->network_list[$row['network_id']];
-    $row['blscr_id'] = (NULL == $row['blscr_id']) ? 'N' : 'Y';
-    $row['threats'] = ($row['threat_level'] != 'NONE' && $row['threat_source'] != '' && $row['threat_justification'] != '') ? 'Y' : 'N';
-    $row['cmeasure_effectiveness'] = ($row['cmeasure_effectiveness'] != 'NONE' && $row['cmeasure_effectiveness'] != '' && $row['cmeasure_justification']) != '' ? 'Y' : 'N';
+foreach($this->list as $key=>$row) {
+    $this->list[$key]['on_time'] = $this->isOnTime($row['duetime']);
 }
 
 define('REPORT_FOOTER_WARNING', "WARNING: This report is for internal, official use only.  This report contains sensitive computer security related information. Public disclosure of this information would risk circumvention of the law. Recipients of this report must not, under any circumstances, show or release its contents for purposes other than official action. This report must be safeguarded to prevent improper disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.");
@@ -95,6 +91,13 @@ if( isset($this->criteria['source_id']) ) {
 }
 
 $pdf->ezText('Plans of Actions And Milestones Report Administration',16,array('justification'=>'center'));
+$columnsArray = str_split($this->columnPreference);
+$i = 0;
+foreach ($cols as $key=>$row) {
+    if ($columnsArray[$i++] == '0') {
+        unset($cols[$key]);
+    }
+}
 $pdf->ezTable($this->list,$cols,$title,
     array('fontSize'=>8,'maxWidth'=>$content_width, 'titleFontSize'=>'12' ));
 
