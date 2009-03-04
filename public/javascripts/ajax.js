@@ -27,10 +27,8 @@ $(document).ready(function(){
    $(".tbframe tr:even").addClass("alt");
    //Click the table row to open the link
    $(".tbframe tr").click(function() {
-       var link = $("#rowlink").attr("href");
-       if (link) {
-          window.location.href = link;
-       }
+       var link = $(this).find("td:last-child a").attr('href');
+       window.location.href = link
    });
 
    $("a[@name=select_all]").click(function(){
