@@ -100,6 +100,14 @@ div.form {
 
 }
 
+div.formValue {
+    background-color: white;
+    border: 1px solid #bebebe;
+    padding: 5px;
+    color: black;
+    font-weight: normal;
+}
+
 div.subform {
     margin: 15px 0px;
 }

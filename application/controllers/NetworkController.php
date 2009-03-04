@@ -170,9 +170,7 @@ class NetworkController extends SecurityController
         } else {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/network/sub/view/id/$id/v/edit");
-            foreach ($form->getElements() as $element) {
-                $element->setAttrib('disabled', 'disabled');
-            }
+            $form->setReadOnly(true);            
         }
         $form->setDefaults($network);
         $this->view->form = $form;

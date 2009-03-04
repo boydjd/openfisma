@@ -37,9 +37,9 @@ displayGroups.finding_upload.elements.selectFile = "selectFile"
 elements.selectFile.options.validators.count.validator = "Count"
 elements.selectFile.options.validators.count.options.max = 1
 elements.selectFile.options.validators.count.options.min = 1
-; 2) Size must be less than 1MB
+; 2) Size must be less than 5MB
 elements.selectFile.options.validators.size.validator = "Size"
-elements.selectFile.options.validators.size.options.max = 1048576
+elements.selectFile.options.validators.size.options.max = 5242880
 ; 3) Extension must be 'xml'
 elements.selectFile.options.validators.extension.validator = "Extension"
 elements.selectFile.options.validators.extension.options.extension = "xml"

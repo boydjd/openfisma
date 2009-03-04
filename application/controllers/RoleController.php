@@ -168,9 +168,7 @@ class RoleController extends SecurityController
         } else {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/role/sub/view/id/$id/v/edit");
-            foreach ($form->getElements() as $element) {
-                $element->setAttrib('disabled', 'disabled');
-            }
+            $form->setReadOnly(true);            
         }
         $form->setDefaults($role);
         $this->view->form = $form;

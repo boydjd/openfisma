@@ -92,7 +92,7 @@ class AccountController extends SecurityController
                  ->addMultiOptions(array($row['id'] => $row['name']));
         }
 
-        $checkboxMatrix = new Form_CheckboxMatrix('systems');
+        $checkboxMatrix = new Form_Element_CheckboxMatrix('systems');
         foreach ($system->getList() as $id => $systemData) {
             $checkboxMatrix->addCheckbox($id, $systemData['name']);
         }
@@ -269,9 +269,7 @@ class AccountController extends SecurityController
             // In view mode, disable all of the form controls
             $this->view->assign('editLink',
                                 "/panel/account/sub/view/id/$id/v/edit");
-            foreach ($form->getElements() as $element) {
-                $element->setAttrib('disabled', 'disabled');
-            }
+            $form->setReadOnly(true);
         }
         
         // Assign view outputs

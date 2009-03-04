@@ -21,15 +21,13 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Plugin_Initialize
  *
  */
 
 /**
  * Initialize the web application front
- * @package   Plugin_Initialize
  */
-class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
+class Plugin_Bootstrap_Webapp extends Zend_Controller_Plugin_Abstract
 {
 
     /**
@@ -79,6 +77,7 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         $this->initDb();
         $this->initHelpers();
         $this->initView();
+        $this->initPlugins();
         $this->initRouters();
     }
 
@@ -124,6 +123,13 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
     }
 
     /**
+     * Initialize plugins
+     */
+    public function initPlugins()
+    {
+    }
+
+    /**
      * Initialize the routers
      * 
      * Using the default router
@@ -156,10 +162,6 @@ class Plugin_Initialize_Webapp extends Zend_Controller_Plugin_Abstract
         $router->addRoute('no_install', $route['no_install']);
     }
 
-    /**
-     * @todo english
-     * Initialize the controller's directory
-     */
     public function initControllers()
     {
         $this->_front->setControllerDirectory(array(

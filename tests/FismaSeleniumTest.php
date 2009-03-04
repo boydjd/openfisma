@@ -31,9 +31,10 @@
  * @ignore
  * Run the application bootstrap in command line mode
  */
-if (!defined('COMMAND_LINE')) {
-    define('COMMAND_LINE', true);
-    require_once(realpath(dirname(__FILE__)."/../application/bootstrap.php"));
+require_once dirname(__FILE__) . "/../library/local/Config/Fisma.php";
+$fisma = Config_Fisma::getInstance();
+if (!$fisma->isInstall()) {
+    die('Please install!');
 }
 
 // Load the base class
@@ -150,24 +151,18 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
 
         // Create the user
         $userTable = new User($this->_db);
-        $userId = $userTable->insert(
-            array(
+        $userId = $userTable->insert(array(
                 'account' => self::USER_NAME,
                 'password' => $userTable->digest(self::PASSWORD),
                 'is_active' => 1,
                 'password_ts' => new Zend_Db_Expr('now()'),
-                'last_rob' => new Zend_Db_Expr('now()')
-            )
-        );
+                'last_rob' => new Zend_Db_Expr('now()')));
 
         // Give the new user the specified role
-        $grantRole = $this->_db->prepare(
-            "INSERT INTO user_roles
-                  SELECT $userId,
-                         r.id
+        $grantRole = $this->_db->prepare("INSERT INTO user_roles
+                  SELECT $userId, r.id
                     FROM roles r
-                   WHERE r.nickname like '$role'"
-        );
+                   WHERE r.nickname like '$role'");
         $grantRole->execute();
     }
 

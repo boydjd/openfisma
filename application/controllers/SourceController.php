@@ -151,9 +151,7 @@ class SourceController extends SecurityController
         } else {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/source/sub/view/id/$id/v/edit");
-            foreach ($form->getElements() as $element) {
-                $element->setAttrib('disabled', 'disabled');
-            }
+            $form->setReadOnly(true);            
         }
         $form->setDefaults($source);
         $this->view->form = $form;

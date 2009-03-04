@@ -28,12 +28,15 @@
  * Indicates that we're running a command line tool, not responding to an http
  * request. This prevents the interface from being rendered.
  */
-define('COMMAND_LINE', true);
-
-require_once (realpath(dirname(__FILE__)."/../../application/bootstrap.php"));
-
-// Kick off the main routine:
-ECDNotifier::run();
+require_once dirname(__FILE__) . "/../../library/local/Config/Fisma.php";
+$fisma = Config_Fisma::getInstance();
+$fisma->unitBootstrap();
+if ($fisma->isInstall()) {
+    // Kick off the main routine:
+    ECDNotifier::run();
+} else {
+    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
+}
 
 /**
  * This class scans for any findings which have ECDs expiring today, in 7 days,

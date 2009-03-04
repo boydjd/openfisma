@@ -680,19 +680,20 @@ class RemediationController extends PoamBaseController
                     $poam['action_est_date'] = $oldpoam['action_current_date'];
                 }
                 
-                $event = new Event();
-                $ret = $event->fetchRow('name = "Mitigation Strategy Submit"');
-                $ret = $ret->toArray();
-                if (!empty($ret)) {
-                    $this->_notification->add($ret['id'],
-                                              $this->_me->account,
-                                              "PoamId: $poamId",
-                                              $oldpoam['system_id']);
-                }
+                $this->_notification->add(Notification::MITIGATION_STRATEGY_SUBMIT,
+                                          $this->_me->account,
+                                          "PoamId: $poamId",
+                                          $oldpoam['system_id']);
+                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
             //Revise Mitigation Strategy
             } else {
                 $poam['status'] = 'DRAFT';
+                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
             }
+            
+            $this->_poam->writeLogs($poamId, $this->_me->id, 
+                 self::$now->toString('Y-m-d H:i:s'), 
+                 'MODIFICATION', $logContent);
         }
 
         if (!empty($decision)) {

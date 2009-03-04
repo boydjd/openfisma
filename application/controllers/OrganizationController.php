@@ -171,9 +171,7 @@ class OrganizationController extends SecurityController
             // In view mode, disable all of the form controls
             $this->view->assign('editLink',
                                 "/panel/organization/sub/view/id/$id/v/edit");
-            foreach ($form->getElements() as $element) {
-                $element->setAttrib('disabled', 'disabled');
-            }
+            $form->setReadOnly(true);
         }
         $form->setDefaults($organization);
         $this->view->form = $form;

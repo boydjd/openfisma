@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Form
  */
 
 /**
@@ -31,7 +30,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Form_CheckboxMatrix extends Zend_Form_Element
+class Form_Element_CheckboxMatrix extends Zend_Form_Element
 {
     protected $_checkboxes = array();
     protected $_defaults = array();
@@ -90,8 +89,10 @@ class Form_CheckboxMatrix extends Zend_Form_Element
         $rowCount = ceil($systemCount / $columnCount);
         
         // These HTML attributes are the same for all checkboxes
-        $disabled = $this->getAttrib('disabled') == 'disabled'
-                    ? ' disabled=\'disabled\'' : '';
+        $disabled = '';
+        if ($this->readOnly) {
+            $disabled = ' disabled=\'disabled\'';
+        }
         $class = $this->getAttrib('class') != ''
                  ? ' class=\''.$this->getAttrib('class').'\'' : '';
 
@@ -126,8 +127,8 @@ class Form_CheckboxMatrix extends Zend_Form_Element
         // @todo put the javascript here instead of in the view directly
         $render .= "<tr><td colspan='$columnCount'>"
                  . "<input type='button' name='select_none'"
-                 . " value='Select None'>&nbsp;"
-                 . "<input type='button' name='select_all' value='Select All'>";
+                 . " value='Select None'$disabled>&nbsp;"
+                 . "<input type='button' name='select_all' value='Select All'$disabled>";
         
         return $render;
     }
