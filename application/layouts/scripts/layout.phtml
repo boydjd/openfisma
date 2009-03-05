@@ -1,13 +1,18 @@
-<?php echo $this->doctype() ?> <!-- This Line will output the doctype we set inside the bootstrap file -->
-
+<?php echo "{$this->doctype()}\n" ?>
 <html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+    <head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 
-	<?php 
-		$this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
-		echo $this->headTitle();
-	?>
+<?php 
+	echo $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
+    Yui::includeLibrary('yahoo-dom-event');
+    Yui::includeLibrary('container');
+    Yui::includeLibrary('menu');
+    Yui::includeLibrary('json');
+    Yui::includeLibrary('connection');
+    Yui::includeLibrary('logger');
+	echo Yui::printIncludes();
+?>
 
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery-1.2.6.min.js"></script>
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery-ui-personalized-1.6rc2.min.js"></script>
@@ -20,53 +25,38 @@
 <script LANGUAGE="javascript" type="text/javascript" src="/javascripts/tiny_mce_config.js"></script>
 <script LANGUAGE="javascript" type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
 <script LANGUAGE="javascript" type="text/javascript" src="/javascripts/deleteconfirm.js"></script>
-<link rel="icon"
-      type="image/ico"
-      href="/images/favicon.ico" />
 
-  <!--
-      The line below demonstrates usage of the headLink() view helper
-      @see http://framework.zend.com/manual/en/zend.view.helpers.html
-      -->
-  <?php echo $this->headLink()->appendStylesheet('/stylesheets/main.css', 'screen,print'); ?>
-  <?php echo $this->headLink()->appendStylesheet('/stylesheets/datepicker.css', 'screen,print'); ?>
-  <?php echo $this->headLink()->appendStylesheet('/stylesheets/jquery-ui-themeroller.css', 'screen,print'); ?>
-  <?php echo $this->headLink()->appendStylesheet('/stylesheets/jquery.cluetip.css', 'screen'); ?>
+<?php 
+    echo $this->headLink()->appendStylesheet('/stylesheets/main.css', 'screen,print')
+                          ->appendStylesheet('/stylesheets/datepicker.css', 'screen,print')
+                          ->appendStylesheet('/stylesheets/jquery-ui-themeroller.css', 'screen,print')
+                          ->appendStylesheet('/stylesheets/jquery.cluetip.css', 'screen')
+                          ->appendStylesheet('/yui/reset-fonts-grids/reset-fonts-grids.css')
+                          ->appendStylesheet('/yui/assets/skins/sam/skin.css')
+                          ->headLink(array('rel' => 'favicon', 'href' => '/img/favicon.ico'));
+?>
 
-<!--[if IE 7]>
-<link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
-<![endif]-->
+        <!--[if IE 7]>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
+        <![endif]-->
+        
+        <!--[if IE 6]>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/ie6hacks.css">
+        <![endif]-->
+    </head>
+    <body class="yui-skin-sam">
+        <div id='header' >
+                <?php echo $this->layout()->header; ?>
+        </div>
+    
 
-<!--[if IE 6]>
-<link rel="stylesheet" type="text/css" href="/stylesheets/ie6hacks.css">
-<![endif]-->
-
-</head>
-<body>
-
-<div id='container'>
-
-<div id='top' >
-        <?php echo $this->layout()->header; ?>
-</div><!--top-->
-
-
-<div id="content">
-
-<div id='detail'>
-        <?php echo $this->placeholder('prepend') ?>
-        <!-- This next call will now include any content that was generated in the
-        dispatching of a controllers action (or series of actions).  -->
-        <?php echo $this->layout()->content ?>
-
-</div><!--detail-->
-<div id='footer'>
-        <?php echo $this->layout()->footer; ?>
-</div>
-</div><!--content-->
-
-</div><!--container-->
-
-</body>
+        <div id='content'>
+                <?php echo $this->placeholder('prepend'); ?>
+                <?php echo $this->layout()->content; ?>
+        </div>
+        
+        <div id='footer'>
+                <?php echo $this->layout()->footer; ?>
+        </div>
+    </body>
 </html>
-

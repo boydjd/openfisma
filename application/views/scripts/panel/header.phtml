@@ -3,10 +3,38 @@
 		<td align="right">
                 <form class="button_link" action="/user/logout">
                 <input type="submit" value="Logout" /></form>
-                <p><b><?php echo $this->identity;  ?></b> is currently logged in.</p>
+                <p><b><?php echo $this->identity; ?></b> is currently logged in.</p>
 		</td>
 	</tr>
 </table>
+<script type="text/javascript">
+// Create the menu bar
+YAHOO.util.Event.onDOMReady(function () {
+/** @todo mhaase: allow access to the logger from the interface when in development mode, and could logger errors go
+ * to a logfile in production mode? 
+ */
+// Uncomment the next line when debugging YUI components
+    var myLogReader = new YAHOO.widget.LogReader('logger');
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/menu/main/format/json', 
+                                    {
+                                        success: function(o) {
+                                            var menuData = YAHOO.lang.JSON.parse(o.responseText);
+                                            var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", { autosubmenudisplay: true });
+                                            YAHOO.util.Dom.addClass(oMenuBar.element, "yuimenubarnav");
+                                            oMenuBar.addItems(menuData.menubar);
+                                            oMenuBar.render('menubar');                                            
+                                        },
+                                        failure: function(o) {alert('Failed to load menubar: '+o.statusText);}
+                                    }, 
+                                    null);
+});
+</script>
+<div id="logger">
+    </div>
+<div id="menubar">
+    <!-- YUI renders the menubar into this div -->
+</div>
 <div id="menu">
 <?php 
     echo '<img src="/images/menu_line.gif" border="0">';
