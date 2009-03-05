@@ -1,34 +1,110 @@
 @import url('fisma.css');
 @import url('layout.css');
-@import url('menu.css');
 
-/* Body Stylesheet */
+/* Create some space around the body content */
 body {
-	margin: 0px;
-	padding: 0px;
-	background-color: #ffffff;
+	padding: 10px;
+	text-align: left;
 }
 
-body,p,blockquote,h1,h2,h3,h4,h5,h6 {
-	font-family: 'Verdana', 'Arial', 'Helvetica';
-	font-weight: normal;
-	font-size: 12px;
+/* The logo is floated to the left */
+div#logo {
+    float: left;
+    margin-bottom: 10px;
 }
 
-li,input,select,textarea {
-	font-family: 'Verdana', 'Arial', 'Helvetica';
-	font-weight: normal;
-	font-size: 12px;
+/* The logout form is floated to the right */
+div#logout {
+    float: right;
+    text-align: right;
 }
 
-/* Bolde Style Sheet for all bold attributes */
-b {
-	font-family: 'Verdana', 'Arial', 'Helvetica';
-	font-weight: bold;
-	color: #44637A;
-	font-size: 12px;
+/* Styling for the menubar. The min-height reserves the space required for the menubar while it loads. */
+div#menubar {
+    clear: both;
+    font-weight: bold;
+    min-height: 25px;
+    background-color: gray;
 }
 
+/* The content area is the middle of the page in between the header and the footer */
+div#content {
+    margin-top: 10px;
+}
+
+/* Sections are used to divide long pages up into separate and distinct content blocks. */
+div.sectionHeader {
+    padding: 3px 8px;
+    background-color: lightgray;
+    color: #3e3e3e;
+    border: 1px solid darkgray;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+}
+
+div.section {
+    border: 1px solid darkgray;
+    border-top: none;
+    padding: 10px;
+    position: relative;
+    height: 100%;
+    margin-bottom: 10px;
+}
+
+/* Panels are a subdivision of the sections */
+div.panel {
+    border: 1px solid darkgray;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+/* Used to display a stacktrace. Traces might be long so the paragraph needs to be able to scroll horizontally. */
+p.stacktrace {
+    margin: 10px;
+    border: 1px solid darkgray;
+    white-space: pre;
+    font-family: monospace;
+    overflow: auto;
+}
+
+/* Provide some whitespace at the bottom of the page */
+div#footer {
+    margin-bottom: 10px;
+}
+
+/* The footer links are aligned in the bottom-right corner */
+div#footerLinks {
+    float: right;
+}
+
+/* A horizontal rules which extends all the way across the parent element. */
+/*hr.fullSeparator {
+    width: 100%;
+}*/
+
+/* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
+ * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
+ * when this style sheet is loaded.
+ */
+em {
+    font-weight: bold;
+}
+
+li {
+    display: list-item;
+}
+
+p {
+    margin: 0px 8px;
+}
+
+h1 {
+    font-size: large;
+    font-weight: bold;
+}
+
+/* ========================================================================================================= */
 /* Table Header Style Sheet for all Tables */
 th {
 	font-family: 'Verdana', 'Arial', 'Helvetica';

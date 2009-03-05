@@ -1,8 +1,5 @@
-<div class="barleft">
-<div class="barright">
-<p><b>Asset Search Results</b>
-</div>
-</div>
+<?php Format_Section::startSection("Asset Search Results"); ?>
+
 <form id="assetresult" method="post" action="/asset/delete">
 <table width="98%" align="center" border="0"><tr><td>
             <div id="asset_buttons" class="button_container">
@@ -60,3 +57,4 @@
     <?php } ?>
 </table>
 </form>
+<?php Format_Section::stopSection(); ?>

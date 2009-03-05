@@ -3,11 +3,8 @@ $this->placeholder('prepend')->captureStart();
 $fid_array = array('name'=>'Source Name','nickname'=>'Nickname');
 $this->declareVars(array('fid'=>'name'));
 ?>
-<div class="barleft">
-<div class="barright">
-<p><b>Finding Source Administration</b>
-</div>
-</div>
+<?php Format_Section::startSection("Search Finding Sources"); ?>
+
 <table class="tipframe" align="center"  width="98%" cellpadding="0" cellspacing="0">
     <tbody>
         <tr>
@@ -45,4 +42,5 @@ Finding Source</a>]</th>
         </tr>
     </tbody>
 </table>
+<?php Format_Section::stopSection(); ?>
 <?php $this->placeholder('prepend')->captureEnd() ?>

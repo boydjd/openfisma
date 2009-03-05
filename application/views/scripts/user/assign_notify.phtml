@@ -16,11 +16,8 @@
 	width:300px;
 }
 </style>
-<div class="barleft">
-    <div class="barright">
-        <p><b>Notification Events</b> 
-    </div>
-</div>
+<?php Format_Section::startSection("Notification Events"); ?>
+
 <div class='block'>
     <form name="event_form" enctype="application/x-www-form-urlencoded" method="post" action="/panel/user/sub/savenotify">
     <table>
@@ -64,3 +61,5 @@
         </table>
     </form>
 </div>
+
+<?php Format_Section::stopSection(); ?>

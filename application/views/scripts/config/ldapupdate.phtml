@@ -13,12 +13,8 @@
         message(responseText);
     }
 </script>
-<div class="barleft">
-<div class="barright">
-<p><b>LDAP Configurations <a href="/panel/config/">Back</a></b> 
-<button id="validateLDAP">Test the configuration</button></p>
-</div>
-</div>
+<?php Format_Section::startSection("LDAP Configurations <a href="/panel/config/">Back</a>
+                                   <button id="validateLDAP">Test the configuration</button>"); ?>
 
 <div class="block">
 <?php
@@ -26,3 +22,5 @@
     echo $this->form;
 ?>
 </div>
+
+<button id="validateLDAP">Test the configuration</button>

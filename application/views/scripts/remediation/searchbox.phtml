@@ -34,11 +34,8 @@
     $this->systems[0] ='--Any--';
     $this->sources[0] ='--Any--';
 ?>
-<div class="barleft">
-<div class="barright">
-<p><b>Remediation Search</b><span></p>
-</div>
-</div>
+<?php Format_Section::startSection("Remediation Search"); ?>
+
 <?php
     $flag = '';
     foreach ($this->params as $k => $value) {
@@ -47,7 +44,7 @@
         }
     }
 ?>
-<!-- Begin Zend_Search_Lucene search Table -->
+
 <?php if ($flag == '') { ?><input type="button" id="advanced_search" value="Advanced Search"><p><?php } ?>
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
@@ -61,8 +58,9 @@
     </tr>
     <tr>
         <td width="410"><?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
-            <i>It maybe spends more time for the first searching.</i>
-        <?php } ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <i>The index has not been created yet. It will be created during the first search request. 
+            This may take a few minutes.</i>
+        <?php } ?></td>
         <td><input type="submit" value="Search"></td>
      </tr>
  </table>
@@ -146,3 +144,4 @@
 </form>
 </div>
 
+<?php Format_Section::stopSection(); ?>

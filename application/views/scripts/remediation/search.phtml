@@ -13,13 +13,11 @@
         $baseUrl .= '/keywords/' . $this->keywords;
     }
 ?>
-<div class="barleft">
-<div class="barright">
+<?php Format_Section::startSection("Search Results"); ?>
     <!-- @todo english -->
     <p><img style="cursor:pointer" src="/images/favor.gif" title="add to bookmark"
             onclick="addBookmark('OpenFisma Finding Result',
-            '<?php echo Config_Fisma::readSysConfig('hostUrl').$this->url; ?>')"/>&nbsp;&nbsp;
-    <b>Remediation Search Results</b>
+            '<?php echo Config_Fisma::readSysConfig('hostUrl').$this->url; ?>')"/>
         <span>
             <?php echo $this->links['all'];?>
         </span>
@@ -32,8 +30,7 @@
             <div id="options" style="display:none" />
         </span>
     </p>
-</div>
-</div>
+
     <table width="100%" class="tbframe" id="poam_rst">
         <tr>
             <th>ID 
@@ -126,3 +123,5 @@
         <?php } ?>
         </tbody>
     </table>
+
+<?php Format_Section::stopSection(); ?>

@@ -62,12 +62,10 @@ class ErrorController extends Zend_Controller_Action
         } else {
             $this->_helper->layout->setLayout('error');
             $this->getResponse()->clearBody();
-            $content = '<p>'
-                     . $errors->exception->getMessage()
-                     . '</p>'
-                     . '<pre>'
+            $content = $errors->exception->getMessage()
+                     . '<br>'
                      . $errors->exception->getTraceAsString()
-                     . '</pre>';
+                     . '<br>';
             $logger = Config_Fisma::getLogInstance();
             $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;

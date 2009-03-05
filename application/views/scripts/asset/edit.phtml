@@ -1,8 +1,5 @@
-<div class="barleft">
-<div class="barright">
-<p><b>Asset Edit</b></p>
-</div>
-</div>
+<?php Format_Section::startSection("Asset Edit"); ?>
+
 <form name="assetedit" method="post" action="/asset/update/id/<?php echo $this->id;?>">
 <table width="810" border="0" align="center">
 <tr>
@@ -54,3 +51,6 @@
     </tr>
 </table>
 </form>
+
+<?php Format_Section::stopSection(); ?>
+

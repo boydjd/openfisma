@@ -27,12 +27,12 @@
 <script LANGUAGE="javascript" type="text/javascript" src="/javascripts/deleteconfirm.js"></script>
 
 <?php 
-    echo $this->headLink()->appendStylesheet('/stylesheets/main.css', 'screen,print')
-                          ->appendStylesheet('/stylesheets/datepicker.css', 'screen,print')
+    echo $this->headLink()->appendStylesheet('/stylesheets/datepicker.css', 'screen,print')
                           ->appendStylesheet('/stylesheets/jquery-ui-themeroller.css', 'screen,print')
                           ->appendStylesheet('/stylesheets/jquery.cluetip.css', 'screen')
                           ->appendStylesheet('/yui/reset-fonts-grids/reset-fonts-grids.css')
                           ->appendStylesheet('/yui/assets/skins/sam/skin.css')
+                          ->appendStylesheet('/stylesheets/main.css', 'screen,print')
                           ->headLink(array('rel' => 'favicon', 'href' => '/img/favicon.ico'));
 ?>
 
@@ -49,7 +49,6 @@
                 <?php echo $this->layout()->header; ?>
         </div>
     
-
         <div id='content'>
                 <?php echo $this->placeholder('prepend'); ?>
                 <?php echo $this->layout()->content; ?>

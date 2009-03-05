@@ -1,16 +1,8 @@
-<!-- Heading Block -->
-<div class="barleft">
-    <div class="barright">
-        <p><b>Finding Description</b>
-    </div>
-</div>
+<?php Format_Section::startSection("Finding Description"); ?>
 
-<!-- FINDING DETAIL TABLE -->
 <table align="center" class="tipframe">
-    <!-- finding and asset row -->
     <tr>
-        <!-- finding information -->
-        <td width="50%" valign="top"><!-- FINDING TABLE -->
+        <td width="50%" valign="top">
             <table cellpadding="5" width="100%" class="tbframe">
                 <th align="left" colspan="2">Finding Information</th>
                 <tr>
@@ -47,9 +39,7 @@
                         </span> </td>
                 </tr>
             </table>
-            <!-- FINDING TABLE -->
         </td>
-        <!-- asset information -->
         <td width="50%" valign="top"><!-- ASSET TABLE -->
             <table cellpadding="5" width="100%" class="tbframe">
                 <th align="left" colspan="2">Asset Information</th>
@@ -85,7 +75,6 @@
                         </i> </td>
                 </tr>
             </table>
-            <!-- END ASSET TABLE -->
         </td>
     </tr>
 </table>
@@ -107,10 +96,9 @@
 <?php if( !empty($this->poam['vuln']) ) { ?>
 <table border="0" cellpadding="5" cellspacing="1" class="tipframe">
     <th align='left'>Additional Vulnerability Detail</th>
-        <!-- VULNERABILITY ROW(S) -->
         <?php foreach($this->poam['vuln'] as $row){ ?>
     <tr>
-        <td colspan="2"><!-- VULERABILITIES TABLE -->
+        <td colspan="2">
             <table border="0" cellpadding="5" cellspacing="1" width="100%">
                 <tr>
                     <td><b>Vulnerability ID: </b><?php echo $row['type'].'-'.$row['seq'];?></td>
@@ -119,7 +107,6 @@
                     <td><b>Description: </b><?php echo $row['description'];?></td>
                 </tr>
             </table>
-            <!-- END VULERABILITIES TABLE -->
         </td>
     </tr>
     <?php }?>
@@ -141,3 +128,5 @@
         </td>
     </tr>
 </table>
+
+<?php Format_Section::stopSection(); ?>

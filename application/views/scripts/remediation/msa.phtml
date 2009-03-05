@@ -8,12 +8,8 @@ function delok()
     return false;
 }
 </script>
-<div class="barleft">
-    <div class="barright">
-        <p><b>Mitigation Strategy Approval</b></p>
-    </div>
-</div>
-<!-- BEGIN MITIGATION STRATEGY APPROVAL TABLE -->
+<?php Format_Section::startSection("Mitigation Strategy Approval"); ?>
+
 <?php
     $postAction = "/remediation/msa/id/".$this->poam['id'];
     $array = array('description'   =>$this->poam['finding_data'],
@@ -92,4 +88,4 @@ function delok()
 </form>
 <?php } }?>
 
-<!-- END MITIGATION STRATEGY APPROVAL TABLE -->
+<?php Format_Section::stopSection(); ?>

@@ -73,23 +73,8 @@ class FindingController extends PoamBaseController
         $this->view->assign('links', $pager->getLinks());
         $this->render('search');
     }
-    /**
-     Get finding detail infomation
-     */
-    public function viewAction()
-    {
-        $this->_acl->requirePrivilege('finding', 'read');
-        $req = $this->getRequest();
-        $id = $req->getParam('id', 0);
-        assert($id);
-        $this->view->assign('id', $id);
-        $sys = new System();
-        $poam = new Poam();
-        $detail = $poam->find($id)->current();
-        $this->view->finding = $poam->getDetail($id);
-        $this->view->finding['system_name'] = 
-                $this->_systemList[$this->view->finding['system_id']];
-    }
+
+
     /**
      Edit finding infomation
      */

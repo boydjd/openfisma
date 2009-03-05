@@ -16,11 +16,8 @@
         $url .='/enddate/'.$this->criteria['enddate'];
     }
 ?>
-<div class="barleft">
-<div class="barright">
-<p><b>FISMA Report to OMB</b></p>
-</div>
-</div>
+<?php Format_Section::startSection("FISMA Report to OMB"); ?>
+
 <form name="filter" method="post" action="/panel/report/sub/fisma/s/search">
 <table width="850"  align="center" border="0" cellpadding="3" cellspacing="1" class="tipframe">
     <tr>
@@ -64,3 +61,6 @@
         echo $this->partial('report/fismasearch.phtml',array('summary'=>&$this->summary,'url'=>&$url));
     }
 ?>
+
+<?php Format_Section::stopSection(); ?>
+

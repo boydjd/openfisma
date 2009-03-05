@@ -28,12 +28,10 @@
 <?php echo $this->partial('remediation/msa.phtml', array('poam'=>&$this->poam, 'ms_evals'=>$this->ms_evals, 'ms_evaluation'=>$this->ms_evaluation, 'acl'=> $this->acl));?>
 
      <?php if($this->poam['status'] != 'NEW' || $this->poam['status'] != 'DRAFT' ) { ?>
-     <!-- Heading Block -->
-     <div class="barleft">
-     <div class="barright">
-     <p><b>Supporting Evidence</b> (<?php echo count($this->ev_evals);?> total)<span></span></p>
-     </div>
-     </div>
+
+<?php Format_Section::startSection("Supporting Evidence (" 
+                                   . count($this->ev_evals)
+                                   . " total)"); ?>
 
      <?php 
           echo $this->partialLoop('remediation/evidence.phtml', $this->ev_evals );
@@ -43,13 +41,10 @@
           }
      }
      ?>
+<?php Format_Section::stopSection(); ?>
 
-     <!-- Heading Block -->
-     <div class="barleft">
-     <div class="barright">
-     <p><b>Audit Log</b><span></span></p>
-     </div>
-     </div>
+<?php Format_Section::startSection("Audit Log"); ?>
+
      <table align="center" cellpadding="5" cellspacing="1" width="95%" class="tbframe">
          <tr>
              <th>Timestamp</td>
@@ -61,6 +56,8 @@
      echo $this->partialLoop('remediation/log.phtml', $this->logs);
 ?>
     </table>
+<?php Format_Section::stopSection(); ?>
+
 <?php 
      echo $this->partial('remediation/uploadev.phtml',array('id'=>$this->poam['id'], 'acl'=> $this->acl));
 ?>

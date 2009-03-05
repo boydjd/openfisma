@@ -1,8 +1,4 @@
-<div class="barleft">
-    <div class="barright">
-        <p><b>Approve Pending Findings</b></p>
-    </div>
-</div>
+<?php Format_Section::startSection("Approve Pending Findings"); ?>
 
 <form method="POST" action="/panel/finding/sub/process-approval">
     <table class="tbframe">
@@ -49,3 +45,5 @@
         </tr>
     </table>
 </form>
+
+<?php Format_Section::stopSection(); ?>

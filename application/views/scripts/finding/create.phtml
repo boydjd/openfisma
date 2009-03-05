@@ -5,11 +5,7 @@
                               "MODERATE" => "MODERATE",
                               "HIGH" => "HIGH");
 ?>
-<div class="barleft">
-  <div class="barright">
-    <p><b>Finding Creation</b></p>
-  </div>
-</div>
+<?php Format_Section::startSection("Finding Creation"); ?>
 
 <form name="finding" method="post" action="/panel/finding/sub/create/is/new" >
 <table width="810" border="0" align="center" cellpadding="0">
@@ -142,3 +138,6 @@
             </tr>
         </table>
 </form>
+
+<?php Format_Section::stopSection(); ?>
+

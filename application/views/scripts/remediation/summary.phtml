@@ -9,12 +9,8 @@
                       '120'=>'120+ Days Old');
     $statusArray = array_merge($this->statusArray, array('CLOSED'));
 ?>
+<?php Format_Section::startSection("Remediation Summary"); ?>
 
-<div class="barleft">
-<div class="barright">
-<p><b>Remediation Summary</b></p>
-</div>
-</div>
 <p>
 <form name="filters" method="post" action="/panel/remediation/sub/summary">
 <!-- Begin Filter Table -->
@@ -115,3 +111,5 @@
 ?>
 <!-- END SUMMARY LOOP -->
 </table>
+
+<?php Format_Section::stopSection(); ?>

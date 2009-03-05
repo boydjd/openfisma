@@ -9,11 +9,8 @@
     })
 </script>
 <script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
-<div class="barleft">
-    <div class="barright">
-        <p><b>User Account Information</b>
-    </div>
-</div>
+<?php Format_Section::startSection('User Account Information'); ?>
+
 <?php if(!empty($this->requirements)) {?>
 <p>The new password must meet the following complexity criteria:</p>
 <ul>
@@ -28,4 +25,4 @@ foreach ($this->requirements as $requirement) {
 <?php echo $this->form ?>
 </div>
 
-<br>
+<?php Format_Section::stopSection(); ?>

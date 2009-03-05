@@ -4,12 +4,8 @@ a.button {
     float:none;
 }
 </style>
+<?php Format_Section::startSection(Config_Fisma::readSysConfig('system_name') . ' Rules of Behavior'); ?>
 
-<div class="barleft">
-    <div class="barright">
-        <p><b>Rules of Behavior for <?php echo Config_Fisma::readSysConfig('system_name');?></b>&nbsp;<a class="button" href="javascript:history.go(-1);">Back</a></p>
-    </div>
-</div>
 <div class="notice">
 <h1>Rules of Behavior for <?php echo Config_Fisma::readSysConfig('system_name');?></h1>
 <p><?php
@@ -22,3 +18,4 @@ a.button {
 ?></p>
 </div>
 
+<?php Format_Section::stopSection(); ?>

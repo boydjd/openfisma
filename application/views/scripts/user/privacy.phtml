@@ -7,15 +7,11 @@ a.button {
     float:none;
 }
 </style>
+<?php Format_Section::startSection(Config_Fisma::readSysConfig('system_name') . ' Privacy Policy'); ?>
 
-<div class="barleft">
-<div class="barright">
-<p><b>Privacy Policy for <?php echo Config_Fisma::readSysConfig('system_name');?></b>&nbsp;<a class="button" href="javascript:history.go(-1);">Back</a></p>
-</div>
-</div>
 <div class="notice">
 <h1>Privacy Policy for <?php echo Config_Fisma::readSysConfig('system_name');?></h1>
-<p><?php echo nl2br(Config_Fisma::readSysConfig('privacy_policy')); ?></p>
+<p><?php echo Config_Fisma::readSysConfig('privacy_policy'); ?></p>
 </div>
 
-
+<?php Format_Section::stopSection(); ?>

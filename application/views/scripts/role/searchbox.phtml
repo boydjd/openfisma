@@ -1,11 +1,8 @@
 <?php
 $this->placeholder('prepend')->captureStart();
 ?>
-<div class="barleft">
-<div class="barright">
-<p><b>Role Administration</b><span>
-</div>
-</div>
+<?php Format_Section::startSection("Search Roles"); ?>
+
 <table class="tipframe" align="center"  width="98%" cellpadding="0" cellspacing="0">
     <tbody>
         <tr>
@@ -43,4 +40,5 @@ Role</a>]</th>
         </tr>
     </tbody>
 </table>
+<?php Format_Section::stopSection(); ?>
 <?php $this->placeholder('prepend')->captureEnd() ?>

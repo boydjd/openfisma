@@ -1,8 +1,4 @@
-<div class="barleft">
-    <div class="barright">
-        <p><b>Spreadsheet Upload</b><span></p>
-    </div>
-</div>
+<?php Format_Section::startSection("Spreadsheet Upload"); ?>
 
 <div class=>
     <form action="/panel/finding/sub/injection" method="POST" enctype="multipart/form-data">
@@ -15,3 +11,5 @@
         </ol>
     </form>
 </div>
+
+<?php Format_Section::stopSection(); ?>

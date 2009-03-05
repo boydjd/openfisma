@@ -1,8 +1,5 @@
-<div class="barleft">
-<div class="barright">
-<p><b>Asset Creation</b><span><?PHP echo $this->escape($this->Current_time);?></span></p>
-</div>
-</div>
+<?php Format_Section::startSection("Asset Creation</b><span>{$this->escape($this->Current_time)}</span>"); ?>
+
 <form name="assetcreate" method="post" action="">
 <table width="810" border="0" align="center">
 <tr>
@@ -46,3 +43,5 @@
 	</tr>
 </table>
 </form>
+
+<?php Format_Section::stopSection(); ?>
