@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -53,14 +52,9 @@ class PoamBaseController extends SecurityController
         'currentPage' => 1,
         'perPage' => 20
     );
-
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
-    public function preDispatch()
+    public function init()
     {
-        parent::preDispatch();
+        parent::init();
         $this->_poam = new Poam();
         $src = new Source();
         $net = new Network();
@@ -74,44 +68,26 @@ class PoamBaseController extends SecurityController
         foreach ($tmpList as $k => $v) {
             $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
         }
+    }
+    public function preDispatch()
+    {
+        parent::preDispatch();
         $this->_req = $this->getRequest();
         $req = $this->_req;
         $this->_pagingBasePath = $req->getBaseUrl();
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
-    
-
-    /**
-     * parse the url form the search filter
-     *
-     * @param array $criteria
-     * @return string
-     */
     public function makeUrl($criteria)
     {
-        $this->_pagingBasePath.= $this->makeUrlParams($criteria);
-    }
-    
-    /**
-     * Translate the criteria to a string which can be used in an URL
-     *
-     * The string can be parsed by the application to form the criteria again later.
-     *
-     * @param array $criteria
-     * @return string
-     */
-    public function makeUrlParams($criteria)
-    {
-        $urlPart = '';
         foreach ($criteria as $key => $value) {
             if (!empty($value)) {
                 if ($value instanceof Zend_Date) {
-                    $urlPart .= '/' . $key . '/' . $value->toString('Ymd') . '';
+                    $this->_pagingBasePath.= 
+                        '/' . $key . '/' . $value->toString('Ymd') . '';
                 } else {
-                    $urlPart .= '/' . $key . '/' . urlencode($value) . '';
+                    $this->_pagingBasePath.= '/' . $key . '/' . $value . '';
                 }
             }
         }
-        return $urlPart;
     }
 }

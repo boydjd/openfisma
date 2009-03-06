@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -59,20 +58,12 @@ class RoleController extends SecurityController
         'flag' => TRUE
     );
 
-    /**
-     * @todo english
-     * Initilize this Class
-     */
     public function init()
     {
         parent::init();
         $this->_role = new Role();
     }
 
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -99,21 +90,24 @@ class RoleController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_roles', 'read');
         
-        $qv = trim($this->_request->getParam('qv'));
+        $req = $this->getRequest();
+        $fid = $req->getParam('fid');
+        $qv = $req->getParam('qv');
+        $query = $this->_role->select()->from(array(
+            'r' => 'roles'
+        ), array(
+            'count' => 'COUNT(r.id)'
+        ));
         if (!empty($qv)) {
-            //@todo english  if role index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
-                $this->createIndex();
-            }
-            $ret = Config_Fisma::searchQuery($qv, 'role');
-        } else {
-            $ret = $this->_role->getList('name');
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
         }
-
-        $count = count($ret);
+        $res = $this->_role->fetchRow($query)->toArray();
+        $count = $res['count'];
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
+        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -126,25 +120,16 @@ class RoleController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_roles', 'read');
         
-        $value = trim($this->_request->getParam('qv'));
-
+        $req = $this->getRequest();
+        $field = $req->getParam('fid');
+        $value = trim($req->getParam('qv'));
         $query = $this->_role->select()->from('roles', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
+                                       ->where('nickname != "auto_role"');
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
-            //@todo english  get search results in ids
-            $roleIds = $cache->load($this->_me->id . '_role');
-            if (!empty($roleIds)) {
-                $ids = implode(',', $roleIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
+            $query->where("$field = ?", $value);
         }
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
         $roleList = $this->_role->fetchAll($query)->toArray();
         $this->view->assign('role_list', $roleList);
     }
@@ -168,7 +153,9 @@ class RoleController extends SecurityController
         } else {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/role/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);            
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
         }
         $form->setDefaults($role);
         $this->view->form = $form;
@@ -218,19 +205,26 @@ class RoleController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::ROLE_CREATED, $this->_me->account, $roleId);
-
-                //Create a role index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
-                    Config_Fisma::updateIndex('role', $roleId, $role);
-                }
-
                 $msg = "The role is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $roleId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
             // Error message
             $this->message("Unable to create role:<br>$errorString", self::M_WARNING);
             $this->_forward('create');
@@ -251,7 +245,6 @@ class RoleController extends SecurityController
         $result = $db->fetchCol($qry);
         if (!empty($result)) {
             $msg = 'This role have been used, You could not to delete';
-            $model = self::M_WARNING;
         } else {
             $res = $this->_role->delete('id = ' . $id);
             if (!$res) {
@@ -261,11 +254,6 @@ class RoleController extends SecurityController
                 $this->_notification
                      ->add(Notification::ROLE_DELETED,
                          $this->_me->account, $id);
-
-                //Delete this role index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
-                    Config_Fisma::deleteIndex('role', $id);
-                }
 
                 $msg = "Successfully Delete a Role.";
                 $model = self::M_NOTICE;
@@ -296,11 +284,6 @@ class RoleController extends SecurityController
                 $this->_notification
                      ->add(Notification::ROLE_MODIFIED, $this->_me->account, $id);
 
-                //Update this role index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
-                    Config_Fisma::updateIndex('role', $id, $role);
-                }
-
                 $msg = "The role is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -310,7 +293,17 @@ class RoleController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
             // Error message
             $this->message("Unable to update role<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
@@ -339,8 +332,7 @@ class RoleController extends SecurityController
             'rf' => 'role_functions'
         ), 'f.id = rf.function_id', array())->where('rf.role_id = ?', $roleId);
         $existFunctions = $db->fetchAll($qry);
-        if ('available_functions' == $do) {
-            $existFunctionIds = explode(',', $req->getParam('exist_functions'));
+        if ('search_function' == $do) {
             $qry->reset();
             $qry->from('functions', array(
                 'function_id' => 'id',
@@ -352,18 +344,14 @@ class RoleController extends SecurityController
             $allFunctions = $db->fetchAll($qry);
             $availableFunctions = array();
             foreach ($allFunctions as $v) {
-                if (!in_array($v['function_id'], $existFunctionIds)) {
+                if (!in_array($v, $existFunctions)) {
                     $availableFunctions[] = $v;
                 }
             }
             $this->_helper->layout->setLayout('ajax');
-            $this->view->assign('functions', $availableFunctions);
-            $this->render('funcoptions');
-        } elseif ('exist_functions' == $do) {
-            $this->_helper->layout->setLayout('ajax');
-            $this->view->assign('functions', $existFunctions);
-            $this->render('funcoptions');
-         } elseif ('update' == $do) {
+            $this->view->assign('available_functions', $availableFunctions);
+            $this->render('availablefunc');
+        } elseif ('update' == $do) {
             $functionIds = $req->getParam('exist_functions');
             $errno = 0;
             $qry = "DELETE FROM `role_functions` WHERE role_id =" . $roleId;
@@ -404,27 +392,4 @@ class RoleController extends SecurityController
             $this->view->assign('exist_functions', $existFunctions);
         }
     }
-
-    /**
-     * Create roles Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/role', true);
-        $list = $this->_role->getList(array('name', 'nickname', 'desc'));
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $id=>$row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
-        }
-    }
-
 }

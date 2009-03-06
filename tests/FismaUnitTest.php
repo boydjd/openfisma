@@ -24,13 +24,9 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Test
  */
 
-/**
- * @ignore
- * Run the application bootstrap in command line mode
- */
+// Run the application bootstrap in command line mode
 require_once dirname(__FILE__) . "/../library/local/Config/Fisma.php";
 $fisma = Config_Fisma::getInstance();
 if (!$fisma->isInstall()) {

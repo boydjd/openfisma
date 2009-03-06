@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: FindingController.php 1054 2008-10-21 23:34:58Z ford_james $
- * @package   Local_Exception
  */
 
 /**
@@ -29,7 +28,6 @@
  *
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @package   Local_Exception
  */
 class Exception_InvalidFileFormat extends Exception_General
 {

@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -42,20 +41,12 @@ class ProductController extends SecurityController
         'perPage' => 20
     );
 
-    /**
-     * @todo english
-     * Initilize Class
-     */
     public function init()
     {
         parent::init();
         $this->_product = new Product();
     }
 
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -115,21 +106,24 @@ class ProductController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
         
-        $qv = trim($this->_request->getParam('qv'));
+        $req = $this->getRequest();
+        $fid = $req->getParam('fid');
+        $qv = $req->getParam('qv');
+        $query = $this->_product->select()->from(array(
+            'p' => 'products'
+        ), array(
+            'count' => 'COUNT(p.id)'
+        ));
         if (!empty($qv)) {
-            //@todo english  if product index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
-                $this->createIndex();
-            }
-            $ret = Config_Fisma::searchQuery($qv, 'product');
-        } else {
-            $ret = $this->_product->getList('name');
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
         }
-
-        $count = count($ret);
+        $res = $this->_product->fetchRow($query)->toArray();
+        $count = $res['count'];
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
+        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -142,25 +136,15 @@ class ProductController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
         
-        $value = trim($this->_request->getParam('qv'));
-
-        $query = $this->_product->select()->from('products', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
+        $req = $this->getRequest();
+        $field = $req->getParam('fid');
+        $value = trim($req->getParam('qv'));
+        $query = $this->_product->select()->from('products', '*');
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
-            //@todo english  get search results in ids
-            $productIds = $cache->load($this->_me->id . '_product');
-            if (!empty($productIds)) {
-                $ids = implode(',', $productIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
+            $query->where("$field = ?", $value);
         }
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
         $productList = $this->_product->fetchAll($query)->toArray();
         $this->view->assign('product_list', $productList);
         $this->render('sublist');
@@ -185,7 +169,9 @@ class ProductController extends SecurityController
         } else {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/product/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);            
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
         }
         $form->setDefaults($product);
         $this->view->form = $form;
@@ -235,19 +221,26 @@ class ProductController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::PRODUCT_CREATED, $this->_me->account, $productId);
-
-                //Create a product index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
-                    Config_Fisma::updateIndex('product', $productId, $product);
-                }
-
                 $msg = "The product is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $productId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
             // Error message
             $this->message("Unable to create product:<br>$errorString", self::M_WARNING);
             $this->_forward('create');
@@ -278,12 +271,6 @@ class ProductController extends SecurityController
                 $this->_notification
                      ->add(Notification::PRODUCT_DELETED,
                          $this->_me->account, $id);
-
-                //Delete this product index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
-                    Config_Fisma::deleteIndex('product', $id);
-                }
-
                 $msg = "Product deleted successfully";
                 $model = self::M_NOTICE;
             }
@@ -313,11 +300,6 @@ class ProductController extends SecurityController
                 $this->_notification
                      ->add(Notification::PRODUCT_MODIFIED, $this->_me->account, $id);
 
-                //Update this product index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
-                    Config_Fisma::updateIndex('product', $id, $product);
-                }
-
                 $msg = "The product is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -327,34 +309,21 @@ class ProductController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
             // Error message
             $this->message("Unable to update product<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
-        }
-    }
-
-    /**
-     * Create products Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/product', true);
-        $list = $this->_product->getList(array('meta', 'vendor', 'name', 'version', 'desc'));
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $id=>$row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('vendor', $row['vendor']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('version', $row['version']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
         }
     }
 }

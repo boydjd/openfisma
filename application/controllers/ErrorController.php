@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
  
 /**
@@ -47,38 +46,24 @@ class ErrorController extends Zend_Controller_Action
         $this->_helper->viewRenderer->setViewSuffix('phtml');
         $content = null;
         $errors = $this->_getParam('error_handler');
+        $this->_helper->layout->setLayout('error');
+        $this->getResponse()->clearBody();
+        $content = '<p>'
+                 . $errors->exception->getMessage()
+                 . '</p>'
+                 . '<pre>'
+                 . $errors->exception->getTraceAsString()
+                 . '</pre>';
+        $logger = Config_Fisma::getLogInstance();
+        $logger->log($content, Zend_Log::ERR);
+        $this->view->content = $content;
 
-        // if the user hasn't login, or the session expired.
-        if ($errors->exception instanceof Exception_InvalidAuthentication) {
-            $this->view->assign('error', $errors->exception->getMessage());
-            //remind the user to login
-            $this->_forward('logout', 'User');
-        // if the user want to access an empty path.  
-        } elseif (!Zend_Auth::getInstance()->hasIdentity()) {
-            ///@todo English
-            $this->view->assign('error', 'Access denied! Please login firstly.');
-            $this->_forward('logout', 'User');
-        // if the user has login and meeted an exception.
-        } else {
-            $this->_helper->layout->setLayout('error');
-            $this->getResponse()->clearBody();
-            $content = '<p>'
-                     . $errors->exception->getMessage()
-                     . '</p>'
-                     . '<pre>'
-                     . $errors->exception->getTraceAsString()
-                     . '</pre>';
-            $logger = Config_Fisma::getLogInstance();
-            $logger->log($content, Zend_Log::ERR);
-            $this->view->content = $content;
-
-            $front = Zend_Controller_Front::getInstance();
-            if ($stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack')) {
-                //clear the action stack to prevent additional exceptions would be throwed
-                while($stack->popStack());
-            }
-            $this->_helper->actionStack('header', 'panel');            
+        $front = Zend_Controller_Front::getInstance();
+        if ($stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack')) {
+            //clear the action stack to prevent additional exceptions would be throwed
+            while($stack->popStack());
         }
+        $this->_helper->actionStack('header', 'panel');
     }
 
     /**

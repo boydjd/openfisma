@@ -21,18 +21,9 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: basic.php 940 2008-09-27 13:40:22Z ryanyang $
- * @package   Local
  *
  * @todo This class should be renamed. "Fisma" doesn't mean anything. Also this class serves multiple purposes. It
  * should be split up into separate classes that each serve a single purpose.
- */
-
-/**
- * The configuration of Fisma
- *
- * @package   Local
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class Config_Fisma
 {
@@ -55,7 +46,7 @@ class Config_Fisma
      *
      * @var _path
      */
-    private static $_path = array(
+    private $_path = array(
             'library'=>'library',
             'data'=>'data',
             'application'=>'application',
@@ -93,11 +84,6 @@ class Config_Fisma
     protected static $_now = null;
 
     /**
-     * Cache instance to cache search results and search keywords
-     */
-    protected static $_cache = null;
-
-    /**
      * Constructor
      *
      * Instantiate using {@link getInstance()}; System wide config is a singleton
@@ -115,6 +101,8 @@ class Config_Fisma
         // APPLICATION CONSTANTS - Set the constants to use in this application.
         // These constants are accessible throughout the application, even in ini 
         // files. 
+        define('APPLICATION_ROOT', self::$_root);
+        define('APPLICATION_PATH', self::$_root . '/' . $this->_path['application']);
         $this->initSetting();
         //freeze the NOW, minimize the impact of running time cost.
         self::$_now = time(); 
@@ -158,19 +146,17 @@ class Config_Fisma
             // retrieval.  This allows the application to ensure that regardless of what
             // happends in the global scope, the registry will contain the objects it
             // needs.
+            $registry = Zend_Registry::getInstance();
+            
             if (!isset($config->environment)) {
                 $config->environment = 'production';
             }
             $configuration = $config->{$config->environment};
             self::addSysConfig($configuration);
-            
-            if (is_writable(self::getPath('data') . $configuration->session->get('save_path'))) {
-                //@todo english  set the absolute path to save session
-                $options['save_path'] = self::getPath('data') . $configuration->session->get('save_path');
-                $options['name'] = $configuration->session->get('name');
-                // Start Session Handling using Zend_Session 
-                Zend_Session::start($options);
-            }
+
+            // Start Session Handling using Zend_Session 
+            Zend_Session::start($configuration->session->toArray());
+
         } catch(Zend_Config_Exception $e) {
             //using default configuration
             $config = new Zend_Config(array());
@@ -234,24 +220,16 @@ class Config_Fisma
     public function bootstrap($mode=null)
     {
         $frontController = Zend_Controller_Front::getInstance();
-        $eHandler = new Zend_Controller_Plugin_ErrorHandler( array(
-                        'model' => null,
-                        'controller' => 'Error',
-                        'action' => 'error'));
-        
-        
+
         if ($mode == self::TEST_MODE) {
             $initPlugin = new Plugin_Bootstrap_Unittest(self::$_root);
         } else {
             if (self::isInstall()) {
                 $initPlugin = new Plugin_Bootstrap_Webapp(self::$_root);
             } else {
-                $eHandler->setErrorHandlerController('install');
                 $initPlugin = new Plugin_Bootstrap_Install(self::$_root);
             }
         }
-
-        $frontController->registerPlugin($eHandler);
         $frontController->registerPlugin($initPlugin);
         $flag = self::readSysConfig('throw_exception');
         $frontController->throwExceptions('1'===$flag);
@@ -279,9 +257,9 @@ class Config_Fisma
         }
         if ('sha256' == $encryptType) {
             $key = self::readSysConfig('encryptKey');
-            $cipherAlg = MCRYPT_TWOFISH;
-            $iv = mcrypt_create_iv(mcrypt_get_iv_size($cipherAlg, MCRYPT_MODE_ECB), MCRYPT_RAND);
-            $encryptedPassword = mcrypt_encrypt($cipherAlg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            $cipher_alg = MCRYPT_TWOFISH;
+            $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
+            $encryptedPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
             return $encryptedPassword;
         }
     }
@@ -297,7 +275,7 @@ class Config_Fisma
     public function getLogInstance()
     {
         if ( null === self::$_log ) {
-            $write = new Zend_Log_Writer_Stream(self::getPath('data') . '/logs/' . self::ERROR_LOG);
+            $write = new Zend_Log_Writer_Stream(APPLICATION_ROOT . '/data/logs/' . self::ERROR_LOG);
             $auth = Zend_Auth::getInstance();
             if ($auth->hasIdentity()) {
                 $me = $auth->getIdentity();
@@ -314,36 +292,6 @@ class Config_Fisma
         return $this->_log;
     }
 
-    /**
-     * @todo english
-     * Initialize the cache instance
-     *
-     * make the directory "/path/to/data/cache" writable
-     *
-     * @return Zend_Cache
-     */
-    public function getCacheInstance()
-    {
-        if (null == self::$_cache) {
-            $frontendOptions = array(
-                'caching'  => true,
-                //@todo english cache life same as system expiring period
-                'lifetime' => self::readSysConfig('expiring_seconds'), 
-                'automatic_serialization' => true
-            );
-
-            $backendOptions = array(
-                'cache_dir' => self::getPath('data') . '/cache'
-            );
-            $this->_cache = Zend_Cache::factory('Core',
-                                                'File',
-                                                $frontendOptions,
-                                                $backendOptions);
-
-        }
-        return $this->_cache;
-    }
-
     /** 
         Read configurations of any sections.
         This function manages the storage, the cache, lazy initializing issue.
@@ -355,10 +303,9 @@ class Config_Fisma
     function readSysConfig($key, $isFresh = false)
     {
         assert(!empty($key) && is_bool($isFresh));
-        if ((self::isInstall() && 
+        if (self::isInstall() && 
             (!Zend_Registry::isRegistered('FISMA_REG') 
-             || !Zend_Registry::get('FISMA_REG')->isFresh))
-            || $isFresh) {
+             || !Zend_Registry::get('FISMA_REG')->isFresh)) {         
             $db = Zend_Db::factory(Zend_Registry::get('datasource'));
             $m = new Config($db);
             $pairs = $m->fetchAll();
@@ -429,7 +376,21 @@ class Config_Fisma
         return false;
     }
 
-        
+    /*
+     * Get form object from form config file section 
+     * @param string $formConfigSection the forms name namely section of
+            the configuration
+     * 
+     * @return  Zend_Form
+     */
+    public function getForm ($formConfigSection)
+    {
+        $formIni = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/' . FORMCONFIGFILE,
+            $formConfigSection);
+        $form = new Zend_Form($formIni);
+        return $form;
+    }
+    
     /**
      * use Registry SYSCONFIG to merge other config
      * @param object @config  
@@ -453,15 +414,13 @@ class Config_Fisma
      * @param string $part the component of the path
      * @return string the path
      */ 
-    public function getPath($part = null)
+    public function getPath($part='root')
     {
         $ret = self::$_root;
-        if (!empty($part)) {
-            if (!isset(self::$_path[$part])) {
-                assert(false);
-            } else {
-                $ret .= "/" . self::$_path[$part];
-            }
+        if (!isset($this->_path[$part])) {
+            assert(false);
+        } else {
+            $ret .= "/{$this->_path[$part]}";
         }
         return $ret;
     }
@@ -475,120 +434,5 @@ class Config_Fisma
     public static function now()
     {
         return self::$_now;
-    }
-
-    /**
-     * @todo english
-     * Update Zend_Search_Lucene index
-     *
-     * This function can create one, update one and update a number of Zend_Lucene indexes.
-     *
-     * @param string index $indexName under the "data/index/" folder
-     * @param string|array $id
-     *           string specific a table primary key   
-     *                      if the id exists in the index, then update it, else create a index.
-     *           array  specific index docuement ids
-     *                      update a number of exist indexes
-     * @param array $data fields need to update
-     */
-    public static function updateIndex($indexName, $id, $data)
-    {
-        if (!is_dir(self::getPath('data') . '/index/'.$indexName)) {
-            return false;
-        }
-        @ini_set("memory_limit", -1);
-        $index = new Zend_Search_Lucene(self::getPath('data') . '/index/'.$indexName);
-        if (is_array($id)) {
-            //Update a number of indexes
-            foreach ($id as $oneId) {
-                $doc = $index->getDocument($oneId);
-                foreach ($data as $field=>$value) {
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
-                }
-                $index->addDocument($doc);
-            }
-        } else {
-            $hits = $index->find('key:'.md5($id));
-            if (!empty($hits)) {
-                //Update one index
-                $doc = $index->getDocument($hits[0]);
-                foreach ($data as $field=>$value) {
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
-                }
-                $index->addDocument($doc);
-            } else {
-                //Create one index
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                foreach ($data as $field=>$value) {
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
-                }
-                $index->addDocument($doc);
-            }
-        }
-        $index->commit();
-    }
-
-    /**
-     * @todo english
-     * Delete Zend_Search_Lucene index
-     *
-     * @param string index indexName under the "data/index/" folder
-     * @param integer $id row id which is indexed by Zend_Lucene
-     */
-    public static function deleteIndex($indexName, $id)
-    {
-        if (!is_dir(self::getPath('data') . '/index/'.$indexName)) {
-            return false;
-        }
-        $index = new Zend_Search_Lucene(self::getPath('data') . '/index/'.$indexName);
-        $hits = $index->find('key:'.md5($id));
-        $index->delete($hits[0]);
-        $index->commit();
-    }
-
-    /**
-     * Fuzzy Search by Zend_Search_Lucene
-     *
-     * @param string $keywords the search conditions
-     *      The keywords should be as following format:
-     *              a.   keyword (search keyword in all fields)
-     *              b.   field:keyword (search keyword in field)
-     *              c.   keyword1 field:keyword2 -keyword3 (required keyword1 in all fields,
-     *                   required keyword2 in field, not required keyword3 in all fields)
-     *              d.   keywor*  (to search for keywor, keyword, keywords, etc.)
-     *              e.   keywo?d  (to search for keyword, keywoaed ,etc.)
-     *              f.   mod_date:[20080101 TO 20080130] (search mod_date fields between 20080101 and 20080130)
-     *              g.   title:{Aida To Carmen} (search whose titles would be sorted between Aida and Carmen)
-     *              h.   keywor~  (fuzzy search, search like keyword, leyword, etc.)
-     *              i.   keyword1 AND keyword2 (search documents that contain keyword1 and keyword2)
-     *              j.   keyword1 OR keyword2 (search docuements that contain keyword1 or keyword2)
-     *              k.   keyword1 AND NOT keyword2 (search documents that contain keyword1 but not keywords2)
-     *              ... see Zend_Search_Lucene for more format
-     * @param string $indexName index name
-     * @return array table row ids
-     */
-    public function searchQuery($keywords, $indexName)
-    {
-        if (!is_dir(self::getPath('data') . '/index/' . $indexName)) {
-            return false;
-        }
-        $cache = self::getCacheInstance();
-        $userId = Zend_Auth::getInstance()->getIdentity()->id;
-        $index = new Zend_Search_Lucene(self::getPath('data') . '/index/' . $indexName);
-        if (!$cache->load($userId . '_keywords') || $keywords != $cache->load($userId . '_keywords')) {
-            $hits = $index->find($keywords);
-            $ids = array();
-            foreach ($hits as $row) {
-                $id = $row->rowId;
-                if (!empty($id)) {
-                    $ids[] = $id;
-                }
-            }
-            $cache->save($ids, $userId . '_' . $indexName);
-            $cache->save($keywords, $userId . '_keywords');
-        }
-        return $cache->load($userId . '_' . $indexName);
     }
 }

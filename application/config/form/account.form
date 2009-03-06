@@ -28,13 +28,15 @@ elements.confirmPassword.options.label = "Confirm Password"
 elements.confirmPassword.options.attribs.size = 35
 displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
-elements.generate_password.type = "button"
-elements.generate_password.options.value = "Generate Password"
-displayGroups.accountInfo.elements.generate_password = "generate_password"
+elements.ldap_dn.type = "text"
+elements.ldap_dn.options.label = "LDAP DN"
+elements.ldap_dn.options.required = true
+elements.ldap_dn.options.attribs.size = 35
+displayGroups.accountInfo.elements.ldap_dn = "ldap_dn"
 
-elements.checkaccount.type = "button"
-elements.checkaccount.options.value = "Check Account"
-displayGroups.accountInfo.elements.checkAccount = "checkaccount"
+elements.checkdn.type = "button"
+elements.checkdn.options.value = "Check DN"
+displayGroups.accountInfo.elements.checkdn = "checkdn"
 
 elements.name_first.type = "text"
 elements.name_first.options.label = "First Name"

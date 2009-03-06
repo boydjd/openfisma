@@ -39,36 +39,8 @@
 <p><b>Remediation Search</b><span></p>
 </div>
 </div>
-<?php
-    $flag = '';
-    foreach ($this->params as $k => $value) {
-        if (!empty($value) && $k != 'keywords' && $k != 'evidence_include') {
-            $flag = 'true';
-        }
-    }
-?>
-<!-- Begin Zend_Search_Lucene search Table -->
-<?php if ($flag == '') { ?><input type="button" id="advanced_search" value="Advanced Search"><p><?php } ?>
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
-<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
-    <tr>
-        <td colspan="2"><br/>
-        <b>Keywords: </b><input type="text" name="keywords" size="50"
-            value="<?php echo $this->params['keywords'];?>">
-        <a id="help_tips" href="/help/help/script/basicsyntax/" title="Simple search syntaxes" rel="/help/help/script/basicsyntax/" >
-        <img src="/images/help.gif"></a>
-        </td>
-    </tr>
-    <tr>
-        <td width="410"><?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
-            <i>It maybe spends more time for the first searching.</i>
-        <?php } ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td><input type="submit" value="Search"></td>
-     </tr>
- </table>
-<p>
 
-<div id="advanced_searchbox" <?php if ($flag == '') { ?>style="display:none" <?php } ?>>
 <!-- Begin Filter Table -->
 <table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
     <tr>
@@ -120,6 +92,7 @@
         </td>
         <td></td>
     </tr>
+
     <tr>
         <td colspan='2'>
             <table border="0" cellpadding="3" cellspacing="1" width="98%">
@@ -142,7 +115,7 @@
             </table>
         </td>
     </tr>
+    <tr>
+        <td align="left"><input type='submit' value='Search'></td>
+    </tr>
 </table>
-</form>
-</div>
-

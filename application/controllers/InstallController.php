@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -33,32 +32,17 @@
  */
 class InstallController extends Zend_Controller_Action
 {
-
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         $this->_helper->layout->setLayout('install');
         //Judge if there is necessary to install
         
     }
-
-    /**
-     * @todo english
-     * Default Action
-     */
     public function indexAction()
     {
         $this->view->back = '';
         $this->view->next = '/install/envcheck';
     }
-
-    /**
-     * @todo english
-     * Check the current environment for installing system
-     */
     public function envcheckAction()
     {
         define('REQUEST_PHP_VERSION', '5');
@@ -75,23 +59,13 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '';
         }
     }
-
-    /**
-     * @todo english
-     * Check the the dir whether is writable
-     */
     public function checkingAction()
     {
         $wDirectories = array(
-            Config_Fisma::getPath() . '/public/temp',
-            Config_Fisma::getPath('data') . '/logs',
-            Config_Fisma::getPath() . '/public/evidence',
-            Config_Fisma::getPath() . '/data/cache',
-            Config_Fisma::getPath() . '/data/sessions',
-            Config_Fisma::getPath() . '/data/temp',
-            Config_Fisma::getPath() . '/data/uploads/evidence',
-            Config_Fisma::getPath() . '/data/uploads/scanreports',
-            Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG
+            APPLICATION_ROOT . '/public/temp',
+            APPLICATION_ROOT . '/data/logs',
+            APPLICATION_ROOT . '/public/evidence',
+            APPLICATION_ROOT . '/application/config/'. Config_Fisma::INSTALL_CONFIG
         );
         $notwritables = array();
         foreach ($wDirectories as $k => $wok) {
@@ -109,11 +83,6 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '';
         }
     }
-
-    /**
-     * @todo english
-     * Configurate the database
-     */
     public function dbsettingAction()
     {
         $this->view->installpath = dirname(dirname(dirname(__FILE__)));
@@ -125,11 +94,6 @@ class InstallController extends Zend_Controller_Action
         $this->view->back = '/install/checking';
         $this->view->next = '/install/dbreview';
     }
-
-    /**
-     * @todo english
-     * Review the database's configuration
-     */
     public function dbreviewAction()
     {
         $dsn = $this->_getParam('dsn');
@@ -187,11 +151,6 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '/install/initial';
         }
     }
-
-    /**
-     * @todo english
-     * Initilize the system
-     */
     public function initialAction()
     {
         $dsn = $this->_getParam('dsn');
@@ -244,7 +203,7 @@ class InstallController extends Zend_Controller_Action
                 );
                 try {
                     $db = Zend_Db::factory(new Zend_Config($zendDsn));
-                    $initFiles = array(Config_Fisma::getPath('application') . '/config/db/base.sql');
+                    $initFiles = array(APPLICATION_ROOT . '/application/config/db/base.sql');
                     if ($ret = $this->importSql($db, $initFiles)) {
                         $checklist['schema'] = 'ok';
                     }
@@ -259,7 +218,7 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->dsn = $dsn;
         if ($ret) {
-            if (is_writable(Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG)) {
+            if (is_writable(APPLICATION_ROOT .'/application/config/'. Config_Fisma::INSTALL_CONFIG)) {
                 $confTpl = $this->_helper->viewRenderer
                                          ->getViewScript('config');
 
@@ -281,7 +240,7 @@ class InstallController extends Zend_Controller_Action
                 }
 
                 $dbconfig = $this->view->render($confTpl);
-                if (0 < file_put_contents(Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG,
+                if (0 < file_put_contents(APPLICATION_ROOT .'/application/config/'. Config_Fisma::INSTALL_CONFIG,
                     $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
                 } else {
@@ -305,42 +264,28 @@ class InstallController extends Zend_Controller_Action
         $this->view->back = '/install/dbsetting';
         $this->render('initial');
     }
-
-    /**
-     * @todo english
-     * Completing the installation
-     */
     public function completeAction()
     {
         $this->view->title = 'Install complete';
         $this->view->next = '/user/login';
     }
-
-    /**
-     * @todo english
-     * Handling the error
-     */
     public function errorAction()
     {
         $content = null;
         $errors = $this->_getParam('error_handler');
         //$this->_helper->layout->setLayout('error');
-        if (!empty($errors)) {
-            switch ($errors->type) {
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
-            default:
-                // 404 error -- controller or action not found
-                $this->getResponse()->setRawHeader('HTTP/1.1 404 Not Found');
-                break;
-            }
-        } else {
+        switch ($errors->type) {
+        case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
+        case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
+        default:
+            // 404 error -- controller or action not found
             $this->getResponse()->setRawHeader('HTTP/1.1 404 Not Found');
+            break;
         }
         $this->getResponse()->clearBody();
     }
 
-    /**
+    /*
      * trim unnecessary comments or data from the input and output the pure sql
      *
      * @param string $data raw string mess with comments and unexcutable information
@@ -357,7 +302,7 @@ class InstallController extends Zend_Controller_Action
         return $execute;    
     }
 
-    /**
+    /*
      * Read from a sql dump file and execute then in a database.
      *
      * This function can handle a large data dump file. 

@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -55,11 +54,6 @@ class UserController extends MessageController
                                 receive any e-mail notifications.";
 
     /**
-     * a cookie name will be used in Jquery Plugin 'Column Manager'
-     */
-    const COOKIE_NAME = 'column_poam_rst';
-    
-    /**
      * init() - Initialize internal data structures.
      */         
     public function init()
@@ -69,13 +63,7 @@ class UserController extends MessageController
     }
 
     /**
-     * Handling user login
-     * 
-     * The login process basically verifies the credential provided by the user. The authentication can also
-     * be performed against the database as well as it is delegated to third partypassword, such as LDAP, 
-     * according to the application's configuration. Besides, it enforeces the security policies set by the
-     * application. Relative behaviors are logged and the user's preference are initialized by cookie after the
-     * user successfully login.
+     * loginAction() - Handles user login, verifying the password, etc.
      */
     public function loginAction()
     {
@@ -92,6 +80,7 @@ class UserController extends MessageController
             $this->view->username = $username;
             $this->view->password = $password;
         }
+
         try {
             /**
              * @todo Fix this SQL injection
@@ -106,7 +95,6 @@ class UserController extends MessageController
             }
 
             $threshold['failure'] = Config_Fisma::readSysConfig("failure_threshold");
-            $searchColumnsPref = $whologin->searchColumnsPref;
             $whologin = $whologin->toArray();
 
             $failureCount = $whologin['failure_count'];
@@ -186,12 +174,6 @@ class UserController extends MessageController
 
             // If we get this far, then the login is totally successful.
             $this->_user->log('LOGIN', $_me->id, "Success");
-            // get the default preference value from database
-            $value = empty($searchColumnsPref) ? $this->_user->setColumnPreference($_me->id) : $searchColumnsPref;
-            // set cookie for 'column manager' to control the columns whether visible
-            // Persistent cookies are prohibited on U.S. government web servers by federal law. 
-            // This cookie will expire at the end of the session."
-            setcookie(self::COOKIE_NAME, $value, false, '/');
             // Initialize the Access Control
             $nickname = $this->_user->getRoles($_me->id);
             foreach ($nickname as $n) {
@@ -246,12 +228,6 @@ class UserController extends MessageController
                 $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
                 $nextRobReview->add(Config_Fisma::readSysConfig('rob_duration'), Zend_Date::DAY);
                 if ($now->isEarlier($nextRobReview)) {
-                    $redirectInfo = new Zend_Session_Namespace('redirect_page');
-                    if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
-                        $path = $redirectInfo->page;
-                        unset($redirectInfo->page);
-                        $this->_response->setRedirect($path);
-                    }
                     $this->_forward('index', 'Panel');
                 } else {
                     $this->_helper->layout->setLayout('notice');
@@ -271,7 +247,7 @@ class UserController extends MessageController
         $now = new Zend_Date();
         $nowSqlString = $now->toString('Y-m-d H:i:s');
         $this->_user->update(array('last_rob'=>$nowSqlString), 'id = '.$this->_me->id);
-        $this->_user->log('ROB_ACCEPT', $this->_me->id, 'Digitally accepted the Rules of Behavior');
+        $this->_user->log('ROB_ACCEPT', $this->_me->id, 'accept ROB');
         $this->_forward('index', 'Panel');
     }
 
@@ -302,8 +278,8 @@ class UserController extends MessageController
         $form->removeElement('account');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
-        $form->removeElement('checkaccount');
-        $form->removeElement('generate_password');
+        $form->removeElement('ldap_dn');
+        $form->removeElement('checkdn');
         $form->removeElement('role');
         $form->removeElement('is_active');
         return $form;
@@ -416,20 +392,32 @@ class UserController extends MessageController
                 if ($originalEmail != $profileData['email']
                 && empty($notifyEmail)) {
                     $this->_user->update(array('email_validate'=>0), 'id = '.$this->_me->id);
-                    $result = $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
-                    if (true == $result) {
-                        $msg .= self::VALIDATION_MESSAGE;
-                    }
+                    $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
+                    $msg .= self::VALIDATION_MESSAGE;
                 }
-                $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
+                $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
                 $this->message($msg, self::M_NOTICE);
             } else {
                 $this->message("Unable to update account. ($ret)",
                 self::M_WARNING);
             }
         } else {
-            $errorString = Form_Manager::getErrors($form);
-            $this->message("Unable to update account:<br>" . $errorString, self::M_WARNING);
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors) > 0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .="$label: $error<br>";
+                    }
+                }
+            }
+
+            $this->message("Unable to update account:<br>" . addslashes($errorString), self::M_WARNING);
         }
         $this->_forward('profile');
     }
@@ -466,13 +454,11 @@ class UserController extends MessageController
         if ($originalEmail != $data['notify_email'] && $data['notify_email'] != '') {
             $this->_user
             ->update(array('email_validate'=>0), 'id = ' . $this->_me->id);
-            $result = $this->emailvalidate($this->_me->id, $data['notify_email'], 'update');
-            if (true == $result) {
-                $msg .= self::VALIDATION_MESSAGE;
-            }
+            $this->emailvalidate($this->_me->id, $data['notify_email'], 'update');
+            $msg .= self::VALIDATION_MESSAGE;
         }
 
-        $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
+        $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
         $this->message($msg, $model);
         $this->_forward('notifications');
     }
@@ -498,7 +484,20 @@ class UserController extends MessageController
             $password->addValidator(new Form_Validator_Password($userRow));
             $formValid = $passwordForm->isValid($post);
             if (!$formValid) {
-                $errorString = Form_Manager::getErrors($passwordForm);
+                /**
+                * @todo this error display code needs to go into the decorator,
+                * but before that can be done, the function it calls needs to be
+                * put in a more convenient place
+                */
+                $errorString = '';
+                foreach ($passwordForm->getMessages() as $field => $fieldErrors) {
+                    if (count($fieldErrors)>0) {
+                        foreach ($fieldErrors as $error) {
+                            $label = $passwordForm->getElement($field)->getLabel();
+                            $errorString .= "$label: $error<br>";
+                        }
+                    }
+                }
                 // Error message
                 $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;
@@ -615,22 +614,5 @@ class UserController extends MessageController
             $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
         }
         $this->view->msg = $msg;
-    }
-    
-    
-    /**
-     * This function is callback function.
-     * When you selected a option, 
-     * the values of options is not only saved in cookie
-     * but also saved in database.
-     * This part deals saving in database.
-     * 
-     */
-    public function preferenceAction()
-    {
-        $user = new User();
-        $user->setColumnPreference($this->_me->id, $_COOKIE[self::COOKIE_NAME]);
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
     }
 }

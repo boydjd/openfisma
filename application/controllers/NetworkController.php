@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
  
 /**
@@ -62,20 +61,12 @@ class NetworkController extends SecurityController
         'flag' => TRUE
     );
 
-    /**
-     * @todo english
-     * init() - Initialize 
-     */
     public function init()
     {
         parent::init();
         $this->_network = new Network();
     }
 
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         $this->_pagingBasePath = $this->_request->getBaseUrl() .
@@ -101,21 +92,23 @@ class NetworkController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_networks', 'read');
         
-        $qv = trim($this->_request->getParam('qv'));
+        $fid = $this->_request->getParam('fid');
+        $qv = $this->_request->getParam('qv');
+        $query = $this->_network->select()->from(array(
+            'n' => 'networks'
+        ), array(
+            'count' => 'COUNT(n.id)'
+        ))->order('n.name ASC');
         if (!empty($qv)) {
-            //@todo english  if network index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
-                $this->createIndex();
-            }
-            $ret = Config_Fisma::searchQuery($qv, 'network');
-        } else {
-            $ret = $this->_network->getList('name');
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
         }
-
-        $count = count($ret);
+        $res = $this->_network->fetchRow($query)->toArray();
+        $count = $res['count'];
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
+        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -128,25 +121,14 @@ class NetworkController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_networks', 'read');
         
+        $field = $this->_request->getParam('fid');
         $value = trim($this->_request->getParam('qv'));
-
-        $query = $this->_network->select()->from('networks', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
+        $query = $this->_network->select()->from('networks', '*');
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
-            //@todo english  get search results in ids
-            $networkIds = $cache->load($this->_me->id . '_network');
-            if (!empty($networkIds)) {
-                $ids = implode(',', $networkIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
+            $query->where("$field = ?", $value);
         }
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
         $networkList = $this->_network->fetchAll($query)->toArray();
         $this->view->assign('network_list', $networkList);
     }
@@ -170,7 +152,9 @@ class NetworkController extends SecurityController
         } else {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/network/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);            
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
         }
         $form->setDefaults($network);
         $this->view->form = $form;
@@ -220,19 +204,26 @@ class NetworkController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::NETWORK_CREATED, $this->_me->account, $networkId);
-
-                //Create a network index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
-                    Config_Fisma::updateIndex('network', $networkId, $network);
-                }
-
                 $msg = "The network is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $networkId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
             // Error message
             $this->message("Unable to create network:<br>$errorString", self::M_WARNING);
             $this->_forward('create');
@@ -260,11 +251,6 @@ class NetworkController extends SecurityController
                 $msg = "Failed to delete the network";
                 $model = self::M_WARNING;
             } else {
-                //Delete network index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
-                    Config_Fisma::deleteIndex('network', $id);
-                }
-
                 $this->_notification
                      ->add(Notification::NETWORK_DELETED,
                          $this->_me->account, $id);
@@ -298,11 +284,6 @@ class NetworkController extends SecurityController
                 $this->_notification
                      ->add(Notification::NETWORK_MODIFIED, $this->_me->account, $id);
 
-                //Update network index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
-                    Config_Fisma::updateIndex('network', $id, $network);
-                }
-
                 $msg = "The network is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -312,33 +293,21 @@ class NetworkController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
             // Error message
             $this->message("Unable to update network<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
-        }
-    }
-
-    /**
-     * Create Networks Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/network', true);
-        $list = $this->_network->getList(array('name', 'nickname', 'desc'));
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $id=>$row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
         }
     }
 }

@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
  
 /**
@@ -35,56 +34,34 @@
  */
 class PanelController extends SecurityController
 {
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         parent::preDispatch();
         $this->_helper->viewRenderer->setNoRender();
     }
-    
-    /** 
-     * Alias of dashboardAction
+    /** Alias of dashboardAction
      */
     public function indexAction()
     {
         $this->_forward('dashboard');
     }
-
-    /** 
-     * @todo english
-     * The header of the page
-     */
     public function headerAction()
     {
         $this->_helper->layout->setLayout('layout');
         $this->_helper->actionStack('footer');
         $this->render('header', 'header');
     }
-
-    /** 
-     * @todo english
-     * The footer of the page
-     */
     public function footerAction()
     {
         $this->render('footer', 'footer');           
     }
 
-    /** 
-     * @todo english
-     * Forward to dashboard Controller
-     */
     public function dashboardAction()
     {
         $this->_helper->actionStack('index', 'Dashboard');
         $this->_helper->actionStack('header');
     }
-    /** 
-     * @todo english
-     * Forward to finding Controller
+    /** finding menu
      */
     public function findingAction()
     {
@@ -93,24 +70,14 @@ class PanelController extends SecurityController
         $this->_helper->actionStack($sub, 'Finding');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to account Controller
-     */
     public function accountAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack('searchbox', 'Account');
         $this->_helper->actionStack($sub, 'Account');
+        $this->_helper->actionStack('searchbox', 'Account');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to search Controller
-     */
     public function searchAction()
     {
         $req = $this->getRequest();
@@ -121,11 +88,6 @@ class PanelController extends SecurityController
             $this->_helper->actionStack('header');
         }
     }
-
-    /** 
-     * @todo english
-     * Forward to remediation Controller
-     */
     public function remediationAction()
     {
         $req = $this->getRequest();
@@ -133,11 +95,6 @@ class PanelController extends SecurityController
         $this->_helper->actionStack($sub, 'Remediation');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to report Controller
-     */
     public function reportAction()
     {
         $req = $this->getRequest();
@@ -145,86 +102,52 @@ class PanelController extends SecurityController
         $this->_helper->actionStack($sub, 'Report');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to system Controller
-     */
     public function systemAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack('searchbox', 'System');
         $this->_helper->actionStack($sub, 'System');
+        $this->_helper->actionStack('searchbox', 'System');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to product Controller
-     */
     public function productAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack('searchbox', 'Product');
         $this->_helper->actionStack($sub, 'Product');
+        $this->_helper->actionStack('searchbox', 'Product');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to organiztion Controller
-     */
     public function organizationAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack('searchbox', 'Organization');
         $this->_helper->actionStack($sub, 'Organization');
+        $this->_helper->actionStack('searchbox', 'Organization');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to source Controller
-     */
     public function sourceAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack('searchbox', 'Source');
         $this->_helper->actionStack($sub, 'Source');
+        $this->_helper->actionStack('searchbox', 'Source');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to network Controller
-     */
     public function networkAction()
     {
         $sub = $this->_request->getParam('sub');
-        $this->_helper->actionStack('searchbox', 'Network');
         $this->_helper->actionStack($sub, 'Network');
+        $this->_helper->actionStack('searchbox', 'Network');
         $this->_helper->actionStack('header');
     }
 
-    /** 
-     * @todo english
-     * Forward to config Controller
-     */
     public function configAction()
     {
         $sub = $this->_request->getParam('sub', 'index');
         $this->_helper->actionStack('header');
         $this->_helper->actionStack($sub, 'Config');
     }
-
-    /** 
-     * @todo english
-     * Forward to user Controller
-     */
     public function userAction()
     {
         $req = $this->getRequest();
@@ -232,11 +155,6 @@ class PanelController extends SecurityController
         $this->_helper->actionStack($sub, 'User');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to asset Controller
-     */
     public function assetAction()
     {
         $req = $this->getRequest();
@@ -244,24 +162,14 @@ class PanelController extends SecurityController
         $this->_helper->actionStack($sub, 'Asset');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to role Controller
-     */
     public function roleAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack('searchbox', 'Role');
         $this->_helper->actionStack($sub, 'Role');
+        $this->_helper->actionStack('searchbox', 'Role');
         $this->_helper->actionStack('header');
     }
-
-    /** 
-     * @todo english
-     * Forward to log Controller
-     */
     public function logAction()
     {
         $req = $this->getRequest();

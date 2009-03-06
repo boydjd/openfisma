@@ -21,11 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
- */
-
-/**
- * @see Zend_View_Helper_Abstract
  */
 
 /**
@@ -33,17 +28,12 @@
  * on the system.
  *
  * @package   Controller
- * @see application/controller/PoamBaseController.php
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class AssetController extends PoamBaseController
 {
     protected $_asset = null;
-
-    /**
-     * init() - Initialize internal members.
-     */
     function init()
     {
         parent::init();
@@ -64,10 +54,6 @@ class AssetController extends PoamBaseController
             ));
         }
     }
-
-    /**
-     * preDispatch() - invoked before each Actions
-     */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -211,21 +197,28 @@ class AssetController extends PoamBaseController
     {
         $this->_acl->requirePrivilege('asset', 'read');
         $req = $this->getRequest();
-        $params['system_id'] = $req->get('system_id');
-        $params['product'] = $req->get('product');
-        $params['vendor'] = $req->get('vendor');
-        $params['version'] = $req->get('version');
-        $params['ip'] = $req->get('ip');
-        $params['port'] = $req->get('port');
-        $params['p'] = $req->get('p');
+        $criteria['system_id'] = $req->get('system_id');
+        $criteria['product'] = $req->get('product');
+        $criteria['vendor'] = $req->get('vendor');
+        $criteria['version'] = $req->get('version');
+        $criteria['ip'] = $req->get('ip');
+        $criteria['port'] = $req->get('port');
+        $criteria['p'] = $req->get('p');
         $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('criteria', $params);
+        $this->view->assign('criteria', $criteria);
         $isExport = $req->getParam('format');
         if ('search' == $req->getParam('s') || isset($isExport)) {
-            $this->_pagingBasePath = $req->getBaseUrl() . '/panel/asset/sub/searchbox/s/search';
+            if (!empty($criteria)) {
+                extract($criteria);
+            }
+            $this->_pagingBasePath = $req->getBaseUrl()
+                . '/panel/asset/sub/searchbox/s/search';
             $this->_paging['currentPage'] = $req->getParam('p', 1);
-            $this->makeUrl($params);
-
+            foreach ($criteria as $key => $value) {
+                if (!empty($value)) {
+                    $this->_pagingBasePath.= '/' . $key . '/' . $value . '';
+                }
+            }
             $db = $this->_poam->getAdapter();
             $query = $db->select()->from(array(
                 'a' => 'assets'
@@ -245,23 +238,23 @@ class AssetController extends PoamBaseController
                 'prod_vendor' => 'p.vendor',
                 'prod_version' => 'p.version'
             ));
-            if (!empty($params['system_id'])) {
-                $query->where('s.id = ?', $params['system_id']);
+            if (!empty($systemId)) {
+                $query->where('s.id = ?', $systemId);
             }
-            if (!empty($params['product'])) {
-                $query->where("p.name like '%$params[product]%'");
+            if (!empty($product)) {
+                $query->where('p.name = ?', $product);
             }
-            if (!empty($params['vendor'])) {
-                $query->where("p.vendor like '%$params[vendor]%'");
+            if (!empty($vendor)) {
+                $query->where('p.vendor = ?', $vendor);
             }
-            if (!empty($params['version'])) {
-                $query->where("p.version like '%$params[version]%'");
+            if (!empty($version)) {
+                $query->where('p.version = ?', $version);
             }
-            if (!empty($params['ip'])) {
-                $query->where('a.address_ip = ?', $params['ip']);
+            if (!empty($ip)) {
+                $query->where('a.address_ip = ?', $ip);
             }
-            if (!empty($params['port'])) {
-                $query->where('a.address_port = ?', $params['port']);
+            if (!empty($port)) {
+                $query->where('a.address_port = ?', $port);
             }
             $res = $db->fetchCol($query);
             $total = count($res);

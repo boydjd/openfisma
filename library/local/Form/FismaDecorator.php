@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Form
  */
 
 /**
@@ -69,24 +68,12 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
         $element = $this->getElement();
         $helper  = $element->helper;
         $value = $element->getValue();
-        $render = '';
-        
-        if ($element->readOnly) {
-            $element->setAttrib('disabled', 'disabled');
-        }
-
-        if (!($element instanceof Zend_Form_Element_Textarea && $element->readOnly)) {
-            $render = $element->getView()->$helper(
-                $element->getName(),
-                $value,
-                $element->getAttribs(),
-                $element->options
-            );
-        } else {
-            $render = "<div class=\"formValue\">$value</div>";
-        }
-        
-        return $render;
+        return $element->getView()->$helper(
+            $element->getName(),
+            $value,
+            $element->getAttribs(),
+            $element->options
+        );
     }
 
     /**
@@ -113,13 +100,14 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
      */
     public function render($content) {
         $element = $this->getElement();
-                
+        
         // Render the HTML 4.01 strict markup for the form and form elements.
         if ($element instanceof Zend_Form_Element) {
             $render = '<tr><td>'
                     . $this->buildLabel()
                     . '</td><td>'
                     . $this->buildInput()
+                    //. $this->buildErrors()
                     . '</td></tr>';
         } else if ($element instanceof Zend_Form_DisplayGroup) {
             $render = '<div class=\'subform\'><table class=\'fisma_crud\'>'
@@ -128,23 +116,14 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             
         } else if ($element instanceof Zend_Form) {
             $enctype = $element->getAttrib('enctype');
-            $id      = $element->getAttrib('id');
-
-            if ($element->isReadOnly()) {
-                $render = '<div class=\'form\'>'
-                        . $content
-                        . '</div>';            
-            } else {
-                $render = "<form method='{$element->getMethod()}'"
-                        . " action='{$element->getAction()}'"
-                        . (isset($enctype) ? " enctype=\"$enctype\"" : '')
-                        . (isset($id) ? " id=\"$id\"" : '')
-                        . '>'
-                        . '<div class=\'form\'>'
-                        . $content
-                        . '</div>'
-                        . '</form>';
-            }
+            $render = "<form method='{$element->getMethod()}'"
+                    . " action='{$element->getAction()}'"
+                    . (isset($enctype) ? " enctype=\"$enctype\"" : '')
+                    . '>'
+                    . '<div class=\'form\'>'
+                    . $content
+                    . '</div>'
+                    . '</form>';
         } else {
             throw new Exception_General("The element to be rendered is an unknown"
                                     . " class: "

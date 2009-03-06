@@ -21,10 +21,9 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package    Local
  *
  */
-
+ 
 /**
  * Fismacl
  * get user's role by which to check privilege
@@ -37,7 +36,7 @@
  * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class Fismacl extends Zend_Acl
-{
+{    
     /** 
      * according to the role and decide whether or not to be displayed.
      * @param $resource resources

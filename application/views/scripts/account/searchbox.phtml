@@ -1,18 +1,29 @@
 <?php
-$this->placeholder('prepend')->captureStart();
+    /**
+     * These are the fields which can be searched, the key is the physical
+     * name and the value is the logical name which is displayed in the
+     * interface.
+     */
+     $fid_array = array(
+         'name_last' => 'Last Name',
+         'name_first' => 'First Name',
+         'account' => 'Username',
+         'email' => 'Email',
+         'title' => 'Title',
+         'phone_office' => 'Office Phone',
+         'phone_mobile' => 'Mobile Phone'
+     );
 ?>
 <div class="barleft">
 <div class="barright">
 <p><b>User Account Administration</b>
 </div>
 </div>
-<table class="tipframe" align="center"  width="98%" cellpadding="0" cellspacing="0">
+<table class="tbframe" align="center"  width="98%">
     <tbody>
         <tr>
             <th>[<a id="user_list" href="/panel/account/sub/list">User List</a>] (total: <?php echo $this->total;?>)</th>
-            <?php if($this->acl->isAllowed('admin_users', 'create')) { ?>
             <th>[<a id="add_user" href="/panel/account/sub/create" title="add new Users">Add User</a>]</th>
-            <?php } ?>
             <th>[<a id="user_log" href="/panel/log/sub/view" title="Review user logs">User Logs</a>]</th>
             <th>
                 <table align="center">
@@ -30,7 +41,8 @@ $this->placeholder('prepend')->captureStart();
                     <table align="center">
                         <tr>
                             <td><b>Query:&nbsp;</b></td>
-                            <td><input name="qv" value="<?php echo $this->qv;?>" size="20" maxlength="40" type="text"></td>
+                            <td><?php echo $this->formSelect('fid', $this->fid, null, $fid_array);?></td>
+                            <td><input name="qv" value="<?php echo $this->qv;?>" size="10" maxlength="40" type="text"></td>
 
                              <td><input value="Search" type="submit"></td>
                         </tr>
@@ -40,4 +52,3 @@ $this->placeholder('prepend')->captureStart();
         </tr>
     </tbody>
 </table>
-<?php $this->placeholder('prepend')->captureEnd() ?>

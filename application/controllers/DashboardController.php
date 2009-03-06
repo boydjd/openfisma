@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
  
 /**
@@ -36,20 +35,12 @@ class DashboardController extends SecurityController
 {
     protected $_poam = null;
     protected $_allSystems = null;
-
-    /**
-     * init() - Initialize internal members.
-     */
     function init()
     {
         parent::init();
         $sys = new System();
         $this->_allSystems = $this->_me->systems;
     }
-
-    /**
-     * preDispatch() - invoked before each Actions
-     */
     function preDispatch()
     {
         parent::preDispatch();

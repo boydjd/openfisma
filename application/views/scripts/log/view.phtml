@@ -9,7 +9,6 @@
         <th width="15%">User</td>
         <th width="20%">Event</td>
         <th>Message</td>
-        <th>Ip Address</td>
     </tr>
 <?php
     foreach ($this->logList as $row) {
@@ -19,7 +18,6 @@
         <td class="tdc"><?php echo $row->account;?></td>
         <td class="tdc"><?php echo $row->event;?></td>
         <td class="tdc"><?php echo $row->message; ?></td>
-        <td class="tdc"><?php echo $row->ip;?></td>
     </tr>
 <?php } ?>
 </table>

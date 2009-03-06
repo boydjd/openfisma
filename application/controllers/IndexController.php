@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -39,12 +38,6 @@ class IndexController extends Zend_Controller_Action
      */
     public function indexAction()
     {
-        //if the user has login, redirect the page to dashboard.
-        if (Zend_Auth::getInstance()->hasIdentity()) {
-            $this->_forward('index', 'Panel');
-        //if the user hasn't login, redirect the page to login page.
-        } else {
-            $this->_forward('login', 'User');
-        }
+        $this->_forward('index', 'Panel');
     }
 }

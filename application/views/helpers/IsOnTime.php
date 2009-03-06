@@ -21,17 +21,16 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package Zend_View
  */
 
 /**
- * @see Zend_View_Helper_Abstract
+ * @see Zend_Controller_Action_Helper_Abstract
  */
 require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for determining if the specified poam is on time. 
- * @package Zend_View
+ *
  */
 class View_Helper_IsOnTime extends Zend_View_Helper_Abstract
 {

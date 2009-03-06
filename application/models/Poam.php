@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Model
  */
 
 /**
@@ -62,9 +61,9 @@ class Poam extends Zend_Db_Table
      *          <dt>'assetOwner'=>(int)</dt><dd> the asset's owner(a system id)</dd>
      *          <dt>'ids'=>(array)</dt><dd> some poam ids, in CSV format</dd>
      *          <dt>'actualDateBegin'=>(Zend_Date)</dt>
-     *          <dd>The lower bound of date when a poam exiting EN and entering EA status.</dd>
+     *          <dd>The lower bound of date when a poam exiting EN and entering EP(EA) status.</dd>
      *          <dt>'actualDateEnd'=>(Zend_Date)</dt>
-     *          <dd>The upper bound of date when a poam exiting EN and entering EA status.</dd>
+     *          <dd>The upper bound of date when a poam exiting EN and entering EP(EA) status.</dd>
      *          <dt>'estDateBegin'=>(Zend_Date)</dt>
      *          <dd>The lower bound of date to complete the mitigation strategy, i.e. uploading an evidence.</dd>
      *          <dt>'estDateEnd'=>(Zend_Date)</dt>
@@ -88,8 +87,7 @@ class Poam extends Zend_Db_Table
      *          <dt>'type'=>(string|array)</dt><dd>poam type(s), namely 'CAP', 'AR', 'FP'.</dd>
      *          <dt>'mp'=>precedence_id(int)</dt><dd>a Mitigation Strategy Evaluation noted by precedence_id </dd>
      *          <dt>'ep'=>(int)</dt><dd>an Evidence Evaluationnoted by precedence_id </dd>
-     *          <dt>'status'=>(string|array)</dt>
-     *          <dd>poam status(s), namely 'NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'</dd>
+     *          <dt>'status'=>(string|array)</dt><dd>poam status(s), namely 'NEW', 'DRAFT', 'MSA', 'EN', 'EP', 'CLOSED'</dd>
      *          <dt>'ip'=>(string)</dt><dd>an asset's ip address</dd>
      *          <dt>'port'=>(int)</dt><dd> a service port of the asset</dd>
      *          <dt>'group'=>(string)</dt><dd>similar with SQL's GROUP BY. used in counting</dd>
@@ -208,9 +206,9 @@ class Poam extends Zend_Db_Table
         if (isset($ep)) {
             if (!empty($status)) {
                 $status = (array)$status;
-                $status[] = 'EA';
+                $status[] = 'EP';
             } else {
-                $status = 'EA';
+                $status = 'EP';
             }
             if ($ep > 0) {
                 $ep --;
@@ -297,12 +295,10 @@ class Poam extends Zend_Db_Table
                                               'as.name' => 'asset_name',
                                               'as.system_id' => 'asset_owner'),
                              'source' => array('s.nickname' =>'source_nickname',
-                                              's.name' => 'source_name'),
-                             'system' => array('sys.nickname' => 'system_nickname',
-                                               'sys.name' => 'system_name'));
+                                              's.name' => 'source_name'));
         $ret = array();
         $count = 0;
-        $countFields = true;
+        $countFields = false;
         $dueTimeColumn = "( CASE p.status
                         WHEN 'NEW'
                             THEN ADDDATE( p.create_ts, ".$this->_overdue['new']."+1 )
@@ -312,15 +308,15 @@ class Poam extends Zend_Db_Table
                             THEN ADDDATE( p.action_current_date, ".$this->_overdue['en']."+1 )
                         WHEN 'MSA'
                             THEN ADDDATE( p.mss_ts, ".$this->_overdue['mp']."+1 )
-                        WHEN 'EA'
+                        WHEN 'EP'
                             THEN ADDDATE( p.action_current_date, ".$this->_overdue['ep']."+1 )
                         ELSE 'N/A' END) AS duetime ";
         
         if ($fields == '*') {
-            $fields = array_merge($this->_cols, $extraFields['asset'], $extraFields['source'],
-                                  $extraFields['system']);
+            $fields = array_merge(  $this->_cols, $extraFields['asset'],$extraFields['source']);
             array_push($fields, $dueTimeColumn);
         } else if (isset($fields['count'])) {
+            $countFields = true;
             if ($fields == 'count' || $fields == array('count' => 'count(*)')) {
                 $fields = array(); //count only
             } else {
@@ -337,10 +333,10 @@ class Poam extends Zend_Db_Table
         
         assert(is_array($fields));
         $tableFields = array_values($fields);
-        $pFields = array_diff($fields, $extraFields['asset'], $extraFields['source'], $extraFields['system']);
+        $pFields = array_diff($fields, $extraFields['asset'],
+                              $extraFields['source']);
         $asFields = array_flip(array_intersect($extraFields['asset'], $tableFields));
         $srcFields = array_flip(array_intersect($extraFields['source'], $tableFields));
-        $sysFields = array_flip(array_intersect($extraFields['system'], $tableFields));
         if (in_array('duetime', $fields)) {
             unset($pFields[array_search('duetime', $pFields)]);
             array_push($pFields, $dueTimeColumn);
@@ -357,10 +353,6 @@ class Poam extends Zend_Db_Table
         if (! empty($srcFields)) {
             $query->joinLeft(array('s' => 'sources'), 's.id = p.source_id',
                 $srcFields);
-        }
-        if (! empty($sysFields)) {
-            $query->joinLeft(array('sys' => 'systems'), 'sys.id = p.system_id',
-                $sysFields);
         }
         if (! empty($criteria['ontime'])) {
             $criteria = $this->_parseOnTime($criteria);
@@ -525,7 +517,7 @@ class Poam extends Zend_Db_Table
             } else {
                 return $msEvalList[0]['nickname'];
             }
-        } else if ('EA' == $ret->current()->status) {
+        } else if ('EP' == $ret->current()->status) {
              $query = $this->_db->select()
                           ->from(array('pev'=>'poam_evaluations'), 'pev.*')
                           ->join(array('ev'=>'evidences'), 'pev.group_id = ev.id', array())
@@ -689,13 +681,6 @@ class Poam extends Zend_Db_Table
         return $ret;
     }
 
-    /** 
-     * @todo english
-     * Insert decision to the poam_evaluations
-     * @param int $eid evidence id
-     * @param array $review post evaluation data
-     * @return int Last insert id
-     */
     public function reviewEv ($eid, $review)
     {
         $data = array_merge(array('group_id' => $eid), $review);
@@ -743,10 +728,6 @@ class Poam extends Zend_Db_Table
         $result = $this->_db->insert('audit_logs', $data);
     }
     
-    /**
-     * This method is not available
-     * @todo delete it
-     */
     public function fismasearch ($agency)
     {
         $flag = substr($agency, 0, 1);
@@ -760,7 +741,6 @@ class Poam extends Zend_Db_Table
                         array('system_id' => 'system_id'))
                     ->where("sgs.sysgroup_id = " . $fsaSysgroupId . "
                         AND sgs.system_id != " . $fpSystemId . "");
-       
         $result = $db->fetchCol($query);
         $systemIds = implode(',', $result);
         $query = $db->select()->distinct()

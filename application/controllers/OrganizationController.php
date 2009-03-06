@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: SysgroupController.php 940 2008-09-27 13:40:22Z ryanyang $
- * @package   Controller
  */
 
 /**
@@ -42,20 +41,12 @@ class OrganizationController extends SecurityController
         'perPage' => 20
     );
 
-    /**
-     * @todo english
-     * init() - Initialize 
-     */
     public function init()
     {
         parent::init();
         $this->_organization = new Organization();
     }
 
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -92,52 +83,45 @@ class OrganizationController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
         
-        $qv = trim($this->_request->getParam('qv'));
+        $req = $this->getRequest();
+        $fid = $req->getParam('fid');
+        $qv = $req->getParam('qv');
+        $query = $this->_organization->select()->from(array(
+            'o' => 'organizations'
+        ), array(
+            'count' => 'COUNT(o.id)'
+        ));
         if (!empty($qv)) {
-            //@todo english  if organization index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
-                $this->createIndex();
-            }
-            $ret = Config_Fisma::searchQuery($qv, 'organization');
-        } else {
-            $ret = $this->_organization->getList('name');
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
         }
-
-        $count = count($ret);
+        $res = $this->_organization->fetchRow($query)->toArray();
+        $count = $res['count'];
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
+        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
     }
 
-    /**
+    /*
      * list the organizations from the search, if search none, it list all organizations
      */     
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
         
-        $value = trim($this->_request->getParam('qv'));
-
-        $query = $this->_organization->select()->from('organizations', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
+        $req = $this->getRequest();
+        $field = $req->getParam('fid');
+        $value = trim($req->getParam('qv'));
+        $query = $this->_organization->select()->from('organizations', '*');
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
-            //@todo english  get search results in ids
-            $organizationIds = $cache->load($this->_me->id . '_organization');
-            if (!empty($organizationIds)) {
-                $ids = implode(',', $organizationIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
+            $query->where("$field = ?", $value);
         }
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+                                             $this->_paging['perPage']);
         $organizationList = $this->_organization->fetchAll($query)->toArray();
         $this->view->assign('organization_list', $organizationList);
     }
@@ -171,7 +155,9 @@ class OrganizationController extends SecurityController
             // In view mode, disable all of the form controls
             $this->view->assign('editLink',
                                 "/panel/organization/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
         }
         $form->setDefaults($organization);
         $this->view->form = $form;
@@ -203,11 +189,6 @@ class OrganizationController extends SecurityController
                          ->add(Notification::ORGANIZATION_CREATED,
                              $this->_me->account, $organizationId);
 
-                    //Create a organization index
-                    if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
-                        Config_Fisma::updateIndex('organization', $organizationId, $organization);
-                    }
-
                     $msg = "The organization is created";
                     $model = self::M_NOTICE;
                 }
@@ -215,7 +196,20 @@ class OrganizationController extends SecurityController
                 $this->_forward('view', null, null, array('id' => $organizationId));
                 return;
             } else {
-                $errorString = Form_Manager::getErrors($form);
+                /**
+                 * @todo this error display code needs to go into the decorator,
+                 * but before that can be done, the function it calls needs to be
+                 * put in a more convenient place
+                 */
+                $errorString = '';
+                foreach ($form->getMessages() as $field => $fieldErrors) {
+                    if (count($fieldErrors)>0) {
+                        foreach ($fieldErrors as $error) {
+                            $label = $form->getElement($field)->getLabel();
+                            $errorString .= "$label: $error<br>";
+                        }
+                    }
+                }
                 // Error message
                 $this->message("Unable to create organization:<br>$errorString", self::M_WARNING);
             }
@@ -250,11 +244,6 @@ class OrganizationController extends SecurityController
                      ->add(Notification::ORGANIZATION_DELETED,
                         $this->_me->account, $id);
 
-                //Delete a organization index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
-                    Config_Fisma::deleteIndex('organization', $id);
-                }
-
                 $msg = "The organization is deleted";
                 $model = self::M_NOTICE;
             }
@@ -287,11 +276,6 @@ class OrganizationController extends SecurityController
                      ->add(Notification::ORGANIZATION_MODIFIED,
                          $this->_me->account, $id);
 
-                //Update this organization index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
-                    Config_Fisma::updateIndex('organization', $id, $organization);
-                }
-
                 $msg = "The organization is saved";
                 $model = self::M_NOTICE;
             } else {
@@ -301,34 +285,21 @@ class OrganizationController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
             // Error message
             $this->message("Unable to update organization<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
     }
-
-    /**
-     * Create organizations Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/organization', true);
-        $list = $this->_organization->getList(array('name', 'nickname'));
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $id=>$row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
-        }
-    }
-
-
 }

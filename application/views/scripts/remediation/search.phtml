@@ -1,128 +1,54 @@
-<script language="javascript">
-    $(document).ready(function(){
-        <?php
-            foreach (explode(',', $this->keywords) as $keyword) {
-        ?>
-        highlight(document.getElementById('poam_list'), '<?php echo $keyword;?>');            
-        <?php } ?>
-    });
-</script>
-<?php
-    $baseUrl =  "/panel/remediation/sub/view";
-    if (!empty($this->keywords)) {
-        $baseUrl .= '/keywords/' . $this->keywords;
-    }
-?>
 <div class="barleft">
 <div class="barright">
-    <!-- @todo english -->
-    <p><img style="cursor:pointer" src="/images/favor.gif" title="add to bookmark"
-            onclick="addBookmark('OpenFisma Finding Result',
-            '<?php echo Config_Fisma::readSysConfig('hostUrl').$this->url; ?>')"/>&nbsp;&nbsp;
-    <b>Remediation Search Results</b>
+    <p><b>Remediation Search Results</b>
         <span>
             <?php echo $this->links['all'];?>
-        </span>
-        <span>
-            <a href="<?php echo $this->attachUrl;?>/format/pdf" ><img style="margin-top:2px;" border="0" src="/images/pdf.gif"/></a>
-            <a href="<?php echo $this->attachUrl;?>/format/xls" ><img style="margin-top:2px;" border="0" src="/images/xls.gif"/></a>
-            <a href="#options" class="ph_sticky options" rel="#options" title="Show/Hide Columns">
-                <img style="margin-top:2px;" border="0" src="/images/emblem-system.png"/>
-            </a>
-            <div id="options" style="display:none" />
         </span>
     </p>
 </div>
 </div>
-    <table width="100%" class="tbframe" id="poam_rst">
-        <tr>
-            <th>ID 
-                <a href="<?php echo $this->url;?>/sortby/p.id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Source 
-                <a href="<?php echo $this->url;?>/sortby/s.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/s.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>System 
-                <a href="<?php echo $this->url;?>/sortby/sys.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/sys.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Asset 
-                <a href="<?php echo $this->url;?>/sortby/as.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/as.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Type 
-                <a href="<?php echo $this->url;?>/sortby/p.type/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.type/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Status 
-                <a href="<?php echo $this->url;?>/sortby/p.status/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.status/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>On Time? </th>
-            <th>Description </th>
-            <th>Recommendation </th>
-            <th>Corrective Action </th>
-            <th>Blscr 
-                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Threat Level 
-                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Threat Description </th>
-            <th>Cmeasures Effectiveness 
-                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Cmeasures Description </th>
-            <th>Attachments </th>
-            <th>ECD 
-               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>View</th>
+    <table width="100%" class="tbframe">
+        <th nowrap>ID 
+            <a href="<?php echo $this->url;?>/sortby/id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+            <a href="<?php echo $this->url;?>/sortby/id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+        </th>
+        <th nowrap>Source </th>
+        <th nowrap>System </th>
+        <th nowrap>Type </th>
+        <th nowrap>Status </th>
+        <th nowrap>On Time? </th>
+        <th nowrap>Finding </th>
+        <th nowrap>ECD 
+           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
+           <a href="<?php echo $this->url;?>/sortby/action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
+        </th>
+        <th nowrap>View</th>
         </tr>
         <!-- REMEDIATION ROWS -->
-        <tbody id = "poam_list">
         <?php
             foreach($this->list as $row){
+            $finding_data = strlen($row['finding_data'])>120?substr($row['finding_data'],0,120)."...":$row['finding_data'];
         ?>
         <tr>
             <td align='center' class='tdc'><?php echo $row['id'];?></td>
-            <td align='center' class='tdc'>
+            <td align='center' class='tdc' nowrap>
             <?php 
-                    if (!isset($row['source_name'])) {
+                    if (!isset($this->sources[$row['source_id']])) {
                         echo 'Missing Source id';
                     } else {
-                        echo $row['source_name'];
+                        echo $this->sources[$row['source_id']];
                     }
             ?>
             </td>
-            <td align='center' class='tdc'><?php echo '(' . $row['system_nickname'] . ')' . $row['system_name'];?></td>
-            <td align='center' class='tdc'><?php echo $row['asset_name'];?></td>
-            <td align='center' class='tdc'><?php echo $row['type'];?></td>
-            <td align='center' class='tdc'><?php echo $row['status'];?></td>
-            <td align='center' class='tdc'>
+            <td align='center' class='tdc'><?php echo $this->systems[$row['system_id']];?></td>
+            <td align='center' class='tdc' nowrap><?php echo $row['type'];?></td>
+            <td align='center' class='tdc' nowrap><?php echo $row['status'];?></td>
+            <td align='center' class='tdc' nowrap>
                 <?php echo $this->isOnTime($row['duetime']);?>
             </td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['finding_data'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_suggested'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_planned'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $row['blscr_id'];?></td>
-            <td align='left' class='tdc'><?php echo $row['threat_level'];?></td>
-            <td align='left' class='tdc'><?php echo $this->showLongText($row['threat_source'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $row['cmeasure_effectiveness'];?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure'], $this->keywords);?></td>
-            <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
-            <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
-            <td align="center" valign='middle' class='tdc'>
-            <a href="<?php echo $baseUrl .'/id/' . $row['id'];?>">
-                <img src="/images/view.gif" border="0">
-            </a></td>
+            <td align='left'   class='tdc'><?php echo $finding_data;?></td>
+            <td align='center' class='tdc' nowrap><?php echo $row['action_current_date'];?></td> 
+            <td align="center" valign='middle' class='tdc'><a href="/panel/remediation/sub/view/id/<?php echo $row['id'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
-        </tbody>
     </table>

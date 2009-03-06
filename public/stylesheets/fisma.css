@@ -226,19 +226,3 @@ label.error {
     margin:10px auto;
     width:70%;
 }
-/* the style of columns in cluetips */
-.options_ul li{
-    list-style-type: none;
-    list-style-image: none;
-    list-style-position: outside;
-}
-/* the style of the column which is checked */
-.accept {
-    background: url("/images/check_point.png") no-repeat scroll 0 50%;
-    padding: 1px 0 2px 20px;
-}
-/* the style of the column which is unchecked */
-.blank {
-    background: url("/images/blank_point.png") no-repeat scroll 0 50%; 
-    padding: 1px 0 2px 20px;
-}

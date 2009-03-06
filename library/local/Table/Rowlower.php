@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -33,13 +32,8 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 
-class Table_Rowlower extends Zend_Db_Table_Row_Abstract
-{
-    /**
-     * Transform the property name from fooBar to foo_bar .
-     *
-     * @param string $columnName 
-     */
+class Table_Rowlower extends Zend_Db_Table_Row_Abstract 
+{ 
     protected function _transformColumn($columnName) { 
         if (!is_string($columnName)) { 
             require_once 'Zend/Db/Table/Row/Exception.php'; 

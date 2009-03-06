@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Form
  */
 
 /**
@@ -42,23 +41,12 @@ class Form_Validator_PasswdMatch extends Zend_Validate_Abstract
      */
     protected $_userRow = null;
 
-    /**
-     * @todo english
-     * Initialize $_userRow property
-     * @param Object $user 
-     */
     public function __construct($user)
     {
         assert($user instanceof Zend_Db_Table_Row_Abstract);
         $this->_userRow = $user;
     }
 
-    /** 
-     * @todo english
-     * Validate the password
-     * @param string $pass password
-     * @return true|false
-     */
     public function isValid($pass)
     {
         $user = $this->_userRow->getTable();

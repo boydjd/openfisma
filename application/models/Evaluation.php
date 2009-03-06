@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Model
  */
 
 /**
@@ -37,12 +36,6 @@ class Evaluation extends FismaModel
     protected $_name = 'evaluations';
     protected $_primary = 'id';
 
-    /**
-     * @todo english
-     * Get evaluation List
-     * @param string $group Evaluation group
-     * @return array $ret 
-     */
     public function getEvalList ($group) {
         if (!in_array($group, array('EVIDENCE', 'ACTION'))) {
             throw new Exception_General('Make sure a valid GROUP is inputed');

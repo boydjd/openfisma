@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package    Controller
  */
 
 /**
@@ -53,13 +52,10 @@ class AccountController extends SecurityController
         parent::init();
         $this->_user = new User();
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('checkaccount', 'html')
+        $ajaxContext->addActionContext('checkdn', 'html')
                     ->initContext();
     }
 
-    /**
-     * preDispatch() - invoked before each Actions
-     */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -92,7 +88,7 @@ class AccountController extends SecurityController
                  ->addMultiOptions(array($row['id'] => $row['name']));
         }
 
-        $checkboxMatrix = new Form_Element_CheckboxMatrix('systems');
+        $checkboxMatrix = new Form_CheckboxMatrix('systems');
         foreach ($system->getList() as $id => $systemData) {
             $checkboxMatrix->addCheckbox($id, $systemData['name']);
         }
@@ -102,11 +98,12 @@ class AccountController extends SecurityController
         // mode, then remove the database authentication fields.
         $systemAuthType = Config_Fisma::readSysConfig('auth_type');
         if ($systemAuthType == 'ldap') {
+            $form->removeElement('account');
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
-            $form->removeElement('generate_password');
         } else if ($systemAuthType == 'database') {
-            $form->removeElement('checkaccount');
+            $form->removeElement('ldap_dn');
+            $form->removeElement('checkdn');
         } else {
             throw new Exception_General("The account form cannot handle"
                                     . " the current authentication type: "
@@ -131,21 +128,23 @@ class AccountController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
 
-        $qv = trim($this->_request->getParam('qv'));
+        $fid = $this->_request->getParam('fid');
+        $qv  = $this->_request->getParam('qv');
+        $query = $this->_user->select()->from(array(
+            'u' => 'users'
+        ), array(
+            'count' => 'COUNT(u.id)'
+        ))->order('u.account ASC');
         if (!empty($qv)) {
-            //@todo english  if account index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
-                $this->createIndex();
-            }
-            $ret = Config_Fisma::searchQuery($qv, 'account');
-        } else {
-            $ret = $this->_user->getList('account');
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
         }
-
-        $count = count($ret);
+        $res = $this->_user->fetchRow($query)->toArray();
+        $count = $res['count'];
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
+        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -159,7 +158,6 @@ class AccountController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
         
-        $value = trim($this->_request->getParam('qv'));
         // Set up the query to get the full list of users
         $user = new User();
         $qry = $user->select()
@@ -171,21 +169,17 @@ class AccountController extends SecurityController
                                  'name_first',
                                  'phone_office',
                                  'phone_mobile',
-                                 'email'))
-                    ->order('name_last ASC')
-                    ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
-        if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
-            //@todo english  get search results in ids
-            $accountIds = $cache->load($this->_me->id . '_account');
-            if (!empty($accountIds)) {
-                $ids = implode(',', $accountIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $qry->where('id IN (' . $ids . ')');
+                                 'email'));
+
+        $qv = $this->_request->getParam('qv');
+        if (!empty($qv)) {
+            $fid = $this->_request->getParam('fid');
+            $qry->where("$fid = '$qv'");
         }
+
+        $qry->order("name_last ASC");
+        $qry->limitPage($this->_paging['currentPage'], 
+                        $this->_paging['perPage']);
         $data = $user->fetchAll($qry);
         
         // Format the query results appropriately for passing to the view script
@@ -235,7 +229,8 @@ class AccountController extends SecurityController
                                  'title',
                                  'is_active',
                                  'account',
-                                 'password'))
+                                 'password',
+                                 'ldap_dn'))
                     ->where("id = ?", $id);
 
         $userDetail = $user->fetchRow($qry)->toArray();
@@ -269,7 +264,9 @@ class AccountController extends SecurityController
             // In view mode, disable all of the form controls
             $this->view->assign('editLink',
                                 "/panel/account/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
         }
         
         // Assign view outputs
@@ -324,6 +321,9 @@ class AccountController extends SecurityController
                 ));
                 return;
             }
+            if ( Config_Fisma::readSysConfig('auth_type') == 'ldap' ) {
+                $accountData['account'] = $accountData['ldap_dn'];
+            }
             if ( !empty($accountData['password']) ) {
                 /// @todo validate the password complexity
                 if ($accountData['password'] !=
@@ -335,14 +335,12 @@ class AccountController extends SecurityController
                     ));
                     return;
                 }
-                $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
                 $accountData['hash']     = Config_Fisma::readSysConfig('encrypt');
             } else {
                 unset($accountData['password']);
             }
             unset($accountData['confirmPassword']);
-            unset($accountData['generate_password']);
             $roleId = $accountData['role'];
             unset($accountData['role']);
             unset($accountData['submit']);
@@ -351,7 +349,7 @@ class AccountController extends SecurityController
                 $systems = array();
             }
             unset($accountData['systems']);
-            unset($accountData['checkaccount']);
+            unset($accountData['checkdn']);
 
             if ($accountData['is_active'] == 0) {
                 $accountData['termination_ts'] =
@@ -363,62 +361,22 @@ class AccountController extends SecurityController
             }
 
             $n = $this->_user->update($accountData, "id=$id");
-            $mySystems = $this->_user->getMySystems($id);
-            $addSystems = array_diff($systems, $mySystems);
-            $removeSystems = array_diff($mySystems, $systems);
-            $n += $this->_user->associate($id, User::SYS, $addSystems);
-            // The last parameter "true" inverts the association, i.e. removes
-            // the specified systems from this user's account
-            $n += $this->_user->associate($id, User::SYS, $removeSystems, true);
-            
             if ($n > 0) {
-                $message = "User ({$accountData['account']}) modified";
-
                 $this->_notification
                      ->add(Notification::ACCOUNT_MODIFIED,
                         $this->_me->account, $id);
                 $this->_user->log('ACCOUNT_MODIFICATION',
                                    $this->_me->id,
                                    "User Account {$accountData['account']} Successfully Modified");
-
-                if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
-                    if (!empty($roleId)) {
-                        $role = new Role();
-                        $ret = $role->find($roleId)->current();
-                        if (!empty($ret)) {
-                            $data['role'] = $ret->name . ' ' . $ret->nickname;
-                        }
-                    }
-                    if (!empty($accountData['name_last'])) {
-                        $data['lastname'] = $accountData['name_last'];
-                    }
-                    if (!empty($accountData['name_first'])) {
-                        $data['firstname'] = $accountData['name_first'];
-                    }
-                    if (!empty($accountData['email'])) {
-                        $data['email'] = $accountData['email'];
-                    }
-                    if (!empty($data)) {
-                        Config_Fisma::updateIndex('account', $id, $data);
-                    }
-                }
-
-                if (!empty($password)) {
-                    $result = $this->sendPassword($id, $password);
-                    if (true == $result) {
-                        /** @todo english */
-                        $message .= ", an email include the new password has sent to this user";
-                    } else {
-                        $message .= ", the email is unable to send, please configure your mail service";
-                    }
-                    // On success, redirect to read view
-                    $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
-                }
-                $this->message($message, self::M_NOTICE);
-            } else {
-                $message = 'Nothing changes';
-                $this->message($message, self::M_WARNING);
             }
+
+            $mySystems = $this->_user->getMySystems($id);
+            $addSystems = array_diff($systems, $mySystems);
+            $removeSystems = array_diff($mySystems, $systems);
+            $n = $this->_user->associate($id, User::SYS, $addSystems);
+            // The last parameter "true" inverts the association, i.e. removes
+            // the specified systems from this user's account
+            $n = $this->_user->associate($id, User::SYS, $removeSystems, true);
 
             $qry = $db->select()->from(array(
                 'ur' => 'user_roles'
@@ -443,9 +401,26 @@ class AccountController extends SecurityController
                     Exception_General('The user has more than 1 role.');
             }
 
+            $this->message("User ({$accountData['account']}) modified",
+                           self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
             // Error message
             $this->message("Unable to update account:<br>$errorString",
                            self::M_WARNING);
@@ -479,11 +454,6 @@ class AccountController extends SecurityController
         if ($res) {
             $this->_notification->add(Notification::ACCOUNT_DELETED,
                 $this->_me->account, $id);
-
-            if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
-                Config_Fisma::deleteIndex('account', $id);
-            }
-
             $msg = "User " . $userName . " deleted successfully.";
             $model = self::M_NOTICE;
             $this->_user->log('ACCOUNT_DELETED',
@@ -513,6 +483,8 @@ class AccountController extends SecurityController
         if (Config_Fisma::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirmPassword')->setRequired(true);
+            $form->getElement('password')->setValue($this->_randomPassword());
+            $form->getElement('confirmPassword')->setValue($this->_randomPassword());
              // Prepare the password requirements explanation:
             $requirements = $this->_getPasswordRequirements();
             $this->view->assign('requirements', $requirements);
@@ -568,12 +540,12 @@ class AccountController extends SecurityController
             // @todo see
             $systems = $accountData['systems'];
             unset($accountData['systems']);
-            unset($accountData['checkaccount']);
-            unset($accountData['generate_password']);
+            unset($accountData['checkdn']);
             
-            $password = '';
             // Create the user's main record.
-            if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
+            if ( 'ldap' == Config_Fisma::readSysConfig('auth_type') ) {
+                $accountData['account'] = $accountData['ldap_dn'];
+            } else if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
                 $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
                 $accountData['hash'] = Config_Fisma::readSysConfig('encrypt');
@@ -592,20 +564,6 @@ class AccountController extends SecurityController
                 $this->_user->associate($userId, User::SYS, $systems);
             }
 
-            //Create this account index
-            if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
-                $data = array('username'   => $accountData['account'],
-                              'lastname'  => $accountData['name_last'],
-                              'firstname' => $accountData['name_first'],
-                              'email'      => $accountData['email']);
-
-                $role = new Role();
-                $ret = $role->find($roleId)->current();
-                $data['role'] = $ret->name . ' ' . $ret->nickname;
-                                
-                Config_Fisma::updateIndex('account', $userId, $data);
-            }
-
             $this->_notification->add(Notification::ACCOUNT_CREATED,
                 $this->_me->account, $userId);
                 
@@ -613,23 +571,32 @@ class AccountController extends SecurityController
             // user.
             $this->_user->log('ACCOUNT_CREATED', $this->_me->id,
                              'User Account '.$accountData['account'].' Successfully Created');
-            $message = "User ({$accountData['account']}) added, ";
+            $this->message("User ({$accountData['account']}) added, and a validation email has been sent to this user.",
+                           self::M_NOTICE);
 
-            $result = $this->emailvalidate($userId, $accountData['email'], 'create',
+            $this->emailvalidate($userId, $accountData['email'], 'create',
                 array('account'=>$accountData['account'], 'password'=>$password));
-            if (true == $result) {
-                $message .= "and a validation email has been sent to this user.";
-            } else {
-                $message .= "but the validation email is unable to send, please configure your mail service";
-            }
                            
             // On success, redirect to read view
-            $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
-            $this->message($message, self::M_NOTICE);
+            $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts');
             $this->_forward('view', null, null, array('id' => $userId));
             $this->_forward('create');
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+
             // Error message
             $this->message("Unable to create account:<br>$errorString",
                            self::M_WARNING);
@@ -640,38 +607,37 @@ class AccountController extends SecurityController
     }
 
     /**
-     * checkaccountAction() - Check to see if the specified LDAP
-     * distinguished name (Account) exists in the system's specified LDAP directory.
+     * checkDnAction() - Check to see if the specified LDAP
+     * distinguished name (DN) exists in the system's specified LDAP directory.
      */
-    public function checkaccountAction()
+    public function checkdnAction()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
         
         $config = new Config();
         $data = $config->getLdap();
-        $account = $this->_request->getParam('account');
+        $dn = $this->_request->getParam('dn');
         $msg = '';
         foreach ($data as $opt) {
             unset($opt['id']);
             $srv = new Zend_Ldap($opt);
             try {
-                $dn = $srv->getCanonicalAccountName($account,
+                $dn = $srv->getCanonicalAccountName($dn,
                             Zend_Ldap::ACCTNAME_FORM_DN); 
-                $msg = "$account exists, the dn is: $dn";
+                $msg = "$dn exists";
             } catch (Zend_Ldap_Exception $e) {
                 // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
                 // DN does not exist.
                 if ($e->getErrorCode() ==
                     Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
-                    $msg = "$account does NOT exist";
+                    $msg = "$dn does NOT exist";
                 } else {
-                    $msg .= 'Unknown error while checking Account: '
+                    $msg .= 'Unknown error while checking DN: '
                           . $e->getMessage();
                 }
             }
         }
         echo $msg;
-        $this->_helper->viewRenderer->setNoRender();
     }
 
     /**
@@ -856,12 +822,12 @@ class AccountController extends SecurityController
     }
 
     /**
-     * generate a password that meet the application's password complexity requirements.
+     * random a complexity password when created a user
      */
-    public function generatepasswordAction()
+    protected function _randomPassword()
     {
         $passLengthMin = Config_Fisma::readSysConfig('pass_min');
-        $passLengthMax = Config_Fisma::readSysConfig('pass_max');
+        $passLengthMax = $passLengthMin+5;
         $passNum = Config_Fisma::readSysConfig('pass_numerical');
         $passUpper = Config_Fisma::readSysConfig('pass_uppercase');
         $passLower = Config_Fisma::readSysConfig('pass_lowercase');
@@ -892,21 +858,13 @@ class AccountController extends SecurityController
                 $password .= rand();
             } else {
                 foreach ($possibleCharactors as $row) {
-                    if (strlen($password) < $length) {
-                        $password .= substr($row, (rand()%(strlen($row))), 1);
-                    }
+                    $password .= substr($row, (rand()%(strlen($row))), 1);
                 }
             }
         }
-        echo $password;
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
+        return $password;
     }
 
-    /**
-     * @todo english
-     * Fetch the password complexs requirements
-     */
     protected function _getPasswordRequirements()
     {
         $requirements[] = "Length must be between "
@@ -927,35 +885,5 @@ class AccountController extends SecurityController
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
         return $requirements;
-    }
-
-    /**
-     * Create accounts Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/account', true);
-        $query = $this->_user->getAdapter()->select()->from(array('u'=>'users'),
-                                        array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
-                                          ->join(array('ur'=>'user_roles'), 'u.id = ur.user_id', array())
-                                          ->join(array('r'=>'roles'), 'ur.role_id = r.id',
-                                                  array('role_name'=>'r.name', 'role_nickname'=>'r.nickname'));
-        $list = $this->_user->getAdapter()->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['account']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('lastname', $row['name_last']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('firstname', $row['name_first']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('email', $row['email']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('role',
-                            $row['role_name'] . ' ' . $row['role_nickname']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
-        }
     }
 }

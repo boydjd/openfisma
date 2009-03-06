@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Model
  */
 
 /**
@@ -38,11 +37,12 @@ class User extends FismaModel
     protected $_rowClass = 'Table_Rowlower';
     protected $_logName = 'account_logs';
     protected $_logger = null;
-    protected $_logMap = array('timestamp' => 'timestamp',
-                               'ip' => 'ip',
+    protected $_logMap = array('priority' => 'priority',
+                               'timestamp' => 'timestamp',
                                'user_id' => 'uid',
                                'event' => 'type',
-                               'message' => 'message');
+                               'message' => 'message',
+                               'priority_name' => 'priorityName');
     protected $_map = array(self::SYS => array('table' => 'user_systems',
                                                'field' => 'system_id'),
                             self::ROLE => array('table' => 'user_roles',
@@ -50,9 +50,6 @@ class User extends FismaModel
     const SYS = 'SYSTEM';
     const ROLE = 'ROLE';
 
-    /**
-     * Initialize this Class
-     */
     public function init ()
     {
         $writer = new Zend_Log_Writer_Db($this->_db, $this->_logName,
@@ -62,9 +59,10 @@ class User extends FismaModel
         }
     }
     /**
-     * Get specified user's roles
-     * @param $id the user id
-     * @return array of role nickname
+        Get specified user's roles
+
+        @param $id the user id
+        @return array of role nickname
      */
     public function getRoles ($id, $fields = array('nickname'=>'nickname'))
     {
@@ -80,9 +78,11 @@ class User extends FismaModel
         return $db->fetchAll($qry);
     }
     /**
-     * Retrieve the systems that the user belongs to
-     * @param $id user id
-     * @return array the system ids
+        Retrieve the systems that the user belongs to
+
+        @param $id user id
+        @return array the system ids
+
      */
     public function getMySystems ($id)
     {
@@ -133,11 +133,8 @@ class User extends FismaModel
             $now = new Zend_Date();
             $notification = new Notification();
             $nowSqlString = $now->get('Y-m-d H:i:s');
-
-            $this->_logger->setEventItem('ip', $_SERVER['REMOTE_ADDR']);
-            $this->_logger->setEventItem('uid', $uid);
             
-            if ($type == 'LOGIN') {
+             if ($type == 'LOGIN') {
                 $row->failureCount = 0;
                 $row->lastLoginTs = $nowSqlString;
                 $row->lastLoginIp = $_SERVER["REMOTE_ADDR"];
@@ -146,7 +143,7 @@ class User extends FismaModel
                 $row->save();
                 $notification->add(Notification::ACCOUNT_LOGIN_SUCCESS,
                    $account, "UserId: {$uid}");
-            } elseif ($type == 'LOGINFAILURE') {
+            } else if ($type == 'LOGINFAILURE') {
                 $type = 'LOGIN';
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
                                    null, "User: {$account}");
@@ -157,6 +154,7 @@ class User extends FismaModel
                     $row->isActive = 0;
                     $notification->add(Notification::ACCOUNT_LOCKED,
                         null, "User: {$account}");
+                    $this->_logger->setEventItem('uid', $uid);
                     $this->_logger->setEventItem('type', 'ACCOUNT_LOCKOUT');
                     $this->_logger->info("User Account $account Successfully Locked");
                 }
@@ -169,6 +167,7 @@ class User extends FismaModel
                         null, "User: {$account}");
                 $row->save();
             }
+            $this->_logger->setEventItem('uid', $uid);
             $this->_logger->setEventItem('type', $type); 
             $this->_logger->info($msg);
         }
@@ -229,36 +228,10 @@ class User extends FismaModel
         }
         if ('sha256' == $digestType) {
             $key = self::readSysConfig('encryptKey');
-            $cipherAlg = MCRYPT_TWOFISH;
-            $iv = mcrypt_create_iv(mcrypt_get_iv_size($cipherAlg, MCRYPT_MODE_ECB), MCRYPT_RAND);
-            $digestPassword = mcrypt_encrypt($cipherAlg, $key, $password, MCRYPT_MODE_CBC, $iv);
+            $cipher_alg = MCRYPT_TWOFISH;
+            $iv=mcrypt_create_iv(mcrypt_get_iv_size($cipher_alg,MCRYPT_MODE_ECB), MCRYPT_RAND);
+            $digestPassword = mcrypt_encrypt($cipher_alg, $key, $password, MCRYPT_MODE_CBC, $iv);
             return $digestPassword;
         }
-    }
-    
-   /**
-    * Set the preference value for JQuery Plugin 'columnManager'
-    * if the value is null, then set a default value '11101111000000001'
-    *
-    * @param string $value a preference value default null
-    * @return string $value a preference value
-    *
-    */
-    public function setColumnPreference($uid, $value = null)
-    {
-        $defaultColumnPreference = '11101111000000001';
-        
-        if (empty($uid)) {
-            return ;
-        }
-        if (empty($value)) {
-            $value = $defaultColumnPreference;
-        }
-        $db = $this->_db;
-        $where = $db->quoteInto('id = ?', $uid);
-        $db->update($this->_name,
-                           array('search_columns_pref' => $value),
-                           $where);
-        return $value;
     }
 }

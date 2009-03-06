@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package    Controller
  */
 
 /**
@@ -35,10 +34,6 @@ class LogController extends PoamBaseController
 {
     protected $_log = null;
 
-    /**
-     * @todo english
-     * init() - Initialize 
-     */
     function init()
     {
         parent::init();
@@ -100,7 +95,7 @@ class LogController extends PoamBaseController
         // Set up the query to get the full list of user logs
         $qry = $this->_log->select()
                   ->from(array('al' => 'account_logs'),
-                         array('timestamp', 'ip', 'event', 'user_id', 'message'))
+                         array('timestamp', 'event', 'user_id', 'message'))
                   ->setIntegrityCheck(false)
                   ->joinLeft(array('u'=>'users'),
                              'al.user_id = u.id',

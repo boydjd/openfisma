@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -42,20 +41,12 @@ class SourceController extends SecurityController
         'perPage' => 20
     );
 
-    /**
-     * @todo english
-     * Initialize this Class
-     */
     public function init()
     {
         parent::init();
         $this->_source = new Source();
     }
 
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         $req = $this->getRequest();
@@ -81,21 +72,24 @@ class SourceController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_sources', 'read');
         
-        $qv = trim($this->_request->getParam('qv'));
+        $req = $this->getRequest();
+        $fid = $req->getParam('fid');
+        $qv = $req->getParam('qv');
+        $query = $this->_source->select()->from(array(
+            's' => 'sources'
+        ), array(
+            'count' => 'COUNT(s.id)'
+        ))->order('s.name ASC');
         if (!empty($qv)) {
-            //@todo english  if source index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/source/')) {
-                $this->createIndex();
-            }
-            $ret = Config_Fisma::searchQuery($qv, 'source');
-        } else {
-            $ret = $this->_source->getList('name');
+            $query->where("$fid = ?", $qv);
+            $this->_pagingBasePath .= '/fid/'.$fid.'/qv/'.$qv;
         }
-
-        $count = count($ret);
+        $res = $this->_source->fetchRow($query)->toArray();
+        $count = $res['count'];
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
+        $this->view->assign('fid', $fid);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
@@ -109,25 +103,14 @@ class SourceController extends SecurityController
         $this->_acl->requirePrivilege('admin_sources', 'read');
         
         $req = $this->getRequest();
+        $field = $req->getParam('fid');
         $value = trim($req->getParam('qv'));
-
-        $query = $this->_source->select()->from('sources', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
+        $query = $this->_source->select()->from('sources', '*');
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
-            //@todo english  get search results in ids
-            $sourceIds = $cache->load($this->_me->id . '_source');
-            if (!empty($sourceIds)) {
-                $ids = implode(',', $sourceIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
+            $query->where("$field = ?", $value);
         }
+        $query->order('name ASC')->limitPage($this->_paging['currentPage'],
+            $this->_paging['perPage']);
         $sourceList = $this->_source->fetchAll($query)->toArray();
         $this->view->assign('source_list', $sourceList);
     }
@@ -151,7 +134,9 @@ class SourceController extends SecurityController
         } else {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/source/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);            
+            foreach ($form->getElements() as $element) {
+                $element->setAttrib('disabled', 'disabled');
+            }
         }
         $form->setDefaults($source);
         $this->view->form = $form;
@@ -201,28 +186,32 @@ class SourceController extends SecurityController
             } else {
                 $this->_notification
                      ->add(Notification::SOURCE_CREATED, $this->_me->account, $sourceId);
-
-                //Update source index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/source/')) {
-                    Config_Fisma::updateIndex('source', $sourceId, $source);
-                }
-
                 $msg = "The source is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $sourceId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            /**
+             * @todo this error display code needs to go into the decorator,
+             * but before that can be done, the function it calls needs to be
+             * put in a more convenient place
+             */
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
             // Error message
             $this->message("Unable to create source:<br>$errorString", self::M_WARNING);
             $this->_forward('create');
         }
     }
 
-    /**
-     * Delete a singal source
-     */
     public function deleteAction()
     {
         $this->_acl->requirePrivilege('admin_sources', 'delete');
@@ -267,11 +256,6 @@ class SourceController extends SecurityController
         $source = $form->getValues();
 
         $id = $this->_request->getParam('id');
-        $ret = $this->_source->find($id)->current();
-        if (!empty($ret)) {
-            $query = $ret->name . ' ' . $ret->nickname;
-        }
-
         if ($formValid) {
             unset($source['submit']);
             unset($source['reset']);
@@ -279,22 +263,6 @@ class SourceController extends SecurityController
             if ($res) {
                 $this->_notification
                      ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
-
-                //Update findings index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/finding')) {
-                    $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/finding');
-                    $hits = $index->find('source:'.$query);
-                    foreach ($hits as $hit) {
-                        $ids[] = $hit->id;
-                    }
-                    $data['source'] = $source['name'] . ' ' . $source['nickname'];
-                    Config_Fisma::updateIndex('finding', $ids, $data);
-                }
-
-                //Update Source index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/source')) {
-                    Config_Fisma::updateIndex('source', $id, $source);
-                }
 
                 $msg = "The source is saved";
                 $model = self::M_NOTICE;
@@ -305,33 +273,21 @@ class SourceController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = '';
+            foreach ($form->getMessages() as $field => $fieldErrors) {
+                if (count($fieldErrors)>0) {
+                    foreach ($fieldErrors as $error) {
+                        $label = $form->getElement($field)->getLabel();
+                        $errorString .= "$label: $error<br>";
+                    }
+                }
+            }
+            $errorString = addslashes($errorString);
+
             // Error message
             $this->message("Unable to update source<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
-        }
-    }
-
-    /**
-     * Create finding sources Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/source', true);
-        $list = $this->_source->getList(array('name', 'nickname', 'desc'));
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $id=>$row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
         }
     }
 }

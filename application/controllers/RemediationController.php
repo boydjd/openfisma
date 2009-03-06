@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -52,36 +51,6 @@ class RemediationController extends PoamBaseController
               'blscr_id'=>Notification::UPDATE_CONTROL_ASSIGNMENT,
               'action_status'=>Notification::MITIGATION_STRATEGY_APPROVED,
               'action_resources'=>Notification::UPDATE_FINDING_RESOURCES);
-              
-              
-    /**
-    * init() - Create the additional PDF, XLS and RSS contexts for this class.
-    *
-    */
-    public function init()
-    {
-        parent::init();
-        $attach = $this->_helper->contextSwitch();
-        if (!$attach->hasContext('pdf')) {
-            $attach->addContext('pdf',
-                array('suffix' => 'pdf',
-                   'headers' => array(
-                        'Content-Disposition' => "attachement;filename=export.pdf",
-                        'Content-Type' => 'application/pdf')))
-                   ->addActionContext('raf', array('pdf'))
-                   ->addActionContext('search', array('pdf'))
-                   ->setAutoDisableLayout(true);
-        }
-        if (!$attach->hasContext('xls')) {
-            $attach->addContext('xls',
-                array('suffix' => 'xls',
-                   'headers' => array(
-                        'Content-Disposition' => "attachement;filename=export.xls",
-                        'Content-Type' => 'application/vnd.ms-excel')))
-                   ->addActionContext('search', array('xls'))->setAutoDisableLayout(true);
-        }
-    }
-    
     /**
      *  Default action.
      *
@@ -239,237 +208,186 @@ class RemediationController extends PoamBaseController
         //$this->_helper->actionStack('searchbox', 'Remediation', null,
         //    array('action'=>'summary'));
     }
-    
-    
+
     /**
-     * parse and translate the URL to criterias
-     * which can be used by searchBoxAction method and searchAction method.
-     *
-     * @param boolean $isSearch default false
-     *    switch the searching condition between searchbox and search
-     * @return array $params the criterias dealt
+     *  Do the real searching work. It's a thin wrapper
+     *  of poam model's search method.
      */
-    protected function parseCriteria($isSearch = false)
+    protected function _search($criteria, $html=true)
     {
-        $this->_acl->requirePrivilege('remediation', 'read');
-         
-        $params = array('system_id' => 0, 'source_id' => 0, 'type' => '',
-                        'status' => '', 'ids' => '', 'asset_owner' => 0,
-                        'est_date_begin' => '', 'est_date_end' => '',
-                        'created_date_begin' => '', 'created_date_end' => '',
-                        'ontime' => '', 'sortby' => '', 'order'=> '', 'keywords' => '');
-        $req = $this->getRequest();
-        $tmp = $req->getParams();
-        foreach ($params as $k => &$v) {
-            if (isset($tmp[$k])) {
-                $v = $tmp[$k];
-            }
-        }
-        if ($isSearch) {
-            $this->_paging['currentPage'] = $req->getParam('p', 1);
-            if (is_numeric($params['system_id'])) {
-                $params['systemId'] = $params['system_id'];
-            }
-            unset($params['system_id']);
-            
-            if (is_numeric($params['source_id'])) {
-                $params['sourceId'] = $params['source_id'];
-            }
-            unset($params['source_id']);
- 
-            if (is_numeric($params['asset_owner'])) {
-                $params['assetOwner'] = $params['asset_owner'];
-            }
-            unset($params['asset_owner']);
-            
-            if (!empty($params['est_date_begin'])) {
-                $params['estDateBegin'] = new Zend_Date($params['est_date_begin'], 'Y-m-d');
-            }
-            unset($params['est_date_begin']);
-            
-            if (!empty($params['est_date_end'])) {
-                $params['estDateEnd'] = new Zend_Date($params['est_date_end'], 'Y-m-d');
-            }
-            unset($params['est_date_end']);
-            
-            if (!empty($params['created_date_begin'])) {
-                $params['createdDateBegin'] = new Zend_Date($params['created_date_begin'], 'Y-m-d');
-            }
-            unset($params['created_date_begin']);
-            
-            if (!empty($params['created_date_end'])) {
-                $params['createdDateEnd'] = new Zend_Date($params['created_date_end'], 'Y-m-d');
-            }
-            unset($params['created_date_end']);
-            
-            return $params;
-        } else {
-            unset($params['sortby']);
-            unset($params['order']);
-        }
-        return $params;
-    }
-    
-    /**
-    * Do the real searching work. It's a thin wrapper
-    * of poam model's search method.
-    */
-    public function searchAction()
-    {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        
-        $link = $this->makeUrlParams($this->parseCriteria());
-        $url = $pageUrl = '/panel/remediation/sub/searchbox' . $link;
-        $attachUrl = '/remediation/search' . $link;
-        unset($link);
-        
-        $params = $this->parseCriteria(true);
-        if (!empty($params['order']) && !empty($params['sortby'])) {
-            $params['order'] = array('sortby' => $params['sortby'],
-                                     'order' => $params['order']);
-            unset($params['sortby']);
-            $pageUrl .= $this->makeUrlParams($params['order']);
-            $attachUrl .= $this->makeUrlParams($params['order']);
-        }
-        
-        if (!empty($params['status'])) {
+        //refer to searchbox.tpl for a complete status list
+        $internalCrit = & $criteria;
+        if (!empty($criteria['status'])) {
             $now = clone parent::$now;
-            switch ($params['status']) {
-                case 'NEW':    $params['status'] = 'NEW';
-                    break;
-                case 'DRAFT':  $params['status'] = 'DRAFT';
-                    break;
-                case 'EN':     $params['status'] = 'EN';
-                    break;
-                case 'CLOSED': $params['status'] = 'CLOSED';
-                    break;
-                case 'NOT-CLOSED': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                    break;
-                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);
-                    break;
-                case 'NOUP-60':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(60, Zend_Date::DAY);
-                    break;
-                case 'NOUP-90':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(90, Zend_Date::DAY);
-                    break;
-                default :
-                     $evaluation = new Evaluation();
-                     $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
-                                                   ->where('nickname = ?', $params['status']);
-                     $ret = $evaluation->fetchRow($query)->toArray();
-                     if (!empty($ret)) {
-                         $precedenceId = $ret['precedence_id'];
-                         $group = $ret['group'];
-                         if ('ACTION' == $group) {
-                             $params['mp']     = $precedenceId;
-                         }
-                         if ('EVIDENCE' == $group) {
-                             $params['ep']     = $precedenceId;
-                         }
-                     }
-                    break;
-            }
-        }
+            switch ($criteria['status']) {
+            case 'NEW':
+                $internalCrit['status'] = 'NEW';
+                break;
 
-        //Basic Search
-        if (!empty($params['keywords'])) {
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
-                $this->createIndex();
-            }
-            $poamIds = Config_Fisma::searchQuery($params['keywords'], 'finding');
-            if (!empty($poamIds)) {
-                if (!empty($params['ids'])) {
-                    $poamIds = array_intersect($poamIds, explode(',', $params['ids']));
-                } 
-                $params['ids'] = implode(',', $poamIds);
-                $this->view->assign('keywords', $this->getKeywords($params['keywords']));
-            } else {
-                $params['ids'] = -1;
+            case 'DRAFT':
+                $internalCrit['status'] = 'DRAFT';
+                break;
+
+            case 'EN':
+                $internalCrit['status'] = 'EN';
+                break;
+
+            case 'CLOSED':
+                $internalCrit['status'] = 'CLOSED';
+                break;
+
+            case 'NOT-CLOSED':
+                $internalCrit['status'] = array(
+                    'DRAFT',
+                    'MSA',
+                    'EN',
+                    'EP'
+                );
+                break;
+
+            case 'NOUP-30':
+                $internalCrit['status'] = array(
+                    'DRAFT',
+                    'MSA',
+                    'EN',
+                    'EP'
+                );
+                $internalCrit['modify_ts'] = $now->sub(30, Zend_Date::DAY);
+                break;
+
+            case 'NOUP-60':
+                $internalCrit['status'] = array(
+                    'DRAFT',
+                    'MSA',
+                    'EN',
+                    'EP'
+                );
+                $internalCrit['modify_ts'] = $now->sub(60, Zend_Date::DAY);
+                break;
+
+            case 'NOUP-90':
+                $internalCrit['status'] = array(
+                    'DRAFT',
+                    'MSA',
+                    'EN',
+                    'EP'
+                );
+                $internalCrit['modify_ts'] = $now->sub(90, Zend_Date::DAY);
+                break;
+            default :
+                $evaluation = new Evaluation();
+                $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
+                                              ->where('nickname = ?', $criteria['status']);
+                $ret = $evaluation->fetchRow($query)->toArray();
+                if (!empty($ret)) {
+                    $precedenceId = $ret['precedence_id'];
+                    $group = $ret['group'];
+                    $internalCrit['status'] = $criteria['status'];
+                    if ('ACTION' == $group) {
+                        $internalCrit['mp']     = $precedenceId;
+                    }
+                    if ('EVIDENCE' == $group) {
+                        $internalCrit['ep']     = $precedenceId;
+                    }
+                }
             }
         }
-        
-        $this->_helper->contextSwitch()->initContext();
-        $format = $this->_helper->contextSwitch()->getCurrentContext();
-        if (empty($format)) {
-            $list = $this->_poam->search($this->_me->systems, '*',
-                    $params, $this->_paging['currentPage'],
-                    $this->_paging['perPage'], false);
-        } else {
-            $list = $this->_poam->search($this->_me->systems, '*', $params, 0, 0, false);
-        }
+        $list = $this->_poam->search($this->_me->systems, array(
+            'id',
+            'source_id',
+            'system_id',
+            'type',
+            'status',
+            'finding_data',
+            'duetime',
+            'action_current_date',
+            'count' => 'count(*)'
+        ), $internalCrit, $this->_paging['currentPage'],
+            $this->_paging['perPage'], $html);
         $total = array_pop($list);
-        //select poams whether have attachments
-        foreach ($list as &$row) {
-            $query = $this->_poam->getAdapter()->select()->from('evidences', 'id')
-                                               ->where('poam_id = '.$row['id']);
-            $result = $this->_poam->getAdapter()->fetchRow($query);
-            if (!empty($result)) {
-                $row['attachments'] = 'Y';
-            } else {
-                $row['attachments'] = 'N';
-            }
-            if ($format == 'pdf' || $format == 'xls') {
-                $row['finding_data'] = trim(html_entity_decode($row['finding_data']));
-                $row['action_suggested'] = trim(html_entity_decode($row['action_suggested']));
-                $row['action_planned'] = trim(html_entity_decode($row['action_planned']));
-                $row['threat_justification'] = trim(html_entity_decode($row['threat_justification']));
-                $row['threat_source'] = trim(html_entity_decode($row['threat_source']));
-                $row['cmeasure_effectiveness'] = trim(html_entity_decode($row['cmeasure_effectiveness']));
-
-                $user = new User();
-                $ret = $user->find($this->_me->id)->current();
-                $columnPreference = $ret->search_columns_pref;
-                $this->view->columnPreference = $columnPreference;
-            }
-        }
-        
         $this->_paging['totalItems'] = $total;
-        $this->_paging['fileName'] = "$pageUrl/p/%d";
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $lastSearchUrl = str_replace('%d', $this->_paging['currentPage'],
-                                     $this->_paging['fileName']);
+            $this->_paging['fileName']);
         $urlNamespace = new Zend_Session_Namespace('urlNamespace');
         $urlNamespace->lastSearch = $lastSearchUrl;
         $pager = & Pager::factory($this->_paging);
- 
+
         $this->view->assign('list', $list);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('source_list', $this->_sourceList);
-        $this->view->assign('network_list', $this->_networkList);
+        $this->view->assign('systems', $this->_systemList);
+        $this->view->assign('sources', $this->_sourceList);
         $this->view->assign('total_pages', $total);
         $this->view->assign('links', $pager->getLinks());
-        $this->view->assign('attachUrl', $attachUrl);
-        $this->view->assign('url', $url);
-        $this->render();
+        $this->render('search');
     }
-    
-    /**
-     * @todo english
-     * Accept the criterias dealt by parseCriteria method,
-     * return the values to advance search page or basic search page.
-     * when the criterias cantain the param 'keywords',
-     * then this method will render the basic search box,
-     * else render the advance search box
-     *
-     * Basic search url would be /panel/remediation/sub/searchbox/s/search/system_id/1/type/CAP/status/DRAFT...
-     * Advanced search url would be /panel/remediation/sub/searchbox/s/search/keywords/firewal
-     * User use advanced search to search the basic search results,the url would be 
-     *  /panel/remediation/sub/searchbox/s/search/keywords/firewal/system_id/1/type/CAP...
-     *
-     */
     public function searchboxAction()
     {
         $this->_acl->requirePrivilege('remediation', 'read');
         
-        $params = $this->parseCriteria();
+        $req = $this->getRequest();
+        $this->_pagingBasePath.= '/panel/remediation/sub/searchbox/s/search';
+        // parse the params of search
+        $params['system_id'] = $req->getParam('system_id', '0');
+        $params['source_id'] = $req->getParam('source_id', '0');
+        $params['type'] = $req->getParam('type');
+        $params['status'] = $req->getParam('status');
+        $params['ids'] = $req->getParam('ids');
+        $params['asset_owner'] = $req->getParam('asset_owner', 0);
+        $params['est_date_begin'] = $req->getParam('est_date_begin');
+        $params['est_date_end'] = $req->getParam('est_date_end');
+        $params['created_date_begin'] = $req->getParam('created_date_begin');
+        $params['created_date_end'] = $req->getParam('created_date_end');
+        $params['ontime'] = $req->getParam('ontime');
+
+        $this->view->assign('url', $this->_pagingBasePath);
         $this->view->assign('params', $params);
         $this->view->assign('systems', $this->_systemList);
         $this->view->assign('sources', $this->_sourceList);
-        $this->_helper->actionStack('search', 'Remediation');
         $this->render();
+        if ('search' == $req->getParam('s')) {
+            $criteria = array();
+            if (!empty($params['system_id'])) {
+                $criteria['systemId'] = $params['system_id'];
+            }
+            if (!empty($params['source_id'])) {
+                $criteria['sourceId'] = $params['source_id'];
+            }            
+            if (!empty($params['type'])) {
+                $criteria['type'] = $params['type'];
+            }
+            if (!empty($params['status'])) {
+                $criteria['status'] = $params['status'];
+            }
+            if (!empty($params['ids'])) {
+                $criteria['ids'] = $params['ids'];
+            }            
+            if (!empty($params['asset_owner'])) {
+                $criteria['assetOwner'] = $params['asset_owner'];
+            }
+            if (!empty($params['est_date_begin'])) {
+                $criteria['estDateBegin'] = new Zend_Date($params['est_date_begin'], 'Y-m-d');
+            }
+            if (!empty($params['est_date_end'])) {
+                $criteria['estDateEnd'] = new Zend_Date($params['est_date_end'], 'Y-m-d');
+            }
+            if (!empty($params['created_date_begin'])) {
+                $criteria['createdDateBegin'] = new Zend_Date($params['created_date_begin'], 'Y-m-d');
+            }
+            if (!empty($params['created_date_end'])) {
+                $criteria['createdDateEnd'] = new Zend_Date($params['created_date_end'], 'Y-m-d');
+            }
+            if (!empty($params['ontime'])) {
+                $criteria['ontime'] = $params['ontime'];
+            }
+            if ($req->getParam('sortby') != null && $req->getParam('order') != null) {
+                $criteria['order'] = array();
+                array_push($criteria['order'], $req->getParam('sortby'));
+                array_push($criteria['order'], $req->getParam('order'));
+            }
+            $this->makeUrl($params);
+            $this->_paging['currentPage'] = $req->getParam('p', 1);
+            $this->_search($criteria, false);
+        }
     }
     /**
      Get remediation detail info
@@ -552,7 +470,6 @@ class RemediationController extends PoamBaseController
         $this->view->assign('ms_evaluation', $msEvaluation);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('keywords', $req->getParam('keywords'));
     }
     
     /**
@@ -620,15 +537,6 @@ class RemediationController extends PoamBaseController
                             self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION',
                             $logContent);
                     }
-
-                    if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
-                        //Update finding index
-                        if (!empty($poam['system_id'])) {
-                                $poam['system'] = $this->_systemList[$poam['system_id']];
-                                unset($poam['system_id']);
-                        }
-                        Config_Fisma::updateIndex('finding', $id, $poam);
-                    }
                 }
             } catch (Exception_General $e) {
                 if ($e instanceof Exception_General) {
@@ -668,6 +576,13 @@ class RemediationController extends PoamBaseController
                 $poam['status'] = 'MSA';
                 $poam['mss_ts'] = self::$now->toString('Y-m-d H:i:s');
 
+                //Get next status from evaluations table
+                $rst = $this->_poam->getAdapter()->select()->from('evaluations')
+                              ->where("`group` = 'ACTION'")
+                              ->order('precedence_id ASC')->limit(1);
+                $nextEvaluation = $this->_poam->getAdapter()->fetchRow($rst);
+                $poam['status'] = $nextEvaluation['nickname'];
+                
                 $msEvaluation = $this->_poam->getActEvaluation($poamId);
                 /** @todo english 
                  * Delete old approval logs while the mitigation strategy was submit after revised.
@@ -684,11 +599,11 @@ class RemediationController extends PoamBaseController
                                           $this->_me->account,
                                           "PoamId: $poamId",
                                           $oldpoam['system_id']);
-                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
+                $logContent = "Update: status\n Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
             //Revise Mitigation Strategy
             } else {
                 $poam['status'] = 'DRAFT';
-                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
+                $logContent = "Update: status\n Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
             }
             
             $this->_poam->writeLogs($poamId, $this->_me->id, 
@@ -745,16 +660,13 @@ class RemediationController extends PoamBaseController
         ));
     }
 
-    /**
-     * Upload evidence 
-     */
     public function uploadevidenceAction()
     {
         $this->_acl->requirePrivilege('remediation', 'update_evidence');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        define('EVIDENCE_PATH', Config_Fisma::getPath() . '/public/evidence');
+        define('EVIDENCE_PATH', APPLICATION_ROOT . '/public/evidence');
         if ($_FILES && $id > 0) {
             $poam = $this->_poam->find($id)->toArray();
             if (empty($poam)) {
@@ -806,12 +718,12 @@ class RemediationController extends PoamBaseController
                 $poam['system_id']);
 
             $updateData = array(
-                'status' => 'EA',
+                'status' => 'EP',
                 'action_actual_date' => $today
             );
             $result = $this->_poam->update($updateData, "id = $id");
             if ($result > 0) {
-                $logContent = "Changed: status: EA . Upload evidence:"
+                $logContent = "Changed: status: EP . Upload evidence:"
                               ." $filename OK";
                 $this->_poam->writeLogs($id, $userId,
                     self::$now->toString('Y-m-d H:i:s'),
@@ -820,7 +732,6 @@ class RemediationController extends PoamBaseController
         }
         $this->_redirect('/panel/remediation/sub/view/id/' . $id);
     }
-
     /**
      *  Handle the evidence evaluations
      */
@@ -933,7 +844,7 @@ class RemediationController extends PoamBaseController
             if ($poamDetail['threat_source'] == '' ||
                 $poamDetail['threat_level'] == 'NONE' ||
                 $poamDetail['cmeasure'] == '' ||
-                $poamDetail['cmeasure_effectiveness'] == 'NONE') {
+                $poamDetail['cmeasure_effectiveness'] == 'NONE'){
                 throw new Exception_General("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
@@ -960,82 +871,21 @@ class RemediationController extends PoamBaseController
             $this->_forward('remediation', 'Panel', null, array('id' => $id, 'sub'=>'view'));
         }
 
-        $this->_helper->contextSwitch()
-               ->setHeader('pdf', 'Content-Disposition', "attachement;filename={$id}_raf.pdf")
-               ->initContext();
-        
+
+        $this->_helper->layout->disableLayout(true);
+        $this->_helper->contextSwitch()->addContext('pdf', array(
+            'suffix' => 'pdf',
+            'headers' => array(
+                'Content-Disposition' =>
+                    "attachement;filename=\"{$id}_raf.pdf\"",
+                'Content-Type' => 'application/pdf'
+            )
+        ))->addActionContext('raf', array(
+            'pdf'
+        ))->initContext();
+
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('source_list', $this->_sourceList);
-    }
-
-    /**
-     * Create findings Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/finding', true);
-        $list = $this->_poam->search($this->_me->systems, '*');
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('finding_data', $row['finding_data']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('action_planned', $row['action_planned']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('action_suggested',
-                            $row['action_suggested']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('action_resources',
-                            $row['action_resources']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure', $row['cmeasure']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure_justification',
-                            $row['cmeasure_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_source', $row['threat_source']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_justification',
-                            $row['threat_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('system',
-                            $row['system_name'] . ' ' . $row['system_nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('source',
-                            $row['source_name'] . ' ' . $row['source_nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('asset', $row['asset_name']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
-        }
-    }
-
-    /**
-     * @todo english
-     * Get keywords from basic search query for highlight
-     *
-     * Basic search query is a complicated format string, system should pick-up available keywords to highlight
-     */
-    protected function getKeywords($query)
-    {
-        $keywords = '';
-        $keywords = strtolower($query);
-
-        //delete not contain keyword (-keyword, NOT keyword)
-        $keywords = preg_replace('/-[A-Za-z0-9]+$/', '', $keywords);
-        $keywords = preg_replace('/not\s+[A-Za-z0-9]+$/', '', $keywords);
-
-        //delete Zend_Search_Lucene query keywords
-        $searchKeys = array('and', 'or', 'not', 'to', '+', '-', '&&', '~', '||', '!', '*', '?');
-        foreach ($searchKeys as $row) {
-            $keywords = str_replace($row, '', $keywords);
-        }
-        
-        //delete multi-spaces
-        $keywords = preg_replace('/\s{2,}/', ' ', $keywords);
-
-        //delete search field
-        $keywords = explode(' ', trim($keywords));
-        foreach ($keywords as &$word) {
-            $word = preg_replace('/^.+:/', '', $word);
-        }
-        
-        $keywords = implode(',', $keywords);
-        return $keywords;
     }
 }

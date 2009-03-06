@@ -21,20 +21,20 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package    Cron_Job
  */
 
 /**
- * @ignore
  * Indicates that we're running a command line tool, not responding to an http
  * request. This prevents the interface from being rendered.
  */
-define('COMMAND_LINE', true);
-
-require_once (realpath(dirname(__FILE__)."/../../application/bootstrap.php"));
-
-// Kick off the main routine:
-Notify::processNotificationQueue();
+require_once dirname(__FILE__) . "/../../library/local/Config/Fisma.php";
+$fisma = Config_Fisma::getInstance();
+if ($fisma->isInstall()) {
+    // Kick off the main routine:
+    Notify::processNotificationQueue();
+} else {
+    die('Please install!');
+}
 
 /**
  * This static class is responsible for scanning for notifications which need to
@@ -132,13 +132,13 @@ class Notify
         // This will only execute one per script execution.
         static $hostUrl;
         if (!isset($hostUrl)) {
-            $config = new Zend_Config_Ini(Config_Fisma::getPath('application') . '/config/install.conf', 'general');
+            $config = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/install.conf', 'general');
             $hostUrl = $config->hostUrl;
         }
         
         $mail = new Zend_Mail();
         $contentTpl = new Zend_View();
-        $contentTpl->setScriptPath(Config_Fisma::getPath('application') . '/views/' . self::EMAIL_VIEW_PATH);
+        $contentTpl->setScriptPath(APPLICATION_ROOT . '/application/views/' . self::EMAIL_VIEW_PATH);
 
         // Set the from: header
         $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
@@ -161,13 +161,8 @@ class Notify
         $mail->setBodyText($content);
         
         // Send the e-mail
-        try {
-            $mail->send(Notify::getTransport());
-            print(new Zend_Date()." Email was sent to $receiveEmail\n");
-        } catch (Exception $exception) {
-            print($exception->getMessage() . "\n");
-            exit();
-        }
+        $mail->send(Notify::getTransport());
+        print(new Zend_Date()." Email was sent to $receiveEmail\n");
     }
 
     /**

@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: RiskAssessment.class.php 863 2008-09-09 21:17:03Z mehaase $
- * @package   Local
  */
 
 /**
@@ -91,7 +90,7 @@ class Cpe
     /**
      * __get() - Return the raw CPE name or one of the parsed CPE components
      *
-     * @param string field's name
+     * @param
      */
     public function __get($fieldName)
     {

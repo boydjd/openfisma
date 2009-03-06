@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -242,7 +241,7 @@ class ReportController extends PoamBaseController
             }
             if (!empty($params['status'])) {
                 if ('OPEN' == $params['status']) {
-                    $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
+                    $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EP');
                 } else {
                     $criteria['status'] = $params['status'];
                 }
@@ -549,7 +548,7 @@ class ReportController extends PoamBaseController
             'NumoOV' => 'count(prod.id)'
         ))->join(array(
             'p' => 'poams'
-        ), 'p.status IN ("DRAFT","MSA", "EN","EA")', array())->join(array(
+        ), 'p.status IN ("DRAFT","MSA", "EN","EP")', array())->join(array(
             'a' => 'assets'
         ), 'a.id = p.asset_id AND a.prod_id = prod.id', array())
             ->group("prod.vendor")->group("prod.name")->group("prod.version");
@@ -596,7 +595,7 @@ class ReportController extends PoamBaseController
         ))->join(array(
             'p' => 'poams'
         ), 'p.type IN ("CAP","AR","FP") AND
-            p.status IN ("DRAFT", "MSA", "EN", "EA") AND p.system_id = sys.id',
+            p.status IN ("DRAFT", "MSA", "EN", "EP") AND p.system_id = sys.id',
             array())->join(array(
             'a' => 'assets'
         ), 'a.id = p.asset_id', array())->group("p.system_id");
@@ -689,7 +688,7 @@ class ReportController extends PoamBaseController
             } else {
                 /** @todo english */
                 $this->message('No finding', self::M_WARNING);
-                $this->_forward('report', 'panel', null, array('sub' => 'rafs', 'system_id' => ''));
+                $this->_forward('report','panel',null,array('sub' => 'rafs', 'system_id' => ''));
             }
         }
     }
@@ -704,7 +703,7 @@ class ReportController extends PoamBaseController
         $this->_acl->requirePrivilege('report', 'read');
         
         // Build up report menu
-        $reportsConfig = new Zend_Config_Ini(Config_Fisma::getPath('application') . '/config/reports.conf');
+        $reportsConfig = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/reports.conf');
         $reports = $reportsConfig->toArray();
         $this->view->assign('reports', $reports);
     }
@@ -726,7 +725,7 @@ class ReportController extends PoamBaseController
         }
         
         // Verify that the user has permission to run this report
-        $reportConfig = new Zend_Config_Ini(Config_Fisma::getPath('application') . '/config/reports.conf', $reportName);
+        $reportConfig = new Zend_Config_Ini(APPLICATION_ROOT . '/application/config/reports.conf', $reportName);
         if ($this->_me->account != 'root') {
             $reportRoles = $reportConfig->roles;
             $report = $reportConfig->toArray();
@@ -744,7 +743,7 @@ class ReportController extends PoamBaseController
         }
         
         // Execute the report script
-        $reportScriptFile = Config_Fisma::getPath('application') . "/config/reports/$reportName.sql";
+        $reportScriptFile = APPLICATION_ROOT . "/application/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         if (!$reportScriptFileHandle) {
             throw new Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");
@@ -764,7 +763,7 @@ class ReportController extends PoamBaseController
             $this->message($msg, self::M_WARNING);
             $this->_forward('plugin');
             return;
-        }
+        } 
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);

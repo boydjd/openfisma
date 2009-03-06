@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Sysgroup.php 880 2008-09-15 22:40:54Z mehaase $
- * @package   Model
  *
  * @todo This file doesn't fit into the OpenFISMA coding standards. It should be
  * refactored into a more fitting class, or else the comments should be

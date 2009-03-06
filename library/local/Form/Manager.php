@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Form
  */
 
 /**
@@ -46,8 +45,8 @@ class Form_Manager
      */
     static function loadForm($formName) {
         // Load the form from a .form file
-        $config = new Zend_Config_Ini(Config_Fisma::getPath('application') . "/config/form/{$formName}.form", $formName);
-        $form = new Form($config);
+        $config = new Zend_Config_Ini(APPLICATION_ROOT . "/application/config/form/{$formName}.form", $formName);
+        $form = new Zend_Form($config);
 
         return $form;
     }
@@ -83,26 +82,4 @@ class Form_Manager
         
         return $form;
     }
-
-    /**
-     * Get form errors if form validate false
-     *
-     * @param Zend_From $form
-     * @return string form errors
-     * @todo this error display code needs to go into the decorator,
-     */
-    static function getErrors($form)
-    {
-        $errorString = '';
-        foreach ($form->getMessages() as $field => $fieldErrors) {
-            if (count($fieldErrors) > 0) {
-                foreach ($fieldErrors as $error) {
-                    $label = $form->getElement($field)->getLabel();
-                    $errorString .= "$label: $error<br>";
-                }
-            }
-        }
-        return addslashes($errorString);
-    }
-
 }

@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: RequirePrivilege.php 1174 2008-11-13 01:07:19Z woody712 $
- * @package    Controller
  */
 
 /**
@@ -54,7 +53,7 @@ class Action_Helper_RequirePrivilege extends Zend_Controller_Action_Helper_Abstr
             $auth = Zend_Auth::getInstance();
             $me = $auth->getIdentity();
             $roleArray = &$me->roleArray;
-            if ($me->account != "root" ) {
+            if ( $me->account != "root" ) {
                 $acl = Zend_Registry::get('acl');
                 foreach ($roleArray as $role) {
                     if ( true == $acl->isAllowed($role, $resource, $operation) ) {
@@ -66,7 +65,7 @@ class Action_Helper_RequirePrivilege extends Zend_Controller_Action_Helper_Abstr
         } catch (Zend_Acl_Exception  $e) {
             $request = $this->getRequest();
 
-            if ($request instanceof Zend_Controller_Request_Abstract === false) {
+            if ($request instanceof Zend_Controller_Request_Abstract === false){
                 /**
                  * @see Zend_Controller_Action_Exception
                  */

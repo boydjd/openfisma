@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package    Cron_Job
  */
 
 /**
@@ -35,7 +34,7 @@ if ($fisma->isInstall()) {
     // Kick off the main routine:
     ECDNotifier::run();
 } else {
-    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
+    die('Please install!');
 }
 
 /**

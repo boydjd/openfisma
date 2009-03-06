@@ -21,13 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
-
-/**
- * @todo move this definition into the class as a constant
- */
-define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
 
 /**
  * The finding controller is used for searching, displaying, and updating
@@ -61,7 +55,7 @@ class FindingController extends PoamBaseController
                 'DRAFT',
                 'MSA',
                 'EN',
-                'EA'
+                'EP'
             );
         }
         $result = $this->_poam->search($this->_me->systems, $fields, $criteria,
@@ -73,6 +67,7 @@ class FindingController extends PoamBaseController
         $this->view->assign('links', $pager->getLinks());
         $this->render('search');
     }
+    
     /**
      Get finding detail infomation
      */
@@ -126,6 +121,7 @@ class FindingController extends PoamBaseController
     {
         $this->_acl->requirePrivilege('finding', 'inject');
 
+        /** @todo convert this to a Zend_Form */
         // If the form isn't submitted, then there is no work to do
         if (!isset($_POST['submit'])) {
             return;
@@ -136,168 +132,24 @@ class FindingController extends PoamBaseController
         if (!is_array($file)) {
             $this->message("The file upload failed.", self::M_WARNING);
             return;
-        }
-
-        // Parse the file using SimpleXML. The finding data is located on the first worksheet.
-        $spreadsheet = simplexml_load_file($file['tmp_name']);
-        if ($spreadsheet === false) {
-            $this->message("The file is not a valid Excel spreadsheet. Make sure that the file is saved as XML.",
+        } elseif (empty($file['name'])) {
+            $this->message('You did not select a file to upload. Please select a file and try again.', 
                            self::M_WARNING);
-            return;
-        }
-        // Have to do some namespace manipulation to make the spreadsheet searchable by xpath.
-        $namespaces = $spreadsheet->getNamespaces(true);
-        $spreadsheet->registerXPathNamespace('s', $namespaces['']);
-        $findingData = $spreadsheet->xpath('/s:Workbook/s:Worksheet[1]/s:Table/s:Row');
-        if ($findingData === false) {
-            $this->message("The file format is not recognized. Your version of Excel might be incompatible.",
-                           self::M_WARNING);
-            return;
-        }
-        // $findingData is an array of rows in the first worksheet. The first two rows on this worksheet contain
-        // column headers, so skip them.
-        array_shift($findingData);
-        array_shift($findingData);
-        
-        // Now process each row
-        $error = '';
-        $rowNumber = 3;
-        /**
-         * @todo Perform these commits in a single transaction.
-         */
-        set_time_limit(0);
-        foreach ($findingData as $row) {
-            $rowArray = (array)$row;
-            $rowData = $rowArray['Cell'];
-
-            /** @todo Remove magic number 10, this is the number of columns in the template */
-            // Verify that all columns are filled in
-            if (count($row) != 10) {
-                $error = "Row $rowNumber: Not all columns are filled in.";
-                continue;
-            }
-
-            // Assign names to the row data
-            $systemNickname  = $rowData[0]->Data;
-            $dateDiscovered  = $rowData[1]->Data;
-            $networkNickname = $rowData[2]->Data;
-            $ipAddress       = $rowData[3]->Data;
-            $ipPort          = $rowData[4]->Data;
-            $findingSource   = $rowData[5]->Data;
-            $description     = $rowData[6]->Data;
-            $recommendation  = $rowData[7]->Data;
-            $securityControl = $rowData[8]->Data;
-            $risk            = $rowData[9]->Data;
-
-            // Validate row data
-            $systemTable = new System();
-            /**
-             * @todo Multiple SQL injection attacks
-             */
-            $system = $systemTable->fetchRow("nickname = '$systemNickname'");
-            if (isset($system)) {
-                $systemId = $system->id;
-                $systemName = $system->name;
-            } else {
-                $error = "Row $rowNumber: Invalid System";
-                continue;
-            }
-            
-            $networkTable = new Network();
-            $network = $networkTable->fetchRow("nickname = '$networkNickname'");
-            if (isset($network)) {
-                $networkId = $network->id;
-            } else {
-                $error = "Row $rowNumber: Invalid Network";
-                continue;
-            }
-
-            if (empty($ipAddress)) {
-                $error = "Row $rowNumber: Blank IP Address";
-                continue;
-            }
-
-            if (empty($ipPort)) {
-                $error = "Row $rowNumber: Blank IP Port";
-                continue;
-            }
-
-            $sourceTable = new Source();
-            $source = $sourceTable->fetchRow("nickname = '$findingSource'");
-            if (isset($source)) {
-                $sourceId = $source->id;
-                $sourceName = $source->name;
-            } else {
-                $error = "Row $rowNumber: Invalid Finding Source";
-                continue;
-            }
-
-            if (empty($description)) {
-                $error = "Row $rowNumber: Blank Finding Description";
-                continue;
-            }
-
-            if (empty($recommendation)) {
-                $error = "Row $rowNumber: Blank Finding Recommendation";
-                continue;
-            }
-            
-            $now = new Zend_Date();
-            // Check to see if the asset exists
-            $assetTable = new Asset();
-            $asset = $assetTable->fetchRow("network_id = '$networkId' AND
-                                            address_ip = '$ipAddress' AND
-                                            address_port = '$ipPort'");
-            if (!isset($asset)) {
-                // The asset does not exist, so create it.
-                $assetData = array('name' => "$ipAddress:$ipPort",
-                               'create_ts' => $now->toString('Y-m-d H:i:s'),
-                               'source' => 'MANUAL',
-                               'system_id' => $systemId,
-                               'network_id' => $networkId,
-                               'address_ip' => $ipAddress,
-                               'address_port' => $ipPort);
-                $assetId = $assetTable->insert($assetData);
-            } else {
-                $assetId = $asset->id;
-            }
-            
-            // Now insert the new finding
-            $poamTable = new Poam();
-            $finding = array('asset_id' => $assetId,
-                             'source_id' => $sourceId,
-                             'system_id' => $systemId,
-                             'blscr_id' => $securityControl,
-                             'create_ts' => $now->toString('Y-m-d H:i:s'),
-                             'discover_ts' => $dateDiscovered,
-                             'finding_data' => $description,
-                             'action_suggested' => $recommendation);
-            $poamId = $poamTable->insert($finding);
-
-            //Create finding lucene index
-            if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
-                $indexData = array('finding_data' => $finding['finding_data'],
-                                   'action_suggested' => $finding['action_suggested'],
-                                   'system' => $systemName . ' ' . $systemNickname,
-                                   'source' => $sourceName . ' ' . $sourceNickname,
-                                   'asset' => isset($assetData)?$assetData['name']:'');
-                Config_Fisma::updateIndex('finding', $poamId, $indexData);
-            }
-            
-            $rowNumber++;
-        }
-
-        if ($error != '') {
-            $this->message("The findings could not be inserted because one or more rows had errors:<br>$error",
-                           self::M_WARNING);
-            $this->render();
-            // If this were a real transaction, we would roll back right here.
         } else {
-            // Otherwise, we'd commit right here.
-            $rowsCommitted = $rowNumber - 3;
-            $this->message("$rowsCommitted findings were created.", self::M_NOTICE);
-            $this->render();
+            // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
+            try {
+                $injectExcel = new Inject_Excel();
+                $rowsProcessed = $injectExcel->inject($file['tmp_name']);
+                // If this were a real transaction, we'd commit right here.
+                /** @todo use database transaction */
+                $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
+            } catch (Exception_InvalidFileFormat $e) {
+                $this->message("The file cannot be processed due to an error.<br>{$e->getMessage()}",
+                               self::M_WARNING);
+                // If this were a real transaction, we would roll back right here.
+            }
         }
+        $this->render();
     }
     
     /**
@@ -314,11 +166,6 @@ class FindingController extends PoamBaseController
                     $asset = new Asset();
                     $ret = $asset->find($poam['asset_id']);
                     $poam['system_id'] = $ret->current()->system_id;
-                // Validate that the user has selected a finding asset
-                } else {
-                    throw new Exception_General(
-                        "You must select a finding asset"
-                    );
                 }
                 // Validate that the user has selected a finding source
                 if ($poam['source_id'] == 0) {
@@ -338,35 +185,8 @@ class FindingController extends PoamBaseController
                 $poam['created_by'] = $this->_me->id;
                 $poamId = $this->_poam->insert($poam);
 
-                if ($poamId > 0) {
-
-                    $this->_notification->add(Notification::FINDING_CREATED, $this->_me->account, $poamId);
-
-                    //Create finding lucene index
-                    if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
-                        $system = new System();
-                        $source = new Source();
-                        $asset = new Asset();
-                        $ret = $system->find($poam['system_id'])->current();
-                        if (!empty($ret)) {
-                            $indexData['system'] = $ret->name . ' ' . $ret->nickname;
-                        }
-                        $ret = $source->find($poam['source_id'])->current();
-                        if (!empty($ret)) {
-                            $indexData['source'] = $ret->name . ' ' . $ret->nickname;
-                        }
-                        $ret = $asset->find($poam['asset_id'])->current();
-                        if (!empty($ret)) {
-                            $indexData['asset'] = $ret->name;
-                        }
-                        $indexData['finding_data'] = $poam['finding_data'];
-                        $indexData['action_suggested'] = $poam['action_suggested'];
-                        Config_Fisma::updateIndex('finding', $poamId, $indexData);
-                    }
-
-                    $message = "Finding created successfully";
-                    $model = self::M_NOTICE;
-                }
+                $message = "Finding created successfully";
+                $model = self::M_NOTICE;
             }
             catch(Zend_Exception $e) {
                 if ($e instanceof Exception_General) {
@@ -439,7 +259,7 @@ class FindingController extends PoamBaseController
             'suffix' => 'xls',
             'headers' => array(
                 'Content-type' => 'application/vnd.ms-excel',
-                'Content-Disposition' => 'filename=' . TEMPLATE_NAME
+                'Content-Disposition' => 'filename=' . Inject_Excel::TEMPLATE_NAME
             )
         ));
         $contextSwitch->addActionContext('template', 'xls');
@@ -478,12 +298,9 @@ class FindingController extends PoamBaseController
                                               controls defined.");
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
-            //var_dump($this->view->blscrs);die;
 
-            // Context switch is called only after the above code executes 
-            // successfully. Otherwise if there is an error,
-            // the error handler will be confused by context switch and will 
-            // look for error.xls.tpl instead of error.tpl
+            // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
+            // the error handler will be confused by context switch and will look for error.xls.tpl instead of error.tpl
             $contextSwitch->initContext('xls');
             
             /* Bug fix #2507318 - 'OVMS Unable to open Spreadsheet upload file'
@@ -528,17 +345,26 @@ class FindingController extends PoamBaseController
         
         // Configure the file select
         $uploadForm->setAttrib('enctype', 'multipart/form-data');
-        $uploadForm->selectFile->setDestination(Config_Fisma::getPath('data') . '/uploads/scanreports');
+        $uploadForm->selectFile->setDestination(APPLICATION_ROOT . '/data/uploads/scanreports');
 
         // Setup the view
         $this->view->assign('uploadForm', $uploadForm);
 
         // Handle the file upload, if necessary
-        $fileReceived = false;
         $postValues = $this->_request->getPost();
 
         if (isset($_POST['submit'])) {
-            if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
+            $isValid = $uploadForm->isValid($postValues);
+            $fileReceived = $uploadForm->selectFile->receive();
+            $fileName = $uploadForm->selectFile->getFileName();
+            // For some reason, Zend_Form will validate a file upload even if the user didn't select a file. So it is 
+            // necessary to check that the file actually exists before trying to use it.
+            $errorString = '';
+            if (!is_file($fileName)) {
+                $errorString = 'You did not select a file to upload. Please select a file and try again.<br>';
+            }
+
+            if ($isValid && $fileReceived && empty($errorString)) {
                 // Get information about the plugin, and then create a new instance of the plugin.
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
                 $pluginTable = new Plugin();
@@ -563,10 +389,18 @@ class FindingController extends PoamBaseController
                                    self::M_WARNING);
                 }
             } else {
-                $errorString = Form_Manager::getErrors($uploadForm);
-
-                if (!$fileReceived) {
-                    $errorString .= "File not received<br>";
+                /**
+                 * @todo this error display code needs to go into the decorator,
+                 * but before that can be done, the function it calls needs to be
+                 * put in a more convenient place
+                 */
+                foreach ($uploadForm->getMessages() as $field => $fieldErrors) {
+                    if (count($fieldErrors)>0) {
+                        foreach ($fieldErrors as $error) {
+                            $label = $uploadForm->getElement($field)->getLabel();
+                            $errorString .= "$label: $error<br>";
+                        }
+                    }
                 }
 
                 // Error message

@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -59,11 +58,6 @@ class MessageController extends Zend_Controller_Action
      *
      * @todo Cleanup this method: comments and formatting
      * @todo This function is named incorrectly
-     * @param int $userId
-     * @param string $email recieved email
-     * @param string $type  
-     * @param string $accountInfo
-     * @return true|false
      */
     public function emailvalidate($userId, $email, $type, $accountInfo = null)
     {
@@ -80,7 +74,7 @@ class MessageController extends Zend_Controller_Action
         $db = Zend_Registry::get('db');
         $db->insert('validate_emails', $data);
 
-        $contentTpl = $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts/mail');
+        $contentTpl = $this->view->setScriptPath(APPLICATION_PATH . '/views/scripts/mail');
         $contentTpl = $this->view;
 
         if (!empty($accountInfo)) {
@@ -94,50 +88,8 @@ class MessageController extends Zend_Controller_Action
         $contentTpl->hostUrl = Config_Fisma::readSysConfig('hostUrl');
         $content = $contentTpl->render('validate.phtml');
         $mail->setBodyText($content);
-        try {
-            $mail->send($this->_getTransport());
-            return true;
-        } catch (Exception $excetpion) {
-            return false;
-        }
+        $mail->send($this->_getTransport());
     }
-
-    /**
-     * Send the new password to the user whom password has been changed by administrator
-     *
-     * @param int $userId a special user id
-     * @param string $password new password for this user
-     * @return true|false
-     */
-    public function sendPassword($userId, $password)
-    {
-        $user = new User();
-        $ret = $user->find($userId)->current();
-
-        $sender = Config_Fisma::readSysConfig('sender');
-        $systemName = Config_Fisma::readSysConfig('system_name');
-
-        $mail = new Zend_Mail();
-
-        $mail->setFrom($sender, $systemName);
-        $mail->addTo($ret->email);
-        $mail->setSubject("Your password for $systemName has been changed");
-
-        $contentTpl = $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts/mail');
-        $contentTpl = $this->view;
-        $contentTpl->hostUrl = Config_Fisma::readSysConfig('hostUrl');
-        $contentTpl->password = $password;
-        $content = $contentTpl->render('sendpassword.phtml');
-        $mail->setBodyText($content);
-        try {
-            $mail->send($this->_getTransport());
-            return true;
-        } catch (Exception $excetpion) {
-            return false;
-        }
-    }
-
-
 
     /**
      * _getTransport() - Return the appropriate Zend_Mail_Transport subclass,

@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -75,11 +74,7 @@ class SecurityController extends MessageController
             self::$now = Zend_Date::now();
         }
         $this->_auth = Zend_Auth::getInstance();
-        $redirectInfo = new Zend_Session_Namespace('redirect_page');
         if ($this->_auth->hasIdentity()) {
-            if (isset($redirectInfo->page)) {
-                unset($redirectInfo->page);
-            }
             $this->_me = $this->_auth->getIdentity();
             $store = $this->_auth->getStorage();
             // refresh the expiring timer
@@ -93,23 +88,14 @@ class SecurityController extends MessageController
                     $this->_sanity['filter'], $this->_sanity['validator'],
                     $this->_request->getParam($this->_sanity['data']));
             }
-        } else {
-            $redirectInfo->page = $_SERVER['REQUEST_URI'];
         }
         $this->_notification = new Notification();
         $this->view->assign('acl', $this->_acl);
     }
 
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
     public function preDispatch()
     {
         if (empty($this->_me)) {
-            // throw exception and redirect the page to login.
-            ///@todo English
-            throw new Exception_InvalidAuthentication('Your session has expired. Please log in again to begin a new session.');
             $this->_forward('login', 'User');
         } else {
             $this->view->identity = $this->_me->account;
@@ -121,12 +107,6 @@ class SecurityController extends MessageController
             }
         }
     }
-
-    /**
-     * initialize access control to a singal user
-     * @param int $uid 
-     * @return object $acl
-     */
     protected function initializeAcl($uid)
     {
         if (!Zend_Registry::isRegistered('acl')) {
@@ -203,5 +183,20 @@ class SecurityController extends MessageController
             $crit[$k] = $req->getParam($v);
         }
         return $crit;
+    }
+
+    /*
+     * Get form object from form config file section 
+     * 
+     * wrapper of Config_Fisma::getForm
+     *
+     * @param string $formConfigSection the forms name namely section of
+            the configuration
+     * 
+     * @return  Zend_Form
+     */
+    public function getForm ($formConfigSection)
+    {
+        return Config_Fisma::getForm($formConfigSection);
     }
 }

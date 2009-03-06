@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Form
  */
 
 /**
@@ -50,11 +49,6 @@ class Form_Validator_Password extends Zend_Validate_Abstract
      */
     protected $_userRow = null;
 
-    /**
-     * @todo english
-     * Initialize $_userRow property
-     * @param Object $user 
-     */
     public function __construct($user = null)
     {
         if ($user !== null) {
@@ -63,13 +57,6 @@ class Form_Validator_Password extends Zend_Validate_Abstract
         }
     }
 
-    /** 
-     * @todo english
-     * Check the password whether is suited for complex
-     * @param string $pass password
-     * @param array $context post data from client's form
-     * @return true|false
-     */
     public function isValid($pass, $context=null)
     {
         $this->_messageTemplates = array(
