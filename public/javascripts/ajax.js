@@ -1,10 +1,7 @@
 String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
 }
-// This is a fix for IE 6 borrowed from SF.net
-// All 'select' elements should hide in IE 6,
-// otherwise the 'ClueTips' could not be over the elements.
-// It will be called by 'ClueTips', when triggering the 'ClueTips'
+
 var ie6SelectsShowing = true;
 function toggleIE6Selects(){
     if($.browser.msie && $.browser.version == '6.0'){
@@ -19,17 +16,6 @@ function toggleIE6Selects(){
 }
 
 $(document).ready(function(){
-
-   //Data Table Row Highlighting and Selection        
-   $(".tbframe tr").mouseover(function() {
-       $(this).addClass("over");}).mouseout(function() {
-            $(this).removeClass("over");})
-   $(".tbframe tr:even").addClass("alt");
-   //Click the table row to open the link
-   $("#poam_list tr").click(function() {
-       var link = $(this).find("td:last-child a").attr('href');
-       window.location.href = link
-   });
 
    $("a[@name=select_all]").click(function(){
        $(":checkbox").attr( 'checked','checked' );
@@ -186,10 +172,10 @@ $(document).ready(function(){
         $('input[@type=checkbox]').removeAttr('checked');
     });
 
-    $("#checkaccount").click(function(){
-        var account = $("input[name='account']").val();
-        var account = encodeURIComponent(account);
-        var url = "/account/checkaccount/format/html/account/"+account;
+    $("#checkdn").click(function(){
+        var dn = $("input[name='ldap_dn']").val();
+        var dn = encodeURIComponent(dn);
+        var url = "/account/checkdn/format/html/dn/"+dn;
         $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
     });
 
@@ -222,7 +208,6 @@ $(document).ready(function(){
     });
 
     $(".editable").click(function(){
-        removeHighlight(document.getElementById('poam_detail'));
         var t_name = $(this).attr('target');
         $(this).removeClass('editable');
         $(this).removeAttr('target');
@@ -262,20 +247,17 @@ $(document).ready(function(){
     });
     shortcut(0);
 
-    // show the 'ClueTips' which contain help info.
+
     $('a#help_tips').click(toggleIE6Selects).cluetip({width: 280, dropShadow: false, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);}});
-    // to fix the conflict caused by 'ColumnManager'
     $('a#help_tips').click(function (){
         $('#cluetip ul').css('display', 'none');
     });
+    
     $('.ph_sticky').click(function (){jQuery('#cluetip ul').css('display', '');});
-    // show the 'ClueTips' which contain columns
     $('.ph_sticky').click(toggleIE6Selects).cluetip({dropShadow: false, arrows: false, cursor: 'pointer', local:true, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);$('#cluetip ul').css('display', '');}});
-    // force to insert HTML code to the elements created by 'ClueTip'
     jQuery('.tbframe').columnManager({listTargetID:'cluetip', onClass: 'accept', offClass: 'blank', 
                                   hideInList: [$(".tbframe tr th").length], saveState: true, 
                                   cookiePath: '/', onToggle: function(index, state){$.get('/user/preference');}});
-    // force to change the style defined by 'ClueTips'
     $('#cluetip-inner').css('border','none');
     $('#cluetip li').css('list-style','none').css('position','relative');
     $('#cluetip ul').css('background','#fff').css('margin','0').css('padding','0 2em 2em').css('z-index','100');
@@ -325,21 +307,10 @@ function search_function() {
     var trigger = $("select[name='function_screen']");
     var param = '';
     var name = trigger.children("option:selected").attr('value');
-
     if( null != name){
         param += '/screen_name/'+name;
     }
-    var kids = $("#exist_functions").children();
-    var exist_functions = '';
-    for (var i=0;i < kids.length;i++) {
-        if (i == 0) {
-            exist_functions += kids[i].value;
-        } else {
-            exist_functions += ',' + kids[i].value;
-        }
-    }
-    
-    var url = trigger.attr("url") + '/do/available_functions' + param + '/exist_functions/'+exist_functions;
+    var url = trigger.attr("url") + '/do/search_function' + param;
     $("select[name='available_functions']").load(url,null);
 }
 
@@ -504,113 +475,16 @@ function addBookmark(title, url){
     }
 }
 
-/**
- * Highlights search results according to the keywords which were used to search
- *
- * @param node object
- * @param keyword string
- */ 
-function highlight(node,keyword) {
-    if (!keyword) {
-        return true;
+function highLight(obj,keywords) {
+    if (!keywords) {
+        return;
     }
-
-    	// Iterate into this nodes childNodes
-	if (node.hasChildNodes) {
-		var hi_cn;
-		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
-			highlight(node.childNodes[hi_cn],keyword);
-		}
-	}
-
-	// And do this node itself
-    if (node.nodeType == 3) { // text node
-        tempNodeVal = node.nodeValue.toLowerCase();
-        tempWordVal = keyword.toLowerCase();
-        if (tempNodeVal.indexOf(tempWordVal) != -1) {
-            pn = node.parentNode;
-            if (pn.className != "highlight") {
-                // keyword has not already been highlighted!
-                nv = node.nodeValue;
-                ni = tempNodeVal.indexOf(tempWordVal);
-                // Create a load of replacement nodes
-                before = document.createTextNode(nv.substr(0,ni));
-                docWordVal = nv.substr(ni,keyword.length);
-                after = document.createTextNode(nv.substr(ni+keyword.length));
-                hiwordtext = document.createTextNode(docWordVal);
-                hiword = document.createElement("span");
-                hiword.className = "highlight";
-                hiword.appendChild(hiwordtext);
-                pn.insertBefore(before,node);
-                pn.insertBefore(hiword,node);
-                pn.insertBefore(after,node);
-                pn.removeChild(node);
-            }
-        }
-    }
-}
-
-/**
- * Remove the highlight attribute from the editable textarea on remediation detail page
- *
- * @param node object 
- */
-function removeHighlight(node) {
-	// Iterate into this nodes childNodes
-	if (node.hasChildNodes) {
-		var hi_cn;
-		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
-			removeHighlight(node.childNodes[hi_cn]);
-		}
-	}
-
-	// And do this node itself
-	if (node.nodeType == 3) { // text node
-		pn = node.parentNode;
-		if( pn.className == "highlight" ) {
-			prevSib = pn.previousSibling;
-			nextSib = pn.nextSibling;
-			nextSib.nodeValue = prevSib.nodeValue + node.nodeValue + nextSib.nodeValue;
-			prevSib.nodeValue = '';
-			node.nodeValue = '';
-		}
-	}
-}
-
-/**
- * @todo english
- * Check the form if has something changed but not saved
- * if nothing changes, then give a confirmation
- * @param dom check_form checking form
- * @param str user's current action
- */
-function form_confirm (check_form, action) {
-    var changed = false;    
-    $(':text, :password, textarea', check_form).each(function() {    
-        var _v = $(this).attr('_value');    
-        if(typeof(_v) == 'undefined')   _v = '';    
-        if(_v != $(this).val()) changed = true;    
-    });    
-   
-    $(':checkbox, :radio', check_form).each(function() {    
-        var _v = this.checked ? 'on' : 'off';  
-        if(_v != $(this).attr('_value')) changed = true;    
-    });    
     
-    $('select', check_form).each(function() {    
-        var _v = $(this).attr('_value');    
-        if(typeof(_v) == 'undefined')   _v = '';    
-        if(_v != this.options[this.selectedIndex].value) changed = true;  
-    });
-
-    if(changed) {
-        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save".') == true) {
-            return true;
-        }
-    } else {
-        if (confirm('WARNING: You are about to '+action+'. This action cannot be undone. Please click "Yes" to confirm your action or click "Cancel" to stop.') == true) {
-            return true;
-        }
-    }
-    return false;
-}
+    var keyword = new Array();
+    keyword = keywords.split(',');
+    for(var i=0;i<keyword.length;i++){
+        var reg = new RegExp(keyword[i]+"(?=[^<>]*<)","ig");
+        var data=document.getElementById(obj).innerHTML;
+        document.getElementById(obj).innerHTML=data.replace(reg,'<span class="searchword">'+keyword[i]+'</span>');
+    } 
+} 

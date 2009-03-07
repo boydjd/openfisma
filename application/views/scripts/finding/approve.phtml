@@ -37,10 +37,12 @@
 ?>
         <tr>
             <td class="tdc" colspan="8">
-                <input type="button" name="select_all" value="Select All">
-                <input type="button" name="select_none" value="Select None">
-                <input type="submit" name="delete_selected" value="Delete Selected">
-                <input type="submit" name="approve_selected" value="Approve Selected">
+                <?php 
+                    echo new Yui_Form_Button_Link('Select All', 'select_all');
+                    echo new Yui_Form_Button_Link('Select None', 'select_none');
+                    echo new Yui_Form_Button_Submit('Delete Selected', 'delete_selected');                    
+                    echo new Yui_Form_Button_Submit('Approve Selected', 'approve_selected');
+                ?>
             </td>
         </tr>
     </table>

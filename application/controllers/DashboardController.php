@@ -56,6 +56,8 @@ class DashboardController extends SecurityController
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addActionContext('totalstatus', 'xml')
                       ->addActionContext('totaltype', 'xml')
+                      ->addActionContext('chart1', 'xml')
+                      ->addActionContext('chart2', 'xml')
                       ->initContext();
         if (!isset($this->_poam)) {
             $this->_poam = new Poam();
@@ -241,5 +243,21 @@ class DashboardController extends SecurityController
         // Headers Required for IE+SSL (see bug #2039290) to stream XML
         header('Pragma:private');
         header('Cache-Control:private');
+    }
+    
+    public function chart1Action()
+    {
+        // Headers Required for IE+SSL (see bug #2039290) to stream XML
+        header('Pragma:private');
+        header('Cache-Control:private');
+        $this->render();
+    }
+
+    public function chart2Action()
+    {
+        // Headers Required for IE+SSL (see bug #2039290) to stream XML
+        header('Pragma:private');
+        header('Cache-Control:private');
+        $this->render();
     }
 }

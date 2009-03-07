@@ -8,12 +8,13 @@
 <?php Format_Section::startSection("Finding Creation"); ?>
 
 <form name="finding" method="post" action="/panel/finding/sub/create/is/new" >
-<table width="810" border="0" align="center" cellpadding="0">
+<table>
     <tr><td>
-        <input name="button" type="submit" id="button" value="Create Finding" >
-        <input name="button" type="reset" id="button" value="Reset Form" >
+        <?php echo new Yui_Form_Button_Submit('Create Finding', 'createFindingSubmit'); ?>
+        <?php echo new Yui_Form_Button_Reset('Reset Form', 'createFindingReset'); ?>
     </td></tr>
     <tr><td>
+
         <table border="0" width="100%" cellpadding="5" class="tipframe">
             <tr> <th align="left">General Information</th> </tr>
             <tr> <td>

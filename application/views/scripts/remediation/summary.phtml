@@ -9,37 +9,34 @@
                       '120'=>'120+ Days Old');
     $statusArray = array_merge($this->statusArray, array('CLOSED'));
 ?>
-<?php Format_Section::startSection("Remediation Summary"); ?>
-
-<p>
 <form name="filters" method="post" action="/panel/remediation/sub/summary">
 <!-- Begin Filter Table -->
-<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
+<table class="searchFilters">
     <tr>
         <td><b>Finding Source: </b>
-            <?php echo $this->formSelect('source_id', $this->criteria['sourceId'], null, $this->sources);?>
+         </td><td>   <?php echo $this->formSelect('source_id', $this->criteria['sourceId'], null, $this->sources);?>
         </td>
         <td><b>Mitigation Strategy: </b>
-            <?php echo $this->formSelect('type', $this->criteria['type'], null, $typeList);?>
+        </td><td>    <?php echo $this->formSelect('type', $this->criteria['type'], null, $typeList);?>
         </td>
         <td><b>Aging Totals: </b>
-            <?php echo $this->formSelect('aging', $this->criteria['aging'], array('id'=>'remediationSearchAging'), $aging); ?>
+        </td><td>    <?php echo $this->formSelect('aging', $this->criteria['aging'], array('id'=>'remediationSearchAging'), $aging); ?>
         </td>
     </tr>
     <tr>
-        <td><b>Date Opened From: </b><input type="text" class="date" id="created_date_begin" name="created_date_begin" value="<?php
+        <td><b>Date Opened From: </b></td><td><input type="text" class="date" id="created_date_begin" name="created_date_begin" value="<?php
             echo $this->criteria['created_date_begin']; ?>"
             size="12" maxlength="20"></td>
-        <td><b>Date Opened To: </b><input type="text" class="date" id="created_date_end" name="created_date_end" value="<?php
+        <td><b>Date Opened To: </b></td><td><input type="text" class="date" id="created_date_end" name="created_date_end" value="<?php
             echo $this->criteria['created_date_end']; ?>"
             size="12" maxlength="20"></td>
-    </tr>
-    <tr>
-        <td align="left"><input type='submit' value='Filter'></td>
+        <td colspan="2"><?php echo new Yui_Form_Button_Submit('Apply Filter', 'filterRemediationSummarySubmit');?></td>
     </tr>
 </table>
-</p>
-<br>
+</form>
+
+<?php Format_Section::startSection("Remediation Summary"); ?>
+
 <table align="center" class="tipframe" width="90%" cellpadding="0" cellspacing="0">
     <tr align="center" bgcolor="#f3f3f3">
         <td class="tdc"></td>

@@ -16,13 +16,13 @@
     $this->source_list[0] ='--Any--';
     $url = "/panel/report/sub/overdue/s/search";
 ?>
-<?php Format_Section::startSection("Overdue Reports"); ?>
+<?php //Format_Section::startSection("Overdue Reports"); ?>
 
 <form name="overdue_report" method="post" action="/panel/report/sub/overdue/s/search">
-<table width="95%" align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
+<table class="searchFilters">
     <tr>
-        <td width="6%" height="47"><b>System </b></td>
-        <td width="21%">
+        <td><b>System </b></td>
+        <td>
         <?php echo $this->formSelect('system_id',
                                      isset($this->params['system_id'])?$this->params['system_id']:0, 
                                      null,$this->system_list);
@@ -31,8 +31,8 @@
               }
         ?>
         </td>
-        <td width="6%"><b>Source</b></td>
-        <td width="18%">
+        <td><b>Source</b></td>
+        <td>
         <?php echo $this->formSelect('source_id',
                                      isset($this->params['source_id'])?$this->params['source_id']:0, 
                                      null,$this->source_list);
@@ -41,8 +41,8 @@
               }
         ?>
         </td>
-        <td width="9%"><b>Fiscal Year</b></td>
-        <td width="40%">
+        <td><b>Fiscal Year</b></td>
+        <td>
         <?php echo $this->formSelect('year',
                                      isset($this->params['year'])?$this->params['year']:0, 
                                      null,$year_list);
@@ -67,9 +67,9 @@
                                     null,$overdue['day']);
         ?>
         </td>
-    </tr>
-    <tr>
-        <td height="39" colspan="2"><input type="submit" name="search" value="Generate"></td>
+        <td height="39" colspan="2">
+            <?php echo new Yui_Form_Button_Submit('Generate Report', 'generateOverdueReport'); ?>
+        </td>
     </tr>
 </table>
 </form>

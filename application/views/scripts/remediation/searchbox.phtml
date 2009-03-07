@@ -34,7 +34,7 @@
     $this->systems[0] ='--Any--';
     $this->sources[0] ='--Any--';
 ?>
-<?php Format_Section::startSection("Remediation Search"); ?>
+<?php //Format_Section::startSection("Remediation Search"); ?>
 
 <?php
     $flag = '';
@@ -45,30 +45,34 @@
     }
 ?>
 
-<?php if ($flag == '') { ?><input type="button" id="advanced_search" value="Advanced Search"><p><?php } ?>
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
-<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
+<table class="searchFilters">
     <tr>
-        <td colspan="2"><br/>
-        <b>Keywords: </b><input type="text" name="keywords" size="50"
-            value="<?php echo $this->params['keywords'];?>">
-        <a id="help_tips" href="/help/help/script/basicsyntax/" title="Simple search syntaxes" rel="/help/help/script/basicsyntax/" >
-        <img src="/images/help.gif"></a>
+        <td>
+            Search: 
         </td>
-    </tr>
-    <tr>
-        <td width="410"><?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
-            <i>The index has not been created yet. It will be created during the first search request. 
-            This may take a few minutes.</i>
-        <?php } ?></td>
-        <td><input type="submit" value="Search"></td>
+        <td>
+            <input type="text" name="keywords" size="50" value="<?php echo $this->params['keywords'];?>">
+        </td>
+        <td>
+            <a id="help_tips" href="/help/help/script/basicsyntax/" title="Simple search syntaxes" rel="/help/help/script/basicsyntax/">
+                <img src="/images/help.gif">
+            </a>
+        </td>
+        <td><?php echo new Yui_Form_Button_Submit('Search', 'remediationSearchSubmit'); ?></td>
+        <td><?php if ($flag == '') { echo new Yui_Form_Button_Link('Toggle Advanced Search Options', 'advanced_search', '#'); } ?></td>
      </tr>
- </table>
-<p>
+     <?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
+         <tr>
+         <td colspan="5">
+         <i>The index has not been created yet. It will be created during the first search request. 
+         This may take a few minutes.</i></td></tr>
+     <?php } ?>
+</table>
 
 <div id="advanced_searchbox" <?php if ($flag == '') { ?>style="display:none" <?php } ?>>
 <!-- Begin Filter Table -->
-<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
+<table class="searchFilters">
     <tr>
         <td><b>Finding Source: </b><br>
             <?php echo $this->formSelect('source_id',
@@ -144,4 +148,4 @@
 </form>
 </div>
 
-<?php Format_Section::stopSection(); ?>
+<?php //Format_Section::stopSection(); ?>

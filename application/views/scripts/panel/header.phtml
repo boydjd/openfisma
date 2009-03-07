@@ -18,17 +18,18 @@ YAHOO.util.Event.onDOMReady(function () {
                                         },
                                         failure: function(o) {alert('Failed to load menubar: '+o.statusText);}
                                     }, 
-                                    null);                                    
+                                    null);
 });
+
+
+
 </script>
 
 <div id="logo">
     <img alt="Logo" src="/images/customer_logo.jpg">
 </div>
 <div id="logout">
-    <form class="button_link" action="/user/logout">
-        <input type="submit" value="Logout" />
-    </form>
+    <?php echo new Yui_Form_Button_Link('Log Out', 'logoutButton', '/user/logout'); ?>
     <p><b><?php echo $this->identity; ?></b> is currently logged in</p>
 </div>
 

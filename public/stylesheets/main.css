@@ -78,10 +78,22 @@ div#footerLinks {
     float: right;
 }
 
-/* A horizontal rules which extends all the way across the parent element. */
-/*hr.fullSeparator {
-    width: 100%;
-}*/
+/* Used to display search criteria & filters at the top of various pages */
+table.searchFilters {
+    background-color: #ebebeb;
+    margin: 10px auto;
+    border: 1px solid #cecece;
+    padding: 10px 10px;
+}
+
+table.searchFilters td {
+    padding: 3px 8px;
+    font-weight: bold;
+}
+
+table.searchFilters td a {
+    font-weight: normal;
+}
 
 /* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
  * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
@@ -156,6 +168,11 @@ td {
 
 .tipframe th {
 	height: auto;
+	padding: 3px;
+}
+
+.tipframe td {
+    padding: 3px;
 }
 
 .thc {

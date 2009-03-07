@@ -7,28 +7,24 @@ $type_list = array('' =>'Please Select Report',
                    '5'=>'Total # of Systems /w Open Vulnerabilities');
 $action_list = array(1=>'blscr',2=>'fips',3=>'prods',4=>'swdisc',5=>'total');
 ?>
-<?php Format_Section::startSection("General Reports"); ?>
+<?php //Format_Section::startSection("General Reports"); ?>
 
 <form name="filter" method="post" action="/panel/report/sub/general/s/search">
-<table width="95%" align="center" border="0">
+
+<table cellpadding="5" class="searchFilters">
     <tr>
+        <td>Report:</td>
         <td>
-            <table cellpadding="5" class="tipframe">
-                <tr>
-                    <td><b>Report</b></td>
-                    <td>
-                        <?php echo $this->formSelect('type',$this->type,null,$type_list);?>
-                    </td>
-                    <td>
-                        <input type="submit" value="Generate">
-                    </td>
-                </tr>
-            </table>
+            <?php echo $this->formSelect('type',$this->type,null,$type_list);?>
+        </td>
+        <td>
+            <?php echo new Yui_Form_Button_Submit('Generate Report', 'generateGeneralReport'); ?>
         </td>
     </tr>
 </table>
+
 </form>
-<?php Format_Section::stopSection(); ?>
+<?php //Format_Section::stopSection(); ?>
 
 <?php
     if(!empty($this->type)){

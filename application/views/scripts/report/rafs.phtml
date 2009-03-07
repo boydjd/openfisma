@@ -2,7 +2,7 @@
 
 <form action="/report/rafs" method="post">
 
-<table border="0" cellpadding="5" cellspacing="0" class="tipframe">
+<table class="searchFilters">
 <tr>
     <td><b>System:</b></td>
     <td>
@@ -11,11 +11,8 @@
                                  null,
                                  $this->system_list);?>
 
-    <input type="submit">
+    <?php echo new Yui_Form_Button_Submit('Generate RAFS', 'generateRafsSubmit'); ?>
     </td>
-</tr>
-<tr>
-    <td colspan="2"> Please select a system to generate risk analysis forms.  </td>
 </tr>
 </table>
 </form>

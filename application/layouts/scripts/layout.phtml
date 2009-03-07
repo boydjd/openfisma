@@ -6,8 +6,10 @@
 <?php 
 	echo $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
     Yui::includeLibrary('yahoo-dom-event');
+    Yui::includeLibrary('element');
     Yui::includeLibrary('container');
     Yui::includeLibrary('menu');
+    Yui::includeLibrary('button');
     Yui::includeLibrary('json');
     Yui::includeLibrary('connection');
     Yui::includeLibrary('logger');
@@ -35,7 +37,6 @@
                           ->appendStylesheet('/stylesheets/main.css', 'screen,print')
                           ->headLink(array('rel' => 'favicon', 'href' => '/img/favicon.ico'));
 ?>
-
         <!--[if IE 7]>
         <link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
         <![endif]-->

@@ -18,10 +18,10 @@
     $url = "/panel/report/sub/poam/s/search";
     $attachUrl = "/report/poam/s/search";
 ?>
-<?php Format_Section::startSection("Plans of Actions And Milestones Report Administration"); ?>
+<?php //Format_Section::startSection("Plan of Actions And Milestones (POA&amp;M) Report"); ?>
 
 <form name="poam_report" method="post" action="/panel/report/sub/poam/s/search">
-<table width="95%" align="center" border="0" cellpadding="5" cellspacing="1" class="tipframe">
+<table class="searchFilters">
     <tr>
         <td width="6%" height="47"><b>System </b></td>
         <td width="21%">
@@ -82,15 +82,15 @@
         </td>
     </tr>
     <tr>
-        <td height="39" colspan="2"><input type="submit" name="search" value="Generate"></td>
+        <td height="39" colspan="2"><?php echo new Yui_Form_Button_Submit('Generate', 'generatePoamReport'); ?></td>
     </tr>
 </table>
 </form>
 
-<?php Format_Section::stopSection(); ?>
+<?php //Format_Section::stopSection(); ?>
 
 <?php if( !empty($this->poam_list) ) { ?>
-<?php Format_Section::startSection("Poam Search Results"); ?>
+<?php Format_Section::startSection("POA&amp;M Report"); ?>
 
 <p><b>Poam Search Results</b>
     <span>
