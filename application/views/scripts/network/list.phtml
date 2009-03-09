@@ -11,11 +11,11 @@
     <?php if($this->acl->isAllowed('admin_networks','update')){
               echo'<th>Edit</th>';
           } 
-          if($this->acl->isAllowed('admin_networks','read')){
-              echo'<th>View</th>';
-          }
           if($this->acl->isAllowed('admin_networks','delete')){
               echo'<th>Del</th>';
+          }
+          if($this->acl->isAllowed('admin_networks','read')){
+              echo'<th>View</th>';
           }
     ?>
 </tr>
@@ -29,15 +29,15 @@
         <a href="/panel/network/sub/view/v/edit/id/<?php echo $network['id'];?>" title="edit the Networks">
         <img src="/images/edit.png" border="0"></a>
     </td>
-    <?php } if($this->acl->isAllowed('admin_networks','read')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/network/sub/view/id/<?php echo $network['id'];?>" title="display the Networks">
-        <img src="/images/view.gif" border="0"></a>
-    </td>
     <?php } if($this->acl->isAllowed('admin_networks','delete')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/network/sub/delete/id/<?php echo $network['id'];?>" title="delete the Networks, then no restore after deleted" onclick="return delok('Network');">
         <img src="/images/del.png" border="0"></a>
+    </td>
+    <?php } if($this->acl->isAllowed('admin_networks','read')){ ?>
+    <td class="tdc" align="center">
+        <a href="/panel/network/sub/view/id/<?php echo $network['id'];?>" title="display the Networks">
+        <img src="/images/view.gif" border="0"></a>
     </td>
     <?php }?>
 </tr>

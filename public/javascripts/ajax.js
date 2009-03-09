@@ -26,9 +26,11 @@ $(document).ready(function(){
             $(this).removeClass("over");})
    $(".tbframe tr:even").addClass("alt");
    //Click the table row to open the link
-   $("#poam_list tr").click(function() {
+   $(".tbframe tr").click(function() {
        var link = $(this).find("td:last-child a").attr('href');
-       window.location.href = link
+       if (link) {
+           window.location.href = link
+       }
    });
 
    $("a[@name=select_all]").click(function(){
