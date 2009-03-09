@@ -58,7 +58,8 @@
                 echo '<input type="hidden" name="reject" value="" />';
                 echo '<input type="hidden" name="comment" value="" />';
                 echo '<input type="hidden" name="decision" value="APPROVE" />';
-                echo '<input type="submit" value="APPROVE" />';
+                echo '<input type="submit" value="APPROVE"
+                    onclick="return form_confirm(document.poam_detail,\'approve '.$name.'\');" >';
                 echo '<input type="button" value="DENY" '.
                     'onclick="ev_deny(document.eval_ev'.$evidence['id'].');" />';
             }else{

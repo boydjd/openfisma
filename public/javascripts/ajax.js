@@ -360,6 +360,9 @@ function search_privilege() {
 }
 
 function upload_evidence(){
+    if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
+        return false;
+    }
     //$("#up_evidence").blur();
     var dw = $(document).width();
     var dh = $(document).height();
@@ -378,6 +381,9 @@ function upload_evidence(){
 }
 
 function ev_deny(formname){
+    if (!form_confirm(document.poam_detail, 'deny the evidence')) {
+        return false;
+    }
     var dw = $(document).width();
     var dh = $(document).height();
     $('<div id="full"></div>')
@@ -417,6 +423,9 @@ function ev_deny(formname){
 }
 
 function ms_comment(formname){
+    if (!form_confirm(document.poam_detail, 'deny the mitigation')) {
+        return false;
+    }
     var dw = $(document).width();
     var dh = $(document).height();
     $('<div id="full"></div>')
@@ -610,7 +619,7 @@ function form_confirm (check_form, action) {
             return true;
         }
     } else {
-        if (confirm('WARNING: You are about to '+action+'. This action cannot be undone. Please click "Yes" to confirm your action or click "Cancel" to stop.') == true) {
+        if (confirm('WARNING: You are about to '+action+'. This action cannot be undone. Please click "Ok" to confirm your action or click "Cancel" to stop.') == true) {
             return true;
         }
     }
