@@ -99,7 +99,7 @@ class Test_Selenium_Admin_UserCrud extends Test_FismaSeleniumTest
         $this->assertTextPresent("CERTAGENT");
 
         // Delete user
-        $this->click("//div[@id='detail']/table[2]/tbody/tr[3]/td[10]/a/img");
+        $this->click("//div[@id='detail']/table[2]/tbody/tr[3]/td[9]/a/img");
         $this->getConfirmation(); // Throw away result
         $this->waitForPageToLoad();
         
