@@ -42,6 +42,6 @@ elements.selectFile.options.validators.size.options.max = 5242880
 elements.selectFile.options.validators.extension.validator = "Extension"
 elements.selectFile.options.validators.extension.options.extension = "xml"
 
-elements.submit.type = "submit"
-elements.submit.options.value = "Upload"
-displayGroups.finding_upload.elements.submit = "submit"
+elements.upload.type = "submit"
+elements.upload.options.value = "Upload"
+displayGroups.finding_upload.elements.submit = "upload"

@@ -1,7 +1,7 @@
 <?php echo "{$this->doctype()}\n" ?>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 <?php
     echo $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
     Yui::includeLibrary('yahoo-dom-event');
@@ -22,7 +22,7 @@
         <?php echo $this->layout()->content; ?>
     </div>
     <div id='footer'>
-        <hr style="color: #44637A;" size="1"></td>
+        <hr style="color: #44637A;" size="1">
         <div id='footerLinks'>
             <a href="mailto:<?php echo Config_Fisma::readSysConfig('contact_email');?>?Subject=<?php echo urlencode(Config_Fisma::readSysConfig('contact_subject'));?>">Contact Administrator</a>&nbsp;|&nbsp;
             <a href="/user/rob/">Rules of Behavior</a>&nbsp;|&nbsp;

@@ -522,7 +522,7 @@ class FindingController extends PoamBaseController
         $fileReceived = false;
         $postValues = $this->_request->getPost();
 
-        if (isset($_POST['submit'])) {
+        if (isset($_POST['upload'])) {
             if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
                 // Get information about the plugin, and then create a new instance of the plugin.
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');

@@ -35,6 +35,7 @@ class Yui_Form_Button_Link extends Yui_Form_Button
 {    
     private $_href;
     private $_image;
+    private $_onClick;
     
     /**
      * Constructor
@@ -50,13 +51,15 @@ class Yui_Form_Button_Link extends Yui_Form_Button
      
     function render() 
     {
+        $onClick = (!empty($this->_onClick)) ? "onclick: {fn: $this->_onClick}," : '';
         $render = "<script type='text/javascript'>
                    YAHOO.util.Event.onDOMReady(function () {
                         var button = new YAHOO.widget.Button({  
                              type: \"link\",  
                              label: \"{$this->_label}\",  
                              href: \"{$this->_href}\",
-                             id: \"{$this->_id}Button\",  
+                             id: \"{$this->_id}Button\",
+                             $onClick  
                              container: \"{$this->_id}\"
                         });";
         if (isset($this->_image)) {
@@ -65,5 +68,9 @@ class Yui_Form_Button_Link extends Yui_Form_Button
         }
         $render .= " });\n</script><span id='{$this->_id}'></span>";
         return $render;
+    }
+    
+    function onClick($code) {
+        $this->_onClick = $code;
     }
 }

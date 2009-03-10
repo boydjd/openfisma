@@ -38,8 +38,12 @@
         <tr>
             <td class="tdc" colspan="8">
                 <?php 
-                    echo new Yui_Form_Button_Link('Select All', 'select_all');
-                    echo new Yui_Form_Button_Link('Select None', 'select_none');
+                    $selectAll = new Yui_Form_Button_Link('Select All', 'select_all');
+                    $selectAll->onClick('selectAllUnsafe');
+                    echo $selectAll;
+                    $selectNone = new Yui_Form_Button_Link('Select None', 'select_none');
+                    $selectNone->onClick('selectNoneUnsafe');
+                    echo $selectNone;
                     echo new Yui_Form_Button_Submit('Delete Selected', 'delete_selected');                    
                     echo new Yui_Form_Button_Submit('Approve Selected', 'approve_selected');
                 ?>

@@ -1,18 +1,26 @@
+/* @override http://localhost/stylesheets/login.css */
+
+html {
+    min-height: 100%;
+}
+
 body {
     color: #cccccc;
     background-color: #44627a;
     margin: 0px;
+    min-height: 100%;
 }
 
 /* The white stripe at the top of the screen */
 div#header{
-    height: 60px;
-    background-image: url('../images/title_vline.jpg');
+    height: 30px;
+    background-image: url('../images/login_header.jpg');
+    background-position: 0px 30px;
 }
 
 /* Diagonal stripes underneath the header */
 div#stripes{
-    background-image: url('../images/login_bg.jpg');
+    background-image: url('../images/login_stripes.jpg');
     height: 60px;
 }
 
@@ -25,7 +33,7 @@ p.message{
 /* The system use notification */
 div#systemUseNotification {
     position: relative;
-    top: -25px;
+    top: -10px;
     width:40em;
     margin: 0px auto;
     padding: 10px;
@@ -50,8 +58,19 @@ form#loginForm input {
     font-size: 10pt;
 }
 
+div#footer {
+	position: absolute;
+	bottom: 10px;
+	width: 100%;
+	text-align: right;
+}
+
+div#footer hr {
+	width: 99%;
+}
+
 div#footerLinks {
-    float: right;
+	padding-right: 10px;
 }
 
 div#footerLinks a {

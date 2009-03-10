@@ -1,5 +1,32 @@
+/* @override http://localhost/stylesheets/main.css */
+
 @import url('fisma.css');
 @import url('layout.css');
+
+/* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
+ * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
+ * when this style sheet is loaded.
+ */
+em {
+    font-weight: bold;
+}
+
+li {
+    display: list-item;
+}
+
+p {
+    margin: 0px 8px;
+}
+
+h1 {
+    font-size: large;
+    font-weight: bold;
+}
+
+/* This next section contains application-specific styles. Each style should
+   be named for what it *does*, and not what it *looks like*. This standard
+   improves application maintenance. */
 
 /* Create some space around the body content */
 body {
@@ -13,10 +40,16 @@ div#logo {
     margin-bottom: 10px;
 }
 
-/* The logout form is floated to the right */
+/* The logout form is floated to the right and 
+   moved down a bit from the corner. */
 div#logout {
     float: right;
     text-align: right;
+    margin-top: 10px;
+}
+
+div#logout p {
+    margin-top: 8px;
 }
 
 /* Styling for the menubar. The min-height reserves the space required for the menubar while it loads. */
@@ -95,27 +128,6 @@ table.searchFilters td a {
     font-weight: normal;
 }
 
-/* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
- * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
- * when this style sheet is loaded.
- */
-em {
-    font-weight: bold;
-}
-
-li {
-    display: list-item;
-}
-
-p {
-    margin: 0px 8px;
-}
-
-h1 {
-    font-size: large;
-    font-weight: bold;
-}
-
 /* ========================================================================================================= */
 /* Table Header Style Sheet for all Tables */
 th {
@@ -127,15 +139,6 @@ th {
         background-color: #DDDDDD;
         padding-left: 5px;
         padding-right: 5px;
-}
-
-/* Table Cell Style Sheet for all td cells */
-td {
-	font-family: 'Verdana', 'Arial', 'Helvetica';
-	color: #000000;
-	height: 23px;
-	font-weight: normal;
-	font-size: 12px;
 }
 
 .tdc {
@@ -232,20 +235,6 @@ table.fisma_crud tr.fisma_checkboxes td {
 div.notice p {
     text-align:left;
     padding: 5px 20px;
-}
-
-/* Used to put an invisible div on top of an existing block element. This prevents click through on
-   the underneath content. */
-.shield {
-    opacity: 0;
-    filter: alpha(opacity=0);
-    z-index: 1;    
-    background-color: red; 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
 }
 
 /* This is the style for highlight the search keyword. */

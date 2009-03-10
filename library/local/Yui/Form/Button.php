@@ -31,7 +31,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-abstract class Yui_Form_Button
+class Yui_Form_Button extends Zend_Form_Element
 {
     protected $_label;
     protected $_id;
@@ -41,6 +41,7 @@ abstract class Yui_Form_Button
      */
     function __construct($label, $id)
     {
+        parent::__construct($id);
         $this->_label = str_replace("\"", "\'", $label);
         $this->_id = $id;
     }
@@ -49,6 +50,4 @@ abstract class Yui_Form_Button
     {
         return $this->render();
     }
-    
-    abstract function render();
 }
