@@ -57,27 +57,29 @@ div#menubar {
     clear: both;
     font-weight: bold;
     min-height: 25px;
-    background-color: gray;
+    background-color: #d3d3d3;
 }
 
 /* The content area is the middle of the page in between the header and the footer */
 div#content {
-    margin-top: 10px;
+	margin: 10px 0px;
 }
 
 /* Sections are used to divide long pages up into separate and distinct content blocks. */
 div.sectionHeader {
+	margin-top: 10px;
     padding: 3px 8px;
-    background-color: lightgray;
-    color: #3e3e3e;
-    border: 1px solid darkgray;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
     border-bottom: none;
     font-weight: bold;
     text-align: left;
 }
 
 div.section {
-    border: 1px solid darkgray;
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
     border-top: none;
     padding: 10px;
     position: relative;
@@ -87,23 +89,50 @@ div.section {
 
 /* Panels are a subdivision of the sections */
 div.panel {
-    border: 1px solid darkgray;
+    border: 1px solid #d3d3d3;
     margin-bottom: 10px;
     padding: 10px;
+}
+
+/* 
+These definitions provide an easy method for creating columns.
+For example, two columns can be arranged like this:
+<div class="column left"></div> 
+<div class="column right"></div>
+<div class="clear"></div>
+*/
+div.column {
+	width: 49%;
+	margin-bottom: 0px;
+}
+
+div.left {
+    float: left;
+}
+
+div.right {
+    float: right;
+}
+
+div.clear {
+    clear: both;
 }
 
 /* Used to display a stacktrace. Traces might be long so the paragraph needs to be able to scroll horizontally. */
 p.stacktrace {
     margin: 10px;
-    border: 1px solid darkgray;
-    white-space: pre;
+    border: 1px solid #d3d3d3;
+    #ffffff-space: pre;
     font-family: monospace;
     overflow: auto;
 }
 
-/* Provide some whitespace at the bottom of the page */
+/* Provide some whitespace at the bottom of the page. */
 div#footer {
-    margin-bottom: 10px;
+    margin: 10px 0px;
+    background-color: #efefef;
+    border: 1px solid #cecece;
+    padding: 3px;
 }
 
 /* The footer links are aligned in the bottom-right corner */
@@ -128,7 +157,28 @@ table.searchFilters td a {
     font-weight: normal;
 }
 
-/* ========================================================================================================= */
+/* This table is used to display key-value pairs, such as on the remediation
+   detail page. */
+table.keyValues td{
+    padding: 2px;
+}
+
+/* This style is used for displaying audit log tables. */
+table.auditLog {
+	width: 100%;
+    background-color: #ffffff;
+}
+
+table.auditLog th {
+    font-weight: bold;
+}
+
+table.auditLog th, table.auditLog td {
+	border: 1px solid #cecece;
+	padding: 3px;
+}
+
+========================================================================================================= */
 /* Table Header Style Sheet for all Tables */
 th {
 	font-family: 'Verdana', 'Arial', 'Helvetica';
@@ -197,7 +247,7 @@ div.form {
 }
 
 div.formValue {
-    background-color: white;
+    background-color: #ffffff;
     border: 1px solid #bebebe;
     padding: 5px;
     color: black;
