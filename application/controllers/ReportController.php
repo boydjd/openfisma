@@ -631,7 +631,7 @@ class ReportController extends PoamBaseController
     public function rafsAction()
     {
         $this->_acl->requirePrivilege('report', 'generate_system_rafs');
-        $sid = $this->_req->getParam('system_id');
+        $sid = $this->_req->getParam('system_id', 0);
         $this->view->assign('system_list', $this->_systemList);
         if (!empty($sid)) {
             $query = $this->_poam->select()->from($this->_poam, array(
@@ -687,6 +687,7 @@ class ReportController extends PoamBaseController
                     $this->message($message, self::M_WARNING);
                 }
             } else {
+                $this->view->sid = $sid;
                 /** @todo english */
                 $this->message('No finding', self::M_WARNING);
                 $this->_forward('report', 'panel', null, array('sub' => 'rafs', 'system_id' => ''));

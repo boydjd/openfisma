@@ -10,11 +10,11 @@
     <td><b>System:</b></td>
     <td>
     <?php echo $this->formSelect('system_id',
-                                 0,
+                                 $this->sid,
                                  null,
                                  $this->system_list);?>
 
-    <input type="submit">
+    <input type="submit" onclick="$('#msgbar').remove()">
     </td>
 </tr>
 <tr>
