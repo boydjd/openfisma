@@ -14,19 +14,19 @@
         
         tabView.addTab( new YAHOO.widget.Tab({
             label: 'Mitigation Strategy',
-            dataSrc: '/remediation/mitigation/id/<?php echo $this->poam['id']; ?>',
+            dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         }));
         
         tabView.addTab( new YAHOO.widget.Tab({
             label: 'Risk Analysis',
-            dataSrc: '/remediation/nist/id/<?php echo $this->poam['id']; ?>',
+            dataSrc: '/remediation/risk-analysis/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         }));
 
         tabView.addTab( new YAHOO.widget.Tab({
-            label: 'Artifacts',
-            dataSrc: '/remediation/evidence/id/<?php echo $this->poam['id']; ?>',
+            label: 'Artifacts (<?php echo count($this->ev_evals); ?>)',
+            dataSrc: '/remediation/artifacts/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         }));
         

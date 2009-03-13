@@ -60,7 +60,6 @@ class ErrorController extends Zend_Controller_Action
             $this->_forward('logout', 'User');
         // if the user has login and meeted an exception.
         } else {
-            $this->_helper->layout->setLayout('error');
             $this->getResponse()->clearBody();
             $content = $errors->exception->getMessage()
                      . '<br>'
@@ -75,7 +74,6 @@ class ErrorController extends Zend_Controller_Action
                 //clear the action stack to prevent additional exceptions would be throwed
                 while($stack->popStack());
             }
-            $this->_helper->actionStack('header', 'panel');            
         }
     }
 

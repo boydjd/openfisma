@@ -7,7 +7,7 @@
 		<?php foreach ($this->summary AS $status=>$statusCount) { ?>
 		<row>
 			<string><?php echo $status; ?></string>
-			<number tooltip='<?php echo $statusCount; ?> findings'><?php echo $statusCount; ?></number>
+			<number tooltip='<?php echo $statusCount; ?> <?php echo $status; ?>'><?php echo $statusCount; ?></number>
 		</row>
 		<?php } ?>
 	</chart_data>
