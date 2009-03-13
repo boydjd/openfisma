@@ -14,22 +14,37 @@
     }
 ?>
 <?php Format_Section::startSection("Search Results"); ?>
-    <!-- @todo english -->
-    <p><img style="cursor:pointer" src="/images/favor.gif" title="add to bookmark"
-            onclick="addBookmark('OpenFisma Finding Result',
-            '<?php echo Config_Fisma::readSysConfig('hostUrl').$this->url; ?>')"/>
+    <div class="toolbar">
+        <script type="text/javascript">
+            function addSearchBookmark() {
+                addBookmark('Search',
+                            '<?php echo Config_Fisma::readSysConfig("hostUrl").$this->url; ?>');
+            }
+            
+            var columnOptionsShowing = false;
+            var columnOptionsPanel;
+            function showColumnOptions() {
+                if (!columnOptionsPanel) {
+                    columnOptionsPanel = newPanel('columnOptionsPanel', '/yada/yada');
+                }
+
+                columnOptionsPanel.show();
+            }
+        </script>
+        <?php 
+            $addBookmarkButton = new Yui_Form_Button_Link('Bookmark This Search', 'addBookmark', '#', '/images/favorite.gif');
+            $addBookmarkButton->onClick('addSearchBookmark');
+            echo $addBookmarkButton;
+            echo new Yui_Form_Button_Link('Export PDF', 'exportPdf', "{$this->attachUrl}/format/pdf", '/images/pdf.gif');
+            echo new Yui_Form_Button_Link('Export Excel', 'exportExcel', "{$this->attachUrl}/format/xls", '/images/xls.gif');
+            $columnOptionsButton = new Yui_Form_Button_Link('Options', 'columnOptions', '#', '/images/options.png');
+            $columnOptionsButton->onClick('showColumnOptions');
+            echo $columnOptionsButton;
+        ?>
         <span>
             <?php echo $this->links['all'];?>
         </span>
-        <span>
-            <a href="<?php echo $this->attachUrl;?>/format/pdf" ><img style="margin-top:2px;" border="0" src="/images/pdf.gif"/></a>
-            <a href="<?php echo $this->attachUrl;?>/format/xls" ><img style="margin-top:2px;" border="0" src="/images/xls.gif"/></a>
-            <a href="#options" class="ph_sticky options" rel="#options" title="Show/Hide Columns">
-                <img style="margin-top:2px;" border="0" src="/images/emblem-system.png"/>
-            </a>
-            <div id="options" style="display:none"></div>
-        </span>
-    </p>
+    </div>
 
     <table width="100%" class="tbframe" id="poam_rst">
         <tr>
@@ -116,9 +131,6 @@
             <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
             <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
             <td align="center" valign='middle' class='tdc'>
-            <a href="<?php echo $baseUrl .'/id/' . $row['id'];?>">
-                <img src="/images/view.gif" border="0">
-            </a></td>
         </tr>
         <?php } ?>
         </tbody>

@@ -273,6 +273,7 @@ $(document).ready(function(){
     $('.ph_sticky').click(function (){jQuery('#cluetip ul').css('display', '');});
     // show the 'ClueTips' which contain columns
     $('.ph_sticky').click(toggleIE6Selects).cluetip({dropShadow: false, arrows: false, cursor: 'pointer', local:true, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);$('#cluetip ul').css('display', '');}});
+
     // force to insert HTML code to the elements created by 'ClueTip'
     jQuery('.tbframe').columnManager({listTargetID:'cluetip', onClass: 'accept', offClass: 'blank', 
                                   hideInList: [$(".tbframe tr th").length], saveState: true, 
@@ -625,3 +626,20 @@ function form_confirm (check_form, action) {
     }
     return false;
 }
+
+function newPanel(name, url) {
+    var panel = new YAHOO.widget.Panel(name, {width:"300px"} ); 
+	panel.setHeader("Panel #2 from Script"); 
+	panel.setBody("This is a dynamically generated Panel."); 
+	panel.render(document.body); 
+	return panel;
+}
+
+function dump(arr) {
+    var text = '';
+    for (i in arr) {
+        text += i + " : " + arr[i] + "\n";
+    }
+    alert(text);
+    //document.write("<pre>"+text+"</pre>");
+} 

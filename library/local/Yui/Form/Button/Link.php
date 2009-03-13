@@ -70,7 +70,7 @@ class Yui_Form_Button_Link extends Yui_Form_Button
         return $render;
     }
     
-    function onClick($code) {
-        $this->_onClick = $code;
+    function onClick($functionName) {
+        $this->_onClick = $functionName;
     }
 }
