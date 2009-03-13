@@ -97,7 +97,7 @@ class NetworkController extends SecurityController
     /**
      *  render the searching boxes and keep the searching criteria
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_networks', 'read');
         
@@ -119,6 +119,7 @@ class NetworkController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
+        $this->render('searchbox');
     }
 
     /**
@@ -127,6 +128,8 @@ class NetworkController extends SecurityController
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_networks', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $value = trim($this->_request->getParam('qv'));
 
@@ -149,6 +152,7 @@ class NetworkController extends SecurityController
         }
         $networkList = $this->_network->fetchAll($query)->toArray();
         $this->view->assign('network_list', $networkList);
+        $this->render('list');
     }
 
     /**
@@ -157,10 +161,12 @@ class NetworkController extends SecurityController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_networks', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $form = $this->getNetworkForm();
         $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v');
+        $v = $this->_request->getParam('v', 'view');
 
         $res = $this->_network->find($id)->toArray();
         $network = $res[0];
@@ -184,6 +190,8 @@ class NetworkController extends SecurityController
     public function createAction()
     {
         $this->_acl->requirePrivilege('admin_networks', 'create');
+        //Display searchbox template
+        $this->searchbox();
 
         // Get the network form
         $form = $this->getNetworkForm();
@@ -196,6 +204,7 @@ class NetworkController extends SecurityController
 
         // Assign view outputs.
         $this->view->form = Form_Manager::prepareForm($form);
+        $this->render('create');
     }
 
 

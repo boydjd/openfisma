@@ -77,7 +77,7 @@ class SourceController extends SecurityController
     /**
      * Render the form for searching the sources.
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_sources', 'read');
         
@@ -99,6 +99,7 @@ class SourceController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
+        $this->render('searchbox');
     }
 
    /**
@@ -107,6 +108,8 @@ class SourceController extends SecurityController
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_sources', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $req = $this->getRequest();
         $value = trim($req->getParam('qv'));
@@ -130,6 +133,7 @@ class SourceController extends SecurityController
         }
         $sourceList = $this->_source->fetchAll($query)->toArray();
         $this->view->assign('source_list', $sourceList);
+        $this->render('list');
     }
 
     /**
@@ -138,10 +142,12 @@ class SourceController extends SecurityController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_sources', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $form = $this->getSourceForm();
         $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v');
+        $v = $this->_request->getParam('v', 'view');
 
         $res = $this->_source->find($id)->toArray();
         $source = $res[0];
@@ -165,6 +171,8 @@ class SourceController extends SecurityController
     public function createAction()
     {
         $this->_acl->requirePrivilege('admin_sources', 'create');
+        //Display searchbox template
+        $this->searchbox();
 
         // Get the source form
         $form = $this->getSourceForm();
@@ -177,6 +185,7 @@ class SourceController extends SecurityController
 
         // Assign view outputs.
         $this->view->form = Form_Manager::prepareForm($form);
+        $this->render('create');
     }
 
 

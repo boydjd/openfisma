@@ -8,11 +8,11 @@
     <?php if($this->acl->isAllowed('admin_products','update')){
               echo'<th>Edit</th>';
           } 
-          if($this->acl->isAllowed('admin_products','read')){
-              echo'<th>View</th>';
-          }
           if($this->acl->isAllowed('admin_products','delete')){
               echo'<th>Del</th>';
+          }
+          if($this->acl->isAllowed('admin_products','read')){
+              echo'<th>View</th>';
           }
     ?>
 </tr>
@@ -26,15 +26,15 @@
         <a href="/panel/product/sub/view/v/edit/id/<?php echo $product['id'];?>" title="edit the Products">
         <img src="/images/edit.png" border="0"></a>
     </td>
-    <?php } if($this->acl->isAllowed('admin_products','read')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/product/sub/view/id/<?php echo $product['id'];?>" title="display the Products">
-        <img src="/images/view.gif" border="0"></a>
-    </td>
     <?php } if($this->acl->isAllowed('admin_products','delete')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/product/sub/delete/id/<?php echo $product['id'];?>" title="delete the Products, then no restore after deleted" onclick="return delok('Product');">
         <img src="/images/del.png" border="0"></a>
+    </td>
+    <?php } if($this->acl->isAllowed('admin_products','read')){ ?>
+    <td class="tdc" align="center">
+        <a href="/panel/product/sub/view/id/<?php echo $product['id'];?>" title="display the Products">
+        <img src="/images/view.gif" border="0"></a>
     </td>
     <?php }?>
 </tr>

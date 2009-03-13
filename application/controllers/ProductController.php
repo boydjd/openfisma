@@ -111,7 +111,7 @@ class ProductController extends SecurityController
     /**
      * List the products from the search, if search none, it list all products
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
         
@@ -133,6 +133,7 @@ class ProductController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
+        $this->render('searchbox');
     }
     
     /**
@@ -141,6 +142,8 @@ class ProductController extends SecurityController
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $value = trim($this->_request->getParam('qv'));
 
@@ -172,10 +175,13 @@ class ProductController extends SecurityController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
+
+        //Display searchbox template
+        $this->searchbox();
         
         $form = $this->getProductForm();
         $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v');
+        $v = $this->_request->getParam('v', 'view');
 
         $res = $this->_product->find($id)->toArray();
         $product = $res[0];
@@ -200,6 +206,9 @@ class ProductController extends SecurityController
     {   
         $this->_acl->requirePrivilege('admin_products', 'create');
 
+        //Display searchbox template
+        $this->searchbox();
+
         // Get the product form
         $form = $this->getProductForm();
         $form->setAction('/panel/product/sub/save');
@@ -211,6 +220,7 @@ class ProductController extends SecurityController
 
         // Assign view outputs.
         $this->view->form = Form_Manager::prepareForm($form);
+        $this->render('create');
     }
 
 

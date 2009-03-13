@@ -306,5 +306,4 @@ tr.alt td {
 /* add bgcolor when mouseover */
 tr.over td { 
     background:#bcd4ec;
-    cursor:pointer; 
 } 

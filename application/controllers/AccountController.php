@@ -125,9 +125,9 @@ class AccountController extends SecurityController
     }
     
     /**
-     * searchboxAction() - Render the form for searching the user accounts.
+     * Render the form for searching the user accounts.
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
 
@@ -149,7 +149,7 @@ class AccountController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
-
+        $this->render('searchbox');
     }
     
     /**
@@ -158,6 +158,8 @@ class AccountController extends SecurityController
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $value = trim($this->_request->getParam('qv'));
         // Set up the query to get the full list of users
@@ -204,6 +206,7 @@ class AccountController extends SecurityController
         // Assign view outputs
         $this->view->assign('roleList', $roleList);
         $this->view->assign('userList', $userList);
+        $this->render('list');
     }
     
     /**
@@ -213,12 +216,15 @@ class AccountController extends SecurityController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
+        //Display searchbox template
+        $this->searchbox();
+
         $form = $this->getAccountForm();
         
         // $id is the user id of the record that should be displayed
         $id = $this->getRequest()->getParam('id');
         // $v is either "view" or "edit" and indicates which view to use
-        $v = $this->getRequest()->getParam('v');
+        $v = $this->getRequest()->getParam('v', 'view');
 
         $user = new User();
         $sys = new System();
@@ -503,6 +509,8 @@ class AccountController extends SecurityController
     public function createAction()
     {
         $this->_acl->requirePrivilege('admin_users', 'create');
+        //Display searchbox template
+        $this->searchbox();
         
         // Get the account form
         $form = $this->getAccountForm();
@@ -524,6 +532,7 @@ class AccountController extends SecurityController
         
         // Assign view outputs.
         $this->view->form = Form_Manager::prepareForm($form);
+        $this->render('create');
     }
     
     /**
@@ -627,7 +636,6 @@ class AccountController extends SecurityController
             $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
             $this->message($message, self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $userId));
-            $this->_forward('create');
         } else {
             $errorString = Form_Manager::getErrors($form);
             // Error message
