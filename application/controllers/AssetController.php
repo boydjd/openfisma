@@ -109,6 +109,10 @@ class AssetController extends PoamBaseController
         if (!empty($port)) {
             $qry->where('address_port = ?', $port);
         }
+        
+        $user = new User();
+        $qry->where('system_id IN (?)', $user->getMySystems($this->_me->id));
+        
         $this->view->assets = $this->_asset->fetchAll($qry)->toArray();
         $this->_helper->layout->setLayout('ajax');
         $this->render('list');
@@ -263,6 +267,10 @@ class AssetController extends PoamBaseController
             if (!empty($params['port'])) {
                 $query->where('a.address_port = ?', $params['port']);
             }
+            
+            $user = new User();
+            $query->where('a.system_id IN (?)', $user->getMySystems($this->_me->id));
+            
             $res = $db->fetchCol($query);
             $total = count($res);
             if (!isset($isExport)) {
