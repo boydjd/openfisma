@@ -668,6 +668,13 @@ class RemediationController extends PoamBaseController
                 $poam['status'] = 'MSA';
                 $poam['mss_ts'] = self::$now->toString('Y-m-d H:i:s');
 
+                //Get next status from evaluations table
+                $rst = $this->_poam->getAdapter()->select()->from('evaluations')
+                              ->where("`group` = 'ACTION'")
+                              ->order('precedence_id ASC')->limit(1);
+                $nextEvaluation = $this->_poam->getAdapter()->fetchRow($rst);
+                $newStatus = $nextEvaluation['nickname'];
+                
                 $msEvaluation = $this->_poam->getActEvaluation($poamId);
                 /** @todo english 
                  * Delete old approval logs while the mitigation strategy was submit after revised.
@@ -684,7 +691,7 @@ class RemediationController extends PoamBaseController
                                           $this->_me->account,
                                           "PoamId: $poamId",
                                           $oldpoam['system_id']);
-                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
+                $logContent = "Update: status\n Original: \"{$oldpoam['status']}\" New: \"{$newStatus}\"";
             //Revise Mitigation Strategy
             } else {
                 $poam['status'] = 'DRAFT';
