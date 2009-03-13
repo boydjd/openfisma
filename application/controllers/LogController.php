@@ -48,7 +48,7 @@ class LogController extends PoamBaseController
     /**
      * Render the form for searching the logs.
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
         
@@ -88,6 +88,7 @@ class LogController extends PoamBaseController
         $this->view->assign('total', $userCount);
         $this->view->assign('postAction', '/panel/log/sub/view/');
         $this->view->assign('links', $pager->getLinks());
+        $this->render('searchbox');
     }
     
     /**
@@ -96,6 +97,8 @@ class LogController extends PoamBaseController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         // Set up the query to get the full list of user logs
         $qry = $this->_log->select()
@@ -117,6 +120,7 @@ class LogController extends PoamBaseController
         $logList = $this->_log->fetchAll($qry);
         // Assign view outputs
         $this->view->assign('logList', $logList);
+        $this->render('view');
     }
 
 }

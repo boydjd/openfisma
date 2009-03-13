@@ -132,6 +132,8 @@ class SystemController extends SecurityController
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_systems', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $value = trim($this->_request->getParam('qv'));
         $db = $this->_system->getAdapter();
@@ -154,12 +156,13 @@ class SystemController extends SecurityController
         }
         $systemList = $db->fetchAll($query);
         $this->view->assign('system_list', $systemList);
+        $this->render('list');
     }
 
     /**
      *  Render the form for searching the systems.
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_systems', 'read');
         
@@ -181,6 +184,7 @@ class SystemController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
+        $this->render('searchbox');
     }
 
     /**
@@ -231,8 +235,12 @@ class SystemController extends SecurityController
                 $this->message("Unable to create system:<br>$errorString", self::M_WARNING);
             }
         }
+        //Display searchbox template
+        $this->searchbox();
+
         $this->view->title = "Create ";
         $this->view->form = $form;
+        $this->render('create');
     }
 
     /**
@@ -289,10 +297,12 @@ class SystemController extends SecurityController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_systems', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $form = $this->getSystemForm();
         $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v');
+        $v = $this->_request->getParam('v', 'view');
 
         $res = $this->_system->find($id)->toArray();
         $system = $res[0];

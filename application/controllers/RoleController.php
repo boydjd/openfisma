@@ -95,7 +95,7 @@ class RoleController extends SecurityController
     /**
      *  render the searching boxes and keep the searching criteria
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_roles', 'read');
         
@@ -117,6 +117,7 @@ class RoleController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
+        $this->render('searchbox');
     }
 
     /**
@@ -125,6 +126,8 @@ class RoleController extends SecurityController
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_roles', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $value = trim($this->_request->getParam('qv'));
 
@@ -147,6 +150,7 @@ class RoleController extends SecurityController
         }
         $roleList = $this->_role->fetchAll($query)->toArray();
         $this->view->assign('role_list', $roleList);
+        $this->render('list');
     }
 
     /**
@@ -155,10 +159,12 @@ class RoleController extends SecurityController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_roles', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $form = $this->getRoleForm();
         $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v');
+        $v = $this->_request->getParam('v', 'view');
 
         $res = $this->_role->find($id)->toArray();
         $role = $res[0];
@@ -182,6 +188,8 @@ class RoleController extends SecurityController
     public function createAction()
     {
         $this->_acl->requirePrivilege('admin_roles', 'create');
+        //Display searchbox template
+        $this->searchbox();
 
         // Get the role form
         $form = $this->getRoleForm();
@@ -194,6 +202,7 @@ class RoleController extends SecurityController
 
         // Assign view outputs.
         $this->view->form = Form_Manager::prepareForm($form);
+        $this->render('create');
     }
 
 
@@ -324,6 +333,8 @@ class RoleController extends SecurityController
     public function rightAction()
     {
         $this->_acl->requirePrivilege('admin_roles', 'definition');
+        //Display searchbox template
+        $this->searchbox();
         
         $req = $this->getRequest();
         $do = $req->getParam('do');
@@ -403,6 +414,7 @@ class RoleController extends SecurityController
             $this->view->assign('screen_list', $screenList);
             $this->view->assign('exist_functions', $existFunctions);
         }
+        $this->render('right');
     }
 
     /**

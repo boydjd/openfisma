@@ -88,7 +88,7 @@ class OrganizationController extends SecurityController
     /**
      *  Render the form for searching the organizations.
      */
-    public function searchboxAction()
+    public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
         
@@ -110,6 +110,7 @@ class OrganizationController extends SecurityController
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
         $this->view->assign('links', $pager->getLinks());
+        $this->render('searchbox');
     }
 
     /**
@@ -118,6 +119,8 @@ class OrganizationController extends SecurityController
     public function listAction()
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $value = trim($this->_request->getParam('qv'));
 
@@ -140,6 +143,7 @@ class OrganizationController extends SecurityController
         }
         $organizationList = $this->_organization->fetchAll($query)->toArray();
         $this->view->assign('organization_list', $organizationList);
+        $this->render('list');
     }
 
     /**
@@ -148,10 +152,12 @@ class OrganizationController extends SecurityController
     public function viewAction()
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
+        //Display searchbox template
+        $this->searchbox();
         
         $form = $this->getOrganizationForm();
         $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v');
+        $v = $this->_request->getParam('v', 'view');
 
         $res = $this->_organization->find($id)->toArray();
         $organization = $res[0];
@@ -220,8 +226,12 @@ class OrganizationController extends SecurityController
                 $this->message("Unable to create organization:<br>$errorString", self::M_WARNING);
             }
         }
+        //Display searchbox template
+        $this->searchbox();
+
         $this->view->title = "Create ";
         $this->view->form = $form;
+        $this->render('create');
     }
 
     /**
