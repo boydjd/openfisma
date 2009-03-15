@@ -262,8 +262,9 @@ class Poam extends Zend_Db_Table
         }
         return $query;
     }
+    
     /** 
-     *  search poam records using varous criteria
+     *  Search poam records using various criteria
      *
      *  @param array $sysIds system id that limit the searching agency range
      *  @param array $fields fields information interested by the caller.
@@ -274,7 +275,7 @@ class Poam extends Zend_Db_Table
      *                   array('count' => 'count(*)') 
      *          the count of the result is array_push into the returned variable;
      *          ontime:  array('status'=>'string',
-                               'ontime'=>'overdue') @see Poam::_parseOnTime()
+     *                         'ontime'=>'overdue') @see Poam::_parseOnTime()
      *
      *  @param array $criteria @see Poam::_parseWhere
      *  @param integer $limit results number.
@@ -290,16 +291,17 @@ class Poam extends Zend_Db_Table
                             $html = true)
     {
         static $extraFields = array(
-                             'asset' => array('as.address_ip' => 'ip',
-                                              'as.address_port' => 'port',
-                                              'as.network_id' => 'network_id',
-                                              'as.prod_id' => 'prod_id',
-                                              'as.name' => 'asset_name',
-                                              'as.system_id' => 'asset_owner'),
-                             'source' => array('s.nickname' =>'source_nickname',
-                                              's.name' => 'source_name'),
-                             'system' => array('sys.nickname' => 'system_nickname',
-                                               'sys.name' => 'system_name'));
+            'asset' => array('as.address_ip' => 'ip',
+                             'as.address_port' => 'port',
+                             'as.network_id' => 'network_id',
+                             'as.prod_id' => 'prod_id',
+                             'as.name' => 'asset_name',
+                             'as.system_id' => 'asset_owner'),
+            'source' => array('s.nickname' =>'source_nickname',
+                              's.name' => 'source_name'),
+            'system' => array('sys.nickname' => 'system_nickname',
+                              'sys.name' => 'system_name')
+        );
         $ret = array();
         $count = 0;
         $countFields = true;
@@ -384,6 +386,7 @@ class Poam extends Zend_Db_Table
                 return $count;
             }
         }
+
         if (! empty($currentPage) && ! empty($perPage)) {
             $query->limitPage($currentPage, $perPage);
         }

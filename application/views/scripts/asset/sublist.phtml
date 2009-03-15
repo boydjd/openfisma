@@ -1,7 +1,7 @@
 <?php Format_Section::startSection("Asset Inventory"); ?>
 
 <form id="assetresult" method="post" action="/asset/delete">
-<table width="98%" align="center" border="0"><tr><td>
+<div class="toolbar">
     <?php
     //<img src="/images/pdf.gif"> , $this->url.'/format/pdf' , 'document.forms.assetresult.submit();' , '/asset/create'
         echo new Yui_Form_Button_Link('Export PDF', 'pdf', "$this->url/format/pdf", '/images/pdf.gif');
@@ -15,10 +15,8 @@
             echo new Yui_Form_Button_Link('Create Asset', 'createAsset', '/asset/create');
         }
     ?>
-        </td><td align="right">
-            <b>Page:&nbsp;</b><?php echo $this->links['all'];?>
-        </td></tr>
-</table>
+    <b>Page:&nbsp;</b><?php echo $this->links['all'];?>
+</div>
 <table width="98%" align="center" border="0" class="tbframe">
     <tr align="center">
         <th nowrap></th>

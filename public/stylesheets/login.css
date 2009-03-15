@@ -12,20 +12,19 @@ body {
 }
 
 /* The white stripe at the top of the screen */
-div#header{
-    height: 30px;
+div#header {
+    height: 58px;
     background-image: url('../images/login_header.jpg');
-    background-position: 0px 30px;
 }
 
 /* Diagonal stripes underneath the header */
-div#stripes{
+div#stripes {
     background-image: url('../images/login_stripes.jpg');
     height: 60px;
 }
 
 /* Messages related to login errors */
-p.message{
+p.message {
     color: #fcb907;
     font-weight: bold;
 }
@@ -33,7 +32,6 @@ p.message{
 /* The system use notification */
 div#systemUseNotification {
     position: relative;
-    top: -10px;
     width:40em;
     margin: 0px auto;
     padding: 10px;

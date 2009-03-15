@@ -61,6 +61,9 @@ class RemediationController extends PoamBaseController
     public function init()
     {
         parent::init();
+        $this->_helper->contextSwitch()
+                      ->addActionContext('search2', 'json')
+                      ->initContext();        
         $attach = $this->_helper->contextSwitch();
         if (!$attach->hasContext('pdf')) {
             $attach->addContext('pdf',
@@ -321,7 +324,7 @@ class RemediationController extends PoamBaseController
         $link = $this->makeUrlParams($this->parseCriteria());
         $url = $pageUrl = '/panel/remediation/sub/searchbox' . $link;
         $attachUrl = '/remediation/search' . $link;
-        unset($link);
+        $this->view->assign('link', $link);
         
         $params = $this->parseCriteria(true);
         if (!empty($params['order']) && !empty($params['sortby'])) {
@@ -1387,5 +1390,162 @@ class RemediationController extends PoamBaseController
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $this->view->assign('logs', $this->_poam->getLogs($id));
+    }
+    
+    function search2Action() {
+        $this->_acl->requirePrivilege('remediation', 'read');
+        $request = $this->getRequest();
+        $pageUrl = '';
+        $attachUrl = '';
+        
+        /* @todo A hack to translate column names in the data table to column names
+         * which can be sorted... this could probably be done in a much better way.
+         */
+        $columnMap = array(
+            'id' => 'p.id',
+            'source_nickname' => 's.nickname',
+            'system_nickname' => 'sys.nickname',
+            'asset_name' => 'as.name',
+            'type' => 'p.type',
+            'status' => 'p.status',
+            'blscr_id' => 'p.blscr_id',
+            'threat_level' => 'p.threat_level', 
+            'cmeasure_effectiveness' => 'p.cmeasure_effectiveness',
+            'action_current_date' => 'p.action_est_date'
+        );
+        
+        $params = $this->parseCriteria(true);
+        if (!empty($params['order']) && !empty($params['sortby'])) {
+            $params['order'] = array('sortby' => $columnMap[$params['sortby']],
+                                     'order' => $params['order']);
+            unset($params['sortby']);
+            $pageUrl .= $this->makeUrlParams($params['order']);
+            $attachUrl .= $this->makeUrlParams($params['order']);
+        }
+        
+        if (!empty($params['status'])) {
+            $now = clone parent::$now;
+            switch ($params['status']) {
+                case 'NEW':    $params['status'] = 'NEW';
+                    break;
+                case 'DRAFT':  $params['status'] = 'DRAFT';
+                    break;
+                case 'EN':     $params['status'] = 'EN';
+                    break;
+                case 'CLOSED': $params['status'] = 'CLOSED';
+                    break;
+                case 'NOT-CLOSED': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                    break;
+                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                     $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);
+                    break;
+                case 'NOUP-60':
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                     $params['modify_ts'] = $now->sub(60, Zend_Date::DAY);
+                    break;
+                case 'NOUP-90':
+                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                     $params['modify_ts'] = $now->sub(90, Zend_Date::DAY);
+                    break;
+                default :
+                     $evaluation = new Evaluation();
+                     $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
+                                                   ->where('nickname = ?', $params['status']);
+                     $ret = $evaluation->fetchRow($query)->toArray();
+                     if (!empty($ret)) {
+                         $precedenceId = $ret['precedence_id'];
+                         $group = $ret['group'];
+                         if ('ACTION' == $group) {
+                             $params['mp']     = $precedenceId;
+                         }
+                         if ('EVIDENCE' == $group) {
+                             $params['ep']     = $precedenceId;
+                         }
+                     }
+                    break;
+            }
+        }
+
+        // Use Zend Lucene to find all POAM ids which match the keyword query
+        if (!empty($params['keywords'])) {
+            // Create the index if it does not exist yet.
+            if (!is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
+                $this->createIndex();
+            }
+            $poamIds = Config_Fisma::searchQuery($params['keywords'], 'finding');
+            if (!empty($poamIds)) {
+                if (!empty($params['ids'])) {
+                    $poamIds = array_intersect($poamIds, explode(',', $params['ids']));
+                } 
+                $params['ids'] = implode(',', $poamIds);
+                $this->view->assign('keywords', $this->getKeywords($params['keywords']));
+            } else {
+                $params['ids'] = -1;
+            }
+        }
+
+        // Use the Zend Lucene search results and combine with the additional parameters
+        // to search the poams table
+        $startIndex = $request->getParam('startIndex');
+        $rowCount = $request->getParam('count');
+        $startPage = ($startIndex / $rowCount) + 1; // Pages are indexed starting at 1
+        $list = $this->_poam->search($this->_me->systems, 
+                                     '*',
+                                     $params, 
+                                     $startPage,
+                                     $rowCount, 
+                                     false);
+                          
+        // JSON requests are handled differently from PDF and XLS requests, so we need
+        // to determine which request type this is.
+        $this->_helper->contextSwitch()->initContext();
+        $format = $this->_helper->contextSwitch()->getCurrentContext();
+
+        // The total number of found rows is appended to the list of poams. 
+        // Pop it off before continuing.
+        $total = array_pop($list);
+        //select poams whether have attachments
+        foreach ($list as &$row) {
+            $query = $this->_poam->getAdapter()->select()
+                                               ->from('evidences', 'id')
+                                               ->where('poam_id = '.$row['id']);
+            $result = $this->_poam->getAdapter()->fetchRow($query);
+            if (!empty($result)) {
+                $row['attachments'] = 'Y';
+            } else {
+                $row['attachments'] = 'N';
+            }
+            if ($format == 'pdf' || $format == 'xls') {
+                $row['finding_data'] = trim(html_entity_decode($row['finding_data']));
+                $row['action_suggested'] = trim(html_entity_decode($row['action_suggested']));
+                $row['action_planned'] = trim(html_entity_decode($row['action_planned']));
+                $row['threat_justification'] = trim(html_entity_decode($row['threat_justification']));
+                $row['threat_source'] = trim(html_entity_decode($row['threat_source']));
+                $row['cmeasure_effectiveness'] = trim(html_entity_decode($row['cmeasure_effectiveness']));
+
+                $user = new User();
+                $ret = $user->find($this->_me->id)->current();
+                $columnPreference = $ret->search_columns_pref;
+                $this->view->columnPreference = $columnPreference;
+            } else {
+                $row['finding_data'] = $this->view->ShowLongText($row['finding_data']);
+                $row['action_suggested'] = $this->view->ShowLongText($row['action_suggested']);
+                $row['action_planned'] = $this->view->ShowLongText($row['action_planned']);
+                $row['threat_justification'] = $this->view->ShowLongText($row['threat_justification']);
+                $row['threat_source'] = $this->view->ShowLongText($row['threat_source']);
+                $row['cmeasure_effectiveness'] = $this->view->ShowLongText($row['cmeasure_effectiveness']);
+            }
+        }
+
+        $tableData = array(
+            'recordsReturned' => count($list),
+            'totalRecords' => $total,
+            'startIndex' => $startIndex,
+            'sort' => null,
+            'dir' => 'asc',
+            'pageSize' => $rowCount,
+            'records' => $list
+        );
+        $this->view->assign('poam', $tableData);
     }
 }

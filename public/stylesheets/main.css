@@ -178,6 +178,11 @@ table.auditLog th, table.auditLog td {
 	padding: 3px;
 }
 
+/* A container for holding a row of buttons */
+div.toolbar {
+    margin-bottom: 10px;
+}
+
 ========================================================================================================= */
 /* Table Header Style Sheet for all Tables */
 th {
@@ -201,9 +206,13 @@ th {
 	font-size: 12px;
 	font-weight: normal;
 	color: #000000;
-        border: 1px solid #BEBEBE;
-        border-collapse: collapse;
-        margin: 0em auto;
+    border: 1px solid #BEBEBE;
+    border-collapse: collapse;
+    margin: 0em auto;
+}
+
+table.tbframe th, table.tbframe td {
+    padding: 2px;
 }
 
 .tipframe {

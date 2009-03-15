@@ -628,6 +628,20 @@ function form_confirm (check_form, action) {
 }
 
 function newPanel(name, url) {
+    // Get panel content
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/remediation/columnOptions', 
+                                    {
+                                        success: function(o) {
+                                            var menuData = YAHOO.lang.JSON.parse(o.responseText);
+                                            var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", { autosubmenudisplay: true });
+                                            YAHOO.util.Dom.addClass(oMenuBar.element, "yuimenubarnav");
+                                            oMenuBar.addItems(menuData.menubar);
+                                            oMenuBar.render('menubar');                                            
+                                        },
+                                        failure: function(o) {alert('Failed to load menubar: '+o.statusText);}
+                                    }, 
+                                    null);
     var panel = new YAHOO.widget.Panel(name, {width:"300px"} ); 
 	panel.setHeader("Panel #2 from Script"); 
 	panel.setBody("This is a dynamically generated Panel."); 

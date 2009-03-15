@@ -1,11 +1,11 @@
 <script language="javascript">
-    $(document).ready(function(){
+   /* $(document).ready(function(){
         <?php
             foreach (explode(',', $this->keywords) as $keyword) {
         ?>
         highlight(document.getElementById('poam_list'), '<?php echo $keyword;?>');            
         <?php } ?>
-    });
+    });*/
 </script>
 <?php
     $baseUrl =  "/panel/remediation/sub/view";
@@ -25,10 +25,55 @@
             var columnOptionsPanel;
             function showColumnOptions() {
                 if (!columnOptionsPanel) {
-                    columnOptionsPanel = newPanel('columnOptionsPanel', '/yada/yada');
+                    var columns = {
+                        id: "POAM Id",
+                        source_nickname: "Source",
+                        system_nickname: "System",
+                        asset_name: "Asset",
+                        type: "Type",
+                        status: "Status",
+                        duetime: "On Time?",
+                        finding_data: "Description",
+                        action_suggested: "Recommendation",
+                        action_planned: "Course of Action",
+                        blscr_id: "Security Control",
+                        threat_level: "Threat Level",
+                        threat_source: "Threat Description",
+                        cmeasure_effectiveness: "Countermeasure Effectiveness",
+                        cmeasure: "Countermeasure Description",
+                        attachments: "Attachmments",
+                        action_current_date: "ECD",
+                    };
+                	for (column in columns) {
+                	    var oCheckButton9 = new YAHOO.widget.Button({  
+                            type: "checkbox",  
+                            label: columns[column],  
+                            container: "columnOptionsPanelBody",
+                            onclick: {
+                                fn: toggleColumn,
+                                obj: column
+                            }
+                        });
+                    columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanel', {width:"300px"} ); 
+                	columnOptionsPanel.setHeader("Column Options");
+                	}
+                	columnOptionsPanel.render(document.body); 
                 }
 
                 columnOptionsPanel.show();
+            }
+            
+            function toggleColumn(event, column) {
+                alert(column);
+                var columnElement = document.getElementById(column);
+                alert(columnElement);
+                if (columnElement.style.visibility == 'visible') {
+                    alert('about to show');
+                    columnElement.style.visibility = 'collapse';
+                } else {
+                    alert('about to hide');
+                    columnElement.style.visibility = 'visible';
+                }
             }
         </script>
         <?php 
@@ -41,99 +86,105 @@
             $columnOptionsButton->onClick('showColumnOptions');
             echo $columnOptionsButton;
         ?>
-        <span>
-            <?php echo $this->links['all'];?>
-        </span>
     </div>
+    <div id="dynamicdata" style="width: 100%;"></div> 
+    <script type="text/javascript">
 
-    <table width="100%" class="tbframe" id="poam_rst">
-        <tr>
-            <th>ID 
-                <a href="<?php echo $this->url;?>/sortby/p.id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Source 
-                <a href="<?php echo $this->url;?>/sortby/s.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/s.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>System 
-                <a href="<?php echo $this->url;?>/sortby/sys.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/sys.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Asset 
-                <a href="<?php echo $this->url;?>/sortby/as.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/as.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Type 
-                <a href="<?php echo $this->url;?>/sortby/p.type/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.type/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Status 
-                <a href="<?php echo $this->url;?>/sortby/p.status/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.status/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>On Time? </th>
-            <th>Description </th>
-            <th>Recommendation </th>
-            <th>Corrective Action </th>
-            <th>Blscr 
-                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Threat Level 
-                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Threat Description </th>
-            <th>Cmeasures Effectiveness 
-                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Cmeasures Description </th>
-            <th>Attachments </th>
-            <th>ECD 
-               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>View</th>
-        </tr>
-        <!-- REMEDIATION ROWS -->
-        <tbody id = "poam_list">
-        <?php
-            foreach($this->list as $row){
-        ?>
-        <tr>
-            <td align='center' class='tdc'><?php echo $row['id'];?></td>
-            <td align='center' class='tdc'>
-            <?php 
-                    if (!isset($row['source_name'])) {
-                        echo 'Missing Source id';
-                    } else {
-                        echo $row['source_name'];
-                    }
-            ?>
-            </td>
-            <td align='center' class='tdc'><?php echo '(' . $row['system_nickname'] . ')' . $row['system_name'];?></td>
-            <td align='center' class='tdc'><?php echo $row['asset_name'];?></td>
-            <td align='center' class='tdc'><?php echo $row['type'];?></td>
-            <td align='center' class='tdc'><?php echo $row['status'];?></td>
-            <td align='center' class='tdc'>
-                <?php echo $this->isOnTime($row['duetime']);?>
-            </td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['finding_data'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_suggested'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_planned'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $row['blscr_id'];?></td>
-            <td align='left' class='tdc'><?php echo $row['threat_level'];?></td>
-            <td align='left' class='tdc'><?php echo $this->showLongText($row['threat_source'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $row['cmeasure_effectiveness'];?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure'], $this->keywords);?></td>
-            <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
-            <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
-            <td align="center" valign='middle' class='tdc'>
-        </tr>
-        <?php } ?>
-        </tbody>
-    </table>
+    // Column definitions
+    var myColumnDefs = [ // sortable:true enables sorting
+        {key:"id", label:"ID", sortable:true},
+        {key:"source_nickname", label:"Source", sortable:true},
+        {key:"system_nickname", label:"System", sortable:true},
+        {key:"asset_name", label:"Asset", sortable:true},
+        {key:"type", label:"Type", sortable:true},
+        {key:"status", label:"Status", sortable:true},
+        {key:"duetime", label:"On Time?"},
+        {key:"finding_data", label:"Description"},
+        //{key:"action_suggested", label:"Recommendation"},
+        //{key:"action_planned", label:"Course of Action"},
+        //{key:"blscr_id", label:"Security Control", sortable:true},
+        //{key:"threat_level", label:"Threat Level", sortable:true},
+        //{key:"threat_source", label:"Threat Description"},
+        //{key:"cmeasure_effectiveness", label:"Countermeasure Effectiveness", sortable:true},
+        //{key:"cmeasure", label:"Countermeasure Description"},
+        //{key:"attachments", label:"Attachments"},
+        //{key:"action_current_date", label:"Expected Completion Date", sortable:true}    
+    ]; // look at formatters
 
+    // Custom parser
+    var stringToDate = function(sData) {
+        var array = sData.split("-");
+        return new Date(array[1] + " " + array[0] + ", " + array[2]);
+    };
+
+    // DataSource instance
+    var myDataSource = new YAHOO.util.DataSource("/remediation/search2/format/json");
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "poam.records",
+        metaFields: {
+            totalRecords: "poam.totalRecords"
+        }
+    };
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+
+        // Build custom request
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        return request;
+    };
+    
+    // A function handle clicks on the rows
+    var myRowClickHandler = function(clickEvent) {
+        var target = clickEvent.target
+        alert(clickEvent.target);
+        dump(clickEvent.target);
+    };
+    
+    // DataTable configuration
+    var myConfigs = {
+        initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/10",
+        dynamicData: true, 
+        sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            { 
+                rowsPerPage:10,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ), 
+        generateRequest : myRequestBuilder
+    };
+
+    // DataTable instance
+    var myDataTable = new YAHOO.widget.DataTable("dynamicdata", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        return oPayload;
+    }
+    
+    // Enable row highlighting and clicking
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    myDataTable.subscribe("rowClickEvent", 
+        function (oArgs) {
+            var elTarget = oArgs.target;
+            var oRecord = this.getRecord(elTarget);
+            document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id");
+        }
+    ); 
+    </script>
+
+    <div id="columnOptionsPanel"><div id="columnOptionsPanelBody" class="bd"></div></div>
 <?php Format_Section::stopSection(); ?>

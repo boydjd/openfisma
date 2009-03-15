@@ -1,4 +1,6 @@
 <chart>
+    <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
+    <link_data url="javascript:pieChartClick(_category_)" target="javascript" />
     <chart_data>
         <row>
             <null />
@@ -24,9 +26,9 @@
                 height='175' />
 
     <chart_type><?php
-        if( array_sum($this->summary) == 0 ) {
+        if (array_sum($this->summary) == 0) {
             echo 'bar';
-        }else{
+        } else {
             echo 'pie';
         }
     ?></chart_type>
