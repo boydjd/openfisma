@@ -1,11 +1,11 @@
 <script language="javascript">
-   /* $(document).ready(function(){
+    $(document).ready(function(){
         <?php
             foreach (explode(',', $this->keywords) as $keyword) {
         ?>
         highlight(document.getElementById('poam_list'), '<?php echo $keyword;?>');            
         <?php } ?>
-    });*/
+    });
 </script>
 <?php
     $baseUrl =  "/panel/remediation/sub/view";
@@ -183,7 +183,13 @@
             var oRecord = this.getRecord(elTarget);
             document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id");
         }
-    ); 
+    );
+    // Enable keyword highlighting when loading data from the data source
+    myDataTable.subscribe("renderEvent", 
+        function (oArgs) {
+            highlight(document.getElementById('dynamicdata'), "<?php echo $this->keywords; ?>");
+        }
+    );
     </script>
 
     <div id="columnOptionsPanel"><div id="columnOptionsPanelBody" class="bd"></div></div>

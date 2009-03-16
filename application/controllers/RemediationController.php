@@ -316,6 +316,7 @@ class RemediationController extends PoamBaseController
     /**
     * Do the real searching work. It's a thin wrapper
     * of poam model's search method.
+    * @yui clean up this method -- lots of stuff that doesn't apply when using the yui data table
     */
     public function searchAction()
     {
