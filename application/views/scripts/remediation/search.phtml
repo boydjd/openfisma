@@ -181,7 +181,8 @@
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id");
+            var keywords = "<?php echo (isset($this->keywords)) ? "/keywords/{$this->keywords}" : ''; ?>";
+            document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
         }
     );
     // Enable keyword highlighting when loading data from the data source

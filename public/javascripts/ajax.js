@@ -515,7 +515,7 @@ function highlight(node,keyword) {
     }
 
     // Iterate into this nodes childNodes
-	if (node.hasChildNodes) {
+	if (node && node.hasChildNodes) {
 		var hi_cn;
 		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
 			highlight(node.childNodes[hi_cn],keyword);
@@ -523,7 +523,7 @@ function highlight(node,keyword) {
 	}
 
 	// And do this node itself
-    if (node.nodeType == 3) { // text node
+    if (node && node.nodeType == 3) { // text node
         tempNodeVal = node.nodeValue.toLowerCase();
         tempWordVal = keyword.toLowerCase();
         if (tempNodeVal.indexOf(tempWordVal) != -1) {
