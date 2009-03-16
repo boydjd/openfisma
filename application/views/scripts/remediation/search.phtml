@@ -13,7 +13,7 @@
         $baseUrl .= '/keywords/' . $this->keywords;
     }
 ?>
-<?php Format_Section::startSection("Search Results"); ?>
+<?php Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
     <div class="toolbar">
         <script type="text/javascript">
             function addSearchBookmark() {
@@ -168,9 +168,17 @@
 
     // DataTable instance
     var myDataTable = new YAHOO.widget.DataTable("dynamicdata", myColumnDefs, myDataSource, myConfigs);
+    
     // Update totalRecords on the fly with value from server
     myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
         oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        if (!searchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            searchResultsHeader.appendChild(searchTotalFound);
+        }
         return oPayload;
     }
     
