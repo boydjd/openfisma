@@ -55,9 +55,9 @@ class UserController extends MessageController
                                 receive any e-mail notifications.";
 
     /**
-     * a cookie name will be used in Jquery Plugin 'Column Manager'
+     * A session cookie that stores a bitmap of which columns the user wants to view on the search page. 
      */
-    const COOKIE_NAME = 'column_poam_rst';
+    const COOKIE_NAME = 'visible_columns';
     
     /**
      * init() - Initialize internal data structures.

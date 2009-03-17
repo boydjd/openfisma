@@ -439,6 +439,41 @@ class RemediationController extends PoamBaseController
         $urlNamespace->lastSearch = $lastSearchUrl;
         $pager = & Pager::factory($this->_paging);
  
+        // Set up the data for the columns in the search results table
+        $columnBitmap = $_COOKIE['column_poam_rst'];
+        $columns = array(
+            'id' => array('label' => 'ID', 'sortable' => true, 'hidden' => $columnBitmap[0] == 0),
+            'source_nickname' => array('label' => 'Source', 'sortable' => true, 'hidden' => $columnBitmap[1] == 0),
+            'system_nickname' => array('label' => 'System', 'sortable' => true, 'hidden' => $columnBitmap[2] == 0),
+            'asset_name' => array('label' => 'Asset', 'sortable' => true, 'hidden' => $columnBitmap[3] == 0),
+            'type' => array('label' => 'Type', 'sortable' => true, 'hidden' => $columnBitmap[4] == 0),
+            'status' => array('label' => 'Status', 'sortable' => true, 'hidden' => $columnBitmap[5] == 0),
+            'duetime' => array('label' => 'On Time?', 'sortable' => false, 'hidden' => $columnBitmap[6] == 0),
+            'finding_data' => array('label' => 'Description', 'sortable' => false, 'hidden' => $columnBitmap[7] == 0),
+            'action_suggested' => array('label' => 'Recommendation', 
+                                        'sortable' => false, 
+                                        'hidden' => $columnBitmap[8] == 0),
+            'action_planned' => array('label' => 'Course of Action', 
+                                      'sortable' => false, 
+                                      'hidden' => $columnBitmap[9] == 0),
+            'blscr_id' => array('label' => 'Security Control', 'sortable' => true, 'hidden' => $columnBitmap[10] == 0),
+            'threat_level' => array('label' => 'Threat Level', 'sortable' => true, 'hidden' => $columnBitmap[11] == 0),
+            'threat_source' => array('label' => 'Threat Description', 
+                                     'sortable' => false, 
+                                     'hidden' => $columnBitmap[12] == 0),
+            'cmeasure_effectiveness' => array('label' => 'Countermeasure Effectiveness', 
+                                              'sortable' => true, 
+                                              'hidden' => $columnBitmap[13] == 0),
+            'cmeasure' => array('label' => 'Countermeasure Description', 
+                                'sortable' => false, 
+                                'hidden' => $columnBitmap[14] == 0),
+            'attachments' => array('label' => 'Attachments', 'sortable' => false, 'hidden' => $columnBitmap[15] == 0),
+            'action_current_date' => array('label' => 'Expected Completion Date', 
+                                           'sortable' => true, 
+                                           'hidden' => $columnBitmap[16] == 0)
+        );
+        $this->view->assign('columns', $columns);
+ 
         $this->view->assign('list', $list);
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('source_list', $this->_sourceList);
