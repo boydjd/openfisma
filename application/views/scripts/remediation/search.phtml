@@ -12,14 +12,8 @@
     </div>
     <div id="dynamicdata"></div> 
     <div id="columnOptionsPanel">
-        <div class="hd">
-            Show/Hide Columns
-        </div>
         <div id="columnOptionsPanelBody" class="bd">
             <!-- YUI fills in the body -->
-        </div>
-        <div class="ft">
-            Tip: Click "Save" to make this your default column preference.
         </div>
     </div>
 <?php Format_Section::stopSection(); ?>
@@ -131,6 +125,13 @@ var columnOptionsPanel;
 /* A function which displays the buttons for showing/hiding columns in the search table */
 function showColumnOptions() {
     if (!columnOptionsPanel) {
+        // Setup the panel
+        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanel', {width:"350px"} ); 
+        columnOptionsPanel.setHeader('Show/Hide Columns');
+        columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
+    	columnOptionsPanel.center();
+        
+        // Add the buttons to the panel
     	for (column in myColumnDefs) {
     	    var oCheckButton9 = new YAHOO.widget.Button({  
                 type: "checkbox",  
@@ -143,8 +144,16 @@ function showColumnOptions() {
                 }
             });
     	}
-        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanel', {width:"300px"} ); 
-    	columnOptionsPanel.center();
+    	var saveButton = new YAHOO.widget.Button({
+    	    type: "button",
+    	    label: "Save",
+    	    container: "columnOptionsPanelBody",
+    	    onclick: {
+                fn: saveColumnPreference
+            }
+        });
+        
+        // Render panel
     	columnOptionsPanel.render(document.body); 
     }
     columnOptionsPanel.show();
@@ -162,8 +171,27 @@ function toggleColumn(event, columnKey) {
 }
 
 /* Save the current displayed columns as the default for this user. The default is stored in a session cookie and
-   also backed up in a column in the users table. */
-function saveColumnPreference(event) {
-    alert('testing');
+ * also backed up in a column in the users table.
+ *  - obj is a required parameter for a handler, but this handler does not use it.
+ */
+function saveColumnPreference(event, obj) {
+    // The column preference is stored as a bitmap: 1=>visible, 0=>hidden.
+    var prefBitmap = 0;
+    var columnKeys = myDataTable.getColumnSet().keys;
+    
+    for (column in columnKeys) {
+        if (!columnKeys[column].hidden) {
+            prefBitmap |= 1 << column;
+        }
+    }
+
+    // Now save the bitmask by calling the appropriate controller action. The controller doesn't return any data
+    // for this action, so there is no check for the return value.
+    YAHOO.util.Cookie.set("search_columns_pref", prefBitmap, {path: "/"});
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/user/set-column-preference', 
+                                    null,
+                                    null); 
+    alert('Your preference has been saved. These columns will be visible whenever you log in.');
 }
 </script>

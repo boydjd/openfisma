@@ -4,8 +4,10 @@ YAHOO.util.Event.onDOMReady(function () {
 /** @todo mhaase: allow access to the logger from the interface when in development mode, and could logger errors go
  * to a logfile in production mode? 
  */
-// Uncomment the next line when debugging YUI components
-//    var myLogReader = new YAHOO.widget.LogReader('logger');
+// Uncomment the next section when debugging YUI components
+//var myLogReader = new YAHOO.widget.LogReader();
+//myLogReader.hideCategory('info');
+
     YAHOO.util.Connect.asyncRequest('GET', 
                                     '/menu/main/format/json', 
                                     {
