@@ -10,11 +10,11 @@
  * @copyright   (c) 2008 Endeavor Systems, Inc. (http://www.endeavorsystems.com)
  * @license     http://www.openfisma.org/mw/index.php?title=License
  */
-
+/*
 a.action {
     text-decoration : none;
     line-height : 2em;
-}
+}*/
 
 /* Button links
  *
@@ -22,7 +22,7 @@ a.action {
  * when you are creating links that are not in-line with a body of text. Typically
  * these should appear in header or footer areas, and not mid-paragraph.
  */
-a.button {
+/*a.button {
     display: block;
     float: left;
     text-decoration: none;
@@ -37,12 +37,12 @@ a.button {
 
 a.button:active {
     border-style: inset;
-}
+}*/
 
 /* If you have multiple a.buttons next to each other, put them into a
  * div.button_container and they will float next to each other.
  */
-div.button_container {
+/*div.button_container {
     /* empty for now, see pseudo class below */
 }
 
@@ -50,7 +50,7 @@ div.button_container {
  * div.button_container. This forces the button_container to expand vertically
  * to enclose all floated divs inside of it.
  */
-div.button_container:after {
+/*div.button_container:after {
     content: ".";
     display: block;
     height: 0;
@@ -61,7 +61,7 @@ div.button_container:after {
 /* This is hack to make the div.button_container auto clear in IE.
  * http://positioniseverything.net/easyclearing.html
  */
-* html div.button_container {height: 1%;}
+/* html div.button_container {height: 1%;}
 
 div#menu ul {
     margin:0;
@@ -89,7 +89,7 @@ ul.stitle li{
 }
 
 /* Start Division Seperator Property for OpenFISMA */
-div.barleft p {
+/*div.barleft p {
     background-color: #dfe5ed;
     color: #42617B;
     height: 24px;
@@ -110,9 +110,9 @@ div.barright {
     background-repeat: no-repeat;
     background-position: right;
     padding-right: 12px;
-}
+}*/
 /* End Division Seperator Properties for OpenFISMA */
-
+/*
 #bottom table{
     font-family: 'Verdana','Arial','Helvetica';
     color: #000000;
@@ -214,7 +214,7 @@ label.error {
 .notice h1 {
     text-align:left;
     padding: 5px 5px ;
-	color: #44637A;		/* Dark Blue */
+	color: #44637A;	
     background-color: #DDDDDD;
 	line-height: 23px;
 	font-weight: bold;
@@ -227,18 +227,20 @@ label.error {
     width:70%;
 }
 /* the style of columns in cluetips */
+/*
 .options_ul li{
     list-style-type: none;
     list-style-image: none;
     list-style-position: outside;
 }
 /* the style of the column which is checked */
-.accept {
+/*.accept {
     background: url("/images/check_point.png") no-repeat scroll 0 50%;
     padding: 1px 0 2px 20px;
 }
 /* the style of the column which is unchecked */
-.blank {
+/*.blank {
     background: url("/images/blank_point.png") no-repeat scroll 0 50%; 
     padding: 1px 0 2px 20px;
 }
+*/

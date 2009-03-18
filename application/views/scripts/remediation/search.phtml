@@ -124,13 +124,7 @@ var columnOptionsShowing = false;
 var columnOptionsPanel;
 /* A function which displays the buttons for showing/hiding columns in the search table */
 function showColumnOptions() {
-    if (!columnOptionsPanel) {
-        // Setup the panel
-        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanel', {width:"350px"} ); 
-        columnOptionsPanel.setHeader('Show/Hide Columns');
-        columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
-    	columnOptionsPanel.center();
-        
+    if (!columnOptionsPanel) {        
         // Add the buttons to the panel
     	for (column in myColumnDefs) {
     	    var oCheckButton9 = new YAHOO.widget.Button({  
@@ -153,7 +147,11 @@ function showColumnOptions() {
             }
         });
         
-        // Render panel
+        // Setup the panel
+        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanel', {width:"300px"} ); 
+        columnOptionsPanel.setHeader('Show/Hide Columns');
+        columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
+        columnOptionsPanel.center();
     	columnOptionsPanel.render(document.body); 
     }
     columnOptionsPanel.show();

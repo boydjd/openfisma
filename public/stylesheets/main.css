@@ -169,8 +169,13 @@ table.searchFilters td a {
 
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
-table.keyValues td{
+table.keyValues td {
     padding: 2px;
+}
+
+/* The first column in a keyValues table is always bold text */
+table.keyValues td:first-child {
+    font-weight: bold;
 }
 
 /* This style is used for displaying audit log tables. */
@@ -193,6 +198,16 @@ div.toolbar {
     margin-bottom: 10px;
 }
 
+/* This style is used to create a field which is editable on the finding detail page. It displays an edit icon (a
+ * pencil) and the element which uses this class should also set a target attribute which contains the id of the
+ * element which needs to become editable.
+ */
+.editable {
+    background: url(/images/button_modify.png) no-repeat center right;
+    padding-right: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
 /*========================================================================================================= */
 /* Table Header Style Sheet for all Tables */
 th {

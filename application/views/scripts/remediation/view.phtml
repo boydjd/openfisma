@@ -3,20 +3,12 @@
 <script type="text/javascript">
     YAHOO.util.Event.onDOMReady(function () {
         var tabView = new YAHOO.widget.TabView();
-
-        // Highlight the keyword arguments when loading a new tab     
-        /*tabView.subscribe("activeTabChange", 
-            function (oArgs) {
-                setTimeout('highlight(document.getElementById("tabContainer"), "<?php echo $this->keywords; ?>");',
-                           1000);
-            }
-        );*/
         
-        // When a tab is loaded for the first time, this function is called to highlight the search
-        // keywords which are contained in it.
-        var highlightTabFunction = function(args) {
+        // When a tab is loaded for the first time, this function is called to set up highlighting and editable fields
+        var prepareTab = function(args) {
             highlight(document.getElementById("tabContainer"), 
-                      "<?php echo $this->keywords; ?>");            
+                      "<?php echo $this->keywords; ?>");
+            setupEditFields();        
         }
         
         // Finding tab
@@ -25,7 +17,7 @@
             dataSrc: '/remediation/finding/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         });
-        findingTab.subscribe("dataLoadedChange", highlightTabFunction);
+        findingTab.subscribe("dataLoadedChange", prepareTab);
         tabView.addTab(findingTab);
         
         var mitigationTab = new YAHOO.widget.Tab({
@@ -33,7 +25,7 @@
             dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         });
-        mitigationTab.subscribe("dataLoadedChange", highlightTabFunction);        
+        mitigationTab.subscribe("dataLoadedChange", prepareTab);        
         tabView.addTab(mitigationTab);
         
         var riskTab = new YAHOO.widget.Tab({
@@ -41,7 +33,7 @@
             dataSrc: '/remediation/risk-analysis/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         });
-        riskTab.subscribe("dataLoadedChange", highlightTabFunction);        
+        riskTab.subscribe("dataLoadedChange", prepareTab);                
         tabView.addTab(riskTab);
 
         var artifactsTab = new YAHOO.widget.Tab({
@@ -49,7 +41,7 @@
             dataSrc: '/remediation/artifacts/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         });
-        artifactsTab.subscribe("dataLoadedChange", highlightTabFunction);        
+        artifactsTab.subscribe("dataLoadedChange", prepareTab);                
         tabView.addTab(artifactsTab);
             
         var auditTab = new YAHOO.widget.Tab({
@@ -57,7 +49,7 @@
             dataSrc: '/remediation/audit-log/id/<?php echo $this->poam['id']; ?>',
             cacheData: true
         });
-        auditTab.subscribe("dataLoadedChange", highlightTabFunction);        
+        auditTab.subscribe("dataLoadedChange", prepareTab);        
         tabView.addTab(auditTab);
      
         tabView.appendTo('tabContainer');

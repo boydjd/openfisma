@@ -1,3 +1,4 @@
+/** @todo start migrating functionality out of this file. eventually this file needs to be removed */
 String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
 }
@@ -209,47 +210,6 @@ $(document).ready(function(){
         }
         return false;
     });
-
-    $(".editable").click(function(){
-        removeHighlight(document.getElementById('poam_detail'));
-        var t_name = $(this).attr('target');
-        $(this).removeClass('editable');
-        $(this).removeAttr('target');
-        if( t_name ) {
-            var target = $('#'+t_name);
-            var name = target.attr('name');
-            var type = target.attr('type');
-            var url = target.attr('href');
-            var eclass = target.attr('class');
-            var cur_val = target.text();
-            var cur_html = target.html();
-            var cur_span = target;
-            if(type == 'text'){
-                cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />');
-                $('input.date').datepicker({
-                        dateFormat:'yymmdd',
-                        showOn: 'both',
-                        onClose: showJustification,
-                        buttonImageOnly: true,
-                        buttonImage: '/images/calendar.gif',
-                        buttonText: 'Calendar'});
-            }else if( type == 'textarea' ){
-                var row = target.attr('rows');
-                var col = target.attr('cols');
-                cur_span.replaceWith( '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">'+
-                        cur_html+ '</textarea>');
-                tinyMCE.execCommand("mceAddControl", true, name);
-            }else{
-                $.get(url,{value:cur_val.trim()},
-                function(data){
-                    if(type == 'select'){
-                        cur_span.replaceWith('<select name="'+name+'">'+data+'</select>');
-                    }
-                });
-            }
-        }
-    });
-    shortcut(0);
 
     // show the 'ClueTips' which contain help info.
     $('a#help_tips').click(toggleIE6Selects).cluetip({width: 280, dropShadow: false, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);}});
