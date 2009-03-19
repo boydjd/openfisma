@@ -642,7 +642,7 @@ class Poam extends Zend_Db_Table
                           'el.id=pvv.eval_id AND el.group = \'EVIDENCE\'',
                           array('eval_name' => 'el.name', 'el.group',
                                 'level' => 'el.precedence_id'))
-                      ->order(array('ev.poam_id' , 'ev.id' , 'level ASC'));
+                      ->order(array('ev.poam_id' , 'ev.id desc' , 'level asc'));
         if (! empty($decision)) {
             assert(in_array($decision, array('APPROVED' , 'DENIED')));
             $query->where('pvv.decision =?', $decision);

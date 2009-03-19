@@ -311,14 +311,13 @@ function upload_evidence(){
     if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
         return false;
     }
-    //$("#up_evidence").blur();
     var dw = $(document).width();
     var dh = $(document).height();
     $('<div id="full"></div>')
                 .width(dw).height(dh)
                 .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
                 .appendTo("body").fadeTo(1, 0.4);
-    var content = $("#editorDIV").html();
+    var content = $("#uploadEvidencePanel").html();
     $('<div title="Upload Evidence"></div>').append(content).
         dialog({position:'middle', width: 540, height: 200, resizable: true,modal:true,
             close:function(){

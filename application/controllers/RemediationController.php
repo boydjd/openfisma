@@ -1248,28 +1248,9 @@ class RemediationController extends PoamBaseController
             $mss[] = $msEvallist;
         }
 
-        $evEvaluation = $this->_poam->getEvEvaluation($id);
-        // currently we don't need to support the comments for est_date change
-        //$act_evaluation = $this->_poam->getActEvaluation($id);
-        $evs = array();
-        foreach ($evEvaluation as $evEval) {
-            $evid = & $evEval['id'];
-            if (!isset($evs[$evid]['ev'])) {
-                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
-            }
-            $evs[$evid]['acl'] = $this->_acl;
-            $evs[$evid]['eval'][$evEval['eval_name']] =
-                array_slice($evEval, 5);
-        }
-
         $this->view->assign('poam', $poamDetail);
-        $this->view->assign('logs', $this->_poam->getLogs($id));
-        $this->view->assign('ev_evals', $evs);
         $this->view->assign('ms_evals', $mss);
         $this->view->assign('ms_evaluation', $msEvaluation);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('keywords', $req->getParam('keywords'));
     }
 
     /**
@@ -1367,56 +1348,10 @@ class RemediationController extends PoamBaseController
         $poamDetail = $this->_poam->getDetail($id);
         if (empty($poamDetail)) {
             throw new Exception_General("POAM($id) is not found,
-                Make sure a valid ID is inputed");
-        }
-
-        if (!empty($poamDetail['action_est_date'])
-            && $poamDetail['action_est_date'] != $poamDetail['action_current_date']) {
-            $query = $this->_poam->getAdapter()->select()
-                          ->from(array('al'=>'audit_logs'), 'date_format(timestamp, "%Y-%m-%d") as time')
-                          ->join(array('u'=>'users'), 'al.user_id = u.id', 'u.account')
-                          ->where('al.poam_id = ?', $id)
-                          ->where('al.description like "%action_current_date%"')
-                          ->order('al.id DESC');
-            $justification = $this->_poam->getAdapter()->fetchRow($query);
-            $this->view->assign('justification', $justification);
-        }
-        
-        $msEvaluation = $this->_poam->getActEvaluation($id);
-        $evalModel = new Evaluation();
-        $msEvallist = $evalModel->getEvalList('ACTION');
-        $mss = array();
-        if (!empty($msEvaluation)) {
-            $i = 0;
-            foreach ($msEvaluation as $k=>$row) {
-                if ($k != 0 && !($row['precedence_id'] > $msEvaluation[$k-1]['precedence_id'])) {
-                    $i++;
-                }
-                $mss[$i][] = $row;
-                if ($k == count($msEvaluation)-1) {
-                    if ($row['decision'] == 'DENIED') {
-                        //If denied, it should start a new round of evaluation 
-                        //however, none of this happens in DRAFT
-                        if ($poamDetail['status']!= 'DRAFT') {
-                            $mss[$i+1] = $msEvallist;
-                        }
-                    } else {
-                        // Get the list of remaining evaluation 
-                        $remainingEval = array_slice($msEvallist, $row['precedence_id']+1);
-                        // To keep the evaluation in the same round,re-organization the index
-                        foreach ($remainingEval as $v) {
-                            $mss[$i][] = $v;
-                        }
-                    }
-                }
-            }
-        } else {
-            $mss[] = $msEvallist;
+                Make sure a valid ID is used");
         }
 
         $evEvaluation = $this->_poam->getEvEvaluation($id);
-        // currently we don't need to support the comments for est_date change
-        //$act_evaluation = $this->_poam->getActEvaluation($id);
         $evs = array();
         foreach ($evEvaluation as $evEval) {
             $evid = & $evEval['id'];
@@ -1428,14 +1363,9 @@ class RemediationController extends PoamBaseController
                 array_slice($evEval, 5);
         }
 
+        $this->view->assign('id', $id);
         $this->view->assign('poam', $poamDetail);
-        $this->view->assign('logs', $this->_poam->getLogs($id));
         $this->view->assign('ev_evals', $evs);
-        $this->view->assign('ms_evals', $mss);
-        $this->view->assign('ms_evaluation', $msEvaluation);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('keywords', $req->getParam('keywords'));
     }
         
     /**

@@ -153,12 +153,12 @@ if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']) {
     if (0 != $complete || !$this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) {
         $submitMitigationButton->readOnly = true;
     }
-    echo "<div>$submitMitigationButton</div>";
-    
-    if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_revise')) {
-        echo "<a class=\"button\" href=\"$postAction/is_msa/0\" onclick=\"return delok();\">Revise Mitigation Strategy</a><br><br>";
-    }  
+    echo "<div class='toolbar'>$submitMitigationButton</div>";
 }
+
+if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_revise')) {
+    echo "<a class=\"button\" href=\"$postAction/is_msa/0\" onclick=\"return delok();\">Revise Mitigation Strategy</a><br><br>";
+}  
 
 if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empty($this->ms_evaluation))) {
     $i = 0;
@@ -180,21 +180,20 @@ if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empt
                     echo '<input type="hidden" name="comment" value="" />';
                     echo '<input type="hidden" name="decision" value="APPROVED" />';
                     echo '<input type="submit" value="APPROVE" 
-                        onclick="return form_confirm(document.poam_detail,\'approve ' . $row['name'] . '\');"/>';
+                        onclick="return form_confirm(document.poam_detail,\'approve ' . $row['name'] . '\');"/>&nbsp;';
                     echo '<input type="button" value="DENY" onclick="ms_comment(document.ms_approval_' . $k.');" />';
                 } else {
                     echo 'PENDING...';
                 }
                 $editable = false;
             } else {
-                echo $value;
                 if ($value == 'APPROVED') {
-                    echo "<span class=\"approved\">({$row['username']} on {$row['date']})</span>";
+                    echo "<span class=\"approved\">$value ({$row['username']} on {$row['date']})</span>";
                 } else if ($value == 'DENIED') {
                     $ret = $comment->fetchRow('poam_evaluation_id = ' . $row['pev_id']);
-                    echo "<span class=\"denied\">";
+                    echo "<span class=\"denied\">$value";
                     if (!empty($ret)) {
-                        echo "<b>\"{$ret->content}\"</b>";
+                        echo " &mdash; \"{$ret->content}\" ";
                     }
                     echo "({$row['username']} on {$row['date']})</span>";
                 }

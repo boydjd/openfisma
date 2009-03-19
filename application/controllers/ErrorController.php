@@ -56,7 +56,7 @@ class ErrorController extends Zend_Controller_Action
         // if the user want to access an empty path.  
         } elseif (!Zend_Auth::getInstance()->hasIdentity()) {
             ///@todo English
-            $this->view->assign('error', 'Access denied! Please login firstly.');
+            $this->view->assign('error', 'Access denied! Please login first.');
             $this->_forward('logout', 'User');
         // if the user has login and meeted an exception.
         } else {

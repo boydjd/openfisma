@@ -4,37 +4,31 @@ if (count($this->ev_evals) == 0) {
     print "<p><i>There are no artifacts for this finding.</i></p>";
 }
 foreach ($this->ev_evals as $e) {
-    $evidence = $e->ev;
-    $evaluation = $e->eval;
+    $evidence = $e['ev'];
+    $evaluation = $e['eval'];
     $comment = new Comments();
 ?>
-    <form action="/remediation/evidence/id/<?php echo $evidence['id'];?>" method="post"
-     name='eval_ev<?php echo $evidence['id'];?>'>
-        <table class="keyValues">
-            <tr>
-                <td colspan="2">
-                    Evidence Submitted by 
-                    <?php echo $evidence['submitted_by'];?> on <?php echo $evidence['submit_ts'];?>
-                </td>
-            </tr>
-            <tr> 
-                <td colspan=2>
-                    <b>Evidence:&nbsp;</b>
-                    <?php 
-                        $url = $evidence['submission'];
-                        $ev_path[] = $evidence['submission'];
-                        $ev_path[] ='evidence' . '/' . $evidence['poam_id']. '/'. $evidence['submission'];
-                        $link = '%filename%';
-                        foreach( $ev_path as $path ) {
-                            if(file_exists($path) ) {
-                                $url = str_replace('\\', '/',$path);
-                                $link = "<a href='/{$url}' target='_blank'>%filename%</a>";
-                            }
-                        }
-                        echo str_replace('%filename%',basename($url),$link);
-                    ?>
-                </td>
-            </tr>
+    <form action="/remediation/evidence/id/<?php echo $evidence['id'];?>" 
+          method="post"
+          name='eval_ev<?php echo $evidence['id'];?>'>
+        <div class="approvalHeader">
+            <b>File: </b>
+            <?php 
+                $url = $evidence['submission'];
+                $ev_path[] = $evidence['submission'];
+                $ev_path[] ='evidence' . '/' . $evidence['poam_id']. '/'. $evidence['submission'];
+                $link = '%filename%';
+                foreach( $ev_path as $path ) {
+                    if(file_exists($path) ) {
+                        $url = str_replace('\\', '/',$path);
+                        $link = "<a href='/{$url}' target='_blank'>%filename%</a>";
+                    }
+                }
+                echo str_replace('%filename%', basename($url), $link);
+            ?>
+            (submitted by <?php echo $evidence['submitted_by']; ?> on <?php echo $evidence['submit_ts']; ?>)
+        </div>
+        <div class="approval">
             <?php 
             $value = 'NONE';
             $editable = true;
@@ -49,52 +43,69 @@ foreach ($this->ev_evals as $e) {
                     $value = &$evaluation[$v['name']]['decision'];
                     $username = isset($evaluation[$name]['username'])?$evaluation[$name]['username']:'...';
                     $date = isset($evaluation[$name]['date'])?$evaluation[$name]['date']:'';
-                }else{
-                    if($value == 'DENIED' ){
+                } else {
+                    if($value == 'DENIED' ) {
                         $value = 'EXCLUDED';
-                    }else if($value == 'APPROVED') {
+                    } elseif ($value == 'APPROVED') {
                         $value = 'NONE';
                     }
                 }
-                echo  "<tr><td><b>$name:&nbsp;</b>";
+                echo  "<p><b>$name:&nbsp;</b>";
                 if($value=='NONE' && $editable){
-                    if($e->acl->isAllowed('remediation',$v['function'])){
+                    if($e['acl']->isAllowed('remediation',$v['function'])) {
                         echo '<input type="hidden" name="evaluation" value="'.$v['id'].'"/>';
                         echo '<input type="hidden" name="precedence" value="'.$v['precedence_id'].'"/>';
                         echo '<input type="hidden" name="topic" value="" />';
                         echo '<input type="hidden" name="reject" value="" />';
                         echo '<input type="hidden" name="comment" value="" />';
                         echo '<input type="hidden" name="decision" value="APPROVE" />';
-                        echo '<input type="submit" value="APPROVE" />';
+                        echo '<input type="submit" value="APPROVE" />&nbsp;';
                         echo '<input type="button" value="DENY" '.
                             'onclick="ev_deny(document.eval_ev'.$evidence['id'].');" />';
-                    }else{
-                        echo "$value </td>";
+                    } else {
+                        echo "$value";
                     }
                     $editable=false;
-                }else{
-                    echo "$value </td>";
-                    if( $value == 'APPROVED' ) {
-                        echo "<td> -- <i> by $username ON $date </i></td>";
-                    }else if($value == 'DENIED') {
+                } else {
+                    if ($value == 'APPROVED') {
+                        echo "<span class='approved'>$value ($username on $date)</span>";
+                    } elseif ($value == 'DENIED') {
                         $row = $comment->fetchRow('poam_evaluation_id = '.$evaluation[$name]['eval_id']);
-                        echo "<td>";
+                        echo "<span class='denied'>$value";
                         if( !empty($row) ) {
-                            echo "<b>{$row->content}</b>";
+                            echo " &mdash; $row->content ";
                         }
-                        echo " -- <i> by $username ON $date </i></td>";
+                        echo "($username on $date)</span>";
+                    } else {
+                        echo "$value";
                     }
                 }
-                echo "</tr>";
+                echo "</p>";
             }
             ?>
-        </table>
+        </div>
     </form>
-<?php } ?>
-
 <?php
-if('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation','update_evidence') ){
-    echo 
-    '<button id="up_evidence" onclick ="upload_evidence();">Upload Evidence</button>';
 }
+
+$uploadEvidenceButton = new Yui_Form_Button('Upload Evidence', 'uploadEvidenceButton');
+$uploadEvidenceButton->onClick('upload_evidence');
+if('EN' != $this->poam['status'] || !$this->acl->isAllowed('remediation', 'update_evidence')) {
+    $uploadEvidenceButton->readOnly = true;
+}
+echo "<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+      <div class='toolbar'>$uploadEvidenceButton</div>";
 ?>
+
+<div id="uploadEvidencePanel" style="display: none;">
+    <form enctype="multipart/form-data" method="POST"
+         action="/panel/remediation/sub/upload_evidence/id/<?php echo $this->id;?>">
+         <b>Select File:&nbsp;</b> <input type='file' name='evidence' size='40' value=''>
+         <input type="submit" id="#upload_ev" value="Upload">
+    </form>
+    <ul style="margin-top:2em;list-style-type:disc">
+        <li>Please submit <b>all evidence</b> for the finding in a <b>single package</b> (eg, zip file)</li>
+        <li>Evidence submissions must be <b>under 10 megabytes</b> in size</li>
+        <li>Please ensure no <b>Personally Identifiable Information</b> is included (eg, SSN, DOB)</li>
+    </ul>
+</div>

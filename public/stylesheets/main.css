@@ -213,10 +213,16 @@ div.toolbar {
 
 /* These styles are used on the remediation detail page to indicate approval status and comments */
 div.approval {
-    margin-top: 10px;
     background-color: #efefef;
     border: 1px solid #cecece;
     padding: 3px;
+    margin-bottom: 10px;
+}
+
+div.approvalHeader {
+    background-color: #cecece;
+    border: 1px solid #cecece;
+    padding: 3px 8px;
 }
 
 div.approval b {
@@ -226,13 +232,11 @@ div.approval b {
 div.approval span.approved {
     background-color: lightGreen;
     padding: 3px;
-    margin-left: 10px;
 }
 
 div.approval span.denied {
     background-color: #ffcccc;
     padding: 3px;
-    margin-left: 10px;
 }
 
 /* This is the standard style for the basic CRUD forms such as users, systems,
