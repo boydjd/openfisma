@@ -35,9 +35,13 @@ class Yui_Form_Button extends Zend_Form_Element
 {
     protected $_label;
     protected $_id;
+    private $_onClick;    
     
     /**
-     * Constructor
+     * Construct a button
+     * 
+     * @param string $label Displayed to the user
+     * @param string $id Used to represent the element uniquely in the DOM       
      */
     function __construct($label, $id)
     {
@@ -46,8 +50,39 @@ class Yui_Form_Button extends Zend_Form_Element
         $this->_id = $id;
     }
 
+    /**
+     * When this element is expressed as a string, it renders itself as a convenience. This allows the element to
+     * be used as a parameter to echo, print, or string interpolation expressions.
+     */              
     function __toString() 
     {
         return $this->render();
     }
+    
+    /**
+     * A default implementation of render() that creates a standard button. This is overridden in subclasses to 
+     * implement more unique button types.
+     */              
+    function render() 
+    {
+        $disabled = $this->readOnly ? 'disabled' : '';
+        $onClick = (!empty($this->_onClick)) ? ",({onclick: \"$this->_onClick()\"" : '';
+        $render = "<input type=\"button\" id=\"{$this->_id}\" value=\"$this->_label\" $disabled>
+                   <script type='text/javascript'>
+                       var {$this->_id} = new YAHOO.widget.Button('$this->_id', 
+                           {
+                               onclick: {fn: $this->_onClick},
+                           }
+                       );
+                   </script>";
+         return $render;
+    }
+    
+    /**
+     * Specify the name of a javascript function (without parentheses) to use as the click event handler for this
+     * button. Not necessarily supported by all subclasses.
+     */              
+    function onClick($functionName) {
+        $this->_onClick = $functionName;
+    }    
 }

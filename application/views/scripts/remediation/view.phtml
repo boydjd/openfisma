@@ -7,28 +7,41 @@ function discardChanges(event) {
       method="post" 
       id="finding_detail"
       onsubmit="prepareform()">
+    <div class="toolbar">
+        <?php
+            echo new Yui_Form_Button_Submit('Back To Search Results (not working)', 'backToSearch');
+            
+            $discardButton = new Yui_Form_Button_Link('Discard Changes', 'discardChanges');
+            $discardButton->onClick('discardChanges');
+            echo $discardButton;
+            
+            echo new Yui_Form_Button_Submit('Save Changes', 'saveChanges');
+        ?>
+    </div>
     <div id="tabContainer">
-        <div class="toolbar">
-            <?php
-                echo new Yui_Form_Button_Submit('Back To Search Results (not working)', 'backToSearch');
-                $discardButton = new Yui_Form_Button_Link('Discard Changes', 'discardChanges');
-                $discardButton->onClick('discardChanges');
-                echo $discardButton;
-                
-                echo new Yui_Form_Button_Submit('Save Changes', 'saveChanges');
-            ?>
-        </div>
+        <!-- YUI will load the tabview into this div -->
     </div>
     <script type="text/javascript">
         /* Configuration for the tabview */
         YAHOO.util.Event.onDOMReady(function () {
             var tabView = new YAHOO.widget.TabView();
         
-            // When a tab is loaded for the first time, this function is called to set up highlighting and editable fields
+            // When a tab is loaded for the first time, this function is called to set up highlighting, editable fields,
+            // and executing scripts that are loaded inside the tab (YUI does not execute these script nodes on its own)
             var prepareTab = function(args) {
                 highlight(document.getElementById("tabContainer"), 
                           "<?php echo $this->keywords; ?>");
-                setupEditFields();        
+                
+                setupEditFields();
+                
+                // Notice that we are eval'ing any script nodes loaded into this tab. This is only safe as long as
+                // we know exactly which URLs we are loading into the tabview. Otherwise we might inadertently execute
+                // a 3rd party script.
+                var tabContainer = document.getElementById('tabContainer');
+                var scriptNodes = tabContainer.getElementsByTagName('script');
+                for (script in scriptNodes) {
+                    eval(scriptNodes[script].text);
+                }
             }
         
             // Finding tab

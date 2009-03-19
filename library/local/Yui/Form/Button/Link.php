@@ -35,7 +35,6 @@ class Yui_Form_Button_Link extends Yui_Form_Button
 {    
     private $_href;
     private $_image;
-    private $_onClick;
     
     /**
      * Constructor
@@ -51,6 +50,8 @@ class Yui_Form_Button_Link extends Yui_Form_Button
      
     function render() 
     {
+        // When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
+        $disabled = $this->readOnly ? 'true' : 'false';
         $onClick = (!empty($this->_onClick)) ? "onclick: {fn: $this->_onClick}," : '';
         $render = "<span id='{$this->_id}'></span>
                    <script type='text/javascript'>
@@ -60,6 +61,7 @@ class Yui_Form_Button_Link extends Yui_Form_Button
                              href: \"{$this->_href}\",
                              id: \"{$this->_id}Button\",
                              $onClick  
+                             disabled: $disabled,
                              container: \"{$this->_id}\"
                         });";
         if (isset($this->_image)) {
@@ -68,9 +70,5 @@ class Yui_Form_Button_Link extends Yui_Form_Button
         }
         $render .= "\n</script>";
         return $render;
-    }
-    
-    function onClick($functionName) {
-        $this->_onClick = $functionName;
     }
 }

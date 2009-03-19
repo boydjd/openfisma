@@ -118,92 +118,91 @@
     }
 </script>
 
-<?php Format_Section::startSection("Mitigation Strategy Approval"); ?>
-<?php
-    $postAction = "/remediation/msa/id/" . $this->poam['id'];
-    $array = array('description'   => $this->poam['finding_data'],
-                   'recommendation'=> $this->poam['action_suggested'],
-                   'description'   => $this->poam['action_planned'],
-                   'resources'     => $this->poam['action_resources'],
-                   'blscr'         => $this->poam['blscr_id'],
-                   'threat_level'  => $this->poam['threat_level'],
-                   'threat_source' => $this->poam['threat_source'],
-                   'cmeasure_effectiveness' => $this->poam['cmeasure_effectiveness'],
-                   'cmeasure' => $this->poam['cmeasure']);
-    $complete = 0;
-    foreach ($array as $row) {
-        if($row == '' || $row == 'NONE'){
-            $complete++;
-        }
+<?php 
+Format_Section::startSection("Mitigation Strategy Approval");
+$postAction = "/remediation/msa/id/" . $this->poam['id'];
+$array = array('description'   => $this->poam['finding_data'],
+               'recommendation'=> $this->poam['action_suggested'],
+               'description'   => $this->poam['action_planned'],
+               'resources'     => $this->poam['action_resources'],
+               'blscr'         => $this->poam['blscr_id'],
+               'threat_level'  => $this->poam['threat_level'],
+               'threat_source' => $this->poam['threat_source'],
+               'cmeasure_effectiveness' => $this->poam['cmeasure_effectiveness'],
+               'cmeasure' => $this->poam['cmeasure']);
+$complete = 0;
+foreach ($array as $row) {
+    if($row == '' || $row == 'NONE'){
+        $complete++;
     }
-    if (0 == $complete) {
-?>
-
-<script type="text/javascript">
-    function confirmSubmitMitigationStrategy() {
-        return form_confirm(document.finding_detail, 'Submit Mitigation Strategy');
-    }
-</script>
-<?php
-    $submitMitigationButton = new Yui_Form_Button_Link('Submit Mitigation Strategy', 'submitMitigationStrategy', "$postAction/is_msa/1");
-    $submitMitigationButton->onClick('confirmSubmitMitigationStrategy');
-    if ('DRAFT' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) {
-        echo $submitMitigationButton;
-    } 
-    if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_revise')) { ?>
-    <a class="button" href="<?php echo $postAction;?>/is_msa/0" onclick="return delok();">Revise Mitigation Strategy</a><br><br>
-<?php }  } else { ?>
-    <p><i>The mitigation strategy, security control, and risk analysis sections must
-    be fully completed before this can be submitted for approval.</i></p>
-    <p></p>
-<?php }
-    if ($this->poam['status']!='NEW' && ($this->poam['status']!='DRAFT' || !empty($this->ms_evaluation))) {
-        $i = 0;
-        foreach ($this->ms_evals as $v) {
-            $k = $i++;
-?>
-<form action="<?php echo $postAction;?>" method="post" name="ms_approval_<?php echo $k;?>">
-<table border="0" cellpadding="5" cellspacing="1" class="tipframe">
-    <th align='left' colspan="2">Approval</th>
-<?php
-    $editable = true;
-    $comment = new Comments();
-    foreach ($v as $precedenceId=>$row) {
-        $value = 'NONE';
-        if (isset($row['decision'])) {
-            $value = $row['decision'];
-        }
-        echo "<tr><td><b>" . $row['name'] . "&nbsp;</b>";
-        if ('NONE' == $value && $editable) {
-            if ($this->acl->isAllowed('remediation', $row['function'])) {
-                echo '<input type="hidden" name="eval_id" value="'.$row['id'].'"/>';
-                echo '<input type="hidden" name="comment" value="" />';
-                echo '<input type="hidden" name="decision" value="APPROVED" />';
-                echo '<input type="submit" value="APPROVE" 
-                    onclick="return form_confirm(document.poam_detail,\'approve '.$row['name'].'\');"/>';
-                echo '<input type="button" value="DENY" onclick="ms_comment(document.ms_approval_'.$k.');" />';
-            } else {
-                echo 'PENDING...';
-            }
-            $editable = false;
-        } else {
-            echo $value."</td>";
-            if ($value == 'APPROVED') {
-                echo "<td> -- <i>by {$row['username']} ON {$row['date']}</i></td>";
-            } else if ($value == 'DENIED') {
-                $ret = $comment->fetchRow('poam_evaluation_id = '.$row['pev_id']);
-                echo "<td>";
-                if (!empty($ret)) {
-                    echo "<b>{$ret->content}</b>";
+}
+if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']) {
+    echo "<script type=\"text/javascript\">
+                function submitMitigationStrategy(event, obj) {
+                    if (form_confirm(document.finding_detail, \"Submit Mitigation Strategy\")) {
+                        document.location = \"$postAction/is_msa/1\";
+                    }
                 }
-                echo "({$row['username']} on {$row['date']})</td>";
-            }
-        }
+          </script>";
+          
+    echo '<p><i>The mitigation strategy, security control, and risk analysis sections must
+          be fully completed before this can be submitted for approval.</i></p>';
+
+    $submitMitigationButton = new Yui_Form_Button('Submit Mitigation Strategy', 'submitMitigation');
+    $submitMitigationButton->onClick('submitMitigationStrategy');
+    if (0 != $complete || !$this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) {
+        $submitMitigationButton->readOnly = true;
     }
+    echo "<div>$submitMitigationButton</div>";
+    
+    if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_revise')) {
+        echo "<a class=\"button\" href=\"$postAction/is_msa/0\" onclick=\"return delok();\">Revise Mitigation Strategy</a><br><br>";
+    }  
+}
 
+if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empty($this->ms_evaluation))) {
+    $i = 0;
+    foreach ($this->ms_evals as $v) {
+        $k = $i++;
+        echo "<form action=\"$postAction\" method=\"post\" name=\"ms_approval_{$k}\">
+              <div class=\"approval\">";
+        $editable = true;
+        $comment = new Comments();
+        foreach ($v as $precedenceId=>$row) {
+            $value = 'NONE';
+            if (isset($row['decision'])) {
+                $value = $row['decision'];
+            }
+            echo "<p><b>" . $row['name'] . ":</b>";
+            if ('NONE' == $value && $editable) {
+                if ($this->acl->isAllowed('remediation', $row['function'])) {
+                    echo '<input type="hidden" name="eval_id" value="' . $row['id'] . '"/>';
+                    echo '<input type="hidden" name="comment" value="" />';
+                    echo '<input type="hidden" name="decision" value="APPROVED" />';
+                    echo '<input type="submit" value="APPROVE" 
+                        onclick="return form_confirm(document.poam_detail,\'approve ' . $row['name'] . '\');"/>';
+                    echo '<input type="button" value="DENY" onclick="ms_comment(document.ms_approval_' . $k.');" />';
+                } else {
+                    echo 'PENDING...';
+                }
+                $editable = false;
+            } else {
+                echo $value;
+                if ($value == 'APPROVED') {
+                    echo "<span class=\"approved\">({$row['username']} on {$row['date']})</span>";
+                } else if ($value == 'DENIED') {
+                    $ret = $comment->fetchRow('poam_evaluation_id = ' . $row['pev_id']);
+                    echo "<span class=\"denied\">";
+                    if (!empty($ret)) {
+                        echo "<b>\"{$ret->content}\"</b>";
+                    }
+                    echo "({$row['username']} on {$row['date']})</span>";
+                }
+            }
+            echo "</p>";
+        }
+        echo "</div></form>";
+    } 
+}
+Format_Section::stopSection(); 
 ?>
-</table>
-</form>
-<?php } }?>
-
-<?php Format_Section::stopSection(); ?>

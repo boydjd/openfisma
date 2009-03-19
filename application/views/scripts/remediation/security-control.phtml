@@ -16,10 +16,11 @@ Format_Section::startSection('NIST 800-53 Control Mapping');
                 }
                 echo '>';
                 
-                if (!empty($this->poam['blscr'])) {
+                if (!empty($this->poam['blscr_id'])) {
                     echo "{$this->poam['blscr_id']}";
                 } else {
-                    echo 'NONE';
+                    // nbsp is a hack to make the pencil appear in the right place
+                    echo 'NONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
                 ?>
             </span>

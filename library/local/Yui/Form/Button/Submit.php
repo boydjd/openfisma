@@ -49,7 +49,6 @@ class Yui_Form_Button_Submit extends Yui_Form_Button
         $disabled = $this->readOnly ? 'true' : 'false';
         $render = "<span id=\"{$this->_id}Container\"></span>
                    <script type='text/javascript'>
-                   YAHOO.util.Event.onDOMReady(function () {
                        var {$this->_id} = new YAHOO.widget.Button({
                            type: \"submit\",
                            label: \"{$this->_label}\",
@@ -59,7 +58,6 @@ class Yui_Form_Button_Submit extends Yui_Form_Button
                            container: \"{$this->_id}Container\",
                            disabled: $disabled
                        });
-                   });
                    </script>";
          return $render;
      }

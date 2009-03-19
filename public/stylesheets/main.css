@@ -1,6 +1,5 @@
 /* @override http://localhost/stylesheets/main.css */
 
-@import url('fisma.css');
 @import url('layout.css');
 
 /* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
@@ -212,69 +211,28 @@ div.toolbar {
     cursor: pointer;
 }
 
-/*========================================================================================================= */
-/* Table Header Style Sheet for all Tables */
-th {
-	font-family: 'Verdana', 'Arial', 'Helvetica';
-	color: #44637A;		/* Dark Blue */
-	height: 23px;
-	font-weight: bold;
-	font-size: 12px;
-        background-color: #DDDDDD;
-        padding-left: 5px;
-        padding-right: 5px;
-}
-
-.tdc {
-	border-left: 1px solid #BEBEBE;
-	border-top: 1px solid #BEBEBE;
-}
-
-.tbframe {
-	font-family: Tahoma,verdana,arial, helvetica;
-	font-size: 12px;
-	font-weight: normal;
-	color: #000000;
-    border: 1px solid #BEBEBE;
-    border-collapse: collapse;
-    margin: 0em auto;
-}
-
-table.tbframe th, table.tbframe td {
-    padding: 2px;
-}
-
-.tipframe {
-    font-family: Tahoma, verdana, arial, helvetica;
-    font-size: 12px;
-    font-weight: normal;
-    color: #000000;
-    border: 1px solid #44637A;
-    width: 98%;
-    margin-top: 0em;
-    margin-right: auto;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-}
-
-.tipframe th {
-	height: auto;
-	padding: 3px;
-}
-
-.tipframe td {
+/* These styles are used on the remediation detail page to indicate approval status and comments */
+div.approval {
+    margin-top: 10px;
+    background-color: #efefef;
+    border: 1px solid #cecece;
     padding: 3px;
 }
 
-.thc {
-    font-family: 'Verdana', 'Arial', 'Helvetica';
-    color: #44637A;
-    height: 23px;
-    font-weight: bold;
-    font-size: 12px;
-    background-color: #E3E3E3;
-    border-left: 1px solid #FFFFFF;
-    border-bottom: 1px solid #FFFFFF;
+div.approval b {
+    margin-right: 10px;
+}
+
+div.approval span.approved {
+    background-color: lightGreen;
+    padding: 3px;
+    margin-left: 10px;
+}
+
+div.approval span.denied {
+    background-color: #ffcccc;
+    padding: 3px;
+    margin-left: 10px;
 }
 
 /* This is the standard style for the basic CRUD forms such as users, systems,
