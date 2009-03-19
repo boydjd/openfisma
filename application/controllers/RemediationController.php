@@ -1606,4 +1606,21 @@ class RemediationController extends PoamBaseController
         );
         $this->view->assign('poam', $tableData);
     }
+
+    /**
+     * Display the NIST SP 800-53 control mapping and related information
+     */
+    function securityControlAction() 
+    {
+        $this->_acl->requirePrivilege('remediation', 'read');
+        $this->_helper->layout->disableLayout();
+    
+        $id = $this->getRequest()->getParam('id');
+        $poamDetail = $this->_poam->getDetail($id);
+        if (empty($poamDetail)) {
+            throw new Exception_General("POAM($id) is not found, Make sure a valid ID is specified");
+        }
+
+        $this->view->assign('poam', $poamDetail);
+    }
 }

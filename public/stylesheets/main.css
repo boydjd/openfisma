@@ -26,7 +26,7 @@ ol li {
 }
 
 p {
-    margin: 0px 8px;
+    margin: 10px 8px;
 }
 
 h1 {
@@ -135,6 +135,7 @@ p.stacktrace {
     #ffffff-space: pre;
     font-family: monospace;
     overflow: auto;
+    white-space: pre-wrap;
 }
 
 /* Provide some whitespace at the bottom of the page. */
@@ -170,12 +171,14 @@ table.searchFilters td a {
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
 table.keyValues td {
-    padding: 2px;
+    padding: 2px 5px;
+    vertical-align: top;
 }
 
-/* The first column in a keyValues table is always bold text */
+/* The first column in a keyValues table is bold text */
 table.keyValues td:first-child {
     font-weight: bold;
+    text-align: right;
 }
 
 /* This style is used for displaying audit log tables. */
@@ -203,11 +206,12 @@ div.toolbar {
  * element which needs to become editable.
  */
 .editable {
-    background: url(/images/button_modify.png) no-repeat center right;
+    background: url(/images/button_modify.png) no-repeat top right;
     padding-right: 20px;
     margin-right: 10px;
     cursor: pointer;
 }
+
 /*========================================================================================================= */
 /* Table Header Style Sheet for all Tables */
 th {

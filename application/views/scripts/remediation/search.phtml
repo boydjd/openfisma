@@ -11,7 +11,7 @@
         ?>
     </div>
     <div id="dynamicdata"></div> 
-    <div id="columnOptionsPanel">
+    <div id="columnOptionsPanelDiv">
         <div id="columnOptionsPanelBody" class="bd">
             <!-- YUI fills in the body -->
         </div>
@@ -148,7 +148,7 @@ function showColumnOptions() {
         });
         
         // Setup the panel
-        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanel', {width:"300px"} ); 
+        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanelDiv', {width:"300px"} ); 
         columnOptionsPanel.setHeader('Show/Hide Columns');
         columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
         columnOptionsPanel.center();

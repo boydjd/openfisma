@@ -1,60 +1,94 @@
-<div id="tabContainer"></div>
-
 <script type="text/javascript">
-    YAHOO.util.Event.onDOMReady(function () {
-        var tabView = new YAHOO.widget.TabView();
-        
-        // When a tab is loaded for the first time, this function is called to set up highlighting and editable fields
-        var prepareTab = function(args) {
-            highlight(document.getElementById("tabContainer"), 
-                      "<?php echo $this->keywords; ?>");
-            setupEditFields();        
-        }
-        
-        // Finding tab
-        var findingTab = new YAHOO.widget.Tab({
-            label: 'Finding #<?php echo $this->poam['id']; ?>',
-            dataSrc: '/remediation/finding/id/<?php echo $this->poam['id']; ?>',
-            cacheData: true
-        });
-        findingTab.subscribe("dataLoadedChange", prepareTab);
-        tabView.addTab(findingTab);
-        
-        var mitigationTab = new YAHOO.widget.Tab({
-            label: 'Mitigation Strategy',
-            dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->poam['id']; ?>',
-            cacheData: true
-        });
-        mitigationTab.subscribe("dataLoadedChange", prepareTab);        
-        tabView.addTab(mitigationTab);
-        
-        var riskTab = new YAHOO.widget.Tab({
-            label: 'Risk Analysis',
-            dataSrc: '/remediation/risk-analysis/id/<?php echo $this->poam['id']; ?>',
-            cacheData: true
-        });
-        riskTab.subscribe("dataLoadedChange", prepareTab);                
-        tabView.addTab(riskTab);
 
-        var artifactsTab = new YAHOO.widget.Tab({
-            label: 'Artifacts (<?php echo count($this->ev_evals); ?>)',
-            dataSrc: '/remediation/artifacts/id/<?php echo $this->poam['id']; ?>',
-            cacheData: true
-        });
-        artifactsTab.subscribe("dataLoadedChange", prepareTab);                
-        tabView.addTab(artifactsTab);
-            
-        var auditTab = new YAHOO.widget.Tab({
-            label: 'Audit Log',
-            dataSrc: '/remediation/audit-log/id/<?php echo $this->poam['id']; ?>',
-            cacheData: true
-        });
-        auditTab.subscribe("dataLoadedChange", prepareTab);        
-        tabView.addTab(auditTab);
-     
-        tabView.appendTo('tabContainer');
-        
-        tabView.selectTab(0);
-    });
+/* This function adds a hash to the form action URL which will return the user to the
+ * currently selected tab after the page refreshes.
+ */
+function prepareForm() {
+    dump(this);
+}
 </script>
+<form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
+      method="post" 
+      id="finding_detail"
+      onsubmit="prepareform()">
+    <div id="tabContainer">
+        <div class="toolbar">
+            <?php
+                echo new Yui_Form_Button_Submit('Back To Search Results (not working)', 'backToSearch');
+                echo new Yui_Form_Button_Submit('Discard Changes (not working)', 'discardChanges');
+                echo new Yui_Form_Button_Submit('Save Changes', 'saveChanges');
+            ?>
+        </div>
+    </div>
+    <script type="text/javascript">
+        /* Configuration for the tabview */
+        YAHOO.util.Event.onDOMReady(function () {
+            var tabView = new YAHOO.widget.TabView();
+        
+            // When a tab is loaded for the first time, this function is called to set up highlighting and editable fields
+            var prepareTab = function(args) {
+                highlight(document.getElementById("tabContainer"), 
+                          "<?php echo $this->keywords; ?>");
+                setupEditFields();        
+            }
+        
+            // Finding tab
+            var findingTab = new YAHOO.widget.Tab({
+                label: 'Finding #<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/finding/id/<?php echo $this->poam['id']; ?>',
+                cacheData: true
+            });
+            findingTab.subscribe("dataLoadedChange", prepareTab);
+            tabView.addTab(findingTab);
+        
+            var mitigationTab = new YAHOO.widget.Tab({
+                label: 'Mitigation Strategy',
+                dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->poam['id']; ?>',
+                cacheData: true
+            });
+            mitigationTab.subscribe("dataLoadedChange", prepareTab);        
+            tabView.addTab(mitigationTab);
+        
+            var riskTab = new YAHOO.widget.Tab({
+                label: 'Risk Analysis',
+                dataSrc: '/remediation/risk-analysis/id/<?php echo $this->poam['id']; ?>',
+                cacheData: true
+            });
+            riskTab.subscribe("dataLoadedChange", prepareTab);                
+            tabView.addTab(riskTab);
 
+            var securityControlTab = new YAHOO.widget.Tab({
+                label: 'Security Control',
+                dataSrc: '/remediation/security-control/id/<?php echo $this->poam['id']; ?>',
+                cacheData: true
+            });
+            securityControlTab.subscribe("dataLoadedChange", prepareTab);                
+            tabView.addTab(securityControlTab);
+
+            var artifactsTab = new YAHOO.widget.Tab({
+                label: 'Artifacts (<?php echo count($this->ev_evals); ?>)',
+                dataSrc: '/remediation/artifacts/id/<?php echo $this->poam['id']; ?>',
+                cacheData: true
+            });
+            artifactsTab.subscribe("dataLoadedChange", prepareTab);                
+            tabView.addTab(artifactsTab);
+            
+            var auditTab = new YAHOO.widget.Tab({
+                label: 'Audit Log',
+                dataSrc: '/remediation/audit-log/id/<?php echo $this->poam['id']; ?>',
+                cacheData: true
+            });
+            auditTab.subscribe("dataLoadedChange", prepareTab);        
+            tabView.addTab(auditTab);
+     
+            tabView.appendTo('tabContainer');
+        
+            // Tab is selected based on the hash appended to the URL
+            var tab = location.hash.substring(1);
+            if (!tab || tab < 0 || tab > 4) {
+                tab = 0;
+            }
+            tabView.selectTab(tab);
+        });
+    </script>
+</form>

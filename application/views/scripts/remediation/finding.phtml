@@ -29,20 +29,21 @@
         <?php } ?>
         <tr>
             <td>
-                <div 
-                    <?php
-                    if('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
-                        && $this->acl->isAllowed('remediation', 'update_finding_assignment')) {
-                        echo 'class="editable" target="action_owner"'; 
-                    }
-                    ?>>Responsible System:
+                <div>
+                    Responsible System:
                 </div>
             </td>
             <td>
                 <div name="poam[system_id]" 
                      id="action_owner" 
                      type="select" 
-                     href="/metainfo/list/o/system/format/html/">
+                     href="/metainfo/list/o/system/format/html/"
+                     <?php
+                     if('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
+                         && $this->acl->isAllowed('remediation', 'update_finding_assignment')) {
+                         echo 'class="editable" target="action_owner"'; 
+                     }
+                     ?>>
                     <?php echo $this->system_list[$this->poam['system_id']]; ?>
                 </div>
             </td>
@@ -142,90 +143,4 @@ if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
 <div name="poam[action_suggested]" id="recommendation" type="textarea" rows="3" cols="160">
     <?php echo $this->poam['action_suggested']; ?>
 </div>
-<?php Format_Section::stopSection(); ?>
-
-<?php
-Format_Section::startSection('NIST 800-53 Control Mapping');
-?>
-<table class="keyValues">
-    <tr>
-        <td>
-            <div
-                <?php
-                if ($this->acl->isAllowed('remediation', 'update_control_assignment')) {
-                    echo "class='editable' target='blscr'";
-                }
-                ?>>
-                Control ID:
-            </div>
-        </td>
-        <td>
-            <span id="blscr" type="select" name="poam[blscr_id]" href="/metainfo/list/o/blscr/format/html/"> 
-                <?php echo $this->poam['blscr_id']; ?>
-            </span>
-        </td>
-    </tr>
-    <?php if( !empty($this->poam['blscr']) ) { 
-        $blscr = $this->poam['blscr']; ?>
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <th class="tdc">Control Number</th>
-                        <th class="tdc">Class</th>
-                        <th class="tdc">Family</th>
-                        <th class="tdc">Subclass</th>
-                        <th class="tdc">Low</th>
-                        <th class="tdc">Moderate</th>
-                        <th class="tdc">High</th>
-                    </tr>
-                    <tr>
-                        <td class="tdc"><?php echo $blscr['code'];?></td>
-                        <td class="tdc"><?php echo $blscr['class'];?></td>
-                        <td class="tdc"><?php echo $blscr['family'];?></td>
-                        <td class="tdc"><?php echo $blscr['subclass'];?></td>
-                        <td class="tdc" align="center">
-                            <?php 
-                                echo 'LOW' == $blscr['control_level']? 'Control Required' : 'Control Not Required';
-                            ?>
-                        </td>
-                        <td class="tdc" align="center">
-                            <?php 
-                                echo 'LOW' == $blscr['control_level'] ||
-                                         'MODERATE' == $blscr['control_level'] ? 'Control Required' : 'Control Not Required';
-                            ?>
-    
-                        </td>
-                        <td class="tdc" align="center">
-                            <?php
-                                echo 'LOW' == $blscr['control_level'] ||
-                                         'MODERATE' == $blscr['control_level'] ||
-                                         'HIGH' == $blscr['control_level'] ? 'Control Required' : 'Control Not Required';
-                            ?>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td><b>Control:</b></td>
-            <td><?php echo $blscr['control'];?></td>
-        </tr>
-        <tr>
-            <td><b>Guidance:</b></td>
-            <td><?php echo $blscr['guidance'];?></td></tr>
-        <tr>
-            <td><b>Enhancements:</b></td>
-            <td>
-                <?php echo isset($blscr['enhancements'])?$blscr['enhancements']:'<i>(none given)</i>'; ?>
-            </td>
-        </tr>
-        <tr>
-            <td><b>Supplement:</b></td>
-            <td>
-                <?php echo isset($blscr['supplement'])?$blscr['supplement']:'<i>(none given)</i>'; ?>
-            </td>
-        </tr>
-    <?php } ?>
-</table>
 <?php Format_Section::stopSection(); ?>
