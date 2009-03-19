@@ -1,10 +1,6 @@
 <script type="text/javascript">
-
-/* This function adds a hash to the form action URL which will return the user to the
- * currently selected tab after the page refreshes.
- */
-function prepareForm() {
-    dump(this);
+function discardChanges(event) {
+    window.location.reload();
 }
 </script>
 <form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
@@ -15,7 +11,10 @@ function prepareForm() {
         <div class="toolbar">
             <?php
                 echo new Yui_Form_Button_Submit('Back To Search Results (not working)', 'backToSearch');
-                echo new Yui_Form_Button_Submit('Discard Changes (not working)', 'discardChanges');
+                $discardButton = new Yui_Form_Button_Link('Discard Changes', 'discardChanges');
+                $discardButton->onClick('discardChanges');
+                echo $discardButton;
+                
                 echo new Yui_Form_Button_Submit('Save Changes', 'saveChanges');
             ?>
         </div>

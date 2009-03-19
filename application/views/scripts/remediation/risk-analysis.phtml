@@ -2,134 +2,116 @@
 if ($this->acl->isAllowed('report','generate_system_rafs')) {
     Format_Section::startSection("Risk Analysis Form (RAF)"); 
 ?>
+    <p>
+        Risk is calculated by evaluating the security categorization of 
+        the information system along with the threat source and the existence 
+        of current countermeasures. 
+    </p>
 
-    <table class="keyValues">
-        <tr>
-            <td>
-                Risk is calculated by evaluating the security categorization of 
-                the information system along with the threat source and the existence 
-                of current countermeasures. 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <?php 
-                    // Check to see if the threat level/description and countermeasure level/description are 
-                    // set. If so, allow the user to generate a RAF.
-                    if( $this->poam['threat_source'] != '' &&
-                        $this->poam['threat_level'] != 'NONE' &&
-                        $this->poam['cmeasure'] != '' &&
-                        $this->poam['cmeasure_effectiveness'] != 'NONE') {
-                ?>
-                    <ul class='linwise' >
-                        <li>
-                            <a class='button' target='_blank' href="/remediation/raf/format/pdf/id/<?php echo $this->poam['id'];?>")>
-                                <img src="/images/pdf.gif" />View Risk Analysis Form
-                            </a>
-                        </li>
-                    </ul>
-                <?php } else { ?>
-                    <i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>
-                <?php } ?>
-            </td>
-        </tr>
-    </table>
+    <p>
+        <?php 
+        // Check to see if the threat level/description and countermeasure level/description are 
+        // set. If so, allow the user to generate a RAF.
+        if( $this->poam['threat_source'] != '' &&
+            $this->poam['threat_level'] != 'NONE' &&
+            $this->poam['cmeasure'] != '' &&
+            $this->poam['cmeasure_effectiveness'] != 'NONE') {
+            print new Yui_Form_Button_Link('View Risk Analysis Form', 
+                                           'viewRaf', 
+                                           "/remediation/raf/format/pdf/id/{$this->poam['id']}", 
+                                           '/images/pdf.gif');
+        } else {
+            print '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>';
+        } 
+        ?>
+    </p>
 <?php
     Format_Section::stopSection();
 }
 ?>
 
 <?php Format_Section::startSection("Threats"); ?>
-<table class="keyValues">
-    <tr>
-        <td colspan="2">
-            A threat is the potential for a particular threat-source to successfully exercise a particular 
-            vulnerability. A vulnerability is a bug, flaw, weakness, or exposure of an application, system, 
-            device, or service that could lead to a failure of confidentiality, integrity, or availability. 
-            The threat level allows the organization to prioritize security weaknesses based on their level 
-            of threat to the information system. Usually, the security level and description are pre-populated 
-            from vulnerability scan data, however, manual findings need an assigned threat level and 
-            description.   
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <b target="threat" 
-                <?php 
-            if($this->acl->isAllowed('remediation','update_threat')){ 
-                echo ' class="editable"';
-            } ?>>Threat Level:</b>
-        </td>
-        <td>
-            <span id ="threat" type="select" name="poam[threat_level]" href="/metainfo/list/o/threat_level/format/html/">
-                <?php echo $this->poam['threat_level']; ?>
-            </span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <b target="threat_source" 
-                <?php 
-                    if($this->acl->isAllowed('remediation','update_threat')){ 
-                        echo 'class="editable"';
-                    } 
-                ?> >Threat Description:</b>
-        </td>
-        <td>
-             <span type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
-                 <?php echo $this->poam['threat_source']; ?>
-             </span>
-         </td>
-    </tr>
-</table>
+<p>
+    <i>
+        A threat is the potential for a particular threat-source to successfully exercise a particular 
+        vulnerability. A vulnerability is a bug, flaw, weakness, or exposure of an application, system, 
+        device, or service that could lead to a failure of confidentiality, integrity, or availability. 
+        The threat level allows the organization to prioritize security weaknesses based on their level 
+        of threat to the information system. Usually, the security level and description are pre-populated 
+        from vulnerability scan data, however, manual findings need an assigned threat level and 
+        description. 
+    </i>
+</p>
+
+<p>
+    <b>Threat Level:</b>
+
+    <span id ="threat" type="select" name="poam[threat_level]" href="/metainfo/list/o/threat_level/format/html/"
+        <?php 
+        if($this->acl->isAllowed('remediation','update_threat')) { 
+            echo ' class="editable" target="threat"';
+        }
+        ?>>
+        <?php echo $this->poam['threat_level']; ?>
+    </span>
+</p>
+
+<p>
+    <b target="threat_source" 
+        <?php 
+        if($this->acl->isAllowed('remediation','update_threat')) { 
+            echo 'class="editable"';
+        } 
+        ?>>Threat Description:</b>
+</p>
+
+<p type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
+    <?php echo $this->poam['threat_source']; ?>
+</p>
 <?php Format_Section::stopSection(); ?>
 
 <?php Format_Section::startSection("Countermeasures"); ?>
-<table>
-    <tr>
-        <td colspan="2">
-            The goal of this step is to analyze the controls that are currently implemented by the 
-            organization to minimize or eliminate the likelihood (or probability) of the vulnerability 
-            being exercised or exploited. This should not include countermeasures that are planned 
-            and are not currently in place. Countermeasures or Security controls can be technical and
-            nontechnical methods. Examples of technical controls would be; access control mechanisms, 
-            identification and authentication mechanisms, encryption methods, intrusion detection 
-            software, etc. Examples of nontechnical controls would be management and operational 
-            controls, such as; security policies, operational procedures, personnel, physical, and 
-            environmental security.
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <b target="effectiveness" 
-                <?php 
-                    if($this->acl->isAllowed('remediation','update_countermeasures')){
-                        echo 'class="editable"';
-                    }
-                ?>>Countermeasures Effectiveness:
-            </b>
-        </td>
-        <td>
-            <span type="select" name="poam[cmeasure_effectiveness]" id="effectiveness" href="/metainfo/list/o/cmeasure_effectiveness/format/html/">
-                <?php echo $this->poam['cmeasure_effectiveness']; ?>
-            </span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <b target="cmeasure" 
-                <?php 
-                    if($this->acl->isAllowed('remediation','update_countermeasures')){
-                        echo 'class="editable"';
-                    } 
-                ?>>Description of Countermeasures:
-            </b>
-        </td>
-        <td>
-            <span type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
-                <?php echo $this->poam['cmeasure']; ?>
-            </span>
-        </td>
-    </tr>
-</table>
+<p>
+    <i>
+        The goal of this step is to analyze the controls that are currently implemented by the 
+        organization to minimize or eliminate the likelihood (or probability) of the vulnerability 
+        being exercised or exploited. This should not include countermeasures that are planned 
+        and are not currently in place. Countermeasures or Security controls can be technical and
+        nontechnical methods. Examples of technical controls would be; access control mechanisms, 
+        identification and authentication mechanisms, encryption methods, intrusion detection 
+        software, etc. Examples of nontechnical controls would be management and operational 
+        controls, such as; security policies, operational procedures, personnel, physical, and 
+        environmental security.
+    </i>
+</p>
+
+<p>
+    <b>Countermeasures Effectiveness:</b>
+</p>
+
+<p>
+    <span type="select" name="poam[cmeasure_effectiveness]" id="effectiveness" href="/metainfo/list/o/cmeasure_effectiveness/format/html/"
+        <?php 
+        if($this->acl->isAllowed('remediation','update_countermeasures')) {
+            echo 'class="editable" target="effectiveness"';
+        }
+        ?>>
+        <?php echo $this->poam['cmeasure_effectiveness']; ?>
+    </span>
+</p>
+
+<p>
+    <b target="cmeasure" 
+        <?php 
+            if($this->acl->isAllowed('remediation','update_countermeasures')) {
+                echo 'class="editable"';
+            } 
+        ?>>
+        Description of Countermeasures:
+    </b>
+</p>
+
+<p type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
+    <?php echo $this->poam['cmeasure']; ?>
+</p>
 <?php Format_Section::stopSection(); ?>
