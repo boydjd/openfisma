@@ -334,7 +334,6 @@ class RoleController extends SecurityController
     {
         $this->_acl->requirePrivilege('admin_roles', 'definition');
         //Display searchbox template
-        $this->searchbox();
         
         $req = $this->getRequest();
         $do = $req->getParam('do');
@@ -374,7 +373,7 @@ class RoleController extends SecurityController
             $this->_helper->layout->setLayout('ajax');
             $this->view->assign('functions', $existFunctions);
             $this->render('funcoptions');
-         } elseif ('update' == $do) {
+        } elseif ('update' == $do) {
             $functionIds = $req->getParam('exist_functions');
             $errno = 0;
             $qry = "DELETE FROM `role_functions` WHERE role_id =" . $roleId;
@@ -401,6 +400,7 @@ class RoleController extends SecurityController
             $this->message($msg, $model);
             $this->_redirect('panel/role/sub/right/id/' . $roleId);
         } else {
+            $this->searchbox();
             $qry = $db->select()->from('roles', array(
                 'id',
                 'name'
@@ -413,8 +413,8 @@ class RoleController extends SecurityController
             $this->view->assign('role', $role);
             $this->view->assign('screen_list', $screenList);
             $this->view->assign('exist_functions', $existFunctions);
+            $this->render('right');
         }
-        $this->render('right');
     }
 
     /**
