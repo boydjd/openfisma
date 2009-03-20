@@ -504,6 +504,9 @@ class RemediationController extends PoamBaseController
         $this->view->assign('links', $pager->getLinks());
         $this->view->assign('attachUrl', $attachUrl);
         $this->view->assign('url', $url);
+        
+        // Also store the search URL in a cookie so that the user can jump back to these search results
+        setcookie('lastSearchUrl', $url, 0, '/');
         $this->render();
     }
     

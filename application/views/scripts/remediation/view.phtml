@@ -1,4 +1,13 @@
 <script type="text/javascript">
+function backToSearch(event) {
+    var location = YAHOO.util.Cookie.get('lastSearchUrl');
+    if (location) {
+        window.location = location;
+    } else {
+        window.location = '/panel/remediation/sub/searchbox';
+    }
+}
+
 function discardChanges(event) {
     window.location.reload();
 }
@@ -9,9 +18,11 @@ function discardChanges(event) {
       onsubmit="prepareform()">
     <div class="toolbar">
         <?php
-            echo new Yui_Form_Button_Submit('Back To Search Results (not working)', 'backToSearch');
+            $backToSearchButton = new Yui_Form_Button('Back To Search Results', 'backToSearch');
+            $backToSearchButton->onClick('backToSearch');
+            echo $backToSearchButton;
             
-            $discardButton = new Yui_Form_Button_Link('Discard Changes', 'discardChanges');
+            $discardButton = new Yui_Form_Button('Discard Changes', 'discardChanges');
             $discardButton->onClick('discardChanges');
             echo $discardButton;
             

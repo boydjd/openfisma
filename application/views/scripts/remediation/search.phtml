@@ -5,7 +5,7 @@
         <?php 
             echo new Yui_Form_Button_Link('Export PDF', 'exportPdf', "{$this->attachUrl}/format/pdf", '/images/pdf.gif');
             echo new Yui_Form_Button_Link('Export Excel', 'exportExcel', "{$this->attachUrl}/format/xls", '/images/xls.gif');
-            $columnOptionsButton = new Yui_Form_Button_Link('Options', 'columnOptions', '#', '/images/options.png');
+            $columnOptionsButton = new Yui_Form_Button('Options', 'columnOptions', '/images/options.png');
             $columnOptionsButton->onClick('showColumnOptions');
             echo $columnOptionsButton;
         ?>

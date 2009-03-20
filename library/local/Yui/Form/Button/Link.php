@@ -34,14 +34,13 @@
 class Yui_Form_Button_Link extends Yui_Form_Button
 {    
     private $_href;
-    private $_image;
     
     /**
      * Constructor
      */
     function __construct($label, $id, $href = '#', $image = null)
     {
-        parent::__construct($label, $id);
+        parent::__construct($label, $id, $image);
         $this->_href = $href;
         if (isset($image)) {
             $this->_image = $image;

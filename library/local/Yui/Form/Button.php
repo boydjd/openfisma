@@ -35,19 +35,22 @@ class Yui_Form_Button extends Zend_Form_Element
 {
     protected $_label;
     protected $_id;
-    private $_onClick;    
+    protected $_onClick;   
+    protected $_image;
     
     /**
      * Construct a button
      * 
      * @param string $label Displayed to the user
      * @param string $id Used to represent the element uniquely in the DOM       
+     * @param string $image Path to an image which decorates the button (optional)
      */
-    function __construct($label, $id)
+    function __construct($label, $id, $image = null)
     {
         parent::__construct($id);
         $this->_label = str_replace("\"", "\'", $label);
         $this->_id = $id;
+        $this->_image = $image;
     }
 
     /**
@@ -66,16 +69,20 @@ class Yui_Form_Button extends Zend_Form_Element
     function render() 
     {
         $disabled = $this->readOnly ? 'disabled' : '';
-        $onClick = (!empty($this->_onClick)) ? ",({onclick: \"$this->_onClick()\"" : '';
         $render = "<input type=\"button\" id=\"{$this->_id}\" value=\"$this->_label\" $disabled>
                    <script type='text/javascript'>
-                       var {$this->_id} = new YAHOO.widget.Button('$this->_id', 
-                           {
-                               onclick: {fn: $this->_onClick},
-                           }
-                       );
-                   </script>";
-         return $render;
+                       YAHOO.util.Event.onDOMReady(function() {
+                           var button = new YAHOO.widget.Button('$this->_id', 
+                               {
+                                   onclick: {fn: $this->_onClick}
+                               }
+                           );";
+        if (isset($this->_image)) {
+           $render .= "button._button.style.background = 'url($this->_image) 10% 50% no-repeat';\n";
+           $render .= "button._button.style.paddingLeft = '3em';\n";
+        }
+        $render .= "})</script>";
+        return $render;
     }
     
     /**

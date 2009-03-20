@@ -107,17 +107,6 @@
 </p>
 <?php Format_Section::stopSection(); ?>
 
-<script language="javascript">
-    function delok()
-    {
-        var str = "The revised mitigation strategy must be fully approved before evidence can be re-submitted. Are you sure that you want to continue?";
-        if(confirm(str) == true){
-            return true;
-        }
-        return false;
-    }
-</script>
-
 <?php 
 Format_Section::startSection("Mitigation Strategy Approval");
 $postAction = "/remediation/msa/id/" . $this->poam['id'];
@@ -157,7 +146,20 @@ if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']) {
 }
 
 if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_revise')) {
-    echo "<a class=\"button\" href=\"$postAction/is_msa/0\" onclick=\"return delok();\">Revise Mitigation Strategy</a><br><br>";
+    echo "<script language=\"javascript\">
+            function reviseMitigationStrategy()
+            {
+                var str = \"The revised mitigation strategy must be fully approved before evidence can be re-submitted. Are you sure that you want to continue?\";
+                if(confirm(str) == true){
+                    location.href = \"$postAction/is_msa/0\";
+                }
+                return false;
+            }
+          </script>";
+    $reviseMitigationButton = new Yui_Form_Button('Revise Mitigation Strategy', 'reviseMitigationButton');
+    $reviseMitigationButton->onClick('reviseMitigationStrategy');
+    echo "<div class='toolbar'>$reviseMitigationButton</div>";
+    //echo "<a class=\"button\" href=\"$postAction/is_msa/0\" onclick=\"return delok();\">Revise Mitigation Strategy</a><br><br>";
 }  
 
 if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empty($this->ms_evaluation))) {
