@@ -10,7 +10,6 @@ function setupEditFields() {
          $(this).removeClass('editable');
          $(this).removeAttr('target');
          if( t_name ) {
-         
              var target = $('#'+t_name);
              var name = target.attr('name');
              var type = target.attr('type');

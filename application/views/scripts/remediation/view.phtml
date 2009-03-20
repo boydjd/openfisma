@@ -43,7 +43,13 @@ function discardChanges(event) {
                     eval(scriptNodes[script].text);
                 }
             }
-        
+            
+            // When the active tab changes, store the active tab in a cookie so that it can be restored
+            // in between page refreshes.
+            var handleTabChange = function(args) {
+                YAHOO.util.Cookie.set("activeTab", args.newValue, { path: '/' });
+            }
+            
             // Finding tab
             var findingTab = new YAHOO.widget.Tab({
                 label: 'Finding #<?php echo $this->poam['id']; ?>',
@@ -92,13 +98,21 @@ function discardChanges(event) {
             });
             auditTab.subscribe("dataLoadedChange", prepareTab);        
             tabView.addTab(auditTab);
-     
+            
+            tabView.subscribe('activeIndexChange', handleTabChange);
             tabView.appendTo('tabContainer');
         
-            // Tab is selected based on the hash appended to the URL
+            // Tab is selected based on the hash appended to the URL, or if no hash is present,
+            // then by the cookie.
             var tab = location.hash.substring(1);
             if (!tab || tab < 0 || tab > 4) {
-                tab = 0;
+                if (YAHOO.util.Cookie.get("currentFindingId") == <?php echo $this->poam['id']; ?>) {
+                    tab = YAHOO.util.Cookie.get("activeTab");
+                } else {
+                    YAHOO.util.Cookie.set("currentFindingId", <?php echo $this->poam['id']; ?>, {path: '/'});
+                    YAHOO.util.Cookie.set("activeTab", 0, {path: '/'}); 
+                    tab = 0;
+                }
             }
             tabView.selectTab(tab);
         });

@@ -349,7 +349,7 @@ function ev_deny(formname){
     dt.name = 'comment';
     content.appendChild(dt);
 
-    $('<div title="Provide Justification"></div>').append(content).
+    $('<div title="Evidence Denial"></div>').append(content).
         dialog({position:'middle', width: 500, height: 240, resizable: true,modal:true,
             close:function(){
                 $('#full').remove();
@@ -390,7 +390,7 @@ function ms_comment(formname){
     dt.name = 'comment';
     content.appendChild(dt);
     
-    $('<div title="Mitigation Strategy Approval"></div>').append(content).
+    $('<div title="Mitigation Strategy Denial"></div>').append(content).
         dialog({position:'middle', width: 500, height: 440, resizable: true,modal:true,
             close:function(){
                 $('#full').remove();

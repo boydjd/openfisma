@@ -65,9 +65,9 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
         ?>>Threat Description:</b>
 </p>
 
-<p type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
+<div type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
     <?php echo $this->poam['threat_source']; ?>
-</p>
+</div>
 <?php Format_Section::stopSection(); ?>
 
 <?php Format_Section::startSection("Countermeasures"); ?>
@@ -107,11 +107,10 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
                 echo 'class="editable"';
             } 
         ?>>
-        Description of Countermeasures:
-    </b>
+        Description of Countermeasures:</b>
 </p>
 
-<p type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
+<div type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
     <?php echo $this->poam['cmeasure']; ?>
-</p>
+</div>
 <?php Format_Section::stopSection(); ?>
