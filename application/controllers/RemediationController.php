@@ -762,7 +762,8 @@ class RemediationController extends PoamBaseController
         $req = $this->getRequest();
         $id = $req->getParam('id');
         define('EVIDENCE_PATH', Config_Fisma::getPath() . '/public/evidence');
-        if ($_FILES && $id > 0) {
+        $file = $_FILES['evidence'];
+        if ($file['name']) {
             $poam = $this->_poam->find($id)->toArray();
             if (empty($poam)) {
                 throw new Exception_General('incorrect ID specified for poam');
@@ -780,19 +781,19 @@ class RemediationController extends PoamBaseController
             }
             $count = 0;
             $filename = preg_replace('/^([^.]*)(\.[^.]*)?\.([^.]*)$/',
-                '$1$2-' . $nowStr . '.$3', $_FILES['evidence']['name'],
+                '$1$2-' . $nowStr . '.$3', $file['name'],
                 2, $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             if ($count > 0) {
                 $resultMove =
-                    move_uploaded_file($_FILES['evidence']['tmp_name'],
+                    move_uploaded_file($file['tmp_name'],
                         $absFile);
                 if ($resultMove) {
                     chmod($absFile, 0755);
                 } else {
                     throw new Exception_General('Failed in move_uploaded_file(). '
-                        . $absFile . $_FILES['evidence']['error']);
+                        . $absFile . $file['error']);
                 }
             } else {
                 throw new Exception_General('The filename is not valid');
@@ -824,8 +825,11 @@ class RemediationController extends PoamBaseController
                     self::$now->toString('Y-m-d H:i:s'),
                     'UPLOAD EVIDENCE', $logContent);
             }
+        } else {
+            $this->message("You did not select a file to upload. Please select a file and try again.",
+                           self::M_WARNING);
         }
-        $this->_redirect('/panel/remediation/sub/view/id/' . $id);
+        $this->_forward('view', 'Remediation', null, array('id'=>$id));
     }
 
     /**

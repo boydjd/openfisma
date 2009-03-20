@@ -250,7 +250,26 @@ $(document).ready(function(){
                         onClose: showJustification,
                         buttonImageOnly: true,
                         buttonImage: '/images/calendar.gif',
-                        buttonText: 'Calendar'});
+                        buttonText: 'Calendar'}).keypress(function (){
+                        return false;
+                        });
+                 var tmpVal = $('input[name="poam[action_current_date]"]').val();
+                 $('input[name="poam[action_current_date]"]').change(function () {
+                     var oDate= new Date();
+                     var Year = oDate.getFullYear();
+                     var Month = oDate.getMonth();
+                     Month = Month + 1;
+                     if (Month < 10) {Month = '0'+Month;}
+                     var Day = oDate.getDate();
+                     if (Day < 10) {Day = '0' + Day;}
+                     if (this.value <= parseInt(""+Year+Month+Day)) {
+                         // to do English
+                         alert('The date is invalid');
+                         this.value = tmpVal;
+                     } else {
+                         tmpVal = this.value;
+                     }
+                 });
             }else if( type == 'textarea' ){
                 var row = target.attr('rows');
                 var col = target.attr('cols');
@@ -260,7 +279,7 @@ $(document).ready(function(){
             }else{
                 $.get(url,{value:cur_val.trim()},
                 function(data){
-                    if(type == 'select'){
+                    if (type == 'select') {
                         cur_span.replaceWith('<select name="'+name+'">'+data+'</select>');
                     }
                 });
