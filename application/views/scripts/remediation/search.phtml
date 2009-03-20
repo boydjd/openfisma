@@ -3,8 +3,14 @@
 <?php Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
     <div class="toolbar">
         <?php 
-            echo new Yui_Form_Button_Link('Export PDF', 'exportPdf', "{$this->attachUrl}/format/pdf", '/images/pdf.gif');
-            echo new Yui_Form_Button_Link('Export Excel', 'exportExcel', "{$this->attachUrl}/format/xls", '/images/xls.gif');
+            echo new Yui_Form_Button_Link('Export PDF', 
+                                          'exportPdf', 
+                                          "{$this->attachUrl}/format/pdf", 
+                                          '/images/pdf.gif');
+            echo new Yui_Form_Button_Link('Export Excel', 
+                                          'exportExcel', 
+                                          "{$this->attachUrl}/format/xls", 
+                                          '/images/xls.gif');
             $columnOptionsButton = new Yui_Form_Button('Options', 'columnOptions', '/images/options.png');
             $columnOptionsButton->onClick('showColumnOptions');
             echo $columnOptionsButton;
@@ -151,8 +157,8 @@ function showColumnOptions() {
         columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanelDiv', {width:"300px"} ); 
         columnOptionsPanel.setHeader('Show/Hide Columns');
         columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
-        columnOptionsPanel.center();
     	columnOptionsPanel.render(document.body); 
+    	columnOptionsPanel.center();
     }
     columnOptionsPanel.show();
 }

@@ -54,13 +54,15 @@
         <td>
             <input type="text" name="keywords" size="50" value="<?php echo $this->params['keywords'];?>">
         </td>
-        <td>
-            <a id="help_tips" href="/help/help/script/basicsyntax/" title="Simple search syntaxes" rel="/help/help/script/basicsyntax/">
-                <img src="/images/help.gif">
-            </a>
-        </td>
         <td><?php echo new Yui_Form_Button_Submit('Search', 'remediationSearchSubmit'); ?></td>
-        <td><?php if ($flag == '') { echo new Yui_Form_Button_Link('Toggle Advanced Search Options', 'advanced_search', '#'); } ?></td>
+        <td><?php echo new Yui_Form_Button_Link('Toggle Advanced Search Options', 'advanced_search', '#'); ?></td>
+        <td>
+            <?php 
+            $helpButton = new Yui_Form_Button('Help', 'searchHelp', '/images/help.gif');
+            $helpButton->onClick('showHelp', 'search');;
+            echo $helpButton; 
+            ?>
+        </td>
      </tr>
      <?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
          <tr>

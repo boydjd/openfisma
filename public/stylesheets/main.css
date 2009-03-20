@@ -307,3 +307,30 @@ tr.alt td {
 tr.over td { 
     background:#bcd4ec;
 } 
+
+/* The notice styles are used for things like the privacy policy, rules of behavior, etc. Sometimes these items
+ * are presented outside of any main layout, so they need to be able to stand on their own.
+ */
+.notice {
+    font-size: 12px;
+    width: 60%;
+    margin: 2em auto;
+    border: 1px solid #bebebe;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+.notice p {
+    padding: 0px 5px;
+}
+
+.notice h1 {
+    text-align: left;
+    padding: 5px 5px;
+    color: #44637a;
+    background-color: #dddddd;
+    line-height: 23px;
+    font-weight: bold;
+    margin-top: 0;
+}
+

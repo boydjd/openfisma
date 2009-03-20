@@ -35,7 +35,8 @@ class Yui_Form_Button extends Zend_Form_Element
 {
     protected $_label;
     protected $_id;
-    protected $_onClick;   
+    protected $_onClickFunction;
+    protected $_onClickArgument;   
     protected $_image;
     
     /**
@@ -74,7 +75,7 @@ class Yui_Form_Button extends Zend_Form_Element
                        YAHOO.util.Event.onDOMReady(function() {
                            var button = new YAHOO.widget.Button('$this->_id', 
                                {
-                                   onclick: {fn: $this->_onClick}
+                                   onclick: {fn: $this->_onClickFunction, obj: \"$this->_onClickArgument\"}
                                }
                            );";
         if (isset($this->_image)) {
@@ -88,8 +89,12 @@ class Yui_Form_Button extends Zend_Form_Element
     /**
      * Specify the name of a javascript function (without parentheses) to use as the click event handler for this
      * button. Not necessarily supported by all subclasses.
+     * 
+     * @param $functionName
+     * @param $argument An optional argument to pass to the click handler function               
      */              
-    function onClick($functionName) {
-        $this->_onClick = $functionName;
+    function onClick($functionName, $argument = null) {
+        $this->_onClickFunction = $functionName;
+        $this->_onClickArgument = $argument;
     }    
 }
