@@ -65,6 +65,8 @@
             if ($this->acl->isAllowed('remediation', 'update_finding_course_of_action')
                 && in_array($this->poam['status'], array('NEW', 'DRAFT'))) {
                 echo ' class="date editable" target="action_est_date">';
+            } else {
+                echo '>';
             }
             
             if (!isset($this->poam['action_current_date'])) {
@@ -75,9 +77,9 @@
     </span>
     <?php 
     if (!empty($this->poam['ecd_justification'])) {
-        echo '<b>Justification:</b> '
+        echo '<b>Justification:</b> "'
            . $this->poam['ecd_justification']
-           . ' ('
+           . '" ('
            . $this->justification['account']
            . ' on '
            . $this->justification['time']

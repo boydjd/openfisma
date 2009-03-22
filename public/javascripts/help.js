@@ -4,7 +4,6 @@ function showHelp(event, helpModule) {
     if (helpPanels[helpModule]) {
         helpPanels[helpModule].show();
     } else {
-        alert('create panel');
         // Create new panel
         var newPanel = new YAHOO.widget.Panel('helpPanel', {width:"400px"} );
         newPanel.setHeader("Help");

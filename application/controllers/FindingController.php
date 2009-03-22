@@ -40,8 +40,8 @@ define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
 class FindingController extends PoamBaseController
 {
     /**
-     Provide searching capability of findings
-     Data is limited in legal systems.
+     * Provide searching capability of findings
+     * Data is limited in legal systems.
      */
     protected function _search($criteria)
     {
@@ -76,7 +76,7 @@ class FindingController extends PoamBaseController
 
 
     /**
-     Edit finding infomation
+     * Edit finding information
      */
     public function editAction()
     {

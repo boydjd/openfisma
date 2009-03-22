@@ -334,3 +334,14 @@ tr.over td {
     margin-top: 0;
 }
 
+/* The message bar is used to present feedback on user actions, such as indications
+ * of success or failure. 
+ */
+div#msgbar {
+    border: 1px solid red;
+    background-color: pink;
+    margin-top: 10px;
+    text-align: center;
+    padding: 3px;
+    display: none;
+}

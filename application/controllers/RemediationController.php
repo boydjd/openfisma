@@ -1510,6 +1510,7 @@ class RemediationController extends PoamBaseController
             } else {
                 $row['attachments'] = 'N';
             }
+            $row['duetime'] = $this->view->isOnTime($row['duetime']);
             if ($format == 'pdf' || $format == 'xls') {
                 $row['finding_data'] = trim(html_entity_decode($row['finding_data']));
                 $row['action_suggested'] = trim(html_entity_decode($row['action_suggested']));
@@ -1523,12 +1524,12 @@ class RemediationController extends PoamBaseController
                 $columnPreference = $ret->search_columns_pref;
                 $this->view->columnPreference = $columnPreference;
             } else {
-                $row['finding_data'] = $this->view->ShowLongText($row['finding_data']);
-                $row['action_suggested'] = $this->view->ShowLongText($row['action_suggested']);
-                $row['action_planned'] = $this->view->ShowLongText($row['action_planned']);
-                $row['threat_justification'] = $this->view->ShowLongText($row['threat_justification']);
-                $row['threat_source'] = $this->view->ShowLongText($row['threat_source']);
-                $row['cmeasure_effectiveness'] = $this->view->ShowLongText($row['cmeasure_effectiveness']);
+                $row['finding_data'] = $this->view->ShowLongText($row['finding_data'], $this->view->keywords);
+                $row['action_suggested'] = $this->view->ShowLongText($row['action_suggested'], $this->view->keywords);
+                $row['action_planned'] = $this->view->ShowLongText($row['action_planned'], $this->view->keywords);
+                $row['threat_justification'] = $this->view->ShowLongText($row['threat_justification'], $this->view->keywords);
+                $row['threat_source'] = $this->view->ShowLongText($row['threat_source'], $this->view->keywords);
+                $row['cmeasure_effectiveness'] = $this->view->ShowLongText($row['cmeasure_effectiveness'], $this->view->keywords);
             }
         }
 

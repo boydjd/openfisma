@@ -43,14 +43,14 @@ class HelpController extends Zend_Controller_Action
      */
     public function helpAction()
     {
-        $script = $this->_request->getParam('script');
+        $module = $this->_request->getParam('module');
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
-        $template = $this->getViewScript($script);
+        $template = $this->getViewScript($module);
         if (is_file(Config_Fisma::getPath('application') . '/views/scripts/' . $template)) {
-            $this->render($script);
+            $this->render($module);
         } else {
-            $this->render('noclue');
+            $this->render('notFound');
         }
     }
 }

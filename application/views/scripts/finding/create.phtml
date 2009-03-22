@@ -9,12 +9,16 @@
 
 <form name="finding" method="post" action="/panel/finding/sub/create/is/new" >
 <table>
-    <tr><td>
-        <?php echo new Yui_Form_Button_Submit('Create Finding', 'createFindingSubmit'); ?>
-        <?php echo new Yui_Form_Button_Reset('Reset Form', 'createFindingReset'); ?>
-    </td></tr>
-    <tr><td>
-
+    <tr>
+        <td>
+            <div class="toolbar">
+                <?php echo new Yui_Form_Button_Submit('Create Finding', 'createFindingSubmit'); ?>
+                <?php echo new Yui_Form_Button_Reset('Reset Form', 'createFindingReset'); ?>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
         <table border="0" width="100%" cellpadding="5" class="tipframe">
             <tr> <th align="left">General Information</th> </tr>
             <tr> <td>
@@ -33,7 +37,7 @@
                             <td align="right"><b>Finding Source:&nbsp;</b></td>
                             <td>
                             <?php 
-                                $this->source[0] = '--Any--';
+                                array_unshift($this->source, '--Any--');
                                 echo $this->formSelect('poam[source_id]', 0, null, $this->source); 
                             ?>
                                 
@@ -68,7 +72,9 @@
                     <table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
                         <tr>
                             <th align="left" >Security Control:&nbsp;
-                            <?php echo $this->formSelect('poam[blscr_id]', 0, null, $this->blscr_list);?>
+                            <?php
+                                array_unshift($this->blscr_list, 'NONE');
+                                echo $this->formSelect('poam[blscr_id]', null, null, $this->blscr_list);?>
                             </th>
                         </tr>
                     </table>
@@ -100,10 +106,8 @@
                                         <td><b>System:</b></td>
                                         <td>
                             <?php 
-                                $this->system[0] = '--Any--';
-                                echo $this->formSelect('poam[system_id]', 0, 
-                                array('url'=>"/asset/search"), 
-                                $this->system); 
+                                array_unshift($this->system, '--Any--');
+                                echo $this->formSelect('poam[system_id]', 0, array('url'=>"/asset/search"), $this->system); 
                             ?>
                                         </td>
                                         <td><b>Asset Name:</b></td>
