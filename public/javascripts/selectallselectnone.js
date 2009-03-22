@@ -1,13 +1,3 @@
-// function used in any form or page that requires a select all and select none buttons
-$(function(){
-    $(":button[name=select_allButton-button]").click(function(){
-        $(":checkbox").attr( 'checked','checked' );
-    });
-    $(":button[name=select_noneButton-button]").click(function(){
-        $(":checkbox").attr( 'checked','' );
-    });
-})
-
 /* This function is unsafe because it selects all checkboxes on the page, regardless
    of what grouping they belong to.
    @todo Write a safe version of this function called selectAll that takes some kind

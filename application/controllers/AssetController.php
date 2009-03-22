@@ -325,7 +325,6 @@ class AssetController extends PoamBaseController
         if ('edit' == $req->getParam('s')) {
             $this->view->assign('system_list', $this->_systemList);
             $this->view->assign('network_list', $this->_networkList);
-            //$this->_helper->actionStack('header', 'Panel');
             $this->render('edit');
             $this->_helper->actionStack('search', 'Product');
         }
@@ -396,16 +395,16 @@ class AssetController extends PoamBaseController
         }
 
         if ($errno < 0) {
-            $msg = "Pleasse select a option at least";
+            $msg = "You did not select any assets to delete";
             $this->message($msg, self::M_WARNING);
         } else if ($errno > 0) {
-            $msg = $errno . "Failed to delete the asset";
+            $msg = "Failed to delete the asset[s]";
             $this->message($msg, self::M_WARNING);
         } else {
             $this->_notification->add(Notification::ASSET_DELETED,
                $this->_me->account, $assetIds);
 
-            $msg = "Asset deleted successfully";
+            $msg = "Asset[s] deleted successfully";
             $this->message($msg, self::M_NOTICE);
         }
         $this->_forward('asset', 'Panel', null, array(

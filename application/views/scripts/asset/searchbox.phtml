@@ -1,5 +1,5 @@
 <?php
-    $this->system_list[0] = '--Any--';
+    array_unshift($this->system_list, '--Any--');
     /* perserve the searching criteria in links */
     $url = '/panel/asset/sub/searchbox/s/search';
     if(!empty($this->criteria['system_id'])){
@@ -26,32 +26,30 @@
         $url .='/p/'.$this->criteria['p'];
     }
 ?>
-<?php //Format_Section::startSection("Asset Search"); ?>
 <form action="/panel/asset/sub/searchbox/s/search" method="post">
-<table class="searchFilters">
-    <tr>
-        <td align="left"><b>System:</b></td>
-        <td align="left"><b>Vendor:</b></td>
-        <td align="left"><b>Product Name:</b></td>
-        <td align="left"><b>Version:</b></td>
-        <td align="left"><b>IP Address:</b></td>
-        <td align="left"><b>Port</b></td>
-        <td align="left">&nbsp;</td>
-    </tr>
-    <tr>
-        <td align="left">
-            <?php echo $this->formSelect('system_id',$this->criteria['system_id'],null, $this->system_list);?>
-        </td>
-        <td align="left"><input name="vendor" type="text" id="vendor" value="<?php echo $this->criteria['vendor'];?>"></td>
-        <td align="left"><input type="text" name="product" value="<?php echo $this->criteria['product'];?>"></td>
-        <td align="left"><input name="version" type="text" id="version" value="<?php echo $this->criteria['version'];?>"></td>
-        <td align="left"><input type="text" name="ip" value="<?php echo $this->criteria['ip'];?>" maxlength="23"></td>
-        <td align="left"><input type="text" name="port" value="<?php echo $this->criteria['port'];?>" size="10"></td>
-        <td><?php echo new Yui_Form_Button_Submit('Search', 'assetSearchSubmit')?></td>
-    </tr>
-</table>
+    <table class="searchFilters">
+        <tr>
+            <td><b>System:</b></td>
+            <td><?php echo $this->formSelect('system_id',$this->criteria['system_id'],null, $this->system_list);?></td>
+            <td><b>Vendor:</b></td>
+            <td><input name="vendor" type="text" id="vendor" value="<?php echo $this->criteria['vendor'];?>"></td>
+            <td><b>Product Name:</b></td>
+            <td><input type="text" name="product" value="<?php echo $this->criteria['product'];?>"></td>
+            <td>&nbsp;</td>
+            <td><?php echo new Yui_Form_Button_Submit('Search', 'assetSearchSubmit')?></td>
+        </tr>
+        <tr>
+            <td><b>IP Address:</b></td>
+            <td><input type="text" name="ip" value="<?php echo $this->criteria['ip'];?>" maxlength="23"></td>
+            <td><b>Port</b></td>
+            <td><input type="text" name="port" value="<?php echo $this->criteria['port'];?>" size="10"></td>
+            <td><b>Version:</b></td>
+            <td><input name="version" type="text" id="version" value="<?php echo $this->criteria['version'];?>"></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
 </form>
-<?php //Format_Section::stopSection(); ?>
 
 <?php 
     echo $this->partial('asset/sublist.phtml',array('asset_list'=>$this->asset_list,

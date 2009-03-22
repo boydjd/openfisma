@@ -1,36 +1,23 @@
-<?php
-    echo $this->doctype();
-?>
+<?php echo "{$this->doctype()}\n" ?>
 <html>
-<head>
-<?php
-    $this->headTitle()->setSeparator(' - ');
-    $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
-    echo $this->headTitle();
-?>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" type="text/css" href="/stylesheets/layout.css">
-<link rel="stylesheet" type="text/css" href="/stylesheets/fisma.css">
-<link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
-<link rel="icon"
-      type="image/ico"
-      href="/images/favicon.ico" />
-
-</head>
-<body>
-<div id='container'>
-
-    <div id="content">
-        <?php echo $this->layout()->content; ?>
-
-        <div id='bottom'>
-            <?php 
-                $this->action('footer', 'panel'); 
-                echo $this->layout()->footer; 
-            ?>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <?php
+            echo $this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
+            Yui::includeLibrary('yahoo-dom-event');
+            Yui::includeLibrary('element');
+            Yui::includeLibrary('button');    
+        	echo Yui::printIncludes();
+            echo $this->headLink()->appendStylesheet('/yui/assets/skins/sam/skin.css')
+                                  ->appendStylesheet('/stylesheets/main.css', 'screen,print')
+                                  ->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
+        ?>
+    </head>
+    <body class="yui-skin-sam">
+        <div id='container'>
+            <div id="content">
+                <?php echo $this->layout()->content; ?>
+            </div>
         </div>
-    </div>
-
-</div>
-</body>
+    </body>
 </html>

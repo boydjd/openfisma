@@ -80,6 +80,7 @@ class User extends FismaModel
                   ->where("u.id = $id and r.nickname != 'auto_role'");
         return $db->fetchAll($qry);
     }
+    
     /**
      * Retrieve the systems that the user belongs to
      * @param $id user id
@@ -108,6 +109,7 @@ class User extends FismaModel
         $db->setFetchMode($originMode);
         return $sys;
     }
+    
     /** 
      * Log any creation, modification, disabling and termination of account.
      *
@@ -176,12 +178,12 @@ class User extends FismaModel
     }
     
     /**
-        Associate systems to a user.
-
-        @param uid int the user id
-        @param type type of associated data, one of system, role.
-        @param data array|int system or role id or array of them
-        @param reverse bool to associate or delete
+     * Associate systems to a user.
+     *
+     * @param uid int the user id
+     * @param type type of associated data, one of system, role.
+     * @param data array|int system or role id or array of them
+     * @param reverse bool to associate or delete
      */
     public function associate ($uid, $type, $data, $reverse = false)
     {

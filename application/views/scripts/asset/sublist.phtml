@@ -1,5 +1,10 @@
 <?php Format_Section::startSection("Asset Inventory"); ?>
-
+<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
+<script type="text/javascript">
+    function deleteSelectedAssets() {
+        document.forms.assetresult.submit();
+    }
+</script>
 <form id="assetresult" method="post" action="/asset/delete">
 <div class="toolbar">
     <?php
@@ -7,9 +12,17 @@
         echo new Yui_Form_Button_Link('Export PDF', 'pdf', "$this->url/format/pdf", '/images/pdf.gif');
         echo new Yui_Form_Button_Link('Export Excel', 'xls', "$this->url/format/xls", '/images/xls.gif');
         if($this->acl->isAllowed('asset','delete')) {
-            echo new Yui_Form_Button_Link('Select All', 'selectAll', '#');
-            echo new Yui_Form_Button_Link('Select None', 'selectNone', '#');
-            echo new Yui_Form_Button_Link('Delete Selected', 'deleteSelected', '#');
+            $selectAllButton = new Yui_Form_Button('Select All', 'selectAll');
+            $selectAllButton->onClick('selectAllUnsafe');
+            echo $selectAllButton;
+
+            $selectNoneButton = new Yui_Form_Button('Select None', 'selectNone');
+            $selectNoneButton->onClick('selectNoneUnsafe');
+            echo $selectNoneButton;
+
+            $deleteButton = new Yui_Form_Button('Delete Selected', 'deleteSelected');
+            $deleteButton->onClick('deleteSelectedAssets');
+            echo $deleteButton;
         }
         if($this->acl->isAllowed('asset','create')) {
             echo new Yui_Form_Button_Link('Create Asset', 'createAsset', '/asset/create');

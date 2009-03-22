@@ -1,21 +1,5 @@
-<style>
-a.button {
-    display:inline;
-    float:none;
-}
-</style>
-<?php Format_Section::startSection(Config_Fisma::readSysConfig('system_name') . ' Rules of Behavior'); ?>
-
-<div class="notice">
-<h1>Rules of Behavior for <?php echo Config_Fisma::readSysConfig('system_name');?></h1>
-<p><?php
-    $behaviorRules = Config_Fisma::readSysConfig('behavior_rule');
-    // Replace double newline with <p> tag
-    $behaviorRules = preg_replace("/\n\s+\n/", '</p><p>', $behaviorRules);
-    // Replace single newline with <br> tag
-    $behaviorRules = str_replace("\n", '<br>', $behaviorRules);
-    print($behaviorRules);
-?></p>
-</div>
-
-<?php Format_Section::stopSection(); ?>
+<?php 
+    Format_Section::startSection(Config_Fisma::readSysConfig('system_name') . ' Rules of Behavior');
+    print(Config_Fisma::readSysConfig('behavior_rule'));
+    Format_Section::stopSection(); 
+?>

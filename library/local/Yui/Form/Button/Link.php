@@ -54,20 +54,22 @@ class Yui_Form_Button_Link extends Yui_Form_Button
         $onClick = (!empty($this->_onClick)) ? "onclick: {fn: $this->_onClick}," : '';
         $render = "<span id='{$this->_id}'></span>
                    <script type='text/javascript'>
-                        var button = new YAHOO.widget.Button({  
-                             type: \"link\",  
-                             label: \"{$this->_label}\",  
-                             href: \"{$this->_href}\",
-                             id: \"{$this->_id}Button\",
-                             $onClick  
-                             disabled: $disabled,
-                             container: \"{$this->_id}\"
-                        });";
+                        YAHOO.util.Event.onDOMReady(function() {
+                            var button = new YAHOO.widget.Button({  
+                                 type: \"link\",  
+                                 label: \"{$this->_label}\",  
+                                 href: \"{$this->_href}\",
+                                 id: \"{$this->_id}Button\",
+                                 $onClick  
+                                 disabled: $disabled,
+                                 container: \"{$this->_id}\"
+                            });
+                        ";
         if (isset($this->_image)) {
             $render .= "button._button.style.background = 'url($this->_image) 10% 50% no-repeat';\n";
             $render .= "button._button.style.paddingLeft = '3em';\n";
         }
-        $render .= "\n</script>";
+        $render .= "\n});</script>";
         return $render;
     }
 }
