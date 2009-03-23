@@ -25,107 +25,6 @@
 <?php Format_Section::stopSection(); ?>
 
 <script type="text/javascript">
-// Column definitions
-var myColumnDefs = [
-    <?php 
-    // PHP is used to populate this javascript array with the column values defined in the controller
-    foreach ($this->columns as $columnName => $columnDef) {
-        print("{key:\"$columnName\", label:\"{$columnDef['label']}\", "
-              . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
-              . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false') . "},\n");
-    }
-    ?>
-];
-
-// Custom parser
-var stringToDate = function(sData) {
-    var array = sData.split("-");
-    return new Date(array[1] + " " + array[0] + ", " + array[2]);
-};
-
-// DataSource instance
-var myDataSource = new YAHOO.util.DataSource("/remediation/search2/format/json");
-myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-myDataSource.responseSchema = {
-    resultsList: "poam.records",
-    metaFields: {
-        totalRecords: "poam.totalRecords"
-    }
-};
-
-// A function which builds the query string
-var myRequestBuilder = function(oState, oSelf) {
-    // Get states or use defaults
-    oState = oState || {pagination:null, sortedBy:null};
-    var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
-    var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
-    var startIndex = oState.pagination.recordOffset;
-    var count = oState.pagination.rowsPerPage;
-
-    // Build custom request
-    var request = "<?php echo $this->link; ?>" + 
-                  "/sortby/" + sort +
-                  "/order/" + dir +
-                  "/startIndex/" + startIndex +
-                  "/count/" + count;
-    return request;
-};
-
-// A function handle clicks on the rows
-var myRowClickHandler = function(clickEvent) {
-    var target = clickEvent.target
-    alert(clickEvent.target);
-    dump(clickEvent.target);
-};
-
-// DataTable configuration
-var myConfigs = {
-    initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/10",
-    dynamicData: true, 
-    sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
-    paginator: new YAHOO.widget.Paginator(
-        { 
-            rowsPerPage:10,
-            template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-        }
-    ), 
-    generateRequest : myRequestBuilder
-};
-
-// DataTable instance
-var myDataTable = new YAHOO.widget.DataTable("dynamicdata", myColumnDefs, myDataSource, myConfigs);
-
-// Update totalRecords on the fly with value from server
-myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
-    oPayload.totalRecords = oResponse.meta.totalRecords;
-    // display total records in the search results header, if not already present
-    var searchResultsHeader = document.getElementById('searchResultsTotalFound');
-    if (!searchResultsHeader.firstChild) {
-        var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
-        var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
-        searchResultsHeader.appendChild(searchTotalFound);
-    }
-    return oPayload;
-}
-
-// Enable row highlighting and clicking
-myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
-myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-myDataTable.subscribe("rowClickEvent", 
-    function (oArgs) {
-        var elTarget = oArgs.target;
-        var oRecord = this.getRecord(elTarget);
-        var keywords = "<?php echo (isset($this->keywords)) ? "/keywords/{$this->keywords}" : ''; ?>";
-        document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
-    }
-);
-// Enable keyword highlighting when loading data from the data source
-myDataTable.subscribe("renderEvent", 
-    function (oArgs) {
-        highlight(document.getElementById('dynamicdata'), "<?php echo $this->keywords; ?>");
-    }
-);
-
 var columnOptionsShowing = false;
 var columnOptionsPanel;
 /* A function which displays the buttons for showing/hiding columns in the search table */
@@ -198,5 +97,112 @@ function saveColumnPreference(event, obj) {
                                     null); 
     alert('Your preference has been saved. These columns will be visible whenever you log in.');
 }
+
+YAHOO.util.Event.onDOMReady(function () {
+
+    // Column definitions
+    var myColumnDefs = [
+        <?php 
+        // PHP is used to populate this javascript array with the column values defined in the controller
+        $text = '';
+        foreach ($this->columns as $columnName => $columnDef) {
+            $text .= "{key:\"$columnName\", label:\"{$columnDef['label']}\", "
+                   . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
+                   . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false') . "},";
+        }
+        $text = substr($text, 0, -1); // remove trailing comma, otherwise IE would throw an exception
+        echo $text;
+        ?>
+    ];
+    
+    // Custom parser
+    var stringToDate = function(sData) {
+        var array = sData.split("-");
+        return new Date(array[1] + " " + array[0] + ", " + array[2]);
+    };
+    
+    // DataSource instance
+    var myDataSource = new YAHOO.util.DataSource("/remediation/search2/format/json");
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "poam.records",
+        metaFields: {
+            totalRecords: "poam.totalRecords"
+        }
+    };
+    
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+    
+        // Build custom request
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        return request;
+    };
+    
+    // A function handle clicks on the rows
+    var myRowClickHandler = function(clickEvent) {
+        var target = clickEvent.target
+        alert(clickEvent.target);
+        dump(clickEvent.target);
+    };
+    
+    // DataTable configuration
+    var myConfigs = {
+        initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/10",
+        dynamicData: true, 
+        sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            { 
+                rowsPerPage:10,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ), 
+        generateRequest : myRequestBuilder
+    };
+        
+    // DataTable instance
+    var myDataTable = new YAHOO.widget.DataTable("dynamicdata", myColumnDefs, myDataSource, myConfigs);
+    
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        if (!searchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            searchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    // Enable row highlighting and clicking
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    myDataTable.subscribe("rowClickEvent", 
+        function (oArgs) {
+            var elTarget = oArgs.target;
+            var oRecord = this.getRecord(elTarget);
+            var keywords = "<?php echo (isset($this->keywords)) ? "/keywords/{$this->keywords}" : ''; ?>";
+            document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
+        }
+    );
+    // Enable keyword highlighting when loading data from the data source
+    myDataTable.subscribe("renderEvent", 
+        function (oArgs) {
+            highlight(document.getElementById('dynamicdata'), "<?php echo $this->keywords; ?>");
+        }
+    );
+});
 </script>
 
