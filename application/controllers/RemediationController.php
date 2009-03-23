@@ -335,49 +335,6 @@ class RemediationController extends PoamBaseController
             $pageUrl .= $this->makeUrlParams($params['order']);
             $attachUrl .= $this->makeUrlParams($params['order']);
         }
-        
-        if (!empty($params['status'])) {
-            $now = clone parent::$now;
-            switch ($params['status']) {
-                case 'NEW':    $params['status'] = 'NEW';
-                    break;
-                case 'DRAFT':  $params['status'] = 'DRAFT';
-                    break;
-                case 'EN':     $params['status'] = 'EN';
-                    break;
-                case 'CLOSED': $params['status'] = 'CLOSED';
-                    break;
-                case 'NOT-CLOSED': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                    break;
-                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);
-                    break;
-                case 'NOUP-60':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(60, Zend_Date::DAY);
-                    break;
-                case 'NOUP-90':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(90, Zend_Date::DAY);
-                    break;
-                default :
-                     $evaluation = new Evaluation();
-                     $query = $evaluation->select()->from($evaluation, array('precedence_id', 'group'))
-                                                   ->where('nickname = ?', $params['status']);
-                     $ret = $evaluation->fetchRow($query)->toArray();
-                     if (!empty($ret)) {
-                         $precedenceId = $ret['precedence_id'];
-                         $group = $ret['group'];
-                         if ('ACTION' == $group) {
-                             $params['mp']     = $precedenceId;
-                         }
-                         if ('EVIDENCE' == $group) {
-                             $params['ep']     = $precedenceId;
-                         }
-                     }
-                    break;
-            }
-        }
 
         //Basic Search
         if (!empty($params['keywords'])) {
@@ -396,49 +353,6 @@ class RemediationController extends PoamBaseController
             }
         }
         
-        $this->_helper->contextSwitch()->initContext();
-        $format = $this->_helper->contextSwitch()->getCurrentContext();
-        if (empty($format)) {
-            $list = $this->_poam->search($this->_me->systems, '*',
-                    $params, $this->_paging['currentPage'],
-                    $this->_paging['perPage'], false);
-        } else {
-            $list = $this->_poam->search($this->_me->systems, '*', $params, 0, 0, false);
-        }
-        $total = array_pop($list);
-        //select poams whether have attachments
-        foreach ($list as &$row) {
-            $query = $this->_poam->getAdapter()->select()->from('evidences', 'id')
-                                               ->where('poam_id = '.$row['id']);
-            $result = $this->_poam->getAdapter()->fetchRow($query);
-            if (!empty($result)) {
-                $row['attachments'] = 'Y';
-            } else {
-                $row['attachments'] = 'N';
-            }
-            if ($format == 'pdf' || $format == 'xls') {
-                $row['finding_data'] = trim(html_entity_decode($row['finding_data']));
-                $row['action_suggested'] = trim(html_entity_decode($row['action_suggested']));
-                $row['action_planned'] = trim(html_entity_decode($row['action_planned']));
-                $row['threat_justification'] = trim(html_entity_decode($row['threat_justification']));
-                $row['threat_source'] = trim(html_entity_decode($row['threat_source']));
-                $row['cmeasure_effectiveness'] = trim(html_entity_decode($row['cmeasure_effectiveness']));
-
-                $user = new User();
-                $ret = $user->find($this->_me->id)->current();
-                $columnPreference = $ret->search_columns_pref;
-                $this->view->columnPreference = $columnPreference;
-            }
-        }
-        
-        $this->_paging['totalItems'] = $total;
-        $this->_paging['fileName'] = "$pageUrl/p/%d";
-        $lastSearchUrl = str_replace('%d', $this->_paging['currentPage'],
-                                     $this->_paging['fileName']);
-        $urlNamespace = new Zend_Session_Namespace('urlNamespace');
-        $urlNamespace->lastSearch = $lastSearchUrl;
-        $pager = & Pager::factory($this->_paging);
- 
         // Set up the data for the columns in the search results table
         $visibleColumns = $_COOKIE['search_columns_pref'];
         $columns = array(
@@ -496,12 +410,6 @@ class RemediationController extends PoamBaseController
         );
         $this->view->assign('columns', $columns);
  
-        $this->view->assign('list', $list);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('source_list', $this->_sourceList);
-        $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('total_pages', $total);
-        $this->view->assign('links', $pager->getLinks());
         $this->view->assign('attachUrl', $attachUrl);
         $this->view->assign('url', $url);
         
@@ -550,71 +458,7 @@ class RemediationController extends PoamBaseController
                 Make sure a valid ID is inputed");
         }
 
-        if (!empty($poamDetail['action_est_date'])
-            && $poamDetail['action_est_date'] != $poamDetail['action_current_date']) {
-            $query = $this->_poam->getAdapter()->select()
-                          ->from(array('al'=>'audit_logs'), 'date_format(timestamp, "%Y-%m-%d") as time')
-                          ->join(array('u'=>'users'), 'al.user_id = u.id', 'u.account')
-                          ->where('al.poam_id = ?', $id)
-                          ->where('al.description like "%action_current_date%"')
-                          ->order('al.id DESC');
-            $justification = $this->_poam->getAdapter()->fetchRow($query);
-            $this->view->assign('justification', $justification);
-        }
-        
-        $msEvaluation = $this->_poam->getActEvaluation($id);
-        $evalModel = new Evaluation();
-        $msEvallist = $evalModel->getEvalList('ACTION');
-        $mss = array();
-        if (!empty($msEvaluation)) {
-            $i = 0;
-            foreach ($msEvaluation as $k=>$row) {
-                if ($k != 0 && !($row['precedence_id'] > $msEvaluation[$k-1]['precedence_id'])) {
-                    $i++;
-                }
-                $mss[$i][] = $row;
-                if ($k == count($msEvaluation)-1) {
-                    if ($row['decision'] == 'DENIED') {
-                        //If denied, it should start a new round of evaluation 
-                        //however, none of this happens in DRAFT
-                        if ($poamDetail['status']!= 'DRAFT') {
-                            $mss[$i+1] = $msEvallist;
-                        }
-                    } else {
-                        // Get the list of remaining evaluation 
-                        $remainingEval = array_slice($msEvallist, $row['precedence_id']+1);
-                        // To keep the evaluation in the same round,re-organization the index
-                        foreach ($remainingEval as $v) {
-                            $mss[$i][] = $v;
-                        }
-                    }
-                }
-            }
-        } else {
-            $mss[] = $msEvallist;
-        }
-
-        $evEvaluation = $this->_poam->getEvEvaluation($id);
-        // currently we don't need to support the comments for est_date change
-        //$act_evaluation = $this->_poam->getActEvaluation($id);
-        $evs = array();
-        foreach ($evEvaluation as $evEval) {
-            $evid = & $evEval['id'];
-            if (!isset($evs[$evid]['ev'])) {
-                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
-            }
-            $evs[$evid]['acl'] = $this->_acl;
-            $evs[$evid]['eval'][$evEval['eval_name']] =
-                array_slice($evEval, 5);
-        }
-
         $this->view->assign('poam', $poamDetail);
-        $this->view->assign('logs', $this->_poam->getLogs($id));
-        $this->view->assign('ev_evals', $evs);
-        $this->view->assign('ms_evals', $mss);
-        $this->view->assign('ms_evaluation', $msEvaluation);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('keywords', $req->getParam('keywords'));
     }
     
@@ -1124,8 +968,7 @@ class RemediationController extends PoamBaseController
         $id = $req->getParam('id');
         $poamDetail = $this->_poam->getDetail($id);
         if (empty($poamDetail)) {
-            throw new Exception_General("POAM($id) is not found,
-                Make sure a valid ID is inputed");
+            throw new Exception_General("POAM($id) is not found, Make sure a valid ID is inputed");
         }
 
         if (!empty($poamDetail['action_est_date'])
@@ -1140,59 +983,9 @@ class RemediationController extends PoamBaseController
             $this->view->assign('justification', $justification);
         }
         
-        $msEvaluation = $this->_poam->getActEvaluation($id);
-        $evalModel = new Evaluation();
-        $msEvallist = $evalModel->getEvalList('ACTION');
-        $mss = array();
-        if (!empty($msEvaluation)) {
-            $i = 0;
-            foreach ($msEvaluation as $k=>$row) {
-                if ($k != 0 && !($row['precedence_id'] > $msEvaluation[$k-1]['precedence_id'])) {
-                    $i++;
-                }
-                $mss[$i][] = $row;
-                if ($k == count($msEvaluation)-1) {
-                    if ($row['decision'] == 'DENIED') {
-                        //If denied, it should start a new round of evaluation 
-                        //however, none of this happens in DRAFT
-                        if ($poamDetail['status']!= 'DRAFT') {
-                            $mss[$i+1] = $msEvallist;
-                        }
-                    } else {
-                        // Get the list of remaining evaluation 
-                        $remainingEval = array_slice($msEvallist, $row['precedence_id']+1);
-                        // To keep the evaluation in the same round,re-organization the index
-                        foreach ($remainingEval as $v) {
-                            $mss[$i][] = $v;
-                        }
-                    }
-                }
-            }
-        } else {
-            $mss[] = $msEvallist;
-        }
-
-        $evEvaluation = $this->_poam->getEvEvaluation($id);
-        // currently we don't need to support the comments for est_date change
-        //$act_evaluation = $this->_poam->getActEvaluation($id);
-        $evs = array();
-        foreach ($evEvaluation as $evEval) {
-            $evid = & $evEval['id'];
-            if (!isset($evs[$evid]['ev'])) {
-                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
-            }
-            $evs[$evid]['acl'] = $this->_acl;
-            $evs[$evid]['eval'][$evEval['eval_name']] =
-                array_slice($evEval, 5);
-        }
 
         $this->view->assign('poam', $poamDetail);
-        $this->view->assign('logs', $this->_poam->getLogs($id));
-        $this->view->assign('ev_evals', $evs);
-        $this->view->assign('ms_evals', $mss);
-        $this->view->assign('ms_evaluation', $msEvaluation);
         $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('keywords', $req->getParam('keywords'));
     }
 
@@ -1275,71 +1068,7 @@ class RemediationController extends PoamBaseController
                 Make sure a valid ID is inputed");
         }
 
-        if (!empty($poamDetail['action_est_date'])
-            && $poamDetail['action_est_date'] != $poamDetail['action_current_date']) {
-            $query = $this->_poam->getAdapter()->select()
-                          ->from(array('al'=>'audit_logs'), 'date_format(timestamp, "%Y-%m-%d") as time')
-                          ->join(array('u'=>'users'), 'al.user_id = u.id', 'u.account')
-                          ->where('al.poam_id = ?', $id)
-                          ->where('al.description like "%action_current_date%"')
-                          ->order('al.id DESC');
-            $justification = $this->_poam->getAdapter()->fetchRow($query);
-            $this->view->assign('justification', $justification);
-        }
-        
-        $msEvaluation = $this->_poam->getActEvaluation($id);
-        $evalModel = new Evaluation();
-        $msEvallist = $evalModel->getEvalList('ACTION');
-        $mss = array();
-        if (!empty($msEvaluation)) {
-            $i = 0;
-            foreach ($msEvaluation as $k=>$row) {
-                if ($k != 0 && !($row['precedence_id'] > $msEvaluation[$k-1]['precedence_id'])) {
-                    $i++;
-                }
-                $mss[$i][] = $row;
-                if ($k == count($msEvaluation)-1) {
-                    if ($row['decision'] == 'DENIED') {
-                        //If denied, it should start a new round of evaluation 
-                        //however, none of this happens in DRAFT
-                        if ($poamDetail['status']!= 'DRAFT') {
-                            $mss[$i+1] = $msEvallist;
-                        }
-                    } else {
-                        // Get the list of remaining evaluation 
-                        $remainingEval = array_slice($msEvallist, $row['precedence_id']+1);
-                        // To keep the evaluation in the same round,re-organization the index
-                        foreach ($remainingEval as $v) {
-                            $mss[$i][] = $v;
-                        }
-                    }
-                }
-            }
-        } else {
-            $mss[] = $msEvallist;
-        }
-
-        $evEvaluation = $this->_poam->getEvEvaluation($id);
-        // currently we don't need to support the comments for est_date change
-        //$act_evaluation = $this->_poam->getActEvaluation($id);
-        $evs = array();
-        foreach ($evEvaluation as $evEval) {
-            $evid = & $evEval['id'];
-            if (!isset($evs[$evid]['ev'])) {
-                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
-            }
-            $evs[$evid]['acl'] = $this->_acl;
-            $evs[$evid]['eval'][$evEval['eval_name']] =
-                array_slice($evEval, 5);
-        }
-
         $this->view->assign('poam', $poamDetail);
-        $this->view->assign('logs', $this->_poam->getLogs($id));
-        $this->view->assign('ev_evals', $evs);
-        $this->view->assign('ms_evals', $mss);
-        $this->view->assign('ms_evaluation', $msEvaluation);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('keywords', $req->getParam('keywords'));
     }
 

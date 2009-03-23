@@ -99,8 +99,10 @@ echo "<p>Evidence can only be uploaded if the finding is in 'EN' status and if y
 
 <div id="uploadEvidencePanel" style="display: none;">
     <form enctype="multipart/form-data" method="POST"
-         action="/panel/remediation/sub/upload_evidence/id/<?php echo $this->id;?>">
-         <b>Select File:&nbsp;</b> <input type='file' name='evidence' size='40' value=''>
+          action="/panel/remediation/sub/upload_evidence/id/<?php echo $this->id;?>"
+          id="evidenceUploadForm">
+         <b>Select File:&nbsp;</b>
+         <input type='file' name='evidence' size='40' value=''>
          <input type="submit" id="#upload_ev" value="Upload">
     </form>
     <ul style="margin-top:2em;list-style-type:disc">

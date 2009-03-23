@@ -1,7 +1,4 @@
-<?php 
-    Format_Section::startSection('User Account Administration'); 
-?>
-<table class="tipframe" align="center"  width="98%" cellpadding="0" cellspacing="0">
+<table class="searchFilters">
     <tbody>
         <tr>
             <th>[<a id="user_list" href="/panel/account/sub/list">User List</a>] (total: <?php echo $this->total;?>)</th>
@@ -12,7 +9,7 @@
             <th>
                 <table align="center">
                     <tbody>
-                        <tr height="22">
+                        <tr>
                             <td><b>Page:&nbsp;</b></td>
                             <td><?php echo $this->links['all'];?></td>
                         </tr>
@@ -35,7 +32,3 @@
         </tr>
     </tbody>
 </table>
-<?php 
-    Format_Section::stopSection();
-?>
-

@@ -78,6 +78,7 @@ class AssetController extends PoamBaseController
             'xls'
         ))->initContext();
     }
+    
     /**
      *  Searching the asset and list them.
      *
@@ -117,6 +118,7 @@ class AssetController extends PoamBaseController
         $this->_helper->layout->setLayout('ajax');
         $this->render('list');
     }
+    
     /**
      *  Create an asset
      */
@@ -170,6 +172,7 @@ class AssetController extends PoamBaseController
         $this->render();
         $this->_forward('search', 'product');
     }
+    
     /**
      * View detail information of an asset
      */
@@ -208,6 +211,7 @@ class AssetController extends PoamBaseController
         $this->_helper->layout->setLayout('ajax');
         $this->render('detail');
     }
+    
     /**
      * Search assets and list them
      */
@@ -285,6 +289,7 @@ class AssetController extends PoamBaseController
             $this->view->assign('links', $pager->getLinks());
         }
     }
+    
     /** 
      *  View an asset in detail
      */
@@ -330,7 +335,6 @@ class AssetController extends PoamBaseController
         }
     }
 
-
     /**
      *  update information of an asset
      */
@@ -371,6 +375,7 @@ class AssetController extends PoamBaseController
             's' => 'edit'
         ));
     }
+    
     /**
      *  Delete an asset
      */

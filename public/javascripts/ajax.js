@@ -171,29 +171,11 @@ $(document).ready(function(){
 
     getProdId();
 
-    $("input#all_finding").click(function(){
-        $('input[@type=checkbox]').attr('checked','checked');
-    });
-
-    $("input#none_finding").click(function(){
-        $('input[@type=checkbox]').removeAttr('checked');
-    });
-
     $("#checkaccount").click(function(){
         var account = $("input[name='account']").val();
         var account = encodeURIComponent(account);
         var url = "/account/checkaccount/format/html/account/"+account;
         $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
-    });
-
-    $("#generate_password").click(function(){
-        var url = "/account/generatepassword/format/html";
-        $.ajax({ url:url, type:"GET",dataType:"html",
-            success:function(password){
-                $("#password").attr("value", password);
-                $("#confirmPassword").attr("value", password);
-            }
-        });
     });
 
     $("#advanced_search").click(function (){
@@ -207,7 +189,7 @@ $(document).ready(function(){
     });
 
     $(".confirm").click(function(){
-        var str = "DELETING COMFIRMATION!";
+        var str = "DELETING CONFIRMATION!";
         if(confirm(str) == true){
             return true;
         }
@@ -291,7 +273,7 @@ function search_privilege() {
     $("select[name='available_privileges']").load(url,null);
 }
 
-function upload_evidence(){
+function upload_evidence() {
     if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
         return false;
     }
@@ -546,7 +528,7 @@ function form_confirm (check_form, action) {
     });
 
     if(changed) {
-        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save".') == true) {
+        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save Changes".') == true) {
             return true;
         }
     } else {
@@ -555,28 +537,6 @@ function form_confirm (check_form, action) {
         }
     }
     return false;
-}
-
-function newPanel(name, url) {
-    // Get panel content
-    YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/remediation/columnOptions', 
-                                    {
-                                        success: function(o) {
-                                            var menuData = YAHOO.lang.JSON.parse(o.responseText);
-                                            var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", { autosubmenudisplay: true });
-                                            YAHOO.util.Dom.addClass(oMenuBar.element, "yuimenubarnav");
-                                            oMenuBar.addItems(menuData.menubar);
-                                            oMenuBar.render('menubar');                                            
-                                        },
-                                        failure: function(o) {alert('Failed to load menubar: '+o.statusText);}
-                                    }, 
-                                    null);
-    var panel = new YAHOO.widget.Panel(name, {width:"300px"} ); 
-	panel.setHeader("Panel #2 from Script"); 
-	panel.setBody("This is a dynamically generated Panel."); 
-	panel.render(document.body); 
-	return panel;
 }
 
 function dump(arr) {

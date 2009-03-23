@@ -495,6 +495,7 @@ class FindingController extends PoamBaseController
         // Load the finding plugin form
         $uploadForm = Form_Manager::loadForm('finding_upload');
         $uploadForm = Form_Manager::prepareForm($uploadForm);
+        $uploadForm->setAttrib('id', 'injectionForm');
 
         // Populate the drop menu options
         $uploadForm->plugin->addMultiOption('', '');

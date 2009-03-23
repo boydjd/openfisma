@@ -51,7 +51,11 @@ function discardChanges(event) {
                 var tabContainer = document.getElementById('tabContainer');
                 var scriptNodes = tabContainer.getElementsByTagName('script');
                 for (script in scriptNodes) {
-                    eval(scriptNodes[script].text);
+                    if (scriptNodes[script].getAttribute('executeFlag') != 'true') {
+                        eval(scriptNodes[script].text);
+                        // Set a flag that prevents this script from being executed more than once
+                        scriptNodes[script].setAttribute('executeFlag', 'true');
+                    }
                 }
             }
             

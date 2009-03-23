@@ -84,8 +84,8 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
          * in the form configuration file, but I can't figure out how to do that right now.
          * @todo revisit this hack
          */
-        if ($element instanceof Zend_Form_Element_Submit) {
-            $replacement = new Yui_Form_Button_Submit($element->getValue(), $element->getName());
+        if ($element instanceof Zend_Form_Element_Submit && !$element instanceof Zend_Form_Element_Button) {
+            $replacement = new Yui_Form_Button_Submit($element->getValue(), $element->getName() . "Replacement");
             $replacement->readOnly = $element->readOnly;
             $render = $replacement->__tostring();
         } elseif ($element instanceof Zend_Form_Element_Textarea && $element->readOnly) {
