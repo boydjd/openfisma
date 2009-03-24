@@ -37,7 +37,7 @@
                             <td align="right"><b>Finding Source:&nbsp;</b></td>
                             <td>
                             <?php 
-                                array_unshift($this->source, '--Any--');
+                                $this->source = array('--Any--') + $this->source;
                                 echo $this->formSelect('poam[source_id]', 0, null, $this->source); 
                             ?>
                                 
@@ -73,7 +73,7 @@
                         <tr>
                             <th align="left" >Security Control:&nbsp;
                             <?php
-                                array_unshift($this->blscr_list, 'NONE');
+                                $this->blscr_list = array('--Any--') + $this->blscr_list;
                                 echo $this->formSelect('poam[blscr_id]', null, null, $this->blscr_list);?>
                             </th>
                         </tr>
@@ -106,7 +106,7 @@
                                         <td><b>System:</b></td>
                                         <td>
                             <?php 
-                                array_unshift($this->system, '--Any--');
+                                $this->system = array('--Any--') + $this->system;
                                 echo $this->formSelect('poam[system_id]', 0, array('url'=>"/asset/search"), $this->system); 
                             ?>
                                         </td>

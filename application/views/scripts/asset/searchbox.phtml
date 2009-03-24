@@ -1,5 +1,7 @@
 <?php
-    array_unshift($this->system_list, '--Any--');
+    // Prepending an element with array_merge or array_unshift has the side-effect of renumbering the indices. Using the
+    // + operator does not have this limitation, however.
+    $this->system_list = array('--Any--') + $this->system_list;
     /* perserve the searching criteria in links */
     $url = '/panel/asset/sub/searchbox/s/search';
     if(!empty($this->criteria['system_id'])){
