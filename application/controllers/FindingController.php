@@ -523,7 +523,7 @@ class FindingController extends PoamBaseController
         $fileReceived = false;
         $postValues = $this->_request->getPost();
 
-        if (isset($_POST['upload'])) {
+        if (isset($_POST['uploadReplacement'])) {
             if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
                 // Get information about the plugin, and then create a new instance of the plugin.
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
@@ -558,6 +558,8 @@ class FindingController extends PoamBaseController
                 // Error message
                 $this->message("Scan upload failed:<br>$errorString", self::M_WARNING);
             }
+            // This is a hack to make the submit button work with YUI:
+            /** @yui */ $uploadForm->upload->setValue('Upload');
             $this->render(); // Not sure why this view doesn't auto-render?? It doesn't render when the POST is set.
         }
     }

@@ -37,12 +37,14 @@
         <tr>
             <td class="tdc" colspan="8">
                 <?php 
-                    $selectAll = new Yui_Form_Button_Link('Select All', 'select_all');
-                    $selectAll->onClick('selectAllUnsafe');
-                    echo $selectAll;
-                    $selectNone = new Yui_Form_Button_Link('Select None', 'select_none');
-                    $selectNone->onClick('selectNoneUnsafe');
-                    echo $selectNone;
+                    $selectAllButton = new Yui_Form_Button('Select All', 'selectAll');
+                    $selectAllButton->onClick('selectAllUnsafe');
+                    echo $selectAllButton;
+        
+                    $selectNoneButton = new Yui_Form_Button('Select None', 'selectNone');
+                    $selectNoneButton->onClick('selectNoneUnsafe');
+                    echo $selectNoneButton;
+                    
                     echo new Yui_Form_Button_Submit('Delete Selected', 'delete_selected');                    
                     echo new Yui_Form_Button_Submit('Approve Selected', 'approve_selected');
                 ?>

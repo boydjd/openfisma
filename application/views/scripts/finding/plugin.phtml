@@ -4,28 +4,4 @@
     echo $this->uploadForm;
 ?>
 
-<script type="text/javascript">
-    // Create the modal loading panel when the form is submitted
-    var injectionForm = document.getElementById('injectionForm');
-    var loadingPanel = 
- 		new YAHOO.widget.Panel('loading',
- 			{ width:"240px", 
- 			  fixedcenter:true, 
- 			  close:false, 
- 			  draggable:false, 
- 			  zindex:4,
- 			  modal:true,
- 			  visible:false
- 			} 
-        );
-    loadingPanel.setHeader("Injecting findings...");
-    loadingPanel.setBody('<img src="/images/loading_bar.gif">');
-    loadingPanel.render(document.body);
-    
-    injectionForm.onsubmit = function () {
-        loadingPanel.show();
-        return true;
-    };
-</script>
-
 <?php Format_Section::stopSection(); ?>
