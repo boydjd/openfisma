@@ -41,7 +41,7 @@ class RemediationController extends PoamBaseController
         array('action_suggested'=>Notification::UPDATE_FINDING_RECOMMENDATION,
               'type'=>Notification::UPDATE_COURSE_OF_ACTION,
               'action_planned'=>Notification::UPDATE_COURSE_OF_ACTION,
-              'action_est_date'=>Notification::UPDATE_EST_COMPLETION_DATE,
+              'action_current_date'=>Notification::UPDATE_EST_COMPLETION_DATE,
               'threat_level'=>Notification::UPDATE_THREAT,
               'threat_source'=>Notification::UPDATE_THREAT,
               'threat_justification'=>Notification::UPDATE_THREAT,
