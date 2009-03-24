@@ -450,16 +450,32 @@ class RemediationController extends PoamBaseController
     {
         $this->_acl->requirePrivilege('remediation', 'read');
         
+        
         $req = $this->getRequest();
         $id = $req->getParam('id');
+        $this->view->assign('keywords', $req->getParam('keywords'));
+        
         $poamDetail = $this->_poam->getDetail($id);
         if (empty($poamDetail)) {
             throw new Exception_General("POAM($id) is not found,
                 Make sure a valid ID is inputed");
         }
-
         $this->view->assign('poam', $poamDetail);
-        $this->view->assign('keywords', $req->getParam('keywords'));
+        
+        // Get the evidence artifacts for this finding so that the count can be determined.
+        /** @todo this could obviously be a more efficient mechanism for getting the evidence count */
+        $evEvaluation = $this->_poam->getEvEvaluation($id);
+        $evs = array();
+        foreach ($evEvaluation as $evEval) {
+            $evid = & $evEval['id'];
+            if (!isset($evs[$evid]['ev'])) {
+                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
+            }
+            $evs[$evid]['acl'] = $this->_acl;
+            $evs[$evid]['eval'][$evEval['eval_name']] =
+                array_slice($evEval, 5);
+        }
+        $this->view->assign('ev_evals', $evs);
     }
     
     /**
