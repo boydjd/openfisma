@@ -12,6 +12,12 @@ function discardChanges(event) {
     window.location.reload();
 }
 </script>
+<style type="text/css"> 
+.yui-navset div.loading div {
+    background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;
+    height:8em; /* hold some space while loading */
+}
+</style>
 <form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
       method="post" 
       id="finding_detail"
