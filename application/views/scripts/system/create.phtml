@@ -1,9 +1,8 @@
-<div class="barleft">
-    <div class="barright">
-    <p><b><?php echo $this->title;?> System Information</b>
-    </div>
-</div>
+<?php Format_Section::startSection("{$this->title} System Information"); ?>
+
 <div class="form_box">
     <font color="blue">*</font> = Required Field 
     <?php echo $this->form ;?>
 </div>
+
+<?php Format_Section::stopSection(); ?>

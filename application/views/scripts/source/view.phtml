@@ -1,8 +1,7 @@
-<div class="barleft">
-<div class="barright">
-<p><b>Finding Source Information</b> [<a href="<?php echo $this->editLink ?>">Edit</a>]</p>
-</div>
-</div>
+<?php Format_Section::startSection("Finding Source Information [<a href='{$this->editLink}'>Edit</a>]"); ?>
+
 <div>
     <?php echo $this->form ?>
 </div>
+
+<?php Format_Section::stopSection(); ?>

@@ -1,0 +1,94 @@
+<?php
+Format_Section::startSection('NIST 800-53 Control Mapping');
+?>
+<table class="keyValues">
+    <tr>
+        <td width="200">
+            <div>
+                Control ID:
+            </div>
+        </td>
+        <td width="*">
+            <span id="blscr" type="select" name="poam[blscr_id]" href="/metainfo/list/o/blscr/format/html/"
+                <?php
+                if ($this->acl->isAllowed('remediation', 'update_control_assignment')) {
+                    echo "class='editable' target='blscr'";
+                }
+                echo '>';
+                
+                if (!empty($this->poam['blscr_id'])) {
+                    echo "{$this->poam['blscr_id']}";
+                } else {
+                    // nbsp is a hack to make the pencil appear in the right place
+                    echo 'NONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                }
+                ?>
+            </span>
+        </td>
+    </tr>
+    <?php if(!empty($this->poam['blscr'])) { 
+        $blscr = $this->poam['blscr']; ?>
+        <tr>
+            <td>Class:</td>
+            <td><?php echo $blscr['class'];?></td>
+        </tr>
+        <tr>
+            <td>Family:</td>
+            <td><?php echo $blscr['family'];?></td>
+        </tr>
+        <tr>
+            <td>Subclass:</td>
+            <td><?php echo $blscr['subclass'];?></td>
+        </tr>
+        <tr>
+            <td>Low Impact System:</td>
+            <td>
+                <?php 
+                echo 'LOW' == $blscr['control_level']? 'Control Required' : 'Control Not Required'; 
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>Moderate Impact System:</td>
+            <td>
+                <?php
+                echo 'LOW' == $blscr['control_level'] || 'MODERATE' == $blscr['control_level'] ? 
+                     'Control Required' : 
+                     'Control Not Required';
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>High Impact System:</td>
+            <td>
+                <?php
+                echo 'LOW' == $blscr['control_level'] || 
+                     'MODERATE' == $blscr['control_level'] || 
+                     'HIGH' == $blscr['control_level'] ? 
+                     'Control Required' : 
+                     'Control Not Required';
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>Control:</td>
+            <td><?php echo $blscr['control'];?></td>
+        </tr>
+        <tr>
+            <td>Guidance:</td>
+            <td><?php echo $blscr['guidance'];?></td></tr>
+        <tr>
+            <td>Enhancements:</td>
+            <td>
+                <?php echo $blscr['enhancements']; ?>
+            </td>
+        </tr>
+        <tr>
+            <td>Supplement:</td>
+            <td>
+                <?php echo $blscr['supplement']; ?>
+            </td>
+        </tr>
+    <?php } ?>
+</table>
+<?php Format_Section::stopSection(); ?>

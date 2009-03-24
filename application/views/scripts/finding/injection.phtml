@@ -1,17 +1,17 @@
-<div class="barleft">
-    <div class="barright">
-        <p><b>Spreadsheet Upload</b><span></p>
-    </div>
-</div>
+<?php Format_Section::startSection("Spreadsheet Upload"); ?>
 
 <div class=>
-    <form action="/panel/finding/sub/injection" method="POST" enctype="multipart/form-data">
+    <form action="/panel/finding/sub/injection" method="POST" enctype="multipart/form-data" id="injectionForm">
         <ol>
             <li>Download the Excel <a href="/finding/template">template file</a>.
             <li>Fill out the template file.
             <li>Upload the file here: <br>
-            <input type="file" name="excelFile"><br>
-            <input type="submit" name="submit">
+            <input type="file" name="excelFile">
         </ol>
+        <p>
+            <?php echo new Yui_Form_Button_Submit('Upload', 'uploadExcelSubmit')?>
+        </p>
     </form>
 </div>
+
+<?php Format_Section::stopSection(); ?>

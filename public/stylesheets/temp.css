@@ -1,0 +1,56 @@
+/* This is a CSS file which stores only *deprecated* styles. These are styles which will
+ * be phased out of the application but are still included as a dependency. Do NOT use
+ * any of these styles for new development.
+ */
+ 
+.tbframe {
+	font-family: Tahoma,verdana,arial, helvetica;
+	font-size: 12px;
+	font-weight: normal;
+	color: #000000;
+    border: 1px solid #BEBEBE;
+    border-collapse: collapse;
+    margin: 0em auto;
+}
+
+table.tbframe th, table.tbframe td {
+    padding: 2px;
+}
+
+th {
+	font-family: 'Verdana', 'Arial', 'Helvetica';
+	color: #44637A;		/* Dark Blue */
+	height: 23px;
+	font-weight: bold;
+	font-size: 12px;
+    background-color: #DDDDDD;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+ 
+.tdc {
+	border-left: 1px solid #BEBEBE;
+	border-top: 1px solid #BEBEBE;
+}
+
+.tipframe {
+    font-family: Tahoma, verdana, arial, helvetica;
+    font-size: 12px;
+    font-weight: normal;
+    color: #000000;
+    border: 1px solid #44637A;
+    width: 98%;
+    margin-top: 0em;
+    margin-right: auto;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+}
+
+.tipframe th {
+	height: auto;
+	padding: 3px;
+}
+
+.tipframe td {
+    padding: 3px;
+}

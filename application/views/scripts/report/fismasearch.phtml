@@ -1,12 +1,9 @@
-<div class="barleft">
-<div class="barright">
-<p><b>FISMA Report to OMB:<?php echo $this->startdate;?>throw <?php echo $this->enddate;?></b>    <span>
+<?php Format_Section::startSection("FISMA Report to OMB"); ?>
+<span>
     Export to:
     <a target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="/images/pdf.gif" border="0"></a>
     <a href="<?php echo $this->url.'/format/xls'; ?>"><img src="/images/xls.gif" border="0"></a>
     </span>
-</div>
-</div>
 <br>
 <table align="center" class="tipframe" style="width:95%">
     <tr align="center">
@@ -79,3 +76,5 @@
         </td>
     </tr>
 </table>
+
+<?php Format_Section::stopSection(); ?>
