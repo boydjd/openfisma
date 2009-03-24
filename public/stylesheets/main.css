@@ -209,7 +209,7 @@ div.toolbar {
  * element which needs to become editable.
  */
 .editable {
-    background: url(/images/button_modify.png) no-repeat top right;
+    background: url(/images/edit.png) no-repeat top right;
     padding-right: 20px;
     margin-right: 10px;
     cursor: pointer;
