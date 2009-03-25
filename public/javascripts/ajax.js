@@ -1,24 +1,10 @@
+/** @todo start migrating functionality out of this file. eventually this file needs to be removed */
 String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
 }
-// This is a fix for IE 6 borrowed from SF.net
-// All 'select' elements should hide in IE 6,
-// otherwise the 'ClueTips' could not be over the elements.
-// It will be called by 'ClueTips', when triggering the 'ClueTips'
-var ie6SelectsShowing = true;
-function toggleIE6Selects(){
-    if($.browser.msie && $.browser.version == '6.0'){
-        if(ie6SelectsShowing){
-            $('select').hide();
-            ie6SelectsShowing = false;
-        } else {
-            $('select').show();
-            ie6SelectsShowing = true;
-        }
-    }
-}
 
 $(document).ready(function(){
+   
    //Data Table Row Highlighting and Selection        
    $(".tbframe tr").mouseover(function() {
        $(this).addClass("over");}).mouseout(function() {
@@ -185,29 +171,11 @@ $(document).ready(function(){
 
     getProdId();
 
-    $("input#all_finding").click(function(){
-        $('input[@type=checkbox]').attr('checked','checked');
-    });
-
-    $("input#none_finding").click(function(){
-        $('input[@type=checkbox]').removeAttr('checked');
-    });
-
     $("#checkaccount").click(function(){
         var account = $("input[name='account']").val();
         var account = encodeURIComponent(account);
         var url = "/account/checkaccount/format/html/account/"+account;
         $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
-    });
-
-    $("#generate_password").click(function(){
-        var url = "/account/generatepassword/format/html";
-        $.ajax({ url:url, type:"GET",dataType:"html",
-            success:function(password){
-                $("#password").attr("value", password);
-                $("#confirmPassword").attr("value", password);
-            }
-        });
     });
 
     $("#advanced_search").click(function (){
@@ -221,90 +189,12 @@ $(document).ready(function(){
     });
 
     $(".confirm").click(function(){
-        var str = "DELETING COMFIRMATION!";
+        var str = "DELETING CONFIRMATION!";
         if(confirm(str) == true){
             return true;
         }
         return false;
     });
-
-    $(".editable").click(function(){
-        removeHighlight(document.getElementById('poam_detail'));
-        var t_name = $(this).attr('target');
-        $(this).removeClass('editable');
-        $(this).removeAttr('target');
-        if( t_name ) {
-            var target = $('#'+t_name);
-            var name = target.attr('name');
-            var type = target.attr('type');
-            var url = target.attr('href');
-            var eclass = target.attr('class');
-            var cur_val = target.text();
-            var cur_html = target.html();
-            var cur_span = target;
-            if(type == 'text'){
-                cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />');
-                $('input.date').datepicker({
-                        dateFormat:'yymmdd',
-                        showOn: 'both',
-                        onClose: showJustification,
-                        buttonImageOnly: true,
-                        buttonImage: '/images/calendar.gif',
-                        buttonText: 'Calendar'}).keypress(function (){
-                        return false;
-                        });
-                 var tmpVal = $('input[name="poam[action_current_date]"]').val();
-                 $('input[name="poam[action_current_date]"]').change(function () {
-                     var oDate= new Date();
-                     var Year = oDate.getFullYear();
-                     var Month = oDate.getMonth();
-                     Month = Month + 1;
-                     if (Month < 10) {Month = '0'+Month;}
-                     var Day = oDate.getDate();
-                     if (Day < 10) {Day = '0' + Day;}
-                     if (this.value <= parseInt(""+Year+Month+Day)) {
-                         // to do English
-                         alert('The date is invalid');
-                         this.value = tmpVal;
-                     } else {
-                         tmpVal = this.value;
-                     }
-                 });
-            }else if( type == 'textarea' ){
-                var row = target.attr('rows');
-                var col = target.attr('cols');
-                cur_span.replaceWith( '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">'+
-                        cur_html+ '</textarea>');
-                tinyMCE.execCommand("mceAddControl", true, name);
-            }else{
-                $.get(url,{value:cur_val.trim()},
-                function(data){
-                    if (type == 'select') {
-                        cur_span.replaceWith('<select name="'+name+'">'+data+'</select>');
-                    }
-                });
-            }
-        }
-    });
-    shortcut(0);
-
-    // show the 'ClueTips' which contain help info.
-    $('a#help_tips').click(toggleIE6Selects).cluetip({width: 280, dropShadow: false, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);}});
-    // to fix the conflict caused by 'ColumnManager'
-    $('a#help_tips').click(function (){
-        $('#cluetip ul').css('display', 'none');
-    });
-    $('.ph_sticky').click(function (){jQuery('#cluetip ul').css('display', '');});
-    // show the 'ClueTips' which contain columns
-    $('.ph_sticky').click(toggleIE6Selects).cluetip({dropShadow: false, arrows: false, cursor: 'pointer', local:true, closePosition: 'title', sticky:true, activation: 'click', onShow: function(){$('#cluetip-close a').click(toggleIE6Selects);$('#cluetip ul').css('display', '');}});
-    // force to insert HTML code to the elements created by 'ClueTip'
-    jQuery('.tbframe').columnManager({listTargetID:'cluetip', onClass: 'accept', offClass: 'blank', 
-                                  hideInList: [$(".tbframe tr th").length], saveState: true, 
-                                  cookiePath: '/', onToggle: function(index, state){$.get('/user/preference');}});
-    // force to change the style defined by 'ClueTips'
-    $('#cluetip-inner').css('border','none');
-    $('#cluetip li').css('list-style','none').css('position','relative');
-    $('#cluetip ul').css('background','#fff').css('margin','0').css('padding','0 2em 2em').css('z-index','100');
 });
 
 function shortcut(step){
@@ -383,18 +273,17 @@ function search_privilege() {
     $("select[name='available_privileges']").load(url,null);
 }
 
-function upload_evidence(){
+function upload_evidence() {
     if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
         return false;
     }
-    //$("#up_evidence").blur();
     var dw = $(document).width();
     var dh = $(document).height();
     $('<div id="full"></div>')
                 .width(dw).height(dh)
                 .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
                 .appendTo("body").fadeTo(1, 0.4);
-    var content = $("#editorDIV").html();
+    var content = $("#uploadEvidencePanel").html();
     $('<div title="Upload Evidence"></div>').append(content).
         dialog({position:'middle', width: 540, height: 200, resizable: true,modal:true,
             close:function(){
@@ -426,7 +315,7 @@ function ev_deny(formname){
     dt.name = 'comment';
     content.appendChild(dt);
 
-    $('<div title="Provide Justification"></div>').append(content).
+    $('<div title="Evidence Denial"></div>').append(content).
         dialog({position:'middle', width: 500, height: 240, resizable: true,modal:true,
             close:function(){
                 $('#full').remove();
@@ -467,7 +356,7 @@ function ms_comment(formname){
     dt.name = 'comment';
     content.appendChild(dt);
     
-    $('<div title="Mitigation Strategy Approval"></div>').append(content).
+    $('<div title="Mitigation Strategy Denial"></div>').append(content).
         dialog({position:'middle', width: 500, height: 440, resizable: true,modal:true,
             close:function(){
                 $('#full').remove();
@@ -550,8 +439,8 @@ function highlight(node,keyword) {
         return true;
     }
 
-    	// Iterate into this nodes childNodes
-	if (node.hasChildNodes) {
+    // Iterate into this nodes childNodes
+	if (node && node.hasChildNodes) {
 		var hi_cn;
 		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
 			highlight(node.childNodes[hi_cn],keyword);
@@ -559,7 +448,7 @@ function highlight(node,keyword) {
 	}
 
 	// And do this node itself
-    if (node.nodeType == 3) { // text node
+    if (node && node.nodeType == 3) { // text node
         tempNodeVal = node.nodeValue.toLowerCase();
         tempWordVal = keyword.toLowerCase();
         if (tempNodeVal.indexOf(tempWordVal) != -1) {
@@ -639,7 +528,7 @@ function form_confirm (check_form, action) {
     });
 
     if(changed) {
-        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save".') == true) {
+        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save Changes".') == true) {
             return true;
         }
     } else {
@@ -649,3 +538,12 @@ function form_confirm (check_form, action) {
     }
     return false;
 }
+
+function dump(arr) {
+    var text = '';
+    for (i in arr) {
+        text += i + " : " + arr[i] + "\n";
+    }
+    alert(text);
+    //document.write("<pre>"+text+"</pre>");
+} 

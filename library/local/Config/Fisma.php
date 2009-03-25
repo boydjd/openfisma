@@ -56,10 +56,11 @@ class Config_Fisma
      * @var _path
      */
     private static $_path = array(
-            'library'=>'library',
-            'data'=>'data',
-            'application'=>'application',
-            'config'=>'application/config'
+            'library' => 'library',
+            'data' => 'data',
+            'application' => 'application',
+            'config' => 'application/config',
+            'yui' => 'public/yui'
         );
     /**
      * Singleton instance

@@ -1,4 +1,6 @@
 <chart>
+    <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
+    <link_data url="javascript:barChartClick(_series_)" target="javascript" />
     <chart_data>
 		<row>
 			<null/>
@@ -7,7 +9,7 @@
 		<?php foreach ($this->summary AS $status=>$statusCount) { ?>
 		<row>
 			<string><?php echo $status; ?></string>
-			<number tooltip='<?php echo $statusCount; ?> findings'><?php echo $statusCount; ?></number>
+			<number tooltip='<?php echo $statusCount; ?> <?php echo $status; ?>'><?php echo $statusCount; ?></number>
 		</row>
 		<?php } ?>
 	</chart_data>

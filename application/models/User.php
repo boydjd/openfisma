@@ -61,6 +61,7 @@ class User extends FismaModel
             $this->_logger = new Zend_Log($writer);
         }
     }
+    
     /**
      * Get specified user's roles
      * @param $id the user id
@@ -79,6 +80,7 @@ class User extends FismaModel
                   ->where("u.id = $id and r.nickname != 'auto_role'");
         return $db->fetchAll($qry);
     }
+    
     /**
      * Retrieve the systems that the user belongs to
      * @param $id user id
@@ -107,6 +109,7 @@ class User extends FismaModel
         $db->setFetchMode($originMode);
         return $sys;
     }
+    
     /** 
      * Log any creation, modification, disabling and termination of account.
      *
@@ -175,12 +178,12 @@ class User extends FismaModel
     }
     
     /**
-        Associate systems to a user.
-
-        @param uid int the user id
-        @param type type of associated data, one of system, role.
-        @param data array|int system or role id or array of them
-        @param reverse bool to associate or delete
+     * Associate systems to a user.
+     *
+     * @param uid int the user id
+     * @param type type of associated data, one of system, role.
+     * @param data array|int system or role id or array of them
+     * @param reverse bool to associate or delete
      */
     public function associate ($uid, $type, $data, $reverse = false)
     {
@@ -214,7 +217,8 @@ class User extends FismaModel
     * @param string $account account name
     * @return string digest password
     */
-    public function digest($password, $account=null) {
+    public function digest($password, $account=null) 
+    {
         if ($account !== null) {
             $row = $this->fetchRow("account = '$account'");
             assert(count($row)==1);
@@ -237,28 +241,17 @@ class User extends FismaModel
     }
     
    /**
-    * Set the preference value for JQuery Plugin 'columnManager'
-    * if the value is null, then set a default value '11101111000000001'
+    * Sets a user's preference for which columns are visible on the finding search results page
     *
-    * @param string $value a preference value default null
-    * @return string $value a preference value
-    *
+    * @param int $id The ID of the user
+    * @param string $value Bitmask specifiying which columns are visible
     */
-    public function setColumnPreference($uid, $value = null)
+    public function setColumnPreference($id, $value)
     {
-        $defaultColumnPreference = '11101111000000001';
-        
-        if (empty($uid)) {
-            return ;
-        }
-        if (empty($value)) {
-            $value = $defaultColumnPreference;
-        }
         $db = $this->_db;
-        $where = $db->quoteInto('id = ?', $uid);
-        $db->update($this->_name,
+        $where = $db->quoteInto('id = ?', $id);
+        $this->_db->update($this->_name,
                            array('search_columns_pref' => $value),
                            $where);
-        return $value;
     }
 }

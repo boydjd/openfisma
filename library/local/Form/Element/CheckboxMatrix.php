@@ -116,19 +116,23 @@ class Form_Element_CheckboxMatrix extends Zend_Form_Element
                     $render .= "<input type='checkbox'"
                              . " name='".$this->getName()."[]'"
                              . " value='{$checkbox['name']}'"
-                             . "$class$checked$disabled>"
+                             . "$class$checked$disabled>&nbsp;"
                              . "{$checkbox['label']}\n";
                 }
                 $render .= "&nbsp;</td>";
             }
             $render .= "</tr>\n";
         }
-        // These buttons require some javascript in the page to do their magic.
-        // @todo put the javascript here instead of in the view directly
+
+        $selectAllButton = new Yui_Form_Button('Select All', 'asdf');
+        $selectAllButton->onClick('selectAllUnsafe');
+
+        $selectNoneButton = new Yui_Form_Button('Select None', 'selectNone');
+        $selectNoneButton->onClick('selectNoneUnsafe');
+        
         $render .= "<tr><td colspan='$columnCount'>"
-                 . "<input type='button' name='select_none'"
-                 . " value='Select None'$disabled>&nbsp;"
-                 . "<input type='button' name='select_all' value='Select All'$disabled>";
+                 . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'
+                 . "$selectAllButton $selectNoneButton</td></tr>";
         
         return $render;
     }

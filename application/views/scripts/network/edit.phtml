@@ -1,8 +1,7 @@
-<div class="barleft">
-    <div class="barright">
-        <p><b>Edit Network Information</b> [<a href="<?php echo $this->viewLink ?>">View</a>]</p>
-    </div>
-</div>
+<?php Format_Section::startSection("Edit Network Information</b> [<a href='{$this->viewLink}'>View</a>]"); ?>
+
 <div class="form_box">
     <?php echo $this->form ?>
 </div>
+
+<?php Format_Section::stopSection(); ?>

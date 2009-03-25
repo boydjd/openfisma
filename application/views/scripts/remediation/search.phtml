@@ -1,124 +1,204 @@
-<script language="javascript">
-    $(document).ready(function(){
-        <?php
-            foreach (explode(',', $this->keywords) as $keyword) {
+<script language="javascript"></script>
+
+<?php Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
+    <div class="toolbar">
+        <?php 
+            echo new Yui_Form_Button_Link('Export PDF', 
+                                          'exportPdf', 
+                                          "{$this->attachUrl}/format/pdf", 
+                                          '/images/pdf.gif');
+            echo new Yui_Form_Button_Link('Export Excel', 
+                                          'exportExcel', 
+                                          "{$this->attachUrl}/format/xls", 
+                                          '/images/xls.gif');
+            $columnOptionsButton = new Yui_Form_Button('Options', 'columnOptions', '/images/options.png');
+            $columnOptionsButton->onClick('showColumnOptions');
+            echo $columnOptionsButton;
         ?>
-        highlight(document.getElementById('poam_list'), '<?php echo $keyword;?>');            
-        <?php } ?>
-    });
-</script>
-<?php
-    $baseUrl =  "/panel/remediation/sub/view";
-    if (!empty($this->keywords)) {
-        $baseUrl .= '/keywords/' . $this->keywords;
+    </div>
+    <div id="dynamicdata"></div> 
+    <div id="columnOptionsPanelDiv">
+        <div id="columnOptionsPanelBody" class="bd">
+            <!-- YUI fills in the body -->
+        </div>
+    </div>
+<?php Format_Section::stopSection(); ?>
+
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    <?php 
+    // PHP is used to populate this javascript array with the column values defined in the controller
+    $text = '';
+    foreach ($this->columns as $columnName => $columnDef) {
+        $text .= "{key:\"$columnName\", label:\"{$columnDef['label']}\", "
+               . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
+               . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false') . "},";
     }
-?>
-<div class="barleft">
-<div class="barright">
-    <b>Remediation Search Results</b>
-        <span>
-            <?php echo $this->links['all'];?>
-        </span>
-        <span>
-            <a href="<?php echo $this->attachUrl;?>/format/pdf" ><img style="margin-top:2px;" border="0" src="/images/pdf.gif"/></a>
-            <a href="<?php echo $this->attachUrl;?>/format/xls" ><img style="margin-top:2px;" border="0" src="/images/xls.gif"/></a>
-            <a href="#options" class="ph_sticky options" rel="#options" title="Show/Hide Columns">
-                <img style="margin-top:2px;" border="0" src="/images/emblem-system.png"/>
-            </a>
-            <div id="options" style="display:none" />
-        </span>
-    </p>
-</div>
-</div>
-    <table width="100%" class="tbframe" id="poam_rst" cursor="hand">
-        <tr>
-            <th>ID 
-                <a href="<?php echo $this->url;?>/sortby/p.id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Source 
-                <a href="<?php echo $this->url;?>/sortby/s.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/s.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>System 
-                <a href="<?php echo $this->url;?>/sortby/sys.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/sys.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Asset 
-                <a href="<?php echo $this->url;?>/sortby/as.name/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/as.name/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Type 
-                <a href="<?php echo $this->url;?>/sortby/p.type/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.type/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Status 
-                <a href="<?php echo $this->url;?>/sortby/p.status/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.status/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>On Time? </th>
-            <th>Description </th>
-            <th>Recommendation </th>
-            <th>Corrective Action </th>
-            <th>Blscr 
-                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.blscr_id/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Threat Level 
-                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.threat_level/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Threat Description </th>
-            <th>Cmeasures Effectiveness 
-                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-                <a href="<?php echo $this->url;?>/sortby/p.cmeasure_effectiveness/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>Cmeasures Description </th>
-            <th>Attachments </th>
-            <th>ECD 
-               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/ASC"><img src="/images/up_arrow.gif" border="0"></a>
-               <a href="<?php echo $this->url;?>/sortby/p.action_est_date/order/DESC"><img src="/images/down_arrow.gif" border="0"></a>
-            </th>
-            <th>View</th>
-        </tr>
-        <!-- REMEDIATION ROWS -->
-        <tbody id = "poam_list">
-        <?php
-            foreach($this->list as $row){
-        ?>
-        <tr>
-            <td align='center' class='tdc'><?php echo $row['id'];?></td>
-            <td align='center' class='tdc'>
-            <?php 
-                    if (!isset($row['source_name'])) {
-                        echo 'Missing Source id';
-                    } else {
-                        echo $row['source_name'];
-                    }
-            ?>
-            </td>
-            <td align='center' class='tdc'><?php echo '(' . $row['system_nickname'] . ')' . $row['system_name'];?></td>
-            <td align='center' class='tdc'><?php echo $row['asset_name'];?></td>
-            <td align='center' class='tdc'><?php echo $row['type'];?></td>
-            <td align='center' class='tdc'><?php echo $row['status'];?></td>
-            <td align='center' class='tdc'>
-                <?php echo $this->isOnTime($row['duetime']);?>
-            </td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['finding_data'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_suggested'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['action_planned'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $row['blscr_id'];?></td>
-            <td align='left' class='tdc'><?php echo $row['threat_level'];?></td>
-            <td align='left' class='tdc'><?php echo $this->showLongText($row['threat_source'], $this->keywords);?></td>
-            <td align='left' class='tdc'><?php echo $row['cmeasure_effectiveness'];?></td>
-            <td align='left' class='tdc'><?php echo $this->ShowLongText($row['cmeasure'], $this->keywords);?></td>
-            <td align='center' class='tdc'><?php echo $row['attachments'];?></td>
-            <td align='center' class='tdc'><?php echo $row['action_current_date'];?></td> 
-            <td align="center" valign='middle' class='tdc'>
-            <a href="<?php echo $baseUrl .'/id/' . $row['id'];?>">
-                <img src="/images/view.gif" border="0">
-            </a></td>
-        </tr>
-        <?php } ?>
-        </tbody>
-    </table>
+    $text = substr($text, 0, -1); // remove trailing comma, otherwise IE would throw an exception
+    echo $text;
+    ?>
+];
+
+// Custom parser
+var stringToDate = function(sData) {
+    var array = sData.split("-");
+    return new Date(array[1] + " " + array[0] + ", " + array[2]);
+};
+
+// DataSource instance
+var myDataSource = new YAHOO.util.DataSource("/remediation/search2/format/json");
+myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+myDataSource.responseSchema = {
+    resultsList: "poam.records",
+    metaFields: {
+        totalRecords: "poam.totalRecords"
+    }
+};
+
+// A function which builds the query string
+var myRequestBuilder = function(oState, oSelf) {
+    // Get states or use defaults
+    oState = oState || {pagination:null, sortedBy:null};
+    var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+    var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+    var startIndex = oState.pagination.recordOffset;
+    var count = oState.pagination.rowsPerPage;
+
+    // Build custom request
+    var request = "<?php echo $this->link; ?>" + 
+                  "/sortby/" + sort +
+                  "/order/" + dir +
+                  "/startIndex/" + startIndex +
+                  "/count/" + count;
+    return request;
+};
+
+// A function handle clicks on the rows
+var myRowClickHandler = function(clickEvent) {
+    var target = clickEvent.target
+    alert(clickEvent.target);
+    dump(clickEvent.target);
+};
+
+// DataTable configuration
+var myConfigs = {
+    initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/10",
+    dynamicData: true, 
+    sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
+    paginator: new YAHOO.widget.Paginator(
+        { 
+            rowsPerPage:10,
+            template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+        }
+    ), 
+    generateRequest : myRequestBuilder
+};
+    
+// DataTable instance
+var myDataTable = new YAHOO.widget.DataTable("dynamicdata", myColumnDefs, myDataSource, myConfigs);
+
+// Update totalRecords on the fly with value from server
+myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+    oPayload.totalRecords = oResponse.meta.totalRecords;
+    // display total records in the search results header, if not already present
+    var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+    if (!searchResultsHeader.firstChild) {
+        var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+        var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+        searchResultsHeader.appendChild(searchTotalFound);
+    }
+    return oPayload;
+}
+
+// Enable row highlighting and clicking
+myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+myDataTable.subscribe("rowClickEvent", 
+    function (oArgs) {
+        var elTarget = oArgs.target;
+        var oRecord = this.getRecord(elTarget);
+        var keywords = "<?php echo (isset($this->keywords)) ? "/keywords/{$this->keywords}" : ''; ?>";
+        document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
+    }
+);
+// Enable keyword highlighting when loading data from the data source
+myDataTable.subscribe("renderEvent", 
+    function (oArgs) {
+        highlight(document.getElementById('dynamicdata'), "<?php echo $this->keywords; ?>");
+    }
+);
+
+var columnOptionsShowing = false;
+var columnOptionsPanel;
+/* A function which displays the buttons for showing/hiding columns in the search table */
+function showColumnOptions() {
+    if (!columnOptionsPanel) {        
+        // Add the buttons to the panel
+    	for (column in myColumnDefs) {
+    	    var oCheckButton9 = new YAHOO.widget.Button({  
+                type: "checkbox",  
+                label: myColumnDefs[column].label,  
+                container: "columnOptionsPanelBody",
+                checked: !myColumnDefs[column].hidden,
+                onclick: {
+                    fn: toggleColumn,
+                    obj: myColumnDefs[column].key
+                }
+            });
+    	}
+    	var saveButton = new YAHOO.widget.Button({
+    	    type: "button",
+    	    label: "Save",
+    	    container: "columnOptionsPanelBody",
+    	    onclick: {
+                fn: saveColumnPreference
+            }
+        });
+        
+        // Setup the panel
+        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanelDiv', {width:"300px"} ); 
+        columnOptionsPanel.setHeader('Show/Hide Columns');
+        columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
+    	columnOptionsPanel.render(document.body); 
+    	columnOptionsPanel.center();
+    }
+    columnOptionsPanel.show();
+}
+
+/* This helper function actually handles the click event to toggle a column's visibility in the search table. */
+function toggleColumn(event, columnKey) {
+    // @yui update the user's preference for column display
+    var column = myDataTable.getColumn(columnKey);
+    if (this.get('checked')) {
+        myDataTable.showColumn(column);
+    } else {
+        myDataTable.hideColumn(column);
+    }
+}
+
+/* Save the current displayed columns as the default for this user. The default is stored in a session cookie and
+ * also backed up in a column in the users table.
+ *  - obj is a required parameter for a handler, but this handler does not use it.
+ */
+function saveColumnPreference(event, obj) {
+    // The column preference is stored as a bitmap: 1=>visible, 0=>hidden.
+    var prefBitmap = 0;
+    var columnKeys = myDataTable.getColumnSet().keys;
+    
+    for (column in columnKeys) {
+        if (!columnKeys[column].hidden) {
+            prefBitmap |= 1 << column;
+        }
+    }
+
+    // Now save the bitmask by calling the appropriate controller action. The controller doesn't return any data
+    // for this action, so there is no check for the return value.
+    YAHOO.util.Cookie.set("search_columns_pref", prefBitmap, {path: "/"});
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/user/set-column-preference', 
+                                    null,
+                                    null); 
+    alert('Your preference has been saved. These columns will be visible whenever you log in.');
+}
+</script>

@@ -1,9 +1,5 @@
-<div class="barleft">
-<div class="barright">
-<p><b>Reports : Generate System RAFs</b><span><?php echo date('Y-M-D h:i:s:A');?></span>
-</div>
-</div>
-<br>
+<?php Format_Section::startSection("Reports : Generate System RAFs"); ?>
+
 <table>
     <tr>
         <td align="left">
@@ -41,3 +37,5 @@
         </td>
     </tr>
 </table>
+
+<?php Format_Section::stopSection(); ?>

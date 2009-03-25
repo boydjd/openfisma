@@ -1,8 +1,4 @@
-<div class="barleft">
-<div class="barright">
-<p><b>LDAP Configurations</b>&nbsp;[<a href="/panel/config/sub/ldapupdate/">New</a>]</p>
-</div>
-</div>
+<?php Format_Section::startSection('LDAP Configurations</b>&nbsp;[<a href="/panel/config/sub/ldapupdate/">New</a>]'); ?>
 
 <div class="block">
 <table width="100%" class="tbframe">
@@ -53,3 +49,5 @@ foreach ($this->ldaps as $id=>$opt) {
 ?>
 </table>
 </div>
+
+<?php Format_Section::stopSection(); ?>

@@ -56,18 +56,15 @@ class ErrorController extends Zend_Controller_Action
         // if the user want to access an empty path.  
         } elseif (!Zend_Auth::getInstance()->hasIdentity()) {
             ///@todo English
-            $this->view->assign('error', 'Access denied! Please login firstly.');
+            $this->view->assign('error', 'Access denied! Please login first.');
             $this->_forward('logout', 'User');
         // if the user has login and meeted an exception.
         } else {
-            $this->_helper->layout->setLayout('error');
             $this->getResponse()->clearBody();
-            $content = '<p>'
-                     . $errors->exception->getMessage()
-                     . '</p>'
-                     . '<pre>'
+            $content = $errors->exception->getMessage()
+                     . '<br>'
                      . $errors->exception->getTraceAsString()
-                     . '</pre>';
+                     . '<br>';
             $logger = Config_Fisma::getLogInstance();
             $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;
@@ -77,7 +74,6 @@ class ErrorController extends Zend_Controller_Action
                 //clear the action stack to prevent additional exceptions would be throwed
                 while($stack->popStack());
             }
-            $this->_helper->actionStack('header', 'panel');            
         }
     }
 

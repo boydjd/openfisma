@@ -1,8 +1,5 @@
-<div class="barleft">
-<div class="barright">
-<p><b>Administration: Rights Assignment</b>
-</div>
-</div>
+<?php Format_Section::startSection("Rights Assignment"); ?>
+
 <form method="post" action="/role/right/id/<?php echo $this->role['id'];?>/do/update" 
     name="assign_right">
 <fieldset style="border: 1px solid rgb(68, 99, 122);">
@@ -49,3 +46,5 @@
     </tr>
 </table>
 </form>
+
+<?php Format_Section::stopSection(); ?>
