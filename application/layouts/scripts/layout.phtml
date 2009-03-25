@@ -1,72 +1,72 @@
-<?php echo "{$this->doctype()}\n" ?>
+<?php echo $this->doctype() ?> <!-- This Line will output the doctype we set inside the bootstrap file -->
+
 <html>
-    <head>
-    	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 
 	<?php 
-	$this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
-	echo $this->headTitle();
-    Yui::includeLibrary('yahoo-dom-event');
-    Yui::includeLibrary('element');
-    Yui::includeLibrary('container');
-    Yui::includeLibrary('json');
-    Yui::includeLibrary('cookie');
-    Yui::includeLibrary('get');
-    Yui::includeLibrary('dragdrop');
-    Yui::includeLibrary('animation');
-    Yui::includeLibrary('menu');
-    Yui::includeLibrary('button');
-    Yui::includeLibrary('json');
-    Yui::includeLibrary('connection');
-    Yui::includeLibrary('logger');
-    Yui::includeLibrary('tabview');
-    Yui::includeLibrary('calendar');
-    Yui::includeLibrary('paginator');
-    Yui::includeLibrary('datasource');
-    Yui::includeLibrary('datatable');
-	echo Yui::printIncludes();
-    ?>
+		$this->headTitle()->prepend(Config_Fisma::readSysConfig('system_name'));
+		echo $this->headTitle();
+	?>
 
-    <script type="text/javascript" src="/javascripts/jquery/jquery-1.2.6.min.js"></script>
-    <script type="text/javascript" src="/javascripts/jquery/jquery-ui-personalized-1.6rc2.min.js"></script>
-    <script type="text/javascript" src="/javascripts/jquery/jquery.dimensions-1.2.0.js"></script>
-    <script type="text/javascript" src="/javascripts/jquery/jquery.cookie.js"></script>
-    <script type="text/javascript" src="/javascripts/ajax.js"></script>
-    <script type="text/javascript" src="/javascripts/editable.js"></script>
-    <script type="text/javascript" src="/javascripts/help.js"></script>
-    <script type="text/javascript" src="/javascripts/tiny_mce/tiny_mce.js"></script>
-    <script type="text/javascript" src="/javascripts/tiny_mce_config.js"></script>
-    <script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
-    <script type="text/javascript" src="/javascripts/deleteconfirm.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery-1.2.6.min.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery-ui-personalized-1.6rc2.min.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/jquery/jquery.cluetip.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/jquery/jquery.dimensions-1.2.0.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/jquery/jquery.columnmanager.pack.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/jquery/jquery.cookie.js"></script>
+<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/ajax.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/tiny_mce/tiny_mce.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/tiny_mce_config.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
+<script LANGUAGE="javascript" type="text/javascript" src="/javascripts/deleteconfirm.js"></script>
+<link rel="icon"
+      type="image/ico"
+      href="/images/favicon.ico" />
 
-    <?php 
-    echo $this->headLink()->appendStylesheet('/yui/reset-fonts-grids/reset-fonts-grids.css')
-                          ->appendStylesheet('/stylesheets/datepicker.css', 'screen,print')
-                          ->appendStylesheet('/stylesheets/jquery-ui-themeroller.css', 'screen,print')
-                          ->appendStylesheet('/yui/assets/skins/sam/skin.css')
-                          ->appendStylesheet('/stylesheets/main.css', 'screen,print')
-                          ->appendStylesheet('/stylesheets/temp.css', 'screen,print')
-                          ->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
-    ?>
-        <!--[if IE 7]>
-        <link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
-        <![endif]-->
-        
-        <!--[if IE 6]>
-        <link rel="stylesheet" type="text/css" href="/stylesheets/ie6hacks.css">
-        <![endif]-->
-    </head>
-    <body class="yui-skin-sam">
-        <div id='header' >
-                <?php echo $this->layout()->header; ?>
-        </div>
-    
-        <div id='content'>
-                <?php echo $this->layout()->content; ?>
-        </div>
-        
-        <div id='footer'>
-                <?php echo $this->layout()->footer; ?>
-        </div>
-    </body>
+  <!--
+      The line below demonstrates usage of the headLink() view helper
+      @see http://framework.zend.com/manual/en/zend.view.helpers.html
+      -->
+  <?php echo $this->headLink()->appendStylesheet('/stylesheets/main.css', 'screen,print'); ?>
+  <?php echo $this->headLink()->appendStylesheet('/stylesheets/datepicker.css', 'screen,print'); ?>
+  <?php echo $this->headLink()->appendStylesheet('/stylesheets/jquery-ui-themeroller.css', 'screen,print'); ?>
+  <?php echo $this->headLink()->appendStylesheet('/stylesheets/jquery.cluetip.css', 'screen'); ?>
+
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
+<![endif]-->
+
+<!--[if IE 6]>
+<link rel="stylesheet" type="text/css" href="/stylesheets/ie6hacks.css">
+<![endif]-->
+
+</head>
+<body>
+
+<div id='container'>
+
+<div id='top' >
+        <?php echo $this->layout()->header; ?>
+</div><!--top-->
+
+
+<div id="content">
+
+<div id='detail'>
+
+		<!-- This next call will now include any content that was generated in the
+		dispatching of a controllers action (or series of actions).  -->
+		<?php echo $this->layout()->content ?>
+
+</div><!--detail-->
+<div id='footer'>
+        <?php echo $this->layout()->footer; ?>
+</div>
+</div><!--content-->
+
+</div><!--container-->
+
+</body>
 </html>
+

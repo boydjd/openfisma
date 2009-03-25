@@ -1,5 +1,8 @@
-<?php Format_Section::startSection("System List"); ?>
-
+<div class="barleft">
+<div class="barright">
+<p><b>System List</b>
+</div>
+</div>
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 <tr align="center">
     <th>System Name</th>
@@ -34,7 +37,6 @@
         <a href="/panel/system/sub/view/v/edit/id/<?php echo $system['id'];?>" title="edit the Systems">
         <img src="/images/edit.png" border="0"></a>
     </td>
-<<<<<<< .working
     <?php } if($this->acl->isAllowed('admin_systems','delete')){ ?>
     <td class="tdc" align="center">
         <a href="/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('System');">
@@ -45,16 +47,7 @@
         <a href="/panel/system/sub/view/id/<?php echo $system['id'];?>" title="display the Systems">
         <img src="/images/view.gif" border="0"></a>
     </td>
-=======
->>>>>>> .merge-right.r1511
-    <?php } if($this->acl->isAllowed('admin_systems','read')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/system/sub/view/id/<?php echo $system['id'];?>" title="display the Systems">
-        <img src="/images/view.gif" border="0"></a>
-    </td>
     <?php }?>
 </tr>
 <?php }?>
 </table>
-
-<?php Format_Section::stopSection(); ?>

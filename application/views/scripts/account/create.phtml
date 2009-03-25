@@ -1,5 +1,19 @@
-<?php Format_Section::startSection('User Account Information'); ?>
-
+<script language="javascript">
+    $(function(){
+        $(":button[name=select_all]").click(function(){
+            $(":checkbox").attr( 'checked','checked' );
+        });
+        $(":button[name=select_none]").click(function(){
+            $(":checkbox").attr( 'checked','' );
+        });
+    })
+</script>
+<script language="javascript" src="/javascripts/jquery/jquery.validate.js"></script>
+<div class="barleft">
+    <div class="barright">
+        <p><b>User Account Information</b>
+    </div>
+</div>
 <?php if(!empty($this->requirements)) {?>
 <p>The new password must meet the following complexity criteria:</p>
 <ul>
@@ -14,23 +28,4 @@ foreach ($this->requirements as $requirement) {
 <?php echo $this->form ?>
 </div>
 
-<?php Format_Section::stopSection(); ?>
-
-<script type="text/javascript">
-YAHOO.util.Event.onDOMReady(function () {
-    var generatePasswordButton = document.getElementById('generate_password');
-    generatePasswordButton.onclick = function () {
-        YAHOO.util.Connect.asyncRequest('GET', 
-                                        '/account/generatepassword/format/html', 
-                                        {
-                                            success: function(o) {
-                                                document.getElementById('password').value = o.responseText;                                           
-                                                document.getElementById('confirmPassword').value = o.responseText;
-                                            },
-                                            failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
-                                        }, 
-                                        null);
-        return false;
-    };
-});
-</script>
+<br>

@@ -1,147 +1,143 @@
-<div class="column left">
-    <?php Format_Section::startSection("Details"); ?>
-    <table class="keyValues">
-        <tr>
-            <td>POAM ID:</td>
-            <td><?php echo $this->poam['id'];?></td>
-        </tr>
-        <tr>
-            <td>Date Discovered:</td>
-            <td><?php echo $this->poam['discover_ts'];?></td>
-        </tr>
-        <tr>
-            <td>Date Opened:</td>
-            <td><?php echo $this->poam['create_ts'];?></td>
-        </tr>
-        <tr>
-            <td>Source:</td>
-            <td>(<?php echo $this->poam['source_nickname'];?>) <?php echo $this->poam['source_name'];?></td>
-        </tr>
-        <tr>
-            <td>Status:</td>
-            <td><?php echo $this->poam['status'];?></td>
-        </tr>
-        <?php if ($this->poam['status'] != 'CLOSED') { ?>
-        <tr>
-            <td>On Time:</td>
-            <td><?php echo $this->isOnTime($this->poam['duetime']);?></td>
-        </tr>
-        <?php } ?>
-        <tr>
-            <td>
-                <div>
-                    Responsible System:
-                </div>
-            </td>
-            <td>
-                <div name="poam[system_id]" 
-                     id="action_owner" 
-                     type="select" 
-                     href="/metainfo/list/o/system/format/html/"
-                     <?php
-                     if('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
-                         && $this->acl->isAllowed('remediation', 'update_finding_assignment')) {
-                         echo 'class="editable" target="action_owner"'; 
-                     }
-                     ?>>
-                    <?php echo $this->system_list[$this->poam['system_id']]; ?>
-                </div>
-            </td>
-        </tr>
-    </table>
-    <?php Format_Section::stopSection(); ?>
+<!-- Heading Block -->
+<div class="barleft">
+    <div class="barright">
+        <p><b>Finding Description</b>
+    </div>
 </div>
 
-<div class="column right">
-    <?php Format_Section::startSection("Asset"); ?>
-    <table class="keyValues">
-        <tr>
-            <td>
-                Asset Owner:
-            </td>
-            <td>
-                <?php
-                    echo isset($this->system_list[$this->poam['asset_owner']]) ? 
-                        $this->system_list[$this->poam['asset_owner']] : "n/a";
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Asset Name:
-            </td>
-            <td>
-                <?php 
-                    echo isset($this->poam['asset_name']) ? $this->poam['asset_name'] : 'n/a';
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Network:
-            </td>
-            <td>
-                <?php 
-                    echo isset($this->network_list[$this->poam['network_id']]) ?
-                         $this->network_list[$this->poam['network_id']] : '(n/a)';
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                IP Address:
-            </td>
-            <td>
-                <?php 
-                    echo isset($this->network_list[$this->poam['network_id']]) ?
-                         ($this->poam['ip'] . ':' . $this->poam['port']) : '(n/a)';
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Product Information:
-            </td>
-            <td>
-                <?php  
-                    if(!empty($this->poam['product'])) {
-                        echo $this->poam['product']['prod_vendor'] . ' ' .
-                             $this->poam['product']['prod_name'] . ' ' .
-                             $this->poam['product']['prod_version'];
-                    } else {
-                        echo 'n/a';
-                    }
-                ?>
-            </td>
-        </tr>
-    </table>
-    <?php Format_Section::stopSection(); ?>
-</div>
-
-<div class="clear"></div>
-
-<?php 
-if ($this->acl->isAllowed('remediation','update_finding_description')) {
-    Format_Section::startSection('Description', 'finding_description');
-} else {
-    Format_Section::startSection('Description');
-}
-?>
-<div name="poam[finding_data]" id="finding_description" type="textarea" rows="3" cols="160"> 
-    <?php echo $this->poam['finding_data']; ?>
-</div>
-<?php Format_Section::stopSection(); ?>
-
->>>>>>> .merge-right.r1511
+<!-- FINDING DETAIL TABLE -->
+<table align="center" class="tipframe">
+    <!-- finding and asset row -->
+    <tr>
+        <!-- finding information -->
+        <td width="50%" valign="top"><!-- FINDING TABLE -->
+            <table cellpadding="3" cellspacing="0" class="tipframe" style="width:100%;" >
+                <th align="left" colspan="2">Finding Information</th>
+                <tr>
+                    <td><b>POAM ID:&nbsp;</b><?php echo $this->poam['id'];?></td>
+                </tr>
+                <tr>
+                    <td><b>Date Opened:&nbsp;</b><?php echo $this->poam['discover_ts'];?></td>
+                </tr>
+                <tr>
+                    <td><b>Date Opened:&nbsp;</b><?php echo $this->poam['create_ts'];?></td>
+                </tr>
+                <tr>
+                    <td><b>Source:&nbsp;</b> (<?php echo $this->poam['source_nickname'];?>) <?php echo $this->poam['source_name'];?></td>
+                </tr>
+                <tr>
+                    <td><b>Status:&nbsp;</b><?php echo $this->poam['status'];?></td>
+                </tr>
+                <?php if ($this->poam['status'] != 'CLOSED') { ?>
+                <tr>
+                    <td><b>On Time:&nbsp;</b><?php echo $this->isOnTime($this->poam['duetime']);?></td>
+                </tr>
+                <?php } ?>
+                <tr>
+                    <td>
+                        <b target="action_owner" <?php
+        if('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
+            && $this->acl->isAllowed('remediation','update_finding_assignment')){
+            echo ' class="editable"'; 
+        }
+        ?> >Responsible System:&nbsp;</b>
+                        <span name="poam[system_id]" id="action_owner" type="select" 
+                   href="/metainfo/list/o/system/format/html/">
+    <?php echo $this->system_list[$this->poam['system_id']]; ?>
+                        </span> </td>
+                </tr>
+            </table>
+            <!-- FINDING TABLE -->
+        </td>
+        <!-- asset information -->
+        <td width="50%" valign="top"><!-- ASSET TABLE -->
+            <table cellpadding="3" cellspacing="0" class="tipframe" style="width:100%;">
+                <th align="left" colspan="2">Asset Information</th>
+                <tr>
 <?php
-if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
-    && $this->acl->isAllowed('remediation', 'update_finding_recommendation')) {
-    Format_Section::startSection('Recommendation', 'recommendation');
-} else {
-    Format_Section::startSection('Recommendation');
-}
+    if (isset($this->system_list[$this->poam['asset_owner']]))
+        echo "<td><b>Asset Owner:&nbsp;</b> {$this->system_list[$this->poam['asset_owner']]}</td>";
+    else
+        echo "<td><b>Asset Owner:&nbsp;</b> <i>None</i></td>";
 ?>
-<div name="poam[action_suggested]" id="recommendation" type="textarea" rows="3" cols="160">
-    <?php echo $this->poam['action_suggested']; ?>
-</div>
-<?php Format_Section::stopSection(); ?>
+                </tr>
+                <tr>
+                    <td><b>Asset Name:&nbsp;</b><?php 
+                        echo isset($this->poam['asset_name'])?$this->poam['asset_name']:'(none given)';
+                    ?></td>
+                </tr>
+                <tr>
+                    <td><b>Known Address(es):&nbsp;</b><?php 
+        echo isset($this->network_list[$this->poam['network_id']])?
+                     "(". $this->network_list[$this->poam['network_id']]
+                     .") ".$this->poam['ip'].':'.$this->poam['port'] :'(not given)' ?></td>
+               
+                </tr>
+                <tr>
+                    <td><b>Product Information:&nbsp;</b> <i>
+                        <?php  if( !empty($this->poam['product']) ){
+                            echo $this->poam['product']['prod_vendor'].' '.
+                                 $this->poam['product']['prod_name'].' '.
+                                 $this->poam['product']['prod_version'];
+                        }else{
+                            echo '(not given)';
+                        } ?>
+                        </i> </td>
+                </tr>
+            </table>
+            <!-- END ASSET TABLE -->
+        </td>
+    </tr>
+</table>
+<table cellpadding="5" width="100%" class="tipframe">
+    <th align='left' ><span target='finding_description' <?php 
+                if ($this->acl->isAllowed('remediation','update_finding_description')) {
+                    echo 'class="editable"';
+                }
+            ?> colspan='2'>Finding Description</span></th>
+    <tr>
+        <td colspan='2'>
+            <span name="poam[finding_data]" id="finding_description"
+                  type="textarea" rows="3" cols="160"> <?php 
+                      echo $this->poam['finding_data'];
+                  ?> </span>
+        </td>
+    </tr>
+</table>
+<?php if( !empty($this->poam['vuln']) ) { ?>
+<table border="0" cellpadding="5" cellspacing="1" class="tipframe">
+    <th align='left'>Additional Vulnerability Detail</th>
+        <!-- VULNERABILITY ROW(S) -->
+        <?php foreach($this->poam['vuln'] as $row){ ?>
+    <tr>
+        <td colspan="2"><!-- VULERABILITIES TABLE -->
+            <table border="0" cellpadding="5" cellspacing="1" width="100%">
+                <tr>
+                    <td><b>Vulnerability ID: </b><?php echo $row['type'].'-'.$row['seq'];?></td>
+                </tr>
+                <tr>
+                    <td><b>Description: </b><?php echo $row['description'];?></td>
+                </tr>
+            </table>
+            <!-- END VULERABILITIES TABLE -->
+        </td>
+    </tr>
+    <?php }?>
+</table>
+<?php } ?>
+<table cellpadding="5" width="100%" class="tipframe">
+    <th align='left' ><span target='recommendation' <?php 
+                if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
+                    && $this->acl->isAllowed('remediation','update_finding_recommendation')) {
+                    echo 'class="editable"';
+                }
+            ?> colspan='2'>Recommendation</span></th>
+    <tr>
+        <td colspan='2'>
+            <span name="poam[action_suggested]" id="recommendation"
+                  type="textarea" rows="3" cols="160"> <?php 
+                      echo $this->poam['action_suggested'];
+                  ?> </span>
+        </td>
+    </tr>
+</table>

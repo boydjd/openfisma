@@ -5,20 +5,19 @@
                               "MODERATE" => "MODERATE",
                               "HIGH" => "HIGH");
 ?>
-<?php Format_Section::startSection("Finding Creation"); ?>
+<div class="barleft">
+  <div class="barright">
+    <p><b>Finding Creation</b></p>
+  </div>
+</div>
 
 <form name="finding" method="post" action="/panel/finding/sub/create/is/new" >
-<table>
-    <tr>
-        <td>
-            <div class="toolbar">
-                <?php echo new Yui_Form_Button_Submit('Create Finding', 'createFindingSubmit'); ?>
-                <?php echo new Yui_Form_Button_Reset('Reset Form', 'createFindingReset'); ?>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
+<table width="810" border="0" align="center" cellpadding="0">
+    <tr><td>
+        <input name="button" type="submit" id="button" value="Create Finding" >
+        <input name="button" type="reset" id="button" value="Reset Form" >
+    </td></tr>
+    <tr><td>
         <table border="0" width="100%" cellpadding="5" class="tipframe">
             <tr> <th align="left">General Information</th> </tr>
             <tr> <td>
@@ -37,7 +36,7 @@
                             <td align="right"><b>Finding Source:&nbsp;</b></td>
                             <td>
                             <?php 
-                                $this->source = array('--Any--') + $this->source;
+                                $this->source[0] = '--Any--';
                                 echo $this->formSelect('poam[source_id]', 0, null, $this->source); 
                             ?>
                                 
@@ -72,9 +71,7 @@
                     <table border="0" width="95%" align="center" cellpadding="5" class="tipframe">
                         <tr>
                             <th align="left" >Security Control:&nbsp;
-                            <?php
-                                $this->blscr_list = array('--Any--') + $this->blscr_list;
-                                echo $this->formSelect('poam[blscr_id]', null, null, $this->blscr_list);?>
+                            <?php echo $this->formSelect('poam[blscr_id]', 0, null, $this->blscr_list);?>
                             </th>
                         </tr>
                     </table>
@@ -106,8 +103,10 @@
                                         <td><b>System:</b></td>
                                         <td>
                             <?php 
-                                $this->system = array('--Any--') + $this->system;
-                                echo $this->formSelect('poam[system_id]', 0, array('url'=>"/asset/search"), $this->system); 
+                                $this->system[0] = '--Any--';
+                                echo $this->formSelect('poam[system_id]', 0, 
+                                array('url'=>"/asset/search"), 
+                                $this->system); 
                             ?>
                                         </td>
                                         <td><b>Asset Name:</b></td>
@@ -143,6 +142,3 @@
             </tr>
         </table>
 </form>
-
-<?php Format_Section::stopSection(); ?>
-

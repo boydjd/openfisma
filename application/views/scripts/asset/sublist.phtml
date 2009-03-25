@@ -1,35 +1,25 @@
-<?php Format_Section::startSection("Asset Inventory"); ?>
-<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
-<script type="text/javascript">
-    function deleteSelectedAssets() {
-        document.forms.assetresult.submit();
-    }
-</script>
-<form id="assetresult" method="post" action="/asset/delete">
-<div class="toolbar">
-    <?php
-    //<img src="/images/pdf.gif"> , $this->url.'/format/pdf' , 'document.forms.assetresult.submit();' , '/asset/create'
-        echo new Yui_Form_Button_Link('Export PDF', 'pdf', "$this->url/format/pdf", '/images/pdf.gif');
-        echo new Yui_Form_Button_Link('Export Excel', 'xls', "$this->url/format/xls", '/images/xls.gif');
-        if($this->acl->isAllowed('asset','delete')) {
-            $selectAllButton = new Yui_Form_Button('Select All', 'selectAll');
-            $selectAllButton->onClick('selectAllUnsafe');
-            echo $selectAllButton;
-
-            $selectNoneButton = new Yui_Form_Button('Select None', 'selectNone');
-            $selectNoneButton->onClick('selectNoneUnsafe');
-            echo $selectNoneButton;
-
-            $deleteButton = new Yui_Form_Button('Delete Selected', 'deleteSelected');
-            $deleteButton->onClick('deleteSelectedAssets');
-            echo $deleteButton;
-        }
-        if($this->acl->isAllowed('asset','create')) {
-            echo new Yui_Form_Button_Link('Create Asset', 'createAsset', '/asset/create');
-        }
-    ?>
-    <b>Page:&nbsp;</b><?php echo $this->links['all'];?>
+<div class="barleft">
+<div class="barright">
+<p><b>Asset Search Results</b>
 </div>
+</div>
+<form id="assetresult" method="post" action="/asset/delete">
+<table width="98%" align="center" border="0"><tr><td>
+            <div id="asset_buttons" class="button_container">
+            <a class="button" target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="/images/pdf.gif" height="16" width="16" align="top" border="0"></a>
+            <a class="button" href="<?php echo $this->url.'/format/xls'; ?>"><img src="/images/xls.gif" height="16" width="16" border="0" align="top"></a>
+            <?php if($this->acl->isAllowed('asset','delete')){ ?>
+                <a class="button" href="#" name="select_all">Select All</a>
+                <a class="button" href="#" name="select_none">Select None</a>
+                <a class="button" href="#" name="delete_selected" onclick="document.forms.assetresult.submit();">Delete</a>
+            <?php } if($this->acl->isAllowed('asset','create')){ ?>
+                <a class="button" href="/asset/create" name="create_asset" >Create an Asset</a>
+            <?php } ?>
+            </div>
+        </td><td align="right">
+            <b>Page:&nbsp;</b><?php echo $this->links['all'];?>
+        </td></tr>
+</table>
 <table width="98%" align="center" border="0" class="tbframe">
     <tr align="center">
         <th nowrap></th>
@@ -70,4 +60,3 @@
     <?php } ?>
 </table>
 </form>
-<?php Format_Section::stopSection(); ?>

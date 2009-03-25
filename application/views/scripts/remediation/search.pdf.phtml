@@ -91,13 +91,12 @@ if( isset($this->criteria['source_id']) ) {
 }
 
 $pdf->ezText('Plans of Actions And Milestones Report Administration',16,array('justification'=>'center'));
+$columnsArray = str_split($this->columnPreference);
 $i = 0;
-$columnPreference = $_COOKIE['search_columns_pref'];
 foreach ($cols as $key=>$row) {
-    if (!($columnPreference & (1 << $i))) {
+    if ($columnsArray[$i++] == '0') {
         unset($cols[$key]);
     }
-    $i++;
 }
 $pdf->ezTable($this->list,$cols,$title,
     array('fontSize'=>8,'maxWidth'=>$content_width, 'titleFontSize'=>'12' ));

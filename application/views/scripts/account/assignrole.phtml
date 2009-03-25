@@ -1,5 +1,8 @@
-<?php Format_Section::startSection('Administration: Role and Privileges Assignment'); ?>
-
+<div class="barleft">
+<div class="barright">
+<p><b>Administration: Role and privileges Assignment</b>
+</div>
+</div>
 <form method="post" action="/panel/account/sub/assignrole/do/assign/id/<?php echo $this->user_id;?>" 
     name="assign_role">
 <fieldset style="border: 1px solid rgb(68, 99, 122); padding: 3px;"><legend><b><font size="3px"><?php echo $this->user_name;?></font></b></legend>
@@ -51,4 +54,3 @@
 </table>
 </form>
 
-<?php Format_Section::stopSection(); ?>

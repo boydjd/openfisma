@@ -1,6 +1,4 @@
 <chart>
-    <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
-    <link_data url="javascript:pieChartClick(_col_)" target="javascript" />
     <chart_data>
         <row>
             <null />
@@ -11,10 +9,10 @@
         </row>
         <row>
             <string>count</string>
-            <number tooltip='<?php echo $this->summary['NONE']; ?> findings without a mitigation strategy'><?php echo $this->summary['NONE']; ?></number>
-            <number tooltip='<?php echo $this->summary['CAP']; ?> CAP findings'><?php echo $this->summary['CAP']; ?></number>
-            <number tooltip='<?php echo $this->summary['FP']; ?> FP findings'><?php echo $this->summary['FP']; ?></number>
-            <number tooltip='<?php echo $this->summary['AR']; ?> AR findings'><?php echo $this->summary['AR']; ?></number>
+            <number tooltip='<?php echo $this->summary['NONE']; ?> findings'><?php echo $this->summary['NONE']; ?></number>
+            <number tooltip='<?php echo $this->summary['CAP']; ?> findings'><?php echo $this->summary['CAP']; ?></number>
+            <number tooltip='<?php echo $this->summary['FP']; ?> findings'><?php echo $this->summary['FP']; ?></number>
+            <number tooltip='<?php echo $this->summary['AR']; ?> findings'><?php echo $this->summary['AR']; ?></number>
         </row>
     </chart_data>
 
@@ -26,9 +24,9 @@
                 height='175' />
 
     <chart_type><?php
-        if (array_sum($this->summary) == 0) {
+        if( array_sum($this->summary) == 0 ) {
             echo 'bar';
-        } else {
+        }else{
             echo 'pie';
         }
     ?></chart_type>

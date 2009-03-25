@@ -18,6 +18,15 @@ $output_cols = array(
 'Attachments',
 'ECD');
 
+
+$columnsArray = str_split($this->columnPreference);
+$i = 0;
+foreach ($output_cols as $key=>$row) {
+    if ($columnsArray[$i++] == '0') {
+        unset($output_cols[$key]);
+    }
+}
+
 $count_cols = count($output_cols);
 // Taking Spreadsheet_Excel_Writer to generate the excel file
 // Refer to http://pear.php.net/package/Spreadsheet_Excel_Writer
@@ -82,6 +91,13 @@ foreach( $this->list as $p ) {
         $p['cmeasure'],
         $p['attachments'],
         $p['action_current_date']);
+
+    $i = 0;
+    foreach ($data as $key=>$row) {
+        if ($columnsArray[$i++] == '0') {
+            unset($data[$key]);
+        }
+    }
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
 $workbook->close();

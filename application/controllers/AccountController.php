@@ -109,8 +109,8 @@ class AccountController extends SecurityController
             $form->removeElement('checkaccount');
         } else {
             throw new Exception_General("The account form cannot handle"
-                                      . " the current authentication type: "
-                                      . $systemAuthType);
+                                    . " the current authentication type: "
+                                    . $systemAuthType);
         }
         // Add the checkbox matrix to a separate display group
         $form->addElement($checkboxMatrix);

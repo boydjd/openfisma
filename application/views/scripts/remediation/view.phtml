@@ -1,141 +1,66 @@
-<script type="text/javascript">
-function backToSearch(event) {
-    var location = YAHOO.util.Cookie.get('lastSearchUrl');
-    if (location) {
-        window.location = location;
-    } else {
-        window.location = '/panel/remediation/sub/searchbox';
-    }
-}
-
-function discardChanges(event) {
-    window.location.reload();
-}
-</script>
-<style type="text/css"> 
-.yui-navset div.loading div {
-    background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;
-    height:8em; /* hold some space while loading */
-}
-</style>
-<form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
-      method="post" 
-      id="finding_detail"
-      onsubmit="prepareform()">
-    <div class="toolbar">
+<?php
+    $urlNamespace = new Zend_Session_Namespace('urlNamespace');
+?>
+<script language="javascript">
+    $(document).ready(function(){
         <?php
-            $backToSearchButton = new Yui_Form_Button('Back To Search Results', 'backToSearch');
-            $backToSearchButton->onClick('backToSearch');
-            echo $backToSearchButton;
-            
-            $discardButton = new Yui_Form_Button('Discard Changes', 'discardChanges');
-            $discardButton->onClick('discardChanges');
-            echo $discardButton;
-            
-            echo new Yui_Form_Button_Submit('Save Changes', 'saveChanges');
+            foreach (explode(',', $this->keywords) as $keyword) {
         ?>
-    </div>
-    <div id="tabContainer">
-        <!-- YUI will load the tabview into this div -->
-    </div>
-    <script type="text/javascript">
-        /* Configuration for the tabview */
-        YAHOO.util.Event.onDOMReady(function () {
-            var tabView = new YAHOO.widget.TabView();
-        
-            // When a tab is loaded for the first time, this function is called to set up highlighting, editable fields,
-            // and executing scripts that are loaded inside the tab (YUI does not execute these script nodes on its own)
-            var prepareTab = function(args) {
-                highlight(document.getElementById("tabContainer"), 
-                          "<?php echo $this->keywords; ?>");
-                
-                setupEditFields();
-                
-                // Notice that we are eval'ing any script nodes loaded into this tab. This is only safe as long as
-                // we know exactly which URLs we are loading into the tabview. Otherwise we might inadertently execute
-                // a 3rd party script.
-                var tabContainer = document.getElementById('tabContainer');
-                var scriptNodes = tabContainer.getElementsByTagName('script');
-                for (script in scriptNodes) {
-                    if (scriptNodes[script].getAttribute('executeFlag') != 'true') {
-                        eval(scriptNodes[script].text);
-                        // Set a flag that prevents this script from being executed more than once
-                        scriptNodes[script].setAttribute('executeFlag', 'true');
-                    }
-                }
-            }
-            
-            // When the active tab changes, store the active tab in a cookie so that it can be restored
-            // in between page refreshes.
-            var handleTabChange = function(args) {
-                YAHOO.util.Cookie.set("activeTab", args.newValue, { path: '/' });
-            }
-            
-            // Finding tab
-            var findingTab = new YAHOO.widget.Tab({
-                label: 'Finding #<?php echo $this->poam['id']; ?>',
-                dataSrc: '/remediation/finding/id/<?php echo $this->poam['id']; ?>',
-                cacheData: true
-            });
-            findingTab.subscribe("dataLoadedChange", prepareTab);
-            tabView.addTab(findingTab);
-        
-            var mitigationTab = new YAHOO.widget.Tab({
-                label: 'Mitigation Strategy',
-                dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->poam['id']; ?>',
-                cacheData: true
-            });
-            mitigationTab.subscribe("dataLoadedChange", prepareTab);        
-            tabView.addTab(mitigationTab);
-        
-            var riskTab = new YAHOO.widget.Tab({
-                label: 'Risk Analysis',
-                dataSrc: '/remediation/risk-analysis/id/<?php echo $this->poam['id']; ?>',
-                cacheData: true
-            });
-            riskTab.subscribe("dataLoadedChange", prepareTab);                
-            tabView.addTab(riskTab);
-
-            var securityControlTab = new YAHOO.widget.Tab({
-                label: 'Security Control',
-                dataSrc: '/remediation/security-control/id/<?php echo $this->poam['id']; ?>',
-                cacheData: true
-            });
-            securityControlTab.subscribe("dataLoadedChange", prepareTab);                
-            tabView.addTab(securityControlTab);
-
-            var artifactsTab = new YAHOO.widget.Tab({
-                label: 'Artifacts (<?php echo count($this->ev_evals); ?>)',
-                dataSrc: '/remediation/artifacts/id/<?php echo $this->poam['id']; ?>',
-                cacheData: true
-            });
-            artifactsTab.subscribe("dataLoadedChange", prepareTab);                
-            tabView.addTab(artifactsTab);
-            
-            var auditTab = new YAHOO.widget.Tab({
-                label: 'Audit Log',
-                dataSrc: '/remediation/audit-log/id/<?php echo $this->poam['id']; ?>',
-                cacheData: true
-            });
-            auditTab.subscribe("dataLoadedChange", prepareTab);        
-            tabView.addTab(auditTab);
-            
-            tabView.subscribe('activeIndexChange', handleTabChange);
-            tabView.appendTo('tabContainer');
-        
-            // Tab is selected based on the hash appended to the URL, or if no hash is present,
-            // then by the cookie.
-            var tab = location.hash.substring(1);
-            if (!tab || tab < 0 || tab > 4) {
-                if (YAHOO.util.Cookie.get("currentFindingId") == <?php echo $this->poam['id']; ?>) {
-                    tab = YAHOO.util.Cookie.get("activeTab");
-                } else {
-                    YAHOO.util.Cookie.set("currentFindingId", <?php echo $this->poam['id']; ?>, {path: '/'});
-                    YAHOO.util.Cookie.set("activeTab", 0, {path: '/'}); 
-                    tab = 0;
-                }
-            }
-            tabView.selectTab(tab);
-        });
-    </script>
+        highlight(document.getElementById('poam_detail'), '<?php echo $keyword;?>');
+        <?php } ?>
+    });
+</script>
+<br>
+<form method="link" class="button_link" action="<?php echo $urlNamespace->lastSearch;?>">
+    <input type="submit" value="Back">
 </form>
+
+<form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" method="post" class="button_link"
+ id="poam_detail">
+<input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
+<?php 
+     echo $this->partial('remediation/finding.phtml', array('poam'=>&$this->poam, 'system_list'=>&$this->system_list, 'network_list'=>&$this->network_list, 'acl'=> $this->acl));
+     echo $this->partial('remediation/mitigation.phtml', array('poam'=>&$this->poam,'justification'=>$this->justification, 'acl'=> $this->acl));
+     echo $this->partial('remediation/nist.phtml', array('poam'=>&$this->poam, 'acl'=> $this->acl));
+?>
+<input type='submit' title='Save or Submit' value="Save" style="cursor: pointer;">
+</form>
+<?php echo $this->partial('remediation/msa.phtml', array('poam'=>&$this->poam, 'ms_evals'=>$this->ms_evals, 'ms_evaluation'=>$this->ms_evaluation, 'acl'=> $this->acl));?>
+
+     <?php if($this->poam['status'] != 'NEW' || $this->poam['status'] != 'DRAFT' ) { ?>
+     <!-- Heading Block -->
+     <div class="barleft">
+     <div class="barright">
+     <p><b>Supporting Evidence</b> (<?php echo count($this->ev_evals);?> total)<span></span></p>
+     </div>
+     </div>
+
+     <?php 
+          echo $this->partialLoop('remediation/evidence.phtml', $this->ev_evals );
+          if('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation','update_evidence') ){
+              echo 
+              '<button id="up_evidence" onclick ="upload_evidence();">Upload Evidence</button>';
+          }
+     }
+     ?>
+
+     <!-- Heading Block -->
+     <div class="barleft">
+     <div class="barright">
+     <p><b>Audit Log</b><span></span></p>
+     </div>
+     </div>
+     <table align="center" cellpadding="5" cellspacing="1" width="95%" class="tbframe">
+         <tr>
+             <th>Timestamp</td>
+             <th>User</td>
+             <th>Event</td>
+             <th>Description</td>
+         </tr>
+<?php 
+     echo $this->partialLoop('remediation/log.phtml', $this->logs);
+?>
+    </table>
+<?php 
+     echo $this->partial('remediation/uploadev.phtml',array('id'=>$this->poam['id'], 'acl'=> $this->acl));
+?>

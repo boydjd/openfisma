@@ -37,7 +37,6 @@ class Blscr extends FismaModel
 {
     protected $_name = 'blscrs';
     protected $_primary = 'code';
-
     /**
      * getList
      *

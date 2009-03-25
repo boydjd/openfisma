@@ -1,34 +1,19 @@
-<div id='systemUseNotification'>
-    <div id="systemName">
-        <?php echo Config_Fisma::readSysConfig('system_name');?>
-    </div
-
-    <hr>
-
-    <div><?php echo Config_Fisma::readSysConfig('use_notification');?></div>
-
-    <hr>
-
-    <p class="message">
-        <?php 
-            if(isset($this->error) ) {
-                $dateString = date('H:i:s');
-                echo "$dateString $this->error"; 
-            }
-        ?>
-    </p>
-
-    <form id='loginForm' method="post" action="/user/login">
-        <table>
-    	    <tr><td>Username:</td><td><input type="text" name="username"
-            value="<?php echo isset($this->username)?$this->username:'';?>" ></td></tr>
-    	    <tr><td>Password:</td><td><input type="password" name="userpass"
-            value="<?php echo isset($this->password)?$this->password:'';?>" ></td></tr>
-            <tr><td>&nbsp;</td><td><?php echo new Yui_Form_Button_Submit('Log In', 'loginButton'); ?></td>
-        </table>
-    </form>
+<p class="message"><?php 
+    if(isset($this->error) ) {
+        echo $this->error; 
+    }
+?></p>
+<form method="post" action="/user/login">
+    <ul id="login">
+	<li>Username: <input type="text" name="username"
+        value="<?php echo isset($this->username)?$this->username:'';?>" ></li>
+	<li>Password: <input type="password" name="userpass"
+         value="<?php echo isset($this->password)?$this->password:'';?>" ></li>
+	<li class='submit'><input type="submit" value="Login" ></li>
+    </ul>
+</form>
+<div id='warning'>
+<?php echo nl2br(Config_Fisma::readSysConfig('use_notification'));?>
 </div>
-
-
 
 

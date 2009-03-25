@@ -1,10 +1,10 @@
 <?php
-    $filter_type = array(0  =>'--Any--',
+    $filter_type = array(0  =>'--- Any Type ---',
                     'NONE' =>'(NONE) Unclassified',
                     'CAP'  =>'(CAP) Corrective Action Plan',
                     'AR'   =>'(AR) Accepted Risk',
                     'FP'   =>'(FP) False Positive');
-    $onTimes    = array(0 =>'--Any--',
+    $onTimes    = array(0 =>'--- Any ---',
                         'ontime'=>'On Time',
                         'overdue'=>'Overdue');
 
@@ -19,7 +19,7 @@
         $epStatus[$row['nickname']] = '('.$row['nickname'].')'.$row['name'];
     }
 
-    $filter_status = array(  0   =>'--Any--',
+    $filter_status = array(  0   =>'--- Any Status ---',
                            'NEW' =>'(NEW) Awaiting Mitigation Type and Approval',
                            'DRAFT'=>'(DRAFT) Awaiting Mitigation Approval');
     $filter_status = array_merge($filter_status, $mpStatus);
@@ -31,11 +31,14 @@
     $filter_status['NOUP-60']   = '(NOUP-60) 60+ Days Since Last Update';
     $filter_status['NOUP-90']   = '(NOUP-90) 90+ Days Since Last Update';
 
-    $this->systems = array('--Any--') + $this->systems;
-    $this->sources = array('--Any--') + $this->sources;
+    $this->systems[0] ='--Any--';
+    $this->sources[0] ='--Any--';
 ?>
-<?php //Format_Section::startSection("Remediation Search"); ?>
-
+<div class="barleft">
+<div class="barright">
+<p><b>Remediation Search</b><span></p>
+</div>
+</div>
 <?php
     $flag = '';
     foreach ($this->params as $k => $value) {
@@ -44,37 +47,30 @@
         }
     }
 ?>
-
+<!-- Begin Zend_Search_Lucene search Table -->
+<?php if ($flag == '') { ?><input type="button" id="advanced_search" value="Advanced Search"><p><?php } ?>
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
-<table class="searchFilters">
+<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
     <tr>
-        <td>
-            Search: 
+        <td colspan="2"><br/>
+        <b>Keywords: </b><input type="text" name="keywords" size="50"
+            value="<?php echo $this->params['keywords'];?>">
+        <a id="help_tips" href="/help/help/script/basicsyntax/" title="Simple search syntaxes" rel="/help/help/script/basicsyntax/" >
+        <img src="/images/help.gif"></a>
         </td>
-        <td>
-            <input type="text" name="keywords" size="50" value="<?php echo $this->params['keywords'];?>">
-        </td>
-        <td><?php echo new Yui_Form_Button_Submit('Search', 'remediationSearchSubmit'); ?></td>
-        <td><?php echo new Yui_Form_Button_Link('Toggle Advanced Search Options', 'advanced_search', '#'); ?></td>
-        <td>
-            <?php 
-            $helpButton = new Yui_Form_Button('Help', 'searchHelp', '/images/help.png');
-            $helpButton->onClick('showHelp', 'search');;
-            echo $helpButton; 
-            ?>
-        </td>
+    </tr>
+    <tr>
+        <td width="410"><?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
+            <i>It maybe spends more time for the first searching.</i>
+        <?php } ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td><input type="submit" value="Search"></td>
      </tr>
-     <?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
-         <tr>
-         <td colspan="5">
-         <i>The index has not been created yet. It will be created during the first search request. 
-         This may take a few minutes.</i></td></tr>
-     <?php } ?>
-</table>
+ </table>
+<p>
 
 <div id="advanced_searchbox" <?php if ($flag == '') { ?>style="display:none" <?php } ?>>
 <!-- Begin Filter Table -->
-<table class="searchFilters">
+<table align="center" border="0" cellpadding="3" cellspacing="1" width="95%" class="tipframe">
     <tr>
         <td><b>Finding Source: </b><br>
             <?php echo $this->formSelect('source_id',
@@ -102,18 +98,27 @@
         </td>
     </tr>
     <tr>
-        <td><b>Responsible System: </b><br>
+        <td ><b>Asset Owners: </b> <br/>
+            <?php echo $this->formSelect('asset_owner',
+                                         $this->params['asset_owner'],
+                                         null,
+                                         $this->systems);?>
+        </td>
+        <td ><b>Action Owners: </b><br>
             <?php echo $this->formSelect('system_id',
                                          $this->params['system_id'],
                                          null,
                                          $this->systems);?>
         </td>
-        <td ><b>On Time:</b><br>
+    </tr>
+    <tr>
+        <td ><b>OnTime:</b><br>
             <?php echo $this->formSelect('ontime',
                                          $this->params['ontime'],
                                          array('disabled'=>'disabled', 'id'=>'poamSearchOnTime'),
                                          $onTimes);?>
         </td>
+        <td></td>
     </tr>
     <tr>
         <td colspan='2'>
@@ -141,4 +146,3 @@
 </form>
 </div>
 
-<?php //Format_Section::stopSection(); ?>

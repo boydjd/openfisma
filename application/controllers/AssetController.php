@@ -78,7 +78,6 @@ class AssetController extends PoamBaseController
             'xls'
         ))->initContext();
     }
-    
     /**
      *  Searching the asset and list them.
      *
@@ -118,7 +117,6 @@ class AssetController extends PoamBaseController
         $this->_helper->layout->setLayout('ajax');
         $this->render('list');
     }
-    
     /**
      *  Create an asset
      */
@@ -172,7 +170,6 @@ class AssetController extends PoamBaseController
         $this->render();
         $this->_forward('search', 'product');
     }
-    
     /**
      * View detail information of an asset
      */
@@ -211,7 +208,6 @@ class AssetController extends PoamBaseController
         $this->_helper->layout->setLayout('ajax');
         $this->render('detail');
     }
-    
     /**
      * Search assets and list them
      */
@@ -289,7 +285,6 @@ class AssetController extends PoamBaseController
             $this->view->assign('links', $pager->getLinks());
         }
     }
-    
     /** 
      *  View an asset in detail
      */
@@ -330,10 +325,12 @@ class AssetController extends PoamBaseController
         if ('edit' == $req->getParam('s')) {
             $this->view->assign('system_list', $this->_systemList);
             $this->view->assign('network_list', $this->_networkList);
+            //$this->_helper->actionStack('header', 'Panel');
             $this->render('edit');
             $this->_helper->actionStack('search', 'Product');
         }
     }
+
 
     /**
      *  update information of an asset
@@ -375,7 +372,6 @@ class AssetController extends PoamBaseController
             's' => 'edit'
         ));
     }
-    
     /**
      *  Delete an asset
      */
@@ -400,16 +396,16 @@ class AssetController extends PoamBaseController
         }
 
         if ($errno < 0) {
-            $msg = "You did not select any assets to delete";
+            $msg = "Pleasse select a option at least";
             $this->message($msg, self::M_WARNING);
         } else if ($errno > 0) {
-            $msg = "Failed to delete the asset[s]";
+            $msg = $errno . "Failed to delete the asset";
             $this->message($msg, self::M_WARNING);
         } else {
             $this->_notification->add(Notification::ASSET_DELETED,
                $this->_me->account, $assetIds);
 
-            $msg = "Asset[s] deleted successfully";
+            $msg = "Asset deleted successfully";
             $this->message($msg, self::M_NOTICE);
         }
         $this->_forward('asset', 'Panel', null, array(

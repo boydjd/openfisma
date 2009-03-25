@@ -1,105 +1,101 @@
-<?php Format_Section::startSection('Dashboard'); ?>
+<div class="barleft">
+<div class="barright">
+<p><b>Dashboard</b>
+</div>
+</div>
 
-<div class="panel">
-    <p><em>Alerts</em></p>
-    <ul>
-        <li>
-            There are <b><a href="<?php echo $this->url ?>NEW"><?PHP echo $this->alert['NEW'];?></a></b>
-            NEW findings (findings that do not have a mitigation strategy).
-        </li>
-        <li>
-            There are <b><a href="<?php echo $this->url;?>DRAFT"><?PHP echo $this->alert['DRAFT'];?></a></b>
-            DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
-        </li>
-        <li>
-            There are <b><a href="<?php echo $this->url ?>EN/ontime/ontime"><?PHP echo $this->alert['EN'];?></a></b>
-            findings awaiting evidence.
-        </li>
-        <li>
-            There are <b><a href="<?php echo $this->url ?>EN/ontime/overdue"><?PHP echo $this->alert['EO'];?></a></b>
-            overdue findings awaiting evidence.    
-        </li>
-    </ul>
-</div>
-<div class="panel">
-    <p><em>Last Login</em></p>
-    <?php if(!empty($this->lastLogin)) { ?>
-        <ul>
+<table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
+    <tr>
+        <td  align="left"><b>Alerts </b>
+            <ul>
+            <!-- Awaiting Draft -->
+            <li>There are <b><a href="<?php echo $this->url ?>NEW"><?PHP echo $this->alert['NEW'];?></a></b> NEW findings (findings that do not have a mitigation strategy).</li>
+            <!-- Awating Mitigation Strategy -->
+            <li>There are <b><a href="<?php echo $this->url;?>DRAFT"><?PHP echo $this->alert['DRAFT'];?></a></b> DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).</li>
+            <!-- Awaiting Evidence -->
+            <li>There are <b><a href="<?php echo $this->url ?>EN/ontime/ontime"><?PHP echo $this->alert['EN'];?></a></b> findings awaiting evidence.
+            <!-- Overdue Awaiting Evidence -->
+            <li>There are <b><a href="<?php echo $this->url ?>EN/ontime/overdue"><?PHP echo $this->alert['EO'];?></a></b> overdue findings awaiting evidence.
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
+    <tr>
+        <td  align="left"><b>Last Login</b>
+            <?php if(!empty($this->lastLogin)) { ?>
+            <ul>
             <li>Last Logged in at <b><?php echo $this->lastLogin; ?></b></li>
-            <li>From IP address <b><?php echo $this->lastLoginIp;?></b></li>
+            <li>From Ip address <b><?php echo $this->lastLoginIp;?></b></li>
             <li>There were <b><?php echo $this->failureCount;?></b> bad login attempts since your last login.</li>
-        </ul>
-    <?php } else { ?>
-        <p>
-            This is the first time you have logged into <?php echo $this->applicationName ?>. 
-            We will begin tracking your login attempts moving forward.
-        </p>
-    <?php } ?>
-</div>
+            </ul>
+            <?php } else { ?>
+            <p>This is the first time you have logged into <?php echo $this->applicationName ?>. 
+            We will begin tracking your login attempts moving forward.</p>
+            <?php } ?>
+        </td>
+    </tr>
+</table>
 
 <?php
 if (isset($this->notifications)) {
 ?>
-    <div class="panel clear">
-        <p><em>Notifications</em></p>
-        <p>
-            You have new notifications that you have not received in e-mail yet.
-            Click <a href="<?php echo $this->dismissUrl; ?>">here</a> to dismiss these notifications.
-        </p>
-        <ol>
-            <?php
-            foreach($this->notifications as $notification) {
-            ?>
-                <li><b><?php echo $notification['event_text']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['timestamp']; ?></b></li>
-            <?php
-            }
-            ?>
-        </ol>
-    </div>
+    <table width="95%" align="center"  border="0" cellpadding="10" class="tipframe">
+        <tr>
+            <td  align="left">
+                <b>Notifications</b>
+                <p>
+                    You have new notifications that you have not received in e-mail yet.
+                    Click <a href="<?php echo $this->dismissUrl; ?>">here</a> to dismiss these notifications.
+                </p>
+                <ol>
+                <?php
+                foreach($this->notifications as $notification) {
+                ?>
+                    <li><b><?php echo $notification['event_text']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['timestamp']; ?></b></li>
+                <?php
+                }
+                ?>
+                </ol>
+            </td>
+        </tr>
+    </table>
 <?php
 }
 ?>
 
-<script type="text/javascript">
-    function barChartClick(status) {
-        document.location = "/panel/remediation/sub/searchbox/s/search/status/" + status;
-    }
-    function pieChartClick(columnNumber) {
-        // Lookup table for converting the column number to the remediation type code
-        var columns = ['NONE', 'CAP', 'FP', 'AR'];
-        var type = columns[columnNumber-1];
-        document.location = "/panel/remediation/sub/searchbox/s/search/type/" + type;
-    }
-</script>
 <?php if ( !empty( $this->alert['TOTAL'] ) ) { ?>
-    <div class="panel clear">
-        <table width="100%">
-            <tr><td colspan="2"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
-            <tr>
-              <td align="center">
-                <?php echo $this->partial('/dashboard/chart.phtml', array(
-                            'source_url'=> urlencode(
-                                '/dashboard/totalstatus/format/xml/type/3d column'),
-                            'width'=>380,
-                            'height'=>275) );
-                ?>
-              </td>
-              <td align="center">
-                <?php echo $this->partial('/dashboard/chart.phtml', array(
-                            'source_url'=> '/dashboard/totaltype/format/xml',
-                            'width'=>380,
-                            'height'=>275 ));
-                ?>
-              </td>
-            </tr>
-            <tr>
-              <td align="center"><b>Finding Status<br>Distribution</b></td>
-              <td align="center"><b>Mitigation Strategy<br>Distribution</b></td>
-            </tr>
-        </table>
-    </div>
+<div style='position: relative; width: 100%;'>
+    <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="tipframe">
+        <tr><td colspan="2"  align="left"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
+        <tr>
+          <td width="34%"  align="center">
+            <?php echo $this->partial('/dashboard/chart.phtml', array(
+                        'source_url'=> urlencode(
+                            '/dashboard/totalstatus/format/xml/type/3d column'),
+                        'width'=>380,
+                        'height'=>275) );
+            ?>
+          </td>
+          <td width="33%"  align="center">
+            <?php echo $this->partial('/dashboard/chart.phtml', array(
+                        'source_url'=> '/dashboard/totaltype/format/xml',
+                        'width'=>380,
+                        'height'=>275 ));
+            ?>
+          </td>
+        </tr>
+        <tr>
+          <td width="34%"  align="center"><b>Finding Status<br>Distribution</b></td>
+          <td width="33%"  align="center"><b>Mitigation Strategy<br>Distribution</b></td>
+        </tr>
+    </table>
+
+    <!-- This div blocks click through on the swf charts -->
+    <div class='shield'>&nbsp;</div>
+</div>
+
 <?php } ?>
 
-<div class="clear"></div>
 
-<?php Format_Section::stopSection(); ?>

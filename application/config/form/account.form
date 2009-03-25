@@ -20,19 +20,16 @@ displayGroups.accountInfo.elements.account = "account"
 
 elements.password.type = "password"
 elements.password.options.label = "Password"
-elements.account.options.attribs.id = "password"
 elements.password.options.attribs.size = 35
 displayGroups.accountInfo.elements.password = "password"
 
 elements.confirmPassword.type = "password"
 elements.confirmPassword.options.label = "Confirm Password"
-elements.account.options.attribs.id = "confirmPassword"
 elements.confirmPassword.options.attribs.size = 35
 displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
 elements.generate_password.type = "button"
 elements.generate_password.options.value = "Generate Password"
-elements.account.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
 elements.checkaccount.type = "button"

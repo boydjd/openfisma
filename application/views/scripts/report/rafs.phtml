@@ -1,8 +1,11 @@
-<?php Format_Section::startSection("Generate Risk Analysis Forms (RAFs)"); ?>
-
+<div class="barleft">
+<div class="barright">
+<p><b>Generate Risk Analysis Forms (RAFs)</b>
+</div>
+</div>
 <form action="/report/rafs" method="post">
 
-<table class="searchFilters">
+<table border="0" cellpadding="5" cellspacing="0" class="tipframe">
 <tr>
     <td><b>System:</b></td>
     <td>
@@ -11,11 +14,11 @@
                                  null,
                                  $this->system_list);?>
 
-    <?php echo new Yui_Form_Button_Submit('Generate RAFS', 'generateRafsSubmit'); ?>
-   <!-- @yui review: <input type="submit" onclick="$('#msgbar').remove()"> -->
+    <input type="submit" onclick="$('#msgbar').remove()">
     </td>
+</tr>
+<tr>
+    <td colspan="2"> Please select a system to generate risk analysis forms.  </td>
 </tr>
 </table>
 </form>
-
-<?php Format_Section::stopSection(); ?>

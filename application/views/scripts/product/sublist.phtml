@@ -1,5 +1,8 @@
-<?php Format_Section::startSection("Products List"); ?>
-
+<div class="barleft">
+<div class="barright">
+<p><b>Administration: Products List</b>
+</div>
+</div>
 <table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
 <tr align="center">
     <th>Product Name</th>
@@ -36,14 +39,7 @@
         <a href="/panel/product/sub/view/id/<?php echo $product['id'];?>" title="display the Products">
         <img src="/images/view.gif" border="0"></a>
     </td>
-    <?php } if($this->acl->isAllowed('admin_products','read')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/product/sub/view/id/<?php echo $product['id'];?>" title="display the Products">
-        <img src="/images/view.gif" border="0"></a>
-    </td>
     <?php }?>
 </tr>
 <?php }?>
 </table>
-
-<?php Format_Section::stopSection(); ?>

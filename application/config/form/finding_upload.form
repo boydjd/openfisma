@@ -5,6 +5,9 @@
 ; License   http://www.openfisma.org/mw/index.php?title=License
 ; Version   $Id$
 
+; I don't know how to set the default values for these lists in the INI file, so they are set inside the action
+; handler.
+
 [finding_upload]
 elements.plugin.type = "select"
 elements.plugin.options.label = "Plugin"
@@ -42,6 +45,6 @@ elements.selectFile.options.validators.size.options.max = 5242880
 elements.selectFile.options.validators.extension.validator = "Extension"
 elements.selectFile.options.validators.extension.options.extension = "xml"
 
-elements.upload.type = "submit"
-elements.upload.options.value = "Upload"
-displayGroups.finding_upload.elements.submit = "upload"
+elements.submit.type = "submit"
+elements.submit.options.value = "Upload"
+displayGroups.finding_upload.elements.submit = "submit"
