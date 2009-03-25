@@ -12,12 +12,6 @@ function discardChanges(event) {
     window.location.reload();
 }
 </script>
-<style type="text/css"> 
-.yui-navset div.loading div {
-    background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;
-    height:8em; /* hold some space while loading */
-}
-</style>
 <form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
       method="post" 
       id="finding_detail"
@@ -56,11 +50,12 @@ function discardChanges(event) {
                 // a 3rd party script.
                 var tabContainer = document.getElementById('tabContainer');
                 var scriptNodes = tabContainer.getElementsByTagName('script');
-                for (script in scriptNodes) {
-                    if (scriptNodes[script].getAttribute('executeFlag') != 'true') {
-                        eval(scriptNodes[script].text);
+                for (var i=0; i < scriptNodes.length; i++) {
+                    alert('executing script ' +i+'\n'+scriptNodes[i]);
+                    if (scriptNodes[i].getAttribute('executeFlag') != 'true') {
+                        eval(scriptNodes[i].text);
                         // Set a flag that prevents this script from being executed more than once
-                        scriptNodes[script].setAttribute('executeFlag', 'true');
+                        scriptNodes[i].setAttribute('executeFlag', 'true');
                     }
                 }
             }

@@ -349,3 +349,9 @@ div#msgbar {
     padding: 3px;
     display: none;
 }
+
+/* This style adds a loading graphic to the YUI tab view */
+.yui-navset div.loading div {
+    background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;
+    height:8em; /* hold some space while loading */
+}
