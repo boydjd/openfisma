@@ -51,7 +51,6 @@ function discardChanges(event) {
                 var tabContainer = document.getElementById('tabContainer');
                 var scriptNodes = tabContainer.getElementsByTagName('script');
                 for (var i=0; i < scriptNodes.length; i++) {
-                    alert('executing script ' +i+'\n'+scriptNodes[i]);
                     if (scriptNodes[i].getAttribute('executeFlag') != 'true') {
                         eval(scriptNodes[i].text);
                         // Set a flag that prevents this script from being executed more than once
