@@ -8,9 +8,6 @@ foreach ($this->ev_evals as $e) {
     $evaluation = $e['eval'];
     $comment = new Comments();
 ?>
-    <form action="/remediation/evidence/id/<?php echo $evidence['id'];?>" 
-          method="post"
-          name='eval_ev<?php echo $evidence['id'];?>'>
         <div class="approvalHeader">
             <b>File: </b>
             <?php 
@@ -54,14 +51,15 @@ foreach ($this->ev_evals as $e) {
                 if($value=='NONE' && $editable){
                     if($e['acl']->isAllowed('remediation',$v['function'])) {
                         echo '<input type="hidden" name="evaluation" value="'.$v['id'].'"/>';
+                        echo '<input type="hidden" name="evidence_id" value="'.$evidence['id'].'"/>';
                         echo '<input type="hidden" name="precedence" value="'.$v['precedence_id'].'"/>';
                         echo '<input type="hidden" name="topic" value="" />';
                         echo '<input type="hidden" name="reject" value="" />';
                         echo '<input type="hidden" name="comment" value="" />';
                         echo '<input type="hidden" name="decision" value="APPROVE" />';
-                        echo '<input type="submit" value="APPROVE" />&nbsp;';
-                        echo '<input type="button" value="DENY" '.
-                            'onclick="ev_deny(document.eval_ev'.$evidence['id'].');" />';
+                        echo '<input name="submit_ea" type="submit" value="APPROVE"
+                            onclick="return form_confirm(document.finding_detail, \'approve ' . $name . '\');">&nbsp;';
+                        echo '<input type="button" value="DENY" onclick="ev_deny(document.finding_detail);">';
                     } else {
                         echo "$value";
                     }
@@ -84,7 +82,6 @@ foreach ($this->ev_evals as $e) {
             }
             ?>
         </div>
-    </form>
 <?php
 }
 

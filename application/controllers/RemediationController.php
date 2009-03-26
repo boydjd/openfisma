@@ -52,7 +52,28 @@ class RemediationController extends PoamBaseController
               'blscr_id'=>Notification::UPDATE_CONTROL_ASSIGNMENT,
               'action_status'=>Notification::MITIGATION_STRATEGY_APPROVED,
               'action_resources'=>Notification::UPDATE_FINDING_RESOURCES);
-              
+
+    /**
+     * The preDispatch hook is used to split off poam modify actions, mitigation approval actions, and evidence
+     * approval actions into separate controller actions.
+     * 
+     * @param Zend_Controller_Request_Abstract $request          
+     */              
+    public function preDispatch() 
+    {
+        $request = $this->getRequest();
+        if ('modify' == $request->getParam('sub')) {
+            // If this is a mitigation or evidence approval, then redirect to the corresponding controller action
+            if (isset($_POST['submit_msa'])) {
+                $request->setParam('sub', null);
+                $this->_forward('msa', null, null, $request);
+            } elseif (isset($_POST['submit_ea'])) {
+                $request->setParam('sub', null);
+                $this->_forward('evidence');
+            }
+        }
+        parent::preDispatch();
+    }
               
     /**
     * init() - Create the additional PDF, XLS and RSS contexts for this class.
@@ -447,7 +468,6 @@ class RemediationController extends PoamBaseController
     {
         $this->_acl->requirePrivilege('remediation', 'read');
         
-        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $this->view->assign('keywords', $req->getParam('keywords'));
@@ -485,6 +505,7 @@ class RemediationController extends PoamBaseController
         $this->_acl->requirePrivilege('remediation', 'update_finding');
         
         $req = $this->getRequest();
+
         $id = $req->getParam('id');
         $poam = $req->getPost('poam');
         if (!empty($poam)) {
@@ -690,7 +711,9 @@ class RemediationController extends PoamBaseController
             } else {
                 $poam = $poam[0];
             }
-            
+            if ($poam['status'] != 'EN') {
+                throw new Exception('Cannot upload evidence unless the finding is in EN status.');
+            }
             $userId = $this->_me->id;
             $nowStr = self::$now->toString('Y-m-d-his');
             if (!file_exists(EVIDENCE_PATH)) {
@@ -761,7 +784,7 @@ class RemediationController extends PoamBaseController
         $evalId = $req->getParam('evaluation');
         $precedenceId = $req->getParam('precedence');
         $decision = $req->getParam('decision');
-        $eid = $req->getParam('id');
+        $eid = $req->getPost('evidence_id');
         $ev = new Evidence();
         $evDetail = $ev->find($eid);
 
@@ -772,7 +795,7 @@ class RemediationController extends PoamBaseController
         // notification
         $poam = $this->_poam->find($evDetail->current()->poam_id)->toArray();
         if (empty($poam)) {
-            throw new Exception_General('incorrect ID specified for poam');
+            throw new Exception_General('POAM id not specified or POAM does not exist');
         } else {
             $poam = $poam[0];
         }

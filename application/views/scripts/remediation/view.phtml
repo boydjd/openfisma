@@ -15,6 +15,7 @@ function discardChanges(event) {
 <form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
       method="post" 
       id="finding_detail"
+      name="finding_detail"
       onsubmit="prepareform()">
     <div class="toolbar">
         <?php
@@ -52,7 +53,12 @@ function discardChanges(event) {
                 var scriptNodes = tabContainer.getElementsByTagName('script');
                 for (var i=0; i < scriptNodes.length; i++) {
                     if (scriptNodes[i].getAttribute('executeFlag') != 'true') {
-                        eval(scriptNodes[i].text);
+                        try {
+                            eval(scriptNodes[i].text);
+                        } catch (e) {
+                            alert('Not able to execute one of the scripts embedded in this page: '
+                                  + err.description);
+                        } 
                         // Set a flag that prevents this script from being executed more than once
                         scriptNodes[i].setAttribute('executeFlag', 'true');
                     }

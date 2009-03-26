@@ -112,7 +112,7 @@
 <?php 
 Format_Section::startSection("Mitigation Strategy Approval");
 $postAction = "/remediation/msa/id/" . $this->poam['id'];
-$array = array('type'   => $this->poam['type'],
+$array = array('type'          => $this->poam['type'],
                'description'   => $this->poam['finding_data'],
                'recommendation'=> $this->poam['action_suggested'],
                'description'   => $this->poam['action_planned'],
@@ -162,15 +162,13 @@ if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitig
     $reviseMitigationButton = new Yui_Form_Button('Revise Mitigation Strategy', 'reviseMitigationButton');
     $reviseMitigationButton->onClick('reviseMitigationStrategy');
     echo "<div class='toolbar'>$reviseMitigationButton</div>";
-    //echo "<a class=\"button\" href=\"$postAction/is_msa/0\" onclick=\"return delok();\">Revise Mitigation Strategy</a><br><br>";
 }  
 
 if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empty($this->ms_evaluation))) {
     $i = 0;
     foreach ($this->ms_evals as $v) {
         $k = $i++;
-        echo "<form action=\"$postAction\" method=\"post\" name=\"ms_approval_{$k}\">
-              <div class=\"approval\">";
+        echo "<div class=\"approval\">";
         $editable = true;
         $comment = new Comments();
         foreach ($v as $precedenceId=>$row) {
@@ -184,9 +182,9 @@ if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empt
                     echo '<input type="hidden" name="eval_id" value="' . $row['id'] . '"/>';
                     echo '<input type="hidden" name="comment" value="" />';
                     echo '<input type="hidden" name="decision" value="APPROVED" />';
-                    echo '<input type="submit" value="APPROVE" 
-                        onclick="return form_confirm(document.poam_detail,\'approve ' . $row['name'] . '\');"/>&nbsp;';
-                    echo '<input type="button" value="DENY" onclick="ms_comment(document.ms_approval_' . $k.');" />';
+                    echo '<input name="submit_msa" type="submit" value="APPROVE" 
+                        onclick="return form_confirm(document.finding_detail, \'approve ' . $row['name'] . '\');"/>&nbsp;';
+                    echo '<input type="button" value="DENY" onclick="ms_comment(document.finding_detail);" />';
                 } else {
                     echo 'PENDING...';
                 }
@@ -205,7 +203,7 @@ if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empt
             }
             echo "</p>";
         }
-        echo "</div></form>";
+        echo "</div>";
     } 
 }
 Format_Section::stopSection(); 

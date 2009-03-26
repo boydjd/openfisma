@@ -329,6 +329,10 @@ function ev_deny(formname){
                     var comments = $("textarea[name=comment]",this).val();
                     form1.elements['comment'].value = comments;
                     form1.elements['decision'].value = 'DENY';
+                    var submitEa = document.createElement('input');
+                    submitEa.name = 'submit_ea';
+                    submitEa.value = 'DENY';
+                    form1.appendChild(submitEa);                    
                     form1.submit();
                 }
             }
@@ -370,6 +374,10 @@ function ms_comment(formname){
                     var comment = $("textarea[name=comment]",this).val();
                     form2.elements['comment'].value = comment;
                     form2.elements['decision'].value = 'DENIED';
+                    var submitMsa = document.createElement('input');
+                    submitMsa.name = 'submit_msa';
+                    submitMsa.value = 'DENY';
+                    form2.appendChild(submitMsa);
                     form2.submit();
                 }
             }
