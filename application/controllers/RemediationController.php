@@ -406,7 +406,7 @@ class RemediationController extends PoamBaseController
                                            'hidden' => ($visibleColumns & (1 << 16)) == 0)
         );
         $this->view->assign('columns', $columns);
- 
+        $this->view->assign('rowCount', $this->_paging['perPage']);
         $this->view->assign('attachUrl', $attachUrl);
         $this->view->assign('url', $url);
         

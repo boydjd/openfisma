@@ -83,12 +83,12 @@ var myRowClickHandler = function(clickEvent) {
 
 // DataTable configuration
 var myConfigs = {
-    initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/10",
+    initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/<?php echo $this->rowCount; ?>",
     dynamicData: true, 
     sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
     paginator: new YAHOO.widget.Paginator(
         { 
-            rowsPerPage:10,
+            rowsPerPage:<?php echo $this->rowCount; ?>,
             template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
         }
     ), 
