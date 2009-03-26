@@ -60,10 +60,7 @@ class RemediationController extends PoamBaseController
     */
     public function init()
     {
-        parent::init();
-        $this->_helper->contextSwitch()
-                      ->addActionContext('search2', 'json')
-                      ->initContext();        
+        parent::init();    
         $attach = $this->_helper->contextSwitch();
         if (!$attach->hasContext('pdf')) {
             $attach->addContext('pdf',
@@ -72,7 +69,7 @@ class RemediationController extends PoamBaseController
                         'Content-Disposition' => "attachement;filename=export.pdf",
                         'Content-Type' => 'application/pdf')))
                    ->addActionContext('raf', array('pdf'))
-                   ->addActionContext('search', array('pdf'))
+                   ->addActionContext('search2', array('pdf'))
                    ->setAutoDisableLayout(true);
         }
         if (!$attach->hasContext('xls')) {
@@ -81,7 +78,7 @@ class RemediationController extends PoamBaseController
                    'headers' => array(
                         'Content-Disposition' => "attachement;filename=export.xls",
                         'Content-Type' => 'application/vnd.ms-excel')))
-                   ->addActionContext('search', array('xls'))->setAutoDisableLayout(true);
+                   ->addActionContext('search2', array('xls'))->setAutoDisableLayout(true);
         }
     }
     
@@ -324,7 +321,7 @@ class RemediationController extends PoamBaseController
         
         $link = $this->makeUrlParams($this->parseCriteria());
         $url = $pageUrl = '/panel/remediation/sub/searchbox' . $link;
-        $attachUrl = '/remediation/search' . $link;
+        $attachUrl = '/remediation/search2' . $link;
         $this->view->assign('link', $link);
         
         $params = $this->parseCriteria(true);
@@ -1223,24 +1220,27 @@ class RemediationController extends PoamBaseController
                 $params['ids'] = -1;
             }
         }
-
-        // Use the Zend Lucene search results and combine with the additional parameters
-        // to search the poams table
-        $startIndex = $request->getParam('startIndex');
-        $rowCount = $request->getParam('count');
-        $startPage = ($startIndex / $rowCount) + 1; // Pages are indexed starting at 1
-        $list = $this->_poam->search($this->_me->systems, 
-                                     '*',
-                                     $params, 
-                                     $startPage,
-                                     $rowCount, 
-                                     false);
                           
         // JSON requests are handled differently from PDF and XLS requests, so we need
         // to determine which request type this is.
         $this->_helper->contextSwitch()->initContext();
         $format = $this->_helper->contextSwitch()->getCurrentContext();
-
+        if (empty($format)) {
+            // Use the Zend Lucene search results and combine with the additional parameters
+            // to search the poams table
+            $startIndex = $request->getParam('startIndex');
+            $rowCount = $request->getParam('count', 1);
+            $startPage = ($startIndex / $rowCount) + 1; // Pages are indexed starting at 1
+            $list = $this->_poam->search($this->_me->systems, 
+                                         '*',
+                                         $params, 
+                                         $startPage,
+                                         $rowCount, 
+                                         false);
+        } else {
+            $list = $this->_poam->search($this->_me->systems, '*', $params, 0, 0, false);
+        }
+        
         // The total number of found rows is appended to the list of poams. 
         // Pop it off before continuing.
         $total = array_pop($list);
@@ -1277,17 +1277,23 @@ class RemediationController extends PoamBaseController
                 $row['cmeasure_effectiveness'] = $this->view->ShowLongText($row['cmeasure_effectiveness'], $this->view->keywords);
             }
         }
-
-        $tableData = array(
-            'recordsReturned' => count($list),
-            'totalRecords' => $total,
-            'startIndex' => $startIndex,
-            'sort' => null,
-            'dir' => 'asc',
-            'pageSize' => $rowCount,
-            'records' => $list
-        );
-        $this->view->assign('poam', $tableData);
+        if ($format == 'pdf' || $format == 'xls') {
+            $this->view->assign('list', $list);
+        } else {
+            $this->_helper->contextSwitch()
+                          ->addActionContext('search2', 'json')
+                          ->initContext();
+            $tableData = array(
+                'recordsReturned' => count($list),
+                'totalRecords' => $total,
+                'startIndex' => $startIndex,
+                'sort' => null,
+                'dir' => 'asc',
+                'pageSize' => $rowCount,
+                'records' => $list
+            );
+            $this->view->assign('poam', $tableData);
+        }
     }
 
     /**
