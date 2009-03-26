@@ -51,7 +51,7 @@ class PoamBaseController extends SecurityController
         'urlVar' => 'p',
         'path' => '',
         'currentPage' => 1,
-        'perPage' => 20
+        'perPage' => 10
     );
 
     /**
