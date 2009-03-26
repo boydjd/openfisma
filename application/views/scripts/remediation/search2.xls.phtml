@@ -1,22 +1,31 @@
 <?php
 $output_cols = array(
-'ID#',
-'Source',
-'System',
-'Asset',
-'Type',
-'Status',
-'On Time?',
-'Description',
-'Recommendation',
-'Corrective Action',
-'Blscr',
-'Threat Level',
-'Threat Description',
-'Cmeasures Effectiveness',
-'Cmeasures Description',
-'Attachments',
-'ECD');
+'id' => 'ID#',
+'source_name' => 'Source',
+'system_name' => 'System',
+'asset_name' => 'Asset',
+'type' => 'Type',
+'status' => 'Status',
+'on_time' => 'On Time?',
+'finding_data' => 'Description',
+'action_suggested' => 'Recommendation',
+'action_planned' => 'Corrective Action',
+'blscr_id' => 'Blscr',
+'threat_level' => 'Threat Level',
+'threat_source' => 'Threat Description',
+'cmeasure_effectiveness' => 'Cmeasures Effectiveness',
+'cmeasure' => 'Cmeasures Description',
+'attachments' => 'Attachments',
+'action_current_date' => 'ECD');
+
+$i = 0;
+$columnPreference = $_COOKIE['search_columns_pref'];
+foreach ($output_cols as $key=>$row) {
+    if (!($columnPreference & (1 << $i))) {
+        unset($output_cols[$key]);
+    }
+    $i++;
+}
 
 $count_cols = count($output_cols);
 // Taking Spreadsheet_Excel_Writer to generate the excel file
@@ -64,24 +73,12 @@ $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
 foreach( $this->list as $p ) {
     $p['on_time'] = $this->isOnTime($p['duetime']);
-    $data = array(
-        $p['id'],
-        $p['source_id'] != 0 ? $this->source_list[$p['source_id']] : 'n/a',
-        $this->system_list[$p['system_id']],
-        $p['asset_name'],
-        $p['type'],
-        $p['status'],
-        $p['on_time'],
-        $p['finding_data'],
-        $p['action_suggested'],
-        $p['action_planned'],
-        $p['blscr_id'],
-        $p['threat_level'],
-        $p['threat_source'],
-        $p['cmeasure_effectiveness'],
-        $p['cmeasure'],
-        $p['attachments'],
-        $p['action_current_date']);
+    $data = array();
+    foreach ($output_cols as $key => $val) {
+        if (isset($p[$key])) {
+            array_push($data, $p[$key]);
+        }
+    }
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
 $workbook->close();
