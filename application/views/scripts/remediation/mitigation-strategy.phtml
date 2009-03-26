@@ -112,7 +112,8 @@
 <?php 
 Format_Section::startSection("Mitigation Strategy Approval");
 $postAction = "/remediation/msa/id/" . $this->poam['id'];
-$array = array('description'   => $this->poam['finding_data'],
+$array = array('type'   => $this->poam['type'],
+               'description'   => $this->poam['finding_data'],
                'recommendation'=> $this->poam['action_suggested'],
                'description'   => $this->poam['action_planned'],
                'resources'     => $this->poam['action_resources'],
