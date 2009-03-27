@@ -277,19 +277,9 @@ function upload_evidence() {
     if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
         return false;
     }
-    var dw = $(document).width();
-    var dh = $(document).height();
-    $('<div id="full"></div>')
-                .width(dw).height(dh)
-                .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
-                .appendTo("body").fadeTo(1, 0.4);
-    var content = $("#uploadEvidencePanel").html();
-    $('<div title="Upload Evidence"></div>').append(content).
-        dialog({position:'middle', width: 540, height: 200, resizable: true,modal:true,
-            close:function(){
-                $('#full').remove();
-            }
-        });
+    // set the encoding for a file upload
+    document.finding_detail.enctype = "multipart/form-data";
+    panel('Upload Evidence', document.finding_detail, '/remediation/upload-form');
     return false;
 }
 
@@ -330,6 +320,7 @@ function ev_deny(formname){
                     form1.elements['comment'].value = comments;
                     form1.elements['decision'].value = 'DENY';
                     var submitEa = document.createElement('input');
+                    submitEa.type = 'hidden';
                     submitEa.name = 'submit_ea';
                     submitEa.value = 'DENY';
                     form1.appendChild(submitEa);                    
@@ -548,10 +539,35 @@ function form_confirm (check_form, action) {
 }
 
 function dump(arr) {
-    var text = '';
+    var text = '' + arr;
     for (i in arr) {
-        text += i + " : " + arr[i] + "\n";
+        if ('function' != typeof(arr[i])) {
+            text += i + " : " + arr[i] + "\n";
+        }
     }
     alert(text);
-    //document.write("<pre>"+text+"</pre>");
 } 
+
+/* temporary helper function to fix a bug in evidence upload for IE6/IE7 */
+function panel(title, parent, src) {
+    var newPanel = new YAHOO.widget.Panel('panel', {width:"540px", modal:true} );
+    newPanel.setHeader(title);
+    newPanel.setBody("Loading...");
+    newPanel.render(parent);
+    newPanel.center();
+    newPanel.show();
+    // Load the help content for this module
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    src,
+                                    {
+                                        success: function(o) {
+                                            // Set the content of the panel to the text of the help module
+                                            o.argument.setBody(o.responseText);
+                                            // Re-center the panel (because the content has changed)
+                                            o.argument.center();
+                                        },
+                                        failure: function(o) {alert('Failed to load the specified panel.');},
+                                        argument: newPanel
+                                    }, 
+                                    null);
+}

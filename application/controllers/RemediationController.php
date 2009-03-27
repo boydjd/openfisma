@@ -63,13 +63,17 @@ class RemediationController extends PoamBaseController
     {
         $request = $this->getRequest();
         if ('modify' == $request->getParam('sub')) {
-            // If this is a mitigation or evidence approval, then redirect to the corresponding controller action
+            // If this is a mitigation, evidence approval, or evidence upload, then redirect to the 
+            // corresponding controller action
             if (isset($_POST['submit_msa'])) {
                 $request->setParam('sub', null);
-                $this->_forward('msa', null, null, $request);
+                $this->_forward('msa');
             } elseif (isset($_POST['submit_ea'])) {
                 $request->setParam('sub', null);
                 $this->_forward('evidence');
+            } elseif (isset($_POST['upload_evidence'])) {
+                $request->setParam('sub', null);
+                $this->_forward('uploadevidence');
             }
         }
         parent::preDispatch();
@@ -1335,4 +1339,11 @@ class RemediationController extends PoamBaseController
 
         $this->view->assign('poam', $poamDetail);
     }
+    
+    /** 
+     * Renders the form for uploading artifacts.
+     */
+    function uploadFormAction() {
+        $this->_helper->layout()->disableLayout();
+    }         
 }
