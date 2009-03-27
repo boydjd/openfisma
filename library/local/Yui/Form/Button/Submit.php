@@ -47,6 +47,15 @@ class Yui_Form_Button_Submit extends Yui_Form_Button
      {
          // When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
         $disabled = $this->readOnly ? 'true' : 'false';
+        $funcPart = '';
+        // merge the part of onclick event
+        if (!empty($this->_onClickFunction)) {
+            $funcPart = ", onclick: {fn:$this->_onClickFunction";
+            if (!empty($this->_onClickArgument)) {
+                $funcPart .= ", obj: \"$this->_onClickArgument\"";
+            }
+            $funcPart .= "}";
+        }
         $render = "<span id=\"{$this->_id}Container\"></span>
                    <script type='text/javascript'>
                        var {$this->_id} = new YAHOO.widget.Button({
@@ -57,6 +66,7 @@ class Yui_Form_Button_Submit extends Yui_Form_Button
                            value: \"$this->_label\",
                            container: \"{$this->_id}Container\",
                            disabled: $disabled
+                           $funcPart
                        });
                    </script>";
          return $render;

@@ -1,7 +1,12 @@
 <?php Format_Section::startSection("Generate Risk Analysis Forms (RAFs)"); ?>
 
 <form action="/report/rafs" method="post">
-
+<script type="text/javascript">
+var clearWarning = function(){
+    var ele = document.getElementById('msgbar');
+    ele.parentNode.removeChild(ele);
+}
+</script>
 <table class="searchFilters">
 <tr>
     <td><b>System:</b></td>
@@ -11,11 +16,13 @@
                                  null,
                                  $this->system_list);?>
 
-    <?php echo new Yui_Form_Button_Submit('Generate RAFS', 'generateRafsSubmit'); ?>
+    <?php $submitBtn = new Yui_Form_Button_Submit('Generate RAFS', 'generateRafsSubmit');
+          $submitBtn->onClick('clearWarning');
+          echo $submitBtn->render();
+     ?>
    <!-- @yui review: <input type="submit" onclick="$('#msgbar').remove()"> -->
     </td>
 </tr>
 </table>
 </form>
-
 <?php Format_Section::stopSection(); ?>
