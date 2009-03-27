@@ -12,7 +12,7 @@ function discardChanges(event) {
     window.location.reload();
 }
 </script>
-<form action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
+<form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
       method="post" 
       id="finding_detail"
       name="finding_detail">
