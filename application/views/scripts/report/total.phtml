@@ -16,12 +16,8 @@
         <td width=10></td>
     </tr>
 </table>
-    <?php
-        $i = 0;
-        foreach($this->rpdata[1] as $rec){
-            $i++;
-            if($i % $colnum == 1){
-    ?>
+
+
     <br>
 <table width="95%" align="center" border="0" cellpadding="0" cellspacing="0"  class="tipframe">
     <tr align="center">
@@ -31,36 +27,19 @@
                 <tr><th nowrap>Open Vulnerabilities</th></tr>
             </table>
         </td>
-            <?php $rbflag = 0;
-                } 
-            ?>        
+    <?php
+        $i = 0;
+        foreach ($this->rpdata[1] as $rec) {
+    ?>
         <td width="<?php echo $colwidth;?>%">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
                 <tr><td class="tdc" align="center"><?php echo $rec['nick'];?></td></tr>
                 <tr><td class="tdc" align="center"><?php echo $rec['num'];?></td></tr>
             </table>
         </td>
-        <?php if($i % $colnum == 0){ ?>
+    <?php } ?>
     </tr>
 </table>
-        <?php $tbflag = 1;
-              }
-           }
-           if(isset($tbflag) && $tbflag != 1){
-               $sumtd = $colnum-$i%$colnum;
-               if($sumtd != $colnum){
-                   $sumtd = $sumtd + 1;
-                   foreach($sumtd as $addtd){
-        ?>
-    <td width="<?php echo $colwidth;?>%">
-<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
-    <tr><td class="tdc" align="center">&nbsp;</td></tr>
-    <tr><td class="tdc" align="center">&nbsp;</td></tr>
-</table>
-</td>
-<?php } 
-}
-?>
 </tr>
 </table>
-<?php } ?>
+
