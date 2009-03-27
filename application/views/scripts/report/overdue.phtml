@@ -1,10 +1,9 @@
 <?php
-    $year_list = array(0     =>'All Fiscal Year',
-                       '2005' =>'2005',
-                       '2006' =>'2006',
-                       '2007' =>'2007',
-                       '2008' =>'2008',
-                       '2009' =>'2009');
+	$currentYear = date('Y');
+	$year_list[0] = 'All Fiscal Year';
+	for ($year=2005;$year<=$currentYear;$year++) {
+		$year_list[$year] = $year;
+	}
     $overdue['type'] = array( 'sso' =>'SSO Approval overdue',
                          'action'   =>'Course of Action overdue');
     $overdue['day'] = array('1' => '0-29 days',
