@@ -433,44 +433,49 @@ function addBookmark(title, url){
  * @param node object
  * @param keyword string
  */ 
-function highlight(node,keyword) {
-    if (!keyword) {
+function highlight(node,keywords) {
+    if (!keywords) {
         return true;
     }
 
-    // Iterate into this nodes childNodes
-	if (node && node.hasChildNodes) {
-		var hi_cn;
-		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
-			highlight(node.childNodes[hi_cn],keyword);
-		}
-	}
+	keywords = keywords.split(',');
+	for (var i in keywords) {
+		keyword = keywords[i];
 
-	// And do this node itself
-    if (node && node.nodeType == 3) { // text node
-        tempNodeVal = node.nodeValue.toLowerCase();
-        tempWordVal = keyword.toLowerCase();
-        if (tempNodeVal.indexOf(tempWordVal) != -1) {
-            pn = node.parentNode;
-            if (pn.className != "highlight") {
-                // keyword has not already been highlighted!
-                nv = node.nodeValue;
-                ni = tempNodeVal.indexOf(tempWordVal);
-                // Create a load of replacement nodes
-                before = document.createTextNode(nv.substr(0,ni));
-                docWordVal = nv.substr(ni,keyword.length);
-                after = document.createTextNode(nv.substr(ni+keyword.length));
-                hiwordtext = document.createTextNode(docWordVal);
-                hiword = document.createElement("span");
-                hiword.className = "highlight";
-                hiword.appendChild(hiwordtext);
-                pn.insertBefore(before,node);
-                pn.insertBefore(hiword,node);
-                pn.insertBefore(after,node);
-                pn.removeChild(node);
-            }
-        }
-    }
+		// Iterate into this nodes childNodes
+		if (node && node.hasChildNodes) {
+			var hi_cn;
+			for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+				highlight(node.childNodes[hi_cn],keyword);
+			}
+		}
+
+		// And do this node itself
+		if (node && node.nodeType == 3) { // text node
+			tempNodeVal = node.nodeValue.toLowerCase();
+			tempWordVal = keyword.toLowerCase();
+			if (tempNodeVal.indexOf(tempWordVal) != -1) {
+				pn = node.parentNode;
+				if (pn.className != "highlight") {
+					// keyword has not already been highlighted!
+					nv = node.nodeValue;
+					ni = tempNodeVal.indexOf(tempWordVal);
+					// Create a load of replacement nodes
+					before = document.createTextNode(nv.substr(0,ni));
+					docWordVal = nv.substr(ni,keyword.length);
+					after = document.createTextNode(nv.substr(ni+keyword.length));
+					hiwordtext = document.createTextNode(docWordVal);
+					hiword = document.createElement("span");
+					hiword.className = "highlight";
+					hiword.appendChild(hiwordtext);
+					pn.insertBefore(before,node);
+					pn.insertBefore(hiword,node);
+					pn.insertBefore(after,node);
+					pn.removeChild(node);
+				}
+			}
+    	}
+	}
 }
 
 /**

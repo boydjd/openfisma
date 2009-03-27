@@ -979,9 +979,9 @@ class RemediationController extends PoamBaseController
         $keywords = preg_replace('/not\s+[A-Za-z0-9]+$/', '', $keywords);
 
         //delete Zend_Search_Lucene query keywords
-        $searchKeys = array('and', 'or', 'not', 'to', '+', '-', '&&', '~', '||', '!', '*', '?');
+        $searchKeys = array(' and ', ' or ', ' not ', ' to ', '+', '-', '&&', '~', '||', '!', '*', '?');
         foreach ($searchKeys as $row) {
-            $keywords = str_replace($row, '', $keywords);
+            $keywords = str_replace($row, ' ', $keywords);
         }
         
         //delete multi-spaces
