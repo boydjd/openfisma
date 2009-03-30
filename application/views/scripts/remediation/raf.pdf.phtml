@@ -75,7 +75,7 @@ $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
 $data = array(array("<b>Finding Number:</b>", $p['id'],
-                    "<b>Finding Source:</b>", strip_tags($p['source_name'])),
+                    "<b>Finding Source:</b>", $this->plainText($p['source_name'])),
               array("<b>Date Opened:</b>", $p['create_ts'],
                     "<b>Date Discovered:</b>", $p['discover_ts']),
               array("<b>Organization:</b>", $organization['name'],
@@ -83,8 +83,8 @@ $data = array(array("<b>Finding Number:</b>", $p['id'],
               array("<b>Asset(s) Affected:</b>", $p['asset_name'],"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
-$data = array(array("<b>Finding Description:</b>", html_entity_decode(strip_tags($p['finding_data'])),"",""),
-              array("<b>Recommendation:</b>",  html_entity_decode(strip_tags($p['action_suggested'])),"",""));
+$data = array(array("<b>Finding Description:</b>", $this->plainText($p['finding_data']),"",""),
+              array("<b>Recommendation:</b>",  $this->plainText($p['action_suggested']),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 // Risk analysis section
@@ -147,10 +147,10 @@ $data = array(array("Based on the threat level and countermeasures currently in 
 $pdf->ezTable($data, null, null, $labelOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
-$data = array(array("<b>Threat Description:</b>", html_entity_decode(strip_tags($p['threat_source'])), "", ""),
+$data = array(array("<b>Threat Description:</b>", $this->plainText($p['threat_source']), "", ""),
               array("<b>Threat Level:</b>", $p['threat_level'], "", ""),
-              array("<b>Description of Countermeasures:</b>", html_entity_decode(strip_tags($p['cmeasure'])), "", ""),
-              array("<b>Countermeasures Effectiveness:</b>", strip_tags($p['cmeasure_effectiveness']), "", ""));
+              array("<b>Description of Countermeasures:</b>", $this->plainText($p['cmeasure']), "", ""),
+              array("<b>Countermeasures Effectiveness:</b>", $this->plainText($p['cmeasure_effectiveness']), "", ""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center')); //vertical blank
@@ -200,14 +200,14 @@ $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 $data = array(array('<b>Mitigation Strategy</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
-$data = array(array("<b>Type:</b>", strip_tags($p['type']), "", ""),
-              array("<b>Description:</b>", html_entity_decode(strip_tags($p['action_planned'])), "", ""),
+$data = array(array("<b>Type:</b>", $this->plainText($p['type']), "", ""),
+              array("<b>Description:</b>", $this->plainText($p['action_planned']), "", ""),
               array("<b>Estimated Completion Date:</b>", $p['action_current_date'], "", ""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 // Endorsement of Risk Level Analysis section
 // only displayed for AR findings
-if ('AR' == strip_tags($p['type'])) {
+if ('AR' == $this->plainText($p['type'])) {
     // a small separator between the previous section and this one
     $pdf->ezText('___________', BODY_TEXT_SIZE, array('justification'=>'center'));
     $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
