@@ -83,9 +83,9 @@ elements.availability_justification.options.cols = "70%"
 elements.availability_justification.options.rows = "7"
 displayGroups.system.elements.availability_justification = "availability_justification"
 
-elements.submit.type = "submit"
-elements.submit.options.value = "Save Changes"
-displayGroups.system.elements.submit = "submit"
+elements.save.type = "Form_Button_Submit"
+elements.save.options.value = "Save Changes"
+displayGroups.system.elements.save = "save"
 
 ; I'm disabling this temporarily because it doesn't work quite right...
 ; After you click submit, the value of this input is changed to "Reset" so the

@@ -38,7 +38,7 @@
             <td><b>Product Name:</b></td>
             <td><input type="text" name="product" value="<?php echo $this->criteria['product'];?>"></td>
             <td>&nbsp;</td>
-            <td><?php echo new Yui_Form_Button_Submit('Search', 'assetSearchSubmit')?></td>
+            <td><?php echo new Yui_Form_Button_Submit('assetSearchSubmit', array('value' => 'Search')); ?></td>
         </tr>
         <tr>
             <td><b>IP Address:</b></td>

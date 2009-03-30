@@ -33,9 +33,9 @@ elements.contact_subject.options.label = "Technical Support Email Subject Text"
 elements.contact_subject.options.required = true
 displayGroups.general.elements.contact_subject = "contact_subject"
 
-elements.submit.type = "submit"
-elements.submit.options.value = "Save Changes"
-displayGroups.general.elements.submit = "submit"
+elements.saveContactConfig.type = "Form_Button_Submit"
+elements.saveContactConfig.options.value = "Save Changes"
+displayGroups.general.elements.saveContactConfig = "saveContactConfig"
 
 ; Disabling this because I don't know how to make this work. see the comments
 ; at the bottom of general_config.form

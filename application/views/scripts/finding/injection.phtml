@@ -7,9 +7,11 @@
             <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=941b3470-3ae9-4aee-8f43-c6bb74cd1466&displaylang=en">Microsoft</a>.)</p>
             <li>Complete the template, following the instructions included in the template header.
             <li>Upload the completed spreadsheet here: <br>
-            <input type="file" name="excelFile"><br>
-            <input type="submit" name="submit">
+            <input type="file" name="excelFile">
         </ol>
+        <p>
+            <?php echo new Yui_Form_Button_Submit('uploadExcelSubmit', array('value' => 'Upload')); ?>
+        </p>
     </form>
 <?php Format_Section::stopSection(); ?>
 

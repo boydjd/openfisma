@@ -32,41 +32,45 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class Yui_Form_Button_Link extends Yui_Form_Button
-{    
-    private $_href;
-    
+{  
     /**
-     * Constructor
-     */
-    function __construct($label, $id, $href = '#', $image = null)
-    {
-        parent::__construct($label, $id, $image);
-        $this->_href = $href;
-        if (isset($image)) {
-            $this->_image = $image;
-        }
-    }
-     
-    function render() 
+     * Instead of overriding render(), renderSelf() can be called by the decorator to build the input.
+     * This saves the trouble of creating a separate view helper and allows the element to simply draw
+     * itself.
+     * 
+     * @return string
+     */  
+    function renderSelf() 
     {
         // When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
         $disabled = $this->readOnly ? 'true' : 'false';
-        $onClick = (!empty($this->_onClick)) ? "onclick: {fn: $this->_onClick}," : '';
-        $render = "<span id='{$this->_id}'></span>
+        // merge the part of onclick event
+        $onClickFunction = $this->getAttrib('onClickFunction');
+        $onClickArgument = $this->getAttrib('onClickArgument');
+        $onClickRender = '';
+        if (!empty($onClickFunction)) {
+            $onClickRender .= ", onclick: {fn:$onClickFunction";
+            if (!empty($onClickArgument)) {
+                $onClickRender .= ", obj: \"$onClickArgument\"";
+            }
+            $onClickRender .= "},\n";
+        }
+        $render = "<span id='{$this->getName()}'></span>
                    <script type='text/javascript'>
                         YAHOO.util.Event.onDOMReady(function() {
                             var button = new YAHOO.widget.Button({  
                                  type: \"link\",  
-                                 label: \"{$this->_label}\",  
-                                 href: \"{$this->_href}\",
-                                 id: \"{$this->_id}Button\",
-                                 $onClick  
+                                 label: \"{$this->getValue()}\",  
+                                 href: \"{$this->getAttrib('href')}\",
+                                 id: \"{$this->getName()}Button\",
+                                 $onClickRender
                                  disabled: $disabled,
-                                 container: \"{$this->_id}\"
+                                 container: \"{$this->getName()}\"
                             });
                         ";
-        if (isset($this->_image)) {
-            $render .= "button._button.style.background = 'url($this->_image) 10% 50% no-repeat';\n";
+        $image = $this->getAttrib('imageSrc');
+        if (isset($image)) {
+            $render .= "button._button.style.background = 'url($image) 10% 50% no-repeat';\n";
             $render .= "button._button.style.paddingLeft = '3em';\n";
         }
         $render .= "\n});</script>";

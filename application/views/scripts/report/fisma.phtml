@@ -38,7 +38,7 @@
             echo isset($this->criteria['enddate'])?$this->criteria['enddate']:'';
             ?>" size="10" maxlength="10" url=""></td>
         <td>
-            <?php echo new Yui_Form_Button_Submit('Generate Report', 'generateFismaReport'); ?>
+            <?php echo new Yui_Form_Button_Submit('generateFismaReport', array('value' => 'Generate Report')); ?>
         </td>
     </tr>
     <tr>

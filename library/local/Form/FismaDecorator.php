@@ -78,19 +78,14 @@ class Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             $element->setAttrib('disabled', 'disabled');
         }
         
-        /* In order to render YUI elements instead of OS elements, there's a really ugly hack here. Check
-         * for elements which have YUI counterparts, and then render the counterpart instead of the original
-         * element. An ideal solution would be to setup plugins so that YUI elements could be used directly
-         * in the form configuration file, but I can't figure out how to do that right now.
-         * @todo revisit this hack
-         */
-        if ($element instanceof Zend_Form_Element_Submit && !$element instanceof Zend_Form_Element_Button) {
-            $replacement = new Yui_Form_Button_Submit($element->getValue(), $element->getName() . "Replacement");
-            $replacement->readOnly = $element->readOnly;
-            $render = $replacement->__tostring();
-        } elseif ($element instanceof Zend_Form_Element_Textarea && $element->readOnly) {
+        if ($element instanceof Zend_Form_Element_Textarea && $element->readOnly) {
+            // Text areas are rendered differently in read only mode:
             $render = "<div class=\"formValue\">$value</div>";
+        } elseif (method_exists($element, 'renderSelf')) {
+            // If the element can render itself, then call its renderSelf() function
+            $render = $element->renderSelf();
         } else {
+            // Otherwise, use the element's view helper to render it
             $render = $element->getView()->$helper(
                 $element->getName(),
                 $value,

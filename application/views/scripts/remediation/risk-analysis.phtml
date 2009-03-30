@@ -16,10 +16,10 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
             $this->poam['threat_level'] != 'NONE' &&
             $this->poam['cmeasure'] != '' &&
             $this->poam['cmeasure_effectiveness'] != 'NONE') {
-            print new Yui_Form_Button_Link('View Risk Analysis Form', 
-                                           'viewRaf', 
-                                           "/remediation/raf/format/pdf/id/{$this->poam['id']}", 
-                                           '/images/pdf.gif');
+            print new Yui_Form_Button_Link('viewRaf',
+                                           array('value' => 'View Risk Analysis Form', 
+                                                 'href' => "/remediation/raf/format/pdf/id/{$this->poam['id']}", 
+                                                 'imageSrc' => '/images/pdf.gif'));
         } else {
             print '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>';
         } 

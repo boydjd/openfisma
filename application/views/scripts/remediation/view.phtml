@@ -18,15 +18,18 @@ function discardChanges(event) {
       name="finding_detail">
     <div class="toolbar">
         <?php
-            $backToSearchButton = new Yui_Form_Button('Back To Search Results', 'backToSearch');
-            $backToSearchButton->onClick('backToSearch');
+            $backToSearchButton = new Yui_Form_Button('backToSearch',
+                                                      array('value' => 'Back To Search Results', 
+                                                            'onClickFunction' => 'backToSearch'));
             echo $backToSearchButton;
             
-            $discardButton = new Yui_Form_Button('Discard Changes', 'discardChanges');
-            $discardButton->onClick('discardChanges');
+            $discardButton = new Yui_Form_Button('discardChanges',
+                                                 array('value' => 'Discard Changes', 
+                                                       'onClickFunction' => 'discardChanges'));
             echo $discardButton;
             
-            echo new Yui_Form_Button_Submit('Save Changes', 'saveChanges');
+            echo new Yui_Form_Button_Submit('saveChanges', 
+                                            array('value' => 'Save Changes'));
         ?>
     </div>
     <div id="tabContainer">

@@ -44,7 +44,17 @@
         }
     }
 ?>
-
+<script type="text/javascript">
+function toggleSearchOptions() {
+    if ($("#advanced_searchbox").css('display') == 'none') {
+        $("#advanced_searchbox").fadeIn();
+        $(this).attr('value', 'Basic Search');
+    } else {
+        $("#advanced_searchbox").fadeOut();
+        $(this).attr('value', 'Advanced Search');
+    }
+}
+</script>
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox/s/search">
 <table class="searchFilters">
     <tr>
@@ -54,12 +64,18 @@
         <td>
             <input type="text" name="keywords" size="50" value="<?php echo $this->params['keywords'];?>">
         </td>
-        <td><?php echo new Yui_Form_Button_Submit('Search', 'remediationSearchSubmit'); ?></td>
-        <td><?php echo new Yui_Form_Button_Link('Toggle Advanced Search Options', 'advanced_search', '#'); ?></td>
+        <td><?php echo new Yui_Form_Button_Submit('remediationSearchSubmit',
+                                                  array('value' => 'Search')); ?></td>
+        <td><?php echo new Yui_Form_Button('advanced_search',
+                                                array('value' => 'Toggle Advanced Search Options',
+                                                      'onClickFunction' => 'toggleSearchOptions')); ?></td>
         <td>
             <?php 
-            $helpButton = new Yui_Form_Button('Help', 'searchHelp', '/images/help.png');
-            $helpButton->onClick('showHelp', 'search');;
+            $helpButton = new Yui_Form_Button('searchHelp', 
+                                              array('value' => 'Help', 
+                                                    'imageSrc' => '/images/help.png',
+                                                    'onClickFunction' => 'showHelp',
+                                                    'onClickArgument' => 'search'));
             echo $helpButton; 
             ?>
         </td>

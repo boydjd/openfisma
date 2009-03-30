@@ -54,9 +54,8 @@ elements.smtp_password.options.label = "Password for smtp Authenticate"
 elements.smtp_password.options.size = 30
 displayGroups.general.elements.smtp_password = "smtp_password"
 
-elements.submit.type = "submit"
+elements.submit.type = "Form_Button_Submit"
 elements.submit.options.value = "Save Changes"
-elements.submit.options.size = 30
 displayGroups.general.elements.submit = "submit"
 
 ; Disabling this because I don't know how to make this work. see the comments

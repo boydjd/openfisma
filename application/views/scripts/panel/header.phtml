@@ -31,7 +31,7 @@ YAHOO.util.Event.onDOMReady(function () {
     <img alt="Logo" src="/images/customer_logo.jpg">
 </div>
 <div id="logout">
-    <?php echo new Yui_Form_Button_Link('Log Out', 'logoutButton', '/user/logout'); ?>
+    <?php echo new Yui_Form_Button_Link('logoutButton', array('value' => 'Log Out', 'href' => '/user/logout')); ?>
     <p><b><?php echo $this->identity; ?></b> is currently logged in</p>
 </div>
 

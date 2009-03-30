@@ -14,8 +14,12 @@
 
 <div>
     <?php
-    echo new Yui_Form_Button_Link('Cancel', 'cancel', '/user/logout');
-    echo new Yui_Form_Button_Link('Accept', 'accept', '/user/acceptrob');    
+    echo new Yui_Form_Button_Link('cancel', 
+                                  array('value' => 'Cancel', 
+                                        'href' => '/user/logout'));
+    echo new Yui_Form_Button_Link('accept', 
+                                  array('value' => 'Accept', 
+                                        'href' => '/user/acceptrob'));
     ?>
 </div>
 <?php Format_Section::stopSection(); ?>

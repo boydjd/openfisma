@@ -3,16 +3,18 @@
 <?php Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
     <div class="toolbar">
         <?php 
-            echo new Yui_Form_Button_Link('Export PDF', 
-                                          'exportPdf', 
-                                          "{$this->attachUrl}/format/pdf", 
-                                          '/images/pdf.gif');
-            echo new Yui_Form_Button_Link('Export Excel', 
-                                          'exportExcel', 
-                                          "{$this->attachUrl}/format/xls", 
-                                          '/images/xls.gif');
-            $columnOptionsButton = new Yui_Form_Button('Options', 'columnOptions', '/images/options.png');
-            $columnOptionsButton->onClick('showColumnOptions');
+            echo new Yui_Form_Button_Link('exportPdf',
+                                          array('value' => 'Export PDF', 
+                                                'href' => "{$this->attachUrl}/format/pdf", 
+                                                'imageSrc' => '/images/pdf.gif'));
+            echo new Yui_Form_Button_Link('exportExcel',
+                                          array('value' => 'Export Excel', 
+                                                'href' => "{$this->attachUrl}/format/xls", 
+                                                'imageSrc' => '/images/xls.gif'));
+            $columnOptionsButton = new Yui_Form_Button('columnOptions',
+                                                       array('value' => 'Options', 
+                                                             'onClickFunction' => 'showColumnOptions',
+                                                             'imageSrc' => '/images/options.png'));
             echo $columnOptionsButton;
         ?>
     </div>

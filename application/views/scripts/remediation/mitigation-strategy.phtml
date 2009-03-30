@@ -140,8 +140,9 @@ if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']) {
     echo '<p><i>The mitigation strategy, security control, and risk analysis sections must
           be fully completed before this can be submitted for approval.</i></p>';
 
-    $submitMitigationButton = new Yui_Form_Button('Submit Mitigation Strategy', 'submitMitigation');
-    $submitMitigationButton->onClick('submitMitigationStrategy');
+    $submitMitigationButton = new Yui_Form_Button('submitMitigation', 
+                                                  array('value' => 'Submit Mitigation Strategy', 
+                                                        'onClickFunction' => 'submitMitigationStrategy'));
     if (0 != $complete || !$this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) {
         $submitMitigationButton->readOnly = true;
     }
@@ -159,8 +160,9 @@ if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitig
                 return false;
             }
           </script>";
-    $reviseMitigationButton = new Yui_Form_Button('Revise Mitigation Strategy', 'reviseMitigationButton');
-    $reviseMitigationButton->onClick('reviseMitigationStrategy');
+    $reviseMitigationButton = new Yui_Form_Button('reviseMitigationButton',
+                                                  array('value' => 'Revise Mitigation Strategy', 
+                                                        'onClickFunction' => 'reviseMitigationStrategy'));
     echo "<div class='toolbar'>$reviseMitigationButton</div>";
 }  
 

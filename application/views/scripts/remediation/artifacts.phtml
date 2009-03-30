@@ -85,8 +85,9 @@ foreach ($this->ev_evals as $e) {
 <?php
 }
 
-$uploadEvidenceButton = new Yui_Form_Button('Upload Evidence', 'uploadEvidenceButton');
-$uploadEvidenceButton->onClick('upload_evidence');
+$uploadEvidenceButton = new Yui_Form_Button('uploadEvidenceButton',
+                                            array('value' => 'Upload Evidence', 
+                                                  'onClickFunction' => 'upload_evidence'));
 if('EN' != $this->poam['status'] || !$this->acl->isAllowed('remediation', 'update_evidence')) {
     $uploadEvidenceButton->readOnly = true;
 }

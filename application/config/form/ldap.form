@@ -81,11 +81,8 @@ elements.accountCanonicalForm.options.validators.strlen.options.min = "1"
 elements.accountCanonicalForm.options.validators.strlen.options.max = "1"
 displayGroups.general.elements.accountCanonicalForm = "accountCanonicalForm"
 
-elements.SaveLdap.type = "submit"
+elements.SaveLdap.type = "Form_Button_Submit"
 elements.SaveLdap.options.value = "submit"
-elements.SaveLdap.options.decorators.options.decorator = "ViewHelper"
-elements.SaveLdap.options.decorators.opt.decorator = "HtmlTag"
-elements.SaveLdap.options.decorators.opt.options.tag = "span"
 displayGroups.general.elements.SaveLdap = "SaveLdap"
 
 ;elements.Reset.type = "reset"

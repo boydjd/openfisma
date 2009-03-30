@@ -30,7 +30,7 @@
         <td><b>Date Opened To: </b></td><td><input type="text" class="date" id="created_date_end" name="created_date_end" value="<?php
             echo $this->criteria['created_date_end']; ?>"
             size="12" maxlength="20"></td>
-        <td colspan="2"><?php echo new Yui_Form_Button_Submit('Apply Filter', 'filterRemediationSummarySubmit');?></td>
+        <td colspan="2"><?php echo new Yui_Form_Button_Submit('filterRemediationSummarySubmit', array('value' => 'Apply Filter')); ?></td>
     </tr>
 </table>
 </form>

@@ -33,23 +33,21 @@
  */
 class Yui_Form_Button_Reset extends Yui_Form_Button
 {
-    private $_href;
-
     /**
-     * Constructor
+     * Instead of overriding render(), renderSelf() can be called by the decorator to build the input.
+     * This saves the trouble of creating a separate view helper and allows the element to simply draw
+     * itself.
+     * 
+     * @return string
      */
-     function __construct($label, $id)
+     function renderSelf() 
      {
-         parent::__construct($label, $id);
-     }
-
-     function render() 
-     {
-         $render = "<script type='text/javascript'>
+         $render = "<input id='{$this->getName()}' type='reset' name='{$this->getName()}' value='{$this->getValue()}'>
+                    <script type='text/javascript'>
                     YAHOO.util.Event.onDOMReady(function () {
-                        var {$this->_id} = new YAHOO.widget.Button(\"{$this->_id}\");
+                        var {$this->getName()} = new YAHOO.widget.Button(\"{$this->getName()}\");
                     });
-                    </script><input id='{$this->_id}' type='reset' name='{$this->_id}' value='{$this->_label}'>";
+                    </script>";
          return $render;
      }
 }

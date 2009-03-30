@@ -33,42 +33,42 @@
  */
 class Yui_Form_Button_Submit extends Yui_Form_Button
 {
-    private $_href;
-
     /**
-     * Constructor
+     * Instead of overriding render(), renderSelf() can be called by the decorator to build the input.
+     * This saves the trouble of creating a separate view helper and allows the element to simply draw
+     * itself.
+     * 
+     * @return string
      */
-     function __construct($label, $id)
-     {
-         parent::__construct($label, $id);
-     }
-
-     function render() 
-     {
-         // When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
+    function renderSelf()
+    {
+        // When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
         $disabled = $this->readOnly ? 'true' : 'false';
         $funcPart = '';
         // merge the part of onclick event
-        if (!empty($this->_onClickFunction)) {
-            $funcPart = ", onclick: {fn:$this->_onClickFunction";
-            if (!empty($this->_onClickArgument)) {
-                $funcPart .= ", obj: \"$this->_onClickArgument\"";
+        $onClickFunction = $this->getAttrib('onClickFunction');
+        $onClickArgument = $this->getAttrib('onClickArgument');
+        $onClickRender = '';
+        if (!empty($onClickFunction)) {
+            $onClickRender .= ", onclick: {fn:$onClickFunction";
+            if (!empty($onClickArgument)) {
+                $onClickRender .= ", obj: \"$onClickArgument\"";
             }
-            $funcPart .= "}";
+            $onClickRender .= "}";
         }
-        $render = "<span id=\"{$this->_id}Container\"></span>
+        $render = "<span id=\"{$this->getName()}Container\"></span>
                    <script type='text/javascript'>
-                       var {$this->_id} = new YAHOO.widget.Button({
+                       var {$this->getName()} = new YAHOO.widget.Button({
                            type: \"submit\",
-                           label: \"{$this->_label}\",
-                           id: \"{$this->_id}\",
-                           name: \"{$this->_id}\",
-                           value: \"$this->_label\",
-                           container: \"{$this->_id}Container\",
+                           label: \"{$this->getValue()}\",
+                           id: \"{$this->getName()}\",
+                           name: \"{$this->getName()}\",
+                           value: \"{$this->getValue()}\",
+                           container: \"{$this->getName()}Container\",
                            disabled: $disabled
-                           $funcPart
+                           $onClickRender
                        });
                    </script>";
-         return $render;
-     }
+        return $render;
+    }
 }

@@ -89,8 +89,8 @@ elements.is_active.options.label = "Status"
 elements.is_active.options.value = "1"
 displayGroups.accountInfo.elements.is_active = "is_active"
 
-elements.submit.type = "submit"
-elements.submit.options.value = "Save"
-displayGroups.accountInfo.elements.submit = "submit"
+elements.save.type = "Form_Button_Submit"
+elements.save.options.value = "Save"
+displayGroups.accountInfo.elements.save = "save"
 
 ; The systems part of the account form is generated dynamically at runtime

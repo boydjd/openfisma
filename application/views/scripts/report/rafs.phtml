@@ -16,11 +16,11 @@ var clearWarning = function(){
                                  null,
                                  $this->system_list);?>
 
-    <?php $submitBtn = new Yui_Form_Button_Submit('Generate RAFS', 'generateRafsSubmit');
-          $submitBtn->onClick('clearWarning');
-          echo $submitBtn->render();
+    <?php $submitBtn = new Yui_Form_Button_Submit('generateRafsSubmit', 
+                                                  array('value' => 'Generate RAFS',
+                                                        'onClickFunction' => 'clearWarning'));
+          echo $submitBtn;
      ?>
-   <!-- @yui review: <input type="submit" onclick="$('#msgbar').remove()"> -->
     </td>
 </tr>
 </table>

@@ -47,7 +47,12 @@ class Form_Manager
     static function loadForm($formName) {
         // Load the form from a .form file
         $config = new Zend_Config_Ini(Config_Fisma::getPath('application') . "/config/form/{$formName}.form", $formName);
-        $form = new Form($config);
+        $form = new Form();
+        
+        // Configure this form to use custom form elements
+        $form->addPrefixPath('Form', 'Form', 'element'); // library/local/Form/...
+        $form->addPrefixPath('Yui', 'Yui', 'element'); // library/local/Yui/...
+        $form->setConfig($config);
 
         return $form;
     }

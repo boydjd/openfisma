@@ -31,70 +31,40 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Yui_Form_Button extends Zend_Form_Element
+class Yui_Form_Button extends Zend_Form_Element_Submit
 {
-    protected $_label;
-    protected $_id;
-    protected $_onClickFunction;
-    protected $_onClickArgument;   
-    protected $_image;
-    
-    /**
-     * Construct a button
-     * 
-     * @param string $label Displayed to the user
-     * @param string $id Used to represent the element uniquely in the DOM       
-     * @param string $image Path to an image which decorates the button (optional)
-     */
-    function __construct($label, $id, $image = null)
-    {
-        parent::__construct($id);
-        $this->_label = str_replace("\"", "\'", $label);
-        $this->_id = $id;
-        $this->_image = $image;
-    }
-
     /**
      * When this element is expressed as a string, it renders itself as a convenience. This allows the element to
      * be used as a parameter to echo, print, or string interpolation expressions.
      */              
     function __toString() 
     {
-        return $this->render();
+        return $this->renderSelf();
     }
     
     /**
      * A default implementation of render() that creates a standard button. This is overridden in subclasses to 
      * implement more unique button types.
+     * 
+     * @return string
      */              
-    function render() 
+    function renderSelf() 
     {
         $disabled = $this->readOnly ? 'disabled' : '';
-        $render = "<input type=\"button\" id=\"{$this->_id}\" value=\"$this->_label\" $disabled>
+        $render = "<input type=\"button\" id=\"{$this->getName()}\" value=\"{$this->getValue()}\" $disabled>
                    <script type='text/javascript'>
                        YAHOO.util.Event.onDOMReady(function() {
-                           var button = new YAHOO.widget.Button('$this->_id', 
+                           var button = new YAHOO.widget.Button('{$this->getName()}', 
                                {
-                                   onclick: {fn: $this->_onClickFunction, obj: \"$this->_onClickArgument\"}
+                                   onclick: {fn: {$this->getAttrib('onClickFunction')}, obj: \"{$this->getAttrib('onClickArgument')}\"}
                                }
                            );";
-        if (isset($this->_image)) {
-           $render .= "button._button.style.background = 'url($this->_image) 10% 50% no-repeat';\n";
+        $image = $this->getAttrib('imageSrc');
+        if (isset($image)) {
+           $render .= "button._button.style.background = 'url($image) 10% 50% no-repeat';\n";
            $render .= "button._button.style.paddingLeft = '3em';\n";
         }
         $render .= "})</script>";
         return $render;
-    }
-    
-    /**
-     * Specify the name of a javascript function (without parentheses) to use as the click event handler for this
-     * button. Not necessarily supported by all subclasses.
-     * 
-     * @param $functionName
-     * @param $argument An optional argument to pass to the click handler function               
-     */              
-    function onClick($functionName, $argument = null) {
-        $this->_onClickFunction = $functionName;
-        $this->_onClickArgument = $argument;
-    }    
+    } 
 }

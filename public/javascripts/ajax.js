@@ -178,16 +178,6 @@ $(document).ready(function(){
         $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
     });
 
-    $("#advanced_search").click(function (){
-        if ($("#advanced_searchbox").css('display') == 'none') {
-            $("#advanced_searchbox").fadeIn();
-            $(this).attr('value', 'Basic Search');
-        } else {
-            $("#advanced_searchbox").fadeOut();
-            $(this).attr('value', 'Advanced Search');
-        }
-    });
-
     $(".confirm").click(function(){
         var str = "DELETING CONFIRMATION!";
         if(confirm(str) == true){

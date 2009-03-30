@@ -16,12 +16,12 @@ elements.privacy_policy.options.label = "Privacy Policy"
 elements.privacy_policy.options.validators.strlen.validator = "StringLength"
 elements.privacy_policy.options.validators.strlen.options.min = "1"
 elements.privacy_policy.options.cols = "80"
-elements.privacy_policy.options.rows = "30"
+elements.privacy_policy.options.rows = "10"
 displayGroups.general.elements.privacy_policy = "privacy_policy"
 
-elements.submit.type = "submit"
-elements.submit.options.value = "Save Changes"
-displayGroups.general.elements.submit = "submit"
+elements.savePrivacyPolicy.type = "Form_Button_Submit"
+elements.savePrivacyPolicy.options.value = "Save Changes"
+displayGroups.general.elements.savePrivacyPolicy = "savePrivacyPolicy"
 
 ; I'm disabling this temporarily because it doesn't work quite right...
 ; After you click submit, the value of this input is changed to "Reset" so the
