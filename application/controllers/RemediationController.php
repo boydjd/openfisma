@@ -1283,6 +1283,7 @@ class RemediationController extends PoamBaseController
                 $row['attachments'] = 'N';
             }
             $row['duetime'] = $this->view->isOnTime($row['duetime']);
+            $row['source_nickname'] = htmlentities($row['source_nickname']);
             if ($format == 'pdf' || $format == 'xls') {
                 $row['finding_data'] = trim(html_entity_decode($row['finding_data']));
                 $row['action_suggested'] = trim(html_entity_decode($row['action_suggested']));
