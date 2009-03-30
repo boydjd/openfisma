@@ -117,6 +117,7 @@ $array = array('type'          => $this->poam['type'],
                'recommendation'=> $this->poam['action_suggested'],
                'description'   => $this->poam['action_planned'],
                'resources'     => $this->poam['action_resources'],
+               'ECD'           => $this->poam['action_current_date'],
                'blscr'         => $this->poam['blscr_id'],
                'threat_level'  => $this->poam['threat_level'],
                'threat_source' => $this->poam['threat_source'],
@@ -124,7 +125,7 @@ $array = array('type'          => $this->poam['type'],
                'cmeasure' => $this->poam['cmeasure']);
 $complete = 0;
 foreach ($array as $row) {
-    if($row == '' || $row == 'NONE'){
+    if ($row == '' || $row == 'NONE' || $row == '0000-00-00') {
         $complete++;
     }
 }
