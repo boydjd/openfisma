@@ -83,7 +83,7 @@
             <td>
                 <?php 
                     echo isset($this->network_list[$this->poam['network_id']]) ?
-                         $this->network_list[$this->poam['network_id']] : '(n/a)';
+                         $this->network_list[$this->poam['network_id']] : 'n/a';
                 ?>
             </td>
         </tr>
@@ -94,7 +94,7 @@
             <td>
                 <?php 
                     echo isset($this->network_list[$this->poam['network_id']]) ?
-                         ($this->poam['ip'] . ':' . $this->poam['port']) : '(n/a)';
+                         ($this->poam['ip'] . ':' . $this->poam['port']) : 'n/a';
                 ?>
             </td>
         </tr>
