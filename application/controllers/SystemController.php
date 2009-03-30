@@ -199,7 +199,7 @@ class SystemController extends SecurityController
         if ($system) {
             if ($form->isValid($system)) {
                 $system = $form->getValues();
-                unset($system['submit']);
+                unset($system['save']);
                 unset($system['reset']);
 
                 $systemId = $this->_system->insert($system);
@@ -352,7 +352,7 @@ class SystemController extends SecurityController
         }
 
         if ($formValid) {
-            unset($system['submit']);
+            unset($system['save']);
             unset($system['reset']);
 
             $res = $this->_system->update($system, 'id = ' . $id);

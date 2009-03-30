@@ -124,11 +124,13 @@ class Form_Element_CheckboxMatrix extends Zend_Form_Element
             $render .= "</tr>\n";
         }
 
-        $selectAllButton = new Yui_Form_Button('Select All', 'asdf');
-        $selectAllButton->onClick('selectAllUnsafe');
+        $selectAllButton = new Yui_Form_Button('SelectAll',
+											   array('value' => 'Select All',
+											    	 'onClickFunction' => 'selectAllUnsafe'));
 
-        $selectNoneButton = new Yui_Form_Button('Select None', 'selectNone');
-        $selectNoneButton->onClick('selectNoneUnsafe');
+        $selectNoneButton = new Yui_Form_Button('SelectNone',
+												array('value' => 'Select None',
+												      'onClickFunction' => 'selectNoneUnsafe'));
         
         $render .= "<tr><td colspan='$columnCount'>"
                  . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'

@@ -220,7 +220,7 @@ class NetworkController extends SecurityController
         $formValid = $form->isValid($post);
         if ($form->isValid($post)) {
             $network = $form->getValues();
-            unset($network['submit']);
+            unset($network['save']);
             unset($network['reset']);
             $networkId = $this->_network->insert($network);
             if (! $networkId) {
@@ -300,7 +300,7 @@ class NetworkController extends SecurityController
 
         $id = $this->_request->getParam('id');
         if ($formValid) {
-            unset($network['submit']);
+            unset($network['save']);
             unset($network['reset']);
             $res = $this->_network->update($network, 'id = ' . $id);
             if ($res) {

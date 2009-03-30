@@ -291,14 +291,14 @@ class UserController extends MessageController
     }
 
     /**
-     * getprofileForm() - Returns the standard form for reading, and updating
+     * getProfileForm() - Returns the standard form for reading, and updating
      * the current user's profile.
      *
      * @return Zend_Form
      *
      * @todo This function is not named correctly
      */
-    public function getprofileForm()
+    public function getProfileForm()
     {
         $form = Form_Manager::loadForm('account');
         $form->removeElement('account');
@@ -319,7 +319,7 @@ class UserController extends MessageController
     public function profileAction()
     {
         // Profile Form
-        $form = $this->getprofileForm();
+        $form = $this->getProfileForm();
         $query = $this->_user
         ->select()->setIntegrityCheck(false)
         ->from('users',
@@ -401,7 +401,7 @@ class UserController extends MessageController
         $form = $this->getProfileForm();
         $formValid = $form->isValid($_POST);
         $profileData = $form->getValues();
-        unset($profileData['submit']);
+        unset($profileData['save']);
 
         if ($formValid) {
             $result = $this->_user->find($this->_me->id);

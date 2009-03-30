@@ -351,7 +351,7 @@ class AccountController extends SecurityController
             unset($accountData['generate_password']);
             $roleId = $accountData['role'];
             unset($accountData['role']);
-            unset($accountData['submit']);
+            unset($accountData['save']);
             $systems = $accountData['systems'];
             if (!is_array($systems)) {
                 $systems = array();
@@ -573,7 +573,7 @@ class AccountController extends SecurityController
             unset($accountData['confirmPassword']);
             $roleId = $accountData['role'];
             unset($accountData['role']);
-            unset($accountData['submit']);
+            unset($accountData['save']);
             // @todo see
             $systems = $accountData['systems'];
             unset($accountData['systems']);

@@ -236,7 +236,7 @@ class ProductController extends SecurityController
         $formValid = $form->isValid($post);
         if ($form->isValid($post)) {
             $product = $form->getValues();
-            unset($product['submit']);
+            unset($product['save']);
             unset($product['reset']);
             $productId = $this->_product->insert($product);
             if (! $productId) {
@@ -316,7 +316,7 @@ class ProductController extends SecurityController
 
         $id = $this->_request->getParam('id');
         if ($formValid) {
-            unset($product['submit']);
+            unset($product['save']);
             unset($product['reset']);
             $res = $this->_product->update($product, 'id = ' . $id);
             if ($res) {

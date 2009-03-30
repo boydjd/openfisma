@@ -197,7 +197,7 @@ class OrganizationController extends SecurityController
         if ($organization) {
             if ($form->isValid($organization)) {
                 $organization = $form->getValues();
-                unset($organization['submit']);
+                unset($organization['save']);
                 unset($organization['reset']);
                 $organizationId = $this->_organization->insert($organization);
                 if (! $organizationId) {
@@ -288,7 +288,7 @@ class OrganizationController extends SecurityController
 
         $id = $this->_request->getParam('id');
         if ($formValid) {
-            unset($organization['submit']);
+            unset($organization['save']);
             unset($organization['reset']);
             $res = $this->_organization->update($organization, 'id = ' . $id);
             if ($res) {

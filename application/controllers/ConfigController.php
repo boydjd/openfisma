@@ -178,7 +178,7 @@ class ConfigController extends SecurityController
             if (isset($data[Config::CONTACT_NAME])) {
                 if ($form->isValid($data)) {
                     $data = $form->getValues();
-                    unset($data['submit']);
+                    unset($data['saveContactConfig']);
                     unset($data['reset']);
                     foreach ($data as $k => $v) {
                         $where = $config->getAdapter()
@@ -308,7 +308,7 @@ class ConfigController extends SecurityController
             if (isset($data[Config::SENDER])) {
                 if ($form->isValid($data)) {
                     $data = $form->getValues();
-                    unset($data['submit']);
+                    unset($data['save']);
                     unset($data['reset']);
                     foreach ($data as $k => $v) {
                         $where = $config->getAdapter()
@@ -385,7 +385,7 @@ class ConfigController extends SecurityController
             if (isset($data[Config::PASS_UPPERCASE])) {
                 if ($form->isValid($data)) {
                     $values = $form->getValues();
-                    unset($values['submit']);
+                    unset($values['savePassword']);
                     unset($values['reset']);
                     foreach ($values as $k => $v) {
                         if ($k == Config::UNLOCK_DURATION) {

@@ -218,7 +218,7 @@ class RoleController extends SecurityController
         $formValid = $form->isValid($post);
         if ($form->isValid($post)) {
             $role = $form->getValues();
-            unset($role['submit']);
+            unset($role['save']);
             unset($role['reset']);
             $roleId = $this->_role->insert($role);
             if (! $roleId) {
@@ -298,7 +298,7 @@ class RoleController extends SecurityController
 
         $id = $this->_request->getParam('id');
         if ($formValid) {
-            unset($role['submit']);
+            unset($role['save']);
             unset($role['reset']);
             $res = $this->_role->update($role, 'id = ' . $id);
             if ($res) {

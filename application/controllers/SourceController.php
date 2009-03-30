@@ -201,7 +201,7 @@ class SourceController extends SecurityController
         $formValid = $form->isValid($post);
         if ($form->isValid($post)) {
             $source = $form->getValues();
-            unset($source['submit']);
+            unset($source['save']);
             unset($source['reset']);
             $sourceId = $this->_source->insert($source);
             if (! $sourceId) {
@@ -282,7 +282,7 @@ class SourceController extends SecurityController
         }
 
         if ($formValid) {
-            unset($source['submit']);
+            unset($source['save']);
             unset($source['reset']);
             $res = $this->_source->update($source, 'id = ' . $id);
             if ($res) {
