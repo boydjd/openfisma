@@ -1026,6 +1026,7 @@ class RemediationController extends PoamBaseController
 
         $this->view->assign('poam', $poamDetail);
         $this->view->assign('system_list', $this->_systemList);
+        $this->view->assign('network_list', $this->_networkList);
         $this->view->assign('keywords', $req->getParam('keywords'));
     }
 
