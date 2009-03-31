@@ -6,7 +6,7 @@ $output_cols = array(
 'asset_name' => 'Asset',
 'type' => 'Type',
 'status' => 'Status',
-'on_time' => 'On Time?',
+'duetime' => 'On Time?',
 'finding_data' => 'Description',
 'action_suggested' => 'Recommendation',
 'action_planned' => 'Corrective Action',
@@ -71,8 +71,7 @@ $worksheet->setColumn(11,14,15);
 
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
-foreach( $this->list as $p ) {
-    $p['on_time'] = $this->isOnTime($p['duetime']);
+foreach( $this->list as $p) {
     $data = array();
     foreach ($output_cols as $key => $val) {
         if (isset($p[$key])) {
