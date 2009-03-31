@@ -50,6 +50,11 @@ class Inject_AppDetective extends Inject_Abstract
     const MAX_VULN_DETAILS_PER_FINDING = 25;
     
     /**
+     * This is marketing language which is filtered out of the recommendation field.
+     */
+    const REMOVE_PHRASE = "/As part of a complete .* level of database security./";
+    
+    /**
      * parse() - Implements the required function in the Inject_Abstract interface. This parses the report and commits
      * all data to the database.
      */
@@ -237,14 +242,15 @@ class Inject_AppDetective extends Inject_Abstract
                 $finding['create_ts'] = $creationDate->toString('Y-m-d H:i:s');
                 $finding['source_id'] = $this->_findingSourceId;
                 $finding['system_id'] = $this->_systemId;
-                $finding['action_suggested'] = $reportFinding->fix;
+                $finding['action_suggested'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);
+                $finding['action_suggested'] = $this->textToHtml($finding['action_suggested']);
                 $finding['threat_level'] = strtoupper($reportFinding->risk);
-                $finding['threat_source'] = $reportFinding->overview;
+                $finding['threat_source'] = $this->textToHtml($reportFinding->overview);
 
                 // The mapping for finding_data is a little more complicated
                 // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
                 // this mapping rule must be approved by a project manager.
-                $findingData = "<p>{$reportFinding->description}</p>";
+                $findingData = $reportFinding->description;
                 if (isset($reportFinding->details)) {
                     $findingData .= '<ul>';
                     $vulnDetails = 0;
@@ -260,7 +266,7 @@ class Inject_AppDetective extends Inject_Abstract
                     }
                     $findingData .= '</ul>';
                 }
-                $finding['finding_data'] = $findingData;
+                $finding['finding_data'] = $this->textToHtml($findingData);
                 
                 // Add this finding to the total findings array
                 $findings[] = $finding;
@@ -324,5 +330,19 @@ class Inject_AppDetective extends Inject_Abstract
         }
         
         return count($this->_findings);
+    }
+    
+    /**
+     * Convert plain text into a similar HTML representation.
+     * 
+     * @todo refactor, put this into a class that is available system-wide
+     * @param string $plainText Plain text that needs to be marked up
+     * @return string HTML version of $plainText
+     */
+    function textToHtml($plainText) {
+        $html = '<p>' . trim($plainText) . '</p>';
+        $html = str_replace("\n\n", '</p><p>', $html);
+        $html = str_replace("\n", '<br>', $html);
+        return $html;
     }
 }
