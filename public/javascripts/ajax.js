@@ -175,7 +175,7 @@ $(document).ready(function(){
         var account = $("input[name='account']").val();
         var account = encodeURIComponent(account);
         var url = "/account/checkaccount/format/html/account/"+account;
-        $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
+        $.ajax({ url:url, type:"GET",dataType:"json", success:function(data){message(data.msg, data.type);} });
     });
 
     $(".confirm").click(function(){

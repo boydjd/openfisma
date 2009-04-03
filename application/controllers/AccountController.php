@@ -659,14 +659,21 @@ class AccountController extends SecurityController
         $data = $config->getLdap();
         $account = $this->_request->getParam('account');
         $msg = '';
+        if (empty($data)) {
+            $type = 'warning';
+            // to do Engilish
+            $msg .= "Ldap doesn't exist or no data";
+        }
         foreach ($data as $opt) {
             unset($opt['id']);
             $srv = new Zend_Ldap($opt);
             try {
+                $type = 'message';
                 $dn = $srv->getCanonicalAccountName($account,
                             Zend_Ldap::ACCTNAME_FORM_DN); 
                 $msg = "$account exists, the dn is: $dn";
             } catch (Zend_Ldap_Exception $e) {
+                $type = 'warning';
                 // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
                 // DN does not exist.
                 if ($e->getErrorCode() ==
@@ -678,7 +685,7 @@ class AccountController extends SecurityController
                 }
             }
         }
-        echo $msg;
+        echo json_encode(array('msg' => $msg, 'type' => $type));
         $this->_helper->viewRenderer->setNoRender();
     }
 
