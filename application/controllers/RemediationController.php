@@ -289,6 +289,9 @@ class RemediationController extends PoamBaseController
             if (isset($tmp[$k])) {
                 $v = $tmp[$k];
             }
+			if ('keywords' == $k) {
+				$v = trim($tmp[$k], '"\'');
+			}
         }
         if ($isSearch) {
             $this->_paging['currentPage'] = $req->getParam('p', 1);
