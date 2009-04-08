@@ -245,6 +245,10 @@ class Inject_AppDetective extends Inject_Abstract
                 $finding['action_suggested'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);
                 $finding['action_suggested'] = $this->textToHtml($finding['action_suggested']);
                 $finding['threat_level'] = strtoupper($reportFinding->risk);
+                //todo english translate "medium" into "MODERATE" to adapt OpenFISMA
+            	if ('MEDIUM' == $finding['threat_level']) {
+					$finding['threat_level'] = 'MODERATE';
+                }
                 $finding['threat_source'] = $this->textToHtml($reportFinding->overview);
 
                 // The mapping for finding_data is a little more complicated
