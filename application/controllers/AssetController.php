@@ -273,20 +273,22 @@ class AssetController extends PoamBaseController
             }
             
             $user = new User();
-            $query->where('a.system_id IN (?)', $user->getMySystems($this->_me->id));
-            
-            $res = $db->fetchCol($query);
-            $total = count($res);
-            if (!isset($isExport)) {
-                $query->limitPage($this->_paging['currentPage'],
-                    $this->_paging['perPage']);
+            $systems = $user->getMySystems($this->_me->id);
+            if (!empty($systems)) {
+                $query->where('a.system_id IN (?)', $systems);
+                $res = $db->fetchCol($query);
+                $total = count($res);
+                if (!isset($isExport)) {
+                    $query->limitPage($this->_paging['currentPage'],
+                        $this->_paging['perPage']);
+                }
+                $assetList = $db->fetchAll($query);
+                $this->_paging['totalItems'] = $total;
+                $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
+                $pager = & Pager::factory($this->_paging);
+                $this->view->assign('asset_list', $assetList);
+                $this->view->assign('links', $pager->getLinks());
             }
-            $assetList = $db->fetchAll($query);
-            $this->_paging['totalItems'] = $total;
-            $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-            $pager = & Pager::factory($this->_paging);
-            $this->view->assign('asset_list', $assetList);
-            $this->view->assign('links', $pager->getLinks());
         }
     }
     
