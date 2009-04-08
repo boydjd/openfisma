@@ -112,7 +112,11 @@ class AssetController extends PoamBaseController
         }
         
         $user = new User();
-        $qry->where('system_id IN (?)', $user->getMySystems($this->_me->id));
+		if ($user->getMySystems($this->_me->id)) {
+	        $qry->where('system_id IN (?)', $user->getMySystems($this->_me->id));
+		} else {
+			$qry->where('system_id = 0');
+		}
         
         $this->view->assets = $this->_asset->fetchAll($qry)->toArray();
         $this->_helper->layout->setLayout('ajax');

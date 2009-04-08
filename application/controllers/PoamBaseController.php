@@ -66,14 +66,19 @@ class PoamBaseController extends SecurityController
         $net = new Network();
         $sys = new System();
         $this->_sourceList = $src->getList('name');
+        $this->_networkList = $net->getList('name');
+
         $tmpList = $sys->getList(array(
             'name',
             'nickname'
         ), $this->_me->systems, 'nickname');
-        $this->_networkList = $net->getList('name');
-        foreach ($tmpList as $k => $v) {
-            $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
-        }
+		if (!empty($tmpList)) {
+	        foreach ($tmpList as $k => $v) {
+    	        $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
+        	}
+		} else {
+			$this->_systemList = array();
+		}
         $this->_req = $this->getRequest();
         $req = $this->_req;
         $this->_pagingBasePath = $req->getBaseUrl();
