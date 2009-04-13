@@ -18,8 +18,13 @@ function setupEditFields() {
              var cur_val = target.text();
              var cur_html = target.html();
              var cur_span = target;
+			 if ('poam[action_current_date]' == name) {
+				 var onchange = ' onchange="validate_est()"';
+			 } else {
+				 var onchange = '';
+			 }
              if (type == 'text') {
-                 cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />');
+                 cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" '+onchange+' />');
                  $('input.date').datepicker({
                          dateFormat:'yymmdd',
                          showOn: 'both',
