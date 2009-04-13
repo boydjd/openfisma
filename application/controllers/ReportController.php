@@ -136,8 +136,8 @@ class ReportController extends PoamBaseController
                     $startdate = $criteria['year'] . '-01-01';
                     $enddate = $criteria['year'] . '-12-31';
                 }
-                $dateBegin = new Zend_Date($startdate, Zend_Date::DATES);
-                $dateEnd = new Zend_Date($enddate, Zend_Date::DATES);
+                $dateBegin = new Zend_Date($startdate, 'Y-m-d');
+                $dateEnd = new Zend_Date($enddate, 'Y-m-d');
             }
             $systemArray = array(
                 'systemId' => $systemId

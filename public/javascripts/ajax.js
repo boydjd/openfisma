@@ -193,6 +193,7 @@ function shortcut(step){
     }
     var year = $("span[name=gen_shortcut]").attr('year');
     year = Number(year) + Number(step);
+	$("span[name=gen_shortcut]").attr('year', year);
     var url = $("span[name=gen_shortcut]").attr('url')+year+'/';
     $("span[name=year]").html( year );
     $("span[name=year]").parent().attr( 'href', url);
