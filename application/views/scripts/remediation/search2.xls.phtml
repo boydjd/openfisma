@@ -76,6 +76,8 @@ foreach( $this->list as $p) {
     foreach ($output_cols as $key => $val) {
         if (isset($p[$key])) {
             array_push($data, $p[$key]);
+        } else {
+            array_push($data, '');
         }
     }
     $worksheet->writeRow($rowi++,0,$data,$format_times); 

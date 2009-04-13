@@ -54,6 +54,7 @@ form#loginForm {
 form#loginForm input {
     padding: 3px;
     font-size: 10pt;
+    width:150px;
 }
 
 div#footer {

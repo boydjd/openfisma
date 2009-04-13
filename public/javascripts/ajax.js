@@ -175,7 +175,7 @@ $(document).ready(function(){
         var account = $("input[name='account']").val();
         var account = encodeURIComponent(account);
         var url = "/account/checkaccount/format/html/account/"+account;
-        $.ajax({ url:url, type:"GET",dataType:"html", success:function(msg){message(msg);} });
+        $.ajax({ url:url, type:"GET",dataType:"json", success:function(data){message(data.msg, data.type);} });
     });
 
     $(".confirm").click(function(){
@@ -193,6 +193,7 @@ function shortcut(step){
     }
     var year = $("span[name=gen_shortcut]").attr('year');
     year = Number(year) + Number(step);
+	$("span[name=gen_shortcut]").attr('year', year);
     var url = $("span[name=gen_shortcut]").attr('url')+year+'/';
     $("span[name=year]").html( year );
     $("span[name=year]").parent().attr( 'href', url);
@@ -565,4 +566,21 @@ function panel(title, parent, src) {
                                         argument: newPanel
                                     }, 
                                     null);
+}
+
+function validate_est() {
+	var obj = $('input[name="poam[action_current_date]"]');
+	var inputDate = obj.val();
+	var oDate= new Date();
+	var Year = oDate.getFullYear();
+	var Month = oDate.getMonth();
+	Month = Month + 1;
+	if (Month < 10) {Month = '0'+Month;}
+	var Day = oDate.getDate();
+	if (Day < 10) {Day = '0' + Day;}
+	if (inputDate <= parseInt(""+Year+Month+Day)) {
+	    //@todo do English
+	    alert("The ECD date can'be in the past!");
+		obj.val('0000-00-00');
+	}
 }

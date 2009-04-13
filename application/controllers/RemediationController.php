@@ -289,6 +289,9 @@ class RemediationController extends PoamBaseController
             if (isset($tmp[$k])) {
                 $v = $tmp[$k];
             }
+			if ('keywords' == $k) {
+				$v = trim($tmp[$k], '"\'');
+			}
         }
         if ($isSearch) {
             $this->_paging['currentPage'] = $req->getParam('p', 1);
@@ -1199,7 +1202,7 @@ class RemediationController extends PoamBaseController
                     break;
                 case 'CLOSED': $params['status'] = 'CLOSED';
                     break;
-                case 'NOT-CLOSED': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                case 'NOT-CLOSED': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
                     break;
                 case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
                      $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);

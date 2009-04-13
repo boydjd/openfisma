@@ -58,7 +58,9 @@
               }
         ?>
     </tr>
-    <?php foreach($this->asset_list as $row){ ?>
+    <?php 
+    if (is_array($this->asset_list)) {
+    foreach($this->asset_list as $row){ ?>
     <tr>
         <?php if($this->acl->isAllowed('asset','delete')) { ?>
             <td align="center" class="tdc"><input type="checkbox" name="aid[]" 
@@ -79,7 +81,8 @@
         <td class="tdc" align="center"><a href="/panel/asset/sub/view/id/<?php echo $row['aid'];?>"><img src="/images/view.gif" border="0"></a></td>
         </tr>
         <?php } ?>
-    <?php } ?>
+    <?php }
+      } ?>
 </table>
 </form>
 <?php Format_Section::stopSection(); ?>
