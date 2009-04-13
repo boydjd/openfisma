@@ -87,6 +87,7 @@ class InstallController extends Zend_Controller_Action
             Config_Fisma::getPath('data') . '/logs',
             Config_Fisma::getPath() . '/public/evidence',
             Config_Fisma::getPath() . '/data/cache',
+			Config_Fisma::getPath() . '/data/index',
             Config_Fisma::getPath() . '/data/sessions',
             Config_Fisma::getPath() . '/data/temp',
             Config_Fisma::getPath() . '/data/uploads/evidence',
