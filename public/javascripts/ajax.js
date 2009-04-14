@@ -187,7 +187,7 @@ $(document).ready(function(){
     });
 });
 
-function shortcut(step){
+function switchyear(step){
     if( !isFinite(step) ){
         step = 0;
     }
