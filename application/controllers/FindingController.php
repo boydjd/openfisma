@@ -197,7 +197,7 @@ class FindingController extends PoamBaseController
                         }
                         $indexData['finding_data'] = $poam['finding_data'];
                         $indexData['action_suggested'] = $poam['action_suggested'];
-                        Fisma_Controller_Front::updateIndex('finding', $poamId, $indexData);
+                        $this->_helper->updateIndex('finding', $poamId, $indexData);
                     }
 
                     $message = "Finding created successfully";

@@ -53,7 +53,7 @@ class Fisma_Controller_Plugin_Web extends Zend_Controller_Plugin_Abstract
      */
     public function initHelpers()
     {
-        Zend_Controller_Action_HelperBroker::addPrefix('Scarab_Controller_Helper');
+        Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Controller_Action_Helper');
     }
 
     /**

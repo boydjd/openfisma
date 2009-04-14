@@ -87,7 +87,7 @@ class SourceController extends SecurityController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/source/')) {
                 $this->createIndex();
             }
-            $ret = Fisma_Controller_Front::searchQuery($qv, 'source');
+            $ret = $this->_helper->searchQuery($qv, 'source');
         } else {
             $ret = $this->_source->getList('name');
         }
@@ -120,7 +120,7 @@ class SourceController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Fisma_Controller_Front::getCacheInstance();
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
             //@todo english  get search results in ids
             $sourceIds = $cache->load($this->_me->id . '_source');
             if (!empty($sourceIds)) {
@@ -213,7 +213,7 @@ class SourceController extends SecurityController
 
                 //Update source index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source/')) {
-                    Fisma_Controller_Front::updateIndex('source', $sourceId, $source);
+                    $this->_helper->updateIndex('source', $sourceId, $source);
                 }
 
                 $msg = "The source is created";
@@ -297,12 +297,12 @@ class SourceController extends SecurityController
                         $ids[] = $hit->id;
                     }
                     $data['source'] = $source['name'] . ' ' . $source['nickname'];
-                    Fisma_Controller_Front::updateIndex('finding', $ids, $data);
+                    $this->_helper->updateIndex('finding', $ids, $data);
                 }
 
                 //Update Source index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source')) {
-                    Fisma_Controller_Front::updateIndex('source', $id, $source);
+                    $this->_helper->updateIndex('source', $id, $source);
                 }
 
                 $msg = "The source is saved";

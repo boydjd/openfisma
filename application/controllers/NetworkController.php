@@ -107,7 +107,7 @@ class NetworkController extends SecurityController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
                 $this->createIndex();
             }
-            $ret = Fisma_Controller_Front::searchQuery($qv, 'network');
+            $ret = $this->_helper->searchQuery($qv, 'network');
         } else {
             $ret = $this->_network->getList('name');
         }
@@ -139,7 +139,7 @@ class NetworkController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Fisma_Controller_Front::getCacheInstance();
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
             //@todo english  get search results in ids
             $networkIds = $cache->load($this->_me->id . '_network');
             if (!empty($networkIds)) {
@@ -232,7 +232,7 @@ class NetworkController extends SecurityController
 
                 //Create a network index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
-                    Fisma_Controller_Front::updateIndex('network', $networkId, $network);
+                    $this->_helper->updateIndex('network', $networkId, $network);
                 }
 
                 $msg = "The network is created";
@@ -271,7 +271,7 @@ class NetworkController extends SecurityController
             } else {
                 //Delete network index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
-                    Fisma_Controller_Front::deleteIndex('network', $id);
+                    $this->_helper->deleteIndex('network', $id);
                 }
 
                 $this->_notification
@@ -309,7 +309,7 @@ class NetworkController extends SecurityController
 
                 //Update network index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
-                    Fisma_Controller_Front::updateIndex('network', $id, $network);
+                    $this->_helper->updateIndex('network', $id, $network);
                 }
 
                 $msg = "The network is saved";

@@ -287,11 +287,12 @@ class RemediationController extends PoamBaseController
         $tmp = $req->getParams();
         foreach ($params as $k => &$v) {
             if (isset($tmp[$k])) {
-                $v = $tmp[$k];
+    			if ('keywords' == $k) {
+    				$v = trim($tmp[$k], '"\'');
+    			} else {
+                    $v = $tmp[$k];
+    			}
             }
-			if ('keywords' == $k) {
-				$v = trim($tmp[$k], '"\'');
-			}
         }
         if ($isSearch) {
             $this->_paging['currentPage'] = $req->getParam('p', 1);
@@ -366,7 +367,7 @@ class RemediationController extends PoamBaseController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
                 $this->createIndex();
             }
-            $poamIds = Fisma_Controller_Front::searchQuery($params['keywords'], 'finding');
+            $poamIds = $this->_helper->searchQuery($params['keywords'], 'finding');
             if (!empty($poamIds)) {
                 if (!empty($params['ids'])) {
                     $poamIds = array_intersect($poamIds, explode(',', $params['ids']));
@@ -575,7 +576,7 @@ class RemediationController extends PoamBaseController
                                 $poam['system'] = $this->_systemList[$poam['system_id']];
                                 unset($poam['system_id']);
                         }
-                        Fisma_Controller_Front::updateIndex('finding', $id, $poam);
+                        $this->_helper->updateIndex('finding', $id, $poam);
                     }
                 }
             } catch (Exception_General $e) {
@@ -709,7 +710,7 @@ class RemediationController extends PoamBaseController
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        define('EVIDENCE_PATH', Fisma_Controller_Front::getPath() . '/public/evidence');
+        define('EVIDENCE_PATH', Fisma_Controller_Front::getPath('pub') . '/evidence');
         $file = $_FILES['evidence'];
         if ($file['name']) {
             $poam = $this->_poam->find($id)->toArray();
@@ -1240,7 +1241,7 @@ class RemediationController extends PoamBaseController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
                 $this->createIndex();
             }
-            $poamIds = Fisma_Controller_Front::searchQuery($params['keywords'], 'finding');
+            $poamIds = $this->_helper->searchQuery($params['keywords'], 'finding');
             if (!empty($poamIds)) {
                 if (!empty($params['ids'])) {
                     $poamIds = array_intersect($poamIds, explode(',', $params['ids']));

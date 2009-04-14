@@ -98,7 +98,7 @@ class OrganizationController extends SecurityController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
                 $this->createIndex();
             }
-            $ret = Fisma_Controller_Front::searchQuery($qv, 'organization');
+            $ret = $this->_helper->searchQuery($qv, 'organization');
         } else {
             $ret = $this->_organization->getList('name');
         }
@@ -130,7 +130,7 @@ class OrganizationController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Fisma_Controller_Front::getCacheInstance();
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
             //@todo english  get search results in ids
             $organizationIds = $cache->load($this->_me->id . '_organization');
             if (!empty($organizationIds)) {
@@ -211,7 +211,7 @@ class OrganizationController extends SecurityController
 
                     //Create a organization index
                     if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
-                        Fisma_Controller_Front::updateIndex('organization', $organizationId, $organization);
+                        $this->_helper->updateIndex('organization', $organizationId, $organization);
                     }
 
                     $msg = "The organization is created";
@@ -262,7 +262,7 @@ class OrganizationController extends SecurityController
 
                 //Delete a organization index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
-                    Fisma_Controller_Front::deleteIndex('organization', $id);
+                    $this->_helper->deleteIndex('organization', $id);
                 }
 
                 $msg = "The organization is deleted";
@@ -299,7 +299,7 @@ class OrganizationController extends SecurityController
 
                 //Update this organization index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
-                    Fisma_Controller_Front::updateIndex('organization', $id, $organization);
+                    $this->_helper->updateIndex('organization', $id, $organization);
                 }
 
                 $msg = "The organization is saved";

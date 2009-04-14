@@ -105,7 +105,7 @@ class RoleController extends SecurityController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
                 $this->createIndex();
             }
-            $ret = Fisma_Controller_Front::searchQuery($qv, 'role');
+            $ret = $this->_helper->searchQuery($qv, 'role');
         } else {
             $ret = $this->_role->getList('name');
         }
@@ -137,7 +137,7 @@ class RoleController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Fisma_Controller_Front::getCacheInstance();
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
             //@todo english  get search results in ids
             $roleIds = $cache->load($this->_me->id . '_role');
             if (!empty($roleIds)) {
@@ -230,7 +230,7 @@ class RoleController extends SecurityController
 
                 //Create a role index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
-                    Fisma_Controller_Front::updateIndex('role', $roleId, $role);
+                    $this->_helper->updateIndex('role', $roleId, $role);
                 }
 
                 $msg = "The role is created";
@@ -273,7 +273,7 @@ class RoleController extends SecurityController
 
                 //Delete this role index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
-                    Fisma_Controller_Front::deleteIndex('role', $id);
+                    $this->_helper->deleteIndex('role', $id);
                 }
 
                 $msg = "Successfully Delete a Role.";
@@ -307,7 +307,7 @@ class RoleController extends SecurityController
 
                 //Update this role index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
-                    Fisma_Controller_Front::updateIndex('role', $id, $role);
+                    $this->_helper->updateIndex('role', $id, $role);
                 }
 
                 $msg = "The role is saved";

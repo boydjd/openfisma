@@ -56,7 +56,7 @@ class Yui
      */
     static function includeLibrary($library) 
     {
-        if ('yahoo-dom-event' != $library || !Config_Fisma::debug()) {
+        if ('yahoo-dom-event' != $library || !Fisma_Controller_Front::debug()) {
             self::$_includes[$library] = true;
         } else {
             // Special case: in debug mode, convert the "yahoo-dom-event" library request into
@@ -76,15 +76,15 @@ class Yui
     static function printIncludes() 
     {
         $render = '';
-        $cf = Config_Fisma::getInstance();
+        $cf = Fisma_Controller_Front::getInstance();
         $yuiPath = $cf->getPath('yui');
        
         foreach (array_keys(self::$_includes) as $include) {
             // Use the debug version of the file when in debugging mode, if possible. In production
             // mode, use the compressed ("-min") version if available.
-            if (!Config_Fisma::debug() && file_exists("$yuiPath/$include/$include-min.js")) {
+            if (!Fisma_Controller_Front::debug() && file_exists("$yuiPath/$include/$include-min.js")) {
                 $source = "/yui/$include/$include-min.js";
-            } elseif (Config_Fisma::debug() && file_exists("$yuiPath/$include/$include-debug.js")) {
+            } elseif (Fisma_Controller_Front::debug() && file_exists("$yuiPath/$include/$include-debug.js")) {
                 $source = "/yui/$include/$include-debug.js";
             } elseif (file_exists("$yuiPath/$include/$include.js")) {
                 $source = "/yui/$include/$include.js";

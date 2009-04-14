@@ -121,7 +121,7 @@ class ProductController extends SecurityController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
                 $this->createIndex();
             }
-            $ret = Fisma_Controller_Front::searchQuery($qv, 'product');
+            $ret = $this->_helper->searchQuery($qv, 'product');
         } else {
             $ret = $this->_product->getList('name');
         }
@@ -153,7 +153,7 @@ class ProductController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Fisma_Controller_Front::getCacheInstance();
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
             //@todo english  get search results in ids
             $productIds = $cache->load($this->_me->id . '_product');
             if (!empty($productIds)) {
@@ -248,7 +248,7 @@ class ProductController extends SecurityController
 
                 //Create a product index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    Fisma_Controller_Front::updateIndex('product', $productId, $product);
+                    $this->_helper->updateIndex('product', $productId, $product);
                 }
 
                 $msg = "The product is created";
@@ -291,7 +291,7 @@ class ProductController extends SecurityController
 
                 //Delete this product index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    Fisma_Controller_Front::deleteIndex('product', $id);
+                    $this->_helper->deleteIndex('product', $id);
                 }
 
                 $msg = "Product deleted successfully";
@@ -325,7 +325,7 @@ class ProductController extends SecurityController
 
                 //Update this product index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    Fisma_Controller_Front::updateIndex('product', $id, $product);
+                    $this->_helper->updateIndex('product', $id, $product);
                 }
 
                 $msg = "The product is saved";

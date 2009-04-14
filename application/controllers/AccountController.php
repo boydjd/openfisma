@@ -137,7 +137,7 @@ class AccountController extends SecurityController
             if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/account/')) {
                 $this->createIndex();
             }
-            $ret = Fisma_Controller_Front::searchQuery($qv, 'account');
+            $ret = $this->_helper->searchQuery($qv, 'account');
         } else {
             $ret = $this->_user->getList('account');
         }
@@ -177,7 +177,7 @@ class AccountController extends SecurityController
                     ->order('name_last ASC')
                     ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
-            $cache = Fisma_Controller_Front::getCacheInstance();
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
             //@todo english  get search results in ids
             $accountIds = $cache->load($this->_me->id . '_account');
             if (!empty($accountIds)) {
@@ -405,7 +405,7 @@ class AccountController extends SecurityController
                         $data['email'] = $accountData['email'];
                     }
                     if (!empty($data)) {
-                        Fisma_Controller_Front::updateIndex('account', $id, $data);
+                        $this->_helper->updateIndex('account', $id, $data);
                     }
                 }
 
@@ -487,7 +487,7 @@ class AccountController extends SecurityController
                 $this->_me->account, $id);
 
             if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/account/')) {
-                Fisma_Controller_Front::deleteIndex('account', $id);
+                $this->_helper->deleteIndex('account', $id);
             }
 
             $msg = "User " . $userName . " deleted successfully.";
@@ -612,7 +612,7 @@ class AccountController extends SecurityController
                 $ret = $role->find($roleId)->current();
                 $data['role'] = $ret->name . ' ' . $ret->nickname;
                                 
-                Fisma_Controller_Front::updateIndex('account', $userId, $data);
+                $this->_helper->updateIndex('account', $userId, $data);
             }
 
             $this->_notification->add(Notification::ACCOUNT_CREATED,
