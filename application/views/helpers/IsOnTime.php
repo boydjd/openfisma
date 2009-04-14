@@ -47,7 +47,7 @@ class View_Helper_IsOnTime extends Zend_View_Helper_Abstract
         $dueTime = strtotime($dueTime);
         if ($dueTime == false || $dueTime == -1) {
             return 'N/A';
-        } elseif ($dueTime < Config_Fisma::now()) {
+        } elseif ($dueTime < Fisma_Controller_Front::now()) {
             return 'Overdue';
         } else {
             return 'On Time';

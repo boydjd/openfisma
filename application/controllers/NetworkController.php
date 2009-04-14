@@ -104,10 +104,10 @@ class NetworkController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if network index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
+            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
                 $this->createIndex();
             }
-            $ret = Config_Fisma::searchQuery($qv, 'network');
+            $ret = Fisma_Controller_Front::searchQuery($qv, 'network');
         } else {
             $ret = $this->_network->getList('name');
         }
@@ -139,7 +139,7 @@ class NetworkController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
+            $cache = Fisma_Controller_Front::getCacheInstance();
             //@todo english  get search results in ids
             $networkIds = $cache->load($this->_me->id . '_network');
             if (!empty($networkIds)) {
@@ -231,8 +231,8 @@ class NetworkController extends SecurityController
                      ->add(Notification::NETWORK_CREATED, $this->_me->account, $networkId);
 
                 //Create a network index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
-                    Config_Fisma::updateIndex('network', $networkId, $network);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
+                    Fisma_Controller_Front::updateIndex('network', $networkId, $network);
                 }
 
                 $msg = "The network is created";
@@ -270,8 +270,8 @@ class NetworkController extends SecurityController
                 $model = self::M_WARNING;
             } else {
                 //Delete network index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
-                    Config_Fisma::deleteIndex('network', $id);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
+                    Fisma_Controller_Front::deleteIndex('network', $id);
                 }
 
                 $this->_notification
@@ -308,8 +308,8 @@ class NetworkController extends SecurityController
                      ->add(Notification::NETWORK_MODIFIED, $this->_me->account, $id);
 
                 //Update network index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/network/')) {
-                    Config_Fisma::updateIndex('network', $id, $network);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
+                    Fisma_Controller_Front::updateIndex('network', $id, $network);
                 }
 
                 $msg = "The network is saved";
@@ -334,7 +334,7 @@ class NetworkController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/network', true);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/network', true);
         $list = $this->_network->getList(array('name', 'nickname', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

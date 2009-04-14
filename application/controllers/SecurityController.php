@@ -84,7 +84,7 @@ class SecurityController extends MessageController
             $store = $this->_auth->getStorage();
             // refresh the expiring timer
             $exps = new Zend_Session_Namespace($store->getNamespace());
-            $exps->setExpirationSeconds(Config_Fisma::readSysConfig('expiring_seconds'));
+            $exps->setExpirationSeconds(Fisma_Controller_Front::readSysConfig('expiring_seconds'));
             $this->_acl = $this->initializeAcl($this->_me->id);
             $user = new User();
             $this->_me->systems = $user->getMySystems($this->_me->id);

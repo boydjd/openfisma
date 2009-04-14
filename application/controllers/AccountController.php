@@ -100,7 +100,7 @@ class AccountController extends SecurityController
         // If the application is in database authentication mode, then remove
         // the LDAP DN fields. If the application is in LDAP authentication
         // mode, then remove the database authentication fields.
-        $systemAuthType = Config_Fisma::readSysConfig('auth_type');
+        $systemAuthType = Fisma_Controller_Front::readSysConfig('auth_type');
         if ($systemAuthType == 'ldap') {
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
@@ -134,10 +134,10 @@ class AccountController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if account index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
+            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/account/')) {
                 $this->createIndex();
             }
-            $ret = Config_Fisma::searchQuery($qv, 'account');
+            $ret = Fisma_Controller_Front::searchQuery($qv, 'account');
         } else {
             $ret = $this->_user->getList('account');
         }
@@ -177,7 +177,7 @@ class AccountController extends SecurityController
                     ->order('name_last ASC')
                     ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
+            $cache = Fisma_Controller_Front::getCacheInstance();
             //@todo english  get search results in ids
             $accountIds = $cache->load($this->_me->id . '_account');
             if (!empty($accountIds)) {
@@ -265,7 +265,7 @@ class AccountController extends SecurityController
         if ($v == 'edit') {
             // Prepare the password requirements explanation:
             $requirements = $this->_getPasswordRequirements();
-            if (Config_Fisma::readSysConfig('auth_type') == 'database') {
+            if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
                 $this->view->assign('requirements', $requirements);
             }
             $this->view->assign('viewLink',
@@ -321,7 +321,7 @@ class AccountController extends SecurityController
             $this->_forward('view', null, null, array('id' => $id,
                                                       'v' => 'edit'));
         } else if ($formValid) {
-            if ( Config_Fisma::readSysConfig('auth_type') == 'database'
+            if ( Fisma_Controller_Front::readSysConfig('auth_type') == 'database'
                  && empty($accountData['account']) ) {
                 $msg = "Account can not be null.";
                 $this->message($msg, self::M_WARNING);
@@ -343,7 +343,7 @@ class AccountController extends SecurityController
                 }
                 $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
-                $accountData['hash']     = Config_Fisma::readSysConfig('encrypt');
+                $accountData['hash']     = Fisma_Controller_Front::readSysConfig('encrypt');
             } else {
                 unset($accountData['password']);
             }
@@ -387,7 +387,7 @@ class AccountController extends SecurityController
                                    $this->_me->id,
                                    "User Account {$accountData['account']} Successfully Modified");
 
-                if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/account/')) {
                     if (!empty($roleId)) {
                         $role = new Role();
                         $ret = $role->find($roleId)->current();
@@ -405,7 +405,7 @@ class AccountController extends SecurityController
                         $data['email'] = $accountData['email'];
                     }
                     if (!empty($data)) {
-                        Config_Fisma::updateIndex('account', $id, $data);
+                        Fisma_Controller_Front::updateIndex('account', $id, $data);
                     }
                 }
 
@@ -418,7 +418,7 @@ class AccountController extends SecurityController
                         $message .= ", the email is unable to send, please configure your mail service";
                     }
                     // On success, redirect to read view
-                    $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
+                    $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
                 }
                 $this->message($message, self::M_NOTICE);
             } else {
@@ -486,8 +486,8 @@ class AccountController extends SecurityController
             $this->_notification->add(Notification::ACCOUNT_DELETED,
                 $this->_me->account, $id);
 
-            if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
-                Config_Fisma::deleteIndex('account', $id);
+            if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/account/')) {
+                Fisma_Controller_Front::deleteIndex('account', $id);
             }
 
             $msg = "User " . $userName . " deleted successfully.";
@@ -518,7 +518,7 @@ class AccountController extends SecurityController
         
         // The password fields are required during creation *if* we are in
         // database authentication mode
-        if (Config_Fisma::readSysConfig('auth_type') == 'database') {
+        if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirmPassword')->setRequired(true);
              // Prepare the password requirements explanation:
@@ -548,7 +548,7 @@ class AccountController extends SecurityController
 
         // The password fields are required during creation *if* we are in
         // database authentication mode
-        if (Config_Fisma::readSysConfig('auth_type') == 'database') {
+        if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirmPassword')->setRequired(true);
             $password = $form->getElement('password');
@@ -582,10 +582,10 @@ class AccountController extends SecurityController
             
             $password = '';
             // Create the user's main record.
-            if ( 'database' == Config_Fisma::readSysConfig('auth_type') ) {
+            if ( 'database' == Fisma_Controller_Front::readSysConfig('auth_type') ) {
                 $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
-                $accountData['hash'] = Config_Fisma::readSysConfig('encrypt');
+                $accountData['hash'] = Fisma_Controller_Front::readSysConfig('encrypt');
             }
             $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');
             $accountData['auto_role'] = $accountData['account'].'_r';
@@ -602,7 +602,7 @@ class AccountController extends SecurityController
             }
 
             //Create this account index
-            if (is_dir(Config_Fisma::getPath('data') . '/index/account/')) {
+            if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/account/')) {
                 $data = array('username'   => $accountData['account'],
                               'lastname'  => $accountData['name_last'],
                               'firstname' => $accountData['name_first'],
@@ -612,7 +612,7 @@ class AccountController extends SecurityController
                 $ret = $role->find($roleId)->current();
                 $data['role'] = $ret->name . ' ' . $ret->nickname;
                                 
-                Config_Fisma::updateIndex('account', $userId, $data);
+                Fisma_Controller_Front::updateIndex('account', $userId, $data);
             }
 
             $this->_notification->add(Notification::ACCOUNT_CREATED,
@@ -633,7 +633,7 @@ class AccountController extends SecurityController
             }
                            
             // On success, redirect to read view
-            $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
+            $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
             $this->message($message, self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $userId));
         } else {
@@ -875,12 +875,12 @@ class AccountController extends SecurityController
      */
     public function generatepasswordAction()
     {
-        $passLengthMin = Config_Fisma::readSysConfig('pass_min');
-        $passLengthMax = Config_Fisma::readSysConfig('pass_max');
-        $passNum = Config_Fisma::readSysConfig('pass_numerical');
-        $passUpper = Config_Fisma::readSysConfig('pass_uppercase');
-        $passLower = Config_Fisma::readSysConfig('pass_lowercase');
-        $passSpecial = Config_Fisma::readSysConfig('pass_special');
+        $passLengthMin = Fisma_Controller_Front::readSysConfig('pass_min');
+        $passLengthMax = Fisma_Controller_Front::readSysConfig('pass_max');
+        $passNum = Fisma_Controller_Front::readSysConfig('pass_numerical');
+        $passUpper = Fisma_Controller_Front::readSysConfig('pass_uppercase');
+        $passLower = Fisma_Controller_Front::readSysConfig('pass_lowercase');
+        $passSpecial = Fisma_Controller_Front::readSysConfig('pass_special');
         
         $flag = 0;
         $password = "";
@@ -925,20 +925,20 @@ class AccountController extends SecurityController
     protected function _getPasswordRequirements()
     {
         $requirements[] = "Length must be between "
-                        . Config_Fisma::readSysConfig('pass_min')
+                        . Fisma_Controller_Front::readSysConfig('pass_min')
                         . " and "
-                        . Config_Fisma::readSysConfig('pass_max')
+                        . Fisma_Controller_Front::readSysConfig('pass_max')
                         . " characters long.";
-        if (Config_Fisma::readSysConfig('pass_uppercase') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_uppercase') == 1) {
             $requirements[] = "Must contain at least 1 upper case character (A-Z)";
         }
-        if (Config_Fisma::readSysConfig('pass_lowercase') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_lowercase') == 1) {
             $requirements[] = "Must contain at least 1 lower case character (a-z)";
         }
-        if (Config_Fisma::readSysConfig('pass_numerical') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_numerical') == 1) {
             $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
-        if (Config_Fisma::readSysConfig('pass_special') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_special') == 1) {
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
         return $requirements;
@@ -949,7 +949,7 @@ class AccountController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/account', true);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/account', true);
         $query = $this->_user->getAdapter()->select()->from(array('u'=>'users'),
                                         array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
                                           ->join(array('ur'=>'user_roles'), 'u.id = ur.user_id', array())

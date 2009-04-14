@@ -24,31 +24,35 @@
  * @package   Application
  */
 
-/**
- * REQUIRE APPLICATION BOOTSTRAP: Perform application-specific setup
- * This allows you to setup the MVC environment to utilize. Later you 
- * can re-use this file for testing your applications.
- * The try-catch block below demonstrates how to handle bootstrap 
- * exceptions. In this application, if defined a different 
- * APPLICATION_ENVIRONMENT other than 'production', we will output the
- * exception and stack trace to the screen to aid in fixing the issue 
- */
+// the root can be customized.
+$root = dirname(dirname(__FILE__));
+$lib = "$root/library";
+$app = "$root/application";
+set_include_path($lib . PATH_SEPARATOR . $app . PATH_SEPARATOR . get_include_path());
+// Zend should be linked/located at the $lib/Zend
+require_once 'Zend/Loader.php';
+Zend_Loader::registerAutoload();
+
+$dbg = true;
+
 try {
-    require '../application/bootstrap.php';
+    $plSetting = new Fisma_Controller_Plugin_Setting($root);
+    $dbg = $plSetting->debug();
+    $front = Fisma_Controller_Front::getInstance();
+    $front->registerPlugin($plSetting, 60); //this should be the highest priority
+    if ($plSetting->installed()){
+        $pl = new Fisma_Controller_Plugin_Web();
+    } else {
+        $pl = new Fisma_Controller_Plugin_Install();
+    }
+    $front->registerPlugin($pl);
+    $front->dispatch();
 } catch (Exception $exception) {
     echo '<html><body><center>'
        . 'An exception occured while bootstrapping the application.';
-    if (Config_Fisma::readSysConfig('show_trace')) {
-        echo '<br /><br />' . $exception->getMessage() . '<br />'
-           . '<div align="left">Stack Trace:' 
-           . '<pre>' . $exception->getTraceAsString() . '</pre></div>';
+    if (1) {
+         echo '<br /><br />' . $exception->getMessage() . '<br />'
+            . '<div align="left">Stack Trace:' 
+            . '<pre>' . $exception->getTraceAsString() . '</pre></div>';
     }
-    echo '</center></body></html>';
-    exit(1);
 }
-
-// DISPATCH:  Dispatch the request using the front controller.
-// The front controller is a singleton, and should be setup by now. We 
-// will grab an instance and dispatch it, which dispatches your 
-// application.
-Zend_Controller_Front::getInstance()->dispatch();

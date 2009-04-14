@@ -705,7 +705,7 @@ class ReportController extends PoamBaseController
         $this->_acl->requirePrivilege('report', 'read');
         
         // Build up report menu
-        $reportsConfig = new Zend_Config_Ini(Config_Fisma::getPath('application') . '/config/reports.conf');
+        $reportsConfig = new Zend_Config_Ini(Fisma_Controller_Front::getPath('application') . '/config/reports.conf');
         $reports = $reportsConfig->toArray();
         $this->view->assign('reports', $reports);
     }
@@ -727,7 +727,7 @@ class ReportController extends PoamBaseController
         }
         
         // Verify that the user has permission to run this report
-        $reportConfig = new Zend_Config_Ini(Config_Fisma::getPath('application') . '/config/reports.conf', $reportName);
+        $reportConfig = new Zend_Config_Ini(Fisma_Controller_Front::getPath('application') . '/config/reports.conf', $reportName);
         if ($this->_me->account != 'root') {
             $reportRoles = $reportConfig->roles;
             $report = $reportConfig->toArray();
@@ -745,7 +745,7 @@ class ReportController extends PoamBaseController
         }
         
         // Execute the report script
-        $reportScriptFile = Config_Fisma::getPath('application') . "/config/reports/$reportName.sql";
+        $reportScriptFile = Fisma_Controller_Front::getPath('application') . "/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         if (!$reportScriptFileHandle) {
             throw new Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");

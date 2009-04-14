@@ -84,10 +84,10 @@ class SourceController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if source index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/source/')) {
+            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/source/')) {
                 $this->createIndex();
             }
-            $ret = Config_Fisma::searchQuery($qv, 'source');
+            $ret = Fisma_Controller_Front::searchQuery($qv, 'source');
         } else {
             $ret = $this->_source->getList('name');
         }
@@ -120,7 +120,7 @@ class SourceController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
+            $cache = Fisma_Controller_Front::getCacheInstance();
             //@todo english  get search results in ids
             $sourceIds = $cache->load($this->_me->id . '_source');
             if (!empty($sourceIds)) {
@@ -212,8 +212,8 @@ class SourceController extends SecurityController
                      ->add(Notification::SOURCE_CREATED, $this->_me->account, $sourceId);
 
                 //Update source index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/source/')) {
-                    Config_Fisma::updateIndex('source', $sourceId, $source);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source/')) {
+                    Fisma_Controller_Front::updateIndex('source', $sourceId, $source);
                 }
 
                 $msg = "The source is created";
@@ -290,19 +290,19 @@ class SourceController extends SecurityController
                      ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
 
                 //Update findings index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/finding')) {
-                    $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/finding');
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) {
+                    $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/finding');
                     $hits = $index->find('source:'.$query);
                     foreach ($hits as $hit) {
                         $ids[] = $hit->id;
                     }
                     $data['source'] = $source['name'] . ' ' . $source['nickname'];
-                    Config_Fisma::updateIndex('finding', $ids, $data);
+                    Fisma_Controller_Front::updateIndex('finding', $ids, $data);
                 }
 
                 //Update Source index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/source')) {
-                    Config_Fisma::updateIndex('source', $id, $source);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source')) {
+                    Fisma_Controller_Front::updateIndex('source', $id, $source);
                 }
 
                 $msg = "The source is saved";
@@ -327,7 +327,7 @@ class SourceController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/source', true);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/source', true);
         $list = $this->_source->getList(array('name', 'nickname', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

@@ -5,7 +5,7 @@ require_once ( 'pdf/class.ezpdf.php');
 !defined('TITLE_TEXT_SIZE') ? define('TITLE_TEXT_SIZE', 18) : true;
 !defined('BODY_TEXT_SIZE') ? define('BODY_TEXT_SIZE', 10) : true;
 !defined('FOOTER_TEXT_SIZE') ? define('FOOTER_TEXT_SIZE', 8) : true;
-!defined('FONTS') ? define('FONTS', Config_Fisma::getPath('library') . '/pdf/fonts') : true;
+!defined('FONTS') ? define('FONTS', Fisma_Controller_Front::getPath('library') . '/pdf/fonts') : true;
 
 // These options are used repeatedly throughout the document for consistent formatting.
 $headerOptions = array('showHeadings'=>0,

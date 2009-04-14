@@ -154,8 +154,8 @@ class User extends FismaModel
                 $notification->add(Notification::ACCOUNT_LOGIN_FAILURE,
                                    null, "User: {$account}");
                 $row->failureCount++;
-                if ('database' ==  Config_Fisma::readSysConfig('auth_type')
-                    && $row->failureCount >= Config_Fisma::readSysConfig('failure_threshold')) {
+                if ('database' ==  Fisma_Controller_Front::readSysConfig('auth_type')
+                    && $row->failureCount >= Fisma_Controller_Front::readSysConfig('failure_threshold')) {
                     $row->terminationTs = $nowSqlString;
                     $row->isActive = 0;
                     $notification->add(Notification::ACCOUNT_LOCKED,
@@ -227,7 +227,7 @@ class User extends FismaModel
                 return md5($password);
             }
         }
-        $digestType = Config_Fisma::readSysConfig('encrypt');
+        $digestType = Fisma_Controller_Front::readSysConfig('encrypt');
         if ('sha1' == $digestType) {
             return sha1($password);
         }

@@ -1,11 +1,11 @@
 <?php if ('update' == $this->actionType) {?>
 This is an automatically generated message, please do not reply to this address.
 
-You recently changed your e-mail address for <?php echo Config_Fisma::readSysConfig('system_name');?>.
+You recently changed your e-mail address for <?php echo Fisma_Controller_Front::readSysConfig('system_name');?>.
 <?php } if ('create' == $this->actionType) {?>
 This is an automatically generated message, please do not reply to this address.
 
-Your <?php echo Config_Fisma::readSysConfig('system_name');?> account has been created.
+Your <?php echo Fisma_Controller_Front::readSysConfig('system_name');?> account has been created.
 
 Login: <?php echo "{$this->account}\n";?>
 Temporary Password: <?php echo "{$this->password}\n";?>

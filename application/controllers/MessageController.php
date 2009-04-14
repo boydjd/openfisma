@@ -69,7 +69,7 @@ class MessageController extends Zend_Controller_Action
     {
         $mail = new Zend_Mail();
 
-        $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
+        $mail->setFrom(Fisma_Controller_Front::readSysConfig('sender'), Fisma_Controller_Front::readSysConfig('system_name'));
         $mail->addTo($email);
         $mail->setSubject("Confirm Your E-mail Address");
 
@@ -80,7 +80,7 @@ class MessageController extends Zend_Controller_Action
         $db = Zend_Registry::get('db');
         $db->insert('validate_emails', $data);
 
-        $contentTpl = $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts/mail');
+        $contentTpl = $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts/mail');
         $contentTpl = $this->view;
 
         if (!empty($accountInfo)) {
@@ -91,7 +91,7 @@ class MessageController extends Zend_Controller_Action
         $contentTpl->actionType = $type;
         $contentTpl->validateCode = $validateCode;
         $contentTpl->userId = $userId;
-        $contentTpl->hostUrl = Config_Fisma::readSysConfig('hostUrl');
+        $contentTpl->hostUrl = Fisma_Controller_Front::readSysConfig('hostUrl');
         $content = $contentTpl->render('validate.phtml');
         $mail->setBodyText($content);
         try {
@@ -114,8 +114,8 @@ class MessageController extends Zend_Controller_Action
         $user = new User();
         $ret = $user->find($userId)->current();
 
-        $sender = Config_Fisma::readSysConfig('sender');
-        $systemName = Config_Fisma::readSysConfig('system_name');
+        $sender = Fisma_Controller_Front::readSysConfig('sender');
+        $systemName = Fisma_Controller_Front::readSysConfig('system_name');
 
         $mail = new Zend_Mail();
 
@@ -123,9 +123,9 @@ class MessageController extends Zend_Controller_Action
         $mail->addTo($ret->email);
         $mail->setSubject("Your password for $systemName has been changed");
 
-        $contentTpl = $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts/mail');
+        $contentTpl = $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts/mail');
         $contentTpl = $this->view;
-        $contentTpl->hostUrl = Config_Fisma::readSysConfig('hostUrl');
+        $contentTpl->hostUrl = Fisma_Controller_Front::readSysConfig('hostUrl');
         $contentTpl->password = $password;
         $content = $contentTpl->render('sendpassword.phtml');
         $mail->setBodyText($content);
@@ -148,13 +148,13 @@ class MessageController extends Zend_Controller_Action
     private function _getTransport()
     {
         $transport = null;
-        if ( 'smtp' == Config_Fisma::readSysConfig('send_type')) {
+        if ( 'smtp' == Fisma_Controller_Front::readSysConfig('send_type')) {
             $config = array('auth' => 'login',
-                'username' => Config_Fisma::readSysConfig('smtp_username'),
-                'password' => Config_Fisma::readSysConfig('smtp_password'),
-                'port' => Config_Fisma::readSysConfig('smtp_port'));
+                'username' => Fisma_Controller_Front::readSysConfig('smtp_username'),
+                'password' => Fisma_Controller_Front::readSysConfig('smtp_password'),
+                'port' => Fisma_Controller_Front::readSysConfig('smtp_port'));
             $transport = new Zend_Mail_Transport_Smtp(
-                Config_Fisma::readSysConfig('smtp_host'), $config);
+                Fisma_Controller_Front::readSysConfig('smtp_host'), $config);
         } else {
             $transport = new Zend_Mail_Transport_Sendmail();
         }

@@ -143,7 +143,7 @@ class SystemController extends SecurityController
                                ->order('s.name ASC')
                                ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
+            $cache = Fisma_Controller_Front::getCacheInstance();
             //@todo english  get search results in ids
             $systemIds = $cache->load($this->_me->id . '_system');
             if (!empty($systemIds)) {
@@ -169,10 +169,10 @@ class SystemController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if system index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
+            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
                 $this->createIndex();
             }
-            $ret = Config_Fisma::searchQuery($qv, 'system');
+            $ret = Fisma_Controller_Front::searchQuery($qv, 'system');
         } else {
             $ret = $this->_system->getList('name');
         }
@@ -213,13 +213,13 @@ class SystemController extends SecurityController
                              $this->_me->account, $systemId);
 
                     //Create a system index
-                    if (is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
+                    if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
                         $organization = new Organization();
                         $ret = $organization->find($system['organization_id'])->current();
                         if (!empty($ret)) {
                             $system['organization'] = $ret->name . ' ' . $ret->nickname;
                             unset($system['organization_id']);
-                            Config_Fisma::updateIndex('system', $systemId, $system);
+                            Fisma_Controller_Front::updateIndex('system', $systemId, $system);
                         }
                     }
 
@@ -279,8 +279,8 @@ class SystemController extends SecurityController
                         $this->_me->account, $id);
 
                 //Delete this system index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
-                    Config_Fisma::deleteIndex('system', $id);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
+                    Fisma_Controller_Front::deleteIndex('system', $id);
                 }
 
                 $msg = "System deleted successfully";
@@ -363,25 +363,25 @@ class SystemController extends SecurityController
                          $this->_me->account, $id);
 
                 //Update findings index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/finding')) {
-                    $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/finding');
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) {
+                    $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/finding');
                     $hits = $index->find('system:'.$query);
                     foreach ($hits as $hit) {
                         $ids[] = $hit->id;
                         $x[] = $hit->rowId;
                     }
                     $data['system'] = $system['name'] . ' ' . $system['nickname'];
-                    Config_Fisma::updateIndex('finding', $ids, $data);
+                    Fisma_Controller_Front::updateIndex('finding', $ids, $data);
                 }
 
                 //Update this system index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/system/')) {
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
                     $organization = new Organization();
                     $ret = $organization->find($system['organization_id'])->current();
                     if (!empty($ret)) {
                         $system['organization'] = $ret->name . ' ' . $ret->nickname;
                         unset($system['organization_id']);
-                        Config_Fisma::updateIndex('system', $id, $system);
+                        Fisma_Controller_Front::updateIndex('system', $id, $system);
                     }
                 }
 
@@ -407,7 +407,7 @@ class SystemController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/system', true);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/system', true);
         $query = $this->_system->getAdapter()->select()->from(array('s'=>'systems'), 's.*')
                               ->join(array('o'=>'organizations'), 's.organization_id = o.id',
                                      array('org_name'=>'o.name', 'org_nickname'=>'o.nickname'));

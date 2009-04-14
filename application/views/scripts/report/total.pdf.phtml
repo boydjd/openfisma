@@ -16,7 +16,7 @@ define('ORIENTATION', 'orient');
 define('PAPERTYPE', 'pagesz');
 define('PGWIDTH', 'pgwidth');
 define('PGHEIGHT', 'pgheight');
-define('FONTS', Config_Fisma::getPath('library') . '/pdf/fonts');
+define('FONTS', Fisma_Controller_Front::getPath('library') . '/pdf/fonts');
 
 $page_config = array( ORIENTATION => 'landscape', PAPERTYPE => 'LETTER', PGWIDTH => 792, PGHEIGHT=>612);
 $pdf =& new Cezpdf($page_config[PAPERTYPE], $page_config[ORIENTATION]);

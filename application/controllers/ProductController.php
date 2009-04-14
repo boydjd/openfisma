@@ -118,10 +118,10 @@ class ProductController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if product index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
+            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
                 $this->createIndex();
             }
-            $ret = Config_Fisma::searchQuery($qv, 'product');
+            $ret = Fisma_Controller_Front::searchQuery($qv, 'product');
         } else {
             $ret = $this->_product->getList('name');
         }
@@ -153,7 +153,7 @@ class ProductController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
+            $cache = Fisma_Controller_Front::getCacheInstance();
             //@todo english  get search results in ids
             $productIds = $cache->load($this->_me->id . '_product');
             if (!empty($productIds)) {
@@ -247,8 +247,8 @@ class ProductController extends SecurityController
                      ->add(Notification::PRODUCT_CREATED, $this->_me->account, $productId);
 
                 //Create a product index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
-                    Config_Fisma::updateIndex('product', $productId, $product);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
+                    Fisma_Controller_Front::updateIndex('product', $productId, $product);
                 }
 
                 $msg = "The product is created";
@@ -290,8 +290,8 @@ class ProductController extends SecurityController
                          $this->_me->account, $id);
 
                 //Delete this product index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
-                    Config_Fisma::deleteIndex('product', $id);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
+                    Fisma_Controller_Front::deleteIndex('product', $id);
                 }
 
                 $msg = "Product deleted successfully";
@@ -324,8 +324,8 @@ class ProductController extends SecurityController
                      ->add(Notification::PRODUCT_MODIFIED, $this->_me->account, $id);
 
                 //Update this product index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/product/')) {
-                    Config_Fisma::updateIndex('product', $id, $product);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
+                    Fisma_Controller_Front::updateIndex('product', $id, $product);
                 }
 
                 $msg = "The product is saved";
@@ -350,7 +350,7 @@ class ProductController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/product', true);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/product', true);
         $list = $this->_product->getList(array('meta', 'vendor', 'name', 'version', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

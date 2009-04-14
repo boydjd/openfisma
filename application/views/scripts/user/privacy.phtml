@@ -1,5 +1,5 @@
 <?php 
-    Format_Section::startSection(Config_Fisma::readSysConfig('system_name') . ' Privacy Policy');
-    print(Config_Fisma::readSysConfig('privacy_policy'));
+    Format_Section::startSection(Fisma_Controller_Front::readSysConfig('system_name') . ' Privacy Policy');
+    print(Fisma_Controller_Front::readSysConfig('privacy_policy'));
     Format_Section::stopSection(); 
 ?>

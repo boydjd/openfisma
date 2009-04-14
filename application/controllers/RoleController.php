@@ -102,10 +102,10 @@ class RoleController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if role index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
+            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
                 $this->createIndex();
             }
-            $ret = Config_Fisma::searchQuery($qv, 'role');
+            $ret = Fisma_Controller_Front::searchQuery($qv, 'role');
         } else {
             $ret = $this->_role->getList('name');
         }
@@ -137,7 +137,7 @@ class RoleController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
+            $cache = Fisma_Controller_Front::getCacheInstance();
             //@todo english  get search results in ids
             $roleIds = $cache->load($this->_me->id . '_role');
             if (!empty($roleIds)) {
@@ -229,8 +229,8 @@ class RoleController extends SecurityController
                      ->add(Notification::ROLE_CREATED, $this->_me->account, $roleId);
 
                 //Create a role index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
-                    Config_Fisma::updateIndex('role', $roleId, $role);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
+                    Fisma_Controller_Front::updateIndex('role', $roleId, $role);
                 }
 
                 $msg = "The role is created";
@@ -272,8 +272,8 @@ class RoleController extends SecurityController
                          $this->_me->account, $id);
 
                 //Delete this role index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
-                    Config_Fisma::deleteIndex('role', $id);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
+                    Fisma_Controller_Front::deleteIndex('role', $id);
                 }
 
                 $msg = "Successfully Delete a Role.";
@@ -306,8 +306,8 @@ class RoleController extends SecurityController
                      ->add(Notification::ROLE_MODIFIED, $this->_me->account, $id);
 
                 //Update this role index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/role/')) {
-                    Config_Fisma::updateIndex('role', $id, $role);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/role/')) {
+                    Fisma_Controller_Front::updateIndex('role', $id, $role);
                 }
 
                 $msg = "The role is saved";
@@ -422,7 +422,7 @@ class RoleController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/role', true);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/role', true);
         $list = $this->_role->getList(array('name', 'nickname', 'desc'));
         set_time_limit(0);
         if (!empty($list)) {

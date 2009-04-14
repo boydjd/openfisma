@@ -31,8 +31,8 @@
     $filter_status['NOUP-60']   = '(NOUP-60) 60+ Days Since Last Update';
     $filter_status['NOUP-90']   = '(NOUP-90) 90+ Days Since Last Update';
 
-    $this->systems = array('--Any--') + $this->systems;
-    $this->sources = array('--Any--') + $this->sources;
+    $this->systems = array('--Any--') + (array)$this->systems;
+    $this->sources = array('--Any--') + (array)$this->sources;
 ?>
 <?php //Format_Section::startSection("Remediation Search"); ?>
 
@@ -80,7 +80,7 @@ function toggleSearchOptions() {
             ?>
         </td>
      </tr>
-     <?php if (!is_dir(Config_Fisma::getPath('data') . '/index/finding')) { ?>
+     <?php if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) { ?>
          <tr>
          <td colspan="5">
          <i>The index has not been created yet. It will be created during the first search request. 

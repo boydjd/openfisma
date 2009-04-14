@@ -95,10 +95,10 @@ class OrganizationController extends SecurityController
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
             //@todo english  if organization index dosen't exist, then create it.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
+            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
                 $this->createIndex();
             }
-            $ret = Config_Fisma::searchQuery($qv, 'organization');
+            $ret = Fisma_Controller_Front::searchQuery($qv, 'organization');
         } else {
             $ret = $this->_organization->getList('name');
         }
@@ -130,7 +130,7 @@ class OrganizationController extends SecurityController
                                                      $this->_paging['perPage']);
 
         if (!empty($value)) {
-            $cache = Config_Fisma::getCacheInstance();
+            $cache = Fisma_Controller_Front::getCacheInstance();
             //@todo english  get search results in ids
             $organizationIds = $cache->load($this->_me->id . '_organization');
             if (!empty($organizationIds)) {
@@ -210,8 +210,8 @@ class OrganizationController extends SecurityController
                              $this->_me->account, $organizationId);
 
                     //Create a organization index
-                    if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
-                        Config_Fisma::updateIndex('organization', $organizationId, $organization);
+                    if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                        Fisma_Controller_Front::updateIndex('organization', $organizationId, $organization);
                     }
 
                     $msg = "The organization is created";
@@ -261,8 +261,8 @@ class OrganizationController extends SecurityController
                         $this->_me->account, $id);
 
                 //Delete a organization index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
-                    Config_Fisma::deleteIndex('organization', $id);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                    Fisma_Controller_Front::deleteIndex('organization', $id);
                 }
 
                 $msg = "The organization is deleted";
@@ -298,8 +298,8 @@ class OrganizationController extends SecurityController
                          $this->_me->account, $id);
 
                 //Update this organization index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/organization/')) {
-                    Config_Fisma::updateIndex('organization', $id, $organization);
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                    Fisma_Controller_Front::updateIndex('organization', $id, $organization);
                 }
 
                 $msg = "The organization is saved";
@@ -324,7 +324,7 @@ class OrganizationController extends SecurityController
      */
     protected function createIndex()
     {
-        $index = new Zend_Search_Lucene(Config_Fisma::getPath('data') . '/index/organization', true);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/organization', true);
         $list = $this->_organization->getList(array('name', 'nickname'));
         set_time_limit(0);
         if (!empty($list)) {

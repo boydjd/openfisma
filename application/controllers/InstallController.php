@@ -83,16 +83,16 @@ class InstallController extends Zend_Controller_Action
     public function checkingAction()
     {
         $wDirectories = array(
-            Config_Fisma::getPath() . '/public/temp',
-            Config_Fisma::getPath('data') . '/logs',
-            Config_Fisma::getPath() . '/public/evidence',
-            Config_Fisma::getPath() . '/data/cache',
-			Config_Fisma::getPath() . '/data/index',
-            Config_Fisma::getPath() . '/data/sessions',
-            Config_Fisma::getPath() . '/data/temp',
-            Config_Fisma::getPath() . '/data/uploads/evidence',
-            Config_Fisma::getPath() . '/data/uploads/scanreports',
-            Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG
+            Fisma_Controller_Front::getPath('pub') . '/temp',
+            Fisma_Controller_Front::getPath('data') . '/logs',
+            Fisma_Controller_Front::getPath('pub') . '/evidence',
+            Fisma_Controller_Front::getPath('data') . '/cache',
+            Fisma_Controller_Front::getPath('data') . '/sessions',
+            Fisma_Controller_Front::getPath('data') . '/temp',
+            Fisma_Controller_Front::getPath('data') . '/index',
+            Fisma_Controller_Front::getPath('data') . '/uploads/evidence',
+            Fisma_Controller_Front::getPath('data') . '/uploads/scanreports',
+            Fisma_Controller_Front::getPath('config') . '/'. Fisma_Controller_Plugin_Setting::INSTALL_CONFIG
         );
         $notwritables = array();
         foreach ($wDirectories as $k => $wok) {
@@ -245,7 +245,7 @@ class InstallController extends Zend_Controller_Action
                 );
                 try {
                     $db = Zend_Db::factory(new Zend_Config($zendDsn));
-                    $initFiles = array(Config_Fisma::getPath('application') . '/config/db/base.sql');
+                    $initFiles = array(Fisma_Controller_Front::getPath('application') . '/config/db/base.sql');
                     if ($ret = $this->importSql($db, $initFiles)) {
                         $checklist['schema'] = 'ok';
                     }
@@ -260,7 +260,7 @@ class InstallController extends Zend_Controller_Action
         }
         $this->view->dsn = $dsn;
         if ($ret) {
-            if (is_writable(Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG)) {
+            if (is_writable(Fisma_Controller_Front::getPath('application') . '/config/'. Fisma_Controller_Plugin_Setting::INSTALL_CONFIG)) {
                 $confTpl = $this->_helper->viewRenderer
                                          ->getViewScript('config');
 
@@ -282,7 +282,7 @@ class InstallController extends Zend_Controller_Action
                 }
 
                 $dbconfig = $this->view->render($confTpl);
-                if (0 < file_put_contents(Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG,
+                if (0 < file_put_contents(Fisma_Controller_Front::getPath('application') . '/config/'. Fisma_Controller_Plugin_Setting::INSTALL_CONFIG,
                     $dbconfig)) {
                     $checklist['savingconfig'] = 'ok';
                 } else {

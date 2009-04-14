@@ -105,7 +105,7 @@ class UserController extends MessageController
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
 
-            $threshold['failure'] = Config_Fisma::readSysConfig("failure_threshold");
+            $threshold['failure'] = Fisma_Controller_Front::readSysConfig("failure_threshold");
             $searchColumnsPref = $whologin->searchColumnsPref;
             $whologin = $whologin->toArray();
 
@@ -113,11 +113,11 @@ class UserController extends MessageController
             $isQualified = $whologin['is_active'];
             // If the account is locked...
             // (due to manual lock, expired account, password errors, etc.)
-            if ('database' == Config_Fisma::readSysConfig('auth_type')) {
+            if ('database' == Fisma_Controller_Front::readSysConfig('auth_type')) {
                 if (!$isQualified) {
                     if ($failureCount >= $threshold['failure']) {
-                        if (Config_Fisma::readSysConfig('unlock_enabled')) {
-                            $unlockDuration = Config_Fisma::readSysConfig('unlock_duration');
+                        if (Fisma_Controller_Front::readSysConfig('unlock_enabled')) {
+                            $unlockDuration = Fisma_Controller_Front::readSysConfig('unlock_duration');
                             // If the system administrator has elected to have accounts
                             // unlock automatically, then calculate how much time is
                             // left on the lock.
@@ -142,13 +142,13 @@ class UserController extends MessageController
                             throw new Zend_Auth_Exception('Your user account has been locked due to '
                             . $threshold['failure']
                             . ' or more unsuccessful login attempts. Please contact the'
-                            . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
+                            . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
                             . '">Administrator</a>.');
                         }
                     } else { //administrator manually lock it
                         throw new Zend_Auth_Exception('Your account has been locked by the Administrator. '
                         . 'Please contact the'
-                        . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
+                        . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
                         . '">Administrator</a>.');
                     }
                 }//deactive policy
@@ -156,7 +156,7 @@ class UserController extends MessageController
 
             // Proceed through authorization based on the configured mechanism
             // (LDAP, Database, etc.)
-            $authType = Config_Fisma::readSysConfig('auth_type');
+            $authType = Fisma_Controller_Front::readSysConfig('auth_type');
             $auth = Zend_Auth::getInstance();
             $result = $this->authenticate($authType, $username, $password);
 
@@ -170,7 +170,7 @@ class UserController extends MessageController
             // At this point, the user is authenticated.
             // Now check if the account has expired.
             $_me = (object)$whologin;
-            $period = Config_Fisma::readSysConfig('max_absent_time');
+            $period = Fisma_Controller_Front::readSysConfig('max_absent_time');
             $deactiveTime = new Zend_Date();
             $deactiveTime->sub($period, Zend_Date::DAY);
             $lastLogin = new Zend_Date($whologin['last_login_ts'],
@@ -180,7 +180,7 @@ class UserController extends MessageController
                 $this->_user->log('ACCOUNT_LOCKOUT', $_me->id, "User Account $_me->account Successfully Locked");
                 throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period"
                 . "or more days. Please contact the <a href=\"mailto:"
-                . Config_Fisma::readSysConfig('contact_email')
+                . Fisma_Controller_Front::readSysConfig('contact_email')
                 . '">Administrator</a>.');
             }
 
@@ -204,12 +204,12 @@ class UserController extends MessageController
             // Set up the session timeout
             $store = $auth->getStorage();
             $exps = new Zend_Session_Namespace($store->getNamespace());
-            $exps->setExpirationSeconds(Config_Fisma::readSysConfig('expiring_seconds'));
+            $exps->setExpirationSeconds(Fisma_Controller_Front::readSysConfig('expiring_seconds'));
             $store->write($_me);
 
             //check password expire
-            $passExpirePeriod = Config_Fisma::readSysConfig('pass_expire');
-			$passWarningDays  = Config_Fisma::readSysConfig('pass_warningdays');
+            $passExpirePeriod = Fisma_Controller_Front::readSysConfig('pass_expire');
+			$passWarningDays  = Fisma_Controller_Front::readSysConfig('pass_warningdays');
             $passwordTs = new Zend_Date($whologin['password_ts'], 'Y-m-d');
 			//show warning ahead of time
             $passwordTs->add($passExpirePeriod-$passWarningDays, Zend_Date::DAY); 
@@ -232,7 +232,7 @@ class UserController extends MessageController
                     throw new Zend_Auth_Exception('Your user account has been locked because you have not'
                     . " changed your password for $passExpirePeriod or more days."
                     . ' Please contact the'
-                    . ' <a href="mailto:'. Config_Fisma::readSysConfig('contact_email')
+                    . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
                     . '">Administrator</a>.');
                 }
             } else if ('md5' == $whologin['hash']) {
@@ -246,7 +246,7 @@ class UserController extends MessageController
                 // If they do, then send them to that page. Otherwise, send them to
                 // the dashboard.
                 $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
-                $nextRobReview->add(Config_Fisma::readSysConfig('rob_duration'), Zend_Date::DAY);
+                $nextRobReview->add(Fisma_Controller_Front::readSysConfig('rob_duration'), Zend_Date::DAY);
                 if ($now->isEarlier($nextRobReview)) {
                     $redirectInfo = new Zend_Session_Namespace('redirect_page');
                     if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
@@ -348,20 +348,20 @@ class UserController extends MessageController
 
         // Prepare the password requirements explanation:
         $requirements[] = "Length must be between "
-        . Config_Fisma::readSysConfig('pass_min')
+        . Fisma_Controller_Front::readSysConfig('pass_min')
         . " and "
-        . Config_Fisma::readSysConfig('pass_max')
+        . Fisma_Controller_Front::readSysConfig('pass_max')
         . " characters long.";
-        if (Config_Fisma::readSysConfig('pass_uppercase') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_uppercase') == 1) {
             $requirements[] = "Must contain at least 1 upper case character (A-Z)";
         }
-        if (Config_Fisma::readSysConfig('pass_lowercase') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_lowercase') == 1) {
             $requirements[] = "Must contain at least 1 lower case character (a-z)";
         }
-        if (Config_Fisma::readSysConfig('pass_numerical') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_numerical') == 1) {
             $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
-        if (Config_Fisma::readSysConfig('pass_special') == 1) {
+        if (Fisma_Controller_Front::readSysConfig('pass_special') == 1) {
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
 
@@ -423,7 +423,7 @@ class UserController extends MessageController
                         $msg .= self::VALIDATION_MESSAGE;
                     }
                 }
-                $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
+                $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
                 $this->message($msg, self::M_NOTICE);
             } else {
                 $this->message("Unable to update account. ($ret)",
@@ -474,7 +474,7 @@ class UserController extends MessageController
             }
         }
 
-        $this->view->setScriptPath(Config_Fisma::getPath('application') . '/views/scripts');
+        $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
         $this->message($msg, $model);
         $this->_forward('notifications');
     }
@@ -515,7 +515,7 @@ class UserController extends MessageController
                 $now = date('Y-m-d H:i:s');
                 $data = array(
                 'password' => $newPass,
-                'hash'     => Config_Fisma::readSysConfig('encrypt'),
+                'hash'     => Fisma_Controller_Front::readSysConfig('encrypt'),
                 'history_password' => $historyPass,
                 'password_ts' => $now
                 );
@@ -611,7 +611,7 @@ class UserController extends MessageController
             $msg = "Your e-mail address has been validated. You may close this window or click <a href='http://"
             . $_SERVER['HTTP_HOST']
             . "'>here</a> to enter "
-            . Config_Fisma::readSysConfig('system_name')
+            . Fisma_Controller_Front::readSysConfig('system_name')
             . '.';
         } else {
             $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
