@@ -1,0 +1,84 @@
+; This is the form for finding.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Ryan yang <ryan.yang@reyosoft.com
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[finding]
+method = "post"
+elementFilters.trim = "StringTrim"
+elementFilters.tags = "StripTags"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.value = "Create Finding"
+displayGroups.finding.elements.save = "save"
+
+elements.discover_ts.type = "text"
+elements.discover_ts.options.label = "Discovered Date"
+elements.discover_ts.options.class = "date"
+elements.discover_ts.options.required = true
+displayGroups.finding.elements.discover_ts = "discover_ts"
+
+elements.source_id.type = "select"
+elements.source_id.options.label = "Finding Source"
+elements.source_id.options.required = true
+displayGroups.finding.elements.source_id = "source_id"
+
+elements.finding_data.type = "textarea"
+elements.finding_data.options.label = "Enter Description of Finding"
+elements.finding_data.options.cols = "70%"
+elements.finding_data.options.rows = "7"
+displayGroups.finding.elements.finding_data = "finding_data"
+
+elements.action_suggested.type = "textarea"
+elements.action_suggested.options.label = "Recommendation"
+elements.action_suggested.options.cols = "70%"
+elements.action_suggested.options.rows = "7"
+displayGroups.finding.elements.action_suggested = "action_suggested"
+
+elements.blscr_id.type = "select"
+elements.blscr_id.options.label = "Security Control"
+displayGroups.finding.elements.blscr_id = "blscr_id"
+
+elements.threat_level.type = "select"
+elements.threat_level.options.label = "Risk Level"
+elements.threat_level.options.MultiOptions.NONE = "NONE"
+elements.threat_level.options.MultiOptions.LOW = "LOW"
+elements.threat_level.options.MultiOptions.MODERATE = "MODERATE"
+elements.threat_level.options.MultiOptions.HIGH = "HIGH"
+displayGroups.finding.elements.threat_level = "threat_level"
+
+elements.system_id.type = "select"
+elements.system_id.options.label = "System"
+displayGroups.searchasset.elements.system_id = "system_id"
+
+elements.name.type = "text"
+elements.name.options.label = "Asset Name"
+elements.name.options.class = "assets"
+displayGroups.searchasset.elements.name = "name"
+
+elements.ip.type = "text"
+elements.ip.options.label = "IP Address"
+elements.ip.options.class = "assets"
+displayGroups.searchasset.elements.ip = "ip"
+
+elements.port.type = "text"
+elements.port.options.label = "Port"
+elements.port.options.class = "assets"
+elements.port.options.style = "width:60px"
+displayGroups.searchasset.elements.port = "port"
+
+elements.search_asset.type = "button"
+elements.search_asset.options.value = "Search Assets"
+displayGroups.searchasset.elements.search_asset = "search_asset"
+
+elements.asset_id.type = "select"
+elements.asset_id.options.size = 8
+elements.asset_id.options.style = "width:150px"
+elements.asset_id.options.label = "Asset Name"
+elements.asset_id.options.required = true
+displayGroups.searchasset.elements.asset_id = "asset_id"

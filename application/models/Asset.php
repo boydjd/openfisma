@@ -33,7 +33,7 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  *
  */
-class Asset extends Zend_Db_Table
+class Asset extends FismaModel
 {
     protected $_name = 'assets';
     protected $_primary = 'id';

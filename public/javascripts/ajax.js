@@ -37,10 +37,6 @@ $(document).ready(function(){
                 buttonImage: '/images/calendar.gif'
                 });
 
-    $("select[name='poam[system_id]']").change(function(){
-        searchAsset();
-    });
-
     $("select#poamSearchStatus").change(function(){
         var value = $(this).val().trim();
         if (!(value == '0' 
@@ -159,12 +155,6 @@ $(document).ready(function(){
         });
     });
 
-    asset_detail();
-    
-    $("input#search_asset").click(function(){
-        searchAsset();
-    }).trigger('click');
-
     $("input#search_product").click(function(){
         searchProduct();
     });
@@ -201,31 +191,6 @@ function switchyear(step){
     $("span[name=q2]").parent().attr( 'href', url+'q/2/' );
     $("span[name=q3]").parent().attr( 'href', url+'q/3/' );
     $("span[name=q4]").parent().attr( 'href', url+'q/4/' );
-}
-
-function searchAsset( ){
-    var trigger = $("select[name='poam[system_id]']");
-    var sys = trigger.children("option:selected").attr('value');
-    var param =  '';
-    if( null != sys){
-        param +=  '/sid/' + sys;
-    }
-    $("input.assets").each(function(){
-        if( $(this).attr('value') ){
-            param += '/' + $(this).attr('name') + '/' + $(this).attr('value');
-        }
-    });
-    var url = trigger.attr("url") + param ;
-    $("select[name='poam[asset_id]']").parent().load(url,null,function(){
-        asset_detail();
-    });
-}
-
-function asset_detail() {
-    $("select[name='poam[asset_id]']").change(function(){
-        var url = $(this).attr('url')+ $(this).children("option:selected").attr('value');
-        $("div#asset_info").load(url,null);
-    });
 }
 
 function search_function() {
