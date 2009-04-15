@@ -80,7 +80,7 @@ class UserController extends MessageController
     public function loginAction()
     {
         $req = $this->getRequest();
-        $username = $req->getPost('username');
+        $username = mysql_real_escape_string($req->getPost('username'));
         $password = $req->getPost('userpass');
 
         // If the username isn't passed in the post variables, then just display
