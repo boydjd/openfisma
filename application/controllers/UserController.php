@@ -80,7 +80,7 @@ class UserController extends MessageController
     public function loginAction()
     {
         $req = $this->getRequest();
-        $username = mysql_real_escape_string($req->getPost('username'));
+        $username = $req->getPost('username');
         $password = $req->getPost('userpass');
 
         // If the username isn't passed in the post variables, then just display
@@ -96,7 +96,8 @@ class UserController extends MessageController
             /**
              * @todo Fix this SQL injection
              */
-            $whologin = $this->_user->fetchRow("account = '$username'");
+			$where = $this->_user->getAdapter()->quoteInto('account = ?', $username);
+			$whologin = $this->_user->fetchRow($where);
             $now = new Zend_Date();
 
             // If the username isn't found, throw an exception
