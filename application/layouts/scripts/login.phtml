@@ -4,10 +4,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 <?php
     echo $this->headTitle()->prepend(Fisma_Controller_Front::readSysConfig('system_name'));
-    Yui::includeLibrary('yahoo-dom-event');
-    Yui::includeLibrary('element');
-    Yui::includeLibrary('button');
-	echo Yui::printIncludes();
+    Fisma_Yui::includeLibrary('yahoo-dom-event');
+    Fisma_Yui::includeLibrary('element');
+    Fisma_Yui::includeLibrary('button');
+	echo Fisma_Yui::printIncludes();
  
     echo $this->headLink()->appendStylesheet('/yui/assets/skins/sam/skin.css')
                           ->appendStylesheet('/stylesheets/login.css', 'screen,print')

@@ -34,7 +34,7 @@
     $this->systems = array('--Any--') + (array)$this->systems;
     $this->sources = array('--Any--') + (array)$this->sources;
 ?>
-<?php //Format_Section::startSection("Remediation Search"); ?>
+<?php //Fisma_Format_Section::startSection("Remediation Search"); ?>
 
 <?php
     $flag = '';
@@ -64,14 +64,14 @@ function toggleSearchOptions() {
         <td>
             <input type="text" name="keywords" size="50" value="<?php echo $this->params['keywords'];?>">
         </td>
-        <td><?php echo new Yui_Form_Button_Submit('remediationSearchSubmit',
+        <td><?php echo new Fisma_Yui_Form_Button_Submit('remediationSearchSubmit',
                                                   array('value' => 'Search')); ?></td>
-        <td><?php echo new Yui_Form_Button('advanced_search',
+        <td><?php echo new Fisma_Yui_Form_Button('advanced_search',
                                                 array('value' => 'Toggle Advanced Search Options',
                                                       'onClickFunction' => 'toggleSearchOptions')); ?></td>
         <td>
             <?php 
-            $helpButton = new Yui_Form_Button('searchHelp', 
+            $helpButton = new Fisma_Yui_Form_Button('searchHelp', 
                                               array('value' => 'Help', 
                                                     'imageSrc' => '/images/help.png',
                                                     'onClickFunction' => 'showHelp',
@@ -157,4 +157,4 @@ function toggleSearchOptions() {
 </form>
 </div>
 
-<?php //Format_Section::stopSection(); ?>
+<?php //Fisma_Format_Section::stopSection(); ?>

@@ -78,13 +78,13 @@
               }
         ?>
         </td>
-        <td><?php echo new Yui_Form_Button_Submit('generatePoamReport', array('value' => 'Generate')); ?></td>
+        <td><?php echo new Fisma_Yui_Form_Button_Submit('generatePoamReport', array('value' => 'Generate')); ?></td>
     </tr>
 </table>
 </form>
 
 <?php if( !empty($this->poam_list) ) { ?>
-<?php Format_Section::startSection("POA&amp;M Report"); ?>
+<?php Fisma_Format_Section::startSection("POA&amp;M Report"); ?>
 
 <p><b>Poam Search Results</b>
     <span>
@@ -155,4 +155,4 @@
 
 <?php } ?>
 
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>

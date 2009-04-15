@@ -300,7 +300,7 @@ class UserController extends MessageController
      */
     public function getProfileForm()
     {
-        $form = Form_Manager::loadForm('account');
+        $form = Fisma_Form_Manager::loadForm('account');
         $form->removeElement('account');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
@@ -333,7 +333,7 @@ class UserController extends MessageController
         $userProfile = $this->_user->fetchRow($query)->toArray();
         $form->setAction("/panel/user/sub/updateprofile");
         $form->setDefaults($userProfile);
-        $this->view->assign('form', Form_Manager::prepareForm($form));
+        $this->view->assign('form', Fisma_Form_Manager::prepareForm($form));
 
     }
 
@@ -343,8 +343,8 @@ class UserController extends MessageController
     public function passwordAction()
     {
         // Load the change password file
-        $passwordForm = Form_Manager::loadForm('change_password');
-        $passwordForm = Form_Manager::prepareForm($passwordForm);
+        $passwordForm = Fisma_Form_Manager::loadForm('change_password');
+        $passwordForm = Fisma_Form_Manager::prepareForm($passwordForm);
 
         // Prepare the password requirements explanation:
         $requirements[] = "Length must be between "
@@ -430,7 +430,7 @@ class UserController extends MessageController
                 self::M_WARNING);
             }
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             $this->message("Unable to update account:<br>" . $errorString, self::M_WARNING);
         }
         $this->_forward('profile');
@@ -492,15 +492,15 @@ class UserController extends MessageController
         $userRow = $this->_user->find($this->_me->id)->current();
         if ('save' == $req->getParam('s')) {
             $post = $req->getPost();
-            $passwordForm = Form_Manager::loadForm('change_password');
-            $passwordForm = Form_Manager::prepareForm($passwordForm);
+            $passwordForm = Fisma_Form_Manager::loadForm('change_password');
+            $passwordForm = Fisma_Form_Manager::prepareForm($passwordForm);
             $oldPassword = $passwordForm->getElement('oldPassword');
-            $oldPassword->addValidator(new Form_Validator_PasswdMatch($userRow));
+            $oldPassword->addValidator(new Fisma_Form_Validator_PasswdMatch($userRow));
             $password = $passwordForm->getElement('newPassword');
-            $password->addValidator(new Form_Validator_Password($userRow));
+            $password->addValidator(new Fisma_Form_Validator_Password($userRow));
             $formValid = $passwordForm->isValid($post);
             if (!$formValid) {
-                $errorString = Form_Manager::getErrors($passwordForm);
+                $errorString = Fisma_Form_Manager::getErrors($passwordForm);
                 // Error message
                 $msg = "Unable to change password:<br>".$errorString;
                 $model = self::M_WARNING;

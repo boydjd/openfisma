@@ -35,7 +35,7 @@ class User extends FismaModel
 {
     protected $_name = 'users';
     protected $_primary = 'id';
-    protected $_rowClass = 'Table_Rowlower';
+    protected $_rowClass = 'Fisma_Table_Rowlower';
     protected $_logName = 'account_logs';
     protected $_logger = null;
     protected $_logMap = array('timestamp' => 'timestamp',

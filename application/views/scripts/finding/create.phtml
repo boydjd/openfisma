@@ -5,15 +5,15 @@
                               "MODERATE" => "MODERATE",
                               "HIGH" => "HIGH");
 ?>
-<?php Format_Section::startSection("Finding Creation"); ?>
+<?php Fisma_Format_Section::startSection("Finding Creation"); ?>
 
 <form name="finding" method="post" action="/panel/finding/sub/create/is/new" >
 <table>
     <tr>
         <td>
             <div class="toolbar">
-                <?php echo new Yui_Form_Button_Submit('createFindingSubmit', array('value' => 'Create Finding')); ?>
-                <?php echo new Yui_Form_Button_Reset('createFindingReset', array('value' => 'Reset Form')); ?>
+                <?php echo new Fisma_Yui_Form_Button_Submit('createFindingSubmit', array('value' => 'Create Finding')); ?>
+                <?php echo new Fisma_Yui_Form_Button_Reset('createFindingReset', array('value' => 'Reset Form')); ?>
             </div>
         </td>
     </tr>
@@ -144,5 +144,5 @@
         </table>
 </form>
 
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 

@@ -45,7 +45,7 @@ class Evaluation extends FismaModel
      */
     public function getEvalList ($group) {
         if (!in_array($group, array('EVIDENCE', 'ACTION'))) {
-            throw new Exception_General('Make sure a valid GROUP is inputed');
+            throw new Fisma_Exception_General('Make sure a valid GROUP is inputed');
         }
         $query = $this->_db->select()
                       ->from(array('ev'=>'evaluations'), array('ev.*'))

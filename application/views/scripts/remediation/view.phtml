@@ -18,17 +18,17 @@ function discardChanges(event) {
       name="finding_detail">
     <div class="toolbar">
         <?php
-            $backToSearchButton = new Yui_Form_Button('backToSearch',
+            $backToSearchButton = new Fisma_Yui_Form_Button('backToSearch',
                                                       array('value' => 'Back To Search Results', 
                                                             'onClickFunction' => 'backToSearch'));
             echo $backToSearchButton;
             
-            $discardButton = new Yui_Form_Button('discardChanges',
+            $discardButton = new Fisma_Yui_Form_Button('discardChanges',
                                                  array('value' => 'Discard Changes', 
                                                        'onClickFunction' => 'discardChanges'));
             echo $discardButton;
             
-            echo new Yui_Form_Button_Submit('saveChanges', 
+            echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
                                             array('value' => 'Save Changes'));
         ?>
     </div>

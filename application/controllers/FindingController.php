@@ -131,7 +131,7 @@ class FindingController extends PoamBaseController
                 // If this were a real transaction, we'd commit right here.
                 /** @todo use database transaction */
                 $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
-            } catch (Exception_InvalidFileFormat $e) {
+            } catch (Fisma_Exception_InvalidFileFormat $e) {
                 $this->message("The file cannot be processed due to an error.<br>{$e->getMessage()}",
                                self::M_WARNING);
                 // If this were a real transaction, we would roll back right here.
@@ -155,13 +155,13 @@ class FindingController extends PoamBaseController
                     $poam['system_id'] = $ret->current()->system_id;
                 // Validate that the user has selected a finding asset
                 } else {
-                    throw new Exception_General(
+                    throw new Fisma_Exception_General(
                         "You must select a finding asset"
                     );
                 }
                 // Validate that the user has selected a finding source
                 if ($poam['source_id'] == 0) {
-                    throw new Exception_General(
+                    throw new Fisma_Exception_General(
                         "You must select a finding source"
                     );
                 }
@@ -205,7 +205,7 @@ class FindingController extends PoamBaseController
                 }
             }
             catch(Zend_Exception $e) {
-                if ($e instanceof Exception_General) {
+                if ($e instanceof Fisma_Exception_General) {
                     $message = $e->getMessage();
                 } else {
                     $message = "Failed to create the finding";
@@ -289,20 +289,20 @@ class FindingController extends PoamBaseController
             $this->view->systems = $src->getList('nickname',
                 $this->_me->systems);
             if (count($this->view->systems) == 0) {
-                throw new Exception_General(
+                throw new Fisma_Exception_General(
                     "The spreadsheet template can not be " .
                     "prepared because there are no systems defined.");
             }
             $src = new Network();
             $this->view->networks = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new Exception_General("The spreadsheet template can not be
+                 throw new Fisma_Exception_General("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
             $src = new Source();
             $this->view->sources = $src->getList('nickname');
             if (count($this->view->networks) == 0) {
-                 throw new Exception_General("The spreadsheet template can
+                 throw new Fisma_Exception_General("The spreadsheet template can
                      not be prepared because there are no finding sources
                      defined.");
             }
@@ -310,7 +310,7 @@ class FindingController extends PoamBaseController
             $blscrs = array_keys($blscr->getList('class'));
             $this->view->blscrs = $blscrs;
             if (count($this->view->blscrs) == 0) {
-                 throw new Exception_General("The spreadsheet template can not be prepared because there are no security
+                 throw new Fisma_Exception_General("The spreadsheet template can not be prepared because there are no security
                                               controls defined.");
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
@@ -326,7 +326,7 @@ class FindingController extends PoamBaseController
              */                                       
             $this->getResponse()->setHeader('Pragma', 'private', true);
             $this->getResponse()->setHeader('Cache-Control', 'private', true);
-        } catch(Exception_General $fe) {
+        } catch(Fisma_Exception_General $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);
             $this->_forward('injection', 'Finding');
@@ -341,8 +341,8 @@ class FindingController extends PoamBaseController
         $this->_acl->requirePrivilege('finding', 'inject');
 
         // Load the finding plugin form
-        $uploadForm = Form_Manager::loadForm('finding_upload');
-        $uploadForm = Form_Manager::prepareForm($uploadForm);
+        $uploadForm = Fisma_Form_Manager::loadForm('finding_upload');
+        $uploadForm = Fisma_Form_Manager::prepareForm($uploadForm);
         $uploadForm->setAttrib('id', 'injectionForm');
 
         // Populate the drop menu options
@@ -392,12 +392,12 @@ class FindingController extends PoamBaseController
                                    . "{$plugin->reviewed} findings need review.<br>"
                                    . "{$plugin->deleted} findings were suppressed.",
                                    self::M_NOTICE);
-                } catch (Exception_InvalidFileFormat $e) {
+                } catch (Fisma_Exception_InvalidFileFormat $e) {
                     $this->message("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
                                    self::M_WARNING);
                 }
             } else {
-                $errorString = Form_Manager::getErrors($uploadForm);
+                $errorString = Fisma_Form_Manager::getErrors($uploadForm);
 
                 if (!$fileReceived) {
                     $errorString .= "File not received<br>";

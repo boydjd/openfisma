@@ -21,7 +21,7 @@ $(document).ready(function(){
         $url .='/enddate/'.$this->criteria['enddate'];
     }
 ?>
-<?php //Format_Section::startSection("FISMA Report to OMB"); ?>
+<?php //Fisma_Format_Section::startSection("FISMA Report to OMB"); ?>
 
 <form name="filter" method="post" action="/panel/report/sub/fisma/s/search">
 <table class="searchFilters">
@@ -43,7 +43,7 @@ $(document).ready(function(){
             echo isset($this->criteria['enddate'])?$this->criteria['enddate']:'';
             ?>" size="10" maxlength="10" url=""></td>
         <td>
-            <?php echo new Yui_Form_Button_Submit('generateFismaReport', array('value' => 'Generate Report')); ?>
+            <?php echo new Fisma_Yui_Form_Button_Submit('generateFismaReport', array('value' => 'Generate Report')); ?>
         </td>
     </tr>
     <tr>
@@ -63,7 +63,7 @@ $(document).ready(function(){
 </table>
 </form>
 
-<?php //Format_Section::stopSection(); ?>
+<?php //Fisma_Format_Section::stopSection(); ?>
 <?php
     if(isset($this->summary)){
         echo $this->partial('report/fismasearch.phtml',array('summary'=>&$this->summary,'url'=>&$url));

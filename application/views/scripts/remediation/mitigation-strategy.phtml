@@ -1,4 +1,4 @@
-<?php Format_Section::startSection("Mitigation Strategy"); ?>
+<?php Fisma_Format_Section::startSection("Mitigation Strategy"); ?>
 <p>
     <b>
         Type:
@@ -107,10 +107,10 @@
     echo $this->poam['action_actual_date'] ;
      ?>
 </p>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 
 <?php 
-Format_Section::startSection("Mitigation Strategy Approval");
+Fisma_Format_Section::startSection("Mitigation Strategy Approval");
 $postAction = "/remediation/msa/id/" . $this->poam['id'];
 $array = array('type'          => $this->poam['type'],
                'description'   => $this->poam['finding_data'],
@@ -141,7 +141,7 @@ if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']) {
     echo '<p><i>The mitigation strategy, security control, and risk analysis sections must
           be fully completed before this can be submitted for approval.</i></p>';
 
-    $submitMitigationButton = new Yui_Form_Button('submitMitigation', 
+    $submitMitigationButton = new Fisma_Yui_Form_Button('submitMitigation', 
                                                   array('value' => 'Submit Mitigation Strategy', 
                                                         'onClickFunction' => 'submitMitigationStrategy'));
     if (0 != $complete || !$this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) {
@@ -161,7 +161,7 @@ if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitig
                 return false;
             }
           </script>";
-    $reviseMitigationButton = new Yui_Form_Button('reviseMitigationButton',
+    $reviseMitigationButton = new Fisma_Yui_Form_Button('reviseMitigationButton',
                                                   array('value' => 'Revise Mitigation Strategy', 
                                                         'onClickFunction' => 'reviseMitigationStrategy'));
     echo "<div class='toolbar'>$reviseMitigationButton</div>";
@@ -209,5 +209,5 @@ if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empt
         echo "</div>";
     } 
 }
-Format_Section::stopSection(); 
+Fisma_Format_Section::stopSection(); 
 ?>

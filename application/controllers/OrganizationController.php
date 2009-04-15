@@ -72,7 +72,7 @@ class OrganizationController extends SecurityController
      */
     public function getOrganizationForm()
     {
-        $form = Form_Manager::loadForm('organization');
+        $form = Fisma_Form_Manager::loadForm('organization');
         
         $db = $this->_organization->getAdapter();
         $query = $db->select()->from(array('o'=>'organizations'), '*')
@@ -82,7 +82,7 @@ class OrganizationController extends SecurityController
         foreach ($ret as $row) {
             $form->getElement('father')->addMultiOptions(array($row['id'] => $row['name']));
         }
-        return Form_Manager::prepareForm($form);
+        return Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
@@ -221,7 +221,7 @@ class OrganizationController extends SecurityController
                 $this->_forward('view', null, null, array('id' => $organizationId));
                 return;
             } else {
-                $errorString = Form_Manager::getErrors($form);
+                $errorString = Fisma_Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to create organization:<br>$errorString", self::M_WARNING);
             }
@@ -311,7 +311,7 @@ class OrganizationController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update organization<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.

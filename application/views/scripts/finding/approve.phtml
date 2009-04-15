@@ -1,4 +1,4 @@
-<?php Format_Section::startSection("Approve Pending Findings"); ?>
+<?php Fisma_Format_Section::startSection("Approve Pending Findings"); ?>
 <form method="POST" action="/panel/finding/sub/process-approval">
     <table class="tipframe" style="width:70%" cellpadding="0" cellspacing="0">
         <tr>
@@ -37,22 +37,22 @@
         <tr>
             <td class="tdc" colspan="8">
                 <?php 
-                    $selectAllButton = new Yui_Form_Button('selectAll',
+                    $selectAllButton = new Fisma_Yui_Form_Button('selectAll',
                                                            array('value' => 'Select All', 
                                                                  'onClickFunction' => 'selectAllUnsafe'));
                     echo $selectAllButton;
         
-                    $selectNoneButton = new Yui_Form_Button('selectNone',
+                    $selectNoneButton = new Fisma_Yui_Form_Button('selectNone',
                                                             array('value' => 'Select None', 
                                                                   'onClickFunction' => 'selectNoneUnsafe'));
                     echo $selectNoneButton;
                     
-                    echo new Yui_Form_Button_Submit('delete_selected', array('value' => 'Delete Selected'));                    
-                    echo new Yui_Form_Button_Submit('approve_selected', array('value' => 'Approve Selected'));
+                    echo new Fisma_Yui_Form_Button_Submit('delete_selected', array('value' => 'Delete Selected'));                    
+                    echo new Fisma_Yui_Form_Button_Submit('approve_selected', array('value' => 'Approve Selected'));
                 ?>
             </td>
         </tr>
     </table>
 </form>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 

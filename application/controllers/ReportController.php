@@ -661,7 +661,7 @@ class ReportController extends PoamBaseController
                                                                                 $actOwner['integrity'],
                                                                                 $actOwner['availability']);
                         if (NULL == $securityCategorization) {
-                            throw new Exception_General('The security categorization for ('.$actOwner['id'].')'.
+                            throw new Fisma_Exception_General('The security categorization for ('.$actOwner['id'].')'.
                                 $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
                                 'unless these values are defined.');
                         }
@@ -680,8 +680,8 @@ class ReportController extends PoamBaseController
                     header("Pragma: public");
                     echo file_get_contents($fname);
                     @unlink($fname);
-                } catch (Exception_General $e) {
-                    if ($e instanceof Exception_General) {
+                } catch (Fisma_Exception_General $e) {
+                    if ($e instanceof Fisma_Exception_General) {
                         $message = $e->getMessage();
                     }
                     $this->message($message, self::M_WARNING);
@@ -739,7 +739,7 @@ class ReportController extends PoamBaseController
             $role = $user->getRoles($this->_me->id);
             $role = $role[0]['nickname'];
             if (!in_array($role, $reportRoles)) {
-                throw new Exception_General("User \"{$this->_me->account}\" does not have permission to view"
+                throw new Fisma_Exception_General("User \"{$this->_me->account}\" does not have permission to view"
                                           . " the \"$reportName\" plug-in report.");
             }
         }
@@ -748,7 +748,7 @@ class ReportController extends PoamBaseController
         $reportScriptFile = Fisma_Controller_Front::getPath('application') . "/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         if (!$reportScriptFileHandle) {
-            throw new Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");
+            throw new Fisma_Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");
         }
         $reportScript = '';
         while (!feof($reportScriptFileHandle)) {

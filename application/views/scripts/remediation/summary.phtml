@@ -30,12 +30,12 @@
         <td><b>Date Opened To: </b></td><td><input type="text" class="date" id="created_date_end" name="created_date_end" value="<?php
             echo $this->criteria['created_date_end']; ?>"
             size="12" maxlength="20"></td>
-        <td colspan="2"><?php echo new Yui_Form_Button_Submit('filterRemediationSummarySubmit', array('value' => 'Apply Filter')); ?></td>
+        <td colspan="2"><?php echo new Fisma_Yui_Form_Button_Submit('filterRemediationSummarySubmit', array('value' => 'Apply Filter')); ?></td>
     </tr>
 </table>
 </form>
 
-<?php Format_Section::startSection("Remediation Summary"); ?>
+<?php Fisma_Format_Section::startSection("Remediation Summary"); ?>
 
 <table align="center" class="tipframe" width="90%" cellpadding="0" cellspacing="0">
     <tr align="center" bgcolor="#f3f3f3">
@@ -109,4 +109,4 @@
 <!-- END SUMMARY LOOP -->
 </table>
 
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>

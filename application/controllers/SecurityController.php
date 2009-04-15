@@ -109,7 +109,7 @@ class SecurityController extends MessageController
         if (empty($this->_me)) {
             // throw exception and redirect the page to login.
             ///@todo English
-            throw new Exception_InvalidAuthentication('Your session has expired. Please log in again to begin a new session.');
+            throw new Fisma_Exception_InvalidAuthentication('Your session has expired. Please log in again to begin a new session.');
             $this->_forward('login', 'User');
         } else {
             $this->view->identity = $this->_me->account;
@@ -130,7 +130,7 @@ class SecurityController extends MessageController
     protected function initializeAcl($uid)
     {
         if (!Zend_Registry::isRegistered('acl')) {
-            $acl = new Fismacl();
+            $acl = new Fisma_Fismacl();
             $db = Zend_Registry::get('db');
             $query = $db->select()->from(array(
                 'r' => 'roles'

@@ -1,4 +1,4 @@
-<?php Format_Section::startSection("Spreadsheet Upload"); ?>
+<?php Fisma_Format_Section::startSection("Spreadsheet Upload"); ?>
     <form action="/panel/finding/sub/injection" method="POST" enctype="multipart/form-data">
         <ol>
             <li>Download the Excel <a href="/finding/template">template file</a>.
@@ -10,8 +10,8 @@
             <input type="file" name="excelFile">
         </ol>
         <p>
-            <?php echo new Yui_Form_Button_Submit('uploadExcelSubmit', array('value' => 'Upload')); ?>
+            <?php echo new Fisma_Yui_Form_Button_Submit('uploadExcelSubmit', array('value' => 'Upload')); ?>
         </p>
     </form>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 

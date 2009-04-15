@@ -1,5 +1,5 @@
 <div class="column left">
-    <?php Format_Section::startSection("Details"); ?>
+    <?php Fisma_Format_Section::startSection("Details"); ?>
     <table class="keyValues">
         <tr>
             <td>POAM ID:</td>
@@ -49,11 +49,11 @@
             </td>
         </tr>
     </table>
-    <?php Format_Section::stopSection(); ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 
 <div class="column right">
-    <?php Format_Section::startSection("Asset"); ?>
+    <?php Fisma_Format_Section::startSection("Asset"); ?>
     <table class="keyValues">
         <tr>
             <td>
@@ -115,32 +115,32 @@
             </td>
         </tr>
     </table>
-    <?php Format_Section::stopSection(); ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 
 <div class="clear"></div>
 
 <?php 
 if ($this->acl->isAllowed('remediation','update_finding_description')) {
-    Format_Section::startSection('Description', 'finding_description');
+    Fisma_Format_Section::startSection('Description', 'finding_description');
 } else {
-    Format_Section::startSection('Description');
+    Fisma_Format_Section::startSection('Description');
 }
 ?>
 <div name="poam[finding_data]" id="finding_description" type="textarea" rows="3" cols="160"> 
     <?php echo $this->poam['finding_data']; ?>
 </div>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 
 <?php
 if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
     && $this->acl->isAllowed('remediation', 'update_finding_recommendation')) {
-    Format_Section::startSection('Recommendation', 'recommendation');
+    Fisma_Format_Section::startSection('Recommendation', 'recommendation');
 } else {
-    Format_Section::startSection('Recommendation');
+    Fisma_Format_Section::startSection('Recommendation');
 }
 ?>
 <div name="poam[action_suggested]" id="recommendation" type="textarea" rows="3" cols="160">
     <?php echo $this->poam['action_suggested']; ?>
 </div>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>

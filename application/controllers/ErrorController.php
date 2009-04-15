@@ -49,7 +49,7 @@ class ErrorController extends Zend_Controller_Action
         $errors = $this->_getParam('error_handler');
 
         // if the user hasn't login, or the session expired.
-        if ($errors->exception instanceof Exception_InvalidAuthentication) {
+        if ($errors->exception instanceof Fisma_Exception_InvalidAuthentication) {
             $this->view->assign('error', $errors->exception->getMessage());
             //remind the user to login
             $this->_forward('logout', 'User');

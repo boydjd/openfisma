@@ -16,7 +16,7 @@ $action_list = array(1=>'blscr',2=>'fips',3=>'prods',4=>'swdisc',5=>'total');
             <?php echo $this->formSelect('type',$this->type,null,$type_list);?>
         </td>
         <td>
-            <?php echo new Yui_Form_Button_Submit('generateGeneralReport', array('value' => 'Generate Report')); ?>
+            <?php echo new Fisma_Yui_Form_Button_Submit('generateGeneralReport', array('value' => 'Generate Report')); ?>
         </td>
     </tr>
 </table>
@@ -27,7 +27,7 @@ $action_list = array(1=>'blscr',2=>'fips',3=>'prods',4=>'swdisc',5=>'total');
     if(!empty($this->type)){
         $url = "/report/".$action_list[$this->type];
 ?>
-<?php Format_Section::startSection("Report: {$type_list[$this->type]}"); ?>
+<?php Fisma_Format_Section::startSection("Report: {$type_list[$this->type]}"); ?>
 
 <span>
 <a target='_blank' href="<?php echo $url.'/format/pdf'; ?>"><img src="/images/pdf.gif" border="0"></a>

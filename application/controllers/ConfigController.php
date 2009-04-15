@@ -59,8 +59,8 @@ class ConfigController extends SecurityController
      */
     public function getConfigForm($formName) {
         // Load the form and populate the dynamic pull downs
-        $form = Form_Manager::loadForm($formName);
-        $form = Form_Manager::prepareForm($form);
+        $form = Fisma_Form_Manager::loadForm($formName);
+        $form = Fisma_Form_Manager::prepareForm($form);
 
         return $form;
     }
@@ -125,7 +125,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $errorString = Form_Manager::getErrors($form);
+                    $errorString = Fisma_Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save general policies:<br>$errorString", self::M_WARNING);
                 }
@@ -188,7 +188,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $errorString = Form_Manager::getErrors($form);
+                    $errorString = Fisma_Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save Technical Contact Information:<br>$errorString",
                         self::M_WARNING);
@@ -227,7 +227,7 @@ class ConfigController extends SecurityController
                 $this->_redirect('/panel/config/');
                 return;
             } else {
-                $errorString = Form_Manager::getErrors($form);
+                $errorString = Fisma_Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to save Ldap Configurations:<br>$errorString", self::M_WARNING);
             }
@@ -283,7 +283,7 @@ class ConfigController extends SecurityController
                     echo "<b>". $e->getMessage(). "</b>";
                 }
             } else {
-                $errorString = Form_Manager::getErrors($form);
+                $errorString = Fisma_Form_Manager::getErrors($form);
                 echo $errorString;
             }
         } else {
@@ -318,7 +318,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $errorString = Form_Manager::getErrors($form);
+                    $errorString = Fisma_Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save Notifciation Policies:<br>$errorString", self::M_WARNING);
                 }
@@ -355,7 +355,7 @@ class ConfigController extends SecurityController
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $errorString = Form_Manager::getErrors($form);
+                    $errorString = Fisma_Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save privacy policies:<br>$errorString", self::M_WARNING);
                 }
@@ -398,7 +398,7 @@ class ConfigController extends SecurityController
                     $msg = 'Password Complexity Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
-                    $errorString = Form_Manager::getErrors($form);
+                    $errorString = Fisma_Form_Manager::getErrors($form);
                     // Error message
                     $this->message("Unable to save password policies:<br>$errorString", self::M_WARNING);
                 }

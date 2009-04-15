@@ -7,20 +7,20 @@
     </i>
 </div>
 
-<?php Format_Section::startSection(Fisma_Controller_Front::readSysConfig('system_name') . ' Rules of Behavior'); ?>
+<?php Fisma_Format_Section::startSection(Fisma_Controller_Front::readSysConfig('system_name') . ' Rules of Behavior'); ?>
 <div>
     <?php print(Fisma_Controller_Front::readSysConfig('behavior_rule')); ?>
 </div>
 
 <div>
     <?php
-    echo new Yui_Form_Button_Link('cancel', 
+    echo new Fisma_Yui_Form_Button_Link('cancel', 
                                   array('value' => 'Cancel', 
                                         'href' => '/user/logout'));
-    echo new Yui_Form_Button_Link('accept', 
+    echo new Fisma_Yui_Form_Button_Link('accept', 
                                   array('value' => 'Accept', 
                                         'href' => '/user/acceptrob'));
     ?>
 </div>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 

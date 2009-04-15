@@ -86,13 +86,13 @@ class AccountController extends SecurityController
         $ret = $db->fetchAll($qry);
 
         // Load the form and populate the dynamic pull downs
-        $form = Form_Manager::loadForm('account');
+        $form = Fisma_Form_Manager::loadForm('account');
         foreach ($ret as $row) {
             $form->getElement('role')
                  ->addMultiOptions(array($row['id'] => $row['name']));
         }
 
-        $checkboxMatrix = new Form_Element_CheckboxMatrix('systems');
+        $checkboxMatrix = new Fisma_Form_Element_CheckboxMatrix('systems');
         foreach ($system->getList() as $id => $systemData) {
             $checkboxMatrix->addCheckbox($id, $systemData['name']);
         }
@@ -108,7 +108,7 @@ class AccountController extends SecurityController
         } else if ($systemAuthType == 'database') {
             $form->removeElement('checkaccount');
         } else {
-            throw new Exception_General("The account form cannot handle"
+            throw new Fisma_Exception_General("The account form cannot handle"
                                       . " the current authentication type: "
                                       . $systemAuthType);
         }
@@ -284,7 +284,7 @@ class AccountController extends SecurityController
         $userDetail['is_active'] = "{$userDetail['is_active']}";
         $form->setDefaults($userDetail);
 
-        $this->view->assign('form', Form_Manager::prepareForm($form));
+        $this->view->assign('form', Fisma_Form_Manager::prepareForm($form));
 
         // Notice that the view is rendered conditionally based on the $v
         // parameter. This can be "edit" or "view"
@@ -304,7 +304,7 @@ class AccountController extends SecurityController
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
         $pass = $form->getElement('password');
-        $pass->addValidator(new Form_Validator_Password());
+        $pass->addValidator(new Fisma_Form_Validator_Password());
         $formValid = $form->isValid($_POST);
         $accountData = $form->getValues();
 
@@ -446,12 +446,12 @@ class AccountController extends SecurityController
                 ));
             } else {
                 throw new
-                    Exception_General('The user has more than 1 role.');
+                    Fisma_Exception_General('The user has more than 1 role.');
             }
 
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update account:<br>$errorString",
                            self::M_WARNING);
@@ -531,7 +531,7 @@ class AccountController extends SecurityController
         $form->setDefaults($_POST);
         
         // Assign view outputs.
-        $this->view->form = Form_Manager::prepareForm($form);
+        $this->view->form = Fisma_Form_Manager::prepareForm($form);
         $this->render('create');
     }
     
@@ -552,7 +552,7 @@ class AccountController extends SecurityController
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirmPassword')->setRequired(true);
             $password = $form->getElement('password');
-            $password->addValidator(new Form_Validator_Password());
+            $password->addValidator(new Fisma_Form_Validator_Password());
         }
 
         // Validate forms and get the submitted values
@@ -637,7 +637,7 @@ class AccountController extends SecurityController
             $this->message($message, self::M_NOTICE);
             $this->_forward('view', null, null, array('id' => $userId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to create account:<br>$errorString",
                            self::M_WARNING);

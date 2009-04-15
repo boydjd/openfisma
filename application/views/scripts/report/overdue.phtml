@@ -15,7 +15,7 @@
     $this->source_list[0] ='--Any--';
     $url = "/panel/report/sub/overdue/s/search";
 ?>
-<?php //Format_Section::startSection("Overdue Reports"); ?>
+<?php //Fisma_Format_Section::startSection("Overdue Reports"); ?>
 
 <form name="overdue_report" method="post" action="/panel/report/sub/overdue/s/search">
 <table class="searchFilters">
@@ -67,16 +67,16 @@
         ?>
         </td>
         <td height="39" colspan="2">
-            <?php echo new Yui_Form_Button_Submit('generateOverdueReport', array('value' => 'Generate Report')); ?>
+            <?php echo new Fisma_Yui_Form_Button_Submit('generateOverdueReport', array('value' => 'Generate Report')); ?>
         </td>
     </tr>
 </table>
 </form>
 
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 
 <?php if( !empty($this->poam_list) ) { ?>
-<?php Format_Section::startSection("Poam Search Results"); ?>
+<?php Fisma_Format_Section::startSection("Poam Search Results"); ?>
     <span>
     <?php echo $this->links['all']; ?>
     <a target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="/images/pdf.gif" border="0"></a>
@@ -133,4 +133,4 @@
 
 <?php } ?>
 
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>

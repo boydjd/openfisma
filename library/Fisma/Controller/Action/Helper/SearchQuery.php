@@ -87,6 +87,6 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
      */
     public function direct($keywords, $indexName)
     {
-        $this->searchQuery($keywords, $indexName);
+        return $this->searchQuery($keywords, $indexName);
     }
 }

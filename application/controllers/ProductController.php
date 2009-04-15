@@ -73,8 +73,8 @@ class ProductController extends SecurityController
      */
     public function getProductForm()
     {
-        $form = Form_Manager::loadForm('product');
-        return Form_Manager::prepareForm($form);
+        $form = Fisma_Form_Manager::loadForm('product');
+        return Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
@@ -219,7 +219,7 @@ class ProductController extends SecurityController
         $form->setDefaults($post);
 
         // Assign view outputs.
-        $this->view->form = Form_Manager::prepareForm($form);
+        $this->view->form = Fisma_Form_Manager::prepareForm($form);
         $this->render('create');
     }
 
@@ -257,7 +257,7 @@ class ProductController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $productId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to create product:<br>$errorString", self::M_WARNING);
             $this->_forward('create');
@@ -337,7 +337,7 @@ class ProductController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update product<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.

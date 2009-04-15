@@ -492,7 +492,7 @@ class Poam extends Zend_Db_Table
                 unset($criteria['status']);
             }
         } else {
-            throw new Exception_General('Parameters wrong in ontime ' . var_export($ontime, true));
+            throw new Fisma_Exception_General('Parameters wrong in ontime ' . var_export($ontime, true));
         }
         
         return $criteria;
@@ -505,7 +505,7 @@ class Poam extends Zend_Db_Table
     public function getStatus ($id)
     {
         if (! is_numeric($id)) {
-            throw new Exception_General('Make sure a valid ID is inputed');
+            throw new Fisma_Exception_General('Make sure a valid ID is inputed');
         }
         $ret = $this->find($id);
         if ('MSA' == $ret->current()->status) {
@@ -563,7 +563,7 @@ class Poam extends Zend_Db_Table
     public function &getDetail($id)
     {
         if (! is_numeric($id)) {
-            throw new Exception_General('Make sure a valid ID is inputed');
+            throw new Fisma_Exception_General('Make sure a valid ID is inputed');
         }
         $poamDetail = $this->search(null, '*', array('id' => $id));
         $ret = array();
@@ -874,7 +874,7 @@ class Poam extends Zend_Db_Table
         // I'm not sure if anybody would call this function with an array of arrays, but for now to be safe I'm
         // explicitly checking for that condition. -Mark
         if (array_key_exists(0, $findingData)) {
-            throw new Exception_General('The $findingData parameter should be an associative array containing key/value
+            throw new Fisma_Exception_General('The $findingData parameter should be an associative array containing key/value
                                          pairs, but it appears to be a linear array.');
         }
 

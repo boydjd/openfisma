@@ -90,8 +90,8 @@ class NetworkController extends SecurityController
      */
     public function getNetworkForm()
     {
-        $form = Form_Manager::loadForm('network');
-        return Form_Manager::prepareForm($form);
+        $form = Fisma_Form_Manager::loadForm('network');
+        return Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
@@ -203,7 +203,7 @@ class NetworkController extends SecurityController
         $form->setDefaults($post);
 
         // Assign view outputs.
-        $this->view->form = Form_Manager::prepareForm($form);
+        $this->view->form = Fisma_Form_Manager::prepareForm($form);
         $this->render('create');
     }
 
@@ -241,7 +241,7 @@ class NetworkController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $networkId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to create network:<br>$errorString", self::M_WARNING);
             $this->_forward('create');
@@ -321,7 +321,7 @@ class NetworkController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update network<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.

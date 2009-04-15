@@ -88,8 +88,8 @@ class RoleController extends SecurityController
      */
     public function getRoleForm()
     {
-        $form = Form_Manager::loadForm('role');
-        return Form_Manager::prepareForm($form);
+        $form = Fisma_Form_Manager::loadForm('role');
+        return Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
@@ -201,7 +201,7 @@ class RoleController extends SecurityController
         $form->setDefaults($post);
 
         // Assign view outputs.
-        $this->view->form = Form_Manager::prepareForm($form);
+        $this->view->form = Fisma_Form_Manager::prepareForm($form);
         $this->render('create');
     }
 
@@ -239,7 +239,7 @@ class RoleController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $roleId));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to create role:<br>$errorString", self::M_WARNING);
             $this->_forward('create');
@@ -319,7 +319,7 @@ class RoleController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update role<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.

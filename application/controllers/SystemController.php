@@ -100,7 +100,7 @@ class SystemController extends SecurityController
      */
     public function getSystemForm()
     {
-        $form = Form_Manager::loadForm('system');
+        $form = Fisma_Form_Manager::loadForm('system');
         
         $db = $this->_system->getAdapter();
         $query = $db->select()->from(array('o'=>'organizations'), '*');
@@ -123,7 +123,7 @@ class SystemController extends SecurityController
         $type = $this->_system->getEnumColumns('type');
         $form->getElement('type')->addMultiOptions(array_combine($type, $type));
         
-        return Form_Manager::prepareForm($form);
+        return Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
@@ -230,7 +230,7 @@ class SystemController extends SecurityController
                 $this->_forward('view', null, null, array('id' => $systemId));
                 return;
             } else {
-                $errorString = Form_Manager::getErrors($form);
+                $errorString = Fisma_Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to create system:<br>$errorString", self::M_WARNING);
             }
@@ -394,7 +394,7 @@ class SystemController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $id));
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update system:<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.

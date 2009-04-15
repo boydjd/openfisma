@@ -1,6 +1,6 @@
 <?php
 if ($this->acl->isAllowed('report','generate_system_rafs')) {
-    Format_Section::startSection("Risk Analysis Form (RAF)"); 
+    Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
 ?>
     <p>
         Risk is calculated by evaluating the security categorization of 
@@ -16,7 +16,7 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
             $this->poam['threat_level'] != 'NONE' &&
             $this->poam['cmeasure'] != '' &&
             $this->poam['cmeasure_effectiveness'] != 'NONE') {
-            print new Yui_Form_Button_Link('viewRaf',
+            print new Fisma_Yui_Form_Button_Link('viewRaf',
                                            array('value' => 'View Risk Analysis Form', 
                                                  'href' => "/remediation/raf/format/pdf/id/{$this->poam['id']}", 
                                                  'imageSrc' => '/images/pdf.gif'));
@@ -26,11 +26,11 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
         ?>
     </p>
 <?php
-    Format_Section::stopSection();
+    Fisma_Format_Section::stopSection();
 }
 ?>
 
-<?php Format_Section::startSection("Threats"); ?>
+<?php Fisma_Format_Section::startSection("Threats"); ?>
 <p>
     <i>
         A threat is the potential for a particular threat-source to successfully exercise a particular 
@@ -68,9 +68,9 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
 <div type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
     <?php echo $this->poam['threat_source']; ?>
 </div>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Format_Section::startSection("Countermeasures"); ?>
+<?php Fisma_Format_Section::startSection("Countermeasures"); ?>
 <p>
     <i>
         The goal of this step is to analyze the controls that are currently implemented by the 
@@ -113,4 +113,4 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
 <div type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
     <?php echo $this->poam['cmeasure']; ?>
 </div>
-<?php Format_Section::stopSection(); ?>
+<?php Fisma_Format_Section::stopSection(); ?>

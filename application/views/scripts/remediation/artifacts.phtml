@@ -1,5 +1,5 @@
 <?php 
-Format_Section::startSection('Artifacts (' . count($this->ev_evals) . ')');
+Fisma_Format_Section::startSection('Artifacts (' . count($this->ev_evals) . ')');
 if (count($this->ev_evals) == 0) {
     print "<p><i>There are no artifacts for this finding.</i></p>";
 }
@@ -85,7 +85,7 @@ foreach ($this->ev_evals as $e) {
 <?php
 }
 
-$uploadEvidenceButton = new Yui_Form_Button('uploadEvidenceButton',
+$uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
                                             array('value' => 'Upload Evidence', 
                                                   'onClickFunction' => 'upload_evidence'));
 if('EN' != $this->poam['status'] || !$this->acl->isAllowed('remediation', 'update_evidence')) {
