@@ -202,7 +202,7 @@ class FindingController extends PoamBaseController
 		$formValid = $form->isValid($poam);
 
 		if ($formValid) {
-			unset($poam['name'], $poam['ip'], $poam['port'], $poam['save']);
+			unset($poam['name'], $poam['ip'], $poam['port'], $poam['save'], $poam['search_asset']);
 			if ($poam['blscr_id'] == '0') {
 				unset($poam['blscr_id']);
 			}

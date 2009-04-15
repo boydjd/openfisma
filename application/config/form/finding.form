@@ -78,7 +78,7 @@ displayGroups.searchasset.elements.search_asset = "search_asset"
 
 elements.asset_id.type = "select"
 elements.asset_id.options.size = 8
-elements.asset_id.options.style = "width:150px"
+elements.asset_id.options.style = "width:130px"
 elements.asset_id.options.label = "Asset Name"
 elements.asset_id.options.required = true
 displayGroups.searchasset.elements.asset_id = "asset_id"

@@ -39,7 +39,7 @@ class Form_CreateFindingDecorator extends Form_FismaDecorator
 	 */
 	public function buildProduct()
 	{
-    	$content = '<td colspan="6" width="200px" valign="top">'
+    	$content = '<td colspan="6" width="450px" valign="top">'
                    . '<fieldset style="height:115; border:1px solid #44637A; padding:5">'
                    . ' <legend><b>Asset Information</b></legend>'
                    . '<div id="asset_info"></div>'
