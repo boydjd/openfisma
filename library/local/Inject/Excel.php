@@ -42,6 +42,13 @@ class Inject_Excel
     const TEMPLATE_NAME = 'Finding_Upload_Template.xls';
 
     /**
+     * The template version is used to make sure that we don't try to process a template which was produced by a
+     * previous version of OpenFISMA. This number should be incremented whenever the template file or processing code
+     * is modified.
+     */
+    const TEMPLATE_VERSION = 1;
+                  
+    /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
      * column's logical names. Excel starts indexes at 1 instead of 0.
      *
@@ -98,22 +105,30 @@ class Inject_Excel
      */
     function inject($filePath) {
         // Parse the file using SimpleXML. The finding data is located on the first worksheet.
-        $spreadsheet = simplexml_load_file($filePath);
+        $spreadsheet = @simplexml_load_file($filePath);
         if ($spreadsheet === false) {
-            $this->message("The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML
-                           spreadsheet.",
-                           self::M_WARNING);
-            return;
+            throw new Exception_InvalidFileFormat(
+                "The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML spreadsheet."
+            );
         }
-        
+
+        // Check that the template version matches the version of OpenFISMA which is running.
+        $templateVersion = (int)$spreadsheet->CustomDocumentProperties->FismaTemplateVersion;
+        if ($templateVersion != self::TEMPLATE_VERSION) {
+            throw new Exception_InvalidFileFormat(
+                "This template was created by a previous version of OpenFISMA and is not compatible with the current"
+                . " version. Download a new copy of the template and transfer your data into it."
+            );
+        }
+                
         // Have to do some namespace manipulation to make the spreadsheet searchable by xpath.
         $namespaces = $spreadsheet->getNamespaces(true);
         $spreadsheet->registerXPathNamespace('s', $namespaces['']);
         $findingData = $spreadsheet->xpath('/s:Workbook/s:Worksheet[1]/s:Table/s:Row');
         if ($findingData === false) {
-            $this->message("The file format is not recognized. Your version of Excel might be incompatible.",
-                           self::M_WARNING);
-            return;
+            throw new Exception_InvalidFileFormat(
+                "The file format is not recognized. Your version of Excel might be incompatible."
+            );
         }
         
         // $findingData is an array of rows in the first worksheet. The first three rows on this worksheet contain
@@ -138,9 +153,17 @@ class Inject_Excel
                 if (isset($cellAttributes['Index'])) {
                     $column = (int)$cellAttributes['Index'];
                 }
-                $finding[$this->_excelTemplateColumns[$column]] = (string)$cell->Data;
+                $cellChildren = $cell->children('urn:schemas-microsoft-com:office:spreadsheet');
+                $finding[$this->_excelTemplateColumns[$column]] = $cellChildren->Data->asXml();
                 $column++;
             }
+            /**
+             * @todo improved input sanitzation. use a better html filter than strip_tags and attempt to preserve the
+             * formatting of the text. this filtering should be done in the model classes.
+             */                                      
+            // Basic input sanitzation: remove HTML tags and then encode any remaining characters
+            $finding = array_map('strip_tags', $finding);
+            $finding = array_map('htmlspecialchars', $finding);
 
             // Validate that required row attributes are filled in:
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
@@ -169,7 +192,7 @@ class Inject_Excel
                                                       be out of date. Please try downloading it again.");
             }
             $poam['finding_data'] = $finding['finding_description'];
-            if (isset($finding['contact_info'])) {
+            if (!empty($finding['contact_info'])) {
                 $poam['finding_data'] .= "<br>Point of Contact: {$finding['contact_info']}";
             }
             $poam['action_suggested'] = $finding['finding_recommendation'];
@@ -196,9 +219,16 @@ class Inject_Excel
             $asset = array();
             $networkTable = new Network();
             $asset['network_id'] = @$networkTable->fetchRow("nickname = '{$finding['network']}'")->id;
-            $asset['name'] = @$finding['asset_name'];
             $asset['address_ip'] = @$finding['asset_ip'];
             $asset['address_port'] = @$finding['asset_port'];
+            if (!empty($asset['address_port']) && !is_numeric($asset['address_port'])) {
+                throw new Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
+            }
+
+            $asset['name'] = @$finding['asset_name'];
+            if (empty($asset['name'])) {
+                $asset['name'] = "{$asset['address_ip']}:{$asset['address_port']}";
+            }
             $asset['create_ts'] = new Zend_Db_Expr('NOW()');
             $asset['system_id'] = $poam['system_id'];
 
@@ -206,7 +236,7 @@ class Inject_Excel
             $product['name'] = @$finding['product_name'];
             $product['vendor'] = @$finding['product_vendor'];
             $product['version'] = @$finding['product_version'];
-            //var_dump($poam); var_dump($asset); var_dump($product); die;
+            
             // Now persist these objects. Check assets and products to see whether they exist before creating new
             // ones.
             if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
@@ -242,5 +272,4 @@ class Inject_Excel
         
         return $rowNumber - $this->_excelTemplateStartRow;
     }
-
 }
