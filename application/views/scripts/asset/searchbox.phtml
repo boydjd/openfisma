@@ -61,6 +61,7 @@
     echo $this->partial('asset/sublist.phtml',array('asset_list'=>$this->asset_list,
                                                     'url'=>$url,
                                                     'links'=>$this->links,
-                                                    'acl'=>$this->acl
+                                                    'acl'=>$this->acl,
+													'columns' => $this->assetColumns
                                                     ));
 ?>

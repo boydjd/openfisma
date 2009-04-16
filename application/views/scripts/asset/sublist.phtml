@@ -43,13 +43,12 @@
 <table width="98%" align="center" border="0" class="tbframe">
     <tr align="center">
         <th nowrap></th>
-        <th>Asset Name</th>
-        <th>System</th>
-        <th>IP Address</th>
-        <th>Port</th>
-        <th>Product Name</th>
-        <th>Vendor</th>
-		<th>Version</th>
+		<?php
+			foreach ($this->columns as $key=>$column) {
+				echo "<th>$column</th>";
+				$keys[] = $key;
+			}
+		?>
         <?php if($this->acl->isAllowed('asset','update')){
                  echo'<th nowrap>Edit</th>';
               }
@@ -67,14 +66,11 @@
                 value="<?php echo $row['aid'];?>"></td>
         <?php } else { ?>
             <td align="center" class="tdc">&nbsp;</td>
-        <?php } ?>
-        <td class="tdc">&nbsp;<?php echo $row['asset_name'];?></td>
-        <td class="tdc">&nbsp;<?php echo $row['system_name'];?></td>
-        <td class="tdc">&nbsp;<?php echo $row['address_ip'];?></td>
-        <td class="tdc">&nbsp;<?php echo $row['address_port'];?></td>
-        <td class="tdc">&nbsp;<?php echo $row['prod_name'];?></td>
-        <td class="tdc">&nbsp;<?php echo $row['prod_vendor'];?></td>
-		<td class="tdc">&nbsp;<?php echo $row['prod_version'];?></td>
+        <?php }
+			foreach ($keys as $v) {
+				echo '<td class="tdc">&nbsp;'.$row[$v].'</td>';
+			}
+		?>
         <?php if($this->acl->isAllowed('asset','update')) { ?>
         <td class="tdc" align="center"><a href="/panel/asset/sub/view/s/edit/id/<?php echo $row['aid'];?>"><img src="/images/edit.png" border="0"></a></td>
         <?php } if($this->acl->isAllowed('asset','read')) { ?>

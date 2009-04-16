@@ -20,7 +20,7 @@ if(!empty($this->criteria['port'])){
     $title .=' [port]: '.$this->criteria['port'];
 }
 
-$fields=array('asset_name'=>'Asset Name','system_name'=>'System','address_ip'=>'IP Address','address_port'=>'Port','prod_name'=>'Product Name','prod_vendor'=>'Vendor');
+$fields = $this->assetColumns;
 
 $table=$this->asset_list;
 

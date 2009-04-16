@@ -1,12 +1,9 @@
 <?php
-$output_cols = array(
-"Asset Name",
-"System",
-"IP Address",
-"Port",
-"Product Name",
-"Vendor"
-);
+foreach ($this->assetColumns as $key=>$column) {
+	$output_cols[] = $column;
+	$keys[]        = $key;
+}
+
 $count_cols = count($output_cols);
 
 require_once ('Spreadsheet/Excel/Writer.php'); // need fix 
@@ -37,19 +34,16 @@ $worksheet->write($rowi++, 0, $headinfo,$format_times);
 $worksheet->setColumn(0,0,20);
 $worksheet->setColumn(0,1,35);
 $worksheet->setColumn(1,2,15);
-$worksheet->mergeCells(0,0,0,5);
+$worksheet->mergeCells(0,0,0,$count_cols-1);
 
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
 foreach( $this->asset_list as $row ) {
-    $data = array(
-        $row['asset_name'],
-        $row['system_name'],
-        $row['address_ip'],
-        $row['address_port'],
-        $row['prod_name'],
-        $row['prod_vendor']);
-    $worksheet->writeRow($rowi++,0,$data,$format_times); 
+	foreach ($keys as $v) {
+		$data[] = $row[$v];
+	}
+    $worksheet->writeRow($rowi++,0,$data,$format_times);
+	unset($data);
 }
 
 $worksheet->setHeader("                            ".$headinfo);
