@@ -126,8 +126,16 @@ class FindingController extends PoamBaseController
         } else {
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
-                $injectExcel = new Inject_Excel();
+                $injectExcel = new Fisma_Inject_Excel();
                 $rowsProcessed = $injectExcel->inject($file['tmp_name']);
+
+				if (!empty($injectExcel->_findingIds)
+					&& is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+					foreach ($injectExcel->_findingIds as $id) {
+						$this->createIndex($id);
+					}
+				}
+
                 // If this were a real transaction, we'd commit right here.
                 /** @todo use database transaction */
                 $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
@@ -180,24 +188,7 @@ class FindingController extends PoamBaseController
                 if ($poamId > 0) {
                     //Create finding lucene index
                     if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-                        $system = new System();
-                        $source = new Source();
-                        $asset = new Asset();
-                        $ret = $system->find($poam['system_id'])->current();
-                        if (!empty($ret)) {
-                            $indexData['system'] = $ret->name . ' ' . $ret->nickname;
-                        }
-                        $ret = $source->find($poam['source_id'])->current();
-                        if (!empty($ret)) {
-                            $indexData['source'] = $ret->name . ' ' . $ret->nickname;
-                        }
-                        $ret = $asset->find($poam['asset_id'])->current();
-                        if (!empty($ret)) {
-                            $indexData['asset'] = $ret->name;
-                        }
-                        $indexData['finding_data'] = $poam['finding_data'];
-                        $indexData['action_suggested'] = $poam['action_suggested'];
-                        $this->_helper->updateIndex('finding', $poamId, $indexData);
+						$this->createIndex($poamId);
                     }
 
                     $message = "Finding created successfully";
@@ -275,7 +266,7 @@ class FindingController extends PoamBaseController
             'suffix' => 'xls',
             'headers' => array(
                 'Content-type' => 'application/vnd.ms-excel',
-                'Content-Disposition' => 'filename=' . Inject_Excel::TEMPLATE_NAME
+                'Content-Disposition' => 'filename=' . Fisma_Inject_Excel::TEMPLATE_NAME
             )
         ));
         $contextSwitch->addActionContext('template', 'xls');
@@ -377,7 +368,7 @@ class FindingController extends PoamBaseController
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
                 $pluginTable = new Plugin();
                 $pluginInfo = $plugin->find($postValues['plugin'])->getRow(0);
-                $pluginClass = $pluginInfo->class;
+                $pluginClass = 'Fisma_' . $pluginInfo->class;
                 $pluginName = $pluginInfo->name;
                 $plugin = new $pluginClass($filePath,
                                            $postValues['network'],
@@ -387,6 +378,13 @@ class FindingController extends PoamBaseController
                 // Execute the plugin with the received file
                 try {
                     $plugin->parse();
+
+					if (!empty($plugin->_findingIds)
+						&& is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+						foreach ($plugin->_findingIds as $id) {
+			                $this->createIndex($id);
+        		    	}
+					}
                     $this->message("Your scan report was successfully uploaded.<br>"
                                    . "{$plugin->created} findings were created.<br>"
                                    . "{$plugin->reviewed} findings need review.<br>"
@@ -455,11 +453,63 @@ class FindingController extends PoamBaseController
                 $poam = new Poam();
                 $now = new Zend_Db_Expr('now()');
                 $poam->update(array('status' => 'NEW', 'create_ts' => $now), "id IN ($inString)");
+
+				if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+					foreach (explode(',', $inString) as $id) {
+						$this->createIndex($id);
+					}
+				}
+
             } elseif (isset($_POST['delete_selected'])) {
                 $poam = new Poam();
                 $poam->delete("id IN ($inString)");
             }
         }
         $this->_forward('approve', 'Finding');
+    }
+
+    /**
+     * Create finding lucene index
+     *
+     * @param int $id a specific id
+     */
+    private function createIndex($id)
+    {
+        set_time_limit(0);
+		$result = $this->_poam->find($id)->current();
+		$systemId = $result->system_id;
+		$sourceId = $result->source_id;
+		$assetId  = $result->asset_id;
+		$indexData['finding_data']           = $result->finding_data;
+		$indexData['action_suggested']       = $result->action_suggested;
+		$indexData['action_planned']         = $result->action_planned;
+		$indexData['action_resources']       = $result->action_resources;
+		$indexData['threat_source']          = $result->threat_source;
+		$indexData['threat_justification']   = $result->threat_justification;
+		$indexData['cmeasure']               = $result->cmeasure;
+		$indexData['cmeasure_justification'] = $result->cmeasure_justification;
+		$indexData['action_resources']       = $result->action_resources;
+		$indexData['threat_source']          = $result->threat_source;
+
+        $system = new System();
+        $source = new Source();
+        $asset  = new Asset();
+
+        $ret = $system->find($systemId)->current();
+        if (!empty($ret)) {
+            $indexData['system'] = $ret->name . ' ' . $ret->nickname;
+        }
+
+        $ret = $source->find($sourceId)->current();
+        if (!empty($ret)) {
+            $indexData['source'] = $ret->name . ' ' . $ret->nickname;
+        }
+
+        $ret = $asset->find($assetId)->current();
+        if (!empty($ret)) {
+            $indexData['asset']  = $ret->name;
+        }
+
+        $this->_helper->updateIndex('finding', $id, $indexData);
     }
 }
