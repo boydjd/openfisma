@@ -74,17 +74,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
      *
      * @var _path
      */
-    private static $_path = array(
-        'library' => 'library',
-        'pear' => 'library/Pear',
-        'data' => 'data',
-        'pub' => 'public',
-        'application' => 'application',
-        'config' => 'application/config',
-        'models' => 'application/models',
-        'yui' => 'public/yui',
-        'local' => 'library/local/'
-    );
+    private static $_path = null;
     
     /**
      * Constructor
@@ -94,17 +84,29 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
      */
     public function __construct($root)
     {
+        $path = array(
+                'library' => 'library',
+                'pear' => 'library/Pear',
+                'data' => 'data',
+                'pub' => 'public',
+                'application' => 'application',
+                'config' => 'application/config',
+                'models' => 'application/models',
+                'yui' => 'public/yui',
+                'local' => 'library/local/');
+        
         if (is_dir($root)) {
             $this->_root = $root;
         }
         if (empty($this->_root)) {
             throw new Fisma_Config_Exception("Wrong root:$root");
         }
-        foreach (self::$_path as $k=>$d) {
+        foreach ($path as $k=>$d) {
             self::$_path[$k] = "$root/$d";
         }
         self::$_defaultSysConf['path'] = self::$_path;
         $this->addConfig(new Zend_Config(self::$_defaultSysConf));
+
         //freeze the NOW, minimize the impact of running time cost.
         self::$_now = time(); 
     }
@@ -112,7 +114,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
     public function routeStartup(Zend_Controller_Request_Abstract $request)
     {
         try {
-            $this->_parse(self::$_path['config'] . "/app.ini");
+            $this->parse();
         } catch (Zend_Config_Exception $e) {
             throw new Scarab_Exception_Config($e->getMessage());
         }
@@ -125,8 +127,11 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
      *
      * @return void
      */
-    private function _parse($file)
+    public function parse($file = null)
     {
+        if (empty($file)) {
+            $file = self::$_path['config'] . "/app.ini";
+        }
         $config = new Zend_Config(self::$_defaultSysConf, true);
         $ini = new Zend_Config_Ini($file, null, array('allowModifications'=>true));
         $general = $ini->{$ini->environment};

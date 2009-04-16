@@ -28,10 +28,11 @@
  * Indicates that we're running a command line tool, not responding to an http
  * request. This prevents the interface from being rendered.
  */
-require_once dirname(__FILE__) . "/../../library/local/Config/Fisma.php";
-$fisma = Config_Fisma::getInstance();
-$fisma->unitBootstrap();
-if ($fisma->isInstall()) {
+ 
+require_once('../init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting($root);
+
+if ($plSetting->installed()) {
     // Kick off the main routine:
     ECDNotifier::run();
 } else {

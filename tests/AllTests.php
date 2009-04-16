@@ -30,13 +30,14 @@
 /**
  * Run the application bootstrap in command line mode
  */
-require_once dirname(__FILE__) . "/../library/local/Config/Fisma.php";
-$fisma = Config_Fisma::getInstance();
-if (!$fisma->isInstall()) {
+require('../init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting($root);
+$plSetting->parse();
+if (!$plSetting->installed()) {
     die('Please install!');
 }
 
-define('TEST', Config_Fisma::getPath() . '/tests');
+define('TEST', $root . '/tests');
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
 // set_include_path(get_include_path() .

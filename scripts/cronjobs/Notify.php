@@ -31,7 +31,8 @@
  */
 define('COMMAND_LINE', true);
 
-require_once (realpath(dirname(__FILE__)."/../../application/bootstrap.php"));
+require_once('../../init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting($root);
 
 // Kick off the main routine:
 Notify::processNotificationQueue();
@@ -132,16 +133,16 @@ class Notify
         // This will only execute one per script execution.
         static $hostUrl;
         if (!isset($hostUrl)) {
-            $config = new Zend_Config_Ini(Config_Fisma::getPath('application') . '/config/install.conf', 'general');
+            $config = new Zend_Config_Ini($plSetting->getPath('config') . '/install.conf', 'general');
             $hostUrl = $config->hostUrl;
         }
         
         $mail = new Zend_Mail();
         $contentTpl = new Zend_View();
-        $contentTpl->setScriptPath(Config_Fisma::getPath('application') . '/views/' . self::EMAIL_VIEW_PATH);
+        $contentTpl->setScriptPath($plSetting->getPath('application') . '/views/' . self::EMAIL_VIEW_PATH);
 
         // Set the from: header
-        $mail->setFrom(Config_Fisma::readSysConfig('sender'), Config_Fisma::readSysConfig('system_name'));
+        $mail->setFrom($plSetting->getConfig('sender'), Fisma_Controller_Plugin_Setting::getConfig('system_name'));
 
         // Set the to: header
         $receiveEmail = !empty($notifications[0]['notify_email'])?
@@ -152,7 +153,7 @@ class Notify
         );
         
         // Set the subject: header
-        $mail->setSubject(Config_Fisma::readSysConfig('subject'));
+        $mail->setSubject($plSetting->getConfig('subject'));
 
         // Render the message body
         $contentTpl->notifyData = $notifications;
@@ -212,14 +213,14 @@ class Notify
      */
     static function getTransport() {
         $transport = null;
-        if ( 'smtp' == Config_Fisma::readSysConfig('send_type')) {
+        if ( 'smtp' == $plSetting->getConfig('send_type')) {
             $config = array('auth' => 'login',
-                'username' => Config_Fisma::readSysConfig('smtp_username'),
-                'password' => Config_Fisma::readSysConfig('smtp_password'),
-                'port' => Config_Fisma::readSysConfig('smtp_port'));
+                'username' => $plSetting->getConfig('smtp_username'),
+                'password' => $plSetting->getConfig('smtp_password'),
+                'port' => $plSetting->getConfig('smtp_port'));
             $transport =
                 new Zend_Mail_Transport_Smtp(
-                    Config_Fisma::readSysConfig('smtp_host'),
+                    $plSetting->getConfig('smtp_host'),
                     $config
                 );
         } else {

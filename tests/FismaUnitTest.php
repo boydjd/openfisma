@@ -31,9 +31,10 @@
  * @ignore
  * Run the application bootstrap in command line mode
  */
-require_once dirname(__FILE__) . "/../library/local/Config/Fisma.php";
-$fisma = Config_Fisma::getInstance();
-if (!$fisma->isInstall()) {
+require('../init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting($root);
+
+if (!$plSetting->installed()) {
     die('Please install!');
 }
 
