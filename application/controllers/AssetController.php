@@ -41,6 +41,17 @@ class AssetController extends PoamBaseController
 {
     protected $_asset = null;
 
+	/**
+	 * asset columns which need to displayed on the list page, PDF and Excel
+     */
+	protected $_assetColumns = array('asset_name'  => 'Asset Name',
+									 'system_name' => 'System',
+									 'address_ip'  => 'IP Address',
+									 'address_port'=> 'Port',
+									 'prod_name'   => 'Product Name',
+									 'prod_vendor' => 'Vendor',
+									 'prod_version'=> 'Version');
+
     /**
      * init() - Initialize internal members.
      */
@@ -232,6 +243,7 @@ class AssetController extends PoamBaseController
         $params['p'] = $req->get('p');
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('criteria', $params);
+		$this->view->assign('assetColumns', $this->_assetColumns);
         $isExport = $req->getParam('format');
         if ('search' == $req->getParam('s') || isset($isExport)) {
             $this->_pagingBasePath = $req->getBaseUrl() . '/panel/asset/sub/searchbox/s/search';

@@ -96,7 +96,8 @@ class UserController extends MessageController
             /**
              * @todo Fix this SQL injection
              */
-            $whologin = $this->_user->fetchRow("account = '$username'");
+			$where = $this->_user->getAdapter()->quoteInto('account = ?', $username);
+			$whologin = $this->_user->fetchRow($where);
             $now = new Zend_Date();
 
             // If the username isn't found, throw an exception

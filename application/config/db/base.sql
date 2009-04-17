@@ -12,7 +12,7 @@ CREATE TABLE `account_logs` (
   `user_id` int(10) unsigned NOT NULL,
   `message` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -29,7 +29,7 @@ CREATE TABLE `assets` (
   `address_port` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `network_id` (`network_id`,`address_ip`,`address_port`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -41,7 +41,7 @@ CREATE TABLE `audit_logs` (
   `event` enum('CREATION','MODIFICATION','CLOSE','','UPLOAD EVIDENCE','EVIDENCE EVALUATION') NOT NULL,
   `description` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -56,7 +56,7 @@ CREATE TABLE `blscrs` (
   `enhancements` text NOT NULL,
   `supplement` text NOT NULL,
   PRIMARY KEY  (`code`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `blscrs` VALUES ('AC-01','TECHNICAL','Access Control Policy and Procedures ','Access Control','The organization develops, disseminates, and periodically reviews/updates: (i) a formal, documented, access control policy that addresses purpose, scope, roles, responsibilities, management commitment, coordination among organizational entities, and compliance; and (ii) formal, documented procedures to facilitate the implementation of the access control policy and associated access controls.','The access control policy and procedures are consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance. The access control policy can be included as part of the general information security policy for the organization. Access control procedures can be developed for the security program in general, and for a particular information system, when required. NIST Special Publication 800-12 provides guidance on security policies and procedures.','LOW','None','None');
 INSERT INTO `blscrs` VALUES ('AC-02','TECHNICAL','Account Management ','Access Control','The organization manages information system accounts, including establishing, activating, modifying, reviewing, disabling, and removing accounts. The organization reviews information system accounts [Assignment: organization-defined frequency, at least annually].','Account management includes the identification of account types (i.e., individual, group, and system), establishment of conditions for group membership, and assignment of associated authorizations. The organization identifies authorized users of the information system and specifies access rights/privileges. The organization grants access to the information system based on: (i) a valid need-to-know/need-to-share that is determined by assigned official duties and satisfying all personnel security criteria; and (ii) intended system usage. The organization requires proper identification for requests to establish information system accounts and approves all such requests. The organization specifically authorizes and monitors the use of guest/anonymous accounts and removes, disables, or otherwise secures unnecessary accounts. Account managers are notified when information system users are terminated or transferred and associated accounts are removed, disabled, or otherwise secured. Account managers are also notified when users\' information system usage or need-to-know/need-to-share changes.','LOW','(1)\nThe organization employs automated mechanisms to support the management of information system accounts.\n(2)\nThe information system automatically terminates temporary and emergency accounts after [Assignment: organization-defined time period for each type of account].\n(3)\nThe information system automatically disables inactive accounts after [Assignment: organization-defined time period].\n(4)\nThe organization employs automated mechanisms to audit account creation, modification, disabling, and termination actions and to notify, as required, appropriate individuals.','Medium: (1) (2) (3) (4)High: (1) (2) (3) (4)');
@@ -239,7 +239,7 @@ CREATE TABLE `comments` (
   `topic` varchar(64) NOT NULL default '',
   `content` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -250,7 +250,7 @@ CREATE TABLE `configurations` (
   `description` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `key` (`key`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `configurations` VALUES (1,'max_absent_time','90','Maximum Days An Account Can Be Inactive');
 INSERT INTO `configurations` VALUES (2,'failure_threshold','3','Maximum Login Attempts Before Server Locks Account');
@@ -293,7 +293,7 @@ CREATE TABLE `evaluations` (
   `event_id` int(10) NOT NULL,
   `group` enum('EVIDENCE','ACTION') NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `evaluations` VALUES (1,'Mitigation Strategy Provided to SSO','MP_SSO',0,24,15,'ACTION');
 INSERT INTO `evaluations` VALUES (2,'Mitigation Strategy Provided to IVV','MP_IVV',1,92,93,'ACTION');
@@ -307,7 +307,7 @@ CREATE TABLE `events` (
   `name` varchar(64) NOT NULL,
   `function_id` int(10) NOT NULL,
   PRIMARY KEY  (`id`,`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `events` VALUES (1,'Finding Created',91);
 INSERT INTO `events` VALUES (2,'Finding Import',91);
@@ -372,7 +372,7 @@ CREATE TABLE `evidences` (
   `submit_ts` date NOT NULL default '0000-00-00',
   PRIMARY KEY  (`id`),
   KEY `poam_id` (`poam_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -385,7 +385,7 @@ CREATE TABLE `functions` (
   `open` char(1) default '1',
   PRIMARY KEY  (`id`),
   KEY `function_name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `functions` VALUES (1,'View Dashboard','dashboard','read','','1');
 INSERT INTO `functions` VALUES (2,'View Findings','finding','read','','1');
@@ -484,7 +484,7 @@ CREATE TABLE `ldap_config` (
   `bind_requires_dn` varchar(64) default NULL,
   `use_ssl` tinyint(1) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -496,7 +496,7 @@ CREATE TABLE `networks` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `nickname` (`nickname`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -507,7 +507,7 @@ CREATE TABLE `notifications` (
   `event_text` text NOT NULL,
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -517,7 +517,7 @@ CREATE TABLE `organizations` (
   `nickname` varchar(8) NOT NULL default '',
   `father` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -527,7 +527,7 @@ CREATE TABLE `plugins` (
   `class` varchar(256) NOT NULL,
   `desc` text,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `plugins` VALUES (1,'AppDetective Security Scanner','Inject_AppDetective','AppDetective application security assessment tool plugin');
 SET @saved_cs_client     = @@character_set_client;
@@ -541,7 +541,7 @@ CREATE TABLE `poam_evaluations` (
   `date` date NOT NULL default '0000-00-00',
   PRIMARY KEY  (`id`),
   KEY `group_id` (`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -550,7 +550,7 @@ CREATE TABLE `poam_vulns` (
   `vuln_seq` int(10) unsigned NOT NULL default '0',
   `vuln_type` char(3) NOT NULL default '',
   PRIMARY KEY  (`poam_id`,`vuln_seq`,`vuln_type`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -591,7 +591,7 @@ CREATE TABLE `poams` (
   `threat_justification` text,
   `duplicate_poam_id` int(11) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -606,7 +606,7 @@ CREATE TABLE `products` (
   `cpe_name` varchar(256) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `cpe_name` (`cpe_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -614,7 +614,7 @@ CREATE TABLE `role_functions` (
   `role_id` int(10) unsigned NOT NULL default '0',
   `function_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`role_id`,`function_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `role_functions` VALUES (3,1);
 INSERT INTO `role_functions` VALUES (3,2);
@@ -872,7 +872,7 @@ CREATE TABLE `roles` (
   `desc` text NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `roles` VALUES (3,'Information System Security Officer','ISSO','[NIST Special Publication 800-37 Definition] \nThe information system security officer is the individual responsible to the authorizing official, information system owner, or the senior agency information security officer for ensuring the appropriate operational security posture is maintained for an information system or program. The information system security officer also serves as the principal advisor to the authorizing official, information system owner, or senior agency information security officer on all matters (technical and otherwise) involving the security of the information system. The information system security officer typically has the detailed knowledge and expertise required to manage the security aspects of the information system and, in many agencies, is assigned responsibility for the day-to-day security operations of the system. This responsibility may also include, but is not limited to, physical security, personnel security, incident handling, and security training and awareness. The information system security officer may be called upon to assist in the development of the system security policy and to ensure compliance with that policy on a routine basis. In close coordination with the information system owner, the information system security officer often plays an active role in developing and updating the system security plan as well as in managing and controlling changes to the system and assessing the security impact of those changes. \n\n[OpenFISMA definition] \nThe Information Systems Security Officer Group is designed to allow Information System Security Officers the ability to identify, assess, prioritize, and monitor the progress of corrective efforts for security weaknesses found in thier system.');
 INSERT INTO `roles` VALUES (5,'Reviewer','REVIEWER','[OpenFISMA Definition] \nThe Reviewer Group gives users the ability to view all information on the Plan of Actions and Milestones report for the information system. They do not have the ability to create, edit, or delete any information.');
@@ -888,7 +888,7 @@ SET character_set_client = utf8;
 CREATE TABLE `schema_version` (
   `schema_version` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`schema_version`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `schema_version` VALUES (55);
 SET @saved_cs_client     = @@character_set_client;
@@ -901,7 +901,7 @@ CREATE TABLE `sources` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `nickname` (`nickname`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -922,7 +922,7 @@ CREATE TABLE `systems` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `nickname` (`nickname`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -930,7 +930,7 @@ CREATE TABLE `user_events` (
   `user_id` int(10) NOT NULL,
   `event_id` int(10) NOT NULL,
   PRIMARY KEY  (`user_id`,`event_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -938,7 +938,7 @@ CREATE TABLE `user_roles` (
   `user_id` int(10) NOT NULL,
   `role_id` int(10) NOT NULL,
   PRIMARY KEY  (`user_id`,`role_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -946,7 +946,7 @@ CREATE TABLE `user_systems` (
   `user_id` int(10) NOT NULL,
   `system_id` int(10) NOT NULL,
   PRIMARY KEY  (`user_id`,`system_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -979,7 +979,7 @@ CREATE TABLE `users` (
   `search_columns_pref` int(11) default '66037',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `account` (`account`)
-) ENGINE=MyISAM AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `users` VALUES (1,'root','4a95bac3e19b28ee0acf3cc1137b4d1e66720a49','sha1','admin','Application',NULL,'Admin','2009-03-05 22:57:57','2009-03-05 22:57:57','','0000-00-00 00:00:00','','0000-00-00 00:00:00',1,0,'',NULL,'',0,'root_r',24,'0000-00-00 00:00:00','','0000-00-00 00:00:00',65783);
 SET @saved_cs_client     = @@character_set_client;
@@ -990,7 +990,7 @@ CREATE TABLE `validate_emails` (
   `email` varchar(64) NOT NULL,
   `validate_code` varchar(32) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -999,7 +999,7 @@ CREATE TABLE `vuln_products` (
   `vuln_type` char(3) NOT NULL default '',
   `prod_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`vuln_seq`,`vuln_type`,`prod_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -1014,7 +1014,7 @@ CREATE TABLE `vulnerabilities` (
   `reference` text,
   `solution` text,
   PRIMARY KEY  (`seq`,`type`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (56);
+INSERT INTO schema_version (schema_version) VALUES (57);
