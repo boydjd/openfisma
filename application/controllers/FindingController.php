@@ -161,15 +161,15 @@ class FindingController extends PoamBaseController
         } else {
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
+                Zend_Registry::get('db')->beginTransaction();
                 $injectExcel = new Inject_Excel();
                 $rowsProcessed = $injectExcel->inject($file['tmp_name']);
-                // If this were a real transaction, we'd commit right here.
-                /** @todo use database transaction */
+                Zend_Registry::get('db')->commit();
                 $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
             } catch (Exception_InvalidFileFormat $e) {
+                Zend_Registry::get('db')->rollback();
                 $this->message("The file cannot be processed due to an error.<br>{$e->getMessage()}",
                                self::M_WARNING);
-                // If this were a real transaction, we would roll back right here.
             }
         }
         $this->render();
@@ -343,6 +343,7 @@ class FindingController extends PoamBaseController
                                               controls defined.");
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
+            $this->view->templateVersion = Inject_Excel::TEMPLATE_VERSION;
 
             // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
             // the error handler will be confused by context switch and will look for error.xls.tpl instead of error.tpl
