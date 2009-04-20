@@ -13,10 +13,6 @@ method = "post"
 elementFilters.trim = "StringTrim"
 elementFilters.tags = "StripTags"
 
-elements.save.type = "Form_Button_Submit"
-elements.save.options.value = "Create Finding"
-displayGroups.finding.elements.save = "save"
-
 elements.discover_ts.type = "text"
 elements.discover_ts.options.label = "Discovered Date"
 elements.discover_ts.options.class = "date"
@@ -32,12 +28,14 @@ elements.finding_data.type = "textarea"
 elements.finding_data.options.label = "Enter Description of Finding"
 elements.finding_data.options.cols = "70%"
 elements.finding_data.options.rows = "7"
+elements.finding_data.options.required = true
 displayGroups.finding.elements.finding_data = "finding_data"
 
 elements.action_suggested.type = "textarea"
 elements.action_suggested.options.label = "Recommendation"
 elements.action_suggested.options.cols = "70%"
 elements.action_suggested.options.rows = "7"
+elements.action_suggested.options.required = true
 displayGroups.finding.elements.action_suggested = "action_suggested"
 
 elements.blscr_id.type = "select"
@@ -82,3 +80,8 @@ elements.asset_id.options.style = "width:130px"
 elements.asset_id.options.label = "Asset Name"
 elements.asset_id.options.required = true
 displayGroups.searchasset.elements.asset_id = "asset_id"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.value = "Create Finding"
+displayGroups.finding.elements.save = "save"
+
