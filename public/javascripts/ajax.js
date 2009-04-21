@@ -177,22 +177,6 @@ $(document).ready(function(){
     });
 });
 
-function switchyear(step){
-    if( !isFinite(step) ){
-        step = 0;
-    }
-    var year = $("span[name=gen_shortcut]").attr('year');
-    year = Number(year) + Number(step);
-	$("span[name=gen_shortcut]").attr('year', year);
-    var url = $("span[name=gen_shortcut]").attr('url')+year+'/';
-    $("span[name=year]").html( year );
-    $("span[name=year]").parent().attr( 'href', url);
-    $("span[name=q1]").parent().attr( 'href', url+'q/1/' );
-    $("span[name=q2]").parent().attr( 'href', url+'q/2/' );
-    $("span[name=q3]").parent().attr( 'href', url+'q/3/' );
-    $("span[name=q4]").parent().attr( 'href', url+'q/4/' );
-}
-
 function search_function() {
     var trigger = $("select[name='function_screen']");
     var param = '';
