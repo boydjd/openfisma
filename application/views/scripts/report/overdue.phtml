@@ -4,13 +4,14 @@
 	for ($year=2005;$year<=$currentYear;$year++) {
 		$year_list[$year] = $year;
 	}
-    $overdue['type'] = array( 'sso' =>'SSO Approval overdue',
-                         'action'   =>'Course of Action overdue');
-    $overdue['day'] = array('1' => '0-29 days',
-                            '2' => '30-59 days',
-                            '3' => '60-89 days',
-                            '4' => '90-119 days',
-                            '5' => '120 and greater days');
+    $overdue['type'] = array('any' => '--Any--',
+                         'sso' =>'Mitigation Strategy',
+                         'action'   =>'Corrective Action');
+    $overdue['day'] = array('1' => '< 30 days',
+                            '2' => '30+ days',
+                            '3' => '60+ days',
+                            '4' => '90+ days',
+                            '5' => '120+ days');
     $this->system_list[0] ='--Any--';
     $this->source_list[0] ='--Any--';
     $url = "/panel/report/sub/overdue/s/search";
@@ -59,13 +60,8 @@
                                     null,$overdue['type']);
         ?>
         </td>
-        <td><b>Overdue </b></td>
-        <td> 
-        <?php echo $this->formSelect('overdue_day',
-                                    isset($this->params['overdue_day'])?$this->params['overdue_day']:0,
-                                    null,$overdue['day']);
-        ?>
-        </td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
         <td height="39" colspan="2">
             <?php echo new Yui_Form_Button_Submit('generateOverdueReport', array('value' => 'Generate Report')); ?>
         </td>
@@ -83,50 +79,37 @@
     <a href="<?php echo $this->url.'/format/xls'; ?>"><img src="/images/xls.gif" border="0"></a>
     </span>
 <table width="95%" align="center" border="0" cellpadding=5" cellspacing="0" class="tbframe">
-    <tr align="center">
+        <tr align="center">
         <th class="tdc">System</th>
-        <th class="tdc">ID#</th>
-        <th class="tdc">Description</th>
-        <th class="tdc">Type</th>
-        <th class="tdc">Status</th>
-        <th class="tdc">Source</th>
-        <th class="tdc">Server/Database</th>
-        <th class="tdc">Location</th>
-        <th class="tdc">Risk Level</th>
-        <th class="tdc">Recommendation</th>
-        <th class="tdc">Corrective Action</th>
-        <th class="tdc">ECD</th>
-    </tr>
-    <?php foreach($this->poam_list as  $row){ ?>
+        <th class="tdc">Overdue Action Type</th>
+        <th class="tdc"><30 Days</th>
+        <th class="tdc">30+ Days</th>
+        <th class="tdc">60+ Days</th>
+        <th class="tdc">90+ Days</th>
+        <th class="tdc">120+ Days</th>
+        <th class="tdc">Total Overdue</th>
+        <th class="tdc">Average Overdue Amount (days)</th>
+        <th class="tdc">Maximum Overdue Amount (days)</th>
+    
+    <?php 
+
+    foreach($this->poam_list as $row) {
+    ?>
     <tr>
-        <td class="tdc" align="center"><?php echo $this->system_list[$row['system_id']];?></td>
-        <td class="tdc" align="center"><?php echo $row['id'];?></td>
-        <td class="tdc"><?php echo $row['finding_data'];?></td>
-        <td class="tdc" ><?php echo $row['type'];?></td>
-        <td class="tdc" align="center"><?php echo $row['status'];?></td>
+        <td class="tdc" align="center"><?php echo $row['systemName'];?></td>
+        <td class="tdc" align="center"><?php echo $row['type'];?></td>
+        <td class="tdc" align="center"><?php echo $row['lessThan30'];?></td>
+        <td class="tdc" align="center"><?php echo $row['moreThan30'];?></td>
+        <td class="tdc" align="center"><?php echo $row['moreThan60'];?></td>
+        <td class="tdc" align="center"><?php echo $row['moreThan90'];?></td>
+        <td class="tdc" align="center"><?php echo $row['moreThan120'];?></td>
         <td class="tdc" align="center">
-        <?php $id = &$row['source_id'];
-            if( empty($id) ){
-                echo 'N/A';
-            }else{ 
-                echo $this->source_list[$id];
-            }
-        ?>
+        <?php $totalOverdue = $row['lessThan30'] + $row['moreThan30'] 
+        + $row['moreThan60'] + $row['moreThan90'] + $row['moreThan120'];
+        echo $totalOverdue;?>
         </td>
-        <td class="tdc"><?php echo $row['ip'];?></td>
-        <td class="tdc" >
-        <?php $id = &$row['network_id'];
-            if( empty($id) ){
-                echo 'N/A';
-            }else{ 
-                echo $this->network_list[$id];
-            }
-        ?>
-        </td>
-        <td class="tdc" align="center"><?php echo $row['threat_level'];?></td>
-        <td class="tdc"><?php echo $row['action_suggested'];?></td>
-        <td class="tdc"><?php echo $row['action_planned'];?></td>
-        <td class="tdc" align="center"><?php echo $row['action_current_date'];?></td>
+        <td class="tdc" align="center"><?php echo sprintf('%.1f', array_sum($row['diffDay'])/$totalOverdue);?></td>
+        <td class="tdc" align="center"><?php echo max($row['diffDay']) ;?></td>
     </tr>
     <?php } ?>
 </table>

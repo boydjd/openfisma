@@ -405,6 +405,7 @@ class Poam extends Zend_Db_Table
         
         foreach ($ret as &$row) {
             if (! empty($row['status']) && ! empty($row['id'])) {
+                $row['oStatus'] = $row['status'];
                 $row['status'] = $this->getStatus($row['id']);
             }
         }

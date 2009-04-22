@@ -1,18 +1,16 @@
 <?php
 $output_cols = array(
-"System",
-"ID#",
-"Description",
-"Type",
-"Status",
-"Source",
-"Server/Database",
-"Location",
-"Risk Level",
-"Recommendation",
-"Corrective Action",
-"ECD"
-);
+'System',
+'Overdue Action Type',
+'<30 Days',
+'30+ Days',
+'60+ Days',
+'90+ Days',
+'120+ Days',
+'Total Overdue',
+'Average Overdue Amount (days)',
+'Maximum Overdue Amount (days)');
+
 $count_cols = count($output_cols);
 
 require_once ('Spreadsheet/Excel/Writer.php'); // need fix 
@@ -42,28 +40,27 @@ $headinfo="Report run time: ".date("Y-m-d H:i:s");
 $worksheet->write($rowi++, 0, $headinfo,$format_times);
 $worksheet->mergeCells($rowi,0,$rowi,2);
 $worksheet->write($rowi++, 0, 'Results',$format_header);
-$worksheet->setColumn(0,1,10);
-$worksheet->setColumn(2,2,50);
-$worksheet->setColumn(3,8,10);
-$worksheet->setColumn(9,10,50);
-$worksheet->setColumn(11,11,50);
+$worksheet->setColumn(0,1,20);
+$worksheet->setColumn(2,6,10);
+$worksheet->setColumn(7,7,20);
+$worksheet->setColumn(8,9,30);
 //inject the titles
 $worksheet->writeRow($rowi++,0,$output_cols,$format_times);
 
-foreach( $this->poam_list as $p ) {
+foreach( $this->poam_list as $p) {
+    $totalOverdue = $p['lessThan30'] + $p['moreThan30'] + $p['moreThan60']
+         + $p['moreThan90'] + $p['moreThan120'];
     $data = array(
-        $this->system_list[$p['system_id']],
-        $p['id'],
-        $p['finding_data'],
+        $p['systemName'],
         $p['type'],
-        $p['status'],
-        $this->source_list[$p['source_id']],
-        $p['ip'],
-        $this->network_list[$p['network_id']],
-        $p['threat_level'],
-        $p['action_suggested'],
-        $p['action_planned'],
-        $p['action_current_date']);
+        $p['lessThan30'],
+        $p['moreThan30'],
+        $p['moreThan60'],
+        $p['moreThan90'],
+        $p['moreThan120'],
+        $totalOverdue,
+        sprintf('%.1f', array_sum($p['diffDay'])/$totalOverdue),
+        max($p['diffDay']));
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
 
