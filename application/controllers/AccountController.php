@@ -321,29 +321,11 @@ class AccountController extends SecurityController
             $this->_forward('view', null, null, array('id' => $id,
                                                       'v' => 'edit'));
         } else if ($formValid) {
-            if ( Config_Fisma::readSysConfig('auth_type') == 'database'
-                 && empty($accountData['account']) ) {
-                $msg = "Account can not be null.";
-                $this->message($msg, self::M_WARNING);
-                $this->_forward('view', null, null, array(
-                    'v' => 'edit'
-                ));
-                return;
-            }
             if ( !empty($accountData['password']) ) {
-                /// @todo validate the password complexity
-                if ($accountData['password'] !=
-                    $accountData['confirmPassword']) {
-                    $msg = "The two passwords do not match.";
-                    $this->message($msg, self::M_WARNING);
-                    $this->_forward('view', null, null, array(
-                        'v' => 'edit'
-                    ));
-                    return;
-                }
                 $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
                 $accountData['hash']     = Config_Fisma::readSysConfig('encrypt');
+                $accountData['password_ts'] = self::$now->toString('Y-m-d H:i:s');
             } else {
                 unset($accountData['password']);
             }
