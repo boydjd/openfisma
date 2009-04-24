@@ -138,11 +138,11 @@ class AccountController extends SecurityController
                 $this->createIndex();
             }
             $ret = Config_Fisma::searchQuery($qv, 'account');
+            $count = count($ret);
         } else {
-            $ret = $this->_user->getList('account');
+            $count = $this->_user->count();
         }
 
-        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
