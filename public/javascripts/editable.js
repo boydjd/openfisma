@@ -49,3 +49,19 @@ function setupEditFields() {
          }
      });
 }
+
+function validate_est() {
+	var obj = $('input[name="poam[action_current_date]"]');
+	var inputDate = obj.val();
+	var oDate= new Date();
+	var Year = oDate.getFullYear();
+	var Month = oDate.getMonth();
+	Month = Month + 1;
+	if (Month < 10) {Month = '0'+Month;}
+	var Day = oDate.getDate();
+	if (Day < 10) {Day = '0' + Day;}
+	if (inputDate <= parseInt(""+Year+Month+Day)) {
+	    //@todo do English
+	    alert("The ECD date can'be in the past!");
+	}
+}
