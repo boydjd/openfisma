@@ -416,15 +416,18 @@ class FindingController extends PoamBaseController
 
                 // Execute the plugin with the received file
                 try {
+                    Zend_Registry::get('db')->beginTransaction();
                     $plugin->parse();
                     $this->message("Your scan report was successfully uploaded.<br>"
                                    . "{$plugin->created} findings were created.<br>"
                                    . "{$plugin->reviewed} findings need review.<br>"
                                    . "{$plugin->deleted} findings were suppressed.",
                                    self::M_NOTICE);
+                    Zend_Registry::get('db')->commit();
                 } catch (Exception_InvalidFileFormat $e) {
                     $this->message("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
                                    self::M_WARNING);
+                    Zend_Registry::get('db')->rollback();
                 }
             } else {
                 $errorString = Form_Manager::getErrors($uploadForm);
