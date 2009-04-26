@@ -69,6 +69,12 @@ div#menubar {
     background-color: #d3d3d3;
 }
 
+/* This class is used to mark elements which should only be applied when data is transferred to 
+   external media, such as a print out. By default, these items are hidden. @see print.css */
+div.externalMediaMarking {
+    display: none;
+}
+
 /* The content area is the middle of the page in between the header and the footer */
 div#content {
 	margin: 10px 0px;
