@@ -76,7 +76,7 @@ class ConfigController extends SecurityController
         $this->_helper->actionStack('password');
         $this->_helper->actionStack('notification');
         $this->_helper->actionStack('contact');
-		$this->_helper->actionStack('privacy');
+        $this->_helper->actionStack('privacy');
         $this->_helper->actionStack('view');
     }
     /**

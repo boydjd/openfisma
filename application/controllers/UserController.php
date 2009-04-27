@@ -96,8 +96,8 @@ class UserController extends MessageController
             /**
              * @todo Fix this SQL injection
              */
-			$where = $this->_user->getAdapter()->quoteInto('account = ?', $username);
-			$whologin = $this->_user->fetchRow($where);
+            $where = $this->_user->getAdapter()->quoteInto('account = ?', $username);
+            $whologin = $this->_user->fetchRow($where);
             $now = new Zend_Date();
 
             // If the username isn't found, throw an exception
@@ -210,9 +210,9 @@ class UserController extends MessageController
 
             //check password expire
             $passExpirePeriod = Config_Fisma::readSysConfig('pass_expire');
-			$passWarningDays  = Config_Fisma::readSysConfig('pass_warningdays');
+            $passWarningDays  = Config_Fisma::readSysConfig('pass_warningdays');
             $passwordTs = new Zend_Date($whologin['password_ts'], 'Y-m-d');
-			//show warning ahead of time
+            //show warning ahead of time
             $passwordTs->add($passExpirePeriod-$passWarningDays, Zend_Date::DAY); 
             if ($now->isLater($passwordTs)) {
                 $passwordTs->add($passWarningDays, Zend_Date::DAY);

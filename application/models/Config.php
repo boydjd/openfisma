@@ -57,8 +57,8 @@ class Config extends FismaModel
     const SMTP_USERNAME   = 'smtp_username';
     const SMTP_PASSWORD   = 'smtp_password';
 
-	const PASS_EXPIRE      = 'pass_expire';
-	const PASS_WARNINGDAYS = 'pass_warningdays';
+    const PASS_EXPIRE      = 'pass_expire';
+    const PASS_WARNINGDAYS = 'pass_warningdays';
     const PASS_UPPERCASE  = 'pass_uppercase';
     const PASS_LOWERCASE  = 'pass_lowercase';
     const PASS_NUMERICAL  = 'pass_numerical';
