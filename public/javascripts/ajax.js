@@ -331,7 +331,7 @@ function searchProduct(){
             url += '/' + $(this).attr('name') + '/' + $(this).attr('value');
         }
     });
-    $("select[name='prod_list']").parent().load(url,null,function(){
+    $("select[name='prod_list']").load(url,null,function(){
         getProdId();
     });
 }

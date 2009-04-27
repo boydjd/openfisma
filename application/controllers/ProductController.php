@@ -93,15 +93,15 @@ class ProductController extends SecurityController
         $qry = $product->select()->setIntegrityCheck(false)->from(array(),
             array());
         if (!empty($prodName)) {
-            $qry->where("name = '$prodName'");
+            $qry->where("name like ?", "%$prodName%");
             $this->view->prodName = $prodName;
         }
         if (!empty($prodVendor)) {
-            $qry->where("vendor='$prodVendor'");
+            $qry->where("vendor like ?", "%$prodVendor%");
             $this->view->prodVendor = $prodVendor;
         }
         if (!empty($prodVersion)) {
-            $qry->where("version='$prodVersion'");
+            $qry->where("version like ?", "%$prodVersion%");
             $this->view->prodVersion = $prodVersion;
         }
         $qry->limit(100, 0);

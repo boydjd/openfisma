@@ -242,9 +242,11 @@ class Inject_Excel
             if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
                 /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
                 $productTable = new Product();
-                $productId = @$productTable->fetchRow("name LIKE '{$product['name']}' AND
-                                                       vendor LIKE '{$product['vendor']}' AND
-                                                       version LIKE '{$product['version']}'")->id;
+                $query = $productTable->select()->from($productTable, 'id')
+                                      ->where("name like ?", "%$product[name]%")
+                                      ->where("vendor like ?", "%$product[vendor]%")
+                                      ->where("version like ?", "%$product[version]%");
+                $productId = @$productTable->fetchRow($query)->id;
                 if (empty($productId) && !empty($product['name'])) {
                     $productId = @$productTable->insert($product);
                 }
@@ -254,9 +256,11 @@ class Inject_Excel
             if (!empty($asset['network_id']) && !empty($asset['address_ip']) && !empty($asset['address_port'])) {
                 $asset['prod_id'] = @$productId;
                 $assetTable = new Asset();
-                $assetId = @$assetTable->fetchRow("network_id = {$asset['network_id']} AND
-                                                   address_ip like '{$asset['address_ip']}' AND
-                                                   address_port = {$asset['address_port']}")->id;
+                $query = $assetTable->select()->from($assetTable, 'id')
+                                    ->where("network_id = ?", $asset['network_id'])
+                                    ->where("address_port = ?", $asset['address_port'])
+                                    ->where("address_ip like ?", "%$asset[address_ip]%");
+                $assetId = @$assetTable->fetchRow($query)->id;
                 if (empty($assetId)) {
                     $assetId = $assetTable->insert($asset);
                 }

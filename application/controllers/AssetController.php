@@ -273,13 +273,13 @@ class AssetController extends PoamBaseController
                 $query->where('s.id = ?', $params['system_id']);
             }
             if (!empty($params['product'])) {
-                $query->where("p.name like '%$params[product]%'");
+                $query->where("p.name like ?", "%$params[product]%");
             }
             if (!empty($params['vendor'])) {
-                $query->where("p.vendor like '%$params[vendor]%'");
+                $query->where("p.vendor like ?", "%$params[vendor]%");
             }
             if (!empty($params['version'])) {
-                $query->where("p.version like '%$params[version]%'");
+                $query->where("p.version like ?", "%$params[version]%");
             }
             if (!empty($params['ip'])) {
                 $query->where('a.address_ip = ?', $params['ip']);
