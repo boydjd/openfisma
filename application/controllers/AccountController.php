@@ -349,8 +349,13 @@ class AccountController extends SecurityController
                 $accountData['last_login_ts'] = '0000-00-00 00:00:00';
                 $accountData['termination_ts'] = NULL;
             }
-
             $n = $this->_user->update($accountData, "id=$id");
+
+            if (isset($roleId)) {
+                $data = array('role_id'=>$roleId);
+                $n += $db->update('user_roles', $data, 'user_id = '.$id);
+            }
+
             $mySystems = $this->_user->getMySystems($id);
             $addSystems = array_diff($systems, $mySystems);
             $removeSystems = array_diff($mySystems, $systems);
@@ -407,30 +412,6 @@ class AccountController extends SecurityController
                 $message = 'Nothing changes';
                 $this->message($message, self::M_WARNING);
             }
-
-            $qry = $db->select()->from(array(
-                'ur' => 'user_roles'
-            ), 'ur.*')->join(array(
-                'r' => 'roles'
-            ), 'ur.role_id = r.id', array())
-            ->where('user_id = ?', $id)
-            ->where('r.nickname != ?', 'auto_role');
-            $ret = $db->fetchAll($qry);
-            $count = count($ret);
-            if (1 == $count) {
-                $db->update('user_roles', array(
-                    'role_id' => $roleId
-                ), 'user_id =' . $id);
-            } elseif (0 == $count) {
-                $db->insert('user_roles', array(
-                    'role_id' => $roleId,
-                    'user_id' => $id
-                ));
-            } else {
-                throw new
-                    Exception_General('The user has more than 1 role.');
-            }
-
             $this->_forward('view', null, null, array('id' => $id));
         } else {
             $errorString = Form_Manager::getErrors($form);
