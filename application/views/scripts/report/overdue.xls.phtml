@@ -51,7 +51,7 @@ foreach( $this->poam_list as $p) {
     $totalOverdue = $p['lessThan30'] + $p['moreThan30'] + $p['moreThan60']
          + $p['moreThan90'] + $p['moreThan120'];
     $data = array(
-        $p['systemName'],
+        $p['systemNickname'] . ' - ' .$p['systemName'],
         $p['type'],
         $p['lessThan30'],
         $p['moreThan30'],

@@ -13,6 +13,7 @@ $cols = array(
 
 $result = array();
 foreach($this->poam_list as &$row) {
+    $row['systemName'] = $row['systemNickname'] . ' - ' . $row['systemName'];
     $totalOverdue = $row['lessThan30'] + $row['moreThan30'] + $row['moreThan60'] 
                     + $row['moreThan90'] + $row['moreThan120'];
     $row['total'] = $totalOverdue;

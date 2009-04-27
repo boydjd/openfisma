@@ -4,7 +4,7 @@
 	for ($year=2005;$year<=$currentYear;$year++) {
 		$year_list[$year] = $year;
 	}
-    $overdue['type'] = array('any' => '--Any--',
+    $overdue['type'] = array('0' => '--Any--',
                          'sso' =>'Mitigation Strategy',
                          'action'   =>'Corrective Action');
     $overdue['day'] = array('1' => '< 30 days',
@@ -12,12 +12,22 @@
                             '3' => '60+ days',
                             '4' => '90+ days',
                             '5' => '120+ days');
-    $this->system_list[0] ='--Any--';
-    $this->source_list[0] ='--Any--';
+    if (!empty($this->system_list)) {$this->system_list[0] = '--Any--'; ksort($this->system_list);}
+    if (!empty($this->source_list)) {$this->source_list[0] = '--Any--'; ksort($this->source_list);}
     $url = "/panel/report/sub/overdue/s/search";
 ?>
 <?php //Format_Section::startSection("Overdue Reports"); ?>
-
+<script type="text/javascript">
+function toggleSearchOptions() {
+    if ($("#advanced_searchbox").css('display') == 'none') {
+        $("#advanced_searchbox").fadeIn();
+        $(this).attr('value', 'Basic Search');
+    } else {
+        $("#advanced_searchbox").fadeOut();
+        $(this).attr('value', 'Advanced Search');
+    }
+}
+</script>
 <form name="overdue_report" method="post" action="/panel/report/sub/overdue/s/search">
 <table class="searchFilters">
     <tr>
@@ -31,6 +41,34 @@
               }
         ?>
         </td>
+        <td>
+            <?php echo new Yui_Form_Button_Submit('generateOverdueReport', array('value' => 'Generate Report')); ?>
+        </td>
+        <td>
+            <?php echo new Yui_Form_Button('advanced_search',
+                                            array('value' => 'Toggle Advanced Search Options',
+                                                  'onClickFunction' => 'toggleSearchOptions')); ?>
+        </td>
+        <!--
+        <td><b>Fiscal Year</b></td>
+        <td>
+        <?php echo $this->formSelect('year',
+                                     isset($this->params['year'])?$this->params['year']:0, 
+                                     null,$year_list);
+              if( !empty($this->params['year']) ) {
+                  $url .= '/year/'.$this->params['year'];
+              }
+        ?>
+        </td>-->
+    </tr>
+    <tr id="advanced_searchbox" style="<?php if (empty($this->params['overdue_type']) && empty($this->params['source_id'])) { ?>display:none<?php } ?>">
+        <td><b>Overdue type</b></td>
+        <td >
+        <?php echo $this->formSelect('overdue_type',
+                                    isset($this->params['overdue_type'])?$this->params['overdue_type']:0,
+                                    null,$overdue['type']);
+        ?>
+        </td>
         <td><b>Source</b></td>
         <td>
         <?php echo $this->formSelect('source_id',
@@ -41,30 +79,6 @@
               }
         ?>
         </td>
-        <td><b>Fiscal Year</b></td>
-        <td>
-        <?php echo $this->formSelect('year',
-                                     isset($this->params['year'])?$this->params['year']:0, 
-                                     null,$year_list);
-              if( !empty($this->params['year']) ) {
-                  $url .= '/year/'.$this->params['year'];
-              }
-        ?>
-        </td>
-    </tr>
-    <tr>
-        <td><b>Overdue type</b></td>
-        <td >
-        <?php echo $this->formSelect('overdue_type',
-                                    isset($this->params['overdue_type'])?$this->params['overdue_type']:0,
-                                    null,$overdue['type']);
-        ?>
-        </td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td height="39" colspan="2">
-            <?php echo new Yui_Form_Button_Submit('generateOverdueReport', array('value' => 'Generate Report')); ?>
-        </td>
     </tr>
 </table>
 </form>
@@ -73,46 +87,54 @@
 
 <?php if( !empty($this->poam_list) ) { ?>
 <?php Format_Section::startSection("Poam Search Results"); ?>
-    <span>
-    <?php echo $this->links['all']; ?>
-    <a target='_blank' href="<?php echo $this->url.'/format/pdf'; ?>"><img src="/images/pdf.gif" border="0"></a>
-    <a href="<?php echo $this->url.'/format/xls'; ?>"><img src="/images/xls.gif" border="0"></a>
-    </span>
-<table width="95%" align="center" border="0" cellpadding=5" cellspacing="0" class="tbframe">
-        <tr align="center">
-        <th class="tdc">System</th>
-        <th class="tdc">Overdue Action Type</th>
-        <th class="tdc"><30 Days</th>
-        <th class="tdc">30+ Days</th>
-        <th class="tdc">60+ Days</th>
-        <th class="tdc">90+ Days</th>
-        <th class="tdc">120+ Days</th>
-        <th class="tdc">Total Overdue</th>
-        <th class="tdc">Average Overdue Amount (days)</th>
-        <th class="tdc">Maximum Overdue Amount (days)</th>
+    <div class="toolbar">
+        <?php echo $this->links['all']; ?>
+        <?php 
+            echo new Yui_Form_Button_Link('exportPdf',
+                                          array('value' => 'Export PDF', 
+                                                'href' => $this->url.'/format/pdf', 
+                                                'imageSrc' => '/images/pdf.gif'));
+            echo new Yui_Form_Button_Link('exportExcel',
+                                          array('value' => 'Export Excel', 
+                                                'href' => $this->url.'/format/xls', 
+                                                'imageSrc' => '/images/xls.gif'));
+        ?>
+    </div>
+<div id="overdue_report"></div>
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    {key:"systemName", label:"System", sortable: true, hidden: false},
+    {key:"type", label:"Overdue Action Type", sortable: true, hidden: false},
+    {key:"lessThan30", label:"<30 Days", sortable: true, hidden: false},
+    {key:"moreThan30", label:"30 days +", sortable: true, hidden: false},
+    {key:"moreThan60", label:"60 days +", sortable: true, hidden: false},
+    {key:"moreThan90", label:"90 days +", sortable: true, hidden: false},
+    {key:"moreThan120", label:"120 days +", sortable: true, hidden: false},
+    {key:"totalOverdue", label:"Total Overdue", sortable: true, hidden: false},
+    {key:"average", label:"Average (days)", sortable: true, hidden: false},
+    {key:"max", label:"Maximum (days)", sortable: true, hidden: false}];
     
-    <?php 
+    var dataSource = { rows: [
+    <?php $i = 0; foreach ($this->poam_list as $row) { 
+        if ($i != 0) {echo ',';}
+        $totalOverdue = $row['lessThan30'] + $row['moreThan30'] 
+        + $row['moreThan60'] + $row['moreThan90'] + $row['moreThan120']; ?>
+        {systemName: '<?php echo $row['systemNickname'] . ' - ' . $row['systemName'];?>', type: '<?php echo $row['type'];?>',
+         lessThan30: '<?php echo $row['lessThan30'];?>', moreThan30: '<?php echo $row['moreThan30'];?>',
+         moreThan60: '<?php echo $row['moreThan60'];?>', moreThan90: '<?php echo $row['moreThan90'];?>',
+         moreThan120: '<?php echo $row['moreThan120'];?>', totalOverdue: '<?php echo $totalOverdue; ?>',
+         average: "<?php echo round(array_sum($row['diffDay'])/$totalOverdue); ?>", max: '<?php echo max($row['diffDay']) ?>'}
+    <?php $i++; } ?>] };
 
-    foreach($this->poam_list as $row) {
-    ?>
-    <tr>
-        <td class="tdc" align="center"><?php echo $row['systemName'];?></td>
-        <td class="tdc" align="center"><?php echo $row['type'];?></td>
-        <td class="tdc" align="center"><?php echo $row['lessThan30'];?></td>
-        <td class="tdc" align="center"><?php echo $row['moreThan30'];?></td>
-        <td class="tdc" align="center"><?php echo $row['moreThan60'];?></td>
-        <td class="tdc" align="center"><?php echo $row['moreThan90'];?></td>
-        <td class="tdc" align="center"><?php echo $row['moreThan120'];?></td>
-        <td class="tdc" align="center">
-        <?php $totalOverdue = $row['lessThan30'] + $row['moreThan30'] 
-        + $row['moreThan60'] + $row['moreThan90'] + $row['moreThan120'];
-        echo $totalOverdue;?>
-        </td>
-        <td class="tdc" align="center"><?php echo sprintf('%.1f', array_sum($row['diffDay'])/$totalOverdue);?></td>
-        <td class="tdc" align="center"><?php echo max($row['diffDay']) ;?></td>
-    </tr>
-    <?php } ?>
-</table>
+    var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
+    
+    // DataTable configuration
+    var myConfigs = {
+        dynamicData: false
+    };
+    var myDataTable = new YAHOO.widget.DataTable("overdue_report", myColumnDefs, myDataSource, myConfigs);
+</script>
 
 <?php } ?>
 

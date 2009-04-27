@@ -352,15 +352,15 @@ class ReportController extends PoamBaseController
                 $criteria['createdDateEnd']   = clone $criteria['createdDateBegin'];
                 $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
             }
-            if (!empty($params['overdue_type'])) {
-                if ($params['overdue_type'] == 'sso') {
-                    $criteria['status'] = array('NEW', 'DRAFT', 'MSA');
-                } elseif ($params['overdue_type'] == 'action') {
-                    $criteria['status'] = array('EN', 'EA');
-                } else {
-                    $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
-                }
+
+            if ($params['overdue_type'] == 'sso') {
+                $criteria['status'] = array('NEW', 'DRAFT', 'MSA');
+            } elseif ($params['overdue_type'] == 'action') {
+                $criteria['status'] = array('EN', 'EA');
+            } else {
+                $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
             }
+
             
             // Search for overdue items according to the criteria
             $list = $this->_poam->search($this->_me->systems,
@@ -368,6 +368,7 @@ class ReportController extends PoamBaseController
                     'id',
                     'finding_data',
                     'system_id',
+                    'system_nickname',
                     'network_id',
                     'source_id',
                     'asset_id',
@@ -790,6 +791,9 @@ class ReportController extends PoamBaseController
             }
             if (!isset($result[$key]['systemName'])) {
                 $result[$key]['systemName'] = $row['system_name'];
+            }
+            if (!isset($result[$key]['systemNickname'])) {
+                $result[$key]['systemNickname'] = $row['system_nickname'];
             }
             if (!isset($result[$key]['type'])) {
                 if ($overdueType == 'MS') {
