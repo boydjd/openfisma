@@ -19,7 +19,7 @@ function setupEditFields() {
              var cur_html = target.html();
              var cur_span = target;
 			 if ('poam[action_current_date]' == name) {
-				 var onchange = ' onchange="validate_est()"';
+				 var onchange = ' onchange="validateEcd()"';
 			 } else {
 				 var onchange = '';
 			 }
@@ -50,7 +50,7 @@ function setupEditFields() {
      });
 }
 
-function validate_est() {
+function validateEcd() {
 	var obj = $('input[name="poam[action_current_date]"]');
 	var inputDate = obj.val();
 	var oDate= new Date();
@@ -61,7 +61,7 @@ function validate_est() {
 	var Day = oDate.getDate();
 	if (Day < 10) {Day = '0' + Day;}
 	if (inputDate <= parseInt(""+Year+Month+Day)) {
-	    //@todo do English
+	    //@todo english
 	    alert("The ECD date can'be in the past!");
 	}
 }
