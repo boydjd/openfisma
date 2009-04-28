@@ -81,9 +81,7 @@ class Poam extends Zend_Db_Table
      *          <dd>The lower bound of date when a poam's mitigation strategy is submitted.</dd>
      *          <dt>'mssDateEnd'=>(Zend_Date)</dt><dd> an end date for poam mss_ts</dd>
      *          <dd>The upper bound of date when a poam's mitigation strategy is submitted.</dd>
-     *          <dt>'closedDateBegin'=>(Zend_Date)</dt>
      *          <dd>The lower bound of closing a poam date</dd>
-     *          <dt>'closedDateEnd'=>(Zend_Date)</dt><dd> an end date for poam close_ts</dd>
      *          <dd>The upper bound of closing a poam date</dd>
      *          <dt>'type'=>(string|array)</dt><dd>poam type(s), namely 'CAP', 'AR', 'FP'.</dd>
      *          <dt>'mp'=>precedence_id(int)</dt><dd>a Mitigation Strategy Evaluation noted by precedence_id </dd>
@@ -162,13 +160,6 @@ class Poam extends Zend_Db_Table
         }
         if (! empty($mssDateEnd)) {
             $query->where("DATE(p.mss_ts) <=?", $mssDateEnd->toString('Y-m-d'));
-        }
-        if (! empty($closedDateBegin)) {
-            $query->where("DATE(p.close_ts) >= ?",
-                $closedDateBegin->toString('Y-m-d'));
-        }
-        if (! empty($closedDateEnd)) {
-            $query->where("DATE(p.close_ts) <=?", $closedDateEnd->toString('Y-m-d'));
         }
         if (! empty($type)) {
             if (is_array($type)) {
@@ -744,114 +735,6 @@ class Poam extends Zend_Db_Table
                       'event' => $event,
                       'description' => trim(strip_tags($logContent)));
         $result = $this->_db->insert('audit_logs', $data);
-    }
-    
-    /**
-     * This method is not available
-     * @todo delete it
-     */
-    public function fismasearch ($agency)
-    {
-        $flag = substr($agency, 0, 1);
-        $db = $this->_db;
-        $fsaSysgroupId = Zend_Registry::get('fsa_sysgroup_id');
-        $fpSystemId = Zend_Registry::get('fsa_system_id');
-        $startdate = Zend_Registry::get('startdate');
-        $enddate = Zend_Registry::get('enddate');
-        $query = $db->select()
-                    ->from(array('sgs' => 'systemgroup_systems'),
-                        array('system_id' => 'system_id'))
-                    ->where("sgs.sysgroup_id = " . $fsaSysgroupId . "
-                        AND sgs.system_id != " . $fpSystemId . "");
-       
-        $result = $db->fetchCol($query);
-        $systemIds = implode(',', $result);
-        $query = $db->select()->distinct()
-                    ->from(array('p' => 'poams'),
-                        array('num_poams' => 'count(p.id)'))
-                    ->join(array('a' => 'assets'), 'a.id = p.asset_id',
-                        array());
-        switch ($flag) {
-            case 'a':
-                switch ($agency) {
-                    case 'aaw':
-                        $query->where("p.system_id = '$fpSystemId'");
-                        break;
-                    case 'as':
-                        $query->where("p.system_id IN (" . $systemIds . ")");
-                        break;
-                }
-                $query->where("DATE(p.create_ts) <= '$startdate'")
-                      ->where("p.close_ts IS NULL
-                         OR DATE(p.close_ts) >= '$startdate'");
-                break;
-            case 'b':
-                switch ($agency) {
-                    case 'baw':
-                        $query->where("p.system_id = '$fpSystemId'");
-                        break;
-                    case 'bs':
-                        $query->where("p.system_id IN (" . $systemIds . ")");
-                        break;
-                }
-                $query->where("DATE(p.create_ts) <= '$enddate'")
-                      ->where("DATE(p.action_est_date) <= '$enddate'")
-                      ->where("DATE(p.action_date_actual) >= '$startdate'")
-                      ->where("DATE(p.action_date_actual) <= '$enddate'");
-                break;
-            case 'c':
-                switch ($agency) {
-                    case 'caw':
-                        $query->where("p.system_id = '$fsaSystemId'");
-                        break;
-                    case 'cs':
-                        $query->where("p.system_id IN (" . $systemIds . ")");
-                        break;
-                }
-                $query->where("DATE(p.create_ts) <= '$enddate'")
-                      ->where("p.action_est_date >= '$enddate'")
-                      ->where("p.action_date_actual IS NULL");
-                break;
-            case 'd':
-                switch ($agency) {
-                    case 'daw':
-                        $query->where("p.system_id = '$fsaSystemId'");
-                        break;
-                    case 'ds':
-                        $query->where("p.system_id IN (" . $systemIds . ")");
-                        break;
-                }
-                $query->where("p.action_est_date <= '$enddate'")
-                      ->where("p.action_date_actual IS NULL 
-                          OR p.action_date_actual >= '$enddate'");
-                break;
-            case 'e':
-                switch ($agency) {
-                    case 'eaw':
-                        $query->where("p.system_id = '$fsaSystemId'");
-                        break;
-                    case 'es':
-                        $query->where("p.system_id IN (" . $systemIds . ")");
-                        break;
-                }
-                $query->where("DATE(p.create_ts) >= '$startdate'")
-                      ->where("DATE(p.create_ts) <= '$enddate'");
-                break;
-            case 'f':
-                switch ($agency) {
-                    case 'faw':
-                        $query->where("p.system_id = '$fsaSystemId'");
-                        break;
-                    case 'fs':
-                        $query->where("p.system_id IN (" . $systemIds . ")");
-                        break;
-                }
-                $query->where("p.create_ts <= '$enddate'")
-                      ->where("p.close_ts IS NULL OR DATE(p.close_ts) >= '$enddate'");
-                break;
-        }
-        $result = $db->fetchRow($query);
-        return $result['num_poams'];
     }
     
     /**

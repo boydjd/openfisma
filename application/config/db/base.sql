@@ -565,7 +565,6 @@ CREATE TABLE `poams` (
   `discover_ts` date NOT NULL,
   `modify_ts` date NOT NULL,
   `mss_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  `close_ts` date NOT NULL,
   `type` enum('NONE','CAP','FP','AR') NOT NULL default 'NONE',
   `status` enum('PEND','NEW','DRAFT','MSA','EN','EA','CLOSED','DELETED') NOT NULL default 'NEW',
   `is_repeat` tinyint(1) default NULL,
@@ -890,7 +889,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (55);
+INSERT INTO `schema_version` VALUES (57);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -1017,4 +1016,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (57);
+INSERT INTO schema_version (schema_version) VALUES (58);
