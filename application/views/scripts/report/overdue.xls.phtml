@@ -59,7 +59,7 @@ foreach( $this->poam_list as $p) {
         $p['moreThan90'],
         $p['moreThan120'],
         $totalOverdue,
-        sprintf('%.1f', array_sum($p['diffDay'])/$totalOverdue),
+        round(array_sum($p['diffDay'])/$totalOverdue),
         max($p['diffDay']));
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }

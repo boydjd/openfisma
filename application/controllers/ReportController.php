@@ -388,11 +388,11 @@ class ReportController extends PoamBaseController
             // Last result is the total
             array_pop($list);
             $result = array();
-            $date = new Zend_Date();
+            $date = new Zend_Date(null, Zend_Date::ISO_8601);
             foreach ($list as $k => $v) {
                 if ('Overdue' == $this->view->isOnTime($v['duetime'])) {
                     $now = clone $date;
-                    $duetime = new Zend_Date($v['duetime']);
+                    $duetime = new Zend_Date($v['duetime'], Zend_Date::ISO_8601);
                     $differDay = $now->sub($duetime, Zend_Date::DAY_OF_YEAR);
                     $v['diffDay'] = $differDay;
                     $result[] = $v;

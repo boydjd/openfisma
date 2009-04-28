@@ -17,7 +17,7 @@ foreach($this->poam_list as &$row) {
     $totalOverdue = $row['lessThan30'] + $row['moreThan30'] + $row['moreThan60'] 
                     + $row['moreThan90'] + $row['moreThan120'];
     $row['total'] = $totalOverdue;
-    $row['average'] = sprintf('%.1f', array_sum($row['diffDay'])/$totalOverdue);
+    $row['average'] = round(array_sum($row['diffDay'])/$totalOverdue);
     $row['max'] = max($row['diffDay']);
 }
 
