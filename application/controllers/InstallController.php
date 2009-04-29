@@ -92,6 +92,7 @@ class InstallController extends Zend_Controller_Action
             Config_Fisma::getPath() . '/data/temp',
             Config_Fisma::getPath() . '/data/uploads/evidence',
             Config_Fisma::getPath() . '/data/uploads/scanreports',
+            Config_Fisma::getPath() . '/data/uploads/spreadsheet',
             Config_Fisma::getPath('application') . '/config/'. Config_Fisma::INSTALL_CONFIG
         );
         $notwritables = array();
