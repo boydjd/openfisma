@@ -394,7 +394,7 @@ class ReportController extends PoamBaseController
                     $now = clone $date;
                     $duetime = new Zend_Date($v['duetime'], Zend_Date::ISO_8601);
                     $differDay = $now->sub($duetime, Zend_Date::DAY_OF_YEAR);
-                    $v['diffDay'] = $differDay;
+                    $v['diffDay'] = $differDay + 1;
                     $result[] = $v;
                 }
             }
