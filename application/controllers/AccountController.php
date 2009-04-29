@@ -587,7 +587,6 @@ class AccountController extends SecurityController
                 $accountData['password'] = $this->_user->digest($accountData['password']);
                 $accountData['hash'] = Fisma_Controller_Front::readSysConfig('encrypt');
             }
-            $accountData['created_ts'] = self::$now->toString('Y-m-d H:i:s');
             $accountData['auto_role'] = $accountData['account'].'_r';
             $accountData['password_ts'] = self::$now->toString('Y-m-d H:i:s');
 

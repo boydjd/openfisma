@@ -38,8 +38,7 @@ class User extends FismaModel
     protected $_rowClass = 'Fisma_Table_Rowlower';
     protected $_logName = 'account_logs';
     protected $_logger = null;
-    protected $_logMap = array('timestamp' => 'timestamp',
-                               'ip' => 'ip',
+    protected $_logMap = array('ip' => 'ip',
                                'user_id' => 'uid',
                                'event' => 'type',
                                'message' => 'message');

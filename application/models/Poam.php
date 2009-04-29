@@ -721,17 +721,15 @@ class Poam extends Zend_Db_Table
      *
      * @param integer $poamId
      * @param integer $userId
-     * @param integer $timestamp
      * @param integer $event
      * @param string $logContent
      *
      * @todo Document this function properly.
      */
-    public function writeLogs ($poamId, $userId, $timestamp, $event, $logContent)
+    public function writeLogs ($poamId, $userId, $event, $logContent)
     {
         $data = array('poam_id' => $poamId,
                       'user_id' => $userId,
-                      'timestamp' => $timestamp,
                       'event' => $event,
                       'description' => trim(strip_tags($logContent)));
         $result = $this->_db->insert('audit_logs', $data);

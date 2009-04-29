@@ -222,7 +222,6 @@ class FindingController extends PoamBaseController
 			$poam['status'] = 'NEW';
 			$discoverTs = new Zend_Date($poam['discover_ts'], 'Y-m-d');
 			$poam['discover_ts'] = $discoverTs->toString("Y-m-d");
-			$poam['create_ts'] = self::$now->toString('Y-m-d H:i:s');
 			$poam['created_by'] = $this->_me->id;
 			$poamId = $this->_poam->insert($poam);
 			if ($poamId > 0) {

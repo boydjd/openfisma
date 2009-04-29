@@ -565,9 +565,7 @@ class RemediationController extends PoamBaseController
 
                         $logContent =
                             "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
-                        $this->_poam->writeLogs($id, $this->_me->id,
-                            self::$now->toString('Y-m-d H:i:s'), 'MODIFICATION',
-                            $logContent);
+                        $this->_poam->writeLogs($id, $this->_me->id, 'MODIFICATION', $logContent);
                     }
 
                     if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
@@ -647,9 +645,7 @@ class RemediationController extends PoamBaseController
                 $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
             }
             
-            $this->_poam->writeLogs($poamId, $this->_me->id, 
-                 self::$now->toString('Y-m-d H:i:s'), 
-                 'MODIFICATION', $logContent);
+            $this->_poam->writeLogs($poamId, $this->_me->id, 'MODIFICATION', $logContent);
         }
 
         if (!empty($decision)) {
@@ -680,16 +676,12 @@ class RemediationController extends PoamBaseController
                 $comm = new Comments();
                 $comm->insert(array('poam_evaluation_id' => $poamEvalId,
                                     'user_id' => $this->_me->id,
-                                    'date' => self::$now->toString('Y-m-d H:i:s'),
-                                    'content' => $comment,
-                                    'date' => new Zend_Db_Expr('NOW()')));
+                                    'content' => $comment));
                 $logContent .=" Status: DRAFT. Justification: $comment";
             }
 
             if (!empty($logContent)) {
-                 $this->_poam->writeLogs($poamId, $this->_me->id, 
-                     self::$now->toString('Y-m-d H:i:s'), 
-                     'MODIFICATION', $logContent);
+                 $this->_poam->writeLogs($poamId, $this->_me->id, 'MODIFICATION', $logContent);
             }
         }
 
@@ -753,8 +745,7 @@ class RemediationController extends PoamBaseController
             $data = array(
                 'poam_id' => $id,
                 'submission' => $filename,
-                'submitted_by' => $userId,
-                'submit_ts' => $today
+                'submitted_by' => $userId
             );
             $db = Zend_Registry::get('db');
             $result = $db->insert('evidences', $data);
@@ -772,9 +763,7 @@ class RemediationController extends PoamBaseController
             if ($result > 0) {
                 $logContent = "Changed: status: EA . Upload evidence:"
                               ." $filename OK";
-                $this->_poam->writeLogs($id, $userId,
-                    self::$now->toString('Y-m-d H:i:s'),
-                    'UPLOAD EVIDENCE', $logContent);
+                $this->_poam->writeLogs($id, $userId, 'UPLOAD EVIDENCE', $logContent);
             }
         } else {
             $this->message("You did not select a file to upload. Please select a file and try again.",
@@ -829,7 +818,6 @@ class RemediationController extends PoamBaseController
                 'decision' => $decision,
                 'eval_id' => $evalId,
                 'user_id' => $this->_me->id,
-                'date' => self::$now->toString('Y-m-d')
             ));
 
             $logContent.= $evalList[$precedenceId]['nickname'] ." Decision: $decision.";
@@ -853,9 +841,7 @@ class RemediationController extends PoamBaseController
                 $comm = new Comments();
                 $comm->insert(array('poam_evaluation_id' => $evvId,
                                     'user_id' => $this->_me->id,
-                                    'date' => 'CURDATE()',
-                                    'content' => $content,
-                                    'date' => new Zend_Db_Expr('NOW()')));
+                                    'content' => $content));
 
                 $logContent .= " Status: EN. Justification: $content";
                 $this->_notification->add(Notification::EVIDENCE_DENIED,
@@ -865,9 +851,7 @@ class RemediationController extends PoamBaseController
             }
             if (!empty($logContent)) {
                 $logContent = "Changed: $logContent";
-                $this->_poam->writeLogs($poamId, $this->_me->id,
-                    self::$now->toString('Y-m-d H:i:s'),
-                    'EVIDENCE EVALUATION', $logContent);
+                $this->_poam->writeLogs($poamId, $this->_me->id, 'EVIDENCE EVALUATION', $logContent);
             }
         }
         $this->_redirect('/panel/remediation/sub/view/id/' . $poamId, array(

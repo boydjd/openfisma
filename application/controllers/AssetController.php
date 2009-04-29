@@ -162,12 +162,10 @@ class AssetController extends PoamBaseController
         $assetPort = $req->getParam('port', '');
         $prodId = $req->getParam('prod_id', '');
         $assetSource = "MANUAL";
-        $createTime = date("Y_m_d H:m:s");
         if (!empty($assetName)) {
             $assetRow = array(
                 'prod_id' => $prodId,
                 'name' => $assetName,
-                'create_ts' => $createTime,
                 'source' => $assetSource,
                 'system_id' => $systemId,
                 'network_id' => $networkId,
