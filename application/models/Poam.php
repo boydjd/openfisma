@@ -300,7 +300,9 @@ class Poam extends Zend_Db_Table
             'source' => array('s.nickname' =>'source_nickname',
                               's.name' => 'source_name'),
             'system' => array('sys.nickname' => 'system_nickname',
-                              'sys.name' => 'system_name')
+                              'sys.name' => 'system_name'),
+            'upload' => array('up.filename' => 'upload_filename',
+                              'up.upload_ts' => 'upload_ts')
         );
         $ret = array();
         $count = 0;
@@ -320,7 +322,7 @@ class Poam extends Zend_Db_Table
         
         if ($fields == '*') {
             $fields = array_merge($this->_cols, $extraFields['asset'], $extraFields['source'],
-                                  $extraFields['system']);
+                                  $extraFields['system'], $extraFields['upload']);
             array_push($fields, $dueTimeColumn);
         } else if (isset($fields['count'])) {
             if ($fields == 'count' || $fields == array('count' => 'count(*)')) {
@@ -339,10 +341,11 @@ class Poam extends Zend_Db_Table
         
         assert(is_array($fields));
         $tableFields = array_values($fields);
-        $pFields = array_diff($fields, $extraFields['asset'], $extraFields['source'], $extraFields['system']);
+        $pFields = array_diff($fields, $extraFields['asset'], $extraFields['source'], $extraFields['system'], $extraFields['upload']);
         $asFields = array_flip(array_intersect($extraFields['asset'], $tableFields));
         $srcFields = array_flip(array_intersect($extraFields['source'], $tableFields));
         $sysFields = array_flip(array_intersect($extraFields['system'], $tableFields));
+        $uploadFields = array_flip(array_intersect($extraFields['upload'], $tableFields));
         if (in_array('duetime', $fields)) {
             unset($pFields[array_search('duetime', $pFields)]);
             array_push($pFields, $dueTimeColumn);
@@ -363,6 +366,10 @@ class Poam extends Zend_Db_Table
         if (! empty($sysFields)) {
             $query->joinLeft(array('sys' => 'systems'), 'sys.id = p.system_id',
                 $sysFields);
+        }
+        if (! empty($uploadFields)) {
+            $query->joinLeft(array('up' => 'uploads'), 'up.id = p.upload_id',
+                $uploadFields);
         }
         if (! empty($criteria['ontime'])) {
             $criteria = $this->_parseOnTime($criteria);

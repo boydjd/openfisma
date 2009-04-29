@@ -15,7 +15,9 @@
         </tr>
         <tr>
             <td>Source:</td>
-            <td>(<?php echo $this->poam['source_nickname'];?>) <?php echo $this->poam['source_name'];?></td>
+            <td>(<?php echo $this->poam['source_nickname'];?>) <?php echo $this->poam['source_name'];?>
+            <?php if (!empty($this->poam['upload_id'])) { ?><br><?php echo $this->poam['upload_filename']; } ?>
+            </td>
         </tr>
         <tr>
             <td>Status:</td>

@@ -216,8 +216,8 @@ abstract class Inject_Abstract
      *
      * Throws an exception if the file is an invalid format.
      *
-     * @param string $file The file to load with this plugin.
+     * @param string $uploadId The id of this uploading.
      * @return Return the number of findings created.
      */
-    abstract public function parse();
+    abstract public function parse($uploadId);
 }

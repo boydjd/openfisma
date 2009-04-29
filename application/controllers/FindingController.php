@@ -162,8 +162,28 @@ class FindingController extends PoamBaseController
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
                 Zend_Registry::get('db')->beginTransaction();
+                
+                // get upload path
+                $path = Config_Fisma::getPath() . '/data/uploads/spreadsheet/';
+                // get original file name
+                $originalName = $file['name'];
+                // get current time
+                $ts = date('YmdHis');
+                // define new file name
+                $newName = str_replace(pathinfo($originalName, PATHINFO_FILENAME), $ts, $originalName);
+                // organize upload data
+                $data = array('user_id' => $this->_me->id,
+                              'upload_ts' => $ts,
+                              'filename' => $originalName);
+                $this->_poam->getAdapter()->insert('uploads', $data);
+                // get the upload id
+                $uploadId = $this->_poam->getAdapter()->lastInsertId();
+
                 $injectExcel = new Inject_Excel();
-                $rowsProcessed = $injectExcel->inject($file['tmp_name']);
+                $rowsProcessed = $injectExcel->inject($file['tmp_name'], $uploadId);
+                // upload file after the file parsed
+                move_uploaded_file($file['tmp_name'], $path . $newName);
+                
                 Zend_Registry::get('db')->commit();
                 $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
             } catch (Exception_InvalidFileFormat $e) {
@@ -403,8 +423,8 @@ class FindingController extends PoamBaseController
 
         if (isset($_POST['upload'])) {
             if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
-                // Get information about the plugin, and then create a new instance of the plugin.
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
+                // Get information about the plugin, and then create a new instance of the plugin.
                 $pluginTable = new Plugin();
                 $pluginInfo = $plugin->find($postValues['plugin'])->getRow(0);
                 $pluginClass = $pluginInfo->class;
@@ -417,7 +437,23 @@ class FindingController extends PoamBaseController
                 // Execute the plugin with the received file
                 try {
                     Zend_Registry::get('db')->beginTransaction();
-                    $plugin->parse();
+                    // get original file name
+                    $originalName = basename($filePath);
+                    // get current time
+                    $ts = date('YmdHis');
+                    // define new file name
+                    $newName = str_replace(pathinfo($originalName, PATHINFO_FILENAME), $ts, $originalName);
+                    // organize upload data
+                    $data = array('user_id' => $this->_me->id,
+                                  'upload_ts' => $ts,
+                                  'filename' => $originalName);
+                    $this->_poam->getAdapter()->insert('uploads', $data);
+                    // get the upload id
+                    $uploadId = $this->_poam->getAdapter()->lastInsertId();
+                    // parse the file
+                    $plugin->parse($uploadId);
+                    // rename the file by ts
+                    rename($filePath, dirname($filePath) . '/' . $newName);
                     $this->message("Your scan report was successfully uploaded.<br>"
                                    . "{$plugin->created} findings were created.<br>"
                                    . "{$plugin->reviewed} findings need review.<br>"

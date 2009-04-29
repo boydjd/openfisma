@@ -103,7 +103,7 @@ class Inject_Excel
      * @param string $filePath
      * @return int The number of findings processed in the file
      */
-    function inject($filePath) {
+    function inject($filePath, $uploadId) {
         // Parse the file using SimpleXML. The finding data is located on the first worksheet.
         $spreadsheet = @simplexml_load_file($filePath);
         if ($spreadsheet === false) {
@@ -178,6 +178,7 @@ class Inject_Excel
             // suppressions.
             $poam = array();
             $systemTable = new System();
+            $poam['upload_id'] = $uploadId;
             $poam['system_id'] = @$systemTable->fetchRow("nickname = '{$finding['system_nickname']}'")->id;
             if (empty($poam['system_id'])) {
                 throw new Exception_InvalidFileFormat("Row $rowNumber: Invalid system selected. Your template may
