@@ -1233,19 +1233,32 @@ class RemediationController extends PoamBaseController
 
         // Use Zend Lucene to find all POAM ids which match the keyword query
         if (!empty($params['keywords'])) {
-            // Create the index if it does not exist yet.
-            if (!is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
-                $this->createIndex();
+            // filter the ids from the keywords
+            $ids = explode(',', $params['keywords']);
+            $isIds = true;
+            foreach ($ids as $id) {
+                if (!is_numeric($id)) {
+                    $isIds = false;
+                }
             }
-            $poamIds = Config_Fisma::searchQuery($params['keywords'], 'finding');
-            if (!empty($poamIds)) {
-                if (!empty($params['ids'])) {
-                    $poamIds = array_intersect($poamIds, explode(',', $params['ids']));
-                } 
-                $params['ids'] = implode(',', $poamIds);
-                $this->view->assign('keywords', $this->getKeywords($params['keywords']));
+            // judge whether use ids to search
+            if ($isIds) {
+                $params['ids'] = $params['keywords'];
             } else {
-                $params['ids'] = -1;
+                // Create the index if it does not exist yet.
+                if (!is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
+                    $this->createIndex();
+                }
+                $poamIds = Config_Fisma::searchQuery($params['keywords'], 'finding');
+                if (!empty($poamIds)) {
+                    if (!empty($params['ids'])) {
+                        $poamIds = array_intersect($poamIds, explode(',', $params['ids']));
+                    } 
+                    $params['ids'] = implode(',', $poamIds);
+                    $this->view->assign('keywords', $this->getKeywords($params['keywords']));
+                } else {
+                    $params['ids'] = -1;
+                }
             }
         }
                           
