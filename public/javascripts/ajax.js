@@ -177,22 +177,6 @@ $(document).ready(function(){
     });
 });
 
-function switchyear(step){
-    if( !isFinite(step) ){
-        step = 0;
-    }
-    var year = $("span[name=gen_shortcut]").attr('year');
-    year = Number(year) + Number(step);
-	$("span[name=gen_shortcut]").attr('year', year);
-    var url = $("span[name=gen_shortcut]").attr('url')+year+'/';
-    $("span[name=year]").html( year );
-    $("span[name=year]").parent().attr( 'href', url);
-    $("span[name=q1]").parent().attr( 'href', url+'q/1/' );
-    $("span[name=q2]").parent().attr( 'href', url+'q/2/' );
-    $("span[name=q3]").parent().attr( 'href', url+'q/3/' );
-    $("span[name=q4]").parent().attr( 'href', url+'q/4/' );
-}
-
 function search_function() {
     var trigger = $("select[name='function_screen']");
     var param = '';
@@ -347,7 +331,7 @@ function searchProduct(){
             url += '/' + $(this).attr('name') + '/' + $(this).attr('value');
         }
     });
-    $("select[name='prod_list']").parent().load(url,null,function(){
+    $("select[name='prod_list']").load(url,null,function(){
         getProdId();
     });
 }
@@ -531,21 +515,4 @@ function panel(title, parent, src) {
                                         argument: newPanel
                                     }, 
                                     null);
-}
-
-function validate_est() {
-	var obj = $('input[name="poam[action_current_date]"]');
-	var inputDate = obj.val();
-	var oDate= new Date();
-	var Year = oDate.getFullYear();
-	var Month = oDate.getMonth();
-	Month = Month + 1;
-	if (Month < 10) {Month = '0'+Month;}
-	var Day = oDate.getDate();
-	if (Day < 10) {Day = '0' + Day;}
-	if (inputDate <= parseInt(""+Year+Month+Day)) {
-	    //@todo do English
-	    alert("The ECD date can'be in the past!");
-		obj.val('0000-00-00');
-	}
 }

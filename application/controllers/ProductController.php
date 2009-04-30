@@ -93,15 +93,15 @@ class ProductController extends SecurityController
         $qry = $product->select()->setIntegrityCheck(false)->from(array(),
             array());
         if (!empty($prodName)) {
-            $qry->where("name = '$prodName'");
+            $qry->where("name like ?", "%$prodName%");
             $this->view->prodName = $prodName;
         }
         if (!empty($prodVendor)) {
-            $qry->where("vendor='$prodVendor'");
+            $qry->where("vendor like ?", "%$prodVendor%");
             $this->view->prodVendor = $prodVendor;
         }
         if (!empty($prodVersion)) {
-            $qry->where("version='$prodVersion'");
+            $qry->where("version like ?", "%$prodVersion%");
             $this->view->prodVersion = $prodVersion;
         }
         $qry->limit(100, 0);
@@ -122,11 +122,11 @@ class ProductController extends SecurityController
                 $this->createIndex();
             }
             $ret = $this->_helper->searchQuery($qv, 'product');
+            $count = count($ret);
         } else {
-            $ret = $this->_product->getList('name');
+            $count = $this->_product->count();
         }
 
-        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);

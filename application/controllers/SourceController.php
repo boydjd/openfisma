@@ -88,11 +88,11 @@ class SourceController extends SecurityController
                 $this->createIndex();
             }
             $ret = $this->_helper->searchQuery($qv, 'source');
+            $count = count($ret);
         } else {
-            $ret = $this->_source->getList('name');
+            $count = $this->_source->count();
         }
 
-        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);

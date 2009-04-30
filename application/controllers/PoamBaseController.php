@@ -72,13 +72,13 @@ class PoamBaseController extends SecurityController
             'name',
             'nickname'
         ), $this->_me->systems, 'nickname');
-		if (!empty($tmpList)) {
-	        foreach ($tmpList as $k => $v) {
-    	        $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
-        	}
-		} else {
-			$this->_systemList = array();
-		}
+        if (!empty($tmpList)) {
+            foreach ($tmpList as $k => $v) {
+                $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
+            }
+        } else {
+            $this->_systemList = array();
+        }
         $this->_req = $this->getRequest();
         $req = $this->_req;
         $this->_pagingBasePath = $req->getBaseUrl();

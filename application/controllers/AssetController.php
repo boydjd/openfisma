@@ -41,16 +41,16 @@ class AssetController extends PoamBaseController
 {
     protected $_asset = null;
 
-	/**
-	 * asset columns which need to displayed on the list page, PDF and Excel
+    /**
+     * asset columns which need to displayed on the list page, PDF and Excel
      */
-	protected $_assetColumns = array('asset_name'  => 'Asset Name',
-									 'system_name' => 'System',
-									 'address_ip'  => 'IP Address',
-									 'address_port'=> 'Port',
-									 'prod_name'   => 'Product Name',
-									 'prod_vendor' => 'Vendor',
-									 'prod_version'=> 'Version');
+    protected $_assetColumns = array('asset_name'  => 'Asset Name',
+                                     'system_name' => 'System',
+                                     'address_ip'  => 'IP Address',
+                                     'address_port'=> 'Port',
+                                     'prod_name'   => 'Product Name',
+                                     'prod_vendor' => 'Vendor',
+                                     'prod_version'=> 'Version');
 
     /**
      * init() - Initialize internal members.
@@ -123,11 +123,11 @@ class AssetController extends PoamBaseController
         }
         
         $user = new User();
-		if ($user->getMySystems($this->_me->id)) {
-	        $qry->where('system_id IN (?)', $user->getMySystems($this->_me->id));
-		} else {
-			$qry->where('system_id = 0');
-		}
+        if ($user->getMySystems($this->_me->id)) {
+            $qry->where('system_id IN (?)', $user->getMySystems($this->_me->id));
+        } else {
+            $qry->where('system_id = 0');
+        }
         
         $this->view->assets = $this->_asset->fetchAll($qry)->toArray();
         $this->_helper->layout->setLayout('ajax');
@@ -241,7 +241,7 @@ class AssetController extends PoamBaseController
         $params['p'] = $req->get('p');
         $this->view->assign('system_list', $this->_systemList);
         $this->view->assign('criteria', $params);
-		$this->view->assign('assetColumns', $this->_assetColumns);
+        $this->view->assign('assetColumns', $this->_assetColumns);
         $isExport = $req->getParam('format');
         if ('search' == $req->getParam('s') || isset($isExport)) {
             $this->_pagingBasePath = $req->getBaseUrl() . '/panel/asset/sub/searchbox/s/search';
@@ -271,13 +271,13 @@ class AssetController extends PoamBaseController
                 $query->where('s.id = ?', $params['system_id']);
             }
             if (!empty($params['product'])) {
-                $query->where("p.name like '%$params[product]%'");
+                $query->where("p.name like ?", "%$params[product]%");
             }
             if (!empty($params['vendor'])) {
-                $query->where("p.vendor like '%$params[vendor]%'");
+                $query->where("p.vendor like ?", "%$params[vendor]%");
             }
             if (!empty($params['version'])) {
-                $query->where("p.version like '%$params[version]%'");
+                $query->where("p.version like ?", "%$params[version]%");
             }
             if (!empty($params['ip'])) {
                 $query->where('a.address_ip = ?', $params['ip']);

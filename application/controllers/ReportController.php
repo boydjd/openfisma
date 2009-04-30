@@ -344,24 +344,15 @@ class ReportController extends PoamBaseController
                 $criteria['createdDateEnd']   = clone $criteria['createdDateBegin'];
                 $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
             }
-            if (!empty($params['overdue_type'])) {
-                $dateEnd = clone self::$now;
-                $dateEnd->sub(($params['overdue_day'] -1) * 30, Zend_Date::DAY);
-                $dateBegin = clone $dateEnd;
-                $dateBegin->sub(30, Zend_Date::DAY);
 
-                if ('sso' == $params['overdue_type']) {
-                    if ($params['overdue_day'] != 5) {
-                        $criteria['actualDateBegin'] = $dateBegin;
-                    }
-                    $criteria['actualDateEnd'] = $dateEnd;
-                } else if ('action' == $params['overdue_type']) {
-                    if ($params['overdue_day'] != 5) {
-                        $criteria['estDateBegin'] = $dateBegin;
-                    }
-                    $criteria['estDateEnd'] = $dateEnd;
-                }
+            if ($params['overdue_type'] == 'sso') {
+                $criteria['status'] = array('NEW', 'DRAFT', 'MSA');
+            } elseif ($params['overdue_type'] == 'action') {
+                $criteria['status'] = array('EN', 'EA');
+            } else {
+                $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
             }
+
             
             // Search for overdue items according to the criteria
             $list = $this->_poam->search($this->_me->systems,
@@ -369,6 +360,7 @@ class ReportController extends PoamBaseController
                     'id',
                     'finding_data',
                     'system_id',
+                    'system_nickname',
                     'network_id',
                     'source_id',
                     'asset_id',
@@ -381,22 +373,26 @@ class ReportController extends PoamBaseController
                     'threat_level',
                     'action_current_date',
                     'action_est_date',
+                    'duetime',
+                    'system_name',
                     'count' => 'count(*)'
-                ),
-                $criteria,
-                $this->_paging['currentPage'],
-                $this->_paging['perPage'],
-                false);
-                
+                ), $criteria, null, null, false);
             // Last result is the total
-            $total = array_pop($list);
-            
+            array_pop($list);
+            $result = array();
+            $date = new Zend_Date(null, Zend_Date::ISO_8601);
+            foreach ($list as $k => $v) {
+                if ('Overdue' == $this->view->isOnTime($v['duetime'])) {
+                    $now = clone $date;
+                    $duetime = new Zend_Date($v['duetime'], Zend_Date::ISO_8601);
+                    $differDay = $now->sub($duetime, Zend_Date::DAY_OF_YEAR);
+                    $v['diffDay'] = $differDay + 1;
+                    $result[] = $v;
+                }
+            }
             // Assign view outputs
-            $this->_paging['totalItems'] = $total;
-            $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-            $pager = & Pager::factory($this->_paging);
-            $this->view->assign('poam_list', $list);
-            $this->view->assign('links', $pager->getLinks());
+            $this->view->assign('poam_list', $this->_overdueReport($result));
+            $this->view->criteria = $criteria;
         }
     }
 
@@ -761,5 +757,80 @@ class ReportController extends PoamBaseController
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
+    }
+    
+    /**
+     * make a statistic for overdue report
+     *
+     * @param array $list all overdue records
+     * @return array $result
+     */  
+    private function _overdueReport($list)
+    {
+        $mitigationStrategyStatus = array('NEW', 'DRAFT', 'MSA');
+        $correctiveAction = array('EN', 'EA');
+        $result = array();
+        foreach($list as  $row) {
+            if (in_array($row['oStatus'], $mitigationStrategyStatus)) {
+                $overdueType = 'MS';
+            }
+            if (in_array($row['oStatus'], $correctiveAction)) {
+                $overdueType = 'CA';
+            }
+            $key = $row['system_id'].'_'.$overdueType;
+            if (!isset($result[$key])) {
+                $result[$row['system_id'].'_'.$overdueType] = array();
+            }
+            if (!isset($result[$key]['systemName'])) {
+                $result[$key]['systemName'] = $row['system_name'];
+            }
+            if (!isset($result[$key]['systemNickname'])) {
+                $result[$key]['systemNickname'] = $row['system_nickname'];
+            }
+            if (!isset($result[$key]['type'])) {
+                if ($overdueType == 'MS') {
+                    $result[$key]['type'] = 'Mitigation Strategy';
+                }
+                if ($overdueType == 'CA') {
+                    $result[$key]['type'] = 'Corrective Action';
+                }
+            }
+            if (!isset($result[$key]['lessThan30'])) {
+                $result[$key]['lessThan30'] = 0;
+            }
+            if ($row['diffDay'] < 30) {
+                $result[$key]['lessThan30'] ++;
+            }
+            if (!isset($result[$key]['moreThan30'])) {
+                $result[$key]['moreThan30'] = 0;
+            }
+            if ($row['diffDay'] >= 30 && $row['diffDay'] < 60) {
+                $result[$key]['moreThan30'] ++;
+            }
+            if (!isset($result[$key]['moreThan60'])) {
+                $result[$key]['moreThan60'] = 0;
+            }
+            if ($row['diffDay'] >= 60 && $row['diffDay'] < 90) {
+                $result[$key]['moreThan60'] ++;
+            }
+            if (!isset($result[$key]['moreThan90'])) {
+                $result[$key]['moreThan90'] = 0;
+            }
+            if ($row['diffDay'] >= 90 && $row['diffDay'] < 120) {
+                $result[$key]['moreThan90'] ++;
+            }
+            if (!isset($result[$key]['moreThan120'])) {
+                $result[$key]['moreThan120'] = 0;
+            }
+            if ($row['diffDay'] >= 120) {
+                $result[$key]['moreThan120'] ++;
+            }
+            if (!isset($result[$key]['diffDay'])) {
+                $result[$key]['diffDay'] = array($row['diffDay']);
+            } else {
+                $result[$key]['diffDay'][] = $row['diffDay'];
+            }
+        }
+        return $result;
     }
 }

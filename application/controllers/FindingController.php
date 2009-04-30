@@ -39,40 +39,40 @@ define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
  */
 class FindingController extends PoamBaseController
 {
-	/**
+    /**
      * Returns the standard form for creating finding
      *
      * @return Zend_Form
      */
     public function getFindingForm()
-	{
-		$form = Form_Manager::loadForm('finding');
-		foreach ($this->_sourceList as $key=>$value) {
-			$form->getElement('source_id')
-				 ->addMultiOptions(array($key => $value));
-		}
-	
+    {
+        $form = Form_Manager::loadForm('finding');
+        foreach ($this->_sourceList as $key=>$value) {
+            $form->getElement('source_id')
+                 ->addMultiOptions(array($key => $value));
+        }
+    
         $blscr = new Blscr();
         $list = array_keys($blscr->getList('class'));
-		$blscrList = array(''=>'--Any--') + array_combine($list, $list);
-		foreach ($blscrList as $key=>$value) {
-			$form->getElement('blscr_id')
-				 ->addMultiOptions(array($key => $value));
-		}
-		
-		$systemList = array('--Any--') + $this->_systemList;
-		foreach ($systemList as $key=>$value) {
-			$form->getElement('system_id')
-				 ->addMultiOptions(array($key=>$value));
-		}
+        $blscrList = array(''=>'--Any--') + array_combine($list, $list);
+        foreach ($blscrList as $key=>$value) {
+            $form->getElement('blscr_id')
+                 ->addMultiOptions(array($key => $value));
+        }
+        
+        $systemList = array('--Any--') + $this->_systemList;
+        foreach ($systemList as $key=>$value) {
+            $form->getElement('system_id')
+                 ->addMultiOptions(array($key=>$value));
+        }
 
-		$asset = new Asset();
-		foreach ($asset->getList('name') as $key=>$value) {
-			$form->getElement('asset_id')
-				 ->addMultiOptions(array($key=>$value));
-		}
-		return $form;
-	}
+        $asset = new Asset();
+        foreach ($asset->getList('name') as $key=>$value) {
+            $form->getElement('asset_id')
+                 ->addMultiOptions(array($key=>$value));
+        }
+        return $form;
+    }
 
     /**
      * Provide searching capability of findings
@@ -161,23 +161,42 @@ class FindingController extends PoamBaseController
         } else {
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
-                $injectExcel = new Fisma_Inject_Excel();
-                $rowsProcessed = $injectExcel->inject($file['tmp_name']);
+                Zend_Registry::get('db')->beginTransaction();
+                
+                // get upload path
+                $path = Config_Fisma::getPath() . '/data/uploads/spreadsheet/';
+                // get original file name
+                $originalName = $file['name'];
+                // get current time
+                $ts = date('YmdHis');
+                // define new file name
+                $newName = str_replace(pathinfo($originalName, PATHINFO_FILENAME), $ts, $originalName);
+                // organize upload data
+                $data = array('user_id' => $this->_me->id,
+                              'upload_ts' => $ts,
+                              'filename' => $originalName);
+                $this->_poam->getAdapter()->insert('uploads', $data);
+                // get the upload id
+                $uploadId = $this->_poam->getAdapter()->lastInsertId();
 
-				if (!empty($injectExcel->_findingIds)
-					&& is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-					foreach ($injectExcel->_findingIds as $id) {
-						$this->createIndex($id);
-					}
-				}
+                $injectExcel = new Inject_Excel();
+		if (!empty($injectExcel->_findingIds)
+                    && is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+		    foreach ($injectExcel->_findingIds as $id) {
+	                $this->createIndex($id);
+                    }
+                }
 
-                // If this were a real transaction, we'd commit right here.
-                /** @todo use database transaction */
+                $rowsProcessed = $injectExcel->inject($file['tmp_name'], $uploadId);
+                // upload file after the file parsed
+                move_uploaded_file($file['tmp_name'], $path . $newName);
+                
+                Zend_Registry::get('db')->commit();
                 $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
             } catch (Fisma_Exception_InvalidFileFormat $e) {
+                Zend_Registry::get('db')->rollback();
                 $this->message("The file cannot be processed due to an error.<br>{$e->getMessage()}",
                                self::M_WARNING);
-                // If this were a real transaction, we would roll back right here.
             }
         }
         $this->render();
@@ -185,78 +204,79 @@ class FindingController extends PoamBaseController
     /**
      *  Display the form for creating a new finding manually
      */
-	public function createAction()
-	{
-		$this->_acl->requirePrivilege('finding', 'create');
-		$poam = $this->_request->getPost();
+    public function createAction()
+    {
+        $this->_acl->requirePrivilege('finding', 'create');
+        $poam = $this->_request->getPost();
 
-		$form = $this->getFindingForm();
-		$form->setDefaults($poam);
-		$this->view->form = Form_Manager::prepareCreateFindingForm($form);
+        $form = $this->getFindingForm();
+        $form->setDefaults($poam);
+        $this->view->form = Form_Manager::prepareCreateFindingForm($form);
 
         $this->view->assign('system', $this->_systemList);
         $this->view->assign('source', $this->_sourceList);
-	}
+    }
 
-	/**
-	 * Saves information for a newly created finding
-	 */
-	 public function saveAction()
-	 {
-	 	$this->_acl->requirePrivilege('finding', 'create');
-		$form = $this->getFindingForm();
-		$poam = $this->_request->getPost();
+    /**
+     * Saves information for a newly created finding
+     */
+     public function saveAction()
+     {
+        $this->_acl->requirePrivilege('finding', 'create');
+        $form = $this->getFindingForm();
+        $poam = $this->_request->getPost();
 
-		$formValid = $form->isValid($poam);
+        $formValid = $form->isValid($poam);
 
-		if ($formValid) {
-			unset($poam['name'], $poam['ip'], $poam['port'], $poam['save'], $poam['search_asset']);
-			if ($poam['blscr_id'] == '0') {
-				unset($poam['blscr_id']);
-			}
+        if ($formValid) {
+            unset($poam['name'], $poam['ip'], $poam['port'], $poam['save'], $poam['search_asset']);
+            if ($poam['blscr_id'] == '0') {
+                unset($poam['blscr_id']);
+            }
 
-			$asset = new Asset();
-			$ret = $asset->find($poam['asset_id']);
+            $asset = new Asset();
+            $ret = $asset->find($poam['asset_id']);
             $poam['system_id'] = $ret->current()->system_id;
 
-			$poam['status'] = 'NEW';
-			$discoverTs = new Zend_Date($poam['discover_ts'], 'Y-m-d');
-			$poam['discover_ts'] = $discoverTs->toString("Y-m-d");
-			$poam['created_by'] = $this->_me->id;
-			$poamId = $this->_poam->insert($poam);
-			if ($poamId > 0) {
-				$this->_notification->add(Notification::FINDING_CREATED, $this->_me->account, $poamId);
-				//Create finding lucene index
-				if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
-					$system = new System();
-					$source = new Source();
-					$asset = new Asset();
-					$ret = $system->find($poam['system_id'])->current();
-					if (!empty($ret)) {
-						$indexData['system'] = $ret->name . ' ' . $ret->nickname;
-					}
-					$ret = $source->find($poam['source_id'])->current();
-					if (!empty($ret)) {
-						$indexData['source'] = $ret->name . ' ' . $ret->nickname;
-					}
-					$ret = $asset->find($poam['asset_id'])->current();
-					if (!empty($ret)) {
-						$indexData['asset'] = $ret->name;
-					}
-					$indexData['finding_data'] = $poam['finding_data'];
-					$indexData['action_suggested'] = $poam['action_suggested'];
-					Config_Fisma::updateIndex('finding', $poamId, $indexData);
-				}
-				$message = "Finding created successfully";
-				$model = self::M_NOTICE;
-				$this->message($message, $model);
-			}
-		} else {
-			$errorString = Form_Manager::getErrors($form);
-			$this->message("Unable to create finding:<br>$errorString", self::M_WARNING);
-		}
-		$this->_forward('create');
- 	}
+            $poam['status'] = 'NEW';
+            $discoverTs = new Zend_Date($poam['discover_ts'], 'Y-m-d');
+            $poam['discover_ts'] = $discoverTs->toString("Y-m-d");
+            $poam['create_ts'] = self::$now->toString('Y-m-d H:i:s');
+            $poam['created_by'] = $this->_me->id;
+            $poamId = $this->_poam->insert($poam);
+            if ($poamId > 0) {
+                $this->_notification->add(Notification::FINDING_CREATED, $this->_me->account, $poamId);
+                //Create finding lucene index
+                if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
+                    $system = new System();
+                    $source = new Source();
+                    $asset = new Asset();
+                    $ret = $system->find($poam['system_id'])->current();
+                    if (!empty($ret)) {
+                        $indexData['system'] = $ret->name . ' ' . $ret->nickname;
+                    }
+                    $ret = $source->find($poam['source_id'])->current();
+                    if (!empty($ret)) {
+                        $indexData['source'] = $ret->name . ' ' . $ret->nickname;
+                    }
+                    $ret = $asset->find($poam['asset_id'])->current();
+                    if (!empty($ret)) {
+                        $indexData['asset'] = $ret->name;
+                    }
+                    $indexData['finding_data'] = $poam['finding_data'];
+                    $indexData['action_suggested'] = $poam['action_suggested'];
+                    Config_Fisma::updateIndex('finding', $poamId, $indexData);
+                }
+                $message = "Finding created successfully";
+                $model = self::M_NOTICE;
+                $this->message($message, $model);
+            }
+        } else {
+            $errorString = Form_Manager::getErrors($form);
+            $this->message("Unable to create finding:<br>$errorString", self::M_WARNING);
+        }
+        $this->_forward('create');
+    }
 
     /**
      *  Delete findings
@@ -350,6 +370,7 @@ class FindingController extends PoamBaseController
                                               controls defined.");
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
+            $this->view->templateVersion = Inject_Excel::TEMPLATE_VERSION;
 
             // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
             // the error handler will be confused by context switch and will look for error.xls.tpl instead of error.tpl
@@ -409,8 +430,8 @@ class FindingController extends PoamBaseController
 
         if (isset($_POST['upload'])) {
             if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
-                // Get information about the plugin, and then create a new instance of the plugin.
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
+                // Get information about the plugin, and then create a new instance of the plugin.
                 $pluginTable = new Plugin();
                 $pluginInfo = $plugin->find($postValues['plugin'])->getRow(0);
                 $pluginClass = 'Fisma_' . $pluginInfo->class;
@@ -422,7 +443,24 @@ class FindingController extends PoamBaseController
 
                 // Execute the plugin with the received file
                 try {
-                    $plugin->parse();
+                    Zend_Registry::get('db')->beginTransaction();
+                    // get original file name
+                    $originalName = basename($filePath);
+                    // get current time
+                    $ts = date('YmdHis');
+                    // define new file name
+                    $newName = str_replace(pathinfo($originalName, PATHINFO_FILENAME), $ts, $originalName);
+                    // organize upload data
+                    $data = array('user_id' => $this->_me->id,
+                                  'upload_ts' => $ts,
+                                  'filename' => $originalName);
+                    $this->_poam->getAdapter()->insert('uploads', $data);
+                    // get the upload id
+                    $uploadId = $this->_poam->getAdapter()->lastInsertId();
+                    // parse the file
+                    $plugin->parse($uploadId);
+                    // rename the file by ts
+                    rename($filePath, dirname($filePath) . '/' . $newName);
 
 					if (!empty($plugin->_findingIds)
 						&& is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
@@ -435,9 +473,11 @@ class FindingController extends PoamBaseController
                                    . "{$plugin->reviewed} findings need review.<br>"
                                    . "{$plugin->deleted} findings were suppressed.",
                                    self::M_NOTICE);
+                    Zend_Registry::get('db')->commit();
                 } catch (Fisma_Exception_InvalidFileFormat $e) {
                     $this->message("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
                                    self::M_WARNING);
+                    Zend_Registry::get('db')->rollback();
                 }
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($uploadForm);

@@ -71,7 +71,7 @@ class LogController extends PoamBaseController
         if (!empty($qv) && in_array($fid, array('event', 'account'))) {
             $query->setIntegrityCheck(false)
                   ->joinLeft(array('u'=>'users'), 'al.user_id = u.id', array())
-                  ->where("$fid = '$qv'");
+                  ->where("$fid like ?", "%$qv%");
             $urlLink = "/fid/$fid/qv/$qv";
         }
         $ret = $this->_log->fetchRow($query);
@@ -112,7 +112,7 @@ class LogController extends PoamBaseController
         $qv = $this->_request->getParam('qv');
         $fid = $this->_request->getParam('fid');
         if (!empty($qv) && in_array($fid, array('event', 'account'))) {
-            $qry->where("$fid = '$qv'");
+            $qry->where("$fid like ?", "%$qv%");
         }
         $qry->order("timestamp DESC");
         $qry->limitPage($this->_paging['currentPage'], 

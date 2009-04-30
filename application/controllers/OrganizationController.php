@@ -99,11 +99,11 @@ class OrganizationController extends SecurityController
                 $this->createIndex();
             }
             $ret = $this->_helper->searchQuery($qv, 'organization');
+            $count = count($ret);
         } else {
-            $ret = $this->_organization->getList('name');
+            $count = $this->_organization->count();
         }
 
-        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);

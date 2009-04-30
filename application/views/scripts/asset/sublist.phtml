@@ -43,12 +43,12 @@
 <table width="98%" align="center" border="0" class="tbframe">
     <tr align="center">
         <th nowrap></th>
-		<?php
-			foreach ($this->columns as $key=>$column) {
-				echo "<th>$column</th>";
-				$keys[] = $key;
-			}
-		?>
+        <?php
+            foreach ($this->columns as $key=>$column) {
+                echo "<th>$column</th>";
+                $keys[] = $key;
+            }
+        ?>
         <?php if($this->acl->isAllowed('asset','update')){
                  echo'<th nowrap>Edit</th>';
               }
@@ -67,10 +67,10 @@
         <?php } else { ?>
             <td align="center" class="tdc">&nbsp;</td>
         <?php }
-			foreach ($keys as $v) {
-				echo '<td class="tdc">&nbsp;'.$row[$v].'</td>';
-			}
-		?>
+            foreach ($keys as $v) {
+                echo '<td class="tdc">&nbsp;'.$row[$v].'</td>';
+            }
+        ?>
         <?php if($this->acl->isAllowed('asset','update')) { ?>
         <td class="tdc" align="center"><a href="/panel/asset/sub/view/s/edit/id/<?php echo $row['aid'];?>"><img src="/images/edit.png" border="0"></a></td>
         <?php } if($this->acl->isAllowed('asset','read')) { ?>

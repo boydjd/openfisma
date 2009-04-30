@@ -108,11 +108,11 @@ class NetworkController extends SecurityController
                 $this->createIndex();
             }
             $ret = $this->_helper->searchQuery($qv, 'network');
+            $count = count($ret);
         } else {
-            $ret = $this->_network->getList('name');
+            $count = $this->_network->count();
         }
 
-        $count = count($ret);
         $this->_paging['totalItems'] = $count;
         $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);

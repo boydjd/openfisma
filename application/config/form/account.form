@@ -30,8 +30,9 @@ elements.account.options.attribs.id = "confirmPassword"
 elements.confirmPassword.options.attribs.size = 35
 displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
-elements.generate_password.type = "button"
+elements.generate_password.type = "Form_Button"
 elements.generate_password.options.value = "Generate Password"
+elements.generate_password.options.onClickFunction = "GeneratePassword"
 elements.account.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
