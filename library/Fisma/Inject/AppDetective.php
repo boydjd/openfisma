@@ -58,7 +58,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      * parse() - Implements the required function in the Inject_Abstract interface. This parses the report and commits
      * all data to the database.
      */
-    public function parse()
+    public function parse($uploadId)
     {
         // Parse the XML file and check for errors
         libxml_use_internal_errors(true);
@@ -87,7 +87,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         // Apply mapping rules
         $this->_asset = $this->_mapAsset($report);
         $this->_product = $this->_mapProduct($report);
-        $this->_findings = $this->_mapFindings($report);
+        $this->_findings = $this->_mapFindings($report, $uploadId);
         
         // Free resources used by XML object
         unset($report);
@@ -203,7 +203,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      * @param SimpleXMLElement $report The full AppDetective report
      * @return array An array of arrays contain one row for each new finding
      */
-    private function _mapFindings($report)
+    private function _mapFindings($report, $uploadId)
     {
         $findings = array();
         
@@ -238,6 +238,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 $finding = array();
                 
                 // The finding's asset ID is set during the commit, since the asset may not exist yet.
+                $finding['upload_id'] = $uploadId;
                 $finding['discover_ts'] = $discoveredDate->toString('Y-m-d H:i:s');
                 $finding['create_ts'] = $creationDate->toString('Y-m-d H:i:s');
                 $finding['source_id'] = $this->_findingSourceId;

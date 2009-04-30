@@ -42,6 +42,13 @@ class Fisma_Inject_Excel
     const TEMPLATE_NAME = 'Finding_Upload_Template.xls';
 
     /**
+     * The template version is used to make sure that we don't try to process a template which was produced by a
+     * previous version of OpenFISMA. This number should be incremented whenever the template file or processing code
+     * is modified.
+     */
+    const TEMPLATE_VERSION = 1;
+                  
+    /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
      * column's logical names. Excel starts indexes at 1 instead of 0.
      *
@@ -101,24 +108,32 @@ class Fisma_Inject_Excel
      * @param string $filePath
      * @return int The number of findings processed in the file
      */
-    function inject($filePath) {
+    function inject($filePath, $uploadId) {
         // Parse the file using SimpleXML. The finding data is located on the first worksheet.
-        $spreadsheet = simplexml_load_file($filePath);
+        $spreadsheet = @simplexml_load_file($filePath);
         if ($spreadsheet === false) {
-            $this->message("The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML
-                           spreadsheet.",
-                           self::M_WARNING);
-            return;
+            throw new Exception_InvalidFileFormat(
+                "The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML spreadsheet."
+            );
         }
-        
+
+        // Check that the template version matches the version of OpenFISMA which is running.
+        $templateVersion = (int)$spreadsheet->CustomDocumentProperties->FismaTemplateVersion;
+        if ($templateVersion != self::TEMPLATE_VERSION) {
+            throw new Exception_InvalidFileFormat(
+                "This template was created by a previous version of OpenFISMA and is not compatible with the current"
+                . " version. Download a new copy of the template and transfer your data into it."
+            );
+        }
+                
         // Have to do some namespace manipulation to make the spreadsheet searchable by xpath.
         $namespaces = $spreadsheet->getNamespaces(true);
         $spreadsheet->registerXPathNamespace('s', $namespaces['']);
         $findingData = $spreadsheet->xpath('/s:Workbook/s:Worksheet[1]/s:Table/s:Row');
         if ($findingData === false) {
-            $this->message("The file format is not recognized. Your version of Excel might be incompatible.",
-                           self::M_WARNING);
-            return;
+            throw new Exception_InvalidFileFormat(
+                "The file format is not recognized. Your version of Excel might be incompatible."
+            );
         }
         
         // $findingData is an array of rows in the first worksheet. The first three rows on this worksheet contain
@@ -143,9 +158,17 @@ class Fisma_Inject_Excel
                 if (isset($cellAttributes['Index'])) {
                     $column = (int)$cellAttributes['Index'];
                 }
-                $finding[$this->_excelTemplateColumns[$column]] = (string)$cell->Data;
+                $cellChildren = $cell->children('urn:schemas-microsoft-com:office:spreadsheet');
+                $finding[$this->_excelTemplateColumns[$column]] = $cellChildren->Data->asXml();
                 $column++;
             }
+            /**
+             * @todo improved input sanitzation. use a better html filter than strip_tags and attempt to preserve the
+             * formatting of the text. this filtering should be done in the model classes.
+             */                                      
+            // Basic input sanitzation: remove HTML tags and then encode any remaining characters
+            $finding = array_map('strip_tags', $finding);
+            $finding = array_map('htmlspecialchars', $finding);
 
             // Validate that required row attributes are filled in:
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
@@ -160,6 +183,7 @@ class Fisma_Inject_Excel
             // suppressions.
             $poam = array();
             $systemTable = new System();
+            $poam['upload_id'] = $uploadId;
             $poam['system_id'] = @$systemTable->fetchRow("nickname = '{$finding['system_nickname']}'")->id;
             if (empty($poam['system_id'])) {
                 throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid system selected. Your template may
@@ -174,7 +198,7 @@ class Fisma_Inject_Excel
                                                       be out of date. Please try downloading it again.");
             }
             $poam['finding_data'] = $finding['finding_description'];
-            if (isset($finding['contact_info'])) {
+            if (!empty($finding['contact_info'])) {
                 $poam['finding_data'] .= "<br>Point of Contact: {$finding['contact_info']}";
             }
             $poam['action_suggested'] = $finding['finding_recommendation'];
@@ -201,9 +225,16 @@ class Fisma_Inject_Excel
             $asset = array();
             $networkTable = new Network();
             $asset['network_id'] = @$networkTable->fetchRow("nickname = '{$finding['network']}'")->id;
-            $asset['name'] = @$finding['asset_name'];
             $asset['address_ip'] = @$finding['asset_ip'];
             $asset['address_port'] = @$finding['asset_port'];
+            if (!empty($asset['address_port']) && !is_numeric($asset['address_port'])) {
+                throw new Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
+            }
+
+            $asset['name'] = @$finding['asset_name'];
+            if (empty($asset['name'])) {
+                $asset['name'] = "{$asset['address_ip']}:{$asset['address_port']}";
+            }
             $asset['create_ts'] = new Zend_Db_Expr('NOW()');
             $asset['system_id'] = $poam['system_id'];
 
@@ -211,15 +242,17 @@ class Fisma_Inject_Excel
             $product['name'] = @$finding['product_name'];
             $product['vendor'] = @$finding['product_vendor'];
             $product['version'] = @$finding['product_version'];
-            //var_dump($poam); var_dump($asset); var_dump($product); die;
+            
             // Now persist these objects. Check assets and products to see whether they exist before creating new
             // ones.
             if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
                 /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
                 $productTable = new Product();
-                $productId = @$productTable->fetchRow("name LIKE '{$product['name']}' AND
-                                                       vendor LIKE '{$product['vendor']}' AND
-                                                       version LIKE '{$product['version']}'")->id;
+                $query = $productTable->select()->from($productTable, 'id')
+                                      ->where("name like ?", "%$product[name]%")
+                                      ->where("vendor like ?", "%$product[vendor]%")
+                                      ->where("version like ?", "%$product[version]%");
+                $productId = @$productTable->fetchRow($query)->id;
                 if (empty($productId) && !empty($product['name'])) {
                     $productId = @$productTable->insert($product);
                 }
@@ -229,9 +262,11 @@ class Fisma_Inject_Excel
             if (!empty($asset['network_id']) && !empty($asset['address_ip']) && !empty($asset['address_port'])) {
                 $asset['prod_id'] = @$productId;
                 $assetTable = new Asset();
-                $assetId = @$assetTable->fetchRow("network_id = {$asset['network_id']} AND
-                                                   address_ip like '{$asset['address_ip']}' AND
-                                                   address_port = {$asset['address_port']}")->id;
+                $query = $assetTable->select()->from($assetTable, 'id')
+                                    ->where("network_id = ?", $asset['network_id'])
+                                    ->where("address_port = ?", $asset['address_port'])
+                                    ->where("address_ip like ?", "%$asset[address_ip]%");
+                $assetId = @$assetTable->fetchRow($query)->id;
                 if (empty($assetId)) {
                     $assetId = $assetTable->insert($asset);
                 }
@@ -247,5 +282,5 @@ class Fisma_Inject_Excel
         
         return $rowNumber - $this->_excelTemplateStartRow;
     }
-
 }
+

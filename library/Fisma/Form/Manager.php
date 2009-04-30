@@ -57,7 +57,7 @@ class Fisma_Form_Manager
         return $form;
     }
 
-    /**
+   /**
      * prepareForm() - Adds the standard decorators and filters to the specified
      * form.
      *
@@ -88,6 +88,29 @@ class Fisma_Form_Manager
         
         return $form;
     }
+
+   /**
+     * Adds the standard decorators and filters to the create finding form
+	 *
+     * @param Zend_Form $form
+     * @return Zend_Form The modified form
+     */
+    static function prepareCreateFindingForm($form) {
+        $form->setMethod('post');
+        
+        $form->setDisplayGroupDecorators(array(
+            new Zend_Form_Decorator_FormElements(),
+            new Form_CreateFindingDecorator()
+        ));
+
+        $form->setElementDecorators(array(new Form_CreateFindingDecorator()));
+        
+        // By default, all input is trimmed of extraneous white space
+        $form->setElementFilters(array('StringTrim'));
+        
+        return $form;
+    }
+
 
     /**
      * Get form errors if form validate false
