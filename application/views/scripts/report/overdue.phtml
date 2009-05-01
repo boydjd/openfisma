@@ -7,10 +7,10 @@
     $overdue['type'] = array('0' => '--Any--',
                          'sso' =>'Mitigation Strategy',
                          'action'   =>'Corrective Action');
-    $overdue['day'] = array('1' => '< 30 days',
-                            '2' => '30+ days',
-                            '3' => '60+ days',
-                            '4' => '90+ days',
+    $overdue['day'] = array('1' => '<30 days',
+                            '2' => '30-59 days',
+                            '3' => '60-89 days',
+                            '4' => '90-119 days',
                             '5' => '120+ days');
     if (!empty($this->system_list)) {$this->system_list[0] = '--Any--'; ksort($this->system_list);}
     if (!empty($this->source_list)) {$this->source_list[0] = '--Any--'; ksort($this->source_list);}
