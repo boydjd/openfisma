@@ -104,29 +104,19 @@ function toggleSearchOptions() {
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"systemName", label:"System", sortable: true, hidden: false},
-    {key:"type", label:"Overdue Action Type", sortable: true, hidden: false},
-    {key:"lessThan30", label:"<30 Days", sortable: true, hidden: false},
-    {key:"moreThan30", label:"30-59 Days", sortable: true, hidden: false},
-    {key:"moreThan60", label:"60-89 Days", sortable: true, hidden: false},
-    {key:"moreThan90", label:"90-119 Days", sortable: true, hidden: false},
-    {key:"moreThan120", label:"120+ Days", sortable: true, hidden: false},
-    {key:"totalOverdue", label:"Total Overdue", sortable: true, hidden: false},
-    {key:"average", label:"Average (days)", sortable: true, hidden: false},
-    {key:"max", label:"Maximum (days)", sortable: true, hidden: false}];
-    
+<?php foreach ($this->columns as $key => $val) { ?>
+    <?php if (!isset($i)) { $i = true; } else { echo ','; } ?>{key:"<?php echo $key; ?>", label:"<?php echo $val; ?>", sortable: true, hidden: false}
+<?php } unset($i); ?>];
     var dataSource = { rows: [
-    <?php $i = 0; foreach ($this->poam_list as $row) { 
-        if ($i != 0) {echo ',';}
-        $totalOverdue = $row['lessThan30'] + $row['moreThan30'] 
-        + $row['moreThan60'] + $row['moreThan90'] + $row['moreThan120']; ?>
-        {systemName: '<?php echo $row['systemNickname'] . ' - ' . $row['systemName'];?>', type: '<?php echo $row['type'];?>',
-         lessThan30: '<?php echo $row['lessThan30'];?>', moreThan30: '<?php echo $row['moreThan30'];?>',
-         moreThan60: '<?php echo $row['moreThan60'];?>', moreThan90: '<?php echo $row['moreThan90'];?>',
-         moreThan120: '<?php echo $row['moreThan120'];?>', totalOverdue: '<?php echo $totalOverdue; ?>',
-         average: "<?php echo round(array_sum($row['diffDay'])/$totalOverdue); ?>", max: '<?php echo max($row['diffDay']) ?>'}
-    <?php $i++; } ?>] };
-
+    <?php foreach ($this->poam_list as $row) { 
+        if (!isset($i)) { $i = true; } else { echo ','; } ?>
+        {<?php  foreach ($this->columns as $key => $val) { 
+                    if (!isset($n)) { $n = true; } else { echo ','; }
+                    echo $key . ":'" . $row[$key] . "'"; 
+                }
+                unset($n); ?>}
+    <?php }
+          unset($i); ?> ] };
     var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
     
     // DataTable configuration

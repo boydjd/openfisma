@@ -399,8 +399,12 @@ class ReportController extends PoamBaseController
                 }
             }
             // Assign view outputs
-            $this->view->assign('poam_list', $this->_overdueReport($result));
+            $this->view->assign('poam_list', $this->_overdueStatistic($result));
             $this->view->criteria = $criteria;
+            $this->view->columns = array('systemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '<30 Days',
+									     'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
+									     'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
+									     'max' => 'Maximum (days)');
         }
     }
 
@@ -768,12 +772,12 @@ class ReportController extends PoamBaseController
     }
     
     /**
-     * make a statistic for overdue report
+     * sort overdue records by overdue days and status
      *
      * @param array $list all overdue records
      * @return array $result
      */  
-    private function _overdueReport($list)
+    private function _overdueSort($list)
     {
         $mitigationStrategyStatus = array('NEW', 'DRAFT', 'MSA');
         $correctiveAction = array('EN', 'EA');
@@ -838,6 +842,28 @@ class ReportController extends PoamBaseController
             } else {
                 $result[$key]['diffDay'][] = $row['diffDay'];
             }
+        }
+        return $result;
+    }
+    
+    /**
+     * make a statistics for overdue records
+     * 
+     * @param array $list all overdue records
+     * @return array $result
+     */
+    private function _overdueStatistic($list)
+    {
+        $result = $this->_overdueSort($list);
+        foreach ($result as &$v) {
+            $v['systemName'] = $v['systemNickname'] . ' - ' . $v['systemName'];
+            unset($v['systemNickname']);
+            $totalOverdue = $v['lessThan30'] + $v['moreThan30'] + $v['moreThan60'] 
+                            + $v['moreThan90'] + $v['moreThan120'];
+            $v['total'] = $totalOverdue;
+            $v['average'] = round(array_sum($v['diffDay'])/$totalOverdue);
+            $v['max'] = max($v['diffDay']);
+            unset($v['diffDay']);
         }
         return $result;
     }
