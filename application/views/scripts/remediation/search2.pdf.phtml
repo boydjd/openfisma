@@ -97,10 +97,6 @@ foreach ($cols as $key=>$row) {
 }
 $pdf->ezTable($this->list,$cols,$title,
     array('fontSize'=>8,'maxWidth'=>$content_width, 'titleFontSize'=>'12' ));
-// IE has a bug where it can't display certain mimetypes if a no-cache header is sent,
-// so we need to switch the header right before we stream the PDF.
-header('Pragma: private');
-header('Cache-Control: private');
 
 echo $pdf->ezOutput();
 ?>
