@@ -712,8 +712,6 @@ class ReportController extends PoamBaseController
 
     /**
      * pluginReportAction() - Execute and display the specified plug-in report
-     *
-     * @todo Need to implement Excel and PDF export options
      */         
     public function pluginReportAction()
     {
@@ -754,6 +752,8 @@ class ReportController extends PoamBaseController
         while (!feof($reportScriptFileHandle)) {
             $reportScript .= fgets($reportScriptFileHandle);
         }
+        $userSystems = implode(',', $this->_me->systems);
+        $reportScript = str_replace('##SYSTEMS##', $userSystems, $reportScript);
         $db = Zend_Db::factory(Zend_Registry::get('datasource'));
         $reportData = $db->fetchAll($reportScript);
         
