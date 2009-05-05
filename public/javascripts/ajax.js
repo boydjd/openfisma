@@ -3,189 +3,201 @@ String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
 }
 
-$(document).ready(function(){
-   
-   //Data Table Row Highlighting and Selection        
-   $(".tbframe tr").mouseover(function() {
-       $(this).addClass("over");}).mouseout(function() {
-            $(this).removeClass("over");})
-   $(".tbframe tr:even").addClass("alt");
-
-   //show hand if the row can open a link
-   if ($('.tbframe').attr('cursor') == 'hand') {
-       $('.tbframe tr td').css('cursor','pointer');
-
-       //Click the table row to open the link
-       $(".tbframe tr").click(function() {
-           var link = $(this).find("td:last-child a").attr('href');
-           if (link) {
-               window.location.href = link
-           }
-       });
-   }
-
-   $("a[@name=select_all]").click(function(){
-       $(":checkbox").attr( 'checked','checked' );
-   });
-   $("a[@name=select_none]").click(function(){
-       $(":checkbox").attr( 'checked','' );
-   });
+var readyFunc = function () {
+    //Data Table Row Highlighting and Selection
+    var trs = YAHOO.util.Selector.query('.tbframe tr');
+    YAHOO.util.Event.on(trs, 'mouseover', 
+    function() {
+        YAHOO.util.Dom.addClass(this, 'over');
+    });
+    YAHOO.util.Event.on(trs, 'mouseout', 
+    function() {
+        YAHOO.util.Dom.removeClass(this, 'over');
+    });
+    YAHOO.util.Dom.addClass(YAHOO.util.Selector.filter(trs, ':nth-child(even)'), 'alt');
 
    $('input.date').datepicker({dateFormat:'yymmdd',
                 showOn: 'both', 
                 buttonImageOnly: true,
                 buttonImage: '/images/calendar.gif'
                 });
-
-    $("select#poamSearchStatus").change(function(){
-        var value = $(this).val().trim();
+                
+    // enable or disable 'on time' type by finding status
+    var filterStatus = function () {
+        if (document.getElementById('poamSearchStatus')) {
+            var value = document.getElementById('poamSearchStatus').value.trim();
+        } else {
+            return ;
+        }
         if (!(value == '0' 
             || value == 'CLOSED'
             || value == 'NOT-CLOSED'
             || value == 'NOUP-30'
             || value == 'NOUP-60'
             || value == 'NOUP-90')) {
-            $("select#poamSearchOnTime").removeAttr("disabled");
+            document.getElementById('poamSearchOnTime').disabled = false;
         } else {
-            $("select#poamSearchOnTime").attr("disabled", "disabled");
+            document.getElementById('poamSearchOnTime').disabled = true;
         }
-    }).trigger('change');
-
-    $("select#remediationSearchAging").change(function(){
-        var value = $(this).val().trim();
+    }
+    YAHOO.util.Event.on('poamSearchStatus', 'change', filterStatus);
+    filterStatus();
+    // switch Aging Totals or Date Opened and End 
+    var searchAging = function (){
+        if (document.getElementById('remediationSearchAging')) {
+            var value = document.getElementById('remediationSearchAging').value.trim();
+        } else {
+            return ;
+        }
+        var dateBegin = document.getElementById('created_date_begin');
+        var dateEnd = document.getElementById('created_date_end');
         if (value == '0') {
-            $("input#created_date_begin").removeAttr("disabled");
-            $("input#created_date_end").removeAttr("disabled");
+            dateBegin.disabled = false;
+            dateEnd.disabled = false;
             $('input.date').datepicker("enable");
         } else {
-            $("input#created_date_begin").attr("disabled", "disabled");
-            $("input#created_date_begin").val('');
-            $("input#created_date_end").attr("disabled", "disabled");
-            $("input#created_date_end").val('');
+            dateBegin.disabled = true;
+            dateEnd.disabled = true;
+            dateBegin.value = '';
+            dateEnd.value = '';
             $('input.date').datepicker("disable");
         }
-    }).trigger('change');
+    }
+    YAHOO.util.Event.on('remediationSearchAging', 'change', searchAging);
+    searchAging();
     
-    $("input#created_date_begin").change(function (){
-        if($(this).val().trim() != '' || $("input#created_date_end").val().trim() != '') {
-            $("select#remediationSearchAging").attr("disabled", "disabled");
+    var searchAging1 = function (){
+        if (document.getElementById('created_date_begin') 
+                && document.getElementById('created_date_end')) {
+            var value1 = document.getElementById('created_date_begin').value.trim();
+            var value2 = document.getElementById('created_date_end').value.trim();
         } else {
-            $("select#remediationSearchAging").attr("disabled", "");
-        }
-    }).trigger('change');
-    
-    $("input#created_date_end").change(function (){
-        if($(this).val().trim() != '' || $("input#created_date_begin").val().trim() != '') {
-            $("select#remediationSearchAging").attr("disabled", "disabled");
+            return ;
+        } 
+        if(value1 != '' || value2 != '') {
+            document.getElementById('remediationSearchAging').disabled = true;
         } else {
-            $("select#remediationSearchAging").attr("disabled", "");
+            document.getElementById('remediationSearchAging').disabled = false;
         }
-    }).trigger('change');
+    }
+    YAHOO.util.Event.on('created_date_begin', 'change', searchAging1);
+    YAHOO.util.Event.on('created_date_end', 'change', searchAging1);
+    searchAging1();
     
-    $("select#encrypt").change(function(){
-        if ($(this).val().trim() == 'sha256') {
-             $("#encryptKey").show();
+    var changeEncrypt = function () {
+        if (document.getElementById('encrypt')) {
+            var obj = document.getElementById('encrypt');
         } else {
-             $("#encryptKey").hide();
+            return;
         }
-    }).trigger('change');
+        var value = obj.value.trim();
+        if (value == 'sha256') {
+             obj.style.display = '';
+        } else {
+             obj.style.display = 'none';
+        }
+    }
+    YAHOO.util.Event.on('encrypt', 'change', changeEncrypt);
+    changeEncrypt();
 
-    $("select[name='function_screen']").change(function(){
-        search_function();
-    }).trigger('change');
-    
-    $('#add_function').click(function() {
-        return !$('#available_functions option:selected').remove().appendTo('#exist_functions');  
-    });  
-    $('#remove_function').click(function() {  
-        return !$('#exist_functions option:selected').remove().appendTo('#available_functions');  
-    }); 
-
-    $('#addNotificationEvents').click(function() {
-        return !$('#availableEvents option:selected').remove().appendTo('#enableEvents');
+    //
+    YAHOO.util.Event.on('function_screen', 'change', search_function);
+    search_function();
+    //
+    YAHOO.util.Event.on('add_function', 'click', function() {
+        var options = new YAHOO.util.Selector.query('#available_functions option');
+        for (var i = 0; i < options.length; i ++) {
+            if (options[i].selected == true) {
+                document.getElementById('exist_functions').appendChild(options[i]);
+            }
+        }
+        return false;  
     });
-	
-	$('#removeNotificationEvents').click(function() {
-        return !$('#enableEvents option:selected').remove().appendTo('#availableEvents');
+    //
+    YAHOO.util.Event.on('remove_function', 'click', function() {
+        var options = YAHOO.util.Selector.query('#exist_functions option');
+        for (var i = 0; i < options.length; i ++) {
+            if (options[i].selected == true) {
+                document.getElementById('available_functions').appendChild(options[i]);
+            }
+        }
+        return false;
     });
-
-    $('#add_role').click(function() {
-        return !$('#available_roles option:selected').remove().appendTo('#assign_roles');
+    //
+    YAHOO.util.Event.on('addNotificationEvents', 'click', function (){
+        var options = YAHOO.util.Selector.query('#availableEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            if (options[i].selected == true) {
+                document.getElementById('enableEvents').appendChild(options[i]);
+            }
+        }
     });
-
-    $('#add_role').click(function() {
-        search_privilege();
-    }).trigger('click');
-
-    $('#remove_role').click(function() {
-        return !$('#assign_roles option:selected').remove().appendTo('#available_roles');
+    //
+    YAHOO.util.Event.on('removeNotificationEvents', 'click', function (){
+        var options = YAHOO.util.Selector.query('#enableEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            if (options[i].selected == true) {
+                document.getElementById('availableEvents').appendChild(options[i]);
+            }
+        }
     });
-
-    $('#remove_role').click(function() {
-        search_privilege();
+    //
+    YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=assign_right]'), 'submit', 
+    function (){
+        var options = YAHOO.util.Selector.query('#exist_functions option');
+        for (var i = 0; i < options.length; i ++) {
+            options[i].selected = true;
+        }
     });
-
-
-    $('#add_privilege').click(function() {
-        return !$('#available_privileges option:selected').remove().appendTo('#assign_privileges');
+    //
+    YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=event_form]'), 'submit', 
+    function (){
+        var options = YAHOO.util.Selector.query('#enableEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            options[i].selected = true;
+        }
     });
-
-    $('#remove_privilege').click(function() {
-        return !$('#assign_privileges option:selected').remove().appendTo('#available_privileges');
-    });
-
-    $("form[name='assign_right']").submit(function() {  
-        $('#exist_functions option').each(function(i) {  
-            $(this).attr("selected", "selected");  
-        });
-    }); 
-
-    $("form[name='assign_role']").submit(function() {
-        $('#assign_roles option').each(function(i) {  
-            $(this).attr("selected", "selected");  
-        });
-        $('#assign_privileges option').each(function(i) {
-            $(this).attr("selected", "selected");
-        });
-    }); 
-
-    $("form[name='event_form']").submit(function() {
-        $('#enableEvents option').each(function(i) {  
-            $(this).attr("selected", "selected");  
-        });
-    });
-
-    $("input#search_product").click(function(){
-        searchProduct();
-    });
-
-    getProdId();
-
-    $("#checkaccount").click(function(){
-        var account = $("input[name='account']").val();
-        var account = encodeURIComponent(account);
+    //
+    YAHOO.util.Event.on('checkaccount', 'click', function () {
+        var account = document.getElementsByName('account')[0].value;
+        account = encodeURIComponent(account);
         var url = "/account/checkaccount/format/html/account/"+account;
-        $.ajax({ url:url, type:"GET",dataType:"json", success:function(data){message(data.msg, data.type);} });
+        
     });
-
-    $(".confirm").click(function(){
+    //
+    YAHOO.util.Event.on('search_asset', 'click', searchAsset);
+    searchAsset();
+    //
+    YAHOO.util.Event.on('search_product' ,'click', searchProduct);
+    //
+    YAHOO.util.Event.on(YAHOO.util.Selector.query('.confirm'), 'click', function(){
         var str = "DELETING CONFIRMATION!";
         if(confirm(str) == true){
             return true;
         }
         return false;
     });
-});
+    //
+    asset_detail();
+    //
+    getProdId();
+}
 
 function search_function() {
-    var trigger = $("select[name='function_screen']");
-    var param = '';
-    var name = trigger.children("option:selected").attr('value');
-
-    if( null != name){
+    var trigger = YAHOO.util.Selector.query('select[name=function_screen]');
+    if (trigger == ''){return;}
+    var param = name = '';
+    var options = YAHOO.util.Selector.query('select[name=function_screen] option');
+    
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].selected == true) {
+            name = options[i].text;
+        }
+    }
+    if('' != name){
         param += '/screen_name/'+name;
     }
-    var kids = $("#exist_functions").children();
+    var kids = YAHOO.util.Selector.query('#exist_functions option');
     var exist_functions = '';
     for (var i=0;i < kids.length;i++) {
         if (i == 0) {
@@ -194,24 +206,18 @@ function search_function() {
             exist_functions += ',' + kids[i].value;
         }
     }
-    
-    var url = trigger.attr("url") + '/do/available_functions' + param + '/exist_functions/'+exist_functions;
-    $("select[name='available_functions']").load(url,null);
-}
-
-function search_privilege() {
-    var trigger = $('#assign_roles');
-    var param = '';
-    var fid ='';
-    $('#assign_roles option').each(function(i) {
-        fid += $(this).attr('value') + '-';
-    });
-    if( null != fid){
-        param = '/assign_roles/'+fid;
+    if (!exist_functions) {
+        return;
     }
-    var url = trigger.attr("url") + param;
-    $("select[name='available_privileges']").load(url,null);
+    var url = document.getElementById('function_screen').getAttribute('url')
+              + '/do/available_functions' + param + '/exist_functions/'+exist_functions;
+    var request = YAHOO.util.Connect.asyncRequest('GET', url, 
+        {success: function(o){
+                   document.getElementById('available_functions').innerHTML = o.responseText;
+                },
+        failure: handleFailure});
 }
+var handleFailure = function(o){alert('error');}
 
 function upload_evidence() {
     if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
@@ -227,13 +233,17 @@ function ev_deny(formname){
     if (!form_confirm(document.poam_detail, 'deny the evidence')) {
         return false;
     }
-    var dw = $(document).width();
-    var dh = $(document).height();
-    $('<div id="full"></div>')
-                .width(dw).height(dh)
-                .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
-                .appendTo("body")
-                .fadeTo(1, 0.4);
+    var dw = YAHOO.util.Dom.getDocumentWidth();
+    var dh = YAHOO.util.Dom.getDocumentHeight();
+    var maskDiv = document.createElement('DIV');
+    maskDiv.id = 'full';
+    maskDiv.style.width = dw+'px';
+    maskDiv.style.height = dh+'px';
+    maskDiv.style.backgroundColor = '#000000';
+    maskDiv.style.marginTop = -1*dh+'px';
+    maskDiv.style.opacity = 0.4;
+    maskDiv.style.zIndex = 10;
+    document.body.appendChild(maskDiv);
 
     var content = document.createElement('div');
     var p = document.createElement('p');
@@ -274,12 +284,17 @@ function ms_comment(formname){
     if (!form_confirm(document.poam_detail, 'deny the mitigation')) {
         return false;
     }
-    var dw = $(document).width();
-    var dh = $(document).height();
-    $('<div id="full"></div>')
-                .width(dw).height(dh)
-                .css({backgroundColor:"#000000", marginTop:-1*dh, opacity:0, zIndex:10})
-                .appendTo("body").fadeTo(1, 0.4);
+    var dw = YAHOO.util.Dom.getDocumentWidth();
+    var dh = YAHOO.util.Dom.getDocumentHeight();
+    var maskDiv = document.createElement('DIV');
+    maskDiv.id = 'full';
+    maskDiv.style.width = dw+'px';
+    maskDiv.style.height = dh+'px';
+    maskDiv.style.backgroundColor = '#000000';
+    maskDiv.style.marginTop = -1*dh+'px';
+    maskDiv.style.opacity = 0.4;
+    maskDiv.style.zIndex = 10;
+    document.body.appendChild(maskDiv);
 
     var content = document.createElement('div');
     var p = document.createElement('p');
@@ -316,40 +331,81 @@ function ms_comment(formname){
 }
 
 function getProdId(){
-    var trigger= $("select[name='prod_list']");
-    trigger.change(function(){
-        var prod_id= trigger.children("option:selected").attr('value');
-        $("input[name='prod_id']").val(prod_id);
+    var trigger= document.getElementsByName('prod_list')[0];
+    YAHOO.util.Event.on(trigger, 'change', function (){
+        document.getElementsByName('prod_id')[0].value = trigger.value;
     });
 }
 
-function searchProduct(){
-    var trigger = $("input#search_product");
-    var url = trigger.attr('url');
-    $("input.product").each(function(){
-        if($(this).attr('value')){
-            url += '/' + $(this).attr('name') + '/' + $(this).attr('value');
+var searchProduct = function (){
+    var trigger = document.getElementById('search_product');
+    var url = trigger.getAttribute('url');
+    
+    var productInput = YAHOO.util.Selector.query('input.product');
+    for(var i = 0;i < productInput.length; i++) {
+        if (productInput[i].value != undefined && productInput[i].value != '') {
+            url += '/' + productInput[i].name + '/' + productInput[i].value;
         }
-    });
-    $("select[name='prod_list']").load(url,null,function(){
-        getProdId();
+    }
+    YAHOO.util.Connect.asyncRequest('GET', url, 
+    {success: function(o){
+                document.getElementsByName('prod_list')[0].innerHTML = o.responseText;
+                getProdId();
+              },
+    failure: handleFailure});
+}
+
+function searchAsset(){
+    var trigger = new YAHOO.util.Element('poam-system_id');
+    if(trigger.get('id') == undefined){
+        return ;
+    }
+    var sys = trigger.get('value');
+    var param =  '';
+    if(0 != parseInt(sys)){
+        param +=  '/sid/' + sys;
+    }
+    var assetInput = YAHOO.util.Selector.query('input.assets');
+    for(var i = 0;i < assetInput.length; i++) {
+        if (assetInput[i].value != undefined && assetInput[i].value != '') {
+            param += '/' + assetInput[i].name + '/' + assetInput[i].value;
+        }
+    }
+    var url = document.getElementById('poam-system_id').getAttribute("url") + param;
+    YAHOO.util.Connect.asyncRequest('GET', url, 
+    {success:function (o){
+        document.getElementById('poam-asset_id').parentNode.innerHTML = o.responseText;
+        asset_detail();
+    },
+    failure: handleFailure});
+}
+
+function asset_detail() {
+    YAHOO.util.Event.on('poam-asset_id', 'change', function (){
+        var url = this.getAttribute("url") + this.value;
+        YAHOO.util.Connect.asyncRequest('GET', url, {
+            success:function (o){document.getElementById('asset_info').innerHTML = o.responseText},
+            failure: handleFailure});
     });
 }
 
 function message( msg ,model){
-    $("#msgbar").html(msg).css('font-weight','bold');
+    var msgbar = new YUI.util.Element('msgbar');
+    msgbar.innerHTML = msg;
+    msgbar.style.fontWeight = 'bold';
+    
     if( model == 'warning')  {
-        $("#msgbar").css('color','red');
+        msgbar.style.color = 'red';
     } else {
-        $("#msgbar").css('color','green');
-        $("#msgbar").css('border-color','green');
-        $("#msgbar").css('background-color','lightgreen');
+        msgbar.style.color = 'green';
+        msgbar.style.borderColor = 'green';
+        msgbar.style.borderColor = 'lightgreen';
     }
-    $("#msgbar").css('display','block');
+    msgbar.style.display = 'block';
 }
 
 function showJustification(){
-    $("div#ecd_justification").show()
+    document.getElementById('ecd_justification').style.display = '';
 }
 
 function addBookmark(title, url){
@@ -516,3 +572,6 @@ function panel(title, parent, src) {
                                     }, 
                                     null);
 }
+
+var e = YAHOO.util.Event;
+e.onDOMReady(readyFunc);

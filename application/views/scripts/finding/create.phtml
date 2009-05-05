@@ -1,5 +1,4 @@
 <?php
-    $this->blscr_list[0] = 'NONE';
     $threatLevelList =  array("NONE" => "NONE",
                               "LOW" => "LOW",
                               "MODERATE" => "MODERATE",
@@ -44,27 +43,56 @@
                             </td>
                         </tr>
                     </table>
-
-    $("#search_asset").click(function(){
-        searchAsset();
-    }).trigger('click');
-
-	function searchAsset( ){
-    	var trigger = $("select[name='system_id']");
-	    var sys = trigger.children("option:selected").attr('value');
-	    var param =  '';
-    	if( null != sys){
-        	param +=  '/sid/' + sys;
-	    }
-    	$("input.assets").each(function(){
-        	if( $(this).attr('value') ){
-            	param += '/' + $(this).attr('name') + '/' + $(this).attr('value');
-	        }
-    	});
-		var url = '/asset/search' + param;
-    	$("select[name='asset_id']").load(url,null,function(){
-        	asset_detail();
-	    });
-	}
+            <tr>
+                <td>
+                    <table border="0" width="100%" cellpadding="5" class="tipframe">
+                        <tr><th align="left">Asset Information
+                        </th>
+                        <th align="right"><a id="add_asset" href="/asset/create" title="Create New Asset">Create New Asset</a>
+                        </th>
+                        <tr>
+                            <td colspan="2">
+                                <table width="100%" border="0" cellpadding="5">
+                                    <tr>
+                                        <td><b>System:</b></td>
+                                        <td>
+                            <?php 
+                                $this->system = array('--Any--') + $this->system;
+                                echo $this->formSelect('poam[system_id]', 0, array('url'=>"/asset/search"), $this->system); 
+                            ?>
+                                        </td>
+                                        <td><b>Asset Name:</b></td>
+                                        <td><input class='assets' type="text" name="name" value="<?php echo $this->param['port']; ?>" size="10" />                                          &nbsp;                                        </td>
+                                      </tr>
+                                    <tr>
+                                                    <td><b>IP Address:</b></td>
+                                                    <td><input class='assets' type="text" name="ip" value="<?php echo $this->param['ip']; ?>" maxlength="23" /></td>
+                                                    <td><b>Port:<b></b></b></td>
+                                                    <td><input class='assets' type="text" name="port" value="<?php echo $this->param['port']; ?>" size="10" /></td>
+                                                    </tr>
+                                    <tr>
+                                      <td>&nbsp;</td>
+                                      <td><input id="search_asset" type="button" value="Search Assets" url='/asset/search' /></td>
+                                      <td colspan=2 ><input type="reset" name="button2" id="button2" value="Reset" /></td>
+                                      </tr>
+                                </table><hr/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="200" align="center"><b>Asset Name:</b><div>
+                                <select id="poam-asset_id" name="poam[asset_id]" size="8" style="width: 190px;" >
+                                </select></div>                            </td>
+                            <td width="600" align="center" valign="top">
+                                <fieldset style="height:115; border:1px solid #44637A; padding:5">
+                                <legend><b>Asset Information</b></legend>
+                                <div id="asset_info"></div>
+                                </fieldset>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+</form>
 
 <?php Fisma_Format_Section::stopSection(); ?>

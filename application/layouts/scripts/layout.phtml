@@ -1,11 +1,11 @@
 <?php echo "{$this->doctype()}\n" ?>
 <html>
     <head>
-    	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 
-	<?php 
-	$this->headTitle()->prepend(Fisma_Controller_Front::readSysConfig('system_name'));
-	echo $this->headTitle();
+    <?php 
+    $this->headTitle()->prepend(Fisma_Controller_Front::readSysConfig('system_name'));
+    echo $this->headTitle();
     Fisma_Yui::includeLibrary('yahoo-dom-event');
     Fisma_Yui::includeLibrary('element');
     Fisma_Yui::includeLibrary('container');
@@ -24,7 +24,8 @@
     Fisma_Yui::includeLibrary('paginator');
     Fisma_Yui::includeLibrary('datasource');
     Fisma_Yui::includeLibrary('datatable');
-	echo Fisma_Yui::printIncludes();
+    Fisma_Yui::includeLibrary('selector');
+    echo Fisma_Yui::printIncludes();
     ?>
 
     <script type="text/javascript" src="/javascripts/jquery/jquery-1.2.6.min.js"></script>
