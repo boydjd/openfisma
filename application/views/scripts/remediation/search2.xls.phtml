@@ -82,5 +82,10 @@ foreach( $this->list as $p) {
     }
     $worksheet->writeRow($rowi++,0,$data,$format_times); 
 }
+// IE has a bug where it can't display certain mimetypes if a no-cache header is sent,
+// so we need to switch the header right before we stream the PDF.
+header('Pragma: private');
+header('Cache-Control: private');
+
 $workbook->close();
 ?>
