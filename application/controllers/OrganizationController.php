@@ -20,7 +20,7 @@
  * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: SysgroupController.php 940 2008-09-27 13:40:22Z ryanyang $
+ * @version   $Id: OrganizationController.php 940 2008-09-27 13:40:22Z ryanyang $
  * @package   Controller
  */
 
