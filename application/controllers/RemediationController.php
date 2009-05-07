@@ -727,9 +727,11 @@ class RemediationController extends PoamBaseController
                 mkdir(EVIDENCE_PATH .'/'. $id, 0755);
             }
             $count = 0;
-            $filename = preg_replace('/^([^.]*)(\.[^.]*)?\.([^.]*)$/',
-                '$1$2-' . $nowStr . '.$3', $file['name'],
-                2, $count);
+            $filename = preg_replace('/^(.*)\.(.*)$/',
+                                     '$1-' . $nowStr . '.$2',
+				     $file['name'],
+                                     2, 
+				     $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             if ($count > 0) {
@@ -740,7 +742,7 @@ class RemediationController extends PoamBaseController
                     chmod($absFile, 0755);
                 } else {
                     throw new Exception_General('Failed in move_uploaded_file(). '
-                        . $absFile . $file['error']);
+                        . $absFile . "\n" . $file['error']);
                 }
             } else {
                 throw new Exception_General('The filename is not valid');
