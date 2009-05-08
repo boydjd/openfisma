@@ -200,6 +200,8 @@ class Inject_Excel
             $poam['type'] = @$finding['course_of_action_type'];
             if (empty($poam['type'])) {
                 $poam['type'] = 'NONE';
+            } else {
+                $poam['status'] = 'DRAFT';
             }
             $poam['action_planned'] = @$finding['course_of_action_description'];
             $poam['action_current_date'] = @$finding['expected_completion_date'];
