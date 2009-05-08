@@ -361,7 +361,6 @@ class ReportController extends PoamBaseController
                 $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
             }
 
-            
             // Search for overdue items according to the criteria
             $list = $this->_poam->search($this->_me->systems,
                 array(
@@ -402,9 +401,9 @@ class ReportController extends PoamBaseController
             $this->view->assign('poam_list', $this->_overdueStatistic($result));
             $this->view->criteria = $criteria;
             $this->view->columns = array('systemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '<30 Days',
-									     'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
-									     'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
-									     'max' => 'Maximum (days)');
+                                         'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
+                                         'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
+                                         'max' => 'Maximum (days)');
         }
     }
 
@@ -789,9 +788,9 @@ class ReportController extends PoamBaseController
             if (in_array($row['oStatus'], $correctiveAction)) {
                 $overdueType = 'CA';
             }
-            $key = $row['system_id'].'_'.$overdueType;
+            $key = $row['system_nickname'] . $row['system_id'].'_'.$overdueType;
             if (!isset($result[$key])) {
-                $result[$row['system_id'].'_'.$overdueType] = array();
+                $result[$row['system_nickname'] . $row['system_id'].'_'.$overdueType] = array();
             }
             if (!isset($result[$key]['systemName'])) {
                 $result[$key]['systemName'] = $row['system_name'];
@@ -865,6 +864,7 @@ class ReportController extends PoamBaseController
             $v['max'] = max($v['diffDay']);
             unset($v['diffDay']);
         }
+        ksort($result);
         return $result;
     }
 }

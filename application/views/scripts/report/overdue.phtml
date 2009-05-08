@@ -109,10 +109,14 @@ var myColumnDefs = [
 <?php } unset($i); ?>];
     var dataSource = { rows: [
     <?php foreach ($this->poam_list as $row) { 
-        if (!isset($i)) { $i = true; } else { echo ','; } ?>
-        {<?php  foreach ($this->columns as $key => $val) { 
+          if (!isset($i)) { $i = true; } else { echo ','; } ?>
+          {<?php  foreach ($this->columns as $key => $val) { 
                     if (!isset($n)) { $n = true; } else { echo ','; }
-                    echo $key . ":'" . $row[$key] . "'"; 
+                    if ($key != 'systemName' && $key != 'type') {
+                        echo $key . ':' . $row[$key];
+                    } else {
+                        echo $key . ":'" . $row[$key] . "'";
+                    }
                 }
                 unset($n); ?>}
     <?php }
@@ -121,7 +125,8 @@ var myColumnDefs = [
     
     // DataTable configuration
     var myConfigs = {
-        dynamicData: false
+        dynamicData: false,
+        sortedBy : {key:"systemName", dir:YAHOO.widget.DataTable.CLASS_ASC}
     };
     var myDataTable = new YAHOO.widget.DataTable("overdue_report", myColumnDefs, myDataSource, myConfigs);
 </script>
