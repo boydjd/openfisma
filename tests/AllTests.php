@@ -30,14 +30,14 @@
 /**
  * Run the application bootstrap in command line mode
  */
-require('../init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting($root);
+require_once('../application/init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
 $plSetting->parse();
 if (!$plSetting->installed()) {
     die('Please install!');
 }
 
-define('TEST', $root . '/tests');
+define('TEST', RootPath::getRootPath() . '/tests');
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
 // set_include_path(get_include_path() .

@@ -23,11 +23,39 @@
  * @version   $Id$
  */
 
-// the root can be customized.
-$root = dirname(__FILE__);
-$lib = "$root/library";
-$app = "$root/application";
-set_include_path($lib . PATH_SEPARATOR . $app . PATH_SEPARATOR . get_include_path());
-// Zend should be linked/located at the $lib/Zend
+/**
+ * get the root path
+ *
+ */
+class RootPath
+{
+    /**
+     * for keeping the path
+     *
+     * @var string $_root
+     */
+    private static $_root = null;
+    
+    /**
+     * get the root path and keep it in a private variable
+     * return the path from the private variable
+     *
+     * @return root path
+     */
+    static function getRootPath()
+    {
+        if (self::$_root == null) {
+            $path = dirname(__FILE__);
+            $pathPart = explode(DIRECTORY_SEPARATOR, $path);
+            array_pop($pathPart);
+            self::$_root = implode(DIRECTORY_SEPARATOR, $pathPart);
+        }
+        return self::$_root;
+    }
+}
+// initialize the include path
+set_include_path(RootPath::getRootPath() .'/library' . PATH_SEPARATOR . 
+                 RootPath::getRootPath() .'/application' . PATH_SEPARATOR . get_include_path());
+// Zend should be linked/located at the root path/library/Zend
 require_once 'Zend/Loader.php';
 Zend_Loader::registerAutoload();

@@ -29,8 +29,8 @@
  * request. This prevents the interface from being rendered.
  */
  
-require_once('../init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting($root);
+require_once('../application/init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
 
 if ($plSetting->installed()) {
     // Kick off the main routine:

@@ -1,9 +1,44 @@
 <?php
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    woody
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
+ * @package   Helper
+ *
+ */
 require_once 'Zend/Controller/Action/Helper/Abstract.php';
 
+/**
+ * Execute the query in Zend_Search_Lucene
+ * 
+ * Find the keywords you specified by Zend_Search_Lucene
+ */
 class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_Helper_Abstract
 {
-    static private $_cache = null;
+    /**
+     * store the cache for Zend_Search_Lucene
+     *
+     * @var object
+     */
+    private $_cache = null;
     
     /**
      * Fuzzy Search by Zend_Search_Lucene
@@ -29,11 +64,19 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
     public function searchQuery($keywords, $indexName)
     {
         if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/' . $indexName)) {
-            return false;
+            /** 
+             * @todo english 
+             */
+            throw new Fisma_Exception_General('The path of creating indexes is not existed');
         }
-        $cache = self::getCacheInstance();
+        // get the variable of cache
+        $cache = $this->getCacheInstance();
+        // get the identity of the user
         $userId = Zend_Auth::getInstance()->getIdentity()->id;
+        // build the object of LUCENE
         $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $indexName);
+        // if the keywords didn't in cache or current keywords is different from the keywords in cache,
+        // then do the LUCENE searching
         if (!$cache->load($userId . '_keywords') || $keywords != $cache->load($userId . '_keywords')) {
             $hits = $index->find($keywords);
             $ids = array();
@@ -43,14 +86,16 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
                     $ids[] = $id;
                 }
             }
+            // Cache current searching result, and identify it from user id.
             $cache->save($ids, $userId . '_' . $indexName);
+            // Cache current keywords, and identify it from user id.
             $cache->save($keywords, $userId . '_keywords');
         }
+        //get the last result
         return $cache->load($userId . '_' . $indexName);
     }
     
     /**
-     * @todo english
      * Initialize the cache instance
      *
      * make the directory "/path/to/data/cache" writable
@@ -59,13 +104,12 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
      */
     public function getCacheInstance()
     {
-        if (null == self::$_cache) {
+        if (null == $this->_cache) {
             $frontendOptions = array(
                 'caching'  => true,
-                //@todo english cache life same as system expiring period
+                // cache life same as system expiring period
                 'lifetime' => Fisma_Controller_Front::readSysConfig('expiring_seconds'), 
-                'automatic_serialization' => true
-            );
+                'automatic_serialization' => true);
 
             $backendOptions = array(
                 'cache_dir' => Fisma_Controller_Front::getPath('data') . '/cache'
@@ -82,8 +126,8 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
     /**
      * Perform helper when called as $this->_helper->searchQuery() from an action controller
      * 
-     * @param  string $resource
-     * @param  string $operation 
+     * @param  string $keywords
+     * @param  string $indexName 
      */
     public function direct($keywords, $indexName)
     {

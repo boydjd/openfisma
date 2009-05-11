@@ -25,6 +25,13 @@
  *
  */
  
+/**
+ * Initialize the web application front only for installing
+ * 
+ * This requires that the directory layout be 
+ * controllers, models, views, layouts, plugins
+ * the error controller is different from others
+ */
 class Fisma_Controller_Plugin_Install extends Fisma_Controller_Plugin_Web
 {
     //overload the parent initDb doing nothing here

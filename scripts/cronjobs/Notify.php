@@ -31,8 +31,8 @@
  */
 define('COMMAND_LINE', true);
 
-require_once('../../init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting($root);
+require_once('../../application/init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
 
 // Kick off the main routine:
 Notify::processNotificationQueue();

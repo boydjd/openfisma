@@ -24,12 +24,12 @@
  * @package   Application
  */
 
-require_once('../init.php');
+require_once('../application/init.php');
 
 $dbg = true;
 
 try {
-    $plSetting = new Fisma_Controller_Plugin_Setting($root);
+    $plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
     $dbg = $plSetting->debug();
     $front = Fisma_Controller_Front::getInstance();
     $front->registerPlugin($plSetting, 60); //this should be the highest priority
@@ -43,7 +43,7 @@ try {
 } catch (Exception $exception) {
     echo '<html><body><center>'
        . 'An exception occured while bootstrapping the application.';
-    if (1) {
+    if ($dbg) {
          echo '<br /><br />' . $exception->getMessage() . '<br />'
             . '<div align="left">Stack Trace:' 
             . '<pre>' . $exception->getTraceAsString() . '</pre></div>';
