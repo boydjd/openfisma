@@ -46,7 +46,7 @@ class FindingController extends PoamBaseController
      */
     public function getFindingForm()
     {
-        $form = Form_Manager::loadForm('finding');
+        $form = Fisma_Form_Manager::loadForm('finding');
         foreach ($this->_sourceList as $key=>$value) {
             $form->getElement('source_id')
                  ->addMultiOptions(array($key => $value));
@@ -180,10 +180,10 @@ class FindingController extends PoamBaseController
                 $uploadId = $this->_poam->getAdapter()->lastInsertId();
 
                 $injectExcel = new Inject_Excel();
-		if (!empty($injectExcel->_findingIds)
+        if (!empty($injectExcel->_findingIds)
                     && is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-		    foreach ($injectExcel->_findingIds as $id) {
-	                $this->createIndex($id);
+            foreach ($injectExcel->_findingIds as $id) {
+                    $this->createIndex($id);
                     }
                 }
 
@@ -211,7 +211,7 @@ class FindingController extends PoamBaseController
 
         $form = $this->getFindingForm();
         $form->setDefaults($poam);
-        $this->view->form = Form_Manager::prepareCreateFindingForm($form);
+        $this->view->form = Fisma_Form_Manager::prepareCreateFindingForm($form);
 
         $this->view->assign('system', $this->_systemList);
         $this->view->assign('source', $this->_sourceList);
@@ -370,7 +370,7 @@ class FindingController extends PoamBaseController
                                               controls defined.");
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
-            $this->view->templateVersion = Inject_Excel::TEMPLATE_VERSION;
+            $this->view->templateVersion = Fisma_Inject_Excel::TEMPLATE_VERSION;
 
             // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
             // the error handler will be confused by context switch and will look for error.xls.tpl instead of error.tpl
@@ -462,12 +462,12 @@ class FindingController extends PoamBaseController
                     // rename the file by ts
                     rename($filePath, dirname($filePath) . '/' . $newName);
 
-					if (!empty($plugin->_findingIds)
-						&& is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-						foreach ($plugin->_findingIds as $id) {
-			                $this->createIndex($id);
-        		    	}
-					}
+                    if (!empty($plugin->_findingIds)
+                        && is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                        foreach ($plugin->_findingIds as $id) {
+                            $this->createIndex($id);
+                        }
+                    }
                     $this->message("Your scan report was successfully uploaded.<br>"
                                    . "{$plugin->created} findings were created.<br>"
                                    . "{$plugin->reviewed} findings need review.<br>"
@@ -539,11 +539,11 @@ class FindingController extends PoamBaseController
                 $now = new Zend_Db_Expr('now()');
                 $poam->update(array('status' => 'NEW', 'create_ts' => $now), "id IN ($inString)");
 
-				if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-					foreach (explode(',', $inString) as $id) {
-						$this->createIndex($id);
-					}
-				}
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                    foreach (explode(',', $inString) as $id) {
+                        $this->createIndex($id);
+                    }
+                }
 
             } elseif (isset($_POST['delete_selected'])) {
                 $poam = new Poam();
@@ -561,20 +561,20 @@ class FindingController extends PoamBaseController
     private function createIndex($id)
     {
         set_time_limit(0);
-		$result = $this->_poam->find($id)->current();
-		$systemId = $result->system_id;
-		$sourceId = $result->source_id;
-		$assetId  = $result->asset_id;
-		$indexData['finding_data']           = $result->finding_data;
-		$indexData['action_suggested']       = $result->action_suggested;
-		$indexData['action_planned']         = $result->action_planned;
-		$indexData['action_resources']       = $result->action_resources;
-		$indexData['threat_source']          = $result->threat_source;
-		$indexData['threat_justification']   = $result->threat_justification;
-		$indexData['cmeasure']               = $result->cmeasure;
-		$indexData['cmeasure_justification'] = $result->cmeasure_justification;
-		$indexData['action_resources']       = $result->action_resources;
-		$indexData['threat_source']          = $result->threat_source;
+        $result = $this->_poam->find($id)->current();
+        $systemId = $result->system_id;
+        $sourceId = $result->source_id;
+        $assetId  = $result->asset_id;
+        $indexData['finding_data']           = $result->finding_data;
+        $indexData['action_suggested']       = $result->action_suggested;
+        $indexData['action_planned']         = $result->action_planned;
+        $indexData['action_resources']       = $result->action_resources;
+        $indexData['threat_source']          = $result->threat_source;
+        $indexData['threat_justification']   = $result->threat_justification;
+        $indexData['cmeasure']               = $result->cmeasure;
+        $indexData['cmeasure_justification'] = $result->cmeasure_justification;
+        $indexData['action_resources']       = $result->action_resources;
+        $indexData['threat_source']          = $result->threat_source;
 
         $system = new System();
         $source = new Source();

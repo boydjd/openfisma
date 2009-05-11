@@ -100,10 +100,10 @@ class Fisma_Form_Manager
         
         $form->setDisplayGroupDecorators(array(
             new Zend_Form_Decorator_FormElements(),
-            new Form_CreateFindingDecorator()
+            new Fisma_Form_CreateFindingDecorator()
         ));
 
-        $form->setElementDecorators(array(new Form_CreateFindingDecorator()));
+        $form->setElementDecorators(array(new Fisma_Form_CreateFindingDecorator()));
         
         // By default, all input is trimmed of extraneous white space
         $form->setElementFilters(array('StringTrim'));

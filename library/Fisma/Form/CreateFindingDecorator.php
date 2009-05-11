@@ -32,21 +32,21 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @todo rename this class to "CrudDecorator"
  */
-class Form_CreateFindingDecorator extends Form_FismaDecorator
+class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
 {
-	/**
-	 * Display product detail information on the create finding page
-	 */
-	public function buildProduct()
-	{
-    	$content = '<td colspan="6" width="450px" valign="top">'
+    /**
+     * Display product detail information on the create finding page
+     */
+    public function buildProduct()
+    {
+        $content = '<td colspan="6" width="450px" valign="top">'
                    . '<fieldset style="height:115; border:1px solid #44637A; padding:5">'
                    . ' <legend><b>Asset Information</b></legend>'
                    . '<div id="asset_info"></div>'
                    . '</fieldset>'
                    . '</td>';
-		return $content;
-	}
+        return $content;
+    }
 
     /**
      * Decorates the specified content with HTML table markup
@@ -56,60 +56,58 @@ class Form_CreateFindingDecorator extends Form_FismaDecorator
     public function render($content) 
     {
         $element = $this->getElement();
-                
+    
         // Render the HTML 4.01 strict markup for the form and form elements.
         if ($element instanceof Zend_Form_Element) {
-			if (in_array($element->getName(), array('name', 'ip', 'port', 'search_asset'))) {
-				$render = '<td>'
-				        . $this->buildLabel()
-						. '</td><td>'
-						. $this->buildInput()
-						. '</td>';
-			} elseif ('asset_id' == $element->getName()) {
-				$render = '<tr><td>'
-						. $this->buildLabel()
-						. '</td><td>'
-						. $this->buildInput()
-						. '</td>'
-						. $this->buildProduct()
-						. '</tr>';
-			} else {
-				$render = '<tr><td>'
-                    . $this->buildLabel()
-                    . '</td><td>'
-                    . $this->buildInput()
-                    . '</td></tr>';
-			}
-        } else if ($element instanceof Zend_Form_DisplayGroup) {
+            if (in_array($element->getName(), array('name', 'ip', 'port', 'search_asset'))) {
+                $render = '<td>'
+                . $this->buildLabel()
+                . '</td><td>'
+                . $this->buildInput()
+                . '</td>';
+            } elseif ('asset_id' == $element->getName()) {
+                $render = '<tr><td>'
+                . $this->buildLabel()
+                . '</td><td>'
+                . $this->buildInput()
+                . '</td>'
+                . $this->buildProduct()
+                . '</tr>';
+            } else {
+                $render = '<tr><td>'
+                . $this->buildLabel()
+                . '</td><td>'
+                . $this->buildInput()
+                . '</td></tr>';
+            }
+        } elseif ($element instanceof Zend_Form_DisplayGroup) {
             $render = '<div class=\'subform\'><table class=\'fisma_crud\'>'
-                    . $content
-                    . '</table></div>';
-            
-        } else if ($element instanceof Zend_Form) {
+            . $content
+            . '</table></div>';
+        } elseif ($element instanceof Zend_Form) {
             $enctype = $element->getAttrib('enctype');
             $id      = $element->getAttrib('id');
-
+    
             if ($element->isReadOnly()) {
                 $render = '<div class=\'form\'>'
-                        . $content
-                        . '</div>';            
+                . $content
+                . '</div>';            
             } else {
                 $render = "<form method='{$element->getMethod()}'"
-                        . " action='{$element->getAction()}'"
-                        . (isset($enctype) ? " enctype=\"$enctype\"" : '')
-                        . (isset($id) ? " id=\"$id\"" : '')
-                        . '>'
-                        . '<div class=\'form\'>'
-                        . $content
-                        . '</div>'
-                        . '</form>';
+                . " action='{$element->getAction()}'"
+                . (isset($enctype) ? " enctype=\"$enctype\"" : '')
+                . (isset($id) ? " id=\"$id\"" : '')
+                . '>'
+                . '<div class=\'form\'>'
+                . $content
+                . '</div>'
+                . '</form>';
             }
         } else {
             throw new Exception_General("The element to be rendered is an unknown"
-                                    . " class: "
-                                    . get_class($element));
+                    . " class: "
+                    . get_class($element));
         }
-        
         return $render;
     }
 }
