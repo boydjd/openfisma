@@ -45,10 +45,7 @@ class RootPath
     static function getRootPath()
     {
         if (self::$_root == null) {
-            $path = dirname(__FILE__);
-            $pathPart = explode(DIRECTORY_SEPARATOR, $path);
-            array_pop($pathPart);
-            self::$_root = implode(DIRECTORY_SEPARATOR, $pathPart);
+            self::$_root = dirname(dirname(__FILE__));
         }
         return self::$_root;
     }
