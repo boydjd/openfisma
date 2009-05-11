@@ -58,18 +58,19 @@ form#loginForm input {
 }
 
 div#footer {
-	position: absolute;
-	bottom: 10px;
-	width: 100%;
-	text-align: right;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: right;
+    z-index: -1;
 }
 
 div#footer hr {
-	width: 99%;
+    width: 99%;
 }
 
 div#footerLinks {
-	padding-right: 10px;
+    padding-right: 10px;
 }
 
 div#footerLinks a {

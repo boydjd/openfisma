@@ -166,15 +166,16 @@ class FindingController extends PoamBaseController
                 // get upload path
                 $path = Config_Fisma::getPath() . '/data/uploads/spreadsheet/';
                 // get original file name
-                $originalName = $file['name'];
-                // get current time
-                $ts = date('YmdHis');
+                $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
+                // get current time and set to a format like '_2009-05-04_11_22_02'
+                $ts = time();
+                $dateTime = date('_Y-m-d_H_i_s', $ts);
                 // define new file name
-                $newName = str_replace(pathinfo($originalName, PATHINFO_FILENAME), $ts, $originalName);
+                $newName = str_replace($originalName, $originalName . $dateTime, $file['name']);
                 // organize upload data
                 $data = array('user_id' => $this->_me->id,
-                              'upload_ts' => $ts,
-                              'filename' => $originalName);
+                              'upload_ts' => date('YmdHis', $ts),
+                              'filename' => $newName);
                 $this->_poam->getAdapter()->insert('uploads', $data);
                 // get the upload id
                 $uploadId = $this->_poam->getAdapter()->lastInsertId();
@@ -445,15 +446,16 @@ class FindingController extends PoamBaseController
                 try {
                     Zend_Registry::get('db')->beginTransaction();
                     // get original file name
-                    $originalName = basename($filePath);
-                    // get current time
-                    $ts = date('YmdHis');
+                    $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
+                    // get current time and set to a format like '_2009-05-04_11_22_02'
+                    $ts = time();
+                    $dateTime = date('_Y-m-d_H_i_s', $ts);
                     // define new file name
-                    $newName = str_replace(pathinfo($originalName, PATHINFO_FILENAME), $ts, $originalName);
+                    $newName = str_replace($originalName, $originalName . $dateTime, basename($filePath));
                     // organize upload data
                     $data = array('user_id' => $this->_me->id,
-                                  'upload_ts' => $ts,
-                                  'filename' => $originalName);
+                                  'upload_ts' => date('YmdHis', $ts),
+                                  'filename' => $newName);
                     $this->_poam->getAdapter()->insert('uploads', $data);
                     // get the upload id
                     $uploadId = $this->_poam->getAdapter()->lastInsertId();

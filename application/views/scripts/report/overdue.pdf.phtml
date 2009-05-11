@@ -1,25 +1,5 @@
 <?php
-$cols = array(
-'systemName' => 'System',
-'type' => 'Overdue Action Type',
-'lessThan30' => '<30 Days',
-'moreThan30' => '30+ Days',
-'moreThan60' => '60+ Days',
-'moreThan90' => '90+ Days',
-'moreThan120' => '120+ Days',
-'total' => 'Total Overdue',
-'average' => 'Average Overdue Amount (days)',
-'max' => 'Maximum Overdue Amount (days)');
-
-$result = array();
-foreach($this->poam_list as &$row) {
-    $row['systemName'] = $row['systemNickname'] . ' - ' . $row['systemName'];
-    $totalOverdue = $row['lessThan30'] + $row['moreThan30'] + $row['moreThan60'] 
-                    + $row['moreThan90'] + $row['moreThan120'];
-    $row['total'] = $totalOverdue;
-    $row['average'] = round(array_sum($row['diffDay'])/$totalOverdue);
-    $row['max'] = max($row['diffDay']);
-}
+$cols = $this->columns;
 
 define('REPORT_FOOTER_WARNING', "WARNING: This report is for internal, official use only.  This report contains sensitive computer security related information. Public disclosure of this information would risk circumvention of the law. Recipients of this report must not, under any circumstances, show or release its contents for purposes other than official action. This report must be safeguarded to prevent improper disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.");
 

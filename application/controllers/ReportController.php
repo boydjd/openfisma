@@ -353,7 +353,6 @@ class ReportController extends PoamBaseController
                 $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
             }
 
-            
             // Search for overdue items according to the criteria
             $list = $this->_poam->search($this->_me->systems,
                 array(
@@ -391,8 +390,12 @@ class ReportController extends PoamBaseController
                 }
             }
             // Assign view outputs
-            $this->view->assign('poam_list', $this->_overdueReport($result));
+            $this->view->assign('poam_list', $this->_overdueStatistic($result));
             $this->view->criteria = $criteria;
+            $this->view->columns = array('systemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '<30 Days',
+                                         'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
+                                         'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
+                                         'max' => 'Maximum (days)');
         }
     }
 
@@ -700,8 +703,6 @@ class ReportController extends PoamBaseController
 
     /**
      * pluginReportAction() - Execute and display the specified plug-in report
-     *
-     * @todo Need to implement Excel and PDF export options
      */         
     public function pluginReportAction()
     {
@@ -742,6 +743,8 @@ class ReportController extends PoamBaseController
         while (!feof($reportScriptFileHandle)) {
             $reportScript .= fgets($reportScriptFileHandle);
         }
+        $userSystems = implode(',', $this->_me->systems);
+        $reportScript = str_replace('##SYSTEMS##', $userSystems, $reportScript);
         $db = Zend_Db::factory(Zend_Registry::get('datasource'));
         $reportData = $db->fetchAll($reportScript);
         
@@ -760,12 +763,12 @@ class ReportController extends PoamBaseController
     }
     
     /**
-     * make a statistic for overdue report
+     * sort overdue records by overdue days and status
      *
      * @param array $list all overdue records
      * @return array $result
      */  
-    private function _overdueReport($list)
+    private function _overdueSort($list)
     {
         $mitigationStrategyStatus = array('NEW', 'DRAFT', 'MSA');
         $correctiveAction = array('EN', 'EA');
@@ -777,9 +780,9 @@ class ReportController extends PoamBaseController
             if (in_array($row['oStatus'], $correctiveAction)) {
                 $overdueType = 'CA';
             }
-            $key = $row['system_id'].'_'.$overdueType;
+            $key = $row['system_nickname'] . $row['system_id'].'_'.$overdueType;
             if (!isset($result[$key])) {
-                $result[$row['system_id'].'_'.$overdueType] = array();
+                $result[$row['system_nickname'] . $row['system_id'].'_'.$overdueType] = array();
             }
             if (!isset($result[$key]['systemName'])) {
                 $result[$key]['systemName'] = $row['system_name'];
@@ -831,6 +834,29 @@ class ReportController extends PoamBaseController
                 $result[$key]['diffDay'][] = $row['diffDay'];
             }
         }
+        return $result;
+    }
+    
+    /**
+     * make a statistics for overdue records
+     * 
+     * @param array $list all overdue records
+     * @return array $result
+     */
+    private function _overdueStatistic($list)
+    {
+        $result = $this->_overdueSort($list);
+        foreach ($result as &$v) {
+            $v['systemName'] = $v['systemNickname'] . ' - ' . $v['systemName'];
+            unset($v['systemNickname']);
+            $totalOverdue = $v['lessThan30'] + $v['moreThan30'] + $v['moreThan60'] 
+                            + $v['moreThan90'] + $v['moreThan120'];
+            $v['total'] = $totalOverdue;
+            $v['average'] = round(array_sum($v['diffDay'])/$totalOverdue);
+            $v['max'] = max($v['diffDay']);
+            unset($v['diffDay']);
+        }
+        ksort($result);
         return $result;
     }
 }
