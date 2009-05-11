@@ -87,6 +87,7 @@ class SystemController extends SecurityController
      */
     public function preDispatch()
     {
+
         $req = $this->getRequest();
         $this->_pagingBasePath = $req->getBaseUrl() .
             '/panel/system/sub/list';
@@ -110,6 +111,9 @@ class SystemController extends SecurityController
                 $form->getElement('organization_id')->addMultiOptions(array($row['id'] => $row['name']));
             }
         }
+        
+	$visibility_array = array("visible"=>"Visible", "hidden"=>"Hidden");
+        $form->getElement('visibility')->addMultiOptions($visibility_array);
         
         $array = $this->_system->getEnumColumns('confidentiality');
         $form->getElement('confidentiality')->addMultiOptions(array_combine($array, $array));
@@ -136,6 +140,7 @@ class SystemController extends SecurityController
         $this->searchbox();
         
         $value = trim($this->_request->getParam('qv'));
+        $show_hidden = trim($this->_request->getParam('sh'));
         $db = $this->_system->getAdapter();
         $query = $db->select()->from(array('s'=>'systems'), 's.*')
                                ->join(array('o'=>'organizations'), 's.organization_id = o.id',
@@ -154,6 +159,14 @@ class SystemController extends SecurityController
             }
             $query->where('s.id IN (' . $ids . ')');
         }
+
+	if (empty($show_hidden)) {
+            $query->where('s.visibility="visible"');
+	}
+	else {
+            $query->where('s.visibility="hidden"');
+	}
+
         $systemList = $db->fetchAll($query);
         $this->view->assign('system_list', $systemList);
         $this->render('list');

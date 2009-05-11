@@ -56,7 +56,7 @@ CREATE TABLE `blscrs` (
   `enhancements` text NOT NULL,
   `supplement` text NOT NULL,
   PRIMARY KEY  (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `blscrs` VALUES ('AC-01','TECHNICAL','Access Control Policy and Procedures ','Access Control','The organization develops, disseminates, and periodically reviews/updates: (i) a formal, documented, access control policy that addresses purpose, scope, roles, responsibilities, management commitment, coordination among organizational entities, and compliance; and (ii) formal, documented procedures to facilitate the implementation of the access control policy and associated access controls.','The access control policy and procedures are consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance. The access control policy can be included as part of the general information security policy for the organization. Access control procedures can be developed for the security program in general, and for a particular information system, when required. NIST Special Publication 800-12 provides guidance on security policies and procedures.','LOW','None','None');
 INSERT INTO `blscrs` VALUES ('AC-02','TECHNICAL','Account Management ','Access Control','The organization manages information system accounts, including establishing, activating, modifying, reviewing, disabling, and removing accounts. The organization reviews information system accounts [Assignment: organization-defined frequency, at least annually].','Account management includes the identification of account types (i.e., individual, group, and system), establishment of conditions for group membership, and assignment of associated authorizations. The organization identifies authorized users of the information system and specifies access rights/privileges. The organization grants access to the information system based on: (i) a valid need-to-know/need-to-share that is determined by assigned official duties and satisfying all personnel security criteria; and (ii) intended system usage. The organization requires proper identification for requests to establish information system accounts and approves all such requests. The organization specifically authorizes and monitors the use of guest/anonymous accounts and removes, disables, or otherwise secures unnecessary accounts. Account managers are notified when information system users are terminated or transferred and associated accounts are removed, disabled, or otherwise secured. Account managers are also notified when users\' information system usage or need-to-know/need-to-share changes.','LOW','(1)\nThe organization employs automated mechanisms to support the management of information system accounts.\n(2)\nThe information system automatically terminates temporary and emergency accounts after [Assignment: organization-defined time period for each type of account].\n(3)\nThe information system automatically disables inactive accounts after [Assignment: organization-defined time period].\n(4)\nThe organization employs automated mechanisms to audit account creation, modification, disabling, and termination actions and to notify, as required, appropriate individuals.','Medium: (1) (2) (3) (4)High: (1) (2) (3) (4)');
@@ -256,6 +256,7 @@ INSERT INTO `configurations` VALUES (1,'max_absent_time','90','Maximum Days An A
 INSERT INTO `configurations` VALUES (2,'failure_threshold','3','Maximum Login Attempts Before Server Locks Account');
 INSERT INTO `configurations` VALUES (3,'expiring_seconds','1800','Session Timeout (In Seconds)');
 INSERT INTO `configurations` VALUES (4,'auth_type','database','authentication type');
+INSERT INTO `configurations` VALUES (5,'sender','','Send Email Address');
 INSERT INTO `configurations` VALUES (6,'subject','','Email Subject');
 INSERT INTO `configurations` VALUES (7,'smtp_host','','Smtp server name');
 INSERT INTO `configurations` VALUES (8,'smtp_username','','Username for smtp Authenticate');
@@ -270,14 +271,13 @@ INSERT INTO `configurations` VALUES (16,'contact_email','','Technical support Co
 INSERT INTO `configurations` VALUES (17,'contact_subject','','Technical Support Email Subject Text');
 INSERT INTO `configurations` VALUES (18,'use_notification','System use notification','<p>This is a United States Government Computer system. We encourage its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474) Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.</p>');
 INSERT INTO `configurations` VALUES (19,'behavior_rule','Rules Of Behavior','<p>SENSITIVE BUT UNCLASSIFIED INFORMATION PROPERTY OF THE UNITED STATES GOVERNMENT</p><p>DISCLOSURE, COPYING, DISSEMINATION, OR DISTRIBUTION OF SENSITIVE BUT UNCLASSIFIED INFORMATION TO UNAUTHORIZED USERS IS PROHIBITED.</p><p>Please dispose of sensitive but unclassified information when no longer needed.</p><p>I. Usage Agreement</p><p>This is a Federal computer system and is the property of the United States Government. It is for authorized use only. Users (authorized or unauthorized) have no explicit or implicit expectation of privacy in anything viewed, created, downloaded, or stored on this system, including e-mail, Internet, and Intranet use. Any or all uses of this system (including all peripheral devices and output media) and all files on this system may be intercepted, monitored, read, captured, recorded, disclosed, copied, audited, and/or inspected by authorized Agency personnel, the Office of Inspector General (OIG),and/or other law enforcement personnel, as well as authorized officials of other agencies. Access or use of this computer by any person, whether authorized or unauthorized, constitutes consent to such interception, monitoring, reading, capturing, recording, disclosure, copying, auditing, and/or inspection at the discretion of authorized Agency personnel, law enforcement personnel (including the OIG),and/or authorized officials other agencies. Unauthorized use of this system is prohibited and may constitute a violation of 18 U.S.C. 1030 or other Federal laws and regulations and may result in criminal, civil, and/or administrative action. By continuing to use this system, you indicate your awareness of, and consent to, these terms and conditions and acknowledge that there is no reasonable expectation of privacy in the access or use of this computer system.</p>');
-INSERT INTO `configurations` VALUES (5,'sender','','Send Email Address');
 INSERT INTO `configurations` VALUES (20,'privacy_policy','Privacy Policy','<ul><li>This is a U.S. Federal government computer system that is FOR OFFICIAL USE ONLY.</li><li>This system is subject to monitoring. No expectation of privacy is to be assumed.</li><li>Individuals found performing unauthorized activities are subject to disciplinary action including criminal prosecution.</li></ul>');
 INSERT INTO `configurations` VALUES (21,'system_name','OpenFISMA','System name');
 INSERT INTO `configurations` VALUES (22,'rob_duration','365','the duration between which the user has to accept the ROB.(Day)');
-INSERT INTO `configurations` VALUES (26,'pass_special','0','Require Special Characters');
-INSERT INTO `configurations` VALUES (25,'pass_numerical','0','Require Numerical Characters');
-INSERT INTO `configurations` VALUES (24,'pass_lowercase','1','Require Lower Case Characters');
 INSERT INTO `configurations` VALUES (23,'pass_uppercase','1','Require Upper Case Characters');
+INSERT INTO `configurations` VALUES (24,'pass_lowercase','1','Require Lower Case Characters');
+INSERT INTO `configurations` VALUES (25,'pass_numerical','0','Require Numerical Characters');
+INSERT INTO `configurations` VALUES (26,'pass_special','0','Require Special Characters');
 INSERT INTO `configurations` VALUES (27,'pass_min','8','Minimum Password Length');
 INSERT INTO `configurations` VALUES (28,'pass_max','16','Maximum Password Length');
 INSERT INTO `configurations` VALUES (29,'pass_expire','90','Password Expiration days');
@@ -354,10 +354,10 @@ INSERT INTO `events` VALUES (42,'System Configuration Modified',89);
 INSERT INTO `events` VALUES (43,'Account Login Success',89);
 INSERT INTO `events` VALUES (44,'Account Login Failure',89);
 INSERT INTO `events` VALUES (45,'Account Logout',89);
-INSERT INTO `events` VALUES (49,'ECD Expires in 21 days',91);
-INSERT INTO `events` VALUES (48,'ECD Expires in 14 days',91);
-INSERT INTO `events` VALUES (47,'ECD Expires in 7 Days',91);
 INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
+INSERT INTO `events` VALUES (47,'ECD Expires in 7 Days',91);
+INSERT INTO `events` VALUES (48,'ECD Expires in 14 days',91);
+INSERT INTO `events` VALUES (49,'ECD Expires in 21 days',91);
 INSERT INTO `events` VALUES (51,'Evidence Denied',91);
 INSERT INTO `events` VALUES (52,'Account Locked',89);
 INSERT INTO `events` VALUES (53,'Mitigation Strategy Approved to IVV',91);
@@ -450,18 +450,18 @@ INSERT INTO `functions` VALUES (76,'Delete Finding Sources','admin_sources','del
 INSERT INTO `functions` VALUES (77,'View Finding Sources','admin_sources','read','','1');
 INSERT INTO `functions` VALUES (78,'Create Finding Sources','admin_sources','create','','1');
 INSERT INTO `functions` VALUES (79,'App Configuration','app_configuration','update','','1');
-INSERT INTO `functions` VALUES (87,'Create Networks','admin_networks','create','','1');
-INSERT INTO `functions` VALUES (86,'Edit Networks','admin_networks','update','','1');
-INSERT INTO `functions` VALUES (85,'View Networks','admin_networks','read','','1');
-INSERT INTO `functions` VALUES (84,'Define Roles','admin_roles','definition','','1');
-INSERT INTO `functions` VALUES (83,'Delete Roles','admin_roles','delete','','1');
-INSERT INTO `functions` VALUES (82,'Create Roles','admin_roles','create','','1');
-INSERT INTO `functions` VALUES (81,'Edit Roles','admin_roles','update','','1');
 INSERT INTO `functions` VALUES (80,'View Roles','admin_roles','read','','1');
+INSERT INTO `functions` VALUES (81,'Edit Roles','admin_roles','update','','1');
+INSERT INTO `functions` VALUES (82,'Create Roles','admin_roles','create','','1');
+INSERT INTO `functions` VALUES (83,'Delete Roles','admin_roles','delete','','1');
+INSERT INTO `functions` VALUES (84,'Define Roles','admin_roles','definition','','1');
+INSERT INTO `functions` VALUES (85,'View Networks','admin_networks','read','','1');
+INSERT INTO `functions` VALUES (86,'Edit Networks','admin_networks','update','','1');
+INSERT INTO `functions` VALUES (87,'Create Networks','admin_networks','create','','1');
 INSERT INTO `functions` VALUES (88,'Delete Networks','admin_networks','delete','','1');
-INSERT INTO `functions` VALUES (91,'Remediation Notifications','notification','remediation','','1');
-INSERT INTO `functions` VALUES (90,'Asset Notifications','notification','asset','','1');
 INSERT INTO `functions` VALUES (89,'Admin Notifications','notification','admin','','1');
+INSERT INTO `functions` VALUES (90,'Asset Notifications','notification','asset','','1');
+INSERT INTO `functions` VALUES (91,'Remediation Notifications','notification','remediation','','1');
 INSERT INTO `functions` VALUES (92,'Mitigation Strategy Provided to IVV','remediation','update_mitigation_strategy_approval_2','','1');
 INSERT INTO `functions` VALUES (93,'Mitigation Strategy submit','remediation','mitigation_strategy_submit','','1');
 INSERT INTO `functions` VALUES (94,'Mitigation Strategy revise','remediation','mitigation_strategy_revise','','1');
@@ -615,7 +615,7 @@ CREATE TABLE `role_functions` (
   `role_id` int(10) unsigned NOT NULL default '0',
   `function_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`role_id`,`function_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 INSERT INTO `role_functions` VALUES (3,1);
 INSERT INTO `role_functions` VALUES (3,2);
@@ -891,7 +891,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (57);
+INSERT INTO `schema_version` VALUES (60);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -917,6 +917,7 @@ CREATE TABLE `systems` (
   `integrity` enum('LOW','MODERATE','HIGH') default NULL,
   `availability` enum('LOW','MODERATE','HIGH') default NULL,
   `tier` int(10) unsigned NOT NULL default '0',
+  `visibility` enum('visible','hidden') default NULL,
   `confidentiality_justification` text NOT NULL,
   `integrity_justification` text NOT NULL,
   `availability_justification` text NOT NULL,
@@ -1028,4 +1029,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (60);
+INSERT INTO schema_version (schema_version) VALUES (61);

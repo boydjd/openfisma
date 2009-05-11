@@ -72,10 +72,15 @@ class System extends FismaModel
             $systemList = array();
             $query = $this->select(array($this->_primary, 'nickname', 'name'))
                           ->distinct()->from($this->_name)->order('nickname');
+	    $query->where('s.visibility="visible"');
+
             $result = $this->fetchAll($query);
+
+
+
             foreach ($result as $row) {
                 $systemList[$row->id] = array('name' =>
-                    ('(' . $row->nickname . ') ' . $row->name));
+                    ('' . $row->nickname . ' - ' . $row->name));
             }
             return $systemList;
         } else {
