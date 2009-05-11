@@ -112,7 +112,8 @@ foreach (@files) {
   my $migrationVersion;
   if (/(\d+)\.up\.sql/) {
     $migrationVersion = $1;
-    if (! -f catfile($config->{'migrationsDir'},"$migrationVersion.dn.sql")) 
+    if (! -f catfile($config->{'migrationsDir'},"$migrationVersion.dn.sql") 
+        && ! -f catfile($config->{'migrationsDir'},"$migrationVersion.NR.sql")) 
       {&error("There is no downward migration for $migrationVersion but there is an upward migration.")}
     if ($migrationVersion > $schemaVersion) {
       unshift @migrations, $migrationVersion;
