@@ -157,11 +157,13 @@ class Inject_Excel
                 $finding[$this->_excelTemplateColumns[$column]] = $cellChildren->Data->asXml();
                 $column++;
             }
+            
             /**
-             * @todo improved input sanitzation. use a better html filter than strip_tags and attempt to preserve the
-             * formatting of the text. this filtering should be done in the model classes.
-             */                                      
-            // Basic input sanitzation: remove HTML tags and then encode any remaining characters
+             * @todo i realized that simplexml can not handle mixed content (an xml text node that also
+             * contains xml tags)... so this whole thing needs to be re-written in DOM or some other API
+             * that CAN read mixed content. until then -- formatting in excel is not preserved -- all
+             * tags are stripped out and remaining special chars are encoded.
+             */                
             $finding = array_map('strip_tags', $finding);
             $finding = array_map('htmlspecialchars', $finding);
 

@@ -886,6 +886,29 @@ class Poam extends Zend_Db_Table
                                          pairs, but it appears to be a linear array.');
         }
 
+        /** @todo this will be overhauled in release 2.4.0 */
+        // Sanitize input text fields that can't contain any HTML
+        foreach(array('blscr_id', 'ecd_justification') as $key) {
+            if (isset($findingData[$key])) {
+                $findingData[$key]= htmlspecialchars(strip_tags($findingData[$key]));
+            }
+        }
+        
+        /** @todo this will be overhauled in release 2.4.0 */
+        // Sanitize input text fields that CAN contain HTML
+        $purifier = $this->_getPurifier();
+        foreach(array('finding_data', 
+                      'action_planned', 
+                      'action_suggested', 
+                      'action_resources', 
+                      'action_current_date',
+                      'cmeasure',
+                      'threat_source') as $key) {
+            if (isset($findingData[$key])) {
+                $findingData[$key] = $purifier->purify($findingData[$key]);
+            }
+        }
+        
         // Call the parent's insert() to do the actual insertion work
         $id = parent::insert($findingData);
 
@@ -907,5 +930,74 @@ class Poam extends Zend_Db_Table
                            $findingData['system_id']);
 
         return $id;
+    }
+
+    /**
+     * This function overrides the parent in order to scrub incoming data.
+     *
+     * @param array $findingData An associative array of column data for the finding
+     */
+    public function update($findingData, $where) {
+        // I'm not sure if anybody would call this function with an array of arrays, but for now to be safe I'm
+        // explicitly checking for that condition. -Mark
+        if (array_key_exists(0, $findingData)) {
+            throw new Exception_General('The $findingData parameter should be an associative array containing key/value
+                                         pairs, but it appears to be a linear array.');
+        }
+
+        /** @todo this will be overhauled in release 2.4.0 */
+        // Sanitize input text fields that CAN NOT contain any HTML
+        foreach(array('blscr_id', 'ecd_justification') as $key) {
+            if (isset($findingData[$key])) {
+                $findingData[$key]= htmlspecialchars(strip_tags($findingData[$key]));
+            }
+        }
+        
+        /** @todo this will be overhauled in release 2.4.0 */
+        // Sanitize input text fields that CAN contain HTML
+        $purifier = $this->_getPurifier();
+        foreach(array('finding_data', 
+                      'action_planned', 
+                      'action_suggested', 
+                      'action_resources', 
+                      'action_current_date',
+                      'cmeasure',
+                      'threat_source') as $key) {
+            if (isset($findingData[$key])) {
+                $findingData[$key] = $purifier->purify($findingData[$key]);
+            }
+        }
+    
+        return parent::update($findingData, $where);
+    }
+    
+    /**
+     * This is a temporary function release 2.3 to add a bit of input HTML filtering
+     * on the POAM class. In release 2.4, this will be migrated to a separate part of
+     * the application and integrated into the base class for the models, so that all
+     * classes can use it.
+     *
+     * @return HTMLPurifier
+     */
+    private function _getPurifier() {
+        require_once('HTMLPurifier/Bootstrap.php');
+        $config = HTMLPurifier_Config::createDefault();
+        /** @see http://htmlpurifier.org/live/configdoc/plain.htm */
+        // Whenever the configuration is modified, the definition rev needs to be incremented.
+        // This prevents HTML Purifier from using a stale cach definition
+        $config->set('Cache', 'DefinitionImpl', null); // remove this later
+        $config->set('Core', 'Encoding', 'ASCII'); /** @todo utf8 */
+        $config->set('HTML', 'Doctype', 'HTML 4.01 Strict'); /** @todo put the purifier into the registry */
+        // Make sure to keep the following line in sync with Tiny MCE so users aren't surprised when their
+        // data looks different before storage and after retreival.
+        $config->set('HTML', 'Allowed', 'a[href],p[style],strong,em,span[style],ul,li,ol,table,tr,th,td');
+        $config->set('HTML', 'TidyLevel', 'medium'); // Conform user submitted HTML to our doctype
+        $config->set('AutoFormat', 'Linkify', true); // Turn text URLS into <a> links
+        $config->set('AutoFormat', 'RemoveEmpty', true); // Remove tags which do not contain semantic information
+        $config->set('Output', 'CommentScriptContents', false); // Do not add HTML comments for browsers that don't understand scripts
+        $config->set('URI', 'AllowedSchemes', array('http','https','mailto')); // Restrict what types of links users can create
+        $config->set('URI', 'Munge', '/redirect/redirect/?url=%s'); // Force links to use the OpenFISMA URL redirector
+        $purifier = new HTMLPurifier($config);
+        return $purifier;
     }
 }
