@@ -557,7 +557,7 @@ SET character_set_client = utf8;
 CREATE TABLE `poams` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `legacy_finding_id` int(10) unsigned NOT NULL default '0',
-  `asset_id` int(10) unsigned NOT NULL default '0',
+  `asset_id` int(10) unsigned default NULL,
   `source_id` int(10) unsigned NOT NULL default '0',
   `system_id` int(10) unsigned NOT NULL default '0',
   `blscr_id` varchar(5) default NULL,
@@ -891,7 +891,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
-INSERT INTO `schema_version` VALUES (60);
+INSERT INTO `schema_version` VALUES (61);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -1029,4 +1029,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (61);
+INSERT INTO schema_version (schema_version) VALUES (62);
