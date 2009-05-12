@@ -392,7 +392,7 @@ class ReportController extends PoamBaseController
                 if ('Overdue' == $this->view->isOnTime($v['duetime'])) {
                     $now = clone $date;
                     $duetime = new Zend_Date($v['duetime'], Zend_Date::ISO_8601);
-                    $differDay = $now->sub($duetime, Zend_Date::DAY_OF_YEAR);
+                    $differDay = floor($now->sub($duetime)/(3600*24));
                     $v['diffDay'] = $differDay + 1;
                     $result[] = $v;
                 }
@@ -776,7 +776,7 @@ class ReportController extends PoamBaseController
      * @param array $list all overdue records
      * @return array $result
      */  
-    private function _overdueSort($list)
+    public function _overdueSort($list)
     {
         $mitigationStrategyStatus = array('NEW', 'DRAFT', 'MSA');
         $correctiveAction = array('EN', 'EA');
@@ -851,7 +851,7 @@ class ReportController extends PoamBaseController
      * @param array $list all overdue records
      * @return array $result
      */
-    private function _overdueStatistic($list)
+    public function _overdueStatistic($list)
     {
         $result = $this->_overdueSort($list);
         foreach ($result as &$v) {
