@@ -81,7 +81,9 @@ class Poam extends Zend_Db_Table
      *          <dd>The lower bound of date when a poam's mitigation strategy is submitted.</dd>
      *          <dt>'mssDateEnd'=>(Zend_Date)</dt><dd> an end date for poam mss_ts</dd>
      *          <dd>The upper bound of date when a poam's mitigation strategy is submitted.</dd>
+     *          <dt>'closedDateBegin'=>(Zend_Date)</dt>
      *          <dd>The lower bound of closing a poam date</dd>
+     *          <dt>'closedDateEnd'=>(Zend_Date)</dt><dd> an end date for poam close_ts</dd>
      *          <dd>The upper bound of closing a poam date</dd>
      *          <dt>'type'=>(string|array)</dt><dd>poam type(s), namely 'CAP', 'AR', 'FP'.</dd>
      *          <dt>'mp'=>precedence_id(int)</dt><dd>a Mitigation Strategy Evaluation noted by precedence_id </dd>
@@ -160,6 +162,13 @@ class Poam extends Zend_Db_Table
         }
         if (! empty($mssDateEnd)) {
             $query->where("DATE(p.mss_ts) <=?", $mssDateEnd->toString('Y-m-d'));
+        }
+        if (! empty($closedDateBegin)) {
+            $query->where("DATE(p.close_ts) >= ?",
+                $closedDateBegin->toString('Y-m-d'));
+        }
+        if (! empty($closedDateEnd)) {
+            $query->where("DATE(p.close_ts) <=?", $closedDateEnd->toString('Y-m-d'));
         }
         if (! empty($type)) {
             if (is_array($type)) {

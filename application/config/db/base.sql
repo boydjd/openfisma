@@ -565,6 +565,7 @@ CREATE TABLE `poams` (
   `discover_ts` date NOT NULL,
   `modify_ts` timestamp NOT NULL default '0000-00-00 00:00:00',
   `mss_ts` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `close_ts` date NOT NULL,
   `type` enum('NONE','CAP','FP','AR') NOT NULL default 'NONE',
   `status` enum('PEND','NEW','DRAFT','MSA','EN','EA','CLOSED','DELETED') NOT NULL default 'NEW',
   `is_repeat` tinyint(1) default NULL,

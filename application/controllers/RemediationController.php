@@ -831,7 +831,7 @@ class RemediationController extends PoamBaseController
                 
                 if ($precedenceId == count($evalList)-1) {
                     $logContent.= " Status: CLOSED";
-                    $this->_poam->update(array('status' => 'CLOSED'), 'id=' . $poamId);
+                    $this->_poam->update(array('status' => 'CLOSED', 'close_ts' => self::$now->toString('Y-m-d')), 'id=' . $poamId);
             
                     $this->_notification->add(Notification::POAM_CLOSED, $this->_me->account, 
                                          "PoamId: $poamId", $poam['system_id']);

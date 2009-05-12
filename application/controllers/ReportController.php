@@ -142,6 +142,10 @@ class ReportController extends PoamBaseController
             $systemArray = array(
                 'systemId' => $systemId
             );
+            $aawArray = array(
+                'createdDateEnd' => $dateBegin,
+                'closedDateBegin' => $dateEnd
+            ); //or close_ts is null
             $bawArray = array(
                 'createdDateEnd' => $dateEnd,
                 'estDateEnd' => $dateEnd,
@@ -160,6 +164,10 @@ class ReportController extends PoamBaseController
                 'createdDateBegin' => $dateBegin,
                 'createdDateEnd' => $dateEnd
             );
+            $fawArray = array(
+                'createdDateEnd' => $dateEnd,
+                'closedDateBegin' => $dateEnd
+            ); //or close_ts is null
             $criteriaAaw = array_merge($systemArray, $aawArray);
             $criteriaBaw = array_merge($systemArray, $bawArray);
             $criteriaCaw = array_merge($systemArray, $cawArray);
