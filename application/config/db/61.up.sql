@@ -8,4 +8,4 @@
 -- add a column for table 'systems'
 
 
-ALTER TABLE `systems` ADD `visibility` enum('visible', 'hidden')  AFTER `tier` ;
+ALTER TABLE `systems` ADD `visibility` enum('visible', 'hidden') DEFAULT 'visible' AFTER `tier` ;

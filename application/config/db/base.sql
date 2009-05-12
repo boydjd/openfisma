@@ -917,7 +917,7 @@ CREATE TABLE `systems` (
   `integrity` enum('LOW','MODERATE','HIGH') default NULL,
   `availability` enum('LOW','MODERATE','HIGH') default NULL,
   `tier` int(10) unsigned NOT NULL default '0',
-  `visibility` enum('visible','hidden') default NULL,
+  `visibility` enum('visible','hidden') default 'visible',
   `confidentiality_justification` text NOT NULL,
   `integrity_justification` text NOT NULL,
   `availability_justification` text NOT NULL,
