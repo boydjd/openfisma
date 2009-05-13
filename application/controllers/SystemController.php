@@ -165,21 +165,18 @@ class SystemController extends SecurityController
     public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_systems', 'read');
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            //@todo english  if system index dosen't exist, then create it.
-            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
-                $this->createIndex();
-            }
             $ret = $this->_helper->searchQuery($qv, 'system');
             $count = count($ret);
+            $this->_paging['fileName'] .= '/qv/'.$qv;
         } else {
             $count = $this->_system->count();
         }
 
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
@@ -400,43 +397,6 @@ class SystemController extends SecurityController
             $this->message("Unable to update system:<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
-        }
-    }
-
-    /**
-     * Create systems Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/system', true);
-        $query = $this->_system->getAdapter()->select()->from(array('s'=>'systems'), 's.*')
-                              ->join(array('o'=>'organizations'), 's.organization_id = o.id',
-                                     array('org_name'=>'o.name', 'org_nickname'=>'o.nickname'));
-        $list = $this->_system->getAdapter()->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('organization',
-                            $row['org_name'] . ' ' . $row['org_nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('type', $row['type']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('confidentiality', $row['confidentiality']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('integrity', $row['integrity']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('availability', $row['availability']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('confidentiality_justification',
-                            $row['confidentiality_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('integrity_justification',
-                            $row['integrity_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('availability_justification',
-                            $row['availability_justification']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
         }
     }
 }

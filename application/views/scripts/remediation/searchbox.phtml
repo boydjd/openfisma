@@ -33,6 +33,11 @@
 
     $this->systems = array('--Any--') + (array)$this->systems;
     $this->sources = array('--Any--') + (array)$this->sources;
+
+    $keywordSearch = true;
+    if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) {
+        $keywordSearch = false;
+    }
 ?>
 <?php //Fisma_Format_Section::startSection("Remediation Search"); ?>
 
@@ -51,7 +56,7 @@
             Search: 
         </td>
         <td>
-            <input type="text" name="keywords" size="50" value='<?php echo $this->params['keywords'];?>'>
+            <input type="text" name="keywords" size="50" value='<?php echo $this->params['keywords'];?>' <?php echo $keywordSearch?'':'disabled="disabled"';?>>
         </td>
         <td><?php echo new Fisma_Yui_Form_Button_Submit('remediationSearchSubmit',
                                                   array('value' => 'Search')); ?></td>
@@ -69,11 +74,10 @@
             ?>
         </td>
      </tr>
-     <?php if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) { ?>
+     <?php if (!$keywordSearch) { ?>
          <tr>
          <td colspan="5">
-         <i>The index has not been created yet. It will be created during the first search request. 
-         This may take a few minutes.</i></td></tr>
+         <i>The index has not been created yet. You can't use keywords search.</i></td></tr>
      <?php } ?>
 </table>
 

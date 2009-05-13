@@ -16,6 +16,7 @@
                     </tbody>
                 </table>
             </th>
+            <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system')) { ?>
             <th>
                 <table align="center">
                 <form name="query" method="post" action="/panel/system/sub/list">
@@ -30,6 +31,7 @@
                 </form>
                 </table>
             </th>
+            <?php } ?>
         </tr>
     </tbody>
 </table>

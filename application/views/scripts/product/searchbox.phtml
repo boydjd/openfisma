@@ -16,6 +16,7 @@ Product</a>]</th>
                         </tr>
                 </table>
             </th>
+            <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product')) { ?>
             <th>
                 <table align="center">
                 <form name="query" method="post" action="/panel/product/sub/list">
@@ -28,5 +29,6 @@ Product</a>]</th>
                 </form>
                 </table>
             </th>
+            <?php } ?>
         </tr>
 </table>

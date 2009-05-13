@@ -130,21 +130,18 @@ class AccountController extends SecurityController
     public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_users', 'read');
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
 
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            //@todo english  if account index dosen't exist, then create it.
-            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/account/')) {
-                $this->createIndex();
-            }
             $ret = $this->_helper->searchQuery($qv, 'account');
             $count = count($ret);
+            $this->_paging['fileName'] .= '/qv/'.$qv;
         } else {
             $count = $this->_user->count();
         }
 
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
@@ -926,35 +923,5 @@ class AccountController extends SecurityController
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
         return $requirements;
-    }
-
-    /**
-     * Create accounts Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/account', true);
-        $query = $this->_user->getAdapter()->select()->from(array('u'=>'users'),
-                                        array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
-                                          ->join(array('ur'=>'user_roles'), 'u.id = ur.user_id', array())
-                                          ->join(array('r'=>'roles'), 'ur.role_id = r.id',
-                                                  array('role_name'=>'r.name', 'role_nickname'=>'r.nickname'));
-        $list = $this->_user->getAdapter()->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['account']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('lastname', $row['name_last']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('firstname', $row['name_first']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('email', $row['email']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('role',
-                            $row['role_name'] . ' ' . $row['role_nickname']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
-        }
     }
 }

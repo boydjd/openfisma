@@ -364,9 +364,6 @@ class RemediationController extends PoamBaseController
 
         //Basic Search
         if (!empty($params['keywords'])) {
-            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-                $this->createIndex();
-            }
             $poamIds = $this->_helper->searchQuery($params['keywords'], 'finding');
             if (!empty($poamIds)) {
                 if (!empty($params['ids'])) {
@@ -918,42 +915,6 @@ class RemediationController extends PoamBaseController
     }
 
     /**
-     * Create findings Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/finding', true);
-        $list = $this->_poam->search($this->_me->systems, '*');
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('finding_data', $row['finding_data']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('action_planned', $row['action_planned']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('action_suggested',
-                            $row['action_suggested']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('action_resources',
-                            $row['action_resources']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure', $row['cmeasure']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure_justification',
-                            $row['cmeasure_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_source', $row['threat_source']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_justification',
-                            $row['threat_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('system',
-                            $row['system_name'] . ' ' . $row['system_nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('source',
-                            $row['source_name'] . ' ' . $row['source_nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('asset', $row['asset_name']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
-        }
-    }
-
-    /**
      * @todo english
      * Get keywords from basic search query for highlight
      *
@@ -1223,10 +1184,6 @@ class RemediationController extends PoamBaseController
 
         // Use Zend Lucene to find all POAM ids which match the keyword query
         if (!empty($params['keywords'])) {
-            // Create the index if it does not exist yet.
-            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-                $this->createIndex();
-            }
             $poamIds = $this->_helper->searchQuery($params['keywords'], 'finding');
             if (!empty($poamIds)) {
                 if (!empty($params['ids'])) {

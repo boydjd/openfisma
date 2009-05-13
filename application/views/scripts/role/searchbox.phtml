@@ -18,6 +18,7 @@ Role</a>]</th>
                     </tbody>
                 </table>
             </th>
+            <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/role')) { ?>
             <th>
                 <table align="center">
                 <form name="query" method="post" action="/panel/role/sub/list">
@@ -32,6 +33,7 @@ Role</a>]</th>
                 </form>
                 </table>
             </th>
+            <?php } ?>
         </tr>
     </tbody>
 </table>

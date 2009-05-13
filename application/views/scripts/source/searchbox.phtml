@@ -20,6 +20,7 @@ $this->declareVars(array('fid'=>'name'));
                             </tr>
                     </table>
                 </th>
+                <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source')) { ?>
                 <th>
                     <table align="center">
                             <tr>
@@ -31,6 +32,7 @@ $this->declareVars(array('fid'=>'name'));
                     </form>
                     </table>
                 </th>
+                <?php } ?>
             </tr>
     </table>
 </form>

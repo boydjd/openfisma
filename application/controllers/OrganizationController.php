@@ -91,21 +91,18 @@ class OrganizationController extends SecurityController
     public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_organizations', 'read');
-        
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
+
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            //@todo english  if organization index dosen't exist, then create it.
-            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
-                $this->createIndex();
-            }
             $ret = $this->_helper->searchQuery($qv, 'organization');
             $count = count($ret);
+            $this->_paging['fileName'] .= '/qv/'.$qv;
         } else {
             $count = $this->_organization->count();
         }
 
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
@@ -319,27 +316,4 @@ class OrganizationController extends SecurityController
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
     }
-
-    /**
-     * Create organizations Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/organization', true);
-        $list = $this->_organization->getList(array('name', 'nickname'));
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $id=>$row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
-        }
-    }
-
-
 }

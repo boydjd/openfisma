@@ -14,6 +14,7 @@
                         </tr>
                 </table>
             </th>
+            <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network')) { ?>
             <th>
                 <table align="center">
                 <form name="query" method="post" action="/panel/network/sub/list">
@@ -26,5 +27,6 @@
                 </form>
                 </table>
             </th>
+            <?php } ?>
         </tr>
 </table>

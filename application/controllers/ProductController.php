@@ -114,21 +114,18 @@ class ProductController extends SecurityController
     public function searchbox()
     {
         $this->_acl->requirePrivilege('admin_products', 'read');
+        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         
         $qv = trim($this->_request->getParam('qv'));
         if (!empty($qv)) {
-            //@todo english  if product index dosen't exist, then create it.
-            if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                $this->createIndex();
-            }
             $ret = $this->_helper->searchQuery($qv, 'product');
             $count = count($ret);
+            $this->_paging['fileName'] .= '/qv/'.$qv;
         } else {
             $count = $this->_product->count();
         }
 
         $this->_paging['totalItems'] = $count;
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
         $pager = & Pager::factory($this->_paging);
         $this->view->assign('qv', $qv);
         $this->view->assign('total', $count);
@@ -343,29 +340,6 @@ class ProductController extends SecurityController
             $this->message("Unable to update product<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
-        }
-    }
-
-    /**
-     * Create products Lucene Index
-     */
-    protected function createIndex()
-    {
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/product', true);
-        $list = $this->_product->getList(array('meta', 'vendor', 'name', 'version', 'desc'));
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $id=>$row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('vendor', $row['vendor']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('version', $row['version']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
         }
     }
 }
