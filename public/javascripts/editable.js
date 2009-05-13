@@ -4,64 +4,118 @@
  * is used to add the required click handler to all of the editable fields.
  */ 
 function setupEditFields() {
-     $(".editable").click(function(){
-         removeHighlight(document);
-         var t_name = $(this).attr('target');
-         $(this).removeClass('editable');
-         $(this).removeAttr('target');
-         if( t_name ) {
-             var target = $('#'+t_name);
-             var name = target.attr('name');
-             var type = target.attr('type');
-             var url = target.attr('href');
-             var eclass = target.attr('class');
-             var cur_val = target.text();
-             var cur_html = target.html();
-             var cur_span = target;
-			 if ('poam[action_current_date]' == name) {
-				 var onchange = ' onchange="validateEcd()"';
-			 } else {
-				 var onchange = '';
-			 }
+    var editable = YAHOO.util.Selector.query('.editable');
+    YAHOO.util.Event.on(editable, 'click', function (o){
+        removeHighlight(document);
+        var t_name = this.getAttribute('target');
+        YAHOO.util.Dom.removeClass(this, 'editable'); 
+        this.removeAttribute('target');
+        if(t_name) {
+             var target = document.getElementById(t_name);
+             var name = target.getAttribute('name');
+             var type = target.getAttribute('type');
+             var url = target.getAttribute('href');
+             var eclass = target.className;
+             var cur_val = target.innerText ? target.innerText : target.textContent;
+             var cur_html = target.innerHTML;
+             if ('poam[action_current_date]' == name) {
+                 var onchange = ' onchange="validateEcd()"';
+             } else {
+                 var onchange = '';
+             }
              if (type == 'text') {
-                 cur_span.replaceWith( '<input name='+name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" '+onchange+' />');
-                 $('input.date').datepicker({
-                         dateFormat:'yymmdd',
-                         showOn: 'both',
-                         onClose: showJustification,
-                         buttonImageOnly: true,
-                         buttonImage: '/images/calendar.gif',
-                         buttonText: 'Calendar'});
+                 target.outerHTML = '<input name='+name+' id='+t_name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" '+onchange+' />';
+                 if (eclass == 'date') {
+                     var img = document.createElement('IMG');
+                     img.src = '/images/calendar.gif';
+                     img.id = t_name + '_show';
+                     img.alt = 'Calendar';
+                     img.width = 18;
+                     img.height = 18;
+                     document.getElementById(t_name).parentNode.appendChild(img);
+                     /*var btn = document.createElement('BUTTON');
+                     btn.id = t_name + '_show';
+                     btn.title = 'Show Calendar';
+                     btn.innerHTML = '<img src="/images/calendar.gif" width="18" height="18" alt="Calendar" >';
+                     document.getElementById(t_name).parentNode.appendChild(btn);*/
+                     showCalendar(t_name, t_name+'_show');
+                 }
              } else if( type == 'textarea' ) {
-                 var row = target.attr('rows');
-                 var col = target.attr('cols');
-                 cur_span.replaceWith( '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">'+
-                         cur_html+ '</textarea>');
+                 var row = target.getAttribute('rows');
+                 var col = target.getAttribute('cols');
+                 target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">' + cur_html+ '</textarea>';
                  tinyMCE.execCommand("mceAddControl", true, name);
              } else {
-                 $.get(url,{value:cur_val.trim()},
-                 function(data){
-                     if(type == 'select'){
-                         cur_span.replaceWith('<select name="'+name+'">'+data+'</select>');
-                     }
-                 });
+                 YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {
+                        success: function(o) {
+                             if(type == 'select'){
+                                 target.outerHTML = '<select name="'+name+'">'+o.responseText+'</select>';
+                             }
+                        },
+                        failure: function(o) {alert('Failed to load the specified panel.');}
+                    }, null);
              }
-         }
-     });
+        }
+    });
 }
 
 function validateEcd() {
-	var obj = $('input[name="poam[action_current_date]"]');
-	var inputDate = obj.val();
-	var oDate= new Date();
-	var Year = oDate.getFullYear();
-	var Month = oDate.getMonth();
-	Month = Month + 1;
-	if (Month < 10) {Month = '0'+Month;}
-	var Day = oDate.getDate();
-	if (Day < 10) {Day = '0' + Day;}
-	if (inputDate <= parseInt(""+Year+Month+Day)) {
-	    //@todo english
-	    alert("The ECD date can'be in the past!");
-	}
+    var obj = document.getElementById('action_current_date');
+    var inputDate = obj.value;
+    var oDate= new Date();
+    var Year = oDate.getFullYear();
+    var Month = oDate.getMonth();
+    Month = Month + 1;
+    if (Month < 10) {Month = '0'+Month;}
+    var Day = oDate.getDate();
+    if (Day < 10) {Day = '0' + Day;}
+    if (inputDate <= parseInt(""+Year+Month+Day)) {
+        //@todo english
+        alert("The ECD date can'be in the past!");
+    }
+}
+
+if(window.HTMLElement) {
+    HTMLElement.prototype.__defineSetter__("outerHTML",function(sHTML){
+        var r=this.ownerDocument.createRange();
+        r.setStartBefore(this);
+        var df=r.createContextualFragment(sHTML);
+        this.parentNode.replaceChild(df,this);
+        return sHTML;
+        });
+
+    HTMLElement.prototype.__defineGetter__("outerHTML",function(){
+    var attr;
+        var attrs=this.attributes;
+        var str="<"+this.tagName.toLowerCase();
+        for(var i=0;i<attrs.length;i++){
+            attr=attrs[i];
+            if(attr.specified)
+                str+=" "+attr.name+'="'+attr.value+'"';
+            }
+        if(!this.canHaveChildren)
+            return str+">";
+        return str+">"+this.innerHTML+"</"+this.tagName.toLowerCase()+">";
+        });
+       
+HTMLElement.prototype.__defineGetter__("canHaveChildren",function(){
+   switch(this.tagName.toLowerCase()){
+            case "area":
+            case "base":
+         case "basefont":
+            case "col":
+            case "frame":
+            case "hr":
+            case "img":
+            case "br":
+            case "input":
+            case "isindex":
+            case "link":
+            case "meta":
+            case "param":
+            return false;
+        }
+        return true;
+
+     });
 }

@@ -1,5 +1,12 @@
-<?php Fisma_Format_Section::startSection("Network Information</b> [<a href='{$this->editLink}'>Edit</a>]"); ?>
-
+<?php
+$operation = '';
+if ($this->acl->isAllowed('admin_networks','update')) {
+    $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
+}
+if ($this->acl->isAllowed('admin_networks','delete')) {
+    $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
+}
+Fisma_Format_Section::startSection("Network Information $operation"); ?>
 <div>
     <?php echo $this->form ?>
 </div>

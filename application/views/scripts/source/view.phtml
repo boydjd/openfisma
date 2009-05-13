@@ -1,4 +1,12 @@
-<?php Fisma_Format_Section::startSection("Finding Source Information [<a href='{$this->editLink}'>Edit</a>]"); ?>
+<?php
+$operation = '';
+if ($this->acl->isAllowed('admin_sources','update')) {
+    $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
+}
+if ($this->acl->isAllowed('admin_sources','delete')) {
+    $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
+}
+Fisma_Format_Section::startSection("Finding Source Information $operation"); ?>
 
 <div>
     <?php echo $this->form ?>

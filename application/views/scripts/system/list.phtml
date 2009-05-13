@@ -1,52 +1,46 @@
 <?php Fisma_Format_Section::startSection("System List"); ?>
+<div id="list"></div>
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    {key:"id", label:"id",hidden: true}
+    ,{key:"name", label:"System Name", sortable: true, hidden: false}
+    ,{key:"nickname", label:"Acronym", sortable: true, hidden: false}
+    ,{key:"organization", label:"Organization", sortable: true, hidden: false}
+    ,{key:"confidentiality", label:"Confidentiality", sortable: true, hidden: false}
+    ,{key:"integrity", label:"Integrity", sortable: true, hidden: false}
+    ,{key:"availability", label:"Availability", sortable: true, hidden: false}
+    ,{key:"type", label:"Type", sortable: true, hidden: false}
+];
 
-<table width="98%" align="center" border="0" cellpadding="0" cellspacing="0" class="tbframe">
-<tr align="center">
-    <th>System Name</th>
-    <th>Acronym</th>
-    <th>Organization</th>
-    <th>Confidentiality</th>
-    <th>Integrity</th>
-    <th>Availability</th>
-    <th>Type</th>
-    <?php if($this->acl->isAllowed('admin_systems','update')){
-              echo'<th>Edit</th>';
-          } 
-          if($this->acl->isAllowed('admin_systems','delete')){
-              echo'<th>Del</th>';
-          }
-          if($this->acl->isAllowed('admin_systems','read')){
-              echo'<th>View</th>';
-          }
-    ?>
-</tr>
-<?php foreach($this->system_list as $system){ ?>
-<tr>
-    <td class="tdc">&nbsp;<?php echo $system['name'];?></td>
-    <td class="tdc">&nbsp;<?php echo $system['nickname'];?></td>
-    <td class="tdc">&nbsp;<?php echo $system['organization'];?></td>
-    <td class="tdc">&nbsp;<?php echo $system['confidentiality'];?></td>
-    <td class="tdc">&nbsp;<?php echo $system['integrity'];?></td>
-    <td class="tdc">&nbsp;<?php echo $system['availability'];?></td>
-    <td class="tdc">&nbsp;<?php echo $system['type'];?></td>
-    <?php if($this->acl->isAllowed('admin_systems','update')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/system/sub/view/v/edit/id/<?php echo $system['id'];?>" title="edit the Systems">
-        <img src="/images/edit.png" border="0"></a>
-    </td>
-    <?php } if($this->acl->isAllowed('admin_systems','delete')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/system/sub/delete/id/<?php echo $system['id'];?>" title="delete the Systems, then no restore after deleted" onclick="return delok('System');">
-        <img src="/images/del.png" border="0"></a>
-    </td>
-    <?php } if($this->acl->isAllowed('admin_systems','read')){ ?>
-    <td class="tdc" align="center">
-        <a href="/panel/system/sub/view/id/<?php echo $system['id'];?>" title="display the Systems">
-        <img src="/images/view.gif" border="0"></a>
-    </td>
+    var dataSource = { rows: [
+    <?php foreach ($this->system_list as $row) {
+          if (!isset($i)) { $i = true; } else { echo ','; } ?>
+          {<?php  foreach (array('id', 'name', 'nickname',
+                                 'organization', 'confidentiality',
+                                 'integrity', 'availability', 'type') as $val) { 
+                    if (!isset($n)) { $n = true; } else { echo ','; }
+                    echo $val . ":'" . $row[$val] . "'";
+                  }
+                unset($n); ?>}
+    <?php } unset($i); ?> ] };
+    var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
+    
+    // DataTable configuration
+    var myConfigs = {
+        dynamicData: false
+    };
+    var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    <?php if ($this->acl->isAllowed('admin_systems','read')) { ?>
+    myDataTable.subscribe("rowClickEvent", 
+        function (oArgs) {
+            var elTarget = oArgs.target;
+            var oRecord = this.getRecord(elTarget);
+            document.location = "/panel/system/sub/view/v/view/id/" + oRecord.getData("id");
+        }
+    );
     <?php }?>
-</tr>
-<?php }?>
-</table>
-
+</script>
 <?php Fisma_Format_Section::stopSection(); ?>

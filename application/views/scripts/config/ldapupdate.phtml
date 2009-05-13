@@ -1,18 +1,4 @@
 <script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.form.js"></script>
-
-<script>
-    $(document).ready(function(){
-        $("#validateLDAP").click(function(){
-            $("#ldapUpdate").ajaxSubmit({url:"/config/ldapvalid/format/html",
-                                success: ldapResult});
-        });
-    });
-
-    function ldapResult(responseText, statusText)
-    {
-        message(responseText);
-    }
-</script>
 <?php Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>
                                    <button id="validateLDAP">Test Configuration</button>'); ?>
 
@@ -22,3 +8,16 @@
     echo $this->form;
 ?>
 </div>
+<script>
+    YAHOO.util.Event.onDOMReady(function () {
+        YAHOO.util.Event.on('validateLDAP', 'click', function(){
+            YAHOO.util.Connect.asyncRequest('POST', '/config/ldapvalid/format/html', {
+                success:function (o){ldapResult(o.responseText, o.statusText)},
+                failure: handleFailure});
+        });
+    });
+    function ldapResult(responseText, statusText)
+    {
+        message(responseText);
+    }
+</script>

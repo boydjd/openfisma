@@ -159,6 +159,7 @@ class SourceController extends SecurityController
             $this->view->assign('editLink', "/panel/source/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);            
         }
+        $this->view->assign('deleteLink', "/panel/source/sub/delete/id/$id");
         $form->setDefaults($source);
         $this->view->form = $form;
         $this->view->assign('id', $id);

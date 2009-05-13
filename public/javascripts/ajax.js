@@ -16,12 +16,11 @@ var readyFunc = function () {
     });
     YAHOO.util.Dom.addClass(YAHOO.util.Selector.filter(trs, ':nth-child(even)'), 'alt');
 
-   $('input.date').datepicker({dateFormat:'yymmdd',
-                showOn: 'both', 
-                buttonImageOnly: true,
-                buttonImage: '/images/calendar.gif'
-                });
-                
+    var calendars = YAHOO.util.Selector.query('.date');
+    for(var i = 0; i < calendars.length; i ++) {
+        YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));
+    }
+    
     // enable or disable 'on time' type by finding status
     var filterStatus = function () {
         if (document.getElementById('poamSearchStatus')) {
@@ -54,13 +53,15 @@ var readyFunc = function () {
         if (value == '0') {
             dateBegin.disabled = false;
             dateEnd.disabled = false;
-            $('input.date').datepicker("enable");
+            document.getElementById('show1').disabled = false;
+            document.getElementById('show2').disabled = false;
         } else {
             dateBegin.disabled = true;
             dateEnd.disabled = true;
             dateBegin.value = '';
             dateEnd.value = '';
-            $('input.date').datepicker("disable");
+            document.getElementById('show1').disabled = true;
+            document.getElementById('show2').disabled = true;
         }
     }
     YAHOO.util.Event.on('remediationSearchAging', 'change', searchAging);
@@ -233,17 +234,6 @@ function ev_deny(formname){
     if (!form_confirm(document.poam_detail, 'deny the evidence')) {
         return false;
     }
-    var dw = YAHOO.util.Dom.getDocumentWidth();
-    var dh = YAHOO.util.Dom.getDocumentHeight();
-    var maskDiv = document.createElement('DIV');
-    maskDiv.id = 'full';
-    maskDiv.style.width = dw+'px';
-    maskDiv.style.height = dh+'px';
-    maskDiv.style.backgroundColor = '#000000';
-    maskDiv.style.marginTop = -1*dh+'px';
-    maskDiv.style.opacity = 0.4;
-    maskDiv.style.zIndex = 10;
-    document.body.appendChild(maskDiv);
 
     var content = document.createElement('div');
     var p = document.createElement('p');
@@ -252,82 +242,79 @@ function ev_deny(formname){
     var dt = document.createElement('textarea');
     dt.rows = 5;
     dt.cols = 60;
+    dt.id = 'dialog_comment';
     dt.name = 'comment';
     content.appendChild(dt);
+    var div = document.createElement('div');
+    div.style.height = '20px';
+    content.appendChild(div);
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.id = 'dialog_continue';
+    button.value = 'Continue';
+    content.appendChild(button);
 
-    $('<div title="Evidence Denial"></div>').append(content).
-        dialog({position:'middle', width: 500, height: 240, resizable: true,modal:true,
-            close:function(){
-                $('#full').remove();
-            },
-            buttons:{
-                'Cancel':function(){
-                    $(this).dialog("close");
-                },
-                'Continue':function(){
-                    var form1 = formname;
-                    var comments = $("textarea[name=comment]",this).val();
-                    form1.elements['comment'].value = comments;
-                    form1.elements['decision'].value = 'DENY';
-                    var submitEa = document.createElement('input');
-                    submitEa.type = 'hidden';
-                    submitEa.name = 'submit_ea';
-                    submitEa.value = 'DENY';
-                    form1.appendChild(submitEa);                    
-                    form1.submit();
-                }
-            }
-        });
+    panel('Evidence Denial', document.finding_detail, '', content.innerHTML);
+    document.getElementById('dialog_continue').onclick = function (){
+        var form2 = formname;
+        if  (document.all) { // IE
+            var comment = document.getElementById('dialog_comment').innerHTML;
+        } else {// firefox
+            var comment = document.getElementById('dialog_comment').value;
+        }
+        form2.elements['comment'].value = comment;
+        form2.elements['decision'].value = 'DENY';
+        var submitMsa = document.createElement('input');
+        submitMsa.type = 'hidden';
+        submitMsa.name = 'submit_ea';
+        submitMsa.value = 'DENY';
+        form2.appendChild(submitMsa);
+        form2.submit();
+    }
 }
 
 function ms_comment(formname){
-    if (!form_confirm(document.poam_detail, 'deny the mitigation')) {
+    if (!form_confirm(document.finding_detail, 'deny the mitigation')) {
         return false;
     }
-    var dw = YAHOO.util.Dom.getDocumentWidth();
-    var dh = YAHOO.util.Dom.getDocumentHeight();
-    var maskDiv = document.createElement('DIV');
-    maskDiv.id = 'full';
-    maskDiv.style.width = dw+'px';
-    maskDiv.style.height = dh+'px';
-    maskDiv.style.backgroundColor = '#000000';
-    maskDiv.style.marginTop = -1*dh+'px';
-    maskDiv.style.opacity = 0.4;
-    maskDiv.style.zIndex = 10;
-    document.body.appendChild(maskDiv);
 
     var content = document.createElement('div');
     var p = document.createElement('p');
-    p.appendChild(document.createTextNode('Comments:'));
+    var c_title = document.createTextNode('Comments:');
+    p.appendChild(c_title);
     content.appendChild(p);
-    var dt = document.createElement('textarea');
-    dt.rows = 5;
-    dt.cols = 60;
-    dt.name = 'comment';
-    content.appendChild(dt);
+    var textarea = document.createElement('textarea');
+    textarea.id = 'dialog_comment';
+    textarea.name = 'comment';
+    textarea.rows = 5;
+    textarea.cols = 60;
+    content.appendChild(textarea);
+    var div = document.createElement('div');
+    div.style.height = '20px';
+    content.appendChild(div);
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.id = 'dialog_continue';
+    button.value = 'Continue';
+    content.appendChild(button);
     
-    $('<div title="Mitigation Strategy Denial"></div>').append(content).
-        dialog({position:'middle', width: 500, height: 440, resizable: true,modal:true,
-            close:function(){
-                $('#full').remove();
-            },
-            buttons:{
-                'Cancel':function(){
-                    $(this).dialog("close");
-                },
-                'Continue':function(){
-                    var form2 = formname;
-                    var comment = $("textarea[name=comment]",this).val();
-                    form2.elements['comment'].value = comment;
-                    form2.elements['decision'].value = 'DENIED';
-                    var submitMsa = document.createElement('input');
-                    submitMsa.name = 'submit_msa';
-                    submitMsa.value = 'DENY';
-                    form2.appendChild(submitMsa);
-                    form2.submit();
-                }
-            }
-        });
+    panel('Mitigation Strategy Denial', document.finding_detail, '', content.innerHTML);
+    document.getElementById('dialog_continue').onclick = function (){
+        var form2 = formname;
+        if  (document.all) { // IE
+            var comment = document.getElementById('dialog_comment').innerHTML;
+        } else {// firefox
+            var comment = document.getElementById('dialog_comment').value;
+        }
+        form2.elements['comment'].value = comment;
+        form2.elements['decision'].value = 'DENIED';
+        var submitMsa = document.createElement('input');
+        submitMsa.type = 'hidden';
+        submitMsa.name = 'submit_msa';
+        submitMsa.value = 'DENY';
+        form2.appendChild(submitMsa);
+        form2.submit();
+    }
 }
 
 function getProdId(){
@@ -390,7 +377,11 @@ function asset_detail() {
 }
 
 function message( msg ,model){
-    var msgbar = new YUI.util.Element('msgbar');
+    if (document.getElementById('msgbar')) {
+        var msgbar = document.getElementById('msgbar'); 
+    } else {
+        return;
+    }
     msgbar.innerHTML = msg;
     msgbar.style.fontWeight = 'bold';
     
@@ -404,8 +395,21 @@ function message( msg ,model){
     msgbar.style.display = 'block';
 }
 
+function toggleSearchOptions(obj) {
+    var searchbox = document.getElementById('advanced_searchbox');
+    if (searchbox.style.display == 'none') {
+        searchbox.style.display = '';
+        obj.value = 'Basic Search';
+    } else {
+        searchbox.style.display = 'none';
+        obj.value = 'Advanced Search';
+    }
+}
+
 function showJustification(){
-    document.getElementById('ecd_justification').style.display = '';
+    if (document.getElementById('ecd_justification')) {
+        document.getElementById('ecd_justification').style.display = '';
+    }
 }
 
 function addBookmark(title, url){
@@ -501,6 +505,24 @@ function removeHighlight(node) {
 	}
 }
 
+function switchYear(step){
+    if( !isFinite(step) ){
+        step = 0;
+    }
+    var oYear = document.getElementById('gen_shortcut');
+    var year = oYear.getAttribute('year');
+    year = Number(year) + Number(step);
+	oYear.setAttribute('year', year);
+    var url = oYear.getAttribute('url') + year + '/';
+    var tmp = YAHOO.util.Selector.query('#gen_shortcut span:nth-child(1)');
+    tmp[0].innerHTML = year;
+    tmp[0].parentNode.setAttribute('href', url);
+    tmp[1].parentNode.setAttribute('href', url + 'q/1/');
+    tmp[2].parentNode.setAttribute('href', url + 'q/2/');
+    tmp[3].parentNode.setAttribute('href', url + 'q/3/');
+    tmp[4].parentNode.setAttribute('href', url + 'q/4/');
+}
+
 /**
  * @todo english
  * Check the form if has something changed but not saved
@@ -509,23 +531,33 @@ function removeHighlight(node) {
  * @param str user's current action
  */
 function form_confirm (check_form, action) {
-    var changed = false;    
-    $(':text, :password, textarea', check_form).each(function() {    
-        var _v = $(this).attr('_value');    
-        if(typeof(_v) == 'undefined')   _v = '';    
-        if(_v != $(this).val()) changed = true;    
-    });    
-   
-    $(':checkbox, :radio', check_form).each(function() {    
-        var _v = this.checked ? 'on' : 'off';  
-        if(_v != $(this).attr('_value')) changed = true;    
-    });    
+    var changed = false;
     
-    $('select', check_form).each(function() {    
-        var _v = $(this).attr('_value');    
-        if(typeof(_v) == 'undefined')   _v = '';    
-        if(_v != this.options[this.selectedIndex].value) changed = true;  
-    });
+    elements = YAHOO.util.Selector.query("[name*='poam']");
+    for (var i = 0;i < elements.length; i ++) {
+        var tag_name = elements[i].tagName.toUpperCase();
+        if (tag_name == 'INPUT') {
+            var e_type = elements[i].type;
+            if (e_type == 'text' || e_type == 'password') {
+                var _v = elements[i].getAttribute('_value');
+                if(typeof(_v) == 'undefined')   _v = '';
+                if(_v != elements[i].value) changed = true;
+            }
+            if (e_type == 'checkbox' || e_type == 'radio') {
+                var _v = elements[i].checked ? 'on' : 'off';  
+                if(_v != elements[i].getAttribute('_value')) changed = true;  
+            }
+        } else if (tag_name == 'SELECT') {
+            var _v = elements[i].getAttribute('_value');    
+            if(typeof(_v) == 'undefined')   _v = '';    
+            if(_v != elements[i].options[elements[i].selectedIndex].value) changed = true;  
+        } else if (tag_name == 'TEXTAREA') {
+            var _v = elements[i].getAttribute('_value');
+            if(typeof(_v) == 'undefined')   _v = '';
+            var textarea_val = elements[i].value ? elements[i].value : elements[i].innerHTML;
+            if(_v != textarea_val) changed = true;
+        }
+    }
 
     if(changed) {
         if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save Changes".') == true) {
@@ -550,28 +582,140 @@ function dump(arr) {
 } 
 
 /* temporary helper function to fix a bug in evidence upload for IE6/IE7 */
-function panel(title, parent, src) {
+function panel(title, parent, src, html) {
     var newPanel = new YAHOO.widget.Panel('panel', {width:"540px", modal:true} );
     newPanel.setHeader(title);
     newPanel.setBody("Loading...");
     newPanel.render(parent);
     newPanel.center();
     newPanel.show();
-    // Load the help content for this module
-    YAHOO.util.Connect.asyncRequest('GET', 
-                                    src,
-                                    {
-                                        success: function(o) {
-                                            // Set the content of the panel to the text of the help module
-                                            o.argument.setBody(o.responseText);
-                                            // Re-center the panel (because the content has changed)
-                                            o.argument.center();
-                                        },
-                                        failure: function(o) {alert('Failed to load the specified panel.');},
-                                        argument: newPanel
-                                    }, 
-                                    null);
+    
+    if (src != '') {
+        // Load the help content for this module
+        YAHOO.util.Connect.asyncRequest('GET', 
+                                        src,
+                                        {
+                                            success: function(o) {
+                                                // Set the content of the panel to the text of the help module
+                                                o.argument.setBody(o.responseText);
+                                                // Re-center the panel (because the content has changed)
+                                                o.argument.center();
+                                            },
+                                            failure: function(o) {alert('Failed to load the specified panel.');},
+                                            argument: newPanel
+                                        }, 
+                                        null);
+    } else {
+        // Set the content of the panel to the text of the help module
+        newPanel.setBody(html);
+        // Re-center the panel (because the content has changed)
+        newPanel.center();
+    }
 }
 
 var e = YAHOO.util.Event;
 e.onDOMReady(readyFunc);
+
+function callCalendar(ele){
+    showCalendar(ele, ele+'_show');
+}
+
+function showCalendar(block, trigger){
+    var Event = YAHOO.util.Event,
+            Dom = YAHOO.util.Dom,
+            dialog,
+            calendar;
+    // Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, until the first time the button is clicked.
+    var showBtn = Dom.get(trigger);
+    if (!dialog) {
+        // Hide Calendar if we click anywhere in the document other than the calendar
+        Event.on(document, "click", function(e) {
+            var el = Event.getTarget(e);
+            var dialogEl = dialog.element;
+            if (el != dialogEl && !Dom.isAncestor(dialogEl, el) && el != showBtn && !Dom.isAncestor(showBtn, el)) {
+                dialog.hide();
+            }
+        });
+
+        function resetHandler() {
+            // Reset the current calendar page to the select date, or 
+            // to today if nothing is selected.
+            var selDates = calendar.getSelectedDates();
+            var resetDate;
+
+            if (selDates.length > 0) {
+                resetDate = selDates[0];
+            } else {
+                resetDate = calendar.today;
+            }
+
+            calendar.cfg.setProperty("pagedate", resetDate);
+            calendar.render();
+        }
+
+        function closeHandler() {
+            dialog.hide();
+        }
+
+        dialog = new YAHOO.widget.Dialog("container", {
+            visible:false,
+            context:["show", "tl", "bl"],
+            buttons:[ {text:"Reset", handler: resetHandler, isDefault:true}, {text:"Close", handler: closeHandler}],
+            draggable:false,
+            close:true
+        });
+        dialog.setHeader('Pick A Date');
+        dialog.setBody('<div id="cal"></div>');
+        dialog.render(document.body);
+
+        dialog.showEvent.subscribe(function() {
+            if (YAHOO.env.ua.ie) {
+                // Since we're hiding the table using yui-overlay-hidden, we 
+                // want to let the dialog know that the content size has changed, when
+                // shown
+                dialog.fireEvent("changeContent");
+            }
+        });
+    }
+
+    // Lazy Calendar Creation - Wait to create the Calendar until the first time the button is clicked.
+    if (!calendar) {
+
+        calendar = new YAHOO.widget.Calendar("cal", {
+            iframe:false,          // Turn iframe off, since container has iframe support.
+            hide_blank_weeks:true  // Enable, to demonstrate how we handle changing height, using changeContent
+        });
+        calendar.render();
+
+        calendar.selectEvent.subscribe(function() {
+            if (calendar.getSelectedDates().length > 0) {
+                var selDate = calendar.getSelectedDates()[0];
+                // Pretty Date Output, using Calendar's Locale values: Friday, 8 February 2008
+                //var wStr = calendar.cfg.getProperty("WEEKDAYS_LONG")[selDate.getDay()];
+                var dStr = selDate.getDate();
+                var mStr = (selDate.getMonth()+1 < 10) ? '0'+(selDate.getMonth()+1) : (selDate.getMonth()+1);
+                var yStr = selDate.getFullYear();
+
+                Dom.get(block).value = yStr + '' + mStr + '' + dStr;
+            } else {
+                Dom.get(block).value = "";
+            }
+            dialog.hide();
+        });
+
+        calendar.renderEvent.subscribe(function() {
+            // Tell Dialog it's contents have changed, which allows 
+            // container to redraw the underlay (for IE6/Safari2)
+            dialog.fireEvent("changeContent");
+        });
+    }
+
+    var seldate = calendar.getSelectedDates();
+
+    if (seldate.length > 0) {
+        // Set the pagedate to show the selected date if it exists
+        calendar.cfg.setProperty("pagedate", seldate[0]);
+        calendar.render();
+    }
+    dialog.show();
+}

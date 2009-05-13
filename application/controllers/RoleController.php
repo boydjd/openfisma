@@ -176,6 +176,8 @@ class RoleController extends SecurityController
             $this->view->assign('editLink', "/panel/role/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);            
         }
+        $this->view->assign('deleteLink', "/panel/role/sub/delete/id/$id");
+        $this->view->assign('rightLink', "/panel/role/sub/right/id/$id");
         $form->setDefaults($role);
         $this->view->form = $form;
         $this->view->assign('id', $id);

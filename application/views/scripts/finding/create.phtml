@@ -27,7 +27,7 @@
                             <td>
                                 <table border="0" cellpadding="0" cellspacing="0">
                                     <tr>
-                                        <td><input type="text" class="date" name="poam[discover_ts]" size="12" maxlength="10" value="<?php echo date('Ymd');?>" url=""></td>
+                                        <td><input type="text" class="date" id="discover_ts" name="poam[discover_ts]" size="12" maxlength="10" value="<?php echo date('Ymd');?>" url=""><button type="button" id="discover_ts_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
                                     </tr>
                                 </table>
                             </td>
@@ -62,14 +62,14 @@
                             ?>
                                         </td>
                                         <td><b>Asset Name:</b></td>
-                                        <td><input class='assets' type="text" name="name" value="<?php echo $this->param['port']; ?>" size="10" />                                          &nbsp;                                        </td>
+                                        <td><input class='assets' type="text" name="name" value="<?php echo $this->param['port']; ?>" size="10" />&nbsp;</td>
                                       </tr>
                                     <tr>
-                                                    <td><b>IP Address:</b></td>
-                                                    <td><input class='assets' type="text" name="ip" value="<?php echo $this->param['ip']; ?>" maxlength="23" /></td>
-                                                    <td><b>Port:<b></b></b></td>
-                                                    <td><input class='assets' type="text" name="port" value="<?php echo $this->param['port']; ?>" size="10" /></td>
-                                                    </tr>
+                                    <td><b>IP Address:</b></td>
+                                    <td><input class='assets' type="text" name="ip" value="<?php echo $this->param['ip']; ?>" maxlength="23" /></td>
+                                    <td><b>Port:<b></b></b></td>
+                                    <td><input class='assets' type="text" name="port" value="<?php echo $this->param['port']; ?>" size="10" /></td>
+                                    </tr>
                                     <tr>
                                       <td>&nbsp;</td>
                                       <td><input id="search_asset" type="button" value="Search Assets" url='/asset/search' /></td>

@@ -283,7 +283,8 @@ class AccountController extends SecurityController
         // option value for is_active needs to be converted from int to string.
         $userDetail['is_active'] = "{$userDetail['is_active']}";
         $form->setDefaults($userDetail);
-
+        
+        $this->view->assign('deleteLink',"/panel/account/sub/delete/id/$id");
         $this->view->assign('form', Fisma_Form_Manager::prepareForm($form));
 
         // Notice that the view is rendered conditionally based on the $v

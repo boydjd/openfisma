@@ -1,5 +1,3 @@
-<script language="javascript"></script>
-
 <?php Fisma_Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
     <div class="toolbar">
         <?php 
@@ -137,8 +135,8 @@ var columnOptionsPanel;
 function showColumnOptions() {
     if (!columnOptionsPanel) {        
         // Add the buttons to the panel
-    	for (column in myColumnDefs) {
-    	    var oCheckButton9 = new YAHOO.widget.Button({  
+        for (column in myColumnDefs) {
+            var oCheckButton9 = new YAHOO.widget.Button({  
                 type: "checkbox",  
                 label: myColumnDefs[column].label,  
                 container: "columnOptionsPanelBody",
@@ -148,12 +146,12 @@ function showColumnOptions() {
                     obj: myColumnDefs[column].key
                 }
             });
-    	}
-    	var saveButton = new YAHOO.widget.Button({
-    	    type: "button",
-    	    label: "Save",
-    	    container: "columnOptionsPanelBody",
-    	    onclick: {
+        }
+        var saveButton = new YAHOO.widget.Button({
+            type: "button",
+            label: "Save",
+            container: "columnOptionsPanelBody",
+            onclick: {
                 fn: saveColumnPreference
             }
         });
@@ -162,8 +160,8 @@ function showColumnOptions() {
         columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanelDiv', {width:"300px"} ); 
         columnOptionsPanel.setHeader('Show/Hide Columns');
         columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
-    	columnOptionsPanel.render(document.body); 
-    	columnOptionsPanel.center();
+        columnOptionsPanel.render(document.body); 
+        columnOptionsPanel.center();
     }
     columnOptionsPanel.show();
 }

@@ -1,23 +1,7 @@
 <script>
-$(document).ready(function(){
-	switchYear();
+YAHOO.util.Event.onDOMReady(function () {
+    switchYear();
 });
-
-function switchYear(step){
-    if( !isFinite(step) ){
-        step = 0;
-    }
-    var year = $("span[name=gen_shortcut]").attr('year');
-    year = Number(year) + Number(step);
-	$("span[name=gen_shortcut]").attr('year', year);
-    var url = $("span[name=gen_shortcut]").attr('url')+year+'/';
-    $("span[name=year]").html( year );
-    $("span[name=year]").parent().attr( 'href', url);
-    $("span[name=q1]").parent().attr( 'href', url+'q/1/' );
-    $("span[name=q2]").parent().attr( 'href', url+'q/2/' );
-    $("span[name=q3]").parent().attr( 'href', url+'q/3/' );
-    $("span[name=q4]").parent().attr( 'href', url+'q/4/' );
-}
 </script>
 <?php 
     $url ="/panel/report/sub/fisma/s/search";
@@ -50,14 +34,14 @@ function switchYear(step){
                                        null,$this->system_list);
             ?>
         </td>
-        <td>From:<input type="text" class="date" name="startdate" value="<?php 
+        <td>From:<input type="text" class="date" id="startdate" name="startdate" value="<?php 
             echo isset($this->criteria['startdate'])?$this->criteria['startdate']:'';
-            ?>" size="10" maxlength="10" url="">
+            ?>" size="10" maxlength="10" url=""><button type="button" id="startdate_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button>
         </td>
         <td>To:
-        <input type="text" class="date" name="enddate" value="<?php 
+        <input type="text" class="date" id="enddate" name="enddate" value="<?php 
             echo isset($this->criteria['enddate'])?$this->criteria['enddate']:'';
-            ?>" size="10" maxlength="10" url=""></td>
+            ?>" size="10" maxlength="10" url=""><button type="button" id="enddate_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
         <td>
             <?php echo new Fisma_Yui_Form_Button_Submit('generateFismaReport', array('value' => 'Generate Report')); ?>
         </td>
@@ -65,7 +49,7 @@ function switchYear(step){
     <tr>
         <td colspan="4">
             Generate Report shortcut:
-                    <span name="gen_shortcut" url="/panel/report/sub/fisma/s/search/y/" year="<?php echo $this->year;?>">
+                    <span name="gen_shortcut" id="gen_shortcut" url="/panel/report/sub/fisma/s/search/y/" year="<?php echo $this->year;?>">
                         <a href="javascript:switchYear(-1);" style="text-decoration: none;" ><<</a>&nbsp
                         <a href="" style="text-decoration: none;" ><span name="year"></span></a>&nbsp;
                         <a href="" style="text-decoration: none;" ><span name="q1">Q1</span></a>&nbsp;

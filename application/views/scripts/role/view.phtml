@@ -1,7 +1,16 @@
-<?php Fisma_Format_Section::startSection("Role Information [<a href='{$this->editLink}'>Edit</a>]"); ?>
-
+<?php
+$operation = '';
+if ($this->acl->isAllowed('admin_roles','definition')) {
+    $operation .= "[<a href='{$this->rightLink}'>Right</a>]";
+}
+if ($this->acl->isAllowed('admin_roles','update')) {
+    $operation .= "&nbsp;&nbsp;[<a href='{$this->editLink}'>Edit</a>]";
+}
+if ($this->acl->isAllowed('admin_roles','delete')) {
+    $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
+}
+Fisma_Format_Section::startSection("Role Information $operation"); ?>
 <div>
     <?php echo $this->form ?>
 </div>
-
 <?php Fisma_Format_Section::stopSection(); ?>

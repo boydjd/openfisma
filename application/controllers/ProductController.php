@@ -193,6 +193,7 @@ class ProductController extends SecurityController
             $this->view->assign('editLink', "/panel/product/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);            
         }
+        $this->view->assign('deleteLink', "/panel/product/sub/delete/id/$id");
         $form->setDefaults($product);
         $this->view->form = $form;
         $this->view->assign('id', $id);

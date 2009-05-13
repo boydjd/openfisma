@@ -178,6 +178,7 @@ class NetworkController extends SecurityController
             $this->view->assign('editLink', "/panel/network/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);            
         }
+        $this->view->assign('deleteLink', "/panel/network/sub/delete/id/$id");
         $form->setDefaults($network);
         $this->view->form = $form;
         $this->view->assign('id', $id);

@@ -17,17 +17,6 @@
     $url = "/panel/report/sub/overdue/s/search";
 ?>
 <?php //Fisma_Format_Section::startSection("Overdue Reports"); ?>
-<script type="text/javascript">
-function toggleSearchOptions() {
-    if ($("#advanced_searchbox").css('display') == 'none') {
-        $("#advanced_searchbox").fadeIn();
-        $(this).attr('value', 'Basic Search');
-    } else {
-        $("#advanced_searchbox").fadeOut();
-        $(this).attr('value', 'Advanced Search');
-    }
-}
-</script>
 <form name="overdue_report" method="post" action="/panel/report/sub/overdue/s/search">
 <table class="searchFilters">
     <tr>
@@ -132,6 +121,8 @@ var myColumnDefs = [
         sortedBy : {key:"systemName", dir:YAHOO.widget.DataTable.CLASS_ASC}
     };
     var myDataTable = new YAHOO.widget.DataTable("overdue_report", myColumnDefs, myDataSource, myConfigs);
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
 </script>
 
 <?php } ?>

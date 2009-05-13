@@ -179,6 +179,7 @@ class OrganizationController extends SecurityController
                                 "/panel/organization/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);
         }
+        $this->view->assign('deleteLink',"/panel/organization/sub/delete/id/$id");
         $form->setDefaults($organization);
         $this->view->form = $form;
         $this->view->assign('id', $id);
