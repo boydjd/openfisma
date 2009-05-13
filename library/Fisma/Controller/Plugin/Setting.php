@@ -214,9 +214,10 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
      * 
      * @param string|array $key key names. If it is an array, the element would be 
      *                                     the section name in sequence.
+     * @param boolean $isFresh  to read from persisten storage or not.
      * @return mix configuration value.
      */
-    function getConfig($key = null, $isFull = false)
+    function getConfig($key = null, $isFresh = false)
     {
         if (is_null($key)) {
             throw new Fisma_Exception_Config(
@@ -227,7 +228,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
             $key = explode('.',$key);
         }
         
-        if ($this->installed() && $isFull) {
+        if ($this->installed() && $isFresh) {
             $this->readLdapConfig();
             $db = Zend_Db::factory(Zend_Registry::get('datasource'));
             require_once(self::$_path['models'].'/FismaModel.php');

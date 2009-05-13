@@ -14,14 +14,14 @@ class Fisma_Controller_Front extends Zend_Controller_Front
      * Read configurations of any sections.
      * This function manages the storage, the cache, lazy initializing issue.
      * 
-     * @param $key string key name
-     * @param $is_fresh boolean to read from persisten storage or not.
+     * @param string $key  key name
+     * @param boolean $isFresh  to read from persisten storage or not.
      * @return string configuration value.
      */ 
-    public static function readSysConfig($key)
+    public static function readSysConfig($key, $isFresh = false)
     {
         $setting = self::getInstance();
-        return $setting->getPlugin('Fisma_Controller_Plugin_Setting')->getConfig($key);
+        return $setting->getPlugin('Fisma_Controller_Plugin_Setting')->getConfig($key, $isFresh);
     }
     
     public static function getLogInstance()
