@@ -189,7 +189,7 @@ function search_function() {
     if (trigger == ''){return;}
     var param = name = '';
     var options = YAHOO.util.Selector.query('select[name=function_screen] option');
-    
+
     for (var i = 0; i < options.length; i++) {
         if (options[i].selected == true) {
             name = options[i].text;
@@ -206,9 +206,6 @@ function search_function() {
         } else {
             exist_functions += ',' + kids[i].value;
         }
-    }
-    if (!exist_functions) {
-        return;
     }
     var url = document.getElementById('function_screen').getAttribute('url')
               + '/do/available_functions' + param + '/exist_functions/'+exist_functions;
@@ -616,17 +613,16 @@ function panel(title, parent, src, html) {
 var e = YAHOO.util.Event;
 e.onDOMReady(readyFunc);
 
-function callCalendar(ele){
+function callCalendar(evt, ele){
     showCalendar(ele, ele+'_show');
 }
 
 function showCalendar(block, trigger){
-    var Event = YAHOO.util.Event,
-            Dom = YAHOO.util.Dom,
-            dialog,
-            calendar;
-    // Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, until the first time the button is clicked.
+    var Event = YAHOO.util.Event, Dom = YAHOO.util.Dom, dialog, calendar;
+
     var showBtn = Dom.get(trigger);
+    
+    // Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, until the first time the button is clicked.
     if (!dialog) {
         // Hide Calendar if we click anywhere in the document other than the calendar
         Event.on(document, "click", function(e) {
@@ -636,7 +632,7 @@ function showCalendar(block, trigger){
                 dialog.hide();
             }
         });
-
+        
         function resetHandler() {
             // Reset the current calendar page to the select date, or 
             // to today if nothing is selected.
@@ -692,7 +688,7 @@ function showCalendar(block, trigger){
                 var selDate = calendar.getSelectedDates()[0];
                 // Pretty Date Output, using Calendar's Locale values: Friday, 8 February 2008
                 //var wStr = calendar.cfg.getProperty("WEEKDAYS_LONG")[selDate.getDay()];
-                var dStr = selDate.getDate();
+                var dStr = (selDate.getDate() < 10) ? '0'+selDate.getDate() : selDate.getDate();
                 var mStr = (selDate.getMonth()+1 < 10) ? '0'+(selDate.getMonth()+1) : (selDate.getMonth()+1);
                 var yStr = selDate.getFullYear();
 
@@ -701,6 +697,9 @@ function showCalendar(block, trigger){
                 Dom.get(block).value = "";
             }
             dialog.hide();
+            if ('poam[action_current_date]' == Dom.get(block).name) {
+                validateEcd();
+            }
         });
 
         calendar.renderEvent.subscribe(function() {

@@ -18,27 +18,18 @@ function setupEditFields() {
              var eclass = target.className;
              var cur_val = target.innerText ? target.innerText : target.textContent;
              var cur_html = target.innerHTML;
-             if ('poam[action_current_date]' == name) {
-                 var onchange = ' onchange="validateEcd()"';
-             } else {
-                 var onchange = '';
-             }
              if (type == 'text') {
-                 target.outerHTML = '<input name='+name+' id='+t_name+' class="'+eclass+'" type="text" value="'+cur_val.trim()+'" '+onchange+' />';
+                 target.outerHTML = '<input name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
                  if (eclass == 'date') {
-                     var img = document.createElement('IMG');
-                     img.src = '/images/calendar.gif';
-                     img.id = t_name + '_show';
-                     img.alt = 'Calendar';
-                     img.width = 18;
-                     img.height = 18;
-                     document.getElementById(t_name).parentNode.appendChild(img);
-                     /*var btn = document.createElement('BUTTON');
+                     var btn = document.createElement('BUTTON');
                      btn.id = t_name + '_show';
+                     btn.type = 'button';
                      btn.title = 'Show Calendar';
                      btn.innerHTML = '<img src="/images/calendar.gif" width="18" height="18" alt="Calendar" >';
-                     document.getElementById(t_name).parentNode.appendChild(btn);*/
-                     showCalendar(t_name, t_name+'_show');
+                     document.getElementById(t_name).parentNode.appendChild(btn);
+                     YAHOO.util.Event.on(t_name+'_show', "click", function() {
+                        showCalendar(t_name, t_name+'_show');
+                     });
                  }
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');
@@ -60,7 +51,7 @@ function setupEditFields() {
 }
 
 function validateEcd() {
-    var obj = document.getElementById('action_current_date');
+    var obj = document.getElementById('action_est_date');
     var inputDate = obj.value;
     var oDate= new Date();
     var Year = oDate.getFullYear();
@@ -69,7 +60,7 @@ function validateEcd() {
     if (Month < 10) {Month = '0'+Month;}
     var Day = oDate.getDate();
     if (Day < 10) {Day = '0' + Day;}
-    if (inputDate <= parseInt(""+Year+Month+Day)) {
+    if (inputDate <= parseInt(""+Year+""+Month+""+Day)) {
         //@todo english
         alert("The ECD date can'be in the past!");
     }
