@@ -164,7 +164,7 @@ class FindingController extends PoamBaseController
                 Zend_Registry::get('db')->beginTransaction();
                 
                 // get upload path
-                $path = Config_Fisma::getPath() . '/data/uploads/spreadsheet/';
+                $path = Fisma_Controller_Front::getPath('data') . '/uploads/spreadsheet/';
                 // get original file name
                 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
                 // get current time and set to a format like '_2009-05-04_11_22_02'
@@ -180,11 +180,11 @@ class FindingController extends PoamBaseController
                 // get the upload id
                 $uploadId = $this->_poam->getAdapter()->lastInsertId();
 
-                $injectExcel = new Inject_Excel();
-        if (!empty($injectExcel->_findingIds)
-                    && is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-            foreach ($injectExcel->_findingIds as $id) {
-                    $this->createIndex($id);
+                $injectExcel = new Fisma_Inject_Excel();
+                if (!empty($injectExcel->_findingIds)
+                            && is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                    foreach ($injectExcel->_findingIds as $id) {
+                        $this->createIndex($id);
                     }
                 }
 
@@ -248,7 +248,7 @@ class FindingController extends PoamBaseController
             if ($poamId > 0) {
                 $this->_notification->add(Notification::FINDING_CREATED, $this->_me->account, $poamId);
                 //Create finding lucene index
-                if (is_dir(Config_Fisma::getPath('data') . '/index/finding/')) {
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
                     $system = new System();
                     $source = new Source();
                     $asset = new Asset();
@@ -266,14 +266,14 @@ class FindingController extends PoamBaseController
                     }
                     $indexData['finding_data'] = $poam['finding_data'];
                     $indexData['action_suggested'] = $poam['action_suggested'];
-                    Config_Fisma::updateIndex('finding', $poamId, $indexData);
+                    $this->_helper->updateIndex('finding', $poamId, $indexData);
                 }
                 $message = "Finding created successfully";
                 $model = self::M_NOTICE;
                 $this->message($message, $model);
             }
         } else {
-            $errorString = Form_Manager::getErrors($form);
+            $errorString = Fisma_Form_Manager::getErrors($form);
             $this->message("Unable to create finding:<br>$errorString", self::M_WARNING);
         }
         $this->_forward('create');

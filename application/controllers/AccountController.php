@@ -301,9 +301,9 @@ class AccountController extends SecurityController
         
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
-        if (Config_Fisma::readSysConfig('auth_type') == 'database') {
+        if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
             $pass = $form->getElement('password');
-            $pass->addValidator(new Form_Validator_Password());
+            $pass->addValidator(new Fisma_Form_Validator_Password());
         }
         $formValid = $form->isValid($_POST);
         $accountData = $form->getValues();
