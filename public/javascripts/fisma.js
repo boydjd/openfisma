@@ -211,7 +211,7 @@ function search_function() {
               + '/do/available_functions' + param + '/exist_functions/'+exist_functions;
     var request = YAHOO.util.Connect.asyncRequest('GET', url, 
         {success: function(o){
-                   document.getElementById('available_functions').innerHTML = o.responseText;
+                   document.getElementById('available_functions').parentNode.innerHTML = '<select style="width: 250px;" name="available_functions" id="available_functions" size="20" multiple="">'+o.responseText+'</select>';
                 },
         failure: handleFailure});
 }

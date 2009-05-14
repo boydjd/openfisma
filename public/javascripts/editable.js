@@ -21,12 +21,14 @@ function setupEditFields() {
              if (type == 'text') {
                  target.outerHTML = '<input name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
                  if (eclass == 'date') {
+                     var target = document.getElementById(t_name);
+                     target.onfocus = function () {this.blur()};
                      var btn = document.createElement('BUTTON');
                      btn.id = t_name + '_show';
-                     btn.type = 'button';
+                     if (window.HTMLElement) btn.type = 'button';
                      btn.title = 'Show Calendar';
                      btn.innerHTML = '<img src="/images/calendar.gif" width="18" height="18" alt="Calendar" >';
-                     document.getElementById(t_name).parentNode.appendChild(btn);
+                     target.parentNode.appendChild(btn);
                      YAHOO.util.Event.on(t_name+'_show', "click", function() {
                         showCalendar(t_name, t_name+'_show');
                      });
@@ -66,7 +68,7 @@ function validateEcd() {
     }
 }
 
-if(window.HTMLElement) {
+if (window.HTMLElement) {
     HTMLElement.prototype.__defineSetter__("outerHTML",function(sHTML){
         var r=this.ownerDocument.createRange();
         r.setStartBefore(this);
@@ -88,12 +90,12 @@ if(window.HTMLElement) {
             return str+">";
         return str+">"+this.innerHTML+"</"+this.tagName.toLowerCase()+">";
         });
-       
-HTMLElement.prototype.__defineGetter__("canHaveChildren",function(){
-   switch(this.tagName.toLowerCase()){
+
+    HTMLElement.prototype.__defineGetter__("canHaveChildren",function(){
+    switch(this.tagName.toLowerCase()){
             case "area":
             case "base":
-         case "basefont":
+            case "basefont":
             case "col":
             case "frame":
             case "hr":
@@ -107,6 +109,5 @@ HTMLElement.prototype.__defineGetter__("canHaveChildren",function(){
             return false;
         }
         return true;
-
      });
 }
