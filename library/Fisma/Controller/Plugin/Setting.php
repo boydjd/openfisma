@@ -50,7 +50,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
     /** 
      * @var root path
      */
-    protected static $_root = null;
+    protected $_root = null;
 
     /**
      * Indicates whether the application is in debug mode or not
@@ -82,7 +82,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
      * @param  string $root The root directory of the application
      * @return void
      */
-    public function __construct($root)
+    public function __construct($root = null)
     {
         $path = array(
                 'library' => 'library',
@@ -94,7 +94,11 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
                 'models' => 'application/models',
                 'yui' => 'public/yui',
                 'local' => 'library/local/');
-        
+
+        // get the default root 
+        if (empty($root)) {
+            $root = $this->_getRoot();
+        }
         if (is_dir($root)) {
             $this->_root = $root;
         }
@@ -110,7 +114,21 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
         //freeze the NOW, minimize the impact of running time cost.
         self::$_now = time(); 
     }
-
+    /**
+     * get the root path of application
+     *
+     * @return $path
+     */
+    private function _getRoot()
+    {
+        // local current file and move up 5 levels folder to the root
+        $path = __FILE__;
+        for($i = 1; $i <= 5; $i ++) {
+            $path = dirname($path);
+        }
+        return $path;
+    }
+    
     public function routeStartup(Zend_Controller_Request_Abstract $request)
     {
         try {
@@ -327,6 +345,10 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
      */ 
     public function getPath($part = null)
     {
+        // return the root path when $part doesn't be assigned.
+        if (is_null($part)) {
+            return $this->_root;
+        }
         return $this->getConfig('path.' . $part);
     }
     

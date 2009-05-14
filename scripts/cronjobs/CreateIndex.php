@@ -31,15 +31,15 @@
 define('COMMAND_LINE', true);
 
 require_once('../../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
-$front = Fisma_Controller_Front::getInstance();
-$front->registerPlugin($plSetting, 60); //this should be the highest priority
-$pl = new Fisma_Controller_Plugin_Web();
-$front->registerPlugin($pl);
+$plSetting = new Fisma_Controller_Plugin_Setting();
 
-
-// Kick off the main routine:
-CreateIndex::process();
+if ($plSetting->installed()) {
+    // Kick off the main routine:
+    $createIndex = new CreateIndex($plSetting);
+    $createIndex->process();
+} else {
+    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
+}
 
 Class CreateIndex
 {
@@ -47,7 +47,25 @@ Class CreateIndex
      * the direcotry of the lucene index
      */
     const INDEX_DIR = '/data/index/';
-
+    /**
+     * the object of setting plugin
+     */
+    private $_setting = null;
+    
+    /**
+     * construct the class and set setting
+     *
+     * @param object $setting
+     */
+    function __construct($setting)
+    {
+        if ($setting instanceof Fisma_Controller_Plugin_Setting) {
+            $this->_setting = $setting;
+        } else {
+            throw new Fisma_Exception_General("can't get the setting");
+        }
+    }
+    
     /**
      * Judge the index if is exist
      *
@@ -56,13 +74,13 @@ Class CreateIndex
      */
     static function isExist($index)
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . $index)) {
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . $index)) {
             return true;
         } else {
             return false;
         }
     }
-
+    
     /**
      * Get db instance
      * @return Zend_Db
@@ -90,15 +108,15 @@ Class CreateIndex
 
     public function createFinding()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'finding')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'finding');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'finding')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'finding');
             $index->optimize();
             /** @todo english */
             print("Findings index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'finding', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'finding', true);
         $query = $db->select()->from('poams', array('count'=>'count(*)'));
         $ret   = $db->fetchRow($query);
         $count = $ret['count'];
@@ -140,22 +158,22 @@ Class CreateIndex
             }
         }
         $index->optimize();
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'finding', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'finding', 0777);
         /** @todo english */
         print("Findings index created successfully. \n");
     }
 
     public function createSource()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'source')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'source');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'source')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'source');
             $index->optimize();
             /** @todo english */
             print("Sources index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'source', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'source', true);
         $query = $db->select()->from('sources', array('id', 'name', 'nickname', 'desc'));
         $list  = $db->fetchAll($query);
         set_time_limit(0);
@@ -171,22 +189,22 @@ Class CreateIndex
             }
             $index->optimize();
         }
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'source', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'source', 0777);
         /** @todo english */
         print("Sources index created successfully. \n");
     }
 
     public function createNetwork()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'network')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'network');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'network')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'network');
             $index->optimize();
             /** @todo english */
             print("Networks index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'network', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'network', true);
         $query = $db->select()->from('networks', array('id', 'name', 'nickname', 'desc'));
         $list  = $db->fetchAll($query);
         set_time_limit(0);
@@ -202,22 +220,22 @@ Class CreateIndex
             }
             $index->optimize();
         }
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'network', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'network', 0777);
         /** @todo english */
         print("Networks index created successfully. \n");
     }
 
     public function createProduct()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'product')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'product');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'product')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'product');
             $index->optimize();
             /** @todo english */
             print("Products index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'product', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'product', true);
         $query = $db->select()->from('products', array('count'=>'count(*)'));
         $ret   = $db->fetchRow($query);
         $count = $ret['count'];
@@ -242,22 +260,22 @@ Class CreateIndex
             }
         }
         $index->optimize();
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'product', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'product', 0777);
         /** @todo english */
         print("Products index created successfully. \n");
     }
 
     public function createRole()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'role')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'role');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'role')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'role');
             $index->optimize();
             /** @todo english */
             print("Roles index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'role', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'role', true);
         $query = $db->select()->from('roles', array('id', 'name', 'nickname', 'desc'));
         $list  = $db->fetchAll($query);
         set_time_limit(0);
@@ -273,22 +291,22 @@ Class CreateIndex
             }
             $index->optimize();
         }
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'role', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'role', 0777);
         /** @todo english */
         print("Roles index created successfully. \n");
     }
 
     public function createOrganization()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'organization')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'organization');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'organization')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'organization');
             $index->optimize();
             /** @todo english */
             print("Organizations index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'organization', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'organization', true);
         $query = $db->select()->from('organizations', array('id', 'name', 'nickname'));
         $list  = $db->fetchAll($query);
         set_time_limit(0);
@@ -303,22 +321,22 @@ Class CreateIndex
             }
             $index->optimize();
         }
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'organization', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'organization', 0777);
         /** @todo english */
         print("Organizations index created successfully. \n");
     }
 
     public function createSystem()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'system')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'system');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'system')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'system');
             $index->optimize();
             /** @todo english */
             print("Systems index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'system', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'system', true);
         $query = $db->select()->from(array('s'=>'systems'), 's.*')
                               ->join(array('o'=>'organizations'), 's.organization_id = o.id',
                                      array('org_name'=>'o.name', 'org_nickname'=>'o.nickname'));
@@ -348,22 +366,22 @@ Class CreateIndex
             }
             $index->optimize();
         }
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'system', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'system', 0777);
         /** @todo english */
         print("Systems index created successfully. \n");
     }
 
     public function createAccount()
     {
-        if (is_dir(RootPath::getRootPath() . self::INDEX_DIR . 'account')) {
-            $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'account');
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'account')) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'account');
             $index->optimize();
             /** @todo english */
             print("Accounts index optimize successfully. \n");
             return false;
         }
         $db = self::getDb();
-        $index = new Zend_Search_Lucene(RootPath::getRootPath() . self::INDEX_DIR . 'account', true);
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'account', true);
         $query = $db->select()->from(array('u'=>'users'),
                                    array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
                               ->join(array('ur'=>'user_roles'), 'u.id = ur.user_id', array())
@@ -386,7 +404,7 @@ Class CreateIndex
             }
             $index->optimize();
         }
-        chmod(RootPath::getRootPath() . self::INDEX_DIR . 'account', 0777);
+        chmod($this->_setting->getPath() . self::INDEX_DIR . 'account', 0777);
         /** @todo english */
         print("Accounts index created successfully. \n");
     }

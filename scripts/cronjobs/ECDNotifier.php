@@ -30,7 +30,7 @@
  */
  
 require_once('../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
+$plSetting = new Fisma_Controller_Plugin_Setting();
 
 if ($plSetting->installed()) {
     // Kick off the main routine:

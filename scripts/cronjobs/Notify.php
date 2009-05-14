@@ -32,10 +32,16 @@
 define('COMMAND_LINE', true);
 
 require_once('../../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
+$plSetting = new Fisma_Controller_Plugin_Setting();
 
-// Kick off the main routine:
-Notify::processNotificationQueue();
+if ($plSetting->installed()) {
+    // Kick off the main routine:
+    $notify = new Notify($plSetting);
+    $notify->processNotificationQueue();
+} else {
+    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
+}
+
 
 /**
  * This static class is responsible for scanning for notifications which need to
@@ -57,12 +63,31 @@ class Notify
     const EMAIL_VIEW = 'notification.phtml';
 
     /**
+     * the object of setting plugin
+     */
+    private $_setting = null;
+    
+    /**
+     * construct the class and set setting
+     *
+     * @param object $setting
+     */
+    function __construct($setting)
+    {
+        if ($setting instanceof Fisma_Controller_Plugin_Setting) {
+            $this->_setting = $setting;
+        } else {
+            throw new Fisma_Exception_General("can't get the setting");
+        }
+    }
+    
+    /**
      * processNotificationQueue() - Iterate through the users and check who has
      * notifications pending.
      *
      * @todo log the email send results
      */
-    static function processNotificationQueue() {
+    function processNotificationQueue() {
         $db = Zend_Db::factory(Zend_Registry::get('datasource'));
         Zend_Db_Table::setDefaultAdapter($db);
         Zend_Registry::set('db', $db);

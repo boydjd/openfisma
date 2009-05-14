@@ -29,7 +29,7 @@ require_once('../application/init.php');
 $dbg = true;
 
 try {
-    $plSetting = new Fisma_Controller_Plugin_Setting(RootPath::getRootPath());
+    $plSetting = new Fisma_Controller_Plugin_Setting();
     $dbg = $plSetting->debug();
     $front = Fisma_Controller_Front::getInstance();
     $front->registerPlugin($plSetting, 60); //this should be the highest priority

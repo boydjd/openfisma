@@ -23,36 +23,8 @@
  * @version   $Id$
  */
 
-/**
- * get the root path
- *
- */
-class RootPath
-{
-    /**
-     * for keeping the path
-     *
-     * @var string $_root
-     */
-    private static $_root = null;
-    
-    /**
-     * get the root path and keep it in a private variable
-     * return the path from the private variable
-     *
-     * @return root path
-     */
-    static function getRootPath()
-    {
-        if (self::$_root == null) {
-            self::$_root = dirname(dirname(__FILE__));
-        }
-        return self::$_root;
-    }
-}
-// initialize the include path
-set_include_path(RootPath::getRootPath() .'/library' . PATH_SEPARATOR . 
-                 RootPath::getRootPath() .'/application' . PATH_SEPARATOR . get_include_path());
-// Zend should be linked/located at the root path/library/Zend
+// To locate the Zend library. It can be modified to suite the proper Zend Framework setup
+// By default Zend should be located at <the root path>/library/Zend
+set_include_path(dirname(dirname(__FILE__)) .'/library' . PATH_SEPARATOR . get_include_path());
 require_once 'Zend/Loader.php';
 Zend_Loader::registerAutoload();
