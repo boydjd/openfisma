@@ -699,7 +699,7 @@ class RemediationController extends PoamBaseController
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
-        define('EVIDENCE_PATH', Fisma_Controller_Front::getPath('pub') . '/evidence');
+        define('EVIDENCE_PATH', Fisma_Controller_Front::getPath('data') . '/uploads/evidence');
         $file = $_FILES['evidence'];
         if ($file['name']) {
             $poam = $this->_poam->find($id)->toArray();
@@ -770,7 +770,58 @@ class RemediationController extends PoamBaseController
         }
         $this->_forward('view', 'Remediation', null, array('id'=>$id));
     }
+    
+    /**
+     * Download evidence
+     *
+     */
+    public function downloadevidenceAction()
+    {
+        $this->_acl->requirePrivilege('remediation', 'read_evidence');
+        $id = $this->getRequest()->getParam('id', 0);
+        $evidences = $this->_poam->getAdapter()
+                     ->query('SELECT * FROM evidences AS e LEFT JOIN poams AS p ON p.id = e.poam_id WHERE e.id = '.$id);
+        $result = $evidences->fetchAll();
+        if (empty($result)) {
+            /**
+             * @todo english
+             */
+            throw new Fisma_Exception_General('Wrong link');
+        }
+        $result= array_pop($result);
+        if(!in_array((int)$result['system_id'], array_keys($this->_systemList)))
+        {
+            /**
+             * @todo english
+             */
+            throw new Fisma_Exception_General('You have no rights to access this file');
+        }
+        $fileName = $result['submission'];
+        $filePath = Fisma_Controller_Front::getPath('data') . '/uploads/evidence/'. $result['poam_id'] . '/';
 
+        if(file_exists($filePath . $fileName)) {
+            $this->_helper->layout->disableLayout(true);
+            $this->_helper->viewRenderer->setNoRender();
+            ob_end_clean();
+            header('Expires: ' . gmdate('D, d M Y H:i:s', time()+31536000) . ' GMT');
+            header('Content-type: application/octet-stream');
+            header('Content-Disposition: attachment; filename=' . urlencode($fileName));
+            header('Content-Length: ' . filesize($filePath . $fileName));
+            $fp = fopen($filePath . $fileName, 'rb');
+            while (!feof ($fp)) {
+                $buffer = fgets($fp, 4096);
+                echo $buffer;
+            }
+            fclose($fp);
+        } else {
+            /**
+             * @todo english
+             */
+            throw new Fisma_Exception_General('No such file or path.');
+        }
+    }
+
+    
     /**
      *  Handle the evidence evaluations
      */

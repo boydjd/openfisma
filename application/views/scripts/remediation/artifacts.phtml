@@ -10,19 +10,7 @@ foreach ($this->ev_evals as $e) {
 ?>
         <div class="approvalHeader">
             <b>File: </b>
-            <?php 
-                $url = $evidence['submission'];
-                $ev_path[] = $evidence['submission'];
-                $ev_path[] ='evidence' . '/' . $evidence['poam_id']. '/'. $evidence['submission'];
-                $link = '%filename%';
-                foreach( $ev_path as $path ) {
-                    if(file_exists($path) ) {
-                        $url = str_replace('\\', '/',$path);
-                        $link = "<a href='/{$url}' target='_blank'>%filename%</a>";
-                    }
-                }
-                echo str_replace('%filename%', basename($url), $link);
-            ?>
+            <a href='/remediation/downloadevidence/id/<?php echo $evidence['id'];?>' target='_blank'><?php echo $evidence['submission']; ?></a>
             (submitted by <?php echo $evidence['submitted_by']; ?> on <?php echo $evidence['submit_ts']; ?>)
         </div>
         <div class="approval">
