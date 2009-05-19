@@ -35,6 +35,11 @@
 class Fisma_Controller_Action_Helper_OverdueStatistic extends Zend_Controller_Action_Helper_Abstract
 {
     /**
+     * the seconds in a day
+     *
+     */
+    const INTERVAL_DAY_SECONDS = 86400;
+    /**
      * make a statistics for overdue records
      * 
      * @param array $list all overdue records
@@ -72,7 +77,7 @@ class Fisma_Controller_Action_Helper_OverdueStatistic extends Zend_Controller_Ac
         foreach ($list as $row) {
             $now = clone $date;
             $duetime = new Zend_Date($row['duetime'], Zend_Date::ISO_8601);
-            $differDay = floor($now->sub($duetime)/(3600*24));
+            $differDay = floor($now->sub($duetime)/self::INTERVAL_DAY_SECONDS);
             $row['diffDay'] = $differDay + 1;
             
             if (in_array($row['oStatus'], $mitigationStrategyStatus)) {
