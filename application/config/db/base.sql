@@ -355,7 +355,6 @@ INSERT INTO `events` VALUES (43,'Account Login Success',89);
 INSERT INTO `events` VALUES (44,'Account Login Failure',89);
 INSERT INTO `events` VALUES (45,'Account Logout',89);
 INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
-INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
 INSERT INTO `events` VALUES (47,'ECD Expires in 7 Days',91);
 INSERT INTO `events` VALUES (48,'ECD Expires in 14 days',91);
 INSERT INTO `events` VALUES (49,'ECD Expires in 21 days',91);
