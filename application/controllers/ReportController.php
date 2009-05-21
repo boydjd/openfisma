@@ -389,6 +389,10 @@ class ReportController extends PoamBaseController
             $result = array();
             foreach ($list as $k => $v) {
                 if ('Overdue' == $this->view->isOnTime($v['duetime'])) {
+                    $now = clone $date;
+                    $duetime = new Zend_Date($v['duetime'], Zend_Date::ISO_8601);
+                    $differDay = floor($now->sub($duetime)/(3600*24));
+                    $v['diffDay'] = $differDay + 1;
                     $result[] = $v;
                 }
             }
@@ -764,5 +768,106 @@ class ReportController extends PoamBaseController
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
     }
+<<<<<<< .working
 
+=======
+    
+    /**
+     * sort overdue records by overdue days and status
+     *
+     * @param array $list all overdue records
+     * @return array $result
+     */  
+    public function _overdueSort($list)
+    {
+        $mitigationStrategyStatus = array('NEW', 'DRAFT', 'MSA');
+        $correctiveAction = array('EN', 'EA');
+        $result = array();
+        foreach($list as  $row) {
+            if (in_array($row['oStatus'], $mitigationStrategyStatus)) {
+                $overdueType = 'MS';
+            }
+            if (in_array($row['oStatus'], $correctiveAction)) {
+                $overdueType = 'CA';
+            }
+            $key = $row['system_nickname'] . $row['system_id'].'_'.$overdueType;
+            if (!isset($result[$key])) {
+                $result[$row['system_nickname'] . $row['system_id'].'_'.$overdueType] = array();
+            }
+            if (!isset($result[$key]['systemName'])) {
+                $result[$key]['systemName'] = $row['system_name'];
+            }
+            if (!isset($result[$key]['systemNickname'])) {
+                $result[$key]['systemNickname'] = $row['system_nickname'];
+            }
+            if (!isset($result[$key]['type'])) {
+                if ($overdueType == 'MS') {
+                    $result[$key]['type'] = 'Mitigation Strategy';
+                }
+                if ($overdueType == 'CA') {
+                    $result[$key]['type'] = 'Corrective Action';
+                }
+            }
+            if (!isset($result[$key]['lessThan30'])) {
+                $result[$key]['lessThan30'] = 0;
+            }
+            if ($row['diffDay'] < 30) {
+                $result[$key]['lessThan30'] ++;
+            }
+            if (!isset($result[$key]['moreThan30'])) {
+                $result[$key]['moreThan30'] = 0;
+            }
+            if ($row['diffDay'] >= 30 && $row['diffDay'] < 60) {
+                $result[$key]['moreThan30'] ++;
+            }
+            if (!isset($result[$key]['moreThan60'])) {
+                $result[$key]['moreThan60'] = 0;
+            }
+            if ($row['diffDay'] >= 60 && $row['diffDay'] < 90) {
+                $result[$key]['moreThan60'] ++;
+            }
+            if (!isset($result[$key]['moreThan90'])) {
+                $result[$key]['moreThan90'] = 0;
+            }
+            if ($row['diffDay'] >= 90 && $row['diffDay'] < 120) {
+                $result[$key]['moreThan90'] ++;
+            }
+            if (!isset($result[$key]['moreThan120'])) {
+                $result[$key]['moreThan120'] = 0;
+            }
+            if ($row['diffDay'] >= 120) {
+                $result[$key]['moreThan120'] ++;
+            }
+            if (!isset($result[$key]['diffDay'])) {
+                $result[$key]['diffDay'] = array($row['diffDay']);
+            } else {
+                $result[$key]['diffDay'][] = $row['diffDay'];
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * make a statistics for overdue records
+     * 
+     * @param array $list all overdue records
+     * @return array $result
+     */
+    public function _overdueStatistic($list)
+    {
+        $result = $this->_overdueSort($list);
+        foreach ($result as &$v) {
+            $v['systemName'] = $v['systemNickname'] . ' - ' . $v['systemName'];
+            unset($v['systemNickname']);
+            $totalOverdue = $v['lessThan30'] + $v['moreThan30'] + $v['moreThan60'] 
+                            + $v['moreThan90'] + $v['moreThan120'];
+            $v['total'] = $totalOverdue;
+            $v['average'] = round(array_sum($v['diffDay'])/$totalOverdue);
+            $v['max'] = max($v['diffDay']);
+            unset($v['diffDay']);
+        }
+        ksort($result);
+        return $result;
+    }
+>>>>>>> .merge-right.r1659
 }

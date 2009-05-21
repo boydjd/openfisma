@@ -74,7 +74,7 @@ class PoamBaseController extends SecurityController
         ), $this->_me->systems, 'nickname');
         if (!empty($tmpList)) {
             foreach ($tmpList as $k => $v) {
-                $this->_systemList[$k] = "({$v['nickname']}) {$v['name']}";
+                $this->_systemList[$k] = "{$v['nickname']} - {$v['name']}";
             }
         } else {
             $this->_systemList = array();

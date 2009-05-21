@@ -6,10 +6,7 @@
     <p class="stacktrace"><?php echo $this->content; ?></p>
 <?php    
     } else {
-?>
-    <p>An unexpected error has occurred. This error has been logged for administrator review.</p>
-    <p>You may want to try again in a few minutes. If the problem persists, please contact your administrator.</p>
-<?php    
+        echo $this->message;
     }
 ?>
 <p>

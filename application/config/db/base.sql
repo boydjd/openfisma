@@ -355,6 +355,7 @@ INSERT INTO `events` VALUES (43,'Account Login Success',89);
 INSERT INTO `events` VALUES (44,'Account Login Failure',89);
 INSERT INTO `events` VALUES (45,'Account Logout',89);
 INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
+INSERT INTO `events` VALUES (46,'ECD Expires Today',91);
 INSERT INTO `events` VALUES (47,'ECD Expires in 7 Days',91);
 INSERT INTO `events` VALUES (48,'ECD Expires in 14 days',91);
 INSERT INTO `events` VALUES (49,'ECD Expires in 21 days',91);
@@ -557,7 +558,7 @@ SET character_set_client = utf8;
 CREATE TABLE `poams` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `legacy_finding_id` int(10) unsigned NOT NULL default '0',
-  `asset_id` int(10) unsigned NOT NULL default '0',
+  `asset_id` int(10) unsigned default NULL,
   `source_id` int(10) unsigned NOT NULL default '0',
   `system_id` int(10) unsigned NOT NULL default '0',
   `blscr_id` varchar(5) default NULL,
@@ -891,6 +892,7 @@ CREATE TABLE `schema_version` (
   PRIMARY KEY  (`schema_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
+INSERT INTO `schema_version` VALUES (61);
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `sources` (
@@ -916,6 +918,7 @@ CREATE TABLE `systems` (
   `integrity` enum('LOW','MODERATE','HIGH') default NULL,
   `availability` enum('LOW','MODERATE','HIGH') default NULL,
   `tier` int(10) unsigned NOT NULL default '0',
+  `visibility` enum('visible','hidden') default 'visible',
   `confidentiality_justification` text NOT NULL,
   `integrity_justification` text NOT NULL,
   `availability_justification` text NOT NULL,
@@ -1027,4 +1030,4 @@ CREATE TABLE `vulnerabilities` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 TRUNCATE TABLE schema_version;
-INSERT INTO schema_version (schema_version) VALUES (60);
+INSERT INTO schema_version (schema_version) VALUES (62);

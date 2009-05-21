@@ -69,11 +69,21 @@ class ErrorController extends Zend_Controller_Action
             $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;
 
+            if ($errors->exception instanceof Exception_InvalidPrivilege) {
+                $this->view->message = "<p>You do not have permission to perform the requested function.</p>";   
+            } else {         
+                $this->view->message = "<p>An unexpected error has occurred. This error has been logged"
+                                     . " for administrator review.</p><p>You may want to try again in a"
+                                     . " few minutes. If the problem persists, please contact your"
+                                     . " administrator.</p>";
+            }
+
             $front = Zend_Controller_Front::getInstance();
             if ($stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack')) {
                 //clear the action stack to prevent additional exceptions would be throwed
                 while($stack->popStack());
             }
+    	    $this->_helper->actionStack('header', 'panel');
         }
     }
 
