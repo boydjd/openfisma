@@ -4,6 +4,7 @@
 tinyMCE.init({
 	theme : "advanced",
 	mode : "textareas",
+	cleanup : false,
 	plugins : "spellchecker, searchreplace, insertdatetime, print, fullscreen",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",

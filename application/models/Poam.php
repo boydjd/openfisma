@@ -875,10 +875,13 @@ class Poam extends Zend_Db_Table
      * insert() - This function overrides the parent in order to write the creation event to the audit log, and create
      * user notification events.
      *
+     * The data is passed by reference so that any cleanup done by HTML purifier will modify the original array, in
+     * case the calling code uses that data for something else afterward (such as adding to a Lucene index)
+     *
      * @param array $findingData An associative array of column data for the finding
      * @return int The id for the new finding
      */
-    public function insert($findingData) {
+    public function insert(&$findingData) {
         // I'm not sure if anybody would call this function with an array of arrays, but for now to be safe I'm
         // explicitly checking for that condition. -Mark
         if (array_key_exists(0, $findingData)) {
@@ -935,9 +938,12 @@ class Poam extends Zend_Db_Table
     /**
      * This function overrides the parent in order to scrub incoming data.
      *
+     * The data is passed by reference so that any cleanup done by HTML purifier will modify the original array, in
+     * case the calling code uses that data for something else afterward (such as adding to a Lucene index)
+     *
      * @param array $findingData An associative array of column data for the finding
      */
-    public function update($findingData, $where) {
+    public function update(&$findingData, $where) {
         // I'm not sure if anybody would call this function with an array of arrays, but for now to be safe I'm
         // explicitly checking for that condition. -Mark
         if (array_key_exists(0, $findingData)) {
