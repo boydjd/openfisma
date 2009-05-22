@@ -387,7 +387,7 @@ function message( msg ,model){
     } else {
         msgbar.style.color = 'green';
         msgbar.style.borderColor = 'green';
-        msgbar.style.borderColor = 'lightgreen';
+        msgbar.style.backgroundColor = 'lightgreen';
     }
     msgbar.style.display = 'block';
 }
