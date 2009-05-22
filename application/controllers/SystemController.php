@@ -336,7 +336,7 @@ class SystemController extends SecurityController
                                 "/panel/system/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);            
         }
-        $this->view->assign('deleteLink', "/panel/system/sub/delete/id");
+        $this->view->assign('deleteLink', "/panel/system/sub/delete/id/$id");
         $form->setDefaults($system);
         $this->view->form = $form;
         $this->view->assign('id', $id);
