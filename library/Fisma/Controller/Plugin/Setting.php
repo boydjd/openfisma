@@ -206,11 +206,18 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
                 $installFile = self::$_path['config']. '/' . self::INSTALL_CONFIG;
                 $config = new Zend_Config_Ini($installFile);
                 if (!empty($config->database)) {
-                   Zend_Registry::set('datasource', $config->database);
-                   foreach ($config->general as $k => $v) {
-                       Zend_Registry::set($k, $v);
-                   }
-                   $this->_installed = true;
+                    Zend_Registry::set('datasource', $config->database);
+                    Zend_Registry::set('doctrine_config', array(
+                           'data_fixtures_path'  =>  $this->root . '/application/doctrine/data/fixtures',
+                           'models_path'         =>  $this->root . '/application/models',
+                           'migrations_path'     =>  $this->root . '/application/doctrine/migrations',
+                           'sql_path'            =>  $this->root . '/application/doctrine/data/sql',
+                           'yaml_schema_path'    =>  $this->root . '/application/doctrine/schema'
+                    ));
+                    foreach ($config->general as $k => $v) {
+                        Zend_Registry::set($k, $v);
+                    }
+                    $this->_installed = true;
                 } else {
                     $log = $this->getLogInstance();
                     $log->log('The install file is damaged. Reinstall it! ', Zend_Log::CRIT);

@@ -1,8 +1,10 @@
+#!/usr/bin/env php
 <?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
+ * This file was adopted from http://ruben.savanne.be/articles/integrating-zend-framework-and-doctrine
  *
  * OpenFISMA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Doctrine
  */
+ 
+require_once('../../application/init.php');
+$plSetting = new Fisma_Controller_Plugin_Setting();
 
-set_include_path(dirname(dirname(__FILE__)) .'/library' . PATH_SEPARATOR . get_include_path());
-require_once 'Zend/Loader.php';
-Zend_Loader::registerAutoload();
+if ($plSetting->installed()) {
+    $cli = new Doctrine_Cli(Zend_Registry::get('doctrine_config'));
+    $cli->run($_SERVER['argv']);
+} else {
+    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
+}
