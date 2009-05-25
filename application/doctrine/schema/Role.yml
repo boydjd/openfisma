@@ -1,9 +1,5 @@
 Role:
     columns:
-        id:
-            primary: true
-            autoincrement: true
-            type: integer
         createdTs: timestamp
         modifiedTs: timestamp
         

@@ -1,0 +1,32 @@
+Evaluation:
+    MITIGATION ISSO:
+        name: ISSO Approval for Mitigation Strategy
+        nickname: MITIGATION ISSO
+        precedence: 0
+        approvalGroup: action
+        #Event: ...
+        #Function: ...
+
+    MITIGATION IVV:
+        name: IVV Approval for Mitigation Strategy
+        nickname: MITIGATION ISSO
+        precedence: 1
+        approvalGroup: action
+        #Event: ...
+        #Function: ...
+
+    EVIDENCE ISSO:
+        name: ISSO Approval for Evidence
+        nickname: MITIGATION ISSO
+        precedence: 0
+        approvalGroup: evidence
+        #Event: ...
+        #Function: ...
+
+    EVIDENCE IVV:
+        name: IVV Approval for Evidence
+        nickname: MITIGATION ISSO
+        precedence: 1
+        approvalGroup: evidence
+        #Event: ...
+        #Function: ...

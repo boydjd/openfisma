@@ -319,9 +319,9 @@ Privilege:
         action: asset
         description: Asset Notifications
         orgSpecific: true
-    notification_remediation:
+    notification_finding:
         resource: notification
-        action: remediation
+        action: finding
         description: Remediation Notifications
         orgSpecific: true
     remediation_update_mitigation_strategy_approval_2:

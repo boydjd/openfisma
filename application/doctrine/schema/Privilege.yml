@@ -1,10 +1,5 @@
 Privilege:
     columns:
-        id:
-            primary: true
-            autoincrement: true
-            type: integer
-        
         resource:
             type: string(255)
             comment: The resource to which this privilege pertains

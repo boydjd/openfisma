@@ -1,0 +1,19 @@
+Comment:
+    columns:
+        createdTs: timestamp
+        
+        content:
+            type: string
+            comment: The text of the comment
+        
+        findingEvaluationId: integer
+        userId: integer
+
+    relations:
+        FindingEvaluation:
+            local: findingEvaluationId
+            foreign: id
+        User:
+            local: userId
+            foreign: id
+    

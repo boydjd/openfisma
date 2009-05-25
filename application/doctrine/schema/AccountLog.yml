@@ -1,0 +1,20 @@
+AccountLog:
+    columns:
+        createdTs: 
+            type: timestamp
+            comment: The time at which this event occurred
+        userId:
+            type: integer
+            comment: The user who caused this event, if applicable
+        ip:
+            type: string(15)
+            notnull: true
+            comment: The IP address where this event originated from
+        message:
+            type: string
+            comment: A description of the event
+
+    relations:
+        User:
+            local: userId
+            foreign: id

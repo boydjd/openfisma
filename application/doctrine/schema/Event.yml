@@ -1,0 +1,11 @@
+Event:
+    columns:
+        name: string(255)
+        privilegeId: 
+            type: integer
+            comment: The privilege which is required in order to receive this event notification
+        
+    relations:
+        Privilege:
+            local: privilegeId
+            foreign: id

@@ -1,0 +1,21 @@
+Evaluation:
+    columns:
+        name: string(255)
+        nickname: string(255)
+        precedence: 
+            type: integer
+            comment: The order in which this evaluation is positioned relative to the others in its group, starting at 0
+        approvalGroup:
+            type: enum
+            values: [action, evidence]
+            comment: Which approval group this evaluation belongs to. "Action" is short for course of action and "evidence" refers to evidence artifacts.
+        eventId: integer
+        privilegeId: integer
+
+    relations:
+        Event:
+            local: eventId
+            foreign: id
+        Privilege:
+            local: privilegeId
+            foreign: id

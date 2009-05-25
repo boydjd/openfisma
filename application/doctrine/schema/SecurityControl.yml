@@ -1,0 +1,18 @@
+SecurityControl:
+    columns:
+        code: 
+            type: string(5)
+            fixed: true
+            comment: The control number, e.g. AC-05
+        class:
+            type: enum
+            values: [management, operational, technical]
+        subclass: string(255)
+        family: string(255)
+        control: string
+        guidance: string
+        controlLevel:
+            type: enum
+            values: [none, low, moderate, high]
+        enhancements: string
+        supplement: string

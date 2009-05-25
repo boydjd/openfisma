@@ -1,0 +1,41 @@
+Asset:
+    columns:
+        createdTs: timestamp
+        modifiedTs: timestamp
+
+        name:
+            type: string(255)
+            comment: The name of this asset
+        source:
+            type: enum
+            values: [manual, scan]
+            default: manual
+            comment: Whether this asset was created manually or by an automated scanner
+        addressIp:
+            type: string(15)
+            ip: true
+            comment: The IP address for this asset
+        addressPort:
+            type: integer(2)
+            comment: The IP port for this asset
+        
+        productId:
+            type: integer
+            comment: Foreign key to product table
+        systemId:
+            type: integer
+            comment: Foreign key to system table
+        networkId:
+            type: integer
+            comment: Foreign key to network table
+
+    relations:
+        Product:
+            local: productId
+            foreign: id
+        System:
+            local: systemId
+            foreign: id
+        Network:
+            local: networkId
+            foreignId: id

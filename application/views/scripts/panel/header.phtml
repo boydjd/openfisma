@@ -32,7 +32,7 @@ YAHOO.util.Event.onDOMReady(function () {
 </div>
 <div id="logout">
     <?php echo new Fisma_Yui_Form_Button_Link('logoutButton', array('value' => 'Log Out', 'href' => '/user/logout')); ?>
-    <p><b><?php echo $this->identity; ?></b> is currently logged in</p>
+    <p><b><?php echo Zend_Auth::getInstance()->getIdentity(); ?></b> is currently logged in</p>
 </div>
 
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>

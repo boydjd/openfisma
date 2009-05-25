@@ -1,9 +1,5 @@
 LdapConfig:
     columns:
-        id:
-            primary: true
-            autoincrement: true
-            type: integer
         host: string(255)
         port: integer(2)
         domainName: string(255)

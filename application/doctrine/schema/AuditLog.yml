@@ -1,0 +1,20 @@
+AuditLog:
+    columns:
+        createdTs: timestamp
+        description:
+            type: string
+            comment: Description of the audit log event
+        userId:
+            type: integer
+            comment: Foreign key to user table
+        findingId:
+            type: integer
+            comment: Foreign key to finding table
+        
+    relations:
+        User:
+            local: userId
+            foreign: id
+        Finding:
+            local: findingId
+            foreign: id

@@ -1,9 +1,5 @@
 Configuration:
     columns:
-        id:
-            primary: true
-            autoincrement: true
-            type: integer
         name: 
             type: string(255)
             comment: A string which logically represents a unique configuration item
