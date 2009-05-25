@@ -91,7 +91,9 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
                 'pub' => 'public',
                 'application' => 'application',
                 'config' => 'application/config',
-                'models' => 'application/models',
+                'models2' => 'application/models',
+                'models' => 'application/models-old',
+                'doctrine-models' => 'application/models/generated',
                 'yui' => 'public/yui',
                 'local' => 'library/local/');
 
@@ -111,6 +113,8 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
         self::$_defaultSysConf['path'] = self::$_path;
         $this->addConfig(new Zend_Config(self::$_defaultSysConf));
 
+        $this->parse();
+
         //freeze the NOW, minimize the impact of running time cost.
         self::$_now = time(); 
     }
@@ -129,15 +133,6 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
         return $path;
     }
     
-    public function routeStartup(Zend_Controller_Request_Abstract $request)
-    {
-        try {
-            $this->parse();
-        } catch (Zend_Config_Exception $e) {
-            throw new Scarab_Exception_Config($e->getMessage());
-        }
-    }
-
     /**
      * Application setting initialization
      *
@@ -207,12 +202,15 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
                 $config = new Zend_Config_Ini($installFile);
                 if (!empty($config->database)) {
                     Zend_Registry::set('datasource', $config->database);
+                    $db = $config->database->params;
+                    $connectString = "mysql://{$db->username}:{$db->password}@{$db->host}/{$db->dbname}";
+                    Doctrine_Manager::connection($connectString);
                     Zend_Registry::set('doctrine_config', array(
-                           'data_fixtures_path'  =>  $this->root . '/application/doctrine/data/fixtures',
-                           'models_path'         =>  $this->root . '/application/models',
-                           'migrations_path'     =>  $this->root . '/application/doctrine/migrations',
-                           'sql_path'            =>  $this->root . '/application/doctrine/data/sql',
-                           'yaml_schema_path'    =>  $this->root . '/application/doctrine/schema'
+                           'data_fixtures_path'  =>  $this->_root . '/application/doctrine/data/fixtures',
+                           'models_path'         =>  $this->_root . '/application/models',
+                           'migrations_path'     =>  $this->_root . '/application/doctrine/migrations',
+                           'sql_path'            =>  $this->_root . '/application/doctrine/data/sql',
+                           'yaml_schema_path'    =>  $this->_root . '/application/doctrine/schema'
                     ));
                     foreach ($config->general as $k => $v) {
                         Zend_Registry::set($k, $v);
@@ -262,11 +260,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
             $pairs = $m->fetchAll();
             $configs = array();
             foreach ($pairs as $val) {
-                $configs[$val->key] = $val->value;
-                if (in_array($val->key, array('use_notification',
-                    'behavior_rule', 'privacy_policy'))) {
-                    $configs[$val->key] = $val->description;
-                }
+                $configs[$val->name] = $val->value;
             }
             $configs['isFresh'] = true;
             $this->addConfig(new Zend_Config($configs));
@@ -316,6 +310,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
         }
         Zend_Registry::set($sect, $sysconfig);
     }
+
     /**
      * Initialize the log instance
      *
@@ -330,9 +325,9 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
             $write = new Zend_Log_Writer_Stream(self::$_path['data'] . '/logs/error.log');
             $auth = Zend_Auth::getInstance();
             if ($auth->hasIdentity()) {
-                $me = $auth->getIdentity();
+                $user = Zend_Registry::get('authenticatedUser');
                 $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-                    "$me->account($me->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+                    "$user->username ($user->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
             } else {
                 $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
                     "{$_SERVER['REMOTE_ADDR']}" . PHP_EOL;

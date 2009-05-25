@@ -26,8 +26,6 @@
 
 require_once('../application/init.php');
 
-$dbg = true;
-
 try {
     $plSetting = new Fisma_Controller_Plugin_Setting();
     $dbg = $plSetting->debug();
@@ -41,11 +39,15 @@ try {
     $front->registerPlugin($pl);
     $front->dispatch();
 } catch (Exception $exception) {
-    echo '<html><body><center>'
-       . 'An exception occured while bootstrapping the application.';
-    if ($dbg) {
-         echo '<br /><br />' . $exception->getMessage() . '<br />'
-            . '<div align="left">Stack Trace:' 
-            . '<pre>' . $exception->getTraceAsString() . '</pre></div>';
-    }
+    echo '<h1>An exception occurred while bootstrapping the application.</h1>';
+//    if ($dbg) {
+         echo '<p>' 
+            . get_class($exception) 
+            . '</p><p>' 
+            . $exception->getMessage() 
+            . '</p><p>'
+            . "<p><pre>Stack Trace:\n" 
+            . $exception->getTraceAsString() 
+            . '</pre></p>';
+//    }
 }
