@@ -1,0 +1,28 @@
+System:
+    columns:
+        id:
+            primary: true
+            autoincrement: true
+            type: integer
+        createdTs: timestamp
+        modifiedTs: timestamp
+        
+        type:
+            type: enum
+            values: [gss, major, minor]
+            comment: General Support System, Major Application, or Minor Application
+        
+        confidentiality:
+            type: enum
+            values: [na, low, moderate, high]
+            comment: The FIPS-199 confidentiality impact
+        integrity:
+            type: enum
+            values: [low, moderate, high]
+            comment: The FIPS-199 integrity impact
+        availability:
+            type: enum
+            values: [low, moderate, high]
+            comment: The FIPS-199 availability impact
+            
+            

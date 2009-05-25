@@ -1,0 +1,8 @@
+UserOrganization:
+    columns:
+        userId:
+            type: integer
+            primary: true
+        organizationId:
+            type: integer
+            primary: true

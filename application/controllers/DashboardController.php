@@ -26,7 +26,8 @@
  
 /**
  * The dashboard controller displays the user dashboard when the user first logs
- * in.
+ * in. This controller also produces graphical charts in conjunction with the SWF Charts
+ * package.
  *
  * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
@@ -34,19 +35,6 @@
  */
 class DashboardController extends SecurityController
 {
-    protected $_poam = null;
-    protected $_allSystems = null;
-
-    /**
-     * init() - Initialize internal members.
-     */
-    function init()
-    {
-        parent::init();
-        $sys = new System();
-        $this->_allSystems = $this->_me->systems;
-    }
-
     /**
      * preDispatch() - invoked before each Actions
      */
@@ -57,9 +45,6 @@ class DashboardController extends SecurityController
         $contextSwitch->addActionContext('totalstatus', 'xml')
                       ->addActionContext('totaltype', 'xml')
                       ->initContext();
-        if (!isset($this->_poam)) {
-            $this->_poam = new Poam();
-        }
     }
 
     /**
@@ -69,7 +54,7 @@ class DashboardController extends SecurityController
      */
     public function indexAction()
     {
-        $this->_acl->requirePrivilege('dashboard', 'read');
+        Fisma_Acl::requirePrivilege('dashboard', 'read');
         
         // Check to see if we got passed a "dismiss" parameter to dismiss
         // notifications
@@ -81,7 +66,6 @@ class DashboardController extends SecurityController
             $deleteQuery = "DELETE FROM notifications
                                   WHERE id IN ($notificationsToDismiss)
                                     AND user_id = {$this->_me->id}";
-                                  //  var_dump($this); die;
             $statement = $notification->getAdapter()->query($deleteQuery);
 
             // The most_recent_notify_ts is not updated here because no e-mails

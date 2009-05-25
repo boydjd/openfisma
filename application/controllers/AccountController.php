@@ -34,8 +34,6 @@
  */
 class AccountController extends SecurityController
 {
-    private $_user;
-
     private $_paging = array(
         'mode' => 'Sliding',
         'append' => false,
@@ -51,7 +49,6 @@ class AccountController extends SecurityController
     public function init()
     {
         parent::init();
-        $this->_user = new User();
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('checkaccount', 'html')
                     ->initContext();
@@ -138,7 +135,7 @@ class AccountController extends SecurityController
             $count = count($ret);
             $this->_paging['fileName'] .= '/qv/'.$qv;
         } else {
-            $count = $this->_user->count();
+            $count = Doctrine::getTable('User')->count();
         }
 
         $this->_paging['totalItems'] = $count;
@@ -292,8 +289,6 @@ class AccountController extends SecurityController
     /**
      * updateAction() - Updates account information after submitting an edit
      * form.
-     *
-     * @todo cleanup this function
      */
     public function updateAction()
     {
@@ -309,7 +304,7 @@ class AccountController extends SecurityController
         $accountData = $form->getValues();
 
         $id = $this->getRequest()->getParam('id');
-        $db = $this->_user->getAdapter();
+        $db = Zend_Registry::get('db');
         // Compare the two passwords
         // @todo when we get ZF 1.6, use the addError function here and in
         // saveAction()

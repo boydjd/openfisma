@@ -1,0 +1,17 @@
+LdapConfig:
+    columns:
+        id:
+            primary: true
+            autoincrement: true
+            type: integer
+        host: string(255)
+        port: integer(2)
+        domainName: string(255)
+        domainShort: string(255)
+        username: string(255)
+        password: string(255)
+        basedn: string(255)
+        accountFilter: string(255)
+        accountCanonical: string(255)
+        bindRequiresDn: boolean
+        useSsl: boolean

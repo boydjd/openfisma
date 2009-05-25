@@ -1,0 +1,89 @@
+User:
+    columns:
+        id:
+            primary: true
+            autoincrement: true
+            type: integer
+        createdTs: timestamp
+        modifiedTs: timestamp
+    
+        username: 
+            type: string(255)
+            unique: true
+            comment: TESTING USERNAME COMMENTS
+        password: string(255)
+        passwordTs: timestamp
+        passwordHistory: string
+        hashType:
+            type: enum
+            values: [md5, sha1, sha224, sha256, sha384, sha512]
+        lastRob: 
+            type: timestamp
+            comment: The last time this user digitally accepted the Rules of Behavior
+        
+        locked: 
+            type: boolean
+            default: false
+        lockTs: timestamp
+        lockType: 
+            type: enum
+            values: [manual, password, inactive, expired]
+            comment: Manual lock means the admin locked the account. Password lock means several consecutive password failures. Inactive lock means the user has not logged in recently enough. Expired locked means the password has expired.
+        failureCount: 
+            type: integer
+            default: 0
+    
+        lastLoginIp:
+            type: string(15)
+            ip: true
+        lastLoginTs: timestamp
+    
+        title: 
+            type: string(255)
+            comment: The users position or title within the agency
+        nameFirst: 
+            type: string(255)
+            comment: The users first name
+        nameLast: 
+            type: string(255)
+            comment: The users last name
+        email: 
+            type: string(255)
+            email: true
+            comment: The users primary e-mail address
+        emailValidate: 
+            type: boolean
+            default: false
+            comment: Whether the user has validated their e-mail address
+        phoneOffice: 
+            type: string(10)
+            fixed: true
+            comment: U.S. 10 digit phone number; stored without punctuation
+        phoneMobile:
+            type: string(10)
+            fixed: true
+            comment: U.S. 10 digit phone number; stored without punctuation
+        searchColumnsPref:
+            type: integer
+            comment: A bitmask corresponding to visible columns on the search page
+    
+        notifyFrequency: integer
+        mostRecentNotifyTs: timestamp
+        notifyEmail:
+            type: string(255)
+            email: true
+
+    relations:
+        # Roles is a many-to-many relation
+        Roles:
+            class: Role
+            local: userId
+            foreign: roleId
+            refClass: UserRole
+
+        # Organizations is a many-to-many relation
+        Organizations:
+            class: Organization
+            local: userId
+            foreign: organizationId
+            refClass: UserOrganization

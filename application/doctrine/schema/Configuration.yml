@@ -1,0 +1,16 @@
+Configuration:
+    columns:
+        id:
+            primary: true
+            autoincrement: true
+            type: integer
+        name: 
+            type: string(255)
+            comment: A string which logically represents a unique configuration item
+        value:
+            type: string
+            comment: The value of this unique configuration item
+        description:
+            type: string(255)
+            comment: A description of the configuration attribute which will be displayed to the user
+            

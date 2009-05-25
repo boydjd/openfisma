@@ -71,197 +71,72 @@ class UserController extends MessageController
     /**
      * Handling user login
      * 
-     * The login process basically verifies the credential provided by the user. The authentication can also
-     * be performed against the database as well as it is delegated to third partypassword, such as LDAP, 
-     * according to the application's configuration. Besides, it enforeces the security policies set by the
-     * application. Relative behaviors are logged and the user's preference are initialized by cookie after the
-     * user successfully login.
+     * The login process verifies the credential provided by the user. The authentication can
+     * be performed against the database or LDAP provider, 
+     * according to the application's configuration. Also, it enforces the security policies set by the
+     * application.
      */
     public function loginAction()
     {
-        $req = $this->getRequest();
-        $username = $req->getPost('username');
-        $password = $req->getPost('userpass');
+        $this->_helper->layout->setLayout('login');
+        $username = $this->getRequest()->getPost('username');
+        $password = $this->getRequest()->getPost('userpass');
 
         // If the username isn't passed in the post variables, then just display
         // the login screen without any further processing.
-        $this->_helper->layout->setLayout('login');
         if ( empty($username) ) {
             return $this->render();
-        } else {
-            $this->view->username = $username;
-            $this->view->password = $password;
         }
+        
+        // Attempt login. Display any authorization exceptions back to the user
         try {
-            /**
-             * @todo Fix this SQL injection
-             */
-            $where = $this->_user->getAdapter()->quoteInto('account = ?', $username);
-            $whologin = $this->_user->fetchRow($where);
-            $now = new Zend_Date();
-
-            // If the username isn't found, throw an exception
-            if (empty($whologin)) {
-                $this->_user->log('LOGINFAILURE', '', 'Failure');
-                throw new Zend_Auth_Exception("Incorrect username or password");
+            $user = User::login($username, $password);
+            
+            // Check whether the user's password is about to expire
+            $passExpirationPeriod = Fisma_Controller_Front::readSysConfig('pass_expire');
+            $passWarningPeriod = Fisma_Controller_Front::readSysConfig('pass_warning');
+            $passWarningTs = new Zend_Date($user->passwordTs);
+            $passWarningTs->sub($passExpirationPeriod - $passWarningPeriod, Zend_Date::DAY);
+            if ($passWarningTs->isEarlier(new Zend_Date())) {
+                $message = "Your password will expire in $leaveDays days, you should change it now.";
+                $model = self::M_WARNING;
+                $this->message($message, $model);
+                // redirect back to password change action
+                $this->_helper->_actionStack('header', 'Panel');
+                $this->_forward('password');
             }
-
-            $threshold['failure'] = Fisma_Controller_Front::readSysConfig("failure_threshold");
-            $searchColumnsPref = $whologin->searchColumnsPref;
-            $whologin = $whologin->toArray();
-
-            $failureCount = $whologin['failure_count'];
-            $isQualified = $whologin['is_active'];
-            // If the account is locked...
-            // (due to manual lock, expired account, password errors, etc.)
-            if ('database' == Fisma_Controller_Front::readSysConfig('auth_type')) {
-                if (!$isQualified) {
-                    if ($failureCount >= $threshold['failure']) {
-                        if (Fisma_Controller_Front::readSysConfig('unlock_enabled')) {
-                            $unlockDuration = Fisma_Controller_Front::readSysConfig('unlock_duration');
-                            // If the system administrator has elected to have accounts
-                            // unlock automatically, then calculate how much time is
-                            // left on the lock.
-                            $terminationTs = new Zend_Date($whologin['termination_ts'], Zend_Date::ISO_8601);
-                            $terminationTs->add($unlockDuration, Zend_Date::SECOND);
-                            //beyond the time limited, unlock automatically
-                            if ($terminationTs->isLater($now)) {
-                                $reincarnation = clone $now;
-                                $terminationTs->sub($now);
-                                throw new Zend_Auth_Exception('Your user account has been locked due to '
-                                . $threshold['failure']
-                                . " or more unsuccessful login attempts. Your account will be"
-                                . " unlocked in ".ceil($terminationTs->getTimestamp()/60)
-                                . " minutes. Please try again at that time.<br>"
-                                . " You may also contact the Administrator for further assistance.");
-                            } else {
-                                $array = array('is_active'=>1, 'failure_count'=>0);
-                                $this->_user->update($array, 'id = '.$whologin['id']);
-                            }
-                            $isQualified = true;
-                        } else {
-                            throw new Zend_Auth_Exception('Your user account has been locked due to '
-                            . $threshold['failure']
-                            . ' or more unsuccessful login attempts. Please contact the'
-                            . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
-                            . '">Administrator</a>.');
-                        }
-                    } else { //administrator manually lock it
-                        throw new Zend_Auth_Exception('Your account has been locked by the Administrator. '
-                        . 'Please contact the'
-                        . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
-                        . '">Administrator</a>.');
-                    }
-                }//deactive policy
-            } // database password policy
-
-            // Proceed through authorization based on the configured mechanism
-            // (LDAP, Database, etc.)
-            $authType = Fisma_Controller_Front::readSysConfig('auth_type');
-            $auth = Zend_Auth::getInstance();
-            $result = $this->authenticate($authType, $username, $password);
-
-            if (!$result->isValid()) {
-                $this->_user->log('LOGINFAILURE',
-                $whologin['id'],
-                'Failure');
-                throw new Zend_Auth_Exception("Incorrect username or password");
-            }
-
-            // At this point, the user is authenticated.
-            // Now check if the account has expired.
-            $_me = (object)$whologin;
-            $period = Fisma_Controller_Front::readSysConfig('max_absent_time');
-            $deactiveTime = new Zend_Date();
-            $deactiveTime->sub($period, Zend_Date::DAY);
-            $lastLogin = new Zend_Date($whologin['last_login_ts'],
-            'YYYY-MM-DD HH-MI-SS');
-
-            if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($deactiveTime) ) {
-                $this->_user->log('ACCOUNT_LOCKOUT', $_me->id, "User Account $_me->account Successfully Locked");
-                throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period"
-                . "or more days. Please contact the <a href=\"mailto:"
-                . Fisma_Controller_Front::readSysConfig('contact_email')
-                . '">Administrator</a>.');
-            }
-
-            // If we get this far, then the login is totally successful.
-            $this->_user->log('LOGIN', $_me->id, "Success");
-            // get the default preference value from database
-            $value = empty($searchColumnsPref) ? $this->_user->setColumnPreference($_me->id) : $searchColumnsPref;
-            // set cookie for 'column manager' to control the columns whether visible
-            // Persistent cookies are prohibited on U.S. government web servers by federal law. 
-            // This cookie will expire at the end of the session."
-            setcookie(self::COOKIE_NAME, $value, false, '/');
-            // Initialize the Access Control
-            $nickname = $this->_user->getRoles($_me->id);
-            foreach ($nickname as $n) {
-                $_me->roleArray[] = $n['nickname'];
-            }
-            if (empty( $_me->roleArray )) {
-                $_me->roleArray[] = $_me->account . '_r';
-            }
-
-            // Set up the session timeout
-            $store = $auth->getStorage();
-            $exps = new Zend_Session_Namespace($store->getNamespace());
-            $exps->setExpirationSeconds(Fisma_Controller_Front::readSysConfig('expiring_seconds'));
-            $store->write($_me);
-
-            //check password expire
-            $passExpirePeriod = Fisma_Controller_Front::readSysConfig('pass_expire');
-            $passWarningDays  = Fisma_Controller_Front::readSysConfig('pass_warningdays');
-            $passwordTs = new Zend_Date($whologin['password_ts'], 'Y-m-d');
-            //show warning ahead of time
-            $passwordTs->add($passExpirePeriod-$passWarningDays, Zend_Date::DAY); 
-            if ($now->isLater($passwordTs)) {
-                $passwordTs->add($passWarningDays, Zend_Date::DAY);
-                $passwordTs->sub($now);
-                $leaveDays = intval($passwordTs->get('DAY'));
-                if ($leaveDays <= $passWarningDays) {
-                    $message = "Your password will expire in $leaveDays days, ".
-                    " you may change it here.";
-                    $model = self::M_WARNING;
-                    $this->message($message, $model);
-                    // redirect back to password change action
-                    $this->_helper->_actionStack('header', 'Panel');
-                    $this->_forward('password');
-                } else {
-                    $this->_user->log('ACCOUNT_LOCKOUT',
-                    $_me->id,
-                    "User Account $_me->account Successfully Locked");
-                    throw new Zend_Auth_Exception('Your user account has been locked because you have not'
-                    . " changed your password for $passExpirePeriod or more days."
-                    . ' Please contact the'
-                    . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
-                    . '">Administrator</a>.');
-                }
-            } else if ('md5' == $whologin['hash']) {
+            
+            // Check if the user is using the system standard hash function
+            if (Fisma_Controller_Front::readSysConfig('hash_type') != $user->hashType) {
                 $message = 'This version of the application uses an improved password storage scheme.'
-                . ' You will need to change your password in order to upgrade your account.';
+                         . ' You will need to change your password in order to upgrade your account.';
                 $this->message($message, self::M_WARNING);
                 $this->_helper->_actionStack('header', 'Panel');
                 $this->_forward('password');
-            } else {
-                // Check to see if the user needs to review the rules of behavior.
-                // If they do, then send them to that page. Otherwise, send them to
-                // the dashboard.
-                $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
-                $nextRobReview->add(Fisma_Controller_Front::readSysConfig('rob_duration'), Zend_Date::DAY);
-                if ($now->isEarlier($nextRobReview)) {
-                    $redirectInfo = new Zend_Session_Namespace('redirect_page');
-                    if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
-                        $path = $redirectInfo->page;
-                        unset($redirectInfo->page);
-                        $this->_response->setRedirect($path);
-                    }
-                    $this->_forward('index', 'Panel');
-                } else {
-                    $this->_helper->layout->setLayout('notice');
-                    return $this->render('rule');
-                }
             }
+            
+            // Check to see if the user needs to review the rules of behavior.
+            // If they do, then send them to that page. Otherwise, send them to
+            // the dashboard.
+            $nextRobReview = new Zend_Date($user->lastRob);
+            $nextRobReview->add(Fisma_Controller_Front::readSysConfig('rob_duration'), Zend_Date::DAY);
+            if ($nextRobReview->isEarlier(new Zend_Date())) {
+                $this->_helper->layout->setLayout('notice');
+                return $this->render('rule');
+            }
+            
+            // Finally, if the user has passed through all of this, send them to their original requested
+            // page. If they don't have a requested page, send them to the main dashboard.
+            $redirectInfo = new Zend_Session_Namespace('redirect_page');
+            if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
+                $path = $redirectInfo->page;
+                unset($redirectInfo->page);
+                $this->_response->setRedirect($path);
+            }
+            $this->_forward('index', 'Panel');
         } catch(Zend_Auth_Exception $e) {
+            // If any Auth exceptions are caught during login, then return to the login screen
+            // and display the message
             $this->view->assign('error', $e->getMessage());
         }
     }
@@ -283,9 +158,10 @@ class UserController extends MessageController
      */
     public function logoutAction() {
         if (!empty($this->_me)) {
-            $this->_user->log('LOGOUT', $this->_me->id, 'Success');
-            $notification = new Notification();
-            $notification->add(Notification::ACCOUNT_LOGOUT, null, "User: {$this->_me->account}");
+            /** @doctrine fix logging */
+            //$this->_user->log('LOGOUT', $this->_me->id, 'Success');
+            //$notification = new Notification();
+            //$notification->add(Notification::ACCOUNT_LOGOUT, null, "User: {$this->_me->account}");
             Zend_Auth::getInstance()->clearIdentity();
         }
         $this->_forward('login');
@@ -533,37 +409,6 @@ class UserController extends MessageController
             $this->message($msg, $model);
         }
         $this->_forward('password');
-    }
-
-    /**
-     * authenticate() - Authenticate the user against LDAP or backend database.
-     *
-     * @param string $type The type of authorization ('ldap' or 'database')
-     * @param string $username Username for login
-     * @param string $password Password for login
-     * @return Zend_Auth_Result
-     */
-    protected function authenticate($type, $username, $password) {
-        $db = Zend_Registry::get('db');
-
-        // The root user is always authenticated against the database.
-        if ($username == 'root') {
-            $type = 'database';
-        }
-
-        // Handle LDAP or database authentication for non-root users.
-        if ($type == 'ldap') {
-            $config = new Config();
-            $data = $config->getLdap();
-            $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
-        } else if ($type == 'database') {
-            $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
-            $digestPass = $this->_user->digest($password, $username);
-            $authAdapter->setIdentity($username)->setCredential($digestPass);
-        }
-
-        $auth = Zend_Auth::getInstance();
-        return $auth->authenticate($authAdapter);
     }
 
     /**

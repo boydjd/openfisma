@@ -1,0 +1,356 @@
+Privilege:
+    dashboard_read:
+        resource: dashboard
+        action: read
+        description: View Dashboard
+        orgSpecific: false
+    finding_read:
+        resource: finding
+        action: read
+        description: View Findings
+        orgSpecific: true
+    finding_update:
+        resource: finding
+        action: update
+        description: Edit Findings
+        orgSpecific: true
+    finding_create:
+        resource: finding
+        action: create
+        description: Create Findings
+        orgSpecific: true
+    finding_delete:
+        resource: finding
+        action: delete
+        description: Delete Findings
+        orgSpecific: true
+    asset_read:
+        resource: asset
+        action: read
+        description: View Assets
+        orgSpecific: true
+    asset_update:
+        resource: asset
+        action: update
+        description: Edit Assets
+        orgSpecific: true
+    asset_create:
+        resource: asset
+        action: create
+        description: Create Assets
+        orgSpecific: true
+    asset_delete:
+        resource: asset
+        action: delete
+        description: Delete Assets
+        orgSpecific: true
+    remediation_read:
+        resource: remediation
+        action: read
+        description: View Remediation
+        orgSpecific: true
+    remediation_create_injection:
+        resource: remediation
+        action: create_injection
+        description: Inject Findings
+        orgSpecific: true
+    remediation_update_finding:
+        resource: remediation
+        action: update_finding
+        description: Edit Findings
+        orgSpecific: true
+    remediation_delete:
+        resource: remediation
+        action: delete
+        description: Delete Remediation
+        orgSpecific: true
+    remediation_update_course_of_action:
+        resource: remediation
+        action: update_course_of_action
+        description: Edit Course of Action
+        orgSpecific: true
+    remediation_update_finding_assignment:
+        resource: remediation
+        action: update_finding_assignment
+        description: Edit Responsible System
+        orgSpecific: true
+    remediation_update_control_assignment:
+        resource: remediation
+        action: update_control_assignment
+        description: Edit 800-53 Control Assignment
+        orgSpecific: true
+    remediation_update_countermeasures:
+        resource: remediation
+        action: update_countermeasures
+        description: Edit Countermeasures
+        orgSpecific: true
+    remediation_update_threat:
+        resource: remediation
+        action: update_threat
+        description: Edit Threat Sources
+        orgSpecific: true
+    remediation_update_finding_recommendation:
+        resource: remediation
+        action: update_finding_recommendation
+        description: Edit Finding Recommendation
+        orgSpecific: true
+    remediation_update_finding_resources:
+        resource: remediation
+        action: update_finding_resources
+        description: Edit Finding Resources
+        orgSpecific: true
+    remediation_update_est_completion_date:
+        resource: remediation
+        action: update_est_completion_date
+        description: Edit Completion Date
+        orgSpecific: true
+    remediation_read_evidence:
+        resource: remediation
+        action: read_evidence
+        description: View Evidence
+        orgSpecific: true
+    remediation_update_evidence:
+        resource: remediation
+        action: update_evidence
+        description: Update Evidence
+        orgSpecific: true
+    remediation_update_mitigation_strategy_approval_1:
+        resource: remediation
+        action: update_mitigation_strategy_approval_1
+        description: Mitigation Strategy Provided to SSO
+        orgSpecific: true
+    remediation_update_evidence_approval_first:
+        resource: remediation
+        action: update_evidence_approval_first
+        description: Approve Evidence Level 1
+        orgSpecific: true
+    remediation_update_evidence_approval_second:
+        resource: remediation
+        action: update_evidence_approval_second
+        description: Approve Evidence Level 2
+        orgSpecific: true
+    remediation_update_evidence_approval_third:
+        resource: remediation
+        action: update_evidence_approval_third
+        description: Approve Evidence Level 3
+        orgSpecific: true
+    remediation_update_risk_first:
+        resource: remediation
+        action: update_risk_first
+        description: Accept Risk Level 1
+        orgSpecific: true
+    remediation_update_risk_second:
+        resource: remediation
+        action: update_risk_second
+        description: Accept Risk Level 2
+        orgSpecific: true
+    remediation_update_risk_third:
+        resource: remediation
+        action: update_risk_third
+        description: Accept Risk Level 3
+        orgSpecific: true
+    report_read:
+        resource: report
+        action: read
+        description: View Reports
+        orgSpecific: false
+    remediation_update_finding_course_of_action:
+        resource: remediation
+        action: update_finding_course_of_action
+        description: Edit Course Of Action
+        orgSpecific: true
+    admin_users_read:
+        resource: admin_users
+        action: read
+        description: View Users
+        orgSpecific: false
+    admin_users_update:
+        resource: admin_users
+        action: update
+        description: Edit Users
+        orgSpecific: false
+    admin_users_delete:
+        resource: admin_users
+        action: delete
+        description: Delete Users
+        orgSpecific: false
+    admin_users_create:
+        resource: admin_users
+        action: create
+        description: Create Users
+        orgSpecific: false
+    admin_organizations_read:
+        resource: admin_organizations
+        action: read
+        description: View Organizations
+        orgSpecific: false
+    admin_organizations_delete:
+        resource: admin_organizations
+        action: delete
+        description: Delete Organizations
+        orgSpecific: false
+    admin_organizations_update:
+        resource: admin_organizations
+        action: update
+        description: Edit Organizations
+        orgSpecific: false
+    admin_organizations_create:
+        resource: admin_organizations
+        action: create
+        description: Create Organizations
+        orgSpecific: false
+    admin_systems_read:
+        resource: admin_systems
+        action: read
+        description: View Systems
+        orgSpecific: false
+    admin_systems_delete:
+        resource: admin_systems
+        action: delete
+        description: Delete Systems
+        orgSpecific: false
+    admin_systems_update:
+        resource: admin_systems
+        action: update
+        description: Edit Systems
+        orgSpecific: false
+    admin_systems_create:
+        resource: admin_systems
+        action: create
+        description: Create Systems
+        orgSpecific: false
+    admin_read:
+        resource: admin
+        action: read
+        description: View Administration Menu
+        orgSpecific: false
+    admin_products_read:
+        resource: admin_products
+        action: read
+        description: View Products
+        orgSpecific: false
+    admin_products_create:
+        resource: admin_products
+        action: create
+        description: Create Products
+        orgSpecific: false
+    admin_products_update:
+        resource: admin_products
+        action: update
+        description: Edit Products
+        orgSpecific: false
+    admin_products_delete:
+        resource: admin_products
+        action: delete
+        description: Delete Products
+        orgSpecific: false
+    admin_sources_update:
+        resource: admin_sources
+        action: update
+        description: Edit Finding Sources
+        orgSpecific: false
+    admin_sources_delete:
+        resource: admin_sources
+        action: delete
+        description: Delete Finding Sources
+        orgSpecific: false
+    admin_sources_read:
+        resource: admin_sources
+        action: read
+        description: View Finding Sources
+        orgSpecific: false
+    admin_sources_create:
+        resource: admin_sources
+        action: create
+        description: Create Finding Sources
+        orgSpecific: false
+    app_configuration_update:
+        resource: app_configuration
+        action: update
+        description: App Configuration
+        orgSpecific: false
+    admin_roles_read:
+        resource: admin_roles
+        action: read
+        description: View Roles
+        orgSpecific: false
+    admin_roles_update:
+        resource: admin_roles
+        action: update
+        description: Edit Roles
+        orgSpecific: false
+    admin_roles_create:
+        resource: admin_roles
+        action: create
+        description: Create Roles
+        orgSpecific: false
+    admin_roles_delete:
+        resource: admin_roles
+        action: delete
+        description: Delete Roles
+        orgSpecific: false
+    admin_networks_read:
+        resource: admin_networks
+        action: read
+        description: View Networks
+        orgSpecific: false
+    admin_networks_update:
+        resource: admin_networks
+        action: update
+        description: Edit Networks
+        orgSpecific: false
+    admin_networks_create:
+        resource: admin_networks
+        action: create
+        description: Create Networks
+        orgSpecific: false
+    admin_networks_delete:
+        resource: admin_networks
+        action: delete
+        description: Delete Networks
+        orgSpecific: false
+    notification_admin:
+        resource: notification
+        action: admin
+        description: Admin Notifications
+        orgSpecific: false
+    notification_asset:
+        resource: notification
+        action: asset
+        description: Asset Notifications
+        orgSpecific: true
+    notification_remediation:
+        resource: notification
+        action: remediation
+        description: Remediation Notifications
+        orgSpecific: true
+    remediation_update_mitigation_strategy_approval_2:
+        resource: remediation
+        action: update_mitigation_strategy_approval_2
+        description: Mitigation Strategy Provided to IVV
+        orgSpecific: true
+    remediation_mitigation_strategy_submit:
+        resource: remediation
+        action: mitigation_strategy_submit
+        description: Mitigation Strategy submit
+        orgSpecific: true
+    remediation_mitigation_strategy_revise:
+        resource: remediation
+        action: mitigation_strategy_revise
+        description: Mitigation Strategy revise
+        orgSpecific: true
+    finding_approve:
+        resource: finding
+        action: approve
+        description: Approve Injected Findings
+        orgSpecific: true
+    finding_inject:
+        resource: finding
+        action: inject
+        description: Inject Findings
+        orgSpecific: false
+    remediation_update_finding_description:
+        resource: remediation
+        action: update_finding_description
+        description: Edit Finding Description
+        orgSpecific: true
