@@ -18,4 +18,13 @@ Organization:
             local: organizationId
             foreign: userId
             refClass: UserOrganization
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
             

@@ -1,0 +1,37 @@
+FindingEvaluation:
+    columns:
+        createdTs: timestamp
+        findingId:
+            type: integer
+            comment: Foreign key to the finding which this evaluation is against (optional, this is mutually exclusive with evidenceId)
+        evidenceId:
+            type: integer
+            comment: Foreign key to the evidence which this evaluation is against (optional, this is mutually exclusive with findingId)
+        evaluationId:
+            type: integer
+            comment: Foreign key to the type of evaluation which this represents against the finding
+        userId:
+            type: integer
+            comment: Foreign key to the user who completed this evaluation
+    
+    relations:
+        Finding:
+            local: findingId
+            foreign: id
+        Evidence:
+            local: evidenceId
+            foreign: id
+        Evaluation:
+            local: evaluationId
+            foreign: id
+        User:
+            local: userId
+            foreign: id
+        
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                disabled: true

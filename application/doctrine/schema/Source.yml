@@ -1,0 +1,5 @@
+Source:
+    columns:
+        name: string(255)
+        nickname: string(255)
+        description: string

@@ -1,22 +1,21 @@
-AuditLog:
+Notification:
     columns:
         createdTs: timestamp
-        description:
+        eventText:
             type: string
-            comment: Description of the audit log event
+            comment: The event text which is sent to the user
+        eventId:
+            type: integer
+            comment: Foreign key to the event which caused this notification
         userId:
             type: integer
-            comment: Foreign key to user table
-        findingId:
-            type: integer
-            comment: Foreign key to finding table
-        
+            comment: Foreign key to the user who caused this notification
     relations:
+        Event:
+            local: eventId
+            foreign: id
         User:
             local: userId
-            foreign: id
-        Finding:
-            local: findingId
             foreign: id
 
     actAs:

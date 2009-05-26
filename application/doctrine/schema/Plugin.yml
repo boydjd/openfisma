@@ -1,0 +1,5 @@
+Plugin:
+    columns:
+        name: string(255)
+        class: string(255)
+        description: string

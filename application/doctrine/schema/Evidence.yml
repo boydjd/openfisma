@@ -1,17 +1,17 @@
-Comment:
+Evidence:
     columns:
         createdTs: timestamp
-        
-        content:
+        filename:
             type: string
-            comment: The text of the comment
-        
-        findingEvaluationId: integer
-        userId: integer
-
+        findingId:
+            type: integer
+            comment: Foreign key to the finding which this evidence is attached to
+        userId:
+            type: integer
+            comment: Foreign key to the use who uploaded this evidence
     relations:
-        FindingEvaluation:
-            local: findingEvaluationId
+        Finding:
+            local: findingId
             foreign: id
         User:
             local: userId

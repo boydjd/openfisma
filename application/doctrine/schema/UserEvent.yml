@@ -1,0 +1,4 @@
+UserEvent:
+    columns:
+        userId: integer
+        eventId: integer

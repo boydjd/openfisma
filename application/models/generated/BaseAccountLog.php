@@ -31,5 +31,8 @@ abstract class BaseAccountLog extends Doctrine_Record
     {
         $this->hasOne('User', array('local' => 'userId',
                                     'foreign' => 'id'));
+
+        $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
+        $this->actAs($timestampable0);
     }
 }

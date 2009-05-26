@@ -18,3 +18,11 @@ AccountLog:
         User:
             local: userId
             foreign: id
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                disabled: true

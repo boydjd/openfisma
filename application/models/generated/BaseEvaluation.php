@@ -13,6 +13,7 @@
  * @property integer $privilegeId
  * @property Event $Event
  * @property Privilege $Privilege
+ * @property Doctrine_Collection $FindingEvaluation
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -39,5 +40,8 @@ abstract class BaseEvaluation extends Doctrine_Record
 
         $this->hasOne('Privilege', array('local' => 'privilegeId',
                                          'foreign' => 'id'));
+
+        $this->hasMany('FindingEvaluation', array('local' => 'id',
+                                                  'foreign' => 'evaluationId'));
     }
 }

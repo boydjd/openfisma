@@ -1,0 +1,14 @@
+Product:
+    columns:
+        vendor:
+            type: string(255)
+            comment: The name of the vendor who brands this product
+        name:
+            type: string(255)
+            comment: Name of the product
+        version:
+            type: string(255)
+            comment: Version of the product
+        cpeName:
+            type: string(255)
+            comment: The common platform enumeration (CPE) for this product, if known

@@ -23,3 +23,12 @@ Role:
             local: roleId
             foreign: privilegeId
             refClass: RolePrivilege
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

@@ -1,8 +1,5 @@
 System:
-    columns:
-        createdTs: timestamp
-        modifiedTs: timestamp
-        
+    columns:    
         type:
             type: enum
             values: [gss, major, minor]
@@ -20,5 +17,3 @@ System:
             type: enum
             values: [low, moderate, high]
             comment: The FIPS-199 availability impact
-            
-            

@@ -10,6 +10,7 @@
  * @property integer $userId
  * @property integer $findingId
  * @property User $User
+ * @property Finding $Finding
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -31,5 +32,11 @@ abstract class BaseAuditLog extends Doctrine_Record
     {
         $this->hasOne('User', array('local' => 'userId',
                                     'foreign' => 'id'));
+
+        $this->hasOne('Finding', array('local' => 'findingId',
+                                       'foreign' => 'id'));
+
+        $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
+        $this->actAs($timestampable0);
     }
 }

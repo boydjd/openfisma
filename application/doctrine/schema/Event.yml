@@ -9,3 +9,10 @@ Event:
         Privilege:
             local: privilegeId
             foreign: id
+
+        # Users is a many-to-many relation
+        Users:
+            class: User
+            local: id
+            foreign: userId
+            refClass: UserEvent

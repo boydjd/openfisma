@@ -14,7 +14,10 @@
  * @property integer $productId
  * @property integer $systemId
  * @property integer $networkId
+ * @property Product $Product
  * @property System $System
+ * @property Network $Network
+ * @property Doctrine_Collection $Finding
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -39,7 +42,19 @@ abstract class BaseAsset extends Doctrine_Record
 
     public function setUp()
     {
+        $this->hasOne('Product', array('local' => 'productId',
+                                       'foreign' => 'id'));
+
         $this->hasOne('System', array('local' => 'systemId',
                                       'foreign' => 'id'));
+
+        $this->hasOne('Network', array('local' => 'networkId',
+                                       'foreign' => 'id'));
+
+        $this->hasMany('Finding', array('local' => 'id',
+                                        'foreign' => 'assetId'));
+
+        $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
+        $this->actAs($timestampable0);
     }
 }

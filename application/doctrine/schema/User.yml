@@ -83,3 +83,19 @@ User:
             local: userId
             foreign: organizationId
             refClass: UserOrganization
+        
+        # Events is a many-to-many relation
+        Events:
+            class: Event
+            local: id
+            foreign: eventId
+            refClass: UserEvent
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

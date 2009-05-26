@@ -1,0 +1,20 @@
+Upload:
+    columns:
+        createdTs: timestamp
+        fileName:
+            type: string(255)
+            comment: Name of the uploaded file
+        userId:
+            type: integer
+            comment: Foreign key to the user who uploaded this file
+    
+    relations:
+        User:
+            local: userId
+            foreign: id
+        
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp                

@@ -8,7 +8,10 @@
  * @property string $name
  * @property integer $privilegeId
  * @property Privilege $Privilege
+ * @property Doctrine_Collection $Users
  * @property Doctrine_Collection $Evaluation
+ * @property Doctrine_Collection $Notification
+ * @property Doctrine_Collection $User
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -29,7 +32,18 @@ abstract class BaseEvent extends Doctrine_Record
         $this->hasOne('Privilege', array('local' => 'privilegeId',
                                          'foreign' => 'id'));
 
+        $this->hasMany('User as Users', array('refClass' => 'UserEvent',
+                                              'local' => 'id',
+                                              'foreign' => 'userId'));
+
         $this->hasMany('Evaluation', array('local' => 'id',
                                            'foreign' => 'eventId'));
+
+        $this->hasMany('Notification', array('local' => 'id',
+                                             'foreign' => 'eventId'));
+
+        $this->hasMany('User', array('refClass' => 'UserEvent',
+                                     'local' => 'eventId',
+                                     'foreign' => 'id'));
     }
 }

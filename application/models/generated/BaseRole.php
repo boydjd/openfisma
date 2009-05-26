@@ -39,5 +39,8 @@ abstract class BaseRole extends Doctrine_Record
         $this->hasMany('Privilege as Privileges', array('refClass' => 'RolePrivilege',
                                                         'local' => 'roleId',
                                                         'foreign' => 'privilegeId'));
+
+        $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
+        $this->actAs($timestampable0);
     }
 }

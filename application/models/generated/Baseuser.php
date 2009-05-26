@@ -32,9 +32,16 @@
  * @property string $notifyEmail
  * @property Doctrine_Collection $Roles
  * @property Doctrine_Collection $Organizations
+ * @property Doctrine_Collection $Events
  * @property Doctrine_Collection $AccountLog
  * @property Doctrine_Collection $AuditLog
  * @property Doctrine_Collection $Comment
+ * @property Doctrine_Collection $Event
+ * @property Doctrine_Collection $Evidence
+ * @property Doctrine_Collection $Finding
+ * @property Doctrine_Collection $FindingEvaluation
+ * @property Doctrine_Collection $Notification
+ * @property Doctrine_Collection $Upload
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -83,6 +90,10 @@ abstract class BaseUser extends Doctrine_Record
                                                               'local' => 'userId',
                                                               'foreign' => 'organizationId'));
 
+        $this->hasMany('Event as Events', array('refClass' => 'UserEvent',
+                                                'local' => 'id',
+                                                'foreign' => 'eventId'));
+
         $this->hasMany('AccountLog', array('local' => 'id',
                                            'foreign' => 'userId'));
 
@@ -91,5 +102,27 @@ abstract class BaseUser extends Doctrine_Record
 
         $this->hasMany('Comment', array('local' => 'id',
                                         'foreign' => 'userId'));
+
+        $this->hasMany('Event', array('refClass' => 'UserEvent',
+                                      'local' => 'userId',
+                                      'foreign' => 'id'));
+
+        $this->hasMany('Evidence', array('local' => 'id',
+                                         'foreign' => 'userId'));
+
+        $this->hasMany('Finding', array('local' => 'id',
+                                        'foreign' => 'createdByUserId'));
+
+        $this->hasMany('FindingEvaluation', array('local' => 'id',
+                                                  'foreign' => 'userId'));
+
+        $this->hasMany('Notification', array('local' => 'id',
+                                             'foreign' => 'userId'));
+
+        $this->hasMany('Upload', array('local' => 'id',
+                                       'foreign' => 'userId'));
+
+        $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
+        $this->actAs($timestampable0);
     }
 }

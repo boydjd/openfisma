@@ -38,4 +38,13 @@ Asset:
             foreign: id
         Network:
             local: networkId
-            foreignId: id
+            foreign: id
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
