@@ -12,5 +12,48 @@
  */
 class Finding extends BaseFinding
 {
+    /**
+     * log the behaviors of finding
+     *
+     * @param User  $userId
+     * @param string  $message
+     */
+    public function log($userId, $message)
+    {
+
+    }
+
+    /**
+     * get the detailed status of a POAM,
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+
+    }
+
+    /**
+     * Approve the current evaluation,
+     * then update the status to either point to
+     * a new Evaluation or else to change the status to DRAFT, EN,
+     * or CLOSED as appropriate
+     *
+     * @return void
+     */
+    public function approve()
+    {
+
+    }
+
+    /**
+     * Deny the current evaluation
+     * @param string $comment deny comment
+     * @return void
+     */
+    function deny($comment)
+    {
+
+    }
 
 }
