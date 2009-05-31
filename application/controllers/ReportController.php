@@ -601,8 +601,9 @@ class ReportController extends PoamBaseController
         $sysVulncounts = $db->fetchAll($query);
         $sysNicks = $system->getList('nickname');
         $systemTotals = array();
+
         foreach ($sysNicks as $nickname) {
-            $systemNick = $nickname;
+            $systemNick = $nickname['nickname'];
             $systemTotals[$systemNick] = 0;
         }
         $totalOpen = 0;

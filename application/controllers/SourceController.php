@@ -277,7 +277,10 @@ class SourceController extends SecurityController
         $ret = $this->_source->find($id)->current();
         if (!empty($ret)) {
             $query = $ret->name . ' ' . $ret->nickname;
+        } else {
+            throw new Exception_General("Ths source posted is not a valid source");
         }
+        $data['source'] = $source['name'] . ' ' . $source['nickname'];
 
         if ($formValid) {
             unset($source['save']);
@@ -288,13 +291,13 @@ class SourceController extends SecurityController
                      ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
 
                 //Update findings index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) {
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding') && $query != $data['source']) {
                     $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/finding');
                     $hits = $index->find('source:'.$query);
+                    $ids = array();
                     foreach ($hits as $hit) {
                         $ids[] = $hit->id;
                     }
-                    $data['source'] = $source['name'] . ' ' . $source['nickname'];
                     $this->_helper->updateIndex('finding', $ids, $data);
                 }
 

@@ -68,24 +68,22 @@ class System extends FismaModel
      */
     public function getList ($fields = '*', $primaryKey = null, $order = null)
     {
-        if (($fields === '*') && ($primaryKey === null) && ($order === null)) {
+        //if (($fields === '*') && ($primaryKey === null) && ($order === null)) {
             $systemList = array();
-            $query = $this->select(array($this->_primary, 'nickname', 'name'))
+            $query = $this->select(array($this->_primary, 'nickname', 'name', 'type', 'conf', 'avail', 'integ'))
                           ->distinct()->from($this->_name)->order('nickname');
-	    $query->where('s.visibility="visible"');
+	    $query->where('visibility="visible"');
 
             $result = $this->fetchAll($query);
 
-
-
             foreach ($result as $row) {
-                $systemList[$row->id] = array('name' =>
-                    ('' . $row->nickname . ' - ' . $row->name));
+                $systemList[$row->id] = array('name' => ('' . $row->name), 'nickname'=>$row->nickname,
+		'type' => $row->type, 'conf'=>$row->confidentiality, 'avail'=>$row->availability, 'integ'=>$row->integrity);
             }
             return $systemList;
-        } else {
-            return parent::getList($fields, $primaryKey, $order);
-        }
+        //} else {
+        //    return parent::getList($fields, $primaryKey, $order);
+        //}
     }
     
     /**

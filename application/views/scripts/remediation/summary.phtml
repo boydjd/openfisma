@@ -69,7 +69,11 @@
 <!-- SUMMARY LOOP -->
 <?php
     define('BASE', "/panel/remediation/sub/searchbox/s/search");
+
     foreach($this->summary as $sid=>$row){
+
+	if (isset($this->systems[$sid])) {
+
         $base_url = BASE . '/system_id/' . $sid . $this->criteriaUrl;
         $flag = false;
         echo '<tr>';
@@ -105,6 +109,7 @@
         echo '<td align="center" class="tdc" bgcolor="#d9ead3">';
         echo $row['TOTAL'] == ''?'-':'<a href="'.$base_url.'">'.$row['TOTAL'].'</a>';
         echo '</td></tr>';
+	}
     }
     echo '<tr bgcolor="#f3f3f3">';
     echo '<td width="20%" align="center" class="tdc"><b>TOTALS</b></td>';

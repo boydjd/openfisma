@@ -37,6 +37,7 @@
     </tr>
     <!-- table detail rows -->
     <?php foreach($this->rpdata[0] as $item){ ?>
+    <?php if(isset($item['type'])) { ?>
      <tr align="center">
         <td align="left" class="tdc"><?php echo $item['name'];?></td>
         <td class="tdc"><?php echo $item['type'];?></td>
@@ -46,5 +47,6 @@
         <td class="tdc"><?php echo $item['avail'];?></td>
         <td class="tdc"><?php echo $item['last_update'];?></td>
     </tr>
+    <?php } ?>
     <?php } ?>
 </table>
