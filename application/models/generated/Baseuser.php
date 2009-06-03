@@ -36,6 +36,7 @@
  * @property Doctrine_Collection $AccountLog
  * @property Doctrine_Collection $AuditLog
  * @property Doctrine_Collection $Comment
+ * @property Doctrine_Collection $EmailValidation
  * @property Doctrine_Collection $Event
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Finding
@@ -102,6 +103,9 @@ abstract class BaseUser extends Doctrine_Record
 
         $this->hasMany('Comment', array('local' => 'id',
                                         'foreign' => 'userId'));
+
+        $this->hasMany('EmailValidation', array('local' => 'id',
+                                                'foreign' => 'userId'));
 
         $this->hasMany('Event', array('refClass' => 'UserEvent',
                                       'local' => 'userId',
