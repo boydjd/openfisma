@@ -27,6 +27,11 @@
  * @package   Test
  */
 
+$root_path = dirname(dirname(__FILE__));
+set_include_path(get_include_path() . PATH_SEPARATOR . $root_path);
+require_once('library/Doctrine.php');
+spl_autoload_register(array('Doctrine', 'autoload'));
+
 /**
  * @ignore
  * Run the application bootstrap in command line mode
@@ -54,10 +59,16 @@ abstract class Test_FismaUnitTest extends PHPUnit_Framework_TestCase
      *
      * @todo why isn't this done in the bootstrap?
      */
-    protected function setUp()
+    protected function setUp($testName)
     {
         // Initialize our DB connection
-        $this->_db = Zend_Db::factory(Zend_Registry::get('datasource'));
+        $datasource = Zend_Registry::get('datasource');
+        $this->_db = Zend_Db::factory($datasource);
         Zend_Db_Table::setDefaultAdapter($this->_db);
+        $dsn = $datasource->params->toArray();
+        Doctrine_Manager::connection('mysql://' . $dsn['username'] . ':' .
+            $dsn['password'] . '@' . $dsn['host'] . '/' . $dsn['dbname']);
+        $df =  dirname(__FILE__) . "/fixtures/$testName.yml";
+        Doctrine::loadData($df);
     }
 }

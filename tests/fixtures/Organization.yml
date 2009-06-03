@@ -1,0 +1,6 @@
+Organization: 
+    BGA:
+        name: Big Governement Agency
+        nickname: BGA
+        description: <p>This is a really, really big government agency, with tremendous FISMA compliance needs</p>
+        orgType: agency
