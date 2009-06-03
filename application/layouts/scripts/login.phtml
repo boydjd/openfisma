@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 <?php
-    echo $this->headTitle()->prepend(Fisma_Controller_Front::readSysConfig('system_name'));
+    echo $this->headTitle()->prepend(Configuration::getConfig('system_name'));
     Fisma_Yui::includeLibrary('yahoo-dom-event');
     Fisma_Yui::includeLibrary('element');
     Fisma_Yui::includeLibrary('button');
@@ -24,7 +24,13 @@
     <div id='footer'>
         <hr style="color: #44637A;" size="1">
         <div id='footerLinks'>
-            <a href="mailto:<?php echo Fisma_Controller_Front::readSysConfig('contact_email');?>?Subject=<?php echo urlencode(Fisma_Controller_Front::readSysConfig('contact_subject'));?>">Contact Administrator</a>&nbsp;|&nbsp;
+<?
+    $mailLink = 'mailto:'
+              . Configuration::getConfig('contact_email')
+              . '?Subject='
+              . str_replace('+', ' ', urlencode(Configuration::getConfig('contact_subject')));
+?>
+            <a href="<?php echo $mailLink; ?>">Contact Administrator</a>&nbsp;|&nbsp;
             <a href="/user/rob/">Rules of Behavior</a>&nbsp;|&nbsp;
             <a href="/user/privacy/">Privacy Policy</a>&nbsp;|&nbsp;
             <i>Powered by <a href="http://www.openfisma.org">OpenFISMA</a></i>

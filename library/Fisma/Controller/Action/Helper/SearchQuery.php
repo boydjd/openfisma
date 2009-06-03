@@ -108,7 +108,7 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
             $frontendOptions = array(
                 'caching'  => true,
                 // cache life same as system expiring period
-                'lifetime' => Fisma_Controller_Front::readSysConfig('expiring_seconds'), 
+                'lifetime' => Configuration::getConfig('expiring_seconds'), 
                 'automatic_serialization' => true);
 
             $backendOptions = array(

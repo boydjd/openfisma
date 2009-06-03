@@ -129,13 +129,13 @@ Configuration:
         value: 0
         description: Require Special Characters
 
-    pass_min:
-        name: pass_min
+    pass_min_length:
+        name: pass_min_length
         value: 8
         description: Minimum Password Length
 
-    pass_max:
-        name: pass_max
+    pass_max_length:
+        name: pass_max_length
         value: 16
         description: Maximum Password Length
 

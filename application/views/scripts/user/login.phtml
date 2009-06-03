@@ -1,13 +1,9 @@
 <div id='systemUseNotification'>
     <div id="systemName">
-        <?php echo Fisma_Controller_Front::readSysConfig('system_name');?>
+        <?php echo Configuration::getConfig('system_name');?>
     </div>
 
-    <hr>
-
-    <div><?php echo Fisma_Controller_Front::readSysConfig('use_notification');?></div>
-
-    <hr>
+    <div><?php echo Configuration::getConfig('use_notification');?></div>
 
     <p class="message">
         <?php 
