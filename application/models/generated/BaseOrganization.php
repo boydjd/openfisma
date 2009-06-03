@@ -9,9 +9,13 @@
  * @property timestamp $modifiedTs
  * @property string $name
  * @property string $nickname
- * @property string $description
  * @property enum $orgType
+ * @property string $description
+ * @property integer $lft
+ * @property integer $rgt
+ * @property integer $level
  * @property Doctrine_Collection $Users
+ * @property Doctrine_Collection $UserOrganization
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -27,8 +31,11 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('name', 'string', 255, array('type' => 'string', 'length' => '255'));
         $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'unique' => 'true;', 'length' => '255'));
+        $this->hasColumn('orgType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'agency', 1 => 'bureau', 2 => 'organization', 3 => 'system'), 'length' => ''));
         $this->hasColumn('description', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('orgType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'agency', 1 => 'bureau', 2 => 'organization', 3 => 'system')));
+        $this->hasColumn('lft', 'integer', 4, array('type' => 'integer', 'length' => '4'));
+        $this->hasColumn('rgt', 'integer', 4, array('type' => 'integer', 'length' => '4'));
+        $this->hasColumn('level', 'integer', 2, array('type' => 'integer', 'length' => '2'));
     }
 
     public function setUp()
@@ -37,7 +44,12 @@ abstract class BaseOrganization extends Doctrine_Record
                                               'local' => 'organizationId',
                                               'foreign' => 'userId'));
 
+        $this->hasMany('UserOrganization', array('local' => 'id',
+                                                 'foreign' => 'organizationId'));
+
+        $nestedset0 = new Doctrine_Template_NestedSet();
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
+        $this->actAs($nestedset0);
         $this->actAs($timestampable0);
     }
 }

@@ -1,30 +1,31 @@
 Organization:
-    columns:
-        createdTs: timestamp
-        modifiedTs: timestamp
-        
-        name: string(255)
-        nickname:
-            type: string(255)
-            unique: true;
-        description: string(255)
-        orgType:
-            type: enum
-            values: [agency, bureau, organization, system]
-    relations:
-        # Users is a many-to-many relation
-        Users:
-            class: User
-            local: organizationId
-            foreign: userId
-            refClass: UserOrganization
-
-    actAs:
-        Timestampable:
-            created:
-                name: createdTs
-                type: timestamp
-            updated:
-                name: modifiedTs
-                type: timestamp
-            
+  columns:
+    createdTs: timestamp
+    modifiedTs: timestamp
+    name: string(255)
+    nickname:
+      type: string(255)
+      unique: true;
+    orgType:
+      type: enum()
+      values: [agency, bureau, organization, system]
+    description: string(255)
+    lft: integer(4)
+    rgt: integer(4)
+    level: integer(2)
+  relations:
+    # Users is a many-to-many relation
+    Users:
+        class: User
+        local: organizationId
+        foreign: userId
+        refClass: UserOrganization
+  actAs:
+    NestedSet:
+    Timestampable:
+      created:
+        name: createdTs
+        type: timestamp
+      updated:
+        name: modifiedTs
+        type: timestamp
