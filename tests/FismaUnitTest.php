@@ -36,7 +36,7 @@ spl_autoload_register(array('Doctrine', 'autoload'));
  * @ignore
  * Run the application bootstrap in command line mode
  */
-require_once('../application/init.php');
+require_once(realpath(dirname(__FILE__) . '/../application/init.php'));
 $plSetting = new Fisma_Controller_Plugin_Setting();
 
 if (!$plSetting->installed()) {
@@ -59,7 +59,7 @@ abstract class Test_FismaUnitTest extends PHPUnit_Framework_TestCase
      *
      * @todo why isn't this done in the bootstrap?
      */
-    protected function setUp($testName)
+    protected function setUp()
     {
         // Initialize our DB connection
         $datasource = Zend_Registry::get('datasource');
@@ -68,7 +68,5 @@ abstract class Test_FismaUnitTest extends PHPUnit_Framework_TestCase
         $dsn = $datasource->params->toArray();
         Doctrine_Manager::connection('mysql://' . $dsn['username'] . ':' .
             $dsn['password'] . '@' . $dsn['host'] . '/' . $dsn['dbname']);
-        $df =  dirname(__FILE__) . "/fixtures/$testName.yml";
-        Doctrine::loadData($df);
     }
 }
