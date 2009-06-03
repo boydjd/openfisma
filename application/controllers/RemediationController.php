@@ -122,6 +122,15 @@ class RemediationController extends PoamBaseController
     }
 
     /**
+     *  Experimental code... not intended for release
+     */
+    public function summary2Action()
+    {
+        ;
+    }
+
+
+    /**
      *  Display the summary page of remediation, per systems.
      */
     public function summaryAction()

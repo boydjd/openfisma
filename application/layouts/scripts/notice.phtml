@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <?php
-            echo $this->headTitle()->prepend(Fisma_Controller_Front::readSysConfig('system_name'));
+            echo $this->headTitle()->prepend(Configuration::getConfig('system_name'));
             Fisma_Yui::includeLibrary('yahoo-dom-event');
             Fisma_Yui::includeLibrary('element');
             Fisma_Yui::includeLibrary('button');    

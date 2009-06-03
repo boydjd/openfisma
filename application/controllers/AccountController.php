@@ -97,7 +97,7 @@ class AccountController extends SecurityController
         // If the application is in database authentication mode, then remove
         // the LDAP DN fields. If the application is in LDAP authentication
         // mode, then remove the database authentication fields.
-        $systemAuthType = Fisma_Controller_Front::readSysConfig('auth_type');
+        $systemAuthType = Configuration::getConfig('auth_type');
         if ($systemAuthType == 'ldap') {
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
@@ -259,7 +259,7 @@ class AccountController extends SecurityController
         if ($v == 'edit') {
             // Prepare the password requirements explanation:
             $requirements = $this->_getPasswordRequirements();
-            if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
+            if (Configuration::getConfig('auth_type') == 'database') {
                 $this->view->assign('requirements', $requirements);
             }
             $this->view->assign('viewLink',
@@ -296,7 +296,7 @@ class AccountController extends SecurityController
         
         // Load the account form in order to perform validations.
         $form = $this->getAccountForm();
-        if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
+        if (Configuration::getConfig('auth_type') == 'database') {
             $pass = $form->getElement('password');
             $pass->addValidator(new Fisma_Form_Validator_Password());
         }
@@ -316,7 +316,7 @@ class AccountController extends SecurityController
             $this->_forward('view', null, null, array('id' => $id,
                                                       'v' => 'edit'));
         } else if ($formValid) {
-            if ( Fisma_Controller_Front::readSysConfig('auth_type') == 'database'
+            if ( Configuration::getConfig('auth_type') == 'database'
                  && empty($accountData['account']) ) {
                 $msg = "Account can not be null.";
                 $this->message($msg, self::M_WARNING);
@@ -338,7 +338,7 @@ class AccountController extends SecurityController
                 }
                 $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
-                $accountData['hash']     = Fisma_Controller_Front::readSysConfig('encrypt');
+                $accountData['hash']     = Configuration::getConfig('encrypt');
                 $accountData['password_ts'] = self::$now->toString('Y-m-d H:i:s');
             } else {
                 unset($accountData['password']);
@@ -495,7 +495,7 @@ class AccountController extends SecurityController
         
         // The password fields are required during creation *if* we are in
         // database authentication mode
-        if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
+        if (Configuration::getConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirmPassword')->setRequired(true);
              // Prepare the password requirements explanation:
@@ -525,7 +525,7 @@ class AccountController extends SecurityController
 
         // The password fields are required during creation *if* we are in
         // database authentication mode
-        if (Fisma_Controller_Front::readSysConfig('auth_type') == 'database') {
+        if (Configuration::getConfig('auth_type') == 'database') {
             $form->getElement('password')->setRequired(true);
             $form->getElement('confirmPassword')->setRequired(true);
             $password = $form->getElement('password');
@@ -559,10 +559,10 @@ class AccountController extends SecurityController
             
             $password = '';
             // Create the user's main record.
-            if ( 'database' == Fisma_Controller_Front::readSysConfig('auth_type') ) {
+            if ( 'database' == Configuration::getConfig('auth_type') ) {
                 $password = $accountData['password'];
                 $accountData['password'] = $this->_user->digest($accountData['password']);
-                $accountData['hash'] = Fisma_Controller_Front::readSysConfig('encrypt');
+                $accountData['hash'] = Configuration::getConfig('encrypt');
             }
             $accountData['auto_role'] = $accountData['account'].'_r';
             $accountData['password_ts'] = self::$now->toString('Y-m-d H:i:s');
@@ -851,12 +851,12 @@ class AccountController extends SecurityController
      */
     public function generatepasswordAction()
     {
-        $passLengthMin = Fisma_Controller_Front::readSysConfig('pass_min');
-        $passLengthMax = Fisma_Controller_Front::readSysConfig('pass_max');
-        $passNum = Fisma_Controller_Front::readSysConfig('pass_numerical');
-        $passUpper = Fisma_Controller_Front::readSysConfig('pass_uppercase');
-        $passLower = Fisma_Controller_Front::readSysConfig('pass_lowercase');
-        $passSpecial = Fisma_Controller_Front::readSysConfig('pass_special');
+        $passLengthMin = Configuration::getConfig('pass_min');
+        $passLengthMax = Configuration::getConfig('pass_max');
+        $passNum = Configuration::getConfig('pass_numerical');
+        $passUpper = Configuration::getConfig('pass_uppercase');
+        $passLower = Configuration::getConfig('pass_lowercase');
+        $passSpecial = Configuration::getConfig('pass_special');
         
         $flag = 0;
         $password = "";
@@ -901,20 +901,20 @@ class AccountController extends SecurityController
     protected function _getPasswordRequirements()
     {
         $requirements[] = "Length must be between "
-                        . Fisma_Controller_Front::readSysConfig('pass_min')
+                        . Configuration::getConfig('pass_min')
                         . " and "
-                        . Fisma_Controller_Front::readSysConfig('pass_max')
+                        . Configuration::getConfig('pass_max')
                         . " characters long.";
-        if (Fisma_Controller_Front::readSysConfig('pass_uppercase') == 1) {
+        if (Configuration::getConfig('pass_uppercase') == 1) {
             $requirements[] = "Must contain at least 1 upper case character (A-Z)";
         }
-        if (Fisma_Controller_Front::readSysConfig('pass_lowercase') == 1) {
+        if (Configuration::getConfig('pass_lowercase') == 1) {
             $requirements[] = "Must contain at least 1 lower case character (a-z)";
         }
-        if (Fisma_Controller_Front::readSysConfig('pass_numerical') == 1) {
+        if (Configuration::getConfig('pass_numerical') == 1) {
             $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
-        if (Fisma_Controller_Front::readSysConfig('pass_special') == 1) {
+        if (Configuration::getConfig('pass_special') == 1) {
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
         return $requirements;

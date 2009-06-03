@@ -69,7 +69,7 @@ class MessageController extends Zend_Controller_Action
     {
         $mail = new Zend_Mail();
 
-        $mail->setFrom(Fisma_Controller_Front::readSysConfig('sender'), Fisma_Controller_Front::readSysConfig('system_name'));
+        $mail->setFrom(Configuration::getConfig('sender'), Configuration::getConfig('system_name'));
         $mail->addTo($email);
         $mail->setSubject("Confirm Your E-mail Address");
 
@@ -91,7 +91,7 @@ class MessageController extends Zend_Controller_Action
         $contentTpl->actionType = $type;
         $contentTpl->validateCode = $validateCode;
         $contentTpl->userId = $userId;
-        $contentTpl->hostUrl = Fisma_Controller_Front::readSysConfig('hostUrl');
+        $contentTpl->hostUrl = Configuration::getConfig('hostUrl');
         $content = $contentTpl->render('validate.phtml');
         $mail->setBodyText($content);
         try {
@@ -114,8 +114,8 @@ class MessageController extends Zend_Controller_Action
         $user = new User();
         $ret = $user->find($userId)->current();
 
-        $sender = Fisma_Controller_Front::readSysConfig('sender');
-        $systemName = Fisma_Controller_Front::readSysConfig('system_name');
+        $sender = Configuration::getConfig('sender');
+        $systemName = Configuration::getConfig('system_name');
 
         $mail = new Zend_Mail();
 
@@ -125,7 +125,7 @@ class MessageController extends Zend_Controller_Action
 
         $contentTpl = $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts/mail');
         $contentTpl = $this->view;
-        $contentTpl->hostUrl = Fisma_Controller_Front::readSysConfig('hostUrl');
+        $contentTpl->hostUrl = Configuration::getConfig('hostUrl');
         $contentTpl->password = $password;
         $content = $contentTpl->render('sendpassword.phtml');
         $mail->setBodyText($content);
@@ -148,13 +148,13 @@ class MessageController extends Zend_Controller_Action
     private function _getTransport()
     {
         $transport = null;
-        if ( 'smtp' == Fisma_Controller_Front::readSysConfig('send_type')) {
+        if ( 'smtp' == Configuration::getConfig('send_type')) {
             $config = array('auth' => 'login',
-                'username' => Fisma_Controller_Front::readSysConfig('smtp_username'),
-                'password' => Fisma_Controller_Front::readSysConfig('smtp_password'),
-                'port' => Fisma_Controller_Front::readSysConfig('smtp_port'));
+                'username' => Configuration::getConfig('smtp_username'),
+                'password' => Configuration::getConfig('smtp_password'),
+                'port' => Configuration::getConfig('smtp_port'));
             $transport = new Zend_Mail_Transport_Smtp(
-                Fisma_Controller_Front::readSysConfig('smtp_host'), $config);
+                Configuration::getConfig('smtp_host'), $config);
         } else {
             $transport = new Zend_Mail_Transport_Sendmail();
         }

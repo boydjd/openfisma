@@ -147,7 +147,7 @@ class ConfigController extends SecurityController
         $form->setDefaults($configs);
         $this->view->generalConfig = $form;
 
-        if ('ldap' == Fisma_Controller_Front::readSysConfig('auth_type', true)) {
+        if ('ldap' == Configuration::getConfig('auth_type', true)) {
             $this->_helper->actionStack('ldaplist');
         }
 

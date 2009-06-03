@@ -1,5 +1,5 @@
 <?php 
-    Fisma_Format_Section::startSection(Fisma_Controller_Front::readSysConfig('system_name') . ' Rules of Behavior');
-    print(Fisma_Controller_Front::readSysConfig('behavior_rule'));
+    Fisma_Format_Section::startSection(Configuration::getConfig('system_name') . ' Rules of Behavior');
+    print(Configuration::getConfig('behavior_rule'));
     Fisma_Format_Section::stopSection(); 
 ?>

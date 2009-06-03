@@ -66,7 +66,7 @@ class User extends BaseUser
         
         // If the system is using database authentication and the account is locked, then check to see
         // what the reason for the lock was and whether it can be unlocked automatically.
-        if ('database' == Fisma_Controller_Front::readSysConfig('auth_type') && $user->locked) {
+        if ('database' == Configuration::getConfig('auth_type') && $user->locked) {
             $result = $user->_checkAccountLock();
             if ($result !== true) {
                 // The account is still locked
@@ -84,7 +84,7 @@ class User extends BaseUser
         } else {
             $this->failureCount++;
             $this->save();
-            if ($this->failureCount > Fisma_Controller_Front::readSysConfig('auth_type')) {
+            if ($this->failureCount > Configuration::getConfig('auth_type')) {
                 $this->_lockAccount('password');
             }
             /** @doctrine fix logging */
@@ -104,7 +104,7 @@ class User extends BaseUser
         // Set up the session timeout for the authentication token
         $store = Zend_Auth::getInstance()->getStorage();
         $sessionExpiration = new Zend_Session_Namespace($store->getNamespace());
-        $sessionExpiration->setExpirationSeconds(Fisma_Controller_Front::readSysConfig('expiring_seconds'));
+        $sessionExpiration->setExpirationSeconds(Configuration::getConfig('expiring_seconds'));
         
         // Check password expiration
         $user->_checkPasswordExpiration();
@@ -156,19 +156,19 @@ class User extends BaseUser
             return 'Your account has been locked by an Administrator. '
                  . 'Please contact the'
                  . ' <a href="mailto:'
-                 . Fisma_Controller_Front::readSysConfig('contact_email')
+                 . Configuration::getConfig('contact_email')
                  . '">Administrator</a>.';
         } elseif ($this->lockType == 'password') {
             // If this system is configured to let accounts unlock automatically,
             // then check whether it can be unlocked now
-            if (Fisma_Controller_Front::readSysConfig('unlock_enabled') == 1) {
+            if (Configuration::getConfig('unlock_enabled') == 1) {
                 $unlockTs = new Zend_Date($this->lockTs);
-                $unlockTs->add(Fisma_Controller_Front::readSysConfig('unlock_duration'), Zend_Date::SECOND);
+                $unlockTs->add(Configuration::getConfig('unlock_duration'), Zend_Date::SECOND);
                 $now = new Zend_Date();
                 if ($unlockTs->isLater($now)) {
                     $unlockTs->sub($now);
                     return 'Your user account has been locked due to '
-                          . Fisma_Controller_Front::readSysConfig('failure_threshold')
+                          . Configuration::getConfig('failure_threshold')
                           . ' or more unsuccessful login attempts. Your account will be unlocked in '
                           . ceil($unlockTs->getTimestamp()/60)
                           . ' minutes. Please try again at that time.<br>'
@@ -179,20 +179,20 @@ class User extends BaseUser
                 }
             } else {
                 return 'Your user account has been locked due to '
-                     . Fisma_Controller_Front::readSysConfig('failure_threshold')
+                     . Configuration::getConfig('failure_threshold')
                      . ' or more unsuccessful login attempts. Please contact the <a href="mailto:'
-                     . Fisma_Controller_Front::readSysConfig('contact_email')
+                     . Configuration::getConfig('contact_email')
                      . '">Administrator</a>.';
             }
         } elseif ($this->lockType == 'inactive') {
             return 'Your account has been locked automatically because you have not '
                  . 'not logged in over '
-                 . Fisma_Controller_Front::readSysConfig('max_absent_time')
+                 . Configuration::getConfig('max_absent_time')
                  . ' days.';
         } elseif ($this->lockType == 'expired') {
             return 'Your account has been locked automatically because you have not '
                  . 'changed your password in over '
-                 . Fisma_Controller_Front::readSysConfig('pass_expire')
+                 . Configuration::getConfig('pass_expire')
                  . ' days.';
         } else {
             throw new Exception("Undefined account lock type");
@@ -205,7 +205,7 @@ class User extends BaseUser
      */
     private function _checkAccountExpiration() 
     {
-        $expirationPeriod = Fisma_Controller_Front::readSysConfig('max_absent_time');
+        $expirationPeriod = Configuration::getConfig('max_absent_time');
         $expirationDate = new Zend_Date();
         $expirationDate->sub($expirationPeriod, Zend_Date::DAY);
         $lastLogin = new Zend_Date($this->lastLoginTs, 'YYYY-MM-DD HH-MI-SS');
@@ -217,7 +217,7 @@ class User extends BaseUser
             throw new Zend_Auth_Exception('Your account has been locked because you have not logged in for '
                 . $expirationPeriod
                 . ' or more days. Please contact the <a href=\"mailto:'
-                . Fisma_Controller_Front::readSysConfig('contact_email')
+                . Configuration::getConfig('contact_email')
                 . '">Administrator</a>.');
         } 
     }
@@ -227,7 +227,7 @@ class User extends BaseUser
      */
     private function _checkPasswordExpiration()
     {
-        $passExpirePeriod = Fisma_Controller_Front::readSysConfig('pass_expire');
+        $passExpirePeriod = Configuration::getConfig('pass_expire');
         $passExpireTs = new Zend_Date($this->passwordTs);
         $passExpireTs->add($passExpirePeriod, Zend_Date::DAY);
         
@@ -238,7 +238,7 @@ class User extends BaseUser
             throw new Zend_Auth_Exception('Your user account has been locked because you have not'
                 . " changed your password for $passExpirePeriod or more days."
                 . ' Please contact the '
-                . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
+                . ' <a href="mailto:'. Configuration::getConfig('contact_email')
                 . '">Administrator</a>.');
 
         }
@@ -253,7 +253,7 @@ class User extends BaseUser
      */
     private function _authenticate($username, $password) {
         $db = Zend_Registry::get('db');
-        $authType = Fisma_Controller_Front::readSysConfig('auth_type');
+        $authType = Configuration::getConfig('auth_type');
 
         // The root user is always authenticated against the database.
         if ($username == 'root') {

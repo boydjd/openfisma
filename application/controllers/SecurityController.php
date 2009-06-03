@@ -73,7 +73,7 @@ class SecurityController extends MessageController
             // Update the session timeout
             $store = Zend_Auth::getInstance()->getStorage();
             $sessionExpiration = new Zend_Session_Namespace($store->getNamespace());
-            $sessionExpiration->setExpirationSeconds(Fisma_Controller_Front::readSysConfig('expiring_seconds'));
+            $sessionExpiration->setExpirationSeconds(Configuration::getConfig('expiring_seconds'));
         } else {
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their

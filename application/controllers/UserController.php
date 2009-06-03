@@ -93,8 +93,8 @@ class UserController extends MessageController
             $user = User::login($username, $password);
             
             // Check whether the user's password is about to expire
-            $passExpirationPeriod = Fisma_Controller_Front::readSysConfig('pass_expire');
-            $passWarningPeriod = Fisma_Controller_Front::readSysConfig('pass_warning');
+            $passExpirationPeriod = Configuration::getConfig('pass_expire');
+            $passWarningPeriod = Configuration::getConfig('pass_warning');
             $passWarningTs = new Zend_Date($user->passwordTs);
             $passWarningTs->sub($passExpirationPeriod - $passWarningPeriod, Zend_Date::DAY);
             if ($passWarningTs->isEarlier(new Zend_Date())) {
@@ -107,7 +107,7 @@ class UserController extends MessageController
             }
             
             // Check if the user is using the system standard hash function
-            if (Fisma_Controller_Front::readSysConfig('hash_type') != $user->hashType) {
+            if (Configuration::getConfig('hash_type') != $user->hashType) {
                 $message = 'This version of the application uses an improved password storage scheme.'
                          . ' You will need to change your password in order to upgrade your account.';
                 $this->message($message, self::M_WARNING);
@@ -119,7 +119,7 @@ class UserController extends MessageController
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
             $nextRobReview = new Zend_Date($user->lastRob);
-            $nextRobReview->add(Fisma_Controller_Front::readSysConfig('rob_duration'), Zend_Date::DAY);
+            $nextRobReview->add(Configuration::getConfig('rob_duration'), Zend_Date::DAY);
             if ($nextRobReview->isEarlier(new Zend_Date())) {
                 $this->_helper->layout->setLayout('notice');
                 return $this->render('rule');
@@ -225,20 +225,20 @@ class UserController extends MessageController
 
         // Prepare the password requirements explanation:
         $requirements[] = "Length must be between "
-        . Fisma_Controller_Front::readSysConfig('pass_min')
+        . Configuration::getConfig('pass_min')
         . " and "
-        . Fisma_Controller_Front::readSysConfig('pass_max')
+        . Configuration::getConfig('pass_max')
         . " characters long.";
-        if (Fisma_Controller_Front::readSysConfig('pass_uppercase') == 1) {
+        if (Configuration::getConfig('pass_uppercase') == 1) {
             $requirements[] = "Must contain at least 1 upper case character (A-Z)";
         }
-        if (Fisma_Controller_Front::readSysConfig('pass_lowercase') == 1) {
+        if (Configuration::getConfig('pass_lowercase') == 1) {
             $requirements[] = "Must contain at least 1 lower case character (a-z)";
         }
-        if (Fisma_Controller_Front::readSysConfig('pass_numerical') == 1) {
+        if (Configuration::getConfig('pass_numerical') == 1) {
             $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
-        if (Fisma_Controller_Front::readSysConfig('pass_special') == 1) {
+        if (Configuration::getConfig('pass_special') == 1) {
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
 
@@ -392,7 +392,7 @@ class UserController extends MessageController
                 $now = date('Y-m-d H:i:s');
                 $data = array(
                 'password' => $newPass,
-                'hash'     => Fisma_Controller_Front::readSysConfig('encrypt'),
+                'hash'     => Configuration::getConfig('encrypt'),
                 'history_password' => $historyPass,
                 'password_ts' => $now
                 );
@@ -457,7 +457,7 @@ class UserController extends MessageController
             $msg = "Your e-mail address has been validated. You may close this window or click <a href='http://"
             . $_SERVER['HTTP_HOST']
             . "'>here</a> to enter "
-            . Fisma_Controller_Front::readSysConfig('system_name')
+            . Configuration::getConfig('system_name')
             . '.';
         } else {
             $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
