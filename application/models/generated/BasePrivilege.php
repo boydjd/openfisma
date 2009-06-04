@@ -9,8 +9,8 @@
  * @property string $action
  * @property string $description
  * @property boolean $orgSpecific
- * @property Doctrine_Collection $Evaluation
- * @property Doctrine_Collection $Event
+ * @property Doctrine_Collection $Evaluations
+ * @property Doctrine_Collection $Events
  * @property Doctrine_Collection $Role
  * 
  * @package    ##PACKAGE##
@@ -31,11 +31,11 @@ abstract class BasePrivilege extends Doctrine_Record
 
     public function setUp()
     {
-        $this->hasMany('Evaluation', array('local' => 'id',
-                                           'foreign' => 'privilegeId'));
+        $this->hasMany('Evaluation as Evaluations', array('local' => 'id',
+                                                          'foreign' => 'privilegeId'));
 
-        $this->hasMany('Event', array('local' => 'id',
-                                      'foreign' => 'privilegeId'));
+        $this->hasMany('Event as Events', array('local' => 'id',
+                                                'foreign' => 'privilegeId'));
 
         $this->hasMany('Role', array('refClass' => 'RolePrivilege',
                                      'local' => 'privilegeId',

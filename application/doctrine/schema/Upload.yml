@@ -12,6 +12,7 @@ Upload:
         User:
             local: userId
             foreign: id
+            foreignAlias: Uploads
         
     actAs:
         Timestampable:

@@ -13,9 +13,11 @@ Evidence:
         Finding:
             local: findingId
             foreign: id
+            foreignAlias: Evidence            
         User:
             local: userId
             foreign: id
+            foreignAlias: Evidence
 
     actAs:
         Timestampable:

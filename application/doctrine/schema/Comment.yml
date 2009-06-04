@@ -13,9 +13,11 @@ Comment:
         FindingEvaluation:
             local: findingEvaluationId
             foreign: id
+            foreignAlias: Comments
         User:
             local: userId
             foreign: id
+            foreignAlias: Comments
 
     actAs:
         Timestampable:

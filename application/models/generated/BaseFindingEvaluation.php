@@ -14,7 +14,7 @@
  * @property Evidence $Evidence
  * @property Evaluation $Evaluation
  * @property User $User
- * @property Doctrine_Collection $Comment
+ * @property Doctrine_Collection $Comments
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -47,8 +47,8 @@ abstract class BaseFindingEvaluation extends Doctrine_Record
         $this->hasOne('User', array('local' => 'userId',
                                     'foreign' => 'id'));
 
-        $this->hasMany('Comment', array('local' => 'id',
-                                        'foreign' => 'findingEvaluationId'));
+        $this->hasMany('Comment as Comments', array('local' => 'id',
+                                                    'foreign' => 'findingEvaluationId'));
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
         $this->actAs($timestampable0);

@@ -8,7 +8,7 @@
  * @property string $name
  * @property string $nickname
  * @property string $description
- * @property Doctrine_Collection $Asset
+ * @property Doctrine_Collection $Assets
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -27,7 +27,7 @@ abstract class BaseNetwork extends Doctrine_Record
 
     public function setUp()
     {
-        $this->hasMany('Asset', array('local' => 'id',
-                                      'foreign' => 'networkId'));
+        $this->hasMany('Asset as Assets', array('local' => 'id',
+                                                'foreign' => 'networkId'));
     }
 }

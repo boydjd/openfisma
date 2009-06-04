@@ -14,6 +14,7 @@ Notification:
         Event:
             local: eventId
             foreign: id
+            foreignAlias: Notifications
         User:
             local: userId
             foreign: id

@@ -16,6 +16,8 @@ Evaluation:
         Event:
             local: eventId
             foreign: id
+            foreignAlias: Evaluations
         Privilege:
             local: privilegeId
             foreign: id
+            foreignAlias: Evaluations

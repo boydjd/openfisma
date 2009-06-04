@@ -15,10 +15,12 @@ AuditLog:
         User:
             local: userId
             foreign: id
+            foreignAlias: AuditLogs
         Finding:
             local: findingId
             foreign: id
-
+            foreignAlias: AuditLogs
+            
     actAs:
         Timestampable:
             created:

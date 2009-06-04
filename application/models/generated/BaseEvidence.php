@@ -11,7 +11,7 @@
  * @property integer $userId
  * @property Finding $Finding
  * @property User $User
- * @property Doctrine_Collection $FindingEvaluation
+ * @property Doctrine_Collection $FindingEvaluations
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -37,8 +37,8 @@ abstract class BaseEvidence extends Doctrine_Record
         $this->hasOne('User', array('local' => 'userId',
                                     'foreign' => 'id'));
 
-        $this->hasMany('FindingEvaluation', array('local' => 'id',
-                                                  'foreign' => 'evidenceId'));
+        $this->hasMany('FindingEvaluation as FindingEvaluations', array('local' => 'id',
+                                                                        'foreign' => 'evidenceId'));
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
         $this->actAs($timestampable0);

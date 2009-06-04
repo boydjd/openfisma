@@ -17,7 +17,7 @@
  * @property Product $Product
  * @property System $System
  * @property Network $Network
- * @property Doctrine_Collection $Finding
+ * @property Doctrine_Collection $Findings
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -51,8 +51,8 @@ abstract class BaseAsset extends Doctrine_Record
         $this->hasOne('Network', array('local' => 'networkId',
                                        'foreign' => 'id'));
 
-        $this->hasMany('Finding', array('local' => 'id',
-                                        'foreign' => 'assetId'));
+        $this->hasMany('Finding as Findings', array('local' => 'id',
+                                                    'foreign' => 'assetId'));
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);

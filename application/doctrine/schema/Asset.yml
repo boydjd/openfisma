@@ -33,12 +33,15 @@ Asset:
         Product:
             local: productId
             foreign: id
+            foreignAlias: Assets
         System:
             local: systemId
             foreign: id
+            foreignAlias: Assets
         Network:
             local: networkId
             foreign: id
+            foreignAlias: Assets
 
     actAs:
         Timestampable:

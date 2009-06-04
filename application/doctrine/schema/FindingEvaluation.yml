@@ -18,15 +18,19 @@ FindingEvaluation:
         Finding:
             local: findingId
             foreign: id
+            foreignAlias: FindingEvaluations
         Evidence:
             local: evidenceId
             foreign: id
+            foreignAlias: FindingEvaluations
         Evaluation:
             local: evaluationId
             foreign: id
+            foreignAlias: FindingEvaluations
         User:
             local: userId
             foreign: id
+            foreignAlias: FindingEvaluations        
         
     actAs:
         Timestampable:

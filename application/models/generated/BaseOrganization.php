@@ -11,9 +11,6 @@
  * @property string $nickname
  * @property enum $orgType
  * @property string $description
- * @property integer $lft
- * @property integer $rgt
- * @property integer $level
  * @property Doctrine_Collection $Users
  * 
  * @package    ##PACKAGE##
@@ -32,9 +29,6 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'unique' => 'true;', 'length' => '255'));
         $this->hasColumn('orgType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'agency', 1 => 'bureau', 2 => 'organization', 3 => 'system'), 'length' => ''));
         $this->hasColumn('description', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('lft', 'integer', 4, array('type' => 'integer', 'length' => '4'));
-        $this->hasColumn('rgt', 'integer', 4, array('type' => 'integer', 'length' => '4'));
-        $this->hasColumn('level', 'integer', 2, array('type' => 'integer', 'length' => '2'));
     }
 
     public function setUp()

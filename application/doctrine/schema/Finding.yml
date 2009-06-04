@@ -90,20 +90,25 @@ Finding:
         Asset:
             local: assetId
             foreign: id
+            foreignAlias: Findings
         Source:
             local: sourceId
             foreign: id
+            foreignAlias: Findings
         SecurityControl:
             local: securityControlId
             foreign: id
+            foreignAlias: Findings
         CreatedBy:
             class: User
             local: createdByUserId
             foreign: id
+            foreignAlias: Findings
         AssignedTo:
             class: User
             local: assignedToUserId
             foreign: id
+            foreignAlias: Findings
 
     actAs:
         Timestampable:

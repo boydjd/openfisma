@@ -36,10 +36,10 @@
  * @property SecurityControl $SecurityControl
  * @property User $CreatedBy
  * @property User $AssignedTo
- * @property Doctrine_Collection $AuditLog
+ * @property Doctrine_Collection $AuditLogs
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Finding
- * @property Doctrine_Collection $FindingEvaluation
+ * @property Doctrine_Collection $FindingEvaluations
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -98,8 +98,8 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasOne('User as AssignedTo', array('local' => 'assignedToUserId',
                                                   'foreign' => 'id'));
 
-        $this->hasMany('AuditLog', array('local' => 'id',
-                                         'foreign' => 'findingId'));
+        $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
+                                                      'foreign' => 'findingId'));
 
         $this->hasMany('Evidence', array('local' => 'id',
                                          'foreign' => 'findingId'));
@@ -107,8 +107,8 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasMany('Finding', array('local' => 'id',
                                         'foreign' => 'duplicateFindingId'));
 
-        $this->hasMany('FindingEvaluation', array('local' => 'id',
-                                                  'foreign' => 'findingId'));
+        $this->hasMany('FindingEvaluation as FindingEvaluations', array('local' => 'id',
+                                                                        'foreign' => 'findingId'));
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);

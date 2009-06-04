@@ -8,7 +8,7 @@
  * @property string $name
  * @property string $nickname
  * @property string $description
- * @property Doctrine_Collection $Finding
+ * @property Doctrine_Collection $Findings
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -27,7 +27,7 @@ abstract class BaseSource extends Doctrine_Record
 
     public function setUp()
     {
-        $this->hasMany('Finding', array('local' => 'id',
-                                        'foreign' => 'sourceId'));
+        $this->hasMany('Finding as Findings', array('local' => 'id',
+                                                    'foreign' => 'sourceId'));
     }
 }

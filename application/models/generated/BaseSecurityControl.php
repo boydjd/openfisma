@@ -14,7 +14,7 @@
  * @property enum $controlLevel
  * @property string $enhancements
  * @property string $supplement
- * @property Doctrine_Collection $Finding
+ * @property Doctrine_Collection $Findings
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -39,7 +39,7 @@ abstract class BaseSecurityControl extends Doctrine_Record
 
     public function setUp()
     {
-        $this->hasMany('Finding', array('local' => 'id',
-                                        'foreign' => 'securityControlId'));
+        $this->hasMany('Finding as Findings', array('local' => 'id',
+                                                    'foreign' => 'securityControlId'));
     }
 }
