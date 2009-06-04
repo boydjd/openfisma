@@ -37,8 +37,19 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
  *
  * @package Test_model
  */
-class Test_Model_System extends Test_FismaUnitTest
+class Unit_Model_System extends Test_FismaUnitTest
 {
+    private $_system = null;
+
+    public function setUp()
+    {
+        $system = new System();
+        $system->mapValue('description');
+        $system->mapValue('name');
+        $system->mapValue('nickname');
+        $this->_system = $system;
+    }
+
     /**
      * Test the method of getting security category level
      * 
@@ -71,4 +82,53 @@ class Test_Model_System extends Test_FismaUnitTest
         $this->assertEquals($system->getSecurityCategory(), null);
         
     }
+
+    public function testSave()
+    {
+        $this->_system->type = 'gss';
+        $this->_system->confidentiality = 'high';
+        $this->_system->integrity       = 'moderate';
+        $this->_system->availability    = 'low';
+        $this->_system->description     = 'description';
+        $this->_system->name            = 'name'; 
+        $this->_system->nickname        = 'nickname';
+        $this->_system->getTable()->addRecordListener(new Listener_System());
+        $this->_system->save();
+
+        $ret = Doctrine::getTable('Organization')->findOneByName('name');
+        $this->assertEquals('description', $ret->description);
+        $this->assertEquals('name', $ret->name);
+        $this->assertEquals('nickname', $ret->nickname);
+    }
+
+    public function testUpdate()
+    {
+        $ret = Doctrine::getTable('Organization')->findOneByName('name');
+        if (!empty($ret)) {
+            $system = $ret->System;
+            $system->name = 'newname';
+            $system->nickname = 'newnick';
+            $system->description = 'new description';
+            $system->integrity  = 'high';
+            $system->getTable()->addRecordListener(new Listener_System());
+            $system->save();
+        }
+
+        $this->assertEquals('newname', $ret->name);
+        $this->assertEquals('newnick', $ret->nickname);
+        $this->assertEquals('new description', $ret->description);
+    }
+
+    public function testDelete()
+    {
+        $ret = Doctrine::getTable('Organization')->findOneByName('newname');
+        if (!empty($ret)) {
+            $system = $ret->System;
+            $system->getTable()->addRecordListener(new Listener_System());
+            $system->delete();
+        }
+
+        $this->assertEquals(false, Doctrine::getTable('Organization')->find($ret->id));
+    }
+
 }

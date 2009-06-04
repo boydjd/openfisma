@@ -40,6 +40,7 @@ class Unit_Model extends PHPUnit_Framework_TestSuite
     {
         $suite = new PHPUnit_Framework_TestSuite('PHPUnit Framework');
         $suite->addTestSuite('Unit_Model_Organization');
+        $suite->addTestSuite('Unit_Model_System');
         return $suite;
     }
 }

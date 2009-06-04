@@ -1,4 +1,4 @@
-Organization:
+Organization:    
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
@@ -9,9 +9,14 @@ Organization:
         orgType:
             type: enum()
             values: [agency, bureau, organization, system]
+        systemId:
+            type: integer
         description: string(255)
 
     relations:
+        System:
+            local: systemId
+            foreign: id
         # Users is a many-to-many relation
         Users:
             class: User
