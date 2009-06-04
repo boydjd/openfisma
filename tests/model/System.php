@@ -20,11 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @author    Woody lee <woody.li@reyosoft.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Test_Model
+ * @package   Test_System
  */
 
 /**
@@ -35,28 +35,40 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 /**
  * Unit tests for the System model
  *
- * @package Test
+ * @package Test_model
  */
 class Test_Model_System extends Test_FismaUnitTest
 {
     /**
-     * Test that the threat likelihood calculations are correct. There are only 9 possible outcomes, so test all of
-     * them.
+     * Test the method of getting security category level
+     * 
+     * The security category will be the highest level 
+     * among the confidentiality, integrity and availability
+     * 
      */
-    public function testThreatLikelihoodCalculations()
+    public function testGetSecurityCategory()
     {
-        $s = new System();
+        $system = new System();
         
-        $this->assertEquals($s->calculateThreatLikelihood('HIGH', 'LOW'),      'HIGH');
-        $this->assertEquals($s->calculateThreatLikelihood('HIGH', 'MODERATE'), 'MODERATE');
-        $this->assertEquals($s->calculateThreatLikelihood('HIGH', 'HIGH'),     'LOW');
+        $system->confidentiality = System::MODERATE_LEVEL;
+        $system->integrity = System::MODERATE_LEVEL;
+        $system->availability = System::LOW_LEVEL;
+        $this->assertEquals($system->getSecurityCategory(), System::MODERATE_LEVEL);
         
-        $this->assertEquals($s->calculateThreatLikelihood('MODERATE', 'LOW'),      'MODERATE');
-        $this->assertEquals($s->calculateThreatLikelihood('MODERATE', 'MODERATE'), 'MODERATE');
-        $this->assertEquals($s->calculateThreatLikelihood('MODERATE', 'HIGH'),     'LOW');
+        $system->confidentiality = System::HIGH_LEVEL;
+        $system->integrity = System::MODERATE_LEVEL;
+        $system->availability = System::LOW_LEVEL;
+        $this->assertEquals($system->getSecurityCategory(), System::HIGH_LEVEL);
         
-        $this->assertEquals($s->calculateThreatLikelihood('LOW', 'LOW'),      'LOW');
-        $this->assertEquals($s->calculateThreatLikelihood('LOW', 'MODERATE'), 'LOW');
-        $this->assertEquals($s->calculateThreatLikelihood('LOW', 'HIGH'),     'LOW');
+        $system->confidentiality = System::LOW_LEVEL;
+        $system->integrity = System::LOW_LEVEL;
+        $system->availability = System::LOW_LEVEL;
+        $this->assertEquals($system->getSecurityCategory(), System::LOW_LEVEL);
+        
+        $system->confidentiality = System::NA;
+        $system->integrity = System::LOW_LEVEL;
+        $system->availability = System::LOW_LEVEL;
+        $this->assertEquals($system->getSecurityCategory(), null);
+        
     }
 }

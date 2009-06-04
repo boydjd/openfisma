@@ -1,5 +1,4 @@
 <?php
-
 /**
  * System
  * 
@@ -12,5 +11,73 @@
  */
 class System extends BaseSystem
 {
+    /**
+     * the level of confidentiality,
+     * integrity and availability
+     *
+     */
+    const HIGH_LEVEL = 'high';
+    
+    /**
+     * the level of confidentiality,
+     * integrity and availability
+     *
+     */
+    const MODERATE_LEVEL = 'moderate';
+    
+    /**
+     * the level of confidentiality,
+     * integrity and availability
+     *
+     */
+    const LOW_LEVEL = 'low';
+    
+    /**
+     * the type of confidentiality
+     *
+     */
+    const NA = null;
+    
+    /**
+     * Calculate Security categorization.
+     *
+     * The calculation over enumeration fields {LOW, MODERATE, HIGH} is tricky here. The algorithm 
+     * is up to their mapping value, which is decided by the appear consequence in TABLE definition.
+     * For example, in case `confidentiality` ENUM('NA','LOW','MODERATE','HIGH') it turns out the 
+     * mapping value: LOW=0, MODERATE=1, HIGH=2. The value calculated is the maximun of C, I, A. And 
+     * is transferred back to enumeration name again.
+     *
+     * As the C(Confidentiality) has the additional value 'NA', which is absent from the other two
+     * I,A, it's necessary to remove it before calculating the security categorization. Due to the
+     * design, we have to hard code it, say array_shift($confidentiality).
+     * 
+     * @return string security_categorization
+     */
+    public function getSecurityCategory()
+    {
+        $confidentiality = $this->confidentiality;
+        $integrity = $this->integrity;
+        $availability = $this->availability;
+        
+        if (null == $confidentiality || null == $integrity || null == $availability) {
+            return null;
+        }
+        
+        $array = $this->getTable()->getEnumValues('confidentiality');
+        assert(in_array($confidentiality, $array));
+        array_shift($array);
+        $confidentiality = array_search($confidentiality, $array);
+        
+        $array = $this->getTable()->getEnumValues('integrity');
+        assert(in_array($integrity, $array));
+        $integrity = array_search($integrity, $array);
+        
+        $array = $this->getTable()->getEnumValues('availability');
+        assert(in_array($availability, $array));
+        $availability = array_search($availability, $array);
 
+        $index = max((int)$confidentiality, (int)$integrity, (int)$availability);
+        return $array[$index];
+    }
+    
 }
