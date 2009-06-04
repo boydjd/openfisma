@@ -20,37 +20,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @author    Ryan <ryan.yang@reyosoft.com>
+ * @author    Chris.chen <chris.chen@reyosoft.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Test_Model
+ * @package   
  */
 
-
 /**
- * Test_FismaUnitTest
- */
-require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
-
-/**
- * Unit tests for the System model
+ * Unit Model tests for the Organization model
  *
- * @package Test
+ * @package
  */
-class Test_Model_Organization extends Test_FismaUnitTest
+class Unit_Model_Organization extends PHPUnit_Framework_TestCase
 {
-    private $_Organization = null;
+    private $_organization = null;
 
-    public function setUp()
+    protected function setUp()
     {
-        parent::setUp('Organization');
-        $organization = new Organization();
+        $data = dirname(dirname(__FILE__)) . "/Data/Organization.yml";
+        Doctrine::loadData($data);
+        $this->_organization = new Organization();
     }
 
     public function testTree()
     {
-        $orgRoot = new Organization();
+        $orgRoot = $this->_organization;
         $orgRoot->name = 'root';
         $orgRoot->nickname = 'root node';
         $orgRoot->description = 'i am root node';
