@@ -40,20 +40,16 @@ if (!$plSetting->installed()) {
 define('TEST', $plSetting->getPath() . '/tests');
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
-// set_include_path(get_include_path() .
-//                  PATH_SEPARATOR . VENDORS .
-//                  PATH_SEPARATOR . TEST);
+
 require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
 /**
- * This class is the controller which executes all of the Unit Test suites. This
- * class is invoked by PhpUnderControl as a part of the continuous integration
- * process.
+ * This class is the controller which executes all of the Selenium Tests.
  *
  * @package Test
  */
-class AllTests
+class AllSeleniumTests
 {
     /**
      * main() - Test controller main method
@@ -64,8 +60,8 @@ class AllTests
     }
 
     /**
-     * suite() - Creates a phpunit test suite for all unit tests in the project.
-     * The controller recurses through all directories and loads all of the .php
+     * suite() - Creates a phpunit test suite for all Selenium tests in the project.
+     * The controller recurses through all subdirectories and loads all of the .php
      * files found.
      *
      * Notice that each test file should be named following the ZF standards in
@@ -77,18 +73,10 @@ class AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('phpUnderControl - AllTests');
         
-        // Load in all files which are in subdirectories of the test
+        // Load in all files which are in subdirectories of the Selenium
         // directory
         chdir(TEST);
-        $directory = opendir('.');
-        while (false !== ($subdirectory = readdir($directory))) {
-            // Ignore directories prefixed with a '.'
-            if (preg_match('/^\./', $subdirectory) == 0
-                && is_dir($subdirectory)
-                && 'fixtures' != $subdirectory) {
-                self::loadAllTests('.', $subdirectory, $suite);
-            }
-        }
+        self::loadAllTests('.', 'Selenium', $suite);
 
         return $suite;
     }
@@ -121,13 +109,11 @@ class AllTests
                     $className = str_replace('.php', '', $fullPath);
                     $className = str_replace('.', 'Test', $className);
 
-                    // Explode the path pieces and upper case each word, then
+                    // Explode the path pieces then
                     // implode with '_' in order to form the class name.
-                    // Example: ./admin/ContactInfo.php becomes
+                    // Example: ./Admin/ContactInfo.php becomes
                     // 'Test_Admin_ContactInfo'
-                    $className = implode('_',
-                                         array_map('ucfirst',
-                                                   explode('/', $className)));
+                    $className = implode('_', explode('/', $className));
                                                    
                     // Now include the file, and check to see if the expected
                     // class name exists. If so, then add that class to the test

@@ -40,9 +40,7 @@ if (!$plSetting->installed()) {
 define('TEST', $plSetting->getPath() . '/tests');
 // Change directory to TEST, in order to make including files relatively simple
 chdir(TEST);
-// set_include_path(get_include_path() .
-//                  PATH_SEPARATOR . VENDORS .
-//                  PATH_SEPARATOR . TEST);
+
 require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
@@ -53,7 +51,7 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
  *
  * @package Test
  */
-class AllTests
+class AllUnitTests
 {
     /**
      * main() - Test controller main method
@@ -85,6 +83,7 @@ class AllTests
             // Ignore directories prefixed with a '.'
             if (preg_match('/^\./', $subdirectory) == 0
                 && is_dir($subdirectory)
+                && 'Selenium' != $subdirectory
                 && 'fixtures' != $subdirectory) {
                 self::loadAllTests('.', $subdirectory, $suite);
             }
@@ -121,13 +120,11 @@ class AllTests
                     $className = str_replace('.php', '', $fullPath);
                     $className = str_replace('.', 'Test', $className);
 
-                    // Explode the path pieces and upper case each word, then
+                    // Explode the path pieces then
                     // implode with '_' in order to form the class name.
-                    // Example: ./admin/ContactInfo.php becomes
+                    // Example: ./Admin/ContactInfo.php becomes
                     // 'Test_Admin_ContactInfo'
-                    $className = implode('_',
-                                         array_map('ucfirst',
-                                                   explode('/', $className)));
+                    $className = implode('_', explode('/', $className));
                                                    
                     // Now include the file, and check to see if the expected
                     // class name exists. If so, then add that class to the test
