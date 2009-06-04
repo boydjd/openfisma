@@ -21,37 +21,37 @@ Privilege:
         description: Configure Application
         orgSpecific: false
 
-    # Finding CRUD
+    # Findings CRUD
     findings_create:
-        resource: finding
+        resource: findings
         action: create
         description: Create Findings
         orgSpecific: true
     findings_read:
-        resource: finding
+        resource: findings
         action: read
         description: View Findings
         orgSpecific: true
     findings_update:
-        resource: finding
+        resource: findings
         action: update
         description: Edit Findings
         orgSpecific: true
     findings_delete:
-        resource: finding
+        resource: findings
         action: delete
         description: Delete Findings
         orgSpecific: true
-
+                    
     # Granular finding privileges
     findings_inject:
-        resource: finding
-        action: delete
+        resource: findings
+        action: inject
         description: Inject Findings
         orgSpecific: true
     findings_approve:
-        resource: finding
-        action: delete
+        resource: findings
+        action: approve
         description: Approve Pending Findings
         orgSpecific: true
     findings_update_course_of_action:

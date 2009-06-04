@@ -106,7 +106,7 @@ class MenuController extends SecurityController
                 $admin->add(new Fisma_Yui_MenuItem('Configuration', '/panel/config'));
             }
 
-            if(Fisma_Acl::hasPrivilege('sources', 'read')) {
+            if(Fisma_Acl::hasPrivilege('finding_sources', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Finding Sources', '/panel/source/sub/list'));
             }
 
