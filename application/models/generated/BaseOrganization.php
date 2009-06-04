@@ -15,7 +15,6 @@
  * @property integer $rgt
  * @property integer $level
  * @property Doctrine_Collection $Users
- * @property Doctrine_Collection $UserOrganization
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -43,9 +42,6 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->hasMany('User as Users', array('refClass' => 'UserOrganization',
                                               'local' => 'organizationId',
                                               'foreign' => 'userId'));
-
-        $this->hasMany('UserOrganization', array('local' => 'id',
-                                                 'foreign' => 'organizationId'));
 
         $nestedset0 = new Doctrine_Template_NestedSet();
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));

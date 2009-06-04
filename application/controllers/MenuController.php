@@ -52,60 +52,60 @@ class MenuController extends SecurityController
     {
         $menubar = new Fisma_Yui_MenuBar();
         
-        if ($this->view->acl->isAllowed('dashboard', 'read')) {
+        if (Fisma_Acl::hasPrivilege('dashboard', 'read')) {
             $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/panel/dashboard');
             $menubar->add($dashboard);
         }
 
-        if($this->view->acl->isAllowed('asset','read')) {
+        if(Fisma_Acl::hasPrivilege('asset','read')) {
             $assets = new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/searchbox/s/search');
             $menubar->add($assets);
         }
 
-        if($this->view->acl->isAllowed('finding','read')) {
+        if(Fisma_Acl::hasPrivilege('finding','read')) {
             $findings = new Fisma_Yui_Menu('Findings');
             
-            if($this->view->acl->isAllowed('remediation', 'read')) {
+            if(Fisma_Acl::hasPrivilege('remediation', 'read')) {
                 $findings->add(new Fisma_Yui_MenuItem('Summary', '/panel/remediation/sub/summary'));
                 $findings->add(new Fisma_Yui_MenuItem('Search', '/panel/remediation/sub/searchbox'));
             }
 
-            if($this->view->acl->isAllowed('finding', 'create')) {
+            if(Fisma_Acl::hasPrivilege('finding', 'create')) {
                 $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/panel/finding/sub/create'));
             }
             
-            if($this->view->acl->isAllowed('finding', 'inject')) {
+            if(Fisma_Acl::hasPrivilege('finding', 'inject')) {
                 $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/panel/finding/sub/injection'));
                 $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/panel/finding/sub/plugin'));
             }
             
-            if($this->view->acl->isAllowed('finding', 'approve')) {
+            if(Fisma_Acl::hasPrivilege('finding', 'approve')) {
                 $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/panel/finding/sub/approve'));
             }
             
             $menubar->add($findings);
         }
 
-        if($this->view->acl->isAllowed('report','read')) {
+        if(Fisma_Acl::hasPrivilege('report','read')) {
             $reports = new Fisma_Yui_Menu('Reports');
             
-            if($this->view->acl->isAllowed('report', 'generate_poam_report')) {
+            if(Fisma_Acl::hasPrivilege('report', 'generate_poam_report')) {
                 $reports->add(new Fisma_Yui_MenuItem('POA&M Report', '/panel/report/sub/poam'));
             }
 
-            if($this->view->acl->isAllowed('report', 'generate_fisma_report')) {
+            if(Fisma_Acl::hasPrivilege('report', 'generate_fisma_report')) {
                 $reports->add(new Fisma_Yui_MenuItem('FISMA Report', '/panel/report/sub/fisma'));
             }
 
-            if($this->view->acl->isAllowed('report', 'generate_general_report')) {
+            if(Fisma_Acl::hasPrivilege('report', 'generate_general_report')) {
                 $reports->add(new Fisma_Yui_MenuItem('General Report', '/panel/report/sub/general'));
             }
 
-            if($this->view->acl->isAllowed('report', 'generate_system_rafs')) {
+            if(Fisma_Acl::hasPrivilege('report', 'generate_system_rafs')) {
                 $reports->add(new Fisma_Yui_MenuItem('Generate System RAFs', '/panel/report/sub/rafs'));
             }
 
-            if($this->view->acl->isAllowed('report', 'generate_overdue_report')) {
+            if(Fisma_Acl::hasPrivilege('report', 'generate_overdue_report')) {
                 $reports->add(new Fisma_Yui_MenuItem('Overdue Report', '/panel/report/sub/overdue'));
             }
 
@@ -114,38 +114,38 @@ class MenuController extends SecurityController
             $menubar->add($reports);
         }
         
-        if($this->view->acl->isAllowed('report','read')) {
+        if(Fisma_Acl::hasPrivilege('report','read')) {
             $admin = new Fisma_Yui_Menu('Administration');
             
-            if($this->view->acl->isAllowed('app_configuration', 'update')) {
+            if(Fisma_Acl::hasPrivilege('app_configuration', 'update')) {
                 $admin->add(new Fisma_Yui_MenuItem('Configuration', '/panel/config'));
             }
 
-            if($this->view->acl->isAllowed('admin_sources', 'read')) {
+            if(Fisma_Acl::hasPrivilege('admin_sources', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Finding Sources', '/panel/source/sub/list'));
             }
 
-            if($this->view->acl->isAllowed('admin_networks', 'read')) {
+            if(Fisma_Acl::hasPrivilege('admin_networks', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Networks', '/panel/network/sub/list'));
             }
 
-            if($this->view->acl->isAllowed('admin_products', 'read')) {
+            if(Fisma_Acl::hasPrivilege('admin_products', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Products', '/panel/product/sub/list'));
             }
 
-            if($this->view->acl->isAllowed('admin_roles', 'read')) {
+            if(Fisma_Acl::hasPrivilege('admin_roles', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Roles', '/panel/role/sub/list'));
             }
 
-            if($this->view->acl->isAllowed('admin_organizations', 'read')) {
+            if(Fisma_Acl::hasPrivilege('admin_organizations', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/list'));
             }
 
-            if($this->view->acl->isAllowed('admin_systems', 'read')) {
+            if(Fisma_Acl::hasPrivilege('admin_systems', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
             }
 
-            if($this->view->acl->isAllowed('admin_users', 'read')) {
+            if(Fisma_Acl::hasPrivilege('admin_users', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Users', '/panel/account/sub/list'));
             }
             

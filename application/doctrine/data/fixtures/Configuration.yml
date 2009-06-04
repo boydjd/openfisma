@@ -1,18 +1,18 @@
 Configuration:
-    max_absent_time:
-        name: max_absent_time
+    account_inactivity_period:
+        name: account_inactivity_period
         value: 90
-        description: Maximum Days An Account Can Be Inactive
+        description: Maximum Days An Account Can Be Inactive Before Automatic Lock
 
     failure_threshold:
         name: failure_threshold
         value: 3
         description: Maximum Login Attempts Before Server Locks Account
 
-    expiring_seconds:
-        name: expiring_seconds
-        value: 1800
-        description: Session Timeout (In Seconds)
+    session_inactivity_period:
+        name: session_inactivity_period
+        value: 90
+        description: Session Timeout (minutes)
 
     auth_type:
         name: auth_type
@@ -147,7 +147,7 @@ Configuration:
     pass_warning:
         name: pass_warning
         value: 14
-        description: Password expiration warning period (days)
+        description: Number of days before the password will expire that a user begins to receive warnings
 
     hash_type:
         name: hash_type

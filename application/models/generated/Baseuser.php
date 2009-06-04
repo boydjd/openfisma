@@ -33,7 +33,7 @@
  * @property Doctrine_Collection $Roles
  * @property Doctrine_Collection $Organizations
  * @property Doctrine_Collection $Events
- * @property Doctrine_Collection $AccountLog
+ * @property Doctrine_Collection $AccountLogs
  * @property Doctrine_Collection $AuditLog
  * @property Doctrine_Collection $Comment
  * @property Doctrine_Collection $EmailValidation
@@ -41,7 +41,7 @@
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Finding
  * @property Doctrine_Collection $FindingEvaluation
- * @property Doctrine_Collection $Notification
+ * @property Doctrine_Collection $Notifications
  * @property Doctrine_Collection $Upload
  * 
  * @package    ##PACKAGE##
@@ -95,8 +95,8 @@ abstract class BaseUser extends Doctrine_Record
                                                 'local' => 'id',
                                                 'foreign' => 'eventId'));
 
-        $this->hasMany('AccountLog', array('local' => 'id',
-                                           'foreign' => 'userId'));
+        $this->hasMany('AccountLog as AccountLogs', array('local' => 'id',
+                                                          'foreign' => 'userId'));
 
         $this->hasMany('AuditLog', array('local' => 'id',
                                          'foreign' => 'userId'));
@@ -120,8 +120,8 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasMany('FindingEvaluation', array('local' => 'id',
                                                   'foreign' => 'userId'));
 
-        $this->hasMany('Notification', array('local' => 'id',
-                                             'foreign' => 'userId'));
+        $this->hasMany('Notification as Notifications', array('local' => 'id',
+                                                              'foreign' => 'userId'));
 
         $this->hasMany('Upload', array('local' => 'id',
                                        'foreign' => 'userId'));

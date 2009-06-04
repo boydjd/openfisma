@@ -66,14 +66,13 @@ class SecurityController extends MessageController
             }
 
             // Store a reference to the authenticated user inside the controller, for convenience
-            $this->_me = Zend_Registry::get('authenticatedUser');
+            $this->_me = $user = User::currentUser();
             // Store a reference to the ACL inside the view object
             $this->view->assign('acl', $this->_me->acl());
 
             // Update the session timeout
-            $store = Zend_Auth::getInstance()->getStorage();
-            $sessionExpiration = new Zend_Session_Namespace($store->getNamespace());
-            $sessionExpiration->setExpirationSeconds(Configuration::getConfig('expiring_seconds'));
+            $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
+            $authSession->setExpirationSeconds(Configuration::getConfig('session_inactivity_period'));
         } else {
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their

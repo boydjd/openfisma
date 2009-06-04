@@ -325,7 +325,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
             $write = new Zend_Log_Writer_Stream(self::$_path['data'] . '/logs/error.log');
             $auth = Zend_Auth::getInstance();
             if ($auth->hasIdentity()) {
-                $user = Zend_Registry::get('authenticatedUser');
+                $user = User::currentUser();
                 $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
                     "$user->username ($user->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
             } else {

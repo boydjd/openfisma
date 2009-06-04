@@ -42,36 +42,27 @@ class DashboardController extends SecurityController
     {
         parent::preDispatch();
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
-        $contextSwitch->addActionContext('totalstatus', 'xml')
-                      ->addActionContext('totaltype', 'xml')
+        $contextSwitch->addActionContext('totalStatus', 'xml')
+                      ->addActionContext('totalType', 'xml')
                       ->initContext();
     }
 
     /**
-     * The integrated dashboard which has three charts in total
-     *
-     * @todo fix the SQL injection at the beginning of this function
+     * The user dashboard displays important system-wide metrics, charts, and graphs
      */
     public function indexAction()
     {
         Fisma_Acl::requirePrivilege('dashboard', 'read');
+        $user = User::currentUser();
         
-        // Check to see if we got passed a "dismiss" parameter to dismiss
-        // notifications
-        $request = $this->getRequest();
-        $notificationsToDismiss = $request->getParam('dismiss');
-        if (isset($notificationsToDismiss)) {
-            $notification = new Notification();
-            // Remove the notifications
-            $deleteQuery = "DELETE FROM notifications
-                                  WHERE id IN ($notificationsToDismiss)
-                                    AND user_id = {$this->_me->id}";
-            $statement = $notification->getAdapter()->query($deleteQuery);
-
-            // The most_recent_notify_ts is not updated here because no e-mails
-            // are sent.
+        // Check to see if we got passed a "dismiss" parameter to dismiss notifications
+        $dismiss = $this->getRequest()->getParam('dismiss');
+        if (isset($dismiss) && 'notifications' == $dimiss) {
+            $user->Notifications->delete();
+            $user->notifyTs = new Zend_Date();
+            $user->save();
         }
-        
+        /*
         $newCount  = $this->_poam->search($this->_allSystems, array(
             'count' => 'count(*)'), array('status' => 'NEW'));
         $draftCount = $this->_poam->search($this->_allSystems, array(
@@ -109,26 +100,20 @@ class DashboardController extends SecurityController
             $this->view->failureCount = $this->_me->failure_count;
         } else {
             $this->view->applicationName = Configuration::getConfig('system_name');
-        }
+        }*/
         
-        $notification = new Notification();
-        $notifications = $notification->getNotifications($this->_me->id);
-        if (count($notifications) > 0) {
-            $this->view->notifications = $notifications;
+        // Alert the user if there are notifications pending
+        $user = User::currentUser();
+        if ($user->Notifications->count() > 0) {
+            $this->view->notifications = $user->Notifications;
+            $this->view->dismissUrl = "/panel/dashboard/dismiss/notifications";
         }
-        $ids = array();
-        foreach ($notifications as $notification) {
-            $ids[] = $notification['id'];
-        }
-        $idString = urlencode(implode(',', $ids));
-        $this->view->dismissUrl = "/panel/dashboard/dismiss/$idString";
-
     }
     
     /**
      * statistics per status 
      */
-    public function totalstatusAction()
+    public function totalStatusAction()
     {
         $this->_acl->requirePrivilege('dashboard', 'read');
         
@@ -205,7 +190,7 @@ class DashboardController extends SecurityController
     /**
      * statitics per type 
      */
-    public function totaltypeAction()
+    public function totalTypeAction()
     {
         $this->_acl->requirePrivilege('dashboard', 'read');
         

@@ -18,6 +18,7 @@ AccountLog:
         User:
             local: userId
             foreign: id
+            foreignAlias: AccountLogs
 
     actAs:
         Timestampable:
