@@ -37,6 +37,7 @@
 class RemediationController extends PoamBaseController
 {
     //define the events of notification
+/*
     private $_notificationArray =
         array('action_suggested'=>Notification::UPDATE_FINDING_RECOMMENDATION,
               'type'=>Notification::UPDATE_COURSE_OF_ACTION,
@@ -52,7 +53,7 @@ class RemediationController extends PoamBaseController
               'blscr_id'=>Notification::UPDATE_CONTROL_ASSIGNMENT,
               'action_status'=>Notification::MITIGATION_STRATEGY_APPROVED,
               'action_resources'=>Notification::UPDATE_FINDING_RESOURCES);
-
+*/
     /**
      * The preDispatch hook is used to split off poam modify actions, mitigation approval actions, and evidence
      * approval actions into separate controller actions.
@@ -123,155 +124,10 @@ class RemediationController extends PoamBaseController
 
     /**
      *  Experimental code... not intended for release
-     */
-    public function summary2Action()
-    {
-        ;
-    }
-
-
-    /**
-     *  Display the summary page of remediation, per systems.
-     */
+     */    
     public function summaryAction()
     {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        $criteria['sourceId'] = $this->_request->getParam('source_id', 0);
-        $criteria['type'] = $this->_request->getParam('type');
-        $criteria['notStatus'] = 'PEND'; //exclude pending findings from the search criteria
-        $criteria['aging'] = $this->_request->getParam('aging');
-        $criteria['created_date_begin'] = $this->_request->getParam('created_date_begin');
-        $criteria['created_date_end'] = $this->_request->getParam('created_date_end');
-
-        if (!empty($criteria['created_date_begin'])) {
-            $criteria['createdDateBegin'] = new Zend_Date($criteria['created_date_begin'], 'Y-m-d');
-        }
-        if (!empty($criteria['created_date_end'])) {
-            $criteria['createdDateEnd'] = new Zend_Date($criteria['created_date_end'], 'Y-m-d');
-        }
-        
-        $criteriaUrl = '';
-        if (!empty($criteria['sourceId'])) {
-            $criteriaUrl = '/source_id/'.$criteria['sourceId'];
-        }
-        if (!empty($criteria['type'])) {
-            $criteriaUrl .='/type/'.$criteria['type'];
-        }
-        if (!empty($criteria['createdDateBegin'])) {
-            $criteriaUrl .='/created_date_begin/'.$criteria['created_date_begin'];
-        }
-        if (!empty($criteria['created_date_end'])) {
-            $criteriaUrl .='/created_date_end/'.$criteria['created_date_end'];
-        }
-        if (!empty($criteria['aging'])) {
-            $endDate = self::$now;
-            $endDate->sub($criteria['aging'], Zend_Date::DAY);
-            $criteriaUrl .='/created_date_end/'.$endDate->toString('Ymd');
-            $criteria['createdDateEnd'] = $endDate;
-        }
-
-        $eval = new Evaluation();
-        $mpEvalList = $eval->getEvalList('ACTION');
-        $epEvalList = $eval->getEvalList('EVIDENCE');
-        foreach ($mpEvalList as $row) {
-            $mpStatus[$row['nickname']] = $row['precedence_id'];
-            $mpSummaryTmp[$row['nickname']] = 0;
-        }
-        $overduePeriod['EN'] = 0;
-        foreach ($epEvalList as $row) {
-            $epStatus[$row['nickname']] = $row['precedence_id'];
-            $epSummaryTmp[$row['nickname']] = 0;
-        }
-    
-        $summaryTmp = array_merge(array('NEW'=>0, 'DRAFT'=>0), $mpSummaryTmp);
-        $summaryTmp = array_merge($summaryTmp, array('EN'=>0));
-        $summaryTmp = array_merge($summaryTmp, $epSummaryTmp);
-        $summaryTmp = array_merge($summaryTmp, array('CLOSED'=>0, 'TOTAL'=>0));
-        // mock array_fill_key in 5.2.0
-        $count = count($this->_me->systems);
-        if ( 0 == $count ) {
-            $summary = array();
-        } else {
-            $sum = array_fill(0, $count, $summaryTmp);
-            $summary = array_combine($this->_me->systems, $sum);
-        }
-        $total = $summaryTmp;
-        $ret = $this->_poam->search($this->_me->systems, array(
-            'count' => array(
-                'status',
-                'system_id'
-            ) ,
-            'status',
-            'type',
-            'system_id'
-        ), $criteria);
-        $sum = array();
-        foreach ($ret as $s) {
-            $sum[$s['system_id']][$s['status']] = $s['count'];
-        }
-        foreach ($sum as $id => & $s) {
-            $summary[$id] = $summaryTmp;
-            $summary[$id]['NEW'] = isset($s['NEW'])?$s['NEW']: 0;
-            $summary[$id]['DRAFT'] = isset($s['DRAFT'])?$s['DRAFT']: 0;
-            $summary[$id]['EN'] = isset($s['EN'])?$s['EN']: 0;
-            $summary[$id]['CLOSED'] = isset($s['CLOSED'])?$s['CLOSED']: 0;
-            $summary[$id]['TOTAL'] = array_sum($s);
-            $total['NEW']+= $summary[$id]['NEW'];
-            $total['DRAFT']+= $summary[$id]['DRAFT'];
-            $total['EN']+= $summary[$id]['EN'];
-            $total['CLOSED']+= $summary[$id]['CLOSED'];
-            $total['TOTAL']+= $summary[$id]['TOTAL'];
-        }
-
-        foreach ($mpEvalList as $row) {
-            $mp = $this->_poam->search($this->_me->systems, array(
-                'count' => 'system_id',
-                'system_id'
-            ), array_merge(array('mp' => $row['precedence_id']), $criteria));
-            foreach ($mp as $v) {
-                $summary[$v['system_id']][$row['nickname']] = $v['count'];
-                $total[$row['nickname']]+= $v['count'];
-            }
-        }
-
-        foreach ($epEvalList as $row) {
-            $ep = $this->_poam->search($this->_me->systems, array(
-                'count' => 'system_id',
-                'system_id'
-            ), array_merge(array('ep' => $row['precedence_id']), $criteria));
-            foreach ($ep as $v) {
-                $summary[$v['system_id']][$row['nickname']] = $v['count'];
-                $total[$row['nickname']]+= $v['count'];
-            }
-        }
-
-        // count the Overdue stauts
-        $statusArray = array_keys($summaryTmp);
-        $statusArray = array_slice($statusArray, 0, -2);
-        foreach ($statusArray as $status) {
-            $overdueCount = $this->_poam->search($this->_me->systems, array(
-                'count' => 'system_id',
-                'system_id'
-            ), array_merge($criteria, array('ontime'=>'overdue', 'status'=>$status)));
-            foreach ($overdueCount as $row) {
-                $summary[$row['system_id']][$status.'overdue'] = $row['count'];
-            }
-        }
-
-        $this->view->assign('total', $total);
-        $this->view->assign('systems', $this->_systemList);
-        $this->view->assign('sources', $this->_sourceList);
-        $this->view->assign('mpCount', count($mpEvalList));
-        $this->view->assign('epCount', count($epEvalList));
-        $this->view->assign('statusArray', $statusArray);
-        $this->view->assign('summary', $summary);
-        $this->view->assign('criteria', $criteria);
-        $this->view->assign('criteriaUrl', $criteriaUrl);
-        $this->render('summary');
-        // Disabling the search box for now because it is not working as
-        // intended
-        //$this->_helper->actionStack('searchbox', 'Remediation', null,
-        //    array('action'=>'summary'));
+        Fisma_Acl::requirePrivilege('findings', 'read', '*');
     }
     
     

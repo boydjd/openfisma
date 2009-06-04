@@ -1,0 +1,84 @@
+/* @override http://localhost/stylesheets/TreeTable.css */
+
+table.treeTable {
+    width: 100%;
+}
+
+table.treeTable th {
+	padding: 5px;
+	background-color: #eee;
+    border: 1px solid grey;
+    font-weight: bold;
+    text-align: center;
+}
+
+table.treeTable td {
+	padding: 5px;
+	background-color: #eee;
+    border: 1px solid grey;
+}
+
+table.treeTable td {
+	padding: 5px;
+	background-color: #eee;
+    border: 1px solid grey;
+}
+
+table.treeTable td img.control {
+	margin: 6px 6px 6px 2px;
+	position: relative;
+	float: left;
+}
+
+table.treeTable td img.icon {
+	float: left;
+	margin-right: 6px;
+}
+
+table.treeTable td img#control {
+	padding: 5px;
+    border: 1px solid grey;
+}
+
+table.treeTable td.onTime {
+    background-color: lightgreen;
+    border: 1px solid green; 
+    text-align: center;
+}
+
+table.treeTable td.overdue {
+    background-color: pink;
+    border: 1px solid red;
+    text-align: center;
+}
+
+.treeTable0 {
+    margin-left: 0em;
+}
+.treeTable1 {
+    margin-left: 1em;
+}
+.treeTable2 {
+    margin-left: 2em;
+}
+.treeTable3 {
+    margin-left: 3em;
+}
+.treeTable4 {
+    margin-left: 4em;
+}
+.treeTable5 {
+    margin-left: 5em;
+}
+.treeTable6 {
+    margin-left: 6em;
+}
+.treeTable7 {
+    margin-left: 7em;
+}
+.treeTable8 {
+    margin-left: 8em;
+}
+.treeTable9 {
+    margin-left: 9em;
+}

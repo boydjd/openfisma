@@ -58,13 +58,14 @@ class PoamBaseController extends SecurityController
      * @todo english
      * Invoked before each Action
      */
-    public function preDispatch()
+/*    public function preDispatch()
     {
         parent::preDispatch();
         $this->_poam = new Poam();
         $src = new Source();
         $net = new Network();
         $sys = new System();
+        * 
         $this->_sourceList = $src->getList('name');
         $this->_networkList = $net->getList('name');
 
@@ -87,7 +88,7 @@ class PoamBaseController extends SecurityController
         $req = $this->_req;
         $this->_pagingBasePath = $req->getBaseUrl();
         $this->_paging['currentPage'] = $req->getParam('p', 1);
-    }
+    }*/
     
 
     /**
