@@ -23,7 +23,7 @@ Role:
         name: Application Administrator
         nickname: ADMIN
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Application Administrators group provides administrative privileges to the OpenFISMA application. Users will have the ability to access all security controls and functions.</p>
-        Privileges: [dashboard_read]
+        Privileges: [areas_dashboard, areas_reports, areas_admin, areas_configuration, findings_create, findings_read, findings_update, findings_delete, findings_inject, findings_approve, findings_update_course_of_action, findings_update_findings_assignment, findings_update_control_assignment, findings_update_countermeasures, findings_update_threat, findings_update_finding_recommendation, findings_update_finding_resources, findings_update_est_completion_date, findings_upload_evidence, findings_mitigation_strategy_submit, findings_mitigation_strategy_revise, finding_mitigation_isso, finding_mitigation_ivv, finding_evidence_isso, finding_evidence_ivv, asset_create, asset_read, asset_update, asset_delete, user_create, user_read, user_update, user_delete, organization_create, organization_read, organization_update, organization_delete, system_create, system_read, system_update, system_delete, product_create, product_read, product_update, product_delete, source_create, source_read, source_update, source_delete, roles_create, roles_read, roles_update, roles_delete, networks_create, networks_read, networks_update, networks_delete, notification_admin, notification_asset, notification_finding]
 
     CERTAGENT:
         name: Certification Agent

@@ -52,7 +52,7 @@ class DashboardController extends SecurityController
      */
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilege('dashboard', 'read');
+        Fisma_Acl::requirePrivilege('areas', 'dashboard');
         $user = User::currentUser();
         
         // Check to see if we got passed a "dismiss" parameter to dismiss notifications

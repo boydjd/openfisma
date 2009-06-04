@@ -4,6 +4,7 @@ Evaluation:
         nickname: MITIGATION ISSO
         precedence: 0
         approvalGroup: action
+        Privilege: finding_mitigation_isso
         #Event: ...
         #Function: ...
 
@@ -12,6 +13,7 @@ Evaluation:
         nickname: MITIGATION ISSO
         precedence: 1
         approvalGroup: action
+        Privilege: finding_mitigation_ivv
         #Event: ...
         #Function: ...
 
@@ -20,6 +22,7 @@ Evaluation:
         nickname: MITIGATION ISSO
         precedence: 0
         approvalGroup: evidence
+        Privilege: finding_evidence_isso
         #Event: ...
         #Function: ...
 
@@ -28,5 +31,6 @@ Evaluation:
         nickname: MITIGATION ISSO
         precedence: 1
         approvalGroup: evidence
+        Privilege: finding_evidence_ivv
         #Event: ...
         #Function: ...

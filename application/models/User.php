@@ -156,15 +156,27 @@ class User extends BaseUser
                             // Fake hierarhical access control by storing system-specific attributes like this:
                             // If the system nickname is "ABC" and the resource is called "finding", then the
                             // resource stored in the ACL is called "ABC/finding"
-                            $newResource = new Zend_Acl_Resource("$organization->nickname/$privilege->resource");
-                            $acl->add($newResource);
-                            $acl->allow($newRole, $newResource, $privilege->action);
+                            $systemResource = "$organization->nickname/$privilege->resource";
+                            if (!$acl->has($systemResource)) {
+                                $acl->add(new Zend_Acl_Resource($systemResource));
+                            }
+                            $acl->allow($newRole, $systemResource, $privilege->action);
+                            
+                            // The wildcard resources indicates whether a user has this privilege on *any* 
+                            // system. This is useful for knowing when to show certain user interface elements
+                            // like menu items. The resource is named "*/finding"
+                            $wildcardResource = "*/$privilege->resource";
+                            if (!$acl->has($wildcardResource)) {
+                                $acl->add(new Zend_Acl_Resource($wildcardResource));
+                            }
+                            $acl->allow($newRole, $wildcardResource, $privilege->action);                            
                         }
                     } else {
                         // Create a resource and grant it to the current role
-                        $newResource = new Zend_Acl_Resource($privilege->resource);
-                        $acl->add($newResource);
-                        $acl->allow($newRole, $newResource, $privilege->action);
+                        if (!$acl->has($privilege->resource)) {
+                            $acl->add(new Zend_Acl_Resource($privilege->resource));
+                        }
+                        $acl->allow($newRole, $privilege->resource, $privilege->action);
                     }
                 }
             }
