@@ -58,12 +58,20 @@ class Fisma_Acl extends Zend_Acl
         }
         
         // Otherwise, check the ACL
-        $acl = Zend_Registry::get('acl');
-        if (isset($organization)) {
-            // See User::acl() for explanation of how $organization is used
-            return $acl->isAllowed($identity, "$organization/$resource", $privilege);
-        } else {
-            return $acl->isAllowed($identity, $resource, $privilege);
+        try {
+            $acl = Zend_Registry::get('acl');
+            if (isset($organization)) {
+                // See User::acl() for explanation of how $organization is used
+                return $acl->isAllowed($identity, "$organization/$resource", $privilege);
+            } else {
+                return $acl->isAllowed($identity, $resource, $privilege);
+            }
+        } catch (Zend_Acl_Exception $e) {
+            // This is an unfortunate hack. For some reason Zend_Acl throws an exception if you check permissions on 
+            // a resource which doesn't exist. We have to capture that condition here and return false, but in doing
+            // this we run the risk of swallowing up a meaningful exception.
+            /** @todo revisit... can we make this work right? */
+            return false;
         }
     }
     

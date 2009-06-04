@@ -62,45 +62,57 @@ class DashboardController extends SecurityController
             $user->notifyTs = new Zend_Date();
             $user->save();
         }
-        /*
-        $newCount  = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'), array('status' => 'NEW'));
-        $draftCount = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'), array('status' => 'DRAFT'));
-        $enCount = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'
-        ), array(
-            'status' => 'EN',
-            'estDateBegin' => parent::$now
-        ));
-        $eoCount = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'
-        ), array(
-            'status' => 'EN',
-            'ontime' => 'overdue'
-        ));
-        $total = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'), array('notStatus' => 'PEND'));
-        $alert = array();
-        $alert['TOTAL'] = $total;
-        $alert['NEW']  = $newCount;
-        $alert['DRAFT'] = $draftCount;
-        $alert['EN'] = $enCount;
-        $alert['EO'] = $eoCount;
+
+        // Calculate the dashboard statistics
+        $totalFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding');
+        $result = $totalFindingsQuery->fetchOne();
+        $alert['TOTAL']  = $result['count'];
+        
+        $newFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding')
+                            ->where('status = ?', 'NEW');
+        $result = $newFindingsQuery->fetchOne();
+        $alert['NEW']  = $result['count'];
+        
+        $draftFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding')
+                            ->where('status = ?', 'DRAFT');
+        $result = $draftFindingsQuery->fetchOne();
+        $alert['DRAFT']  = $result['count'];
+        
+        $enFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding')
+                            ->where('status = ? and nextDueDate >= NOW()', 'EN');
+        $result = $draftFindingsQuery->fetchOne();
+        $alert['EN']  = $result['count'];
+
+        $eoFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding')
+                            ->where('status = ? AND nextDueDate < NOW()', 'DRAFT');
+        $result = $draftFindingsQuery->fetchOne();
+        $alert['EO']  = $result['count'];
+        
         $url = '/panel/remediation/sub/searchbox/s/search/status/';
 
         $this->view->url = $url;
         $this->view->alert = $alert;
         
-        if (false !== strtotime($this->_me->last_login_ts)) {
-            $lastLoginDate = new Zend_Date($this->_me->last_login_ts, Zend_Date::ISO_8601);
-            $lastLogin = $lastLoginDate->toString('l, M j, g:i a');
-            $this->view->lastLogin = $lastLogin;
-            $this->view->lastLoginIp = $this->_me->last_login_ip;
-            $this->view->failureCount = $this->_me->failure_count;
+        // Look up the user's last login information. If it's their first time logging in, then the view
+        // script will show a different message.
+        if (isset($user->lastLoginTs)) {
+            $lastLoginDate = new Zend_Date($this->_me->lastLoginTs, Zend_Date::ISO_8601);
+            $this->view->lastLogin = $lastLoginDate->toString('l, M j, g:i a');
+            $this->view->lastLoginIp = $this->_me->lastLoginIp;
+            $this->view->failureCount = $this->_me->failureCount;
         } else {
             $this->view->applicationName = Configuration::getConfig('system_name');
-        }*/
+        }
         
         // Alert the user if there are notifications pending
         $user = User::currentUser();

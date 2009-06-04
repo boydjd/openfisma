@@ -72,7 +72,7 @@ class SecurityController extends MessageController
 
             // Update the session timeout
             $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
-            $authSession->setExpirationSeconds(Configuration::getConfig('session_inactivity_period'));
+            $authSession->setExpirationSeconds(Configuration::getConfig('session_inactivity_period') * 60);
         } else {
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their

@@ -9,6 +9,9 @@ Finding:
         closedTs:
             type: timestamp
             comment: The timestamp when this finding was closed
+        nextDueDate:
+            type: date
+            comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
             
         legacyFindingKey:
             type: string(255)

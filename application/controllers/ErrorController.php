@@ -61,7 +61,9 @@ class ErrorController extends Zend_Controller_Action
         // if the user has login and meeted an exception.
         } else {
             $this->getResponse()->clearBody();
-            $content = $errors->exception->getMessage()
+            $content = get_class($errors->exception)
+                     . ": "
+                     . $errors->exception->getMessage()
                      . '<br>'
                      . $errors->exception->getTraceAsString()
                      . '<br>';

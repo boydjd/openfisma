@@ -9,6 +9,7 @@
  * @property timestamp $modifiedTs
  * @property date $discoveredDate
  * @property timestamp $closedTs
+ * @property date $nextDueDate
  * @property string $legacyFindingKey
  * @property enum $type
  * @property enum $status
@@ -54,6 +55,7 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('discoveredDate', 'date', null, array('type' => 'date', 'comment' => 'The when the finding was discovered. This is self-reported by users'));
         $this->hasColumn('closedTs', 'timestamp', null, array('type' => 'timestamp', 'comment' => 'The timestamp when this finding was closed'));
+        $this->hasColumn('nextDueDate', 'date', null, array('type' => 'date', 'comment' => 'The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.'));
         $this->hasColumn('legacyFindingKey', 'string', 255, array('type' => 'string', 'unique' => true, 'comment' => 'This field can be used by end clients to track findings under a legacy tracking system', 'length' => '255'));
         $this->hasColumn('type', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'CAP', 1 => 'AR', 2 => 'FP'), 'comment' => 'The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)'));
         $this->hasColumn('status', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'PEND', 1 => 'NEW', 2 => 'DRAFT', 3 => 'MSA', 4 => 'EN', 5 => 'EA', 6 => 'CLOSED'), 'comment' => 'The current status. MSA and EA are physical status codes that need to be translated into logical status codes before displaying to the user'));
