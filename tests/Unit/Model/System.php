@@ -30,14 +30,13 @@
 /**
  * Test_FismaUnitTest
  */
-require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 
 /**
  * Unit tests for the System model
  *
  * @package Test_model
  */
-class Unit_Model_System extends Test_FismaUnitTest
+class Unit_Model_System extends PHPUnit_Framework_TestCase
 {
     private $_system = null;
 
