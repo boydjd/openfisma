@@ -54,6 +54,8 @@ require_once 'PHPUnit/Framework/TestCase.php';
  */
 abstract class Test_FismaUnitTest extends PHPUnit_Framework_TestCase
 {
+    protected $_fixturePath;
+    
     /**
      * Set up access to the database.
      *
@@ -61,6 +63,8 @@ abstract class Test_FismaUnitTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        $this->_fixturePath = realpath(dirname(__FILE__) . '/fixtures');
+        
         // Initialize our DB connection
         $datasource = Zend_Registry::get('datasource');
         $this->_db = Zend_Db::factory($datasource);

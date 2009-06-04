@@ -27,18 +27,18 @@
  * @package   
  */
 
+require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
+
 /**
  * Unit Model tests for the Organization model
- *
- * @package
  */
-class Unit_Model_Organization extends PHPUnit_Framework_TestCase
+class Test_Model_Organization extends Test_FismaUnitTest
 {
     private $_organization = null;
 
     protected function setUp()
     {
-        $data = dirname(dirname(__FILE__)) . "/Data/Organization.yml";
+        $data = realpath($this->_fixturePath . 'Organization.yml');
         Doctrine::loadData($data);
         $this->_organization = new Organization();
     }

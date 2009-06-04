@@ -27,16 +27,14 @@
  * @package   Test_System
  */
 
-/**
- * Test_FismaUnitTest
- */
+require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 
 /**
  * Unit tests for the System model
  *
  * @package Test_model
  */
-class Unit_Model_System extends PHPUnit_Framework_TestCase
+class Test_Model_System extends Test_FismaUnitTest
 {
     private $_system = null;
 
@@ -56,78 +54,29 @@ class Unit_Model_System extends PHPUnit_Framework_TestCase
      * among the confidentiality, integrity and availability
      * 
      */
-    public function testGetSecurityCategory()
+    public function testSecurityCategory()
     {
         $system = new System();
         
-        $system->confidentiality = System::MODERATE_LEVEL;
-        $system->integrity = System::MODERATE_LEVEL;
-        $system->availability = System::LOW_LEVEL;
-        $this->assertEquals($system->getSecurityCategory(), System::MODERATE_LEVEL);
+        $system->confidentiality = System::CIA_MODERATE;
+        $system->integrity = System::CIA_MODERATE;
+        $system->availability = System::CIA_LOW;
+        $this->assertEquals($system->fipsSecurityCategory(), System::CIA_MODERATE);
         
-        $system->confidentiality = System::HIGH_LEVEL;
-        $system->integrity = System::MODERATE_LEVEL;
-        $system->availability = System::LOW_LEVEL;
-        $this->assertEquals($system->getSecurityCategory(), System::HIGH_LEVEL);
+        $system->confidentiality = System::CIA_HIGH;
+        $system->integrity = System::CIA_MODERATE;
+        $system->availability = System::CIA_LOW;
+        $this->assertEquals($system->fipsSecurityCategory(), System::CIA_HIGH);
         
-        $system->confidentiality = System::LOW_LEVEL;
-        $system->integrity = System::LOW_LEVEL;
-        $system->availability = System::LOW_LEVEL;
-        $this->assertEquals($system->getSecurityCategory(), System::LOW_LEVEL);
+        $system->confidentiality = System::CIA_LOW;
+        $system->integrity = System::CIA_LOW;
+        $system->availability = System::CIA_LOW;
+        $this->assertEquals($system->fipsSecurityCategory(), System::CIA_LOW);
         
-        $system->confidentiality = System::NA;
-        $system->integrity = System::LOW_LEVEL;
-        $system->availability = System::LOW_LEVEL;
-        $this->assertEquals($system->getSecurityCategory(), null);
+        $system->confidentiality = System::CIA_NA;
+        $system->integrity = System::CIA_LOW;
+        $system->availability = System::CIA_MODERATE;
+        $this->assertEquals($system->fipsSecurityCategory(), System::CIA_MODERATE);
         
     }
-
-    public function testSave()
-    {
-        $this->_system->type = 'gss';
-        $this->_system->confidentiality = 'high';
-        $this->_system->integrity       = 'moderate';
-        $this->_system->availability    = 'low';
-        $this->_system->description     = 'description';
-        $this->_system->name            = 'name'; 
-        $this->_system->nickname        = 'nickname';
-        $this->_system->getTable()->addRecordListener(new Listener_System());
-        $this->_system->save();
-
-        $ret = Doctrine::getTable('Organization')->findOneByName('name');
-        $this->assertEquals('description', $ret->description);
-        $this->assertEquals('name', $ret->name);
-        $this->assertEquals('nickname', $ret->nickname);
-    }
-
-    public function testUpdate()
-    {
-        $ret = Doctrine::getTable('Organization')->findOneByName('name');
-        if (!empty($ret)) {
-            $system = $ret->System;
-            $system->name = 'newname';
-            $system->nickname = 'newnick';
-            $system->description = 'new description';
-            $system->integrity  = 'high';
-            $system->getTable()->addRecordListener(new Listener_System());
-            $system->save();
-        }
-
-        $this->assertEquals('newname', $ret->name);
-        $this->assertEquals('newnick', $ret->nickname);
-        $this->assertEquals('new description', $ret->description);
-    }
-
-    public function testDelete()
-    {
-        $ret = Doctrine::getTable('Organization')->findOneByName('newname');
-        if (!empty($ret)) {
-            $system = $ret->System;
-            $system->getTable()->addRecordListener(new Listener_System());
-            $system->delete();
-        }
-
-        $this->assertEquals(false, Doctrine::getTable('Organization')->find($ret->id));
-    }
-
 }

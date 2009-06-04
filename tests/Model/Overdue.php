@@ -27,15 +27,7 @@
  * @package   Test
  */
 
-/**
- * @ignore
- * Run the application bootstrap in command line mode
- */
-
-
 require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
-
-require_once('Fisma/Controller/Action/Helper/OverdueStatistic.php');
 
 class Test_Model_Overdue extends Test_FismaUnitTest
 {
