@@ -13,31 +13,24 @@ require_once 'listener/System.php';
 class System extends BaseSystem
 {
     /**
-     * the level of confidentiality,
-     * integrity and availability
-     *
+     * Confidentiality, Integrity, Availability
      */
-    const HIGH_LEVEL = 'high';
+    const CIA_HIGH = 'high';
     
     /**
-     * the level of confidentiality,
-     * integrity and availability
-     *
+     * Confidentiality, Integrity, Availability
      */
-    const MODERATE_LEVEL = 'moderate';
+    const CIA_MODERATE = 'moderate';
     
     /**
-     * the level of confidentiality,
-     * integrity and availability
-     *
+     * Confidentiality, Integrity, Availability
      */
-    const LOW_LEVEL = 'low';
+    const CIA_LOW = 'low';
     
     /**
-     * the type of confidentiality
-     *
+     * Only confidentiality can have 'NA'
      */
-    const NA = null;
+    const CIA_NA = 'na';
     
     /**
      * Calculate Security categorization.
@@ -47,14 +40,10 @@ class System extends BaseSystem
      * For example, in case `confidentiality` ENUM('NA','LOW','MODERATE','HIGH') it turns out the 
      * mapping value: LOW=0, MODERATE=1, HIGH=2. The value calculated is the maximun of C, I, A. And 
      * is transferred back to enumeration name again.
-     *
-     * As the C(Confidentiality) has the additional value 'NA', which is absent from the other two
-     * I,A, it's necessary to remove it before calculating the security categorization. Due to the
-     * design, we have to hard code it, say array_shift($confidentiality).
      * 
      * @return string security_categorization
      */
-    public function getSecurityCategory()
+    public function fipsSecurityCategory()
     {
         $confidentiality = $this->confidentiality;
         $integrity = $this->integrity;
@@ -66,8 +55,7 @@ class System extends BaseSystem
         
         $array = $this->getTable()->getEnumValues('confidentiality');
         assert(in_array($confidentiality, $array));
-        array_shift($array);
-        $confidentiality = array_search($confidentiality, $array);
+        $confidentiality = array_search($confidentiality, $array) - 1;
         
         $array = $this->getTable()->getEnumValues('integrity');
         assert(in_array($integrity, $array));
