@@ -83,7 +83,7 @@ class AllUnitTests
             // Ignore directories prefixed with a '.'
             if (preg_match('/^\./', $subdirectory) == 0
                 && is_dir($subdirectory)
-                && 'Selenium' != $subdirectory
+                && 'selenium' != $subdirectory
                 && 'fixtures' != $subdirectory) {
                 self::loadAllTests('.', $subdirectory, $suite);
             }
