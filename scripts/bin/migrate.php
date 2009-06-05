@@ -33,18 +33,22 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 require_once('../../application/init.php');
-//in order to export we need a database connection
-$dbUser     = '';
-$dbPassword = '';
-$dbHost     = 'localhost';
-$dbName     = '';
+$plSetting = new Fisma_Controller_Plugin_Setting();
+
+if (!$plSetting->installed()) {
+    die('Please install!');
+}
+
+// Initialize our DB connection
+$datasource = Zend_Registry::get('datasource');
+$dsn        = $datasource->params->toArray();
 
 $migrationDir = '../../application/doctrine/migrations/';
 
-Doctrine_Manager::connection("mysql://$dbUser:$dbPassword@$dbHost/$dbName");
-$migration = new Doctrine_Migration($migrationDir);
+Doctrine_Manager::connection("mysql://$dsn[username]:$dsn[password]@$dsn[host]/$dsn[dbname]");
+$migration  = new Doctrine_Migration($migrationDir);
 
 //Migrate to the latest version, also ,you can type "$migration->migrate(1)" to the version 1
-$migration->migrate(); 
+$migration->migrate(0); 
 
 print('Migration successful.Current version is ' . $migration->getCurrentVersion() . '\n'); 
