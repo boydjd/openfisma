@@ -40,7 +40,7 @@ class Test_Model_Organization extends Test_FismaUnitTest
     {
         parent::setUp();
         $data = realpath($this->_fixturePath . '/Organization.yml');
-        Doctrine::loadData($data);
+        Doctrine::loadData($data, true);
         $this->_organization = new Organization();
     }
 
@@ -74,5 +74,10 @@ class Test_Model_Organization extends Test_FismaUnitTest
         $this->assertEquals($organizationTable->findOneByName('root')->level, NULL);
         $this->assertEquals($organizationTable->findOneByName('left_1')->level, 1);
         $this->assertEquals($organizationTable->findOneByName('right_1')->level, 1);
+
+        $organizationTable->findOneByName('root')->delete();
+        $organizationTable->findOneByName('left_1')->delete();
+        $organizationTable->findOneByName('right_1')->delete();
+        $organizationTable->findOneByNickname('BGA')->delete();
     }
 }
