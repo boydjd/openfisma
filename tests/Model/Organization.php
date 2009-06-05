@@ -38,7 +38,8 @@ class Test_Model_Organization extends Test_FismaUnitTest
 
     protected function setUp()
     {
-        $data = realpath($this->_fixturePath . 'Organization.yml');
+        parent::setUp();
+        $data = realpath($this->_fixturePath . '/Organization.yml');
         Doctrine::loadData($data);
         $this->_organization = new Organization();
     }
