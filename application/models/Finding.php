@@ -10,19 +10,9 @@
  * @author     ##NAME## <##EMAIL##>
  * @version    SVN: $Id: Builder.php 5441 2009-01-30 22:58:43Z jwage $
  */
+require_once 'listener/Finding.php';
 class Finding extends BaseFinding
 {
-    /**
-     * log the behaviors of finding
-     *
-     * @param User  $userId
-     * @param string  $message
-     */
-    public function log($userId, $message)
-    {
-
-    }
-
     /**
      * get the detailed status of a POAM,
      *
