@@ -9,7 +9,9 @@
  * @property integer $findingId
  * @property integer $evidenceId
  * @property integer $evaluationId
+ * @property enum $decision
  * @property integer $userId
+ * @property string $comment
  * @property Finding $Finding
  * @property Evidence $Evidence
  * @property Evaluation $Evaluation
@@ -30,7 +32,9 @@ abstract class BaseFindingEvaluation extends Doctrine_Record
         $this->hasColumn('findingId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the finding which this evaluation is against (optional, this is mutually exclusive with evidenceId)'));
         $this->hasColumn('evidenceId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the evidence which this evaluation is against (optional, this is mutually exclusive with findingId)'));
         $this->hasColumn('evaluationId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the type of evaluation which this represents against the finding'));
+        $this->hasColumn('decision', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'APPROVED', 1 => 'DENIED', 2 => 'EST_CHANGED'), 'comment' => 'The approve result'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the user who completed this evaluation'));
+        $this->hasColumn('comment', 'string', null, array('type' => 'string', 'comment' => 'The deny comment or the justification of ECD changed'));
     }
 
     public function setUp()

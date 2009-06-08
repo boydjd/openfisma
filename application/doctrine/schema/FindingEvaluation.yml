@@ -10,9 +10,16 @@ FindingEvaluation:
         evaluationId:
             type: integer
             comment: Foreign key to the type of evaluation which this represents against the finding
+        decision:
+            type: enum
+            values: [APPROVED, DENIED, EST_CHANGED]
+            comment: The approve result
         userId:
             type: integer
             comment: Foreign key to the user who completed this evaluation
+        comment: 
+            type: string
+            comment: The deny comment or the justification of ECD changed
     
     relations:
         Finding:
