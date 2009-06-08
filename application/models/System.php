@@ -33,6 +33,13 @@ class System extends BaseSystem
     const CIA_NA = 'na';
     
     /**
+     * Return a formatted label for this system based on the name and nickname
+     */
+    public function getLabel() {
+        return "{$this->nickname} - {$this->name}";
+    }
+    
+    /**
      * Calculate Security categorization.
      *
      * The calculation over enumeration fields {LOW, MODERATE, HIGH} is tricky here. The algorithm 

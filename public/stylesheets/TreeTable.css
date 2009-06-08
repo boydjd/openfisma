@@ -18,10 +18,9 @@ table.treeTable td {
     border: 1px solid grey;
 }
 
-table.treeTable td {
-	padding: 5px;
-	background-color: #eee;
-    border: 1px solid grey;
+table.treeTable td a {
+    color: black;
+    text-decoration: none;
 }
 
 table.treeTable td img.control {
@@ -40,15 +39,17 @@ table.treeTable td img#control {
     border: 1px solid grey;
 }
 
+table.treeTable td.noDueDate {
+    text-align: center;
+}
+
 table.treeTable td.onTime {
     background-color: lightgreen;
-    border: 1px solid green; 
     text-align: center;
 }
 
 table.treeTable td.overdue {
     background-color: pink;
-    border: 1px solid red;
     text-align: center;
 }
 

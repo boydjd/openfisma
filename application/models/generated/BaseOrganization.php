@@ -12,8 +12,8 @@
  * @property enum $orgType
  * @property integer $systemId
  * @property string $description
- * @property  $
- * @property User $
+ * @property System $System
+ * @property Doctrine_Collection $Users
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##

@@ -1,71 +1,46 @@
 <script type="text/javascript">
-
-var tree = [
-    {
-        nickname: "BGA",
-        label: "BGA - Big Gov Agency",
-        counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        type: "agency",
-        children: [
-            {
-                nickname: "AA",
-                label: "AA",
-                counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                type: "major",
-                children: [
-                    {
-                        nickname: "BB",
-                        label: "BB",
-                        counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        type:"minor"
-                    },
-                    {
-                        nickname: "CC",
-                        label: "CC",
-                        counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        type:"minor"
-                    }
-                ],
-            },
-            {
-                nickname: "DD",
-                label: "DD",
-                counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                type: "bureau"
-            },
-            {
-                nickname: "EE",
-                label: "EE",
-                counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                type: "gss",
-                children: [
-                    {
-                        nickname: "FF",
-                        label: "FF",
-                        counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        type: "major"
-                    },
-                    {
-                        nickname: "GG",
-                        label: "GG",
-                        counts: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        type: "major"
-                    }
-                ]
-            }
-        ]
-    }
-]
-
 YAHOO.util.Event.onDOMReady(function () {
-    YAHOO.fisma.TreeTable.render('findingSummaryTable', tree, 0);
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/remediation/summary-data/format/json', 
+                                    {
+                                        success: function(o) {
+                                            var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);                                
+                                        },
+                                        failure: function(o) {
+                                            alert('Unable to load finding summary: ' + o.statusText);
+                                        }
+                                    }, 
+                                    null);
 });
 </script>
 
+<div class="toolbar">
+<?php
+$expandAll = new Fisma_Yui_Form_Button('expandAll', 
+                                       array('value' => 'Expand All', 
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.expandAll'));
+print $expandAll;
+
+$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
+                                         array('value' => 'Collapse All', 
+                                               'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
+print $collapseAll;
+?>
+</div>
+
 <table id='findingSummaryTable' class="treeTable">
     <tr>
-        <th>&nbsp;</th><th>NEW</th><th>DRAFT</th><th>MITIGATION ISSO</th>
-        <th>MITIGATION IVV</th><th>EN</th><th>EVIDENCE ISSO</th>
-        <th>EVIDENCE IVV</th><th>CLOSED</th><th>TOTAL</th>
+        <th>&nbsp;</th>
+        <?php // foreach ?>
+        <th>NEW</th>
+        <th>DRAFT</th>
+        <th>MITIGATION ISSO</th>
+        <th>MITIGATION IVV</th>
+        <th>EN</th>
+        <th>EVIDENCE ISSO</th>
+        <th>EVIDENCE IVV</th>
+        <th>CLOSED</th>
+        <th>TOTAL</th>
     </tr>
 </table>

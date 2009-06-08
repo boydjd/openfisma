@@ -106,6 +106,9 @@ class RemediationController extends PoamBaseController
                         'Content-Type' => 'application/vnd.ms-excel')))
                    ->addActionContext('search2', array('xls'))->setAutoDisableLayout(true);
         }
+        $this->_helper->contextSwitch()
+                      ->addActionContext('summary-data', 'json')
+                      ->initContext();
     }
     
     /**
@@ -123,13 +126,89 @@ class RemediationController extends PoamBaseController
     }
 
     /**
-     *  Experimental code... not intended for release
+     * Experimental code... not intended for release
+     * 
+     * Presents the view which contains the summary table. The summary table loads summary data
+     * asynchronously by invoking the summaryDataAction().
      */    
     public function summaryAction()
     {
         Fisma_Acl::requirePrivilege('findings', 'read', '*');
     }
     
+    /**
+     * Invoked asynchronously to load data for the summary table.
+     * 
+     * @todo cache computed record counts
+     */
+    public function summaryDataAction() {
+        Fisma_Acl::requirePrivilege('findings', 'read', '*');
+        
+        // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
+        // query selects all Organizations which the user has access to.
+        $userOrgQuery = Doctrine_Query::create()
+                        ->select('o.name, o.nickname, o.orgType, s.type AS sysType')
+                        ->from('Organization o')
+                        ->innerJoin('o.Users u')
+                        ->leftJoin('o.System s')
+                        ->where('u.id = ?', $this->_me->id)
+                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $orgTree = Doctrine::getTable('Organization')->getTree();
+        $orgTree->setBaseQuery($userOrgQuery);
+        $organizations = $orgTree->fetchTree();
+        $orgTree->resetBaseQuery();
+        
+        $organizations = $this->toHierarchy($organizations);
+        
+        $this->view->summaryData = $organizations;
+    }
+
+    /**
+     * Transform the flat array returned from Doctrine's nested set into a nested array
+     */
+    public function toHierarchy($collection) 
+    { 
+        // Trees mapped 
+        $trees = array(); 
+        $l = 0; 
+        if (count($collection) > 0) { 
+            // Node Stack. Used to help building the hierarchy 
+            $stack = array(); 
+            foreach ($collection as $node) { 
+                $item = $node; 
+                $item['label'] = $item['nickname'] . ' - ' . $item['name'];
+                if ($item['orgType'] == 'system') {
+                   $item['orgType'] = $item['sysType'];
+                }
+                $item['ontime'] = array(0, 0, 0, 0, 0, 0, 0, 0, 0);
+                $overdue = array(0, 0, 0, 0, 0, 0, 0);
+                if (array_sum($overdue) > 0) {
+                    $item['overdue'] = $overdue;
+                }
+                $item['children'] = array(); 
+                // Number of stack items 
+                $l = count($stack); 
+                // Check if we're dealing with different levels 
+                while($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
+                    array_pop($stack); 
+                    $l--; 
+                } 
+                // Stack is empty (we are inspecting the root) 
+                if ($l == 0) { 
+                    // Assigning the root node 
+                    $i = count($trees); 
+                    $trees[$i] = $item; 
+                    $stack[] = & $trees[$i]; 
+                } else { 
+                    // Add node to parent 
+                    $i = count($stack[$l - 1]['children']); 
+                    $stack[$l - 1]['children'][$i] = $item; 
+                    $stack[] = & $stack[$l - 1]['children'][$i]; 
+                } 
+            } 
+        } 
+        return $trees; 
+    }    
     
     /**
      * parse and translate the URL to criterias
