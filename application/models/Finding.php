@@ -101,7 +101,7 @@ class Finding extends BaseFinding
             $this->currentEvaluationId = null;
         }
         if ('EA' == $this->status) {
-            $firstEaEvaluationId = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = "evidence"')->count();
+            $firstEaEvaluationId = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = "action"')->count();
             $this->status              = 'EN';
             $this->currentEvaluationId = $firstEaEvaluationId;
         }

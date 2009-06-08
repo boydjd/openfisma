@@ -94,6 +94,7 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
                 'models2' => 'application/models',
                 'models' => 'application/models-old',
                 'doctrine-models' => 'application/models/generated',
+                'listener' => 'application/models/listener',
                 'yui' => 'public/yui',
                 'local' => 'library/local/');
 
