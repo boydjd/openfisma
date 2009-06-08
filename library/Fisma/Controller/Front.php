@@ -6,7 +6,11 @@ class Fisma_Controller_Front extends Zend_Controller_Front
         if (null === self::$_instance) {
             self::$_instance = new self();
         }
-
+        $flag = self::$_instance->hasPlugin('Fisma_Controller_Plugin_Setting');
+        if (!$flag) {
+            $plSetting = new Fisma_Controller_Plugin_Setting();
+            self::$_instance->registerPlugin($plSetting, 60);
+        }
         return self::$_instance;
     }
     

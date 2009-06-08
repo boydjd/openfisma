@@ -27,10 +27,9 @@
 require_once('../application/init.php');
 
 try {
-    $plSetting = new Fisma_Controller_Plugin_Setting();
-    $dbg = $plSetting->debug();
     $front = Fisma_Controller_Front::getInstance();
-    $front->registerPlugin($plSetting, 60); //this should be the highest priority
+    $plSetting = $front->getPlugin('Fisma_Controller_Plugin_Setting');
+    $dbg = $plSetting->debug();
     if ($plSetting->installed()){
         $pl = new Fisma_Controller_Plugin_Web();
     } else {
