@@ -1,7 +1,9 @@
 Evaluation:
     MITIGATION ISSO:
+        id: 1
         name: ISSO Approval for Mitigation Strategy
         nickname: MITIGATION ISSO
+        NextEvaluation: [MITIGATION IVV]
         precedence: 0
         approvalGroup: action
         Privilege: finding_mitigation_isso
@@ -9,6 +11,7 @@ Evaluation:
         #Function: ...
 
     MITIGATION IVV:
+        id: 2
         name: IVV Approval for Mitigation Strategy
         nickname: MITIGATION IVV
         precedence: 1
@@ -18,8 +21,10 @@ Evaluation:
         #Function: ...
 
     EVIDENCE ISSO:
+        id: 3
         name: ISSO Approval for Evidence
         nickname: EVIDENCE ISSO
+        NextEvaluation: [EVIDENCE IVV]
         precedence: 0
         approvalGroup: evidence
         Privilege: finding_evidence_isso
@@ -27,6 +32,7 @@ Evaluation:
         #Function: ...
 
     EVIDENCE IVV:
+        id: 4
         name: IVV Approval for Evidence
         nickname: EVIDENCE IVV
         precedence: 1
