@@ -38,19 +38,16 @@ class Fisma_Controller_Action_Helper_AddNotification extends Zend_Controller_Act
      *
      * @param int $eventType The type of event
      * @param string $userName The name of the user who caused the event
-     * @param int|string|array $recordId An ID or description of the object
-     * @param int $systemId The ID of the associated system, if applicable
-     *
-     * @todo Reconsider the $recordId parameter... seems to be useless
+     * @param int|string|array $records An ID or description of the object
+     * @param int $systemId The ID of the associated system, if applicable. Actually, it is organization id.
      */
-    public static function addNotification($eventType, $userName, $recordId, $systemId=null)
+    public static function addNotification($eventType, $userName, $records, $systemId = null)
     {
-        // Format the $recordId for inclusion in the event text.
-        // Notice: this value is currently not used
-        if (is_array($recordId)) {
-            $record = implode(",", $recordId);
+        // Format the $records for inclusion in the event text.
+        if (is_array($records)) {
+            $record = implode(",", $records);
         } else {
-            $record = $recordId;
+            $record = $records;
         }
 
         // Create a new event object with the specified type
@@ -73,8 +70,8 @@ class Fisma_Controller_Action_Helper_AddNotification extends Zend_Controller_Act
             $q = Doctrine_Query::create()
                  ->select('ue.eventId, ue.userId')
                  ->from('UserEvent ue, UserOrganization uo')
-                 ->Where('ue.eventId = ?', $eventType)
-                 ->andWhere('uo.organizationId = (SELECT o.id FROM Organization o WHERE o.systemId = '.$systemId.')');
+                 ->where('ue.eventId = ?', $eventType)
+                 ->andWhere('uo.organizationId = ?', $systemId);
             $userEvents = $q->execute();
         }
         if (!$userEvents = $userEvents->toArray()) {
@@ -94,11 +91,11 @@ class Fisma_Controller_Action_Helper_AddNotification extends Zend_Controller_Act
      * 
      * @param int $eventType The type of event
      * @param string $userName The name of the user who caused the event
-     * @param int|string|array $recordId An ID or description of the object
+     * @param int|string|array $records An ID or description of the object
      * @param int $systemId The ID of the associated system, if applicable
      */
-    public function direct($eventType, $userName, $recordId, $systemId = null)
+    public function direct($eventType, $userName, $records, $systemId = null)
     {
-        $this->addNotification($eventType, $userName, $recordId, $systemId);
+        $this->addNotification($eventType, $userName, $records, $systemId);
     }
 }
