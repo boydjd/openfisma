@@ -3,15 +3,5 @@ User:
         username: root
         password: 4a95bac3e19b28ee0acf3cc1137b4d1e66720a49
         hashType: sha1
-#TESTDATA
-    mehaase:
-        username: mehaase
-        password: a8418bc9002425b343c9ade524a3ee83ddde805c
-        hashType: sha1
-        nameFirst: Mark
-        nameLast: Haase
-        email: mehaase@gmail.com
-        lastLoginTs: 2009-03-01 12:00:00
-        Roles: [ADMIN]
-        Organizations: [BGA]
-    
+        nameLast: Super User
+        lastLoginTs: 2050-01-01 12:00:0

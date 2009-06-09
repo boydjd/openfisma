@@ -1,0 +1,19 @@
+System:
+    WDC_SYS:
+        type: gss
+    OF_SYS:
+        type: major
+    OSC_SYS:
+        type: minor
+    FMS_SYS:
+        type: major
+    TETS_SYS:
+        type: major
+    IAD_SYS:
+        type: minor
+    CIT_SYS:
+        type: major
+    SCMS_SYS:
+        type: major
+    CRMS_SYS:
+        type: major

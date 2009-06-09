@@ -158,13 +158,21 @@ class RemediationController extends PoamBaseController
         
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
-        $userOrgQuery = Doctrine_Query::create()
-                        ->select('o.name, o.nickname, o.orgType, s.type AS sysType')
-                        ->from('Organization o')
-                        ->innerJoin('o.Users u')
-                        ->leftJoin('o.System s')
-                        ->where('u.id = ?', $this->_me->id)
-                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        if ('root' == Zend_Auth::getInstance()->getIdentity()) {
+            $userOrgQuery = Doctrine_Query::create()
+                            ->select('o.name, o.nickname, o.orgType, s.type AS sysType')
+                            ->from('Organization o')
+                            ->leftJoin('o.System s')
+                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        } else {
+            $userOrgQuery = Doctrine_Query::create()
+                            ->select('o.name, o.nickname, o.orgType, s.type AS sysType')
+                            ->from('Organization o')
+                            ->innerJoin('o.Users u')
+                            ->leftJoin('o.System s')
+                            ->where('u.id = ?', $this->_me->id)
+                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        }
         $orgTree = Doctrine::getTable('Organization')->getTree();
         $orgTree->setBaseQuery($userOrgQuery);
         $organizations = $orgTree->fetchTree();

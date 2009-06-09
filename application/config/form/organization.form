@@ -14,28 +14,30 @@ elementFilters.trim = "StringTrim"
 elementFilters.tags = "StripTags"
 
 elements.parent.type = "select"
-elements.parent.options.label = "Organization Parent Name"
+elements.parent.options.label = "Parent Organization"
 elements.parent.options.validators.strlen.validator = "StringLength"
 elements.parent.options.validators.strlen.options.min = "1"
 elements.parent.options.validators.strlen.options.max = "10"
 displayGroups.organization.elements.parent = "parent"
 
 elements.name.type = "text"
-elements.name.options.label = "Organization Name"
+elements.name.options.label = "Name"
 elements.name.options.validators.alnum.validator = "NotEmpty"
 elements.name.options.required = true
 displayGroups.organization.elements.name = "name"
 
 elements.nickname.type = "text"
-elements.nickname.options.label = "Organization nickname"
+elements.nickname.options.label = "Acronym"
 elements.nickname.options.validators.alnum.validator = "NotEmpty"
+elements.nickname.options.tooltip = "Each organization must have a unique acronym. Acronyms are used in reports to uniquely identify an organization or information system while also conserving space on the page."
 elements.nickname.options.required = true
 displayGroups.organization.elements.nickname = "nickname"
 
 elements.orgType.type = "select"
-elements.orgType.options.label = "type"
+elements.orgType.options.label = "Type"
 elements.orgType.options.validators.alnum.validator = "NotEmpty"
 elements.orgType.options.validators.strlen.validator = "StringLength"
+elements.orgType.options.tooltip = "<p><b>Agency:</b> Represents the entire agency or department. This is the largest unit that is reported to OMB. We recommend that you only configure one agency.</p><p><b>Bureau:</b> Bureaus are the second largest unit that are reported to OMB. The bureaus' FISMA report numbers will be rolled up when producing the agency's FISMA report.</p><p><b>Organization:</b> Organizations are a free-form type of object in OpenFISMA that allows you to customize the way you organize and report on information systems. An organization will automatically roll up statistics for all of the organizations and information systems that are contained inside of it, but it will not be reported to OMB as a separate entity.</p>"
 displayGroups.organization.elements.orgType = "orgType"
 
 elements.description.type = "textarea"
