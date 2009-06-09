@@ -1,11 +1,11 @@
 <?php
 $operation = '';
-if ($this->acl->isAllowed('admin_organizations','update')) {
+//if ($this->acl->isAllowed('admin_organizations','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
-}
-if ($this->acl->isAllowed('admin_organizations','delete')) {
+//}
+//if ($this->acl->isAllowed('admin_organizations','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
-}
+//}
 Fisma_Format_Section::startSection("Organization Information</b> $operation"); ?>
 
 <div>

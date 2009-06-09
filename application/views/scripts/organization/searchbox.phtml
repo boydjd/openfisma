@@ -1,22 +1,11 @@
 <table class="searchFilters">
     <tbody>
         <tr>
-            <th>[<a href="/panel/organization/sub/list">Organization List</a>] (total: <?php echo 
-$this->total;?>)</th>
-            <?php if($this->acl->isAllowed('admin_organizations', 'create')) { ?>
-            <th>[<a href="/panel/organization/sub/create" title="add new Organizations">Add 
-Organization</a>]</th>
-            <?php } ?>
-            <th>
-                <table align="center">
-                    <tbody>
-                        <tr>
-                            <td><b>Page:&nbsp;</b></td>
-                            <td><?php echo $this->links['all'];?></td>
-                            <td>|</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <th>[<a href="/panel/organization/sub/list">Organization List</a>] 
+            <?php if (!empty($this->total)) { ?>(total: <?php echo $this->total;?>) <?php } ?></th>
+            <?php //if($this->acl->isAllowed('admin_organizations', 'create')) { ?>
+            <th>[<a href="/panel/organization/sub/create" title="add new Organizations">Add Organization</a>]</th>
+            <?php //} ?>
             </th>
             <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization')) { ?>
             <th>
@@ -25,7 +14,7 @@ Organization</a>]</th>
                     <tbody>
                         <tr>
                             <td><b>Query:&nbsp;</b></td>
-                            <td><input name="qv" value="<?php echo $this->qv;?>" title="Input your query value" size="20" maxlength="40" type="text"></td>
+                            <td><input name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text"></td>
 
                              <td><input value="Search" title="submit your request" type="submit"></td>
                         </tr>

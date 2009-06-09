@@ -1,32 +1,71 @@
-<?php Fisma_Format_Section::startSection("Organization List"); ?>
+<?php Fisma_Format_Section::startSection("Organization List <span id='searchResultsTotalFound'></span>"); ?>
 <div id="list"></div>
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"id", label:"id",hidden: true}
+    {key:"id", label:"id", hidden: true}
     ,{key:"name", label:"Organization Name", sortable: true, hidden: false}
     ,{key:"nickname", label:"Nickname", sortable: true, hidden: false}
+    ,{key:"orgType", label:"type", sortable: true, hidden: false}
 ];
 
-    var dataSource = { rows: [
-    <?php foreach ($this->organization_list as $row) {
-          if (!isset($i)) { $i = true; } else { echo ','; } ?>
-          {<?php  foreach (array('id', 'name', 'nickname') as $val) { 
-                    if (!isset($n)) { $n = true; } else { echo ','; }
-                    echo $val . ":'" . $row[$val] . "'";
-                  }
-                unset($n); ?>}
-    <?php } unset($i); ?> ] };
-    var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
     
+        // Build custom request
+        var request = "/sortby/" + sort +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        return request;
+    };
+
+    // DataSource instance
+    var myDataSource = new YAHOO.util.DataSource("/panel/organization/sub/list/format/json");
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
     // DataTable configuration
     var myConfigs = {
-        dynamicData: false
+        //dynamicData: false
+        initialRequest: "/sortby/id/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['perPage']?>",
+        dynamicData: true, 
+        sortedBy : {key:"name", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:<?php echo $this->pageInfo['perPage']?>,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ), 
+        generateRequest : myRequestBuilder
     };
     var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        if (!searchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            searchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if ($this->acl->isAllowed('admin_organizations','read')) { ?>
+    <?php //if ($this->acl->isAllowed('admin_organizations','read')) { ?>
     myDataTable.subscribe("rowClickEvent", 
         function (oArgs) {
             var elTarget = oArgs.target;
@@ -34,6 +73,6 @@ var myColumnDefs = [
             document.location = "/panel/organization/sub/view/v/view/id/" + oRecord.getData("id");
         }
     );
-    <?php }?>
+    <?php //}?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
