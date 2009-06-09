@@ -37,9 +37,6 @@ class Notification extends BaseNotification
     const POAM_CLOSED = 16;
     
     const EVIDENCE_UPLOAD = 17;
-    const EVIDENCE_APPROVAL_1ST = 18;
-    const EVIDENCE_APPROVAL_2ND = 19;
-    const EVIDENCE_APPROVAL_3RD = 20;
     const EVIDENCE_DENIED = 51;
     
     const ACCOUNT_MODIFIED = 21;
