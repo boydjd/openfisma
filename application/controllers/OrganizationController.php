@@ -34,25 +34,11 @@
 class OrganizationController extends SecurityController
 {
     private $_paging = array(
-        'mode' => 'Sliding',
-        'append' => false,
-        'urlVar' => 'p',
         'path' => '',
         'currentPage' => 1,
-        'perPage' => 20,
-        'totalItems' => 0
+        'perPage' => 10,
     );
-
-    /**
-     * @todo english
-     * init() - Initialize 
-     */
-    public function init()
-    {
-        parent::init();
-        $this->_organization = new Organization();
-    }
-
+    
     /**
      * @todo english
      * Invoked before each Action
@@ -60,45 +46,56 @@ class OrganizationController extends SecurityController
     public function preDispatch()
     {
         $req = $this->getRequest();
-        $this->_pagingBasePath = $req->getBaseUrl()
-                                   . '/panel/organization/sub/list';
         $this->_paging['currentPage'] = $req->getParam('p', 1);
     }
-
+    
     /**
      * Returns the standard form for creating, reading, and
      * updating organizations.
-     * @todo filter the organizations belong to current organization
      * 
-     * @param Object $organization current recode of organization
+     * @param Object $currOrg current recode of organization
      * @return Zend_Form
      */
-    private function _getOrganizationForm($organization = null)
+    private function _getOrganizationForm($currOrg = null)
     {
         $form = Fisma_Form_Manager::loadForm('organization');
         
-        $organizationTreeObject = Doctrine::getTable('organization')->getTree();
-        $q = Doctrine_Query::create()
-                ->select('o.*')
-                ->from('Organization o')
-                ->where('o.orgType IS NULL OR o.orgType != "system"');
-        $organizationTreeObject->setBaseQuery($q);
-        $organizationTree = $organizationTreeObject->fetchTree();
-        if (!empty($organizationTree)) {
-            foreach ($organizationTree as $organization) {
-                $value = $organization['id'];
-                $text = str_repeat('--', $organization['level']) . $organization['name'];
-                $form->getElement('parent')->addMultiOptions(array($value => $text));
-            }
-        } else {
-            $form->getElement('parent')->addMultiOptions(array(0 => 'NONE'));
+        if ($currOrg == null) {
+            $currOrg = new Organization();
         }
         // get all kinds of orgType
-        $orgTypeArray = $this->_organization->getTable()->getEnumValues('orgType');
+        $orgTypeArray = $currOrg->getTable()->getEnumValues('orgType');
         // except 'system' type
         unset($orgTypeArray[array_search('system', $orgTypeArray)]);
         $form->getElement('orgType')->addMultiOptions(array_combine($orgTypeArray, $orgTypeArray));
         
+        // if the organization is root, then you haven't chance to change its parent
+        if ($currOrg->getNode()->isRoot()) {
+            // remove the column
+            $form->removeElement('parent');
+        } else {
+            $organizationTreeObject = Doctrine::getTable('organization')->getTree();
+            $orgArray = $currOrg->toArray();
+            $q = Doctrine_Query::create()
+                    ->select('o.*')
+                    ->from('Organization o')
+                    ->where('o.orgType != "system"')
+                    // filter the organizations which belongs to the current organization and itself
+                    ->andWhere('o.lft < ? OR o.rgt > ?', array($orgArray['lft'], $orgArray['rgt']));
+            $organizationTreeObject->setBaseQuery($q);
+            $organizationTree = $organizationTreeObject->fetchTree();
+            if (!empty($organizationTree)) {
+                foreach ($organizationTree as $organization) {
+                    $value = $organization['id'];
+                    $text = str_repeat('--', $organization['level']) . $organization['name'];
+                    $form->getElement('parent')->addMultiOptions(array($value => $text));
+                }
+                $form->getElement('parent')->setValue($currOrg->getNode()->getParent()->id);
+            } else {
+                // condition: no organization in DB
+                $form->getElement('parent')->addMultiOptions(array(0 => 'NONE'));
+            }
+        }
         return Fisma_Form_Manager::prepareForm($form);
     }
 
@@ -110,17 +107,10 @@ class OrganizationController extends SecurityController
         /**
          * @todo add acl control
          */
-        //$this->_acl->requirePrivilege('admin_organizations', 'read');
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-
-        $qv = trim($this->_request->getParam('qv'));
-        if (!empty($qv)) {
-            $this->_paging['fileName'] .= '/qv/'.$qv;
-        }
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $this->_paging['totalItems']);
-        $this->view->assign('links', $pager->getLinks());
+        //Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
+        
+        $keywords = trim($this->_request->getParam('keywords'));
+        $this->view->assign('keywords', $keywords);
         $this->render('searchbox');
     }
 
@@ -132,37 +122,55 @@ class OrganizationController extends SecurityController
         /**
          * @todo add acl control
          */
-        //$this->_acl->requirePrivilege('admin_organizations', 'read');
-        $value = trim($this->_request->getParam('qv'));
-
-        $q = Doctrine_Query::create()
-             ->select('o.*, s.*')
-             ->from('Organization o')
-             ->where('o.orgType IS NULL OR ')
-             ->orWhere('o.orgType != ?', 'system')
-             ->orderBy('o.name ASC')
-             ->limit($this->_paging['perPage'])
-             ->offset(($this->_paging['currentPage']-1) * $this->_paging['perPage']);
-
-        if (!empty($value)) {
-            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            //@todo english  get search results in ids
-            $organizationIds = $cache->load($this->_me->id . '_organization');
-            if (empty($organizationIds)) {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $organizationIds = array(-1);
+        //Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
+        $value = trim($this->_request->getParam('keywords'));
+        $format = $this->_request->getParam('format');
+        // switch normal response or ajax response
+        if ($format == 'json') {
+            $sortBy = $this->_request->getParam('sortby', 'name');
+            $order = $this->_request->getParam('order', 'ASC');
+            
+            $q = Doctrine_Query::create()
+                 ->select('o.*, s.*')
+                 ->from('Organization o')
+                 ->where('o.orgType IS NULL')
+                 ->orWhere('o.orgType != ?', 'system')
+                 ->orderBy("o.$sortBy $order")
+                 ->limit($this->_paging['perPage'])
+                 ->offset(($this->_paging['currentPage'] - 1) * $this->_paging['perPage']);
+    
+            if (!empty($value)) {
+                $cache = $this->getHelper('SearchQuery')->getCacheInstance();
+                //@todo english  get search results in ids
+                $organizationIds = $cache->load($this->_me->id . '_organization');
+                if (empty($organizationIds)) {
+                    //@todo english  set ids as a not exist value in database if search results is none.
+                    $organizationIds = array(-1);
+                }
+                $q->whereIn('o.id', $organizationIds);
             }
-            $q->whereIn('o.id', $organizationIds);
+            $totalRecords = $q->count();
+            $organizations = $q->execute();
+            
+            $tableData = array('table' => array(
+                'recordsReturned' => count($organizations->toArray()),
+                'totalRecords' => $totalRecords,
+                'startIndex' => ($this->_paging['currentPage'] - 1) * $this->_paging['perPage'],
+                'sort' => $sortBy,
+                'dir' => $order,
+                'pageSize' => $this->_paging['perPage'],
+                'records' => $organizations->toArray()
+            ));
+            
+            $this->_helper->layout->setLayout('ajax');
+            $this->_helper->viewRenderer->setNoRender();
+            echo json_encode($tableData);
+        } else {
+            // Display searchbox template
+            $this->searchbox();
+            $this->view->assign('pageInfo', $this->_paging);
+            $this->render('list');
         }
-        $this->_paging['totalItems'] = $q->count();
-        $organizations = $q->execute();
-        
-        $this->view->assign('total', $this->_paging['totalItems']);
-        $this->view->assign('organization_list', $organizations);
-        
-        //Display searchbox template
-        $this->searchbox();
-        $this->render('list');
     }
 
     /**
@@ -173,23 +181,25 @@ class OrganizationController extends SecurityController
         /**
          * @todo add acl control
          */
-        //$this->_acl->requirePrivilege('admin_organizations', 'read');
+        //Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
         //Display searchbox template
         $this->searchbox();
         
-        $form = $this->getOrganizationForm();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'view');
-
-        $organizationObj = $this->_organization->getTable()->find($id);
-        if ($organizationObj->getNode()->isRoot()) {
-            $form->removeElement('parent');
-        }
         
-        if (!$organizationObj) {
-            throw new Fisma_Exception_General('The system is not existed.');
+        $organization = new Organization();
+        $organization = $organization->getTable()->find($id);
+        
+        $form = $this->_getOrganizationForm($organization);
+        
+        if (!$organization) {
+            /**
+             * @todo english 
+             */
+            throw new Fisma_Exception_General('The organization is not existed.');
         } else {
-            $organization = $organizationObj->toArray();
+            $organization = $organization->toArray();
         }
         
         if ($v == 'edit') {
@@ -217,41 +227,42 @@ class OrganizationController extends SecurityController
         /**
          * @todo add acl control
          */
-        //$this->_acl->requirePrivilege('admin_organizations', 'create');
+        //Fisma_Acl::requirePrivilege('admin_organizations', 'create'); 
+        $form = $this->_getOrganizationForm();
+        $orgValues = $this->_request->getPost();
         
-        $form = $this->getOrganizationForm();
-        $organization = $this->_request->getPost();
-        if ($organization) {
-            if ($form->isValid($organization)) {
-                $organization = $form->getValues();
-                $this->_organization->name = $organization['name'];
-                $this->_organization->nickname = $organization['nickname'];
-                $this->_organization->orgType = $organization['orgType'];
-                $this->_organization->description = $organization['description'];
-                $this->_organization->save();
+        if ($orgValues) {
+            if ($form->isValid($orgValues)) {
+                $orgValues = $form->getValues();
+                $organization = new Organization();
+                $organization->merge($orgValues);
                 
-                if ((int)$organization['parent'] == 0) {
-                    $treeObject = Doctrine::getTable('Organization')->getTree();
-                    $treeObject->createRoot($this->_organization);
-                } else {
-                    $this->_organization->getNode()
-                         ->insertAsLastChildOf($this->_organization->getTable()->find($organization['parent']));
-                }
-                if (empty($this->_organization->id)) {
+                // save the data, if failure then return false
+                if (!$organization->trySave()) {
                     $msg = "Failure in creation";
                     $model = self::M_WARNING;
                 } else {
+                    // the organization hasn't parent, so it is a root
+                    if ((int)$orgValues['parent'] == 0) {
+                        $treeObject = Doctrine::getTable('Organization')->getTree();
+                        $treeObject->createRoot($organization);
+                    // the organization which has parent
+                    } else {
+                        // insert as a child to a specify parent organization
+                        $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
+                    }
+                    
                     $this->_helper->addNotification(Notification::ORGANIZATION_CREATED,
-                                                    $this->_me->username, $this->_organization->id);
+                                                    $this->_me->username, $organization->id);
                     //Create a organization index
                     if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
-                        $this->_helper->updateIndex('organization', $this->_organization->id, $this->_organization->toArray());
+                        $this->_helper->updateIndex('organization', $organization->id, $organization->toArray());
                     }
                     $msg = "The organization is created";
                     $model = self::M_NOTICE;
                 }
                 $this->message($msg, $model);
-                $this->_forward('view', null, null, array('id' => $this->_organization->id));
+                $this->_forward('view', null, null, array('id' => $organization->id));
                 return;
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
@@ -259,6 +270,7 @@ class OrganizationController extends SecurityController
                 $this->message("Unable to create organization:<br>$errorString", self::M_WARNING);
             }
         }
+        
         //Display searchbox template
         $this->searchbox();
 
@@ -279,7 +291,7 @@ class OrganizationController extends SecurityController
     }
 
     /**
-     * Updates account information after submitting an edit form.
+     * Update organization information after submitting an edit form.
      *
      * @todo cleanup this function
      */
@@ -288,43 +300,47 @@ class OrganizationController extends SecurityController
         /**
          * @todo add acl control
          */
-        //$this->_acl->requirePrivilege('admin_organizations', 'update');
+        //Fisma_Acl::requirePrivilege('admin_organizations', 'update'); 
+        $id = $this->_request->getParam('id', 0);
+        $organization = new Organization();
+        $organization = $organization->getTable()->find($id);
         
-        $id = $this->_request->getParam('id');
-        if (empty($id)) {
+        if (!$organization) {
+            /**
+             * @todo english 
+             */
             throw new Exception_General("The organization posted is not a valid organization");
         }
         
-        $this->_organization = $this->_organization->getTable()->find($id);
-        $form = $this->getOrganizationForm();
-        $formValid = $form->isValid($_POST);
+        $form = $this->_getOrganizationForm($organization);
+        $orgValues = $this->_request->getPost();
         
-        if ($formValid) {
+        if ($form->isValid($orgValues)) {
             $isModify = false;
-            $organization = $form->getValues();
-            $this->_organization->name = $organization['name'];
-            $this->_organization->nickname = $organization['nickname'];
-            $this->_organization->orgType = $organization['orgType'];
-            $this->_organization->description = $organization['description'];
+            $orgValues = $form->getValues();
+            $organization->merge($orgValues);
 
-            if ($this->_organization->isModified()) {
-                $this->_organization->save();
+            if ($organization->isModified()) {
+                $organization->save();
                 $isModify = true;
             }
+            // if the organization is not the root and 
+            // its parent id is not equal the value submited
             
-            if (!$this->_organization->getNode()->isRoot() && 
-                    (int)$organization['parent'] != $this->_organization->getNode()->getParent()->id) {
-                $this->_organization->getNode()
-                ->moveAsLastChildOf(Doctrine::getTable('Organization')->find($organization['parent']));
+            if (!$organization->getNode()->isRoot() && 
+                    (int)$orgValues['parent'] != $organization->getNode()->getParent()->id) {
+                // then move this organization to an other parent node
+                $organization->getNode()
+                ->moveAsLastChildOf(Doctrine::getTable('Organization')->find($orgValues['parent']));
                 $isModify = true;
             }
             
             if ($isModify) {
                 $this->_helper->addNotification(Notification::ORGANIZATION_MODIFIED, 
-                                                $this->_me->username, $this->_organization->id);
+                                                $this->_me->username, $organization->id);
                 //Update this organization index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
-                    $this->_helper->updateIndex('organization', $id, $organization);
+                    $this->_helper->updateIndex('organization', $id, $organization->toArray());
                 }
                 $msg = "The organization is saved";
                 $model = self::M_NOTICE;
@@ -333,7 +349,7 @@ class OrganizationController extends SecurityController
                 $model = self::M_WARNING;
             }
             $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $id));
+            $this->_forward('view', null, null, array('id' => $organization->id));
         } else {
             $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
