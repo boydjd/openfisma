@@ -270,20 +270,38 @@ div.subform {
 
 table.fisma_crud {
     margin: 0px 15px;
-    background-color: #e3e3e3;
-    border: 1px solid #bebebe;
+    background-color: #f0f0f0;
+    border: 1px dotted #c0c0c0;
 }
 
-table.fisma_crud tr td {
+table.fisma_crud tr td, table.fisma_crud tr td input {
     font-family: 'Verdana', 'Arial', 'Helvetica';
-    color: #44637a;
+    color: #404040;
     font-weight: bold;
     font-size: 12px;
     padding: 3px 5px;
 }
 
+/* 
+This class indicates that the item should have a tooltip associated with it.
+The tooltip itself is added with YUI.
+*/
+span.tooltip {
+	padding: 0px 2px 2px 22px;
+	background: url(/images/tooltip.png) no-repeat;
+}
+
+/* This is the style for the tooltip itself. The style must be marked !important
+   so that YUI won't override it.
+*/
+.yui-tt .bd {
+    border: 1px solid #c0dea7 ! important;
+    background-color: #dbfdbe ! important;
+}
+
 table.fisma_crud tr td:first-child {
     text-align: right;
+    background-repeat: no-repeat;
 }
 
 
