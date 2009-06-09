@@ -2,6 +2,9 @@ Evaluation:
     columns:
         name: string(255)
         nickname: string(255)
+        next: 
+            type: integer
+            comment: Relates to itself and points to the next Evaluation record
         precedence: 
             type: integer
             comment: The order in which this evaluation is positioned relative to the others in its group, starting at 0
@@ -13,6 +16,11 @@ Evaluation:
         privilegeId: integer
 
     relations:
+        NextEvaluation:
+            class: Evaluation
+            local: next
+            foreign: id
+            foreignAlias: Evaluations
         Event:
             local: eventId
             foreign: id

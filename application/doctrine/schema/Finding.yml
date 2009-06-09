@@ -109,6 +109,10 @@ Finding:
             local: assignedToUserId
             foreign: id
             foreignAlias: Findings
+        CurrentEvaluation:
+            class: Evaluation
+            local: currentEvaluationId
+            foreign: id
 
     actAs:
         Timestampable:
