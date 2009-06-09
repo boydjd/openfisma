@@ -40,7 +40,7 @@ YAHOO.fisma.TreeTable.render = function (tableId, tree) {
         controlImage = node.expanded ? "minus.png" : "plus.png";
         control = needsLink ? "<img class=\"control\" id=\"" + node.nickname + "Img\" src=\"/images/" + controlImage + "\">" : "<img class=\"control\" id=\"" + node.nickname + "Img\" src=\"/images/leaf_node.png\">";
 
-        firstCell.innerHTML = "<div class=\"treeTable" + node.level + "\">" + linkOpen + control + "<img class=\"icon\" src=\"/images/" + node.orgType + ".png\">" + node.label + '<br><i>' + node.orgType + '</i>' + linkClose;
+        firstCell.innerHTML = "<div class=\"treeTable" + node.level + "\">" + linkOpen + control + "<img class=\"icon\" src=\"/images/" + node.orgType + ".png\">" + node.label + '<br><i>' + node.orgType + '</i>' + linkClose + '</div>';
 
         // If there are overdue items, then the first cell needs to expand to span two rows
         var i = 1;

@@ -5,7 +5,7 @@ YAHOO.util.Event.onDOMReady(function () {
                                     {
                                         success: function(o) {
                                             var json = YAHOO.lang.JSON.parse(o.responseText);
-                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);                                
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);
                                         },
                                         failure: function(o) {
                                             alert('Unable to load finding summary: ' + o.statusText);
@@ -35,11 +35,17 @@ print $collapseAll;
         <?php // foreach ?>
         <th>NEW</th>
         <th>DRAFT</th>
-        <th>MITIGATION ISSO</th>
-        <th>MITIGATION IVV</th>
+        <?php 
+            foreach ($this->mitigationEvaluations as $evaluation) {
+                print "<th>$evaluation->nickname</th>";
+            }
+        ?>
         <th>EN</th>
-        <th>EVIDENCE ISSO</th>
-        <th>EVIDENCE IVV</th>
+        <?php 
+            foreach ($this->evidenceEvaluations as $evaluation) {
+                print "<th>$evaluation->nickname</th>";
+            }
+        ?>        
         <th>CLOSED</th>
         <th>TOTAL</th>
     </tr>

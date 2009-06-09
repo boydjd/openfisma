@@ -134,6 +134,18 @@ class RemediationController extends PoamBaseController
     public function summaryAction()
     {
         Fisma_Acl::requirePrivilege('findings', 'read', '*');
+        
+        $mitigationEvaluationQuery = Doctrine_Query::create()
+                                     ->from('Evaluation e')
+                                     ->where('approvalGroup = \'action\'')
+                                     ->orderBy('e.precedence');
+        $this->view->mitigationEvaluations = $mitigationEvaluationQuery->execute();
+        
+        $evidenceEvaluationQuery = Doctrine_Query::create()
+                                     ->from('Evaluation e')
+                                     ->where('approvalGroup = \'evidence\'')
+                                     ->orderBy('e.precedence');
+        $this->view->evidenceEvaluations = $evidenceEvaluationQuery->execute();
     }
     
     /**
