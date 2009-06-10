@@ -62,6 +62,7 @@ class Finding extends BaseFinding
             //@todo english
             throw new Fisma_Exception_General("The finding can't be approved");
         }
+
         $findingEvaluation = new FindingEvaluation();
 
         if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
@@ -72,37 +73,29 @@ class Finding extends BaseFinding
         $findingEvaluation->decision   = 'APPROVED';
         $findingEvaluation->User       = $user;
         $findingEvaluation->save();
-
+        
         switch ($this->status) {
             case 'MSA':
-                $mitigationApprovedCount = $this->CurrentEvaluation->getTable()
-                                            ->findByDql('approvalGroup = "action"')
-                                            ->count();
-                $ret = Doctrine_Query::create()->select('e.precedence')
-                                               ->from('Evaluation e')
-                                               ->where('e.approvalGroup = "action"')
-                                               ->orderBy('e.precedence DESC')
-                                               ->limit(1)
-                                               ->execute();
-                $lastPrecedence = $ret[0]->precedence;
-                if ($this->CurrentEvaluation->precedence == $lastPrecedence) {
+                if (is_null($this->CurrentEvaluation->NextEvaluation)) {
+                    $this->CurrentEvaluation = null;
                     $this->status = 'EN';
                 }
                 break;
             case 'EA':
-                $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
-                if (is_null($this->CurrentEvaluation->id)) {
+                if (is_null($this->CurrentEvaluation->NextEvaluation)) {
+                    $this->CurrentEvaluation = null;
                     $this->status = 'CLOSED';
                 }
                 break;
         }
+        $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
         $this->save();
     }
 
     /**
      * Deny the current evaluation
      *
-     * @param Object $user a specific user
+     * @param $user a specific user
      * @param string $comment deny comment
      */
     public function deny(User $user, $comment)

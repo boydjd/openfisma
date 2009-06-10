@@ -2,7 +2,7 @@ Evaluation:
     columns:
         name: string(255)
         nickname: string(255)
-        next: 
+        nextId: 
             type: integer
             comment: Relates to itself and points to the next Evaluation record
         precedence: 
@@ -18,9 +18,9 @@ Evaluation:
     relations:
         NextEvaluation:
             class: Evaluation
-            local: next
+            local: nextId
             foreign: id
-            foreignAlias: Evaluations
+            foreignAlias: PreviousEvaluation
         Event:
             local: eventId
             foreign: id

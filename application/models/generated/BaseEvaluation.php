@@ -7,7 +7,7 @@
  * 
  * @property string $name
  * @property string $nickname
- * @property integer $next
+ * @property integer $nextId
  * @property integer $precedence
  * @property enum $approvalGroup
  * @property integer $eventId
@@ -15,7 +15,7 @@
  * @property Evaluation $NextEvaluation
  * @property Event $Event
  * @property Privilege $Privilege
- * @property Doctrine_Collection $Evaluations
+ * @property Doctrine_Collection $PreviousEvaluation
  * @property Doctrine_Collection $Finding
  * @property Doctrine_Collection $FindingEvaluations
  * 
@@ -31,7 +31,7 @@ abstract class BaseEvaluation extends Doctrine_Record
         $this->setTableName('evaluation');
         $this->hasColumn('name', 'string', 255, array('type' => 'string', 'length' => '255'));
         $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('next', 'integer', null, array('type' => 'integer', 'comment' => 'Relates to itself and points to the next Evaluation record'));
+        $this->hasColumn('nextId', 'integer', null, array('type' => 'integer', 'comment' => 'Relates to itself and points to the next Evaluation record'));
         $this->hasColumn('precedence', 'integer', null, array('type' => 'integer', 'comment' => 'The order in which this evaluation is positioned relative to the others in its group, starting at 0'));
         $this->hasColumn('approvalGroup', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'action', 1 => 'evidence'), 'comment' => 'Which approval group this evaluation belongs to. "Action" is short for course of action and "evidence" refers to evidence artifacts.'));
         $this->hasColumn('eventId', 'integer', null, array('type' => 'integer'));
@@ -40,7 +40,7 @@ abstract class BaseEvaluation extends Doctrine_Record
 
     public function setUp()
     {
-        $this->hasOne('Evaluation as NextEvaluation', array('local' => 'next',
+        $this->hasOne('Evaluation as NextEvaluation', array('local' => 'nextId',
                                                             'foreign' => 'id'));
 
         $this->hasOne('Event', array('local' => 'eventId',
@@ -49,8 +49,8 @@ abstract class BaseEvaluation extends Doctrine_Record
         $this->hasOne('Privilege', array('local' => 'privilegeId',
                                          'foreign' => 'id'));
 
-        $this->hasMany('Evaluation as Evaluations', array('local' => 'id',
-                                                          'foreign' => 'next'));
+        $this->hasMany('Evaluation as PreviousEvaluation', array('local' => 'id',
+                                                                 'foreign' => 'nextId'));
 
         $this->hasMany('Finding', array('local' => 'id',
                                         'foreign' => 'currentEvaluationId'));
