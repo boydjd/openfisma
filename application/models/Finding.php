@@ -87,9 +87,12 @@ class Finding extends BaseFinding
             //@todo english
             throw new Fisma_Exception_General("The finding can't be approved");
         }
+        
+        //Start Doctrine Transaction
+        $conn = Doctrine_Manager::connection();
+        $conn->beginTransaction();
 
         $findingEvaluation = new FindingEvaluation();
-
         if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
             $findingEvaluation->Evidence   = $this->Evidence->getLast();
         }
@@ -115,6 +118,8 @@ class Finding extends BaseFinding
         }
         $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
         $this->save();
+        $findingEvaluation->save();
+        $conn->commit();
     }
 
     /**
@@ -130,8 +135,11 @@ class Finding extends BaseFinding
             throw new Fisma_Exception_General("The finding can't be denied");
         }
 
-        $findingEvaluation = new FindingEvaluation();
+        //Start Doctrine Transaction
+        $conn = Doctrine_Manager::connection();
+        $conn->beginTransaction();
 
+        $findingEvaluation = new FindingEvaluation();
         if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
             $findingEvaluation->Evidence   = $this->Evidence->getLast();
         }
@@ -153,6 +161,7 @@ class Finding extends BaseFinding
                 break;
         }
         $this->save();
+        $conn->commit();
     }
 
 }

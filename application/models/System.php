@@ -9,9 +9,49 @@
  * @author     ##NAME## <##EMAIL##>
  * @version    SVN: $Id: Builder.php 5441 2009-01-30 22:58:43Z jwage $
  */
-require_once 'listener/System.php';
 class System extends BaseSystem
 {
+    /**
+     * Map the values to Organization table
+     */
+    public function construct()
+    {
+        $this->mapValue('name');
+        $this->mapValue('nickname');
+        $this->mapValue('description');
+    }
+
+    /**
+     * Create the organization with the system's name,nickname...after
+     * the system attributs have been saved.
+     *
+     * @todo transaction it
+     * @todo The postInsert and postSave will be called in sequence. There should be another way.
+     */
+    public function postInsert()
+    {
+        $organization = new Organization();
+        $organization->System      = $this;
+        $organization->name        = $this->name;
+        $organization->nickname    = $this->nickname;
+        $organization->description = $this->description;
+        $organization->orgType     = 'system';
+        $organization->save();
+    }
+
+    /**
+     * Update the organization with the system's name, nickname...
+     * accodingly after the system's attributes saved.
+     */
+    public function postSave()
+    {
+        $organization = $this->Organization[0];
+        $organization->name = $this->name;
+        $organization->nickname = $this->nickname;
+        $organization->description = $this->description;
+        $organization->save();
+    }
+
     /**
      * Confidentiality, Integrity, Availability
      */

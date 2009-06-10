@@ -28,7 +28,6 @@
  */
 
 require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
-
 /**
  * Unit tests for the System model
  *
@@ -36,17 +35,6 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
  */
 class Test_Model_System extends Test_FismaUnitTest
 {
-    private $_system = null;
-
-    public function setUp()
-    {
-        $system = new System();
-        $system->mapValue('description');
-        $system->mapValue('name');
-        $system->mapValue('nickname');
-        $this->_system = $system;
-    }
-
     /**
      * Test the method of getting security category level
      * 
@@ -79,4 +67,48 @@ class Test_Model_System extends Test_FismaUnitTest
         $this->assertEquals($system->fipsSecurityCategory(), System::CIA_MODERATE);
         
     }
+
+    public function testSave()
+    {
+        $system = new System();
+        $system->type = 'gss';
+        $system->confidentiality = 'high';
+        $system->integrity       = 'moderate';
+        $system->availability    = 'low';
+        $system->description     = 'description';
+        $system->name            = 'name';
+        $system->nickname        = 'nickname';
+        $system->save();
+
+        $organization = Doctrine::getTable('Organization')->findOneByName('name');
+        $this->assertEquals('description', $organization->description);
+        $this->assertEquals('name', $organization->name);
+        $this->assertEquals('nickname', $organization->nickname);
+    }
+
+    public function testUpdate()
+    {
+        $organization = Doctrine::getTable('Organization')->findOneByName('name');
+        if (!empty($organization)) {
+            $system = $organization->System;
+            $system->name = 'newname';
+            $system->nickname = 'newnick';
+            $system->description = 'new description';
+            $system->save();
+        }
+
+        $this->assertEquals('newname', $organization->name);
+        $this->assertEquals('newnick', $organization->nickname);
+        $this->assertEquals('new description', $organization->description);
+    }
+
+    public function testDelete()
+    {
+        $organization = Doctrine::getTable('Organization')->findOneByName('newname');
+        if (!empty($organization)) {
+            $organization->delete();
+        }
+        $this->assertEquals(false, Doctrine::getTable('Organization')->find($ret->id));
+    }
+
 }
