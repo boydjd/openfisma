@@ -39,9 +39,9 @@ class Fisma_Controller_Action_Helper_AddNotification extends Zend_Controller_Act
      * @param int $eventType The type of event
      * @param string $userName The name of the user who caused the event
      * @param int|string|array $records An ID or description of the object
-     * @param int $systemId The ID of the associated system, if applicable. Actually, it is organization id.
+     * @param int $orgSystemId The ID of the associated system, if applicable. Actually, it is organization id.
      */
-    public static function addNotification($eventType, $userName, $records, $systemId = null)
+    public static function addNotification($eventType, $userName, $records, $orgSystemId = null)
     {
         // Format the $records for inclusion in the event text.
         if (is_array($records)) {
@@ -63,7 +63,7 @@ class Fisma_Controller_Action_Helper_AddNotification extends Zend_Controller_Act
                      . "($record)";
 
         // Create notification records for all interested users
-        if ($systemId == null) {
+        if ($orgSystemId == null) {
             $userEvents = new UserEvent();
             $userEvents = $userEvents->getTable('UserEvent')->findByEventId($eventType);
         } else {
@@ -71,7 +71,7 @@ class Fisma_Controller_Action_Helper_AddNotification extends Zend_Controller_Act
                  ->select('ue.eventId, ue.userId')
                  ->from('UserEvent ue, UserOrganization uo')
                  ->where('ue.eventId = ?', $eventType)
-                 ->andWhere('uo.organizationId = ?', $systemId);
+                 ->andWhere('uo.organizationId = ?', $orgSystemId);
             $userEvents = $q->execute();
         }
         if (!$userEvents = $userEvents->toArray()) {
@@ -92,10 +92,10 @@ class Fisma_Controller_Action_Helper_AddNotification extends Zend_Controller_Act
      * @param int $eventType The type of event
      * @param string $userName The name of the user who caused the event
      * @param int|string|array $records An ID or description of the object
-     * @param int $systemId The ID of the associated system, if applicable
+     * @param int $orgSystemId The ID of the associated system, if applicable
      */
-    public function direct($eventType, $userName, $records, $systemId = null)
+    public function direct($eventType, $userName, $records, $orgSystemId = null)
     {
-        $this->addNotification($eventType, $userName, $records, $systemId);
+        $this->addNotification($eventType, $userName, $records, $orgSystemId);
     }
 }

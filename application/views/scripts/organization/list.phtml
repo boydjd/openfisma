@@ -19,7 +19,8 @@ var myColumnDefs = [
         var count = oState.pagination.rowsPerPage;
     
         // Build custom request
-        var request = "/sortby/" + sort +
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
                       "/count/" + count;
@@ -38,7 +39,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         //dynamicData: false
-        initialRequest: "/sortby/id/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['perPage']?>",
+        initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['perPage']?>",
         dynamicData: true, 
         sortedBy : {key:"name", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(

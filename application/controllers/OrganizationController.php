@@ -125,6 +125,8 @@ class OrganizationController extends SecurityController
         //Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
         $value = trim($this->_request->getParam('keywords'));
         $format = $this->_request->getParam('format');
+        $link = '';
+        
         // switch normal response or ajax response
         if ($format == 'json') {
             $sortBy = $this->_request->getParam('sortby', 'name');
@@ -140,6 +142,7 @@ class OrganizationController extends SecurityController
                  ->offset(($this->_paging['currentPage'] - 1) * $this->_paging['perPage']);
     
             if (!empty($value)) {
+                $this->_helper->searchQuery($value, 'organization');
                 $cache = $this->getHelper('SearchQuery')->getCacheInstance();
                 //@todo english  get search results in ids
                 $organizationIds = $cache->load($this->_me->id . '_organization');
@@ -166,9 +169,13 @@ class OrganizationController extends SecurityController
             $this->_helper->viewRenderer->setNoRender();
             echo json_encode($tableData);
         } else {
+            if (!empty($value)) {
+                $link .= '/keywords/' . $value;
+            }
             // Display searchbox template
             $this->searchbox();
             $this->view->assign('pageInfo', $this->_paging);
+            $this->view->assign('link', $link);
             $this->render('list');
         }
     }
