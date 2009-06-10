@@ -60,14 +60,21 @@ class OrganizationController extends SecurityController
     {
         $form = Fisma_Form_Manager::loadForm('organization');
         
+        // build base query
+        $q = Doctrine_Query::create()
+                ->select('o.*')
+                ->from('Organization o')
+                ->where('o.orgType != "system"');
+
         if ($currOrg == null) {
             $currOrg = new Organization();
+        } else {
+            $orgArray = $currOrg->toArray();
+            // filter the organizations which belongs to the current organization and itself
+            $q->andWhere('o.lft < ? OR o.rgt > ?', array($orgArray['lft'], $orgArray['rgt']));
+            // if the organization is specifted, than set the parent node.
+            $form->getElement('parent')->setValue($currOrg->getNode()->getParent()->id);
         }
-        // get all kinds of orgType
-        $orgTypeArray = $currOrg->getTable()->getEnumValues('orgType');
-        // except 'system' type
-        unset($orgTypeArray[array_search('system', $orgTypeArray)]);
-        $form->getElement('orgType')->addMultiOptions(array_combine($orgTypeArray, $orgTypeArray));
         
         // if the organization is root, then you haven't chance to change its parent
         if ($currOrg->getNode()->isRoot()) {
@@ -75,13 +82,6 @@ class OrganizationController extends SecurityController
             $form->removeElement('parent');
         } else {
             $organizationTreeObject = Doctrine::getTable('organization')->getTree();
-            $orgArray = $currOrg->toArray();
-            $q = Doctrine_Query::create()
-                    ->select('o.*')
-                    ->from('Organization o')
-                    ->where('o.orgType != "system"')
-                    // filter the organizations which belongs to the current organization and itself
-                    ->andWhere('o.lft < ? OR o.rgt > ?', array($orgArray['lft'], $orgArray['rgt']));
             $organizationTreeObject->setBaseQuery($q);
             $organizationTree = $organizationTreeObject->fetchTree();
             if (!empty($organizationTree)) {
@@ -90,12 +90,18 @@ class OrganizationController extends SecurityController
                     $text = str_repeat('--', $organization['level']) . $organization['name'];
                     $form->getElement('parent')->addMultiOptions(array($value => $text));
                 }
-                $form->getElement('parent')->setValue($currOrg->getNode()->getParent()->id);
             } else {
                 // condition: no organization in DB
                 $form->getElement('parent')->addMultiOptions(array(0 => 'NONE'));
             }
         }
+        
+        // get all kinds of orgType
+        $orgTypeArray = $currOrg->getTable()->getEnumValues('orgType');
+        // except 'system' type
+        unset($orgTypeArray[array_search('system', $orgTypeArray)]);
+        $form->getElement('orgType')->addMultiOptions(array_combine($orgTypeArray, $orgTypeArray));
+        
         return Fisma_Form_Manager::prepareForm($form);
     }
 
