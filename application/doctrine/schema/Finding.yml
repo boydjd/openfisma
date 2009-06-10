@@ -66,6 +66,9 @@ Finding:
         duplicateFindingId:
             type: integer
             comment: If this finding is a duplicate of an existing finding, then this is a foreign key to that finding; otherwise its null
+        responsibleOrganizationId:
+            type: integer
+            comment: Foreign key to the organization which is responsible for addressing this finding
         assetId:
             type: integer
             comment: Foreign key to the asset which this finding is against
@@ -89,6 +92,11 @@ Finding:
             foreign: id
         Asset:
             local: assetId
+            foreign: id
+            foreignAlias: Findings
+        ResponsibleOrganization:
+            class: Organization
+            local: responsibleOrganizationId
             foreign: id
             foreignAlias: Findings
         Source:

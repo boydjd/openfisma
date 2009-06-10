@@ -5,32 +5,27 @@ YAHOO.namespace ("fisma.TreeTable");
 YAHOO.fisma.TreeTable.treeRoot;
 
 // How many tree levels to display, by default
-YAHOO.fisma.TreeTable.defaultDisplayLevel = 1;
+YAHOO.fisma.TreeTable.defaultDisplayLevel = 2;
 
 YAHOO.fisma.TreeTable.render = function (tableId, tree) {
+    // Set the global tree root first, if necessary
     if (YAHOO.lang.isUndefined(YAHOO.fisma.TreeTable.treeRoot)) {
         YAHOO.fisma.TreeTable.treeRoot = tree;
     }
     var table = document.getElementById(tableId);
 
+    // Render each node at this level
     for (var nodeId in tree) {
         var node = tree[nodeId];
 
-        // Add a row to the table for this node
-        var newRow = table.insertRow(table.rows.length);
-        newRow.id = node.nickname;
-
-        // Based on the current depth, show/hide the new row and set the expanded attribute on the
-        // corresponding node
-        node.expanded = false;
-        if (node.level > YAHOO.fisma.TreeTable.defaultDisplayLevel) {
-            newRow.style.display = "none";
-        } else if (node.level < YAHOO.fisma.TreeTable.defaultDisplayLevel) {
-            node.expanded = true;
-        }
+        // Add two rows to the table for this node
+        var firstRow = table.insertRow(table.rows.length);
+        firstRow.id = node.nickname;
+        var secondRow = table.insertRow(table.rows.length);
+        secondRow.id = node.nickname + "2";
        
-        // Populate the new row with table cells
-        var firstCell = newRow.insertCell(0);
+        // The first cell of the first row is the system label
+        var firstCell = firstRow.insertCell(0);
 
         // @doctrine convert to YUI and remove innerHTML if possible
         // general cleanup is needed too
@@ -40,45 +35,49 @@ YAHOO.fisma.TreeTable.render = function (tableId, tree) {
         controlImage = node.expanded ? "minus.png" : "plus.png";
         control = needsLink ? "<img class=\"control\" id=\"" + node.nickname + "Img\" src=\"/images/" + controlImage + "\">" : "<img class=\"control\" id=\"" + node.nickname + "Img\" src=\"/images/leaf_node.png\">";
 
-        firstCell.innerHTML = "<div class=\"treeTable" + node.level + "\">" + linkOpen + control + "<img class=\"icon\" src=\"/images/" + node.orgType + ".png\">" + node.label + '<br><i>' + node.orgType + '</i>' + linkClose + '</div>';
+        firstCell.innerHTML = "<div class=\"treeTable" + node.level + "\">" + linkOpen + control + "<img class=\"icon\" src=\"/images/" + node.orgType + ".png\">" + node.label + '<br><i>' + node.orgTypeLabel + '</i>' + linkClose + '</div>';
 
-        // If there are overdue items, then the first cell needs to expand to span two rows
-        var i = 1;
-        if (!YAHOO.lang.isUndefined(node.overdue)) {
-            firstCell.rowSpan = "2";
-        }
+        // Determine which set of counts to show initially (single or all)
+        node.expanded = (node.level < YAHOO.fisma.TreeTable.defaultDisplayLevel - 1);
+        var ontime = node.expanded ? node.single_ontime : node.all_ontime;
+        var overdue = node.expanded ? node.single_overdue : node.all_overdue;
+        node.hasOverdue = YAHOO.fisma.TreeTable.arraySum(overdue) > 0;
 
-        // Insert cells for ontime findings
-        for (var c in node.ontime) {
-            cell = newRow.insertCell(i++);
-            if (c > node.ontime.length - 3) {
+        // The remaining cells on the first row are summary counts
+        var i = 1; // b/c the system label is in the first cell
+        for (var c in ontime) {
+            count = ontime[c];
+            cell = firstRow.insertCell(i++);
+            if (c == 'CLOSED' || c == 'TOTAL') {
                 // The last two colums don't have the ontime/overdue distinction
                 cell.className = "noDueDate";
-                
-                // The last two columns have rowspan=2 if there are overdue items
-                if (!YAHOO.lang.isUndefined(node.overdue)) {
-                    cell.rowSpan = "2";
-                }
             } else {
                 // The in between columns should have the ontime class
                 cell.className = 'onTime';                
             }
-            cell.appendChild(document.createTextNode("" + node.ontime[c]));
+            cell.appendChild(document.createTextNode("" + count));
         }
-    
-        // If there are overdue items, then add a new row to the table and insert cells for
-        // overdue findings
-        if (!YAHOO.lang.isUndefined(node.overdue)) {
-            var secondRow = table.insertRow(table.rows.length);
-            secondRow.id  = node.nickname + '2';
-            if (node.level > YAHOO.fisma.TreeTable.defaultDisplayLevel) {
-                secondRow.style.display = "none";
-            }
-            i = 0;
-            for (var c in node.overdue) {
-                cell = secondRow.insertCell(i++);
-                cell.className = 'overdue';
-                cell.appendChild(document.createTextNode("" + node.overdue[c]));
+
+        // Now add cells to the second row
+        for (var c in overdue) {
+            count = overdue[c];
+            cell = secondRow.insertCell(secondRow.childNodes.length);
+            cell.className = 'overdue';
+            cell.appendChild(document.createTextNode("" + count));
+        }
+
+        // Hide both rows by default
+        firstRow.style.display = "none";
+        secondRow.style.display = "none";
+
+        // Selectively display one or both rows based on current level and whether it has overdues
+        if (node.level < YAHOO.fisma.TreeTable.defaultDisplayLevel) {
+            firstRow.style.display = 'table-row';
+            if (node.hasOverdue) {
+                firstRow.childNodes[0].rowSpan = "2";
+                firstRow.childNodes[firstRow.childNodes.length - 2].rowSpan = "2";
+                firstRow.childNodes[firstRow.childNodes.length - 1].rowSpan = "2";
+                secondRow.style.display = 'table-row';
             }
         }
         
@@ -91,47 +90,122 @@ YAHOO.fisma.TreeTable.render = function (tableId, tree) {
 
 YAHOO.fisma.TreeTable.toggleNode = function (treeNode) {
     node = YAHOO.fisma.TreeTable.findNode(treeNode, YAHOO.fisma.TreeTable.treeRoot);
-    if (node.expanded == true) {
-        // hide child nodes
-        document.getElementById(node.nickname + "Img").src = "/images/plus.png";
-        node.expanded = false;
+    if (node.expanded) {
+        YAHOO.fisma.TreeTable.collapseNode(node, true);
         YAHOO.fisma.TreeTable.hideSubtree(node.children);
     } else {
-        // show child nodes
-        document.getElementById(node.nickname + "Img").src = "/images/minus.png";
-        node.expanded = true;
+        YAHOO.fisma.TreeTable.expandNode(node);
         YAHOO.fisma.TreeTable.showSubtree(node.children);
     }
 }
 
-YAHOO.fisma.TreeTable.hideSubtree = function (treeNode) {
-    for (nodeId in treeNode) {
-        node = treeNode[nodeId];
-        document.getElementById(node.nickname).style.display = 'none';
-        var secondRow = document.getElementById(node.nickname + '2');
-        if (secondRow) {
-            secondRow.style.display = 'none';
+YAHOO.fisma.TreeTable.expandNode = function (treeNode) {
+    // When expanding a node, switch the counts displayed from the "all" counts to the "single"
+    treeNode.ontime = treeNode.single_ontime;
+    treeNode.overdue = treeNode.single_overdue;
+    treeNode.hasOverdue = YAHOO.fisma.TreeTable.arraySum(treeNode.overdue) > 0;
+
+    // Update the ontime row first
+    var ontimeRow = document.getElementById(treeNode.nickname);    
+    var i = 1; // start at 1 b/c the first column is the system name
+    for (c in treeNode.ontime) {
+        count = treeNode.ontime[c];
+        ontimeRow.childNodes[i++].firstChild.nodeValue = count;
+    }
+    
+    // Then update the overdue row, or hide it if there are no overdues
+    var overdueRow = document.getElementById(treeNode.nickname + "2");
+    if (treeNode.hasOverdue) {
+        // Do not hide the overdue row. Instead, update the counts
+        var i = 0;
+        for (c in treeNode.overdue) {
+            count = treeNode.overdue[c];
+            overdueRow.childNodes[i++].firstChild.nodeValue = count;
         }
+    } else {
+        // Hide the overdue row and adjust the rowspans on the ontime row to compensate
+        ontimeRow.childNodes[0].rowSpan = "1";
+        ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "1";
+        ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "1";
+        overdueRow.style.display = 'none';
+    }
+    
+    // Lastly, update the control image and internal status field
+    document.getElementById(treeNode.nickname + "Img").src = "/images/minus.png";
+    treeNode.expanded = true;
+}
+
+YAHOO.fisma.TreeTable.collapseNode = function (treeNode, displayOverdue) {
+    // When collapsing a node, switch the counts displayed from the "single" counts to the "all"
+    treeNode.ontime = treeNode.all_ontime;
+    treeNode.overdue = treeNode.all_overdue;
+    treeNode.hasOverdue = YAHOO.fisma.TreeTable.arraySum(treeNode.overdue) > 0;
+
+    // Update the ontime row first
+    var ontimeRow = document.getElementById(treeNode.nickname);
+    var i = 1; // start at 1 b/c the first column is the system name
+    for (c in treeNode.ontime) {
+        count = treeNode.ontime[c];
+        ontimeRow.childNodes[i++].firstChild.nodeValue = count;
+    }
+    
+    // Update the overdue row. Display the row first if necessary.
+    var overdueRow = document.getElementById(treeNode.nickname + "2");
+    if (displayOverdue && treeNode.hasOverdue) {
+        // Show the overdue row and adjust the rowspans on the ontime row to compensate
+        ontimeRow.childNodes[0].rowSpan = "2";
+        ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
+        ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
+        overdueRow.style.display = 'table-row';
+
+        var i = 0;
+        for (c in treeNode.all_overdue) {
+            count = treeNode.all_overdue[c];
+            overdueRow.childNodes[i++].firstChild.nodeValue = count;
+        }
+    }
+    
+    document.getElementById(treeNode.nickname + "Img").src = "/images/plus.png";
+    treeNode.expanded = false;
+}
+
+YAHOO.fisma.TreeTable.hideSubtree = function (nodeArray) {
+    for (nodeId in nodeArray) {
+        node = nodeArray[nodeId];
+
+        // Now update this node
+        ontimeRow = document.getElementById(node.nickname);
+        ontimeRow.style.display = 'none';
+        overdueRow = document.getElementById(node.nickname + "2");
+        overdueRow.style.display = 'none';
+
+        // Recurse through children
         if (node.children.length > 0) {
-            node.expanded = false;
-            document.getElementById(node.nickname + "Img").src = '/images/plus.png';
+            YAHOO.fisma.TreeTable.collapseNode(node, false);
             YAHOO.fisma.TreeTable.hideSubtree(node.children);
         }
     }
 }
 
-YAHOO.fisma.TreeTable.showSubtree = function (treeNode, recursive) {
-    for (nodeId in treeNode) {
-        node = treeNode[nodeId];
-        document.getElementById(node.nickname).style.display = 'table-row';
-        var secondRow = document.getElementById(node.nickname + '2');
-        if (secondRow) {
-            secondRow.style.display = 'table-row';
-        }
+YAHOO.fisma.TreeTable.showSubtree = function (nodeArray, recursive) {
+    for (nodeId in nodeArray) {
+        node = nodeArray[nodeId];
+
+        // Recurse through the child nodes (if necessary)
         if (recursive && node.children.length > 0) {
-            node.expanded = true;
-            document.getElementById(node.nickname + "Img").src = '/images/minus.png';
+            YAHOO.fisma.TreeTable.expandNode(node);
             YAHOO.fisma.TreeTable.showSubtree(node.children, true);            
+        }
+
+        // Now update this node
+        ontimeRow = document.getElementById(node.nickname);
+        ontimeRow.style.display = 'table-row';
+        overdueRow = document.getElementById(node.nickname + "2");
+        if (node.hasOverdue) {
+            ontimeRow.childNodes[0].rowSpan = "2";
+            ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
+            ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
+            overdueRow.style.display = 'table-row';
         }
     }   
 }
@@ -139,8 +213,7 @@ YAHOO.fisma.TreeTable.showSubtree = function (treeNode, recursive) {
 YAHOO.fisma.TreeTable.collapseAll = function () {
     for (nodeId in YAHOO.fisma.TreeTable.treeRoot) {
         node = YAHOO.fisma.TreeTable.treeRoot[nodeId];
-        document.getElementById(node.nickname + "Img").src = "/images/plus.png";
-        node.expanded = false;
+        YAHOO.fisma.TreeTable.collapseNode(node, true);
         YAHOO.fisma.TreeTable.hideSubtree(node.children);
     }
 }
@@ -148,8 +221,7 @@ YAHOO.fisma.TreeTable.collapseAll = function () {
 YAHOO.fisma.TreeTable.expandAll = function () {
     for (nodeId in YAHOO.fisma.TreeTable.treeRoot) {
         node = YAHOO.fisma.TreeTable.treeRoot[nodeId];
-        document.getElementById(node.nickname + "Img").src = "/images/minus.png";
-        node.expanded = true;
+        YAHOO.fisma.TreeTable.expandNode(node);
         YAHOO.fisma.TreeTable.showSubtree(node.children, true);
     }
 }
@@ -167,4 +239,12 @@ YAHOO.fisma.TreeTable.findNode = function (nodeName, tree) {
         }
     }
     return false;
+}
+
+YAHOO.fisma.TreeTable.arraySum = function (a) {
+    var sum = 0;
+    for (var i in a) {
+        sum += a[i];
+    }
+    return sum;
 }

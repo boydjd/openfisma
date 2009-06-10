@@ -28,12 +28,37 @@
  * A business object which represents a plan of action and milestones related
  * to a particular finding.
  *
- * @package    Model
+ * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class Finding extends BaseFinding
 {
+    /**
+     * Returns an ordered list of all business possible statuses
+     * 
+     * @return array
+     */
+    public static function getAllStatuses() {
+        $allStatuses = array('NEW', 'DRAFT');
+        
+        $mitigationStatuses = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = ?', array('action'));
+        foreach ($mitigationStatuses as $status) {
+            $allStatuses[] = $status->nickname;
+        }
+        
+        $allStatuses[] = 'EN';
+
+        $evidenceStatus = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = ?', array('evidence'));
+        foreach ($evidenceStatus as $status) {
+            $allStatuses[] = $status->nickname;
+        }
+        
+        $allStatuses[] = 'CLOSED';
+
+        return $allStatuses;
+    }
+
     /**
      * get the detailed status of a Finding
      *

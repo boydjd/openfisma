@@ -25,6 +25,7 @@
  * @property string $countermeasures
  * @property enum $countermeasuresEffectiveness
  * @property integer $duplicateFindingId
+ * @property integer $responsibleOrganizationId
  * @property integer $assetId
  * @property integer $sourceId
  * @property integer $securityControlId
@@ -32,15 +33,16 @@
  * @property integer $assignedToUserId
  * @property Finding $DuplicateFinding
  * @property Asset $Asset
+ * @property Organization $ResponsibleOrganization
  * @property Source $Source
  * @property SecurityControl $SecurityControl
  * @property User $CreatedBy
  * @property User $AssignedTo
  * @property Evaluation $CurrentEvaluation
+ * @property Doctrine_Collection $AuditLogs
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Finding
  * @property Doctrine_Collection $FindingEvaluations
- * @property Doctrine_Collection $AuditLogs
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -72,6 +74,7 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasColumn('countermeasures', 'string', null, array('type' => 'string', 'comment' => 'The countermeasures in place against the threat source'));
         $this->hasColumn('countermeasuresEffectiveness', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'LOW', 1 => 'MODERATE', 2 => 'HIGH'), 'comment' => 'A subjective assessment of the effectivness of the in-place countermeasures against the described threat'));
         $this->hasColumn('duplicateFindingId', 'integer', null, array('type' => 'integer', 'comment' => 'If this finding is a duplicate of an existing finding, then this is a foreign key to that finding; otherwise its null'));
+        $this->hasColumn('responsibleOrganizationId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the organization which is responsible for addressing this finding'));
         $this->hasColumn('assetId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the asset which this finding is against'));
         $this->hasColumn('sourceId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the source of this finding. For example, was it certification and accreditation? Continous monitoring?'));
         $this->hasColumn('securityControlId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the security control associated with this finding'));
@@ -86,6 +89,9 @@ abstract class BaseFinding extends Doctrine_Record
 
         $this->hasOne('Asset', array('local' => 'assetId',
                                      'foreign' => 'id'));
+
+        $this->hasOne('Organization as ResponsibleOrganization', array('local' => 'responsibleOrganizationId',
+                                                                       'foreign' => 'id'));
 
         $this->hasOne('Source', array('local' => 'sourceId',
                                       'foreign' => 'id'));
@@ -102,6 +108,9 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasOne('Evaluation as CurrentEvaluation', array('local' => 'currentEvaluationId',
                                                                'foreign' => 'id'));
 
+        $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
+                                                      'foreign' => 'findingId'));
+
         $this->hasMany('Evidence', array('local' => 'id',
                                          'foreign' => 'findingId'));
 
@@ -110,9 +119,6 @@ abstract class BaseFinding extends Doctrine_Record
 
         $this->hasMany('FindingEvaluation as FindingEvaluations', array('local' => 'id',
                                                                         'foreign' => 'findingId'));
-
-        $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
-                                                      'foreign' => 'findingId'));
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);

@@ -160,18 +160,16 @@ class RemediationController extends PoamBaseController
         // query selects all Organizations which the user has access to.
         if ('root' == Zend_Auth::getInstance()->getIdentity()) {
             $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type AS sysType')
+                            ->select('o.name, o.nickname, o.orgType, s.type')
                             ->from('Organization o')
-                            ->leftJoin('o.System s')
-                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                            ->leftJoin('o.System s');
         } else {
             $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type AS sysType')
+                            ->select('o.name, o.nickname, o.orgType, s.type')
                             ->from('Organization o')
                             ->innerJoin('o.Users u')
                             ->leftJoin('o.System s')
-                            ->where('u.id = ?', $this->_me->id)
-                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                            ->where('u.id = ?', $this->_me->id);
         }
         $orgTree = Doctrine::getTable('Organization')->getTree();
         $orgTree->setBaseQuery($userOrgQuery);
@@ -185,6 +183,8 @@ class RemediationController extends PoamBaseController
 
     /**
      * Transform the flat array returned from Doctrine's nested set into a nested array
+     * 
+     * Doctrine should provide this functionality in a future
      */
     public function toHierarchy($collection) 
     { 
@@ -195,17 +195,15 @@ class RemediationController extends PoamBaseController
             // Node Stack. Used to help building the hierarchy 
             $stack = array(); 
             foreach ($collection as $node) { 
-                $item = $node; 
+                $item = $item = ($node instanceof Doctrine_Record) ? $node->toArray() : $node;
                 $item['label'] = $item['nickname'] . ' - ' . $item['name'];
-                if ($item['orgType'] == 'system') {
-                   $item['orgType'] = $item['sysType'];
-                }
-                $item['ontime'] = array(0, 0, 0, 0, 0, 0, 0, 0, 0);
-                $overdue = array(0, 0, 0, 0, 0, 0, 0);
-                if (array_sum($overdue) > 0) {
-                    $item['overdue'] = $overdue;
-                }
-                $item['children'] = array(); 
+                $item['orgType'] = $node->getType();
+                $item['orgTypeLabel'] = $node->getOrgTypeLabel();
+
+                $summaryCounts = $node->getSummaryCounts();
+                $item = array_merge($item, $summaryCounts);
+                
+                $item['children'] = array();
                 // Number of stack items 
                 $l = count($stack); 
                 // Check if we're dealing with different levels 

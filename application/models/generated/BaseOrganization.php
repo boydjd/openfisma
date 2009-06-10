@@ -14,6 +14,7 @@
  * @property string $description
  * @property System $System
  * @property Doctrine_Collection $Users
+ * @property Doctrine_Collection $Findings
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -42,6 +43,9 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->hasMany('User as Users', array('refClass' => 'UserOrganization',
                                               'local' => 'organizationId',
                                               'foreign' => 'userId'));
+
+        $this->hasMany('Finding as Findings', array('local' => 'id',
+                                                    'foreign' => 'responsibleOrganizationId'));
 
         $nestedset0 = new Doctrine_Template_NestedSet();
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));

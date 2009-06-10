@@ -31,12 +31,21 @@ class System extends BaseSystem
      * Only confidentiality can have 'NA'
      */
     const CIA_NA = 'na';
+
+    /**
+     * A mapping from the physical system types to proper English terms
+     */
+    private $_typeMap = array(
+        'gss' => 'General Support System',
+        'major' => 'Major Application',
+        'minor' => 'Minor Application'
+    );
     
     /**
-     * Return a formatted label for this system based on the name and nickname
+     * Return the English version of the orgType field
      */
-    public function getLabel() {
-        return "{$this->nickname} - {$this->name}";
+    public function getTypeLabel() {
+        return $this->_typeMap[$this->type];
     }
     
     /**
@@ -45,7 +54,7 @@ class System extends BaseSystem
      * The calculation over enumeration fields {LOW, MODERATE, HIGH} is tricky here. The algorithm 
      * is up to their mapping value, which is decided by the appear consequence in TABLE definition.
      * For example, in case `confidentiality` ENUM('NA','LOW','MODERATE','HIGH') it turns out the 
-     * mapping value: LOW=0, MODERATE=1, HIGH=2. The value calculated is the maximun of C, I, A. And 
+     * mapping value: LOW=0, MODERATE=1, HIGH=2. The value calculated is the maximum of C, I, A. And 
      * is transferred back to enumeration name again.
      * 
      * @return string security_categorization
@@ -61,15 +70,12 @@ class System extends BaseSystem
         }
         
         $array = $this->getTable()->getEnumValues('confidentiality');
-        assert(in_array($confidentiality, $array));
         $confidentiality = array_search($confidentiality, $array) - 1;
         
         $array = $this->getTable()->getEnumValues('integrity');
-        assert(in_array($integrity, $array));
         $integrity = array_search($integrity, $array);
         
         $array = $this->getTable()->getEnumValues('availability');
-        assert(in_array($availability, $array));
         $availability = array_search($availability, $array);
 
         $index = max((int)$confidentiality, (int)$integrity, (int)$availability);
