@@ -35,22 +35,22 @@
 Class ListenerFinding extends Doctrine_Record_Listener
 {
     /**
-     * The message of audit log
-     */
-    private $_description = null;
-
-    /**
      * Set the status to "NEW" when a finding is created 
      * Also save the audit log for the finding creation.
      *
      * @param Doctrine_Event $event
-     * @return void
      */
     public function preInsert(Doctrine_Event $event)
     {
         $finding = $event->getInvoker();
         $finding->status = 'NEW';
-        $this->_description = array('New Finding Created');
+        $message = 'New Finding Created';
+
+        $auditLog = new AuditLog();
+        $auditLog->userId      = $finding->createdByUserId;
+        $auditLog->description = $message;
+        $auditLog->save();
+
     }
 
     /**
@@ -61,56 +61,24 @@ Class ListenerFinding extends Doctrine_Record_Listener
      * Save the audit logs
      *
      * @param Doctrine_Event $event
-     * @return void
      */
     public function preUpdate(Doctrine_Event $event)
     {
         $finding = $event->getInvoker();
         $modifyValues = $finding->getModified(true);
         if (!empty($modifyValues)) {
-            $description = array();
+            $auditLog = new AuditLog();
             foreach ($modifyValues as $key=>$value) {
                 if ('modifyTs' != $key) {
-                    $description[] = 'Update: '.$key.' Original: '.$value.' NEW: '.$finding->$key;
+                    $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $finding->$key;
+                    $auditLog->userId      = $this->createdByUserId;
+                    $auditLog->description = $message;
+                    $finding->AuditLogs[]  = $auditLog;
                 }
             }
-            $this->_description = $description;
 
             if (array_key_exists('type', $modifyValues) && 'NEW' == $finding->status) {
                 $finding->status = 'DRAFT';
-            }
-
-            if ('MSA' == $finding->status) {
-                $evaluation = Doctrine::getTable('Evaluation')
-                                ->findByDql('approvalGroup = "action" AND precedence = 0 ');
-                $finding->currentEvaluationId = $evaluation[0]->id;
-            }
-
-            if ('EA' == $finding->status) {
-                $evaluation = Doctrine::getTable('Evaluation')
-                                ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
-                $finding->currentEvaluationId = $evaluation[0]->id;
-            }
-        }
-    }
-
-
-    /** 
-     * Write the audit logs after the finding was saved
-     *
-     * @param Doctrine_Event $event
-     * @param return void
-     */
-    public function postSave(Doctrine_Event $event)
-    {
-        if (!empty($this->_description)) {
-            $finding = $event->getInvoker();
-            $count   = $finding->AuditLogs->count();
-            foreach ($this->_description as $message) {
-                $key = $count++;
-                $finding->AuditLogs[$key]->userId      = $finding->createdByUserId;
-                $finding->AuditLogs[$key]->description = $message;
-                $finding->AuditLogs[$key]->save();
             }
         }
     }

@@ -34,6 +34,40 @@
  */
 class Finding extends BaseFinding
 {
+    //Threshold of overdue for various status
+    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>14, 'EN'=>0, 'EA'=>21);
+
+    /**
+     * Set the status as "NEW" for a new finding created and write the audit log
+     */
+    public function preInsert()
+    {
+        $this->status      = 'NEW';
+        $this->updateNextDueDate($this->status);
+
+        $auditLog              = new AuditLog();
+        $auditLog->User        = $this->CreatedBy;
+        $auditLog->description = 'New Finding Created';
+        $this->AuditLogs[]     = $auditLog;
+    }
+
+    /**
+     * Write the audit logs
+     */
+    public function preUpdate()
+    {
+        $modifyValues = $this->getModified(true);
+        if (!empty($modifyValues)) {
+            $auditLog = new AuditLog();
+            foreach ($modifyValues as $key=>$value) {
+                $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $this->$key;
+                $auditLog->User        = $this->CreatedBy;
+                $auditLog->description = $message;
+                $this->AuditLogs[]     = $auditLog;
+            }
+        }
+    }
+
     /**
      * Returns an ordered list of all business possible statuses
      * 
@@ -74,6 +108,40 @@ class Finding extends BaseFinding
     }
 
     /**
+     * Submit Mitigation Strategy
+     * Set the status as "MSA" and the currentEvaluationId as the first mitigation evaluation id
+     */
+    public function submitMitigation(User $user)
+    {
+        if ('DRAFT' != $this->status) {
+            //@todo english
+            throw new Fisma_Exception_General("The finding can't be sbumited mitigation strategy");
+        }
+        $this->status = 'MSA';
+        $this->updateNextDueDate($this->status);
+        $evaluation = Doctrine::getTable('Evaluation')
+                                        ->findByDql('approvalGroup = "action" AND precedence = 0 ');
+        $this->CurrentEvaluation = $evaluation[0];
+        $this->save();
+    }
+
+    /**
+     * Revise the Mitigation Strategy
+     * Set the status as "DRAFT" and the currentEvaluationId as null
+     */
+    public function reviseMitigation(User $user)
+    {
+        if ('EN' != $this->status) {
+            //@todo english
+            throw new Fisma_Exception_General("The finding can't be revised mitigation strategy");
+        }
+        $this->status = 'DRAFT';
+        $this->updateNextDueDate($this->status);
+        $this->CurrentEvaluation = null;
+        $this->save();
+    }
+
+    /**
      * Approve the current evaluation,
      * then update the status to either point to
      * a new Evaluation or else to change the status to DRAFT, EN,
@@ -100,25 +168,30 @@ class Finding extends BaseFinding
         $findingEvaluation->Evaluation = $this->CurrentEvaluation;
         $findingEvaluation->decision   = 'APPROVED';
         $findingEvaluation->User       = $user;
-        $findingEvaluation->save();
-        
+        $this->FindingEvaluations[]    = $findingEvaluation;
+
+        $auditLog = new AuditLog();
+        $auditLog->User      = $this->CreatedBy;
+        $auditLog->description = 'Update: ' . $this->status . ' Original: "NONE" New: "APPROVED"';
+        $this->AuditLogs[] = $auditLog;
+
+        $nextEvaluation = $this->CurrentEvaluation->NextEvaluation->toArray();
         switch ($this->status) {
             case 'MSA':
-                if (is_null($this->CurrentEvaluation->NextEvaluation)) {
-                    $this->CurrentEvaluation = null;
+                //@todo is there any way to judge the NextEvaluation is empty unless use toArray()
+                if (empty($nextEvaluation['id'])) {
                     $this->status = 'EN';
                 }
                 break;
             case 'EA':
-                if (is_null($this->CurrentEvaluation->NextEvaluation)) {
-                    $this->CurrentEvaluation = null;
+                if (empty($nextEvaluation['id'])) {
                     $this->status = 'CLOSED';
                 }
                 break;
         }
         $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
+        $this->updateNextDueDate($this->status);
         $this->save();
-        $findingEvaluation->save();
         $conn->commit();
     }
 
@@ -148,7 +221,12 @@ class Finding extends BaseFinding
         $findingEvaluation->decision     = 'DENIED';
         $findingEvaluation->User         = $user;
         $findingEvaluation->comment      = $comment;
-        $findingEvaluation->save();
+        $this->FindingEvaluations[]      = $findingEvaluation;
+
+        $auditLog = new AuditLog();
+        $auditLog->User      = $this->CreatedBy;
+        $auditLog->description = 'Update: ' . $this->status . ' Original: "NONE" New: "DENIED"';
+        $this->AuditLogs[] = $auditLog;
 
         switch ($this->status) {
             case 'MSA':
@@ -160,8 +238,66 @@ class Finding extends BaseFinding
                 $this->CurrentEvaluation   = null;
                 break;
         }
+        $this->updateNextDueDate($this->status);
         $this->save();
         $conn->commit();
     }
 
+    /**
+     * Upload Evidence
+     * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
+     *
+     * @param string $fileName evidence file name
+     * @param $user
+     */
+    public function uploadEvidence($fileName, User $user)
+    {
+        $this->status = 'EA';
+        $this->updateNextDueDate($this->status);
+        $evaluation = Doctrine::getTable('Evaluation')
+                                        ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
+        $this->CurrentEvaluation = $evaluation[0];
+        $evidence = new Evidence();
+        $evidence->filename = $fileName;
+        $evidence->Finding  = $this;
+        $evidence->User     = $user;
+        $this->Evidence[]  = $evidence;
+        $this->save();
+    }
+
+    /**
+     * Set the status to "DRAFT" automaticly where a finding' type changed at first time
+     */
+    public function setType()
+    {
+        return $this->_set('status', 'DRAFT');
+    }
+
+    /**
+     * Set the nextduedate when the status has changed except 'CLOSED'
+     *
+     * @param string $status finding status
+     */
+    private function updateNextDueDate($status)
+    {
+        switch ($status) {
+            case 'NEW':
+                $startDate = $this->createdTs;
+                break;
+            case 'DRAFT':
+                $startDate = $this->createdTs;
+                break;
+            //@todo these hasn't  mss_ts field any more, shall we keep this?
+            //case 'MSA':
+            case 'EN':
+                $startDate = $this->expectedCompletionDate;
+                break;
+            case 'EA':
+                $startDate = $this->expectedCompletionDate;
+                break;
+        }
+        $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
+        $nextDueDate->add($this->_overdue[$status], Zend_Date::DAY);
+        $this->nextDueDate = $nextDueDate->toString('Y-m-d');
+    }
 }
