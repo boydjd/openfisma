@@ -22,33 +22,62 @@ class System extends BaseSystem
     }
 
     /**
-     * Create the organization with the system's name,nickname...after
-     * the system attributs have been saved.
+     * set the mapping value 'name'
      *
-     * @todo transaction it
-     * @todo The postInsert and postSave will be called in sequence. There should be another way.
+     * @param string $name
      */
-    public function postInsert()
+    public function setName($name)
     {
-        $organization = new Organization();
-        $organization->System      = $this;
-        $organization->name        = $this->name;
-        $organization->nickname    = $this->nickname;
-        $organization->description = $this->description;
-        $organization->orgType     = 'system';
-        $organization->save();
+        $this->set('name', $name);
+        if (empty($this->Organization[0]->id)) {
+            $this->state(Doctrine_Record::STATE_TDIRTY);
+        } else {
+            $this->state(Doctrine_Record::STATE_DIRTY);
+        }
+    }
+    
+    /**
+     * set the mapping value 'nickname'
+     *
+     * @param string $nickname
+     */
+    public function setNickname($nickname)
+    {
+        $this->set('nickname', $nickname);
+        if (empty($this->Organization[0]->id)) {
+            $this->state(Doctrine_Record::STATE_TDIRTY);
+        } else {
+            $this->state(Doctrine_Record::STATE_DIRTY);
+        }
+    }
+    
+    /**
+     * set the map value 'description'
+     *
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->set('description', $description);
+        if (empty($this->Organization[0]->id)) {
+            $this->state(Doctrine_Record::STATE_TDIRTY);
+        } else {
+            $this->state(Doctrine_Record::STATE_DIRTY);
+        }
     }
 
     /**
-     * Update the organization with the system's name, nickname...
+     * Save the organization with the system's name, nickname...
      * accodingly after the system's attributes saved.
      */
     public function postSave()
     {
         $organization = $this->Organization[0];
-        $organization->name = $this->name;
-        $organization->nickname = $this->nickname;
+        $organization->System      = $this;
+        $organization->name        = $this->name;
+        $organization->nickname    = $this->nickname;
         $organization->description = $this->description;
+        $organization->orgType = 'system';
         $organization->save();
     }
 
@@ -104,10 +133,6 @@ class System extends BaseSystem
         $confidentiality = $this->confidentiality;
         $integrity = $this->integrity;
         $availability = $this->availability;
-        
-        if (null == $confidentiality || null == $integrity || null == $availability) {
-            return null;
-        }
         
         $array = $this->getTable()->getEnumValues('confidentiality');
         $confidentiality = array_search($confidentiality, $array) - 1;
