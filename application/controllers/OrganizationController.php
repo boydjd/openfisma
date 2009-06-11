@@ -73,7 +73,9 @@ class OrganizationController extends SecurityController
             // filter the organizations which belongs to the current organization and itself
             $q->andWhere('o.lft < ? OR o.rgt > ?', array($orgArray['lft'], $orgArray['rgt']));
             // if the organization is specifted, than set the parent node.
-            $form->getElement('parent')->setValue($currOrg->getNode()->getParent()->id);
+            if ($currOrg->getNode()->getParent()) {
+                $form->getElement('parent')->setValue($currOrg->getNode()->getParent()->id);
+            }
         }
         
         // if the organization is root, then you haven't chance to change its parent
