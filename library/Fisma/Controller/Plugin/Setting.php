@@ -206,6 +206,9 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
                     $db = $config->database->params;
                     $connectString = "mysql://{$db->username}:{$db->password}@{$db->host}/{$db->dbname}";
                     Doctrine_Manager::connection($connectString);
+                    // add the attribute of Doctrine to support the soft delete behavior
+                    $conManager = Doctrine_Manager::getInstance();
+                    $conManager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
                     Zend_Registry::set('doctrine_config', array(
                            'data_fixtures_path'  =>  $this->_root . '/application/doctrine/data/fixtures',
                            'models_path'         =>  $this->_root . '/application/models',

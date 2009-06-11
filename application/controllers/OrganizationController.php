@@ -138,9 +138,7 @@ class OrganizationController extends SecurityController
         if ($format == 'json') {
             $sortBy = $this->_request->getParam('sortby', 'name');
             $order = $this->_request->getParam('order', 'ASC');
-            // add the attribute of Doctrine to support the soft delete behavior
-            $conManager = Doctrine_Manager::getInstance();
-            $conManager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
+
             $q = Doctrine_Query::create()
                  ->select('*')
                  ->from('Organization o')
@@ -305,19 +303,27 @@ class OrganizationController extends SecurityController
         $id = $this->_request->getParam('id');
         $organization = new Organization();
         $organization = $organization->getTable()->find($id);
-        if ($organization->delete()) {
-            $this->_helper->addNotification(Notification::SYSTEM_DELETED, $this->_me->username, $id);
-            //Delete this system index
-            if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
-                $this->_helper->deleteIndex('organization', $id);
+        if ($organization) {
+            if ($organization->delete()) {
+                $this->_helper->addNotification(Notification::ORGANIZATION_DELETED, $this->_me->username, $id);
+                //Delete this organization index
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                    $this->_helper->deleteIndex('organization', $id);
+                }
+                /**
+                 * @todo english
+                 */
+                $msg = "Organization deleted successfully";
+                $model = self::M_NOTICE;
+            } else {
+                /**
+                 * @todo english
+                 */
+                $msg = "Failed to delete the Organization";
+                $model = self::M_WARNING;
             }
-            $msg = "Organization deleted successfully";
-            $model = self::M_NOTICE;
-        } else {
-            $msg = "Failed to delete the Organization";
-            $model = self::M_WARNING;
+            $this->message($msg, $model);
         }
-        $this->message($msg, $model);
         $this->_forward('list');
     }
 
