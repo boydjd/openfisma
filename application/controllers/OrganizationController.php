@@ -34,9 +34,8 @@
 class OrganizationController extends SecurityController
 {
     private $_paging = array(
-        'path' => '',
-        'currentPage' => 1,
-        'perPage' => 10,
+        'startIndex' => 0,
+        'count' => 20,
     );
     
     /**
@@ -46,7 +45,7 @@ class OrganizationController extends SecurityController
     public function preDispatch()
     {
         $req = $this->getRequest();
-        $this->_paging['currentPage'] = $req->getParam('p', 1);
+        $this->_paging['startIndex'] = $req->getParam('startIndex', 0);
     }
     
     /**
@@ -139,16 +138,18 @@ class OrganizationController extends SecurityController
         if ($format == 'json') {
             $sortBy = $this->_request->getParam('sortby', 'name');
             $order = $this->_request->getParam('order', 'ASC');
-            
+            // add the attribute of Doctrine to support the soft delete behavior
+            $conManager = Doctrine_Manager::getInstance();
+            $conManager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
             $q = Doctrine_Query::create()
-                 ->select('o.*, s.*')
+                 ->select('*')
                  ->from('Organization o')
                  ->where('o.orgType IS NULL')
                  ->orWhere('o.orgType != ?', 'system')
                  ->orderBy("o.$sortBy $order")
-                 ->limit($this->_paging['perPage'])
-                 ->offset(($this->_paging['currentPage'] - 1) * $this->_paging['perPage']);
-    
+                 ->limit($this->_paging['count'])
+                 ->offset($this->_paging['startIndex']);
+
             if (!empty($value)) {
                 $this->_helper->searchQuery($value, 'organization');
                 $cache = $this->getHelper('SearchQuery')->getCacheInstance();
@@ -166,10 +167,10 @@ class OrganizationController extends SecurityController
             $tableData = array('table' => array(
                 'recordsReturned' => count($organizations->toArray()),
                 'totalRecords' => $totalRecords,
-                'startIndex' => ($this->_paging['currentPage'] - 1) * $this->_paging['perPage'],
+                'startIndex' => $this->_paging['startIndex'],
                 'sort' => $sortBy,
                 'dir' => $order,
-                'pageSize' => $this->_paging['perPage'],
+                'pageSize' => $this->_paging['count'],
                 'records' => $organizations->toArray()
             ));
             
@@ -297,12 +298,27 @@ class OrganizationController extends SecurityController
     /**
      * Delete a specified organization.
      * 
-     * @todo The organizations are related with system, 
-     *       and the systems are related with others things.
-     *       So We should discuss the logic of this delete action and implement later
      */
     public function deleteAction()
     {
+        //Fisma_Acl::requirePrivilege('admin_organizations', 'delete');
+        $id = $this->_request->getParam('id');
+        $organization = new Organization();
+        $organization = $organization->getTable()->find($id);
+        if ($organization->delete()) {
+            $this->_helper->addNotification(Notification::SYSTEM_DELETED, $this->_me->username, $id);
+            //Delete this system index
+            if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                $this->_helper->deleteIndex('organization', $id);
+            }
+            $msg = "Organization deleted successfully";
+            $model = self::M_NOTICE;
+        } else {
+            $msg = "Failed to delete the Organization";
+            $model = self::M_WARNING;
+        }
+        $this->message($msg, $model);
+        $this->_forward('list');
     }
 
     /**

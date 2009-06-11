@@ -26,6 +26,7 @@ Organization:
 
     actAs:
         NestedSet:
+        SoftDelete:
         Timestampable:
             created:
                 name: createdTs

@@ -48,8 +48,10 @@ abstract class BaseOrganization extends Doctrine_Record
                                                     'foreign' => 'responsibleOrganizationId'));
 
         $nestedset0 = new Doctrine_Template_NestedSet();
+        $softdelete0 = new Doctrine_Template_SoftDelete();
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($nestedset0);
+        $this->actAs($softdelete0);
         $this->actAs($timestampable0);
     }
 }
