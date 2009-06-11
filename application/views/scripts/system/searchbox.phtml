@@ -1,50 +1,59 @@
-<table class="searchFilters">
-    <tbody>
-        <tr>
-            <th>[<a id="system_list" href="/panel/system/sub/list">System List</a>] (total: <?php echo $this->total;?>)</th>
-            <?php if($this->acl->isAllowed('admin_systems', 'create')) { ?>
-            <th>[<a id="add_system" href="/panel/system/sub/create" title="add new Systems">Add System</a>]</th>
-            <?php } ?>
-            <th>
-                <table align="center">
-                    <tbody>
-                        <tr>
-                            <td><b>Page:&nbsp;</b></td>
-                            <td><?php echo $this->links['all'];?></td>
-                            <td>|</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </th>
-            <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system')) { ?>
-            <th>
-                <table align="center">
-                <form name="query" method="post" action="/panel/system/sub/list">
-                    <tbody>
-                        <tr>
-                            <td><b>Query:&nbsp;</b></td>
-                            <td><input name="qv" value="<?php echo $this->qv;?>" title="Input your query value" size="20" maxlength="40" type="text"></td>
-
-                             <td><input value="Search" title="submit your request" type="submit"></td>
-                        </tr>
-                    </tbody>
-                </form>
-                </table>
-            </th>
-            <th>
-                <table align="center">
-                <form name="query" method="post" action="/panel/system/sub/list">
-                    <tbody>
-                        <tr>
-                            <td><b><input type='checkbox' name='sh' value='1'> Display Hidden Systems</b></td>
-
-                             <td><input value="Update Listing" title="submit your request" type="submit"></td>
-                        </tr>
-                    </tbody>
-                </form>
-                </table>
-            </th>
-            <?php } ?>
-        </tr>
-    </tbody>
-</table>
+<div class="searchFilters">
+    <span id='listButton'></span>
+    <script type='text/javascript'>
+        YAHOO.util.Event.onDOMReady(function() {
+            var button = new YAHOO.widget.Button({  
+                 type: "link",  
+                 label: "System List",  
+                 href: "/panel/system/sub/list",
+                 id: "listButton",
+                 disabled: false,
+                 container: "listButton"
+            });
+        
+    });</script>
+    <?php //if(Fisma_Acl::hasPrivilege('admin_systems', 'create')) { ?>
+    <span id='createButton'></span>
+    <script type='text/javascript'>
+        YAHOO.util.Event.onDOMReady(function() {
+            var button = new YAHOO.widget.Button({  
+                 type: "link",  
+                 label: "Add System",  
+                 href: "/panel/system/sub/create",
+                 id: "createButton",
+                 disabled: false,
+                 container: "createButton"
+            });
+    });</script>
+    <?php //} ?>
+    
+    <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system')) { ?>
+    <form name="query" method="post" action="/panel/system/sub/list" style="display:inline">
+    <b>Query:&nbsp;</b>
+    <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
+    <span id="searchContainer"></span>
+    <script type='text/javascript'>
+       var save = new YAHOO.widget.Button({
+           type: "submit",
+           label: "Search",
+           value: "Search",
+           container: "searchContainer",
+           disabled: false
+       });
+    </script>
+    </form>
+    <?php } ?>
+    <form name="query" method="post" action="/panel/system/sub/list" style="display:inline">
+    <input type='checkbox' name='sh' value='1' <?php if ($this->visibility) echo 'checked'; ?>/> <b>Display Hidden Systems</b>
+    <span id="switchContainer"></span>
+    <script type='text/javascript'>
+       var save = new YAHOO.widget.Button({
+           type: "submit",
+           label: "submit your request",
+           value: "Update Listing",
+           container: "switchContainer",
+           disabled: false
+       });
+    </script>
+    </form>
+</div>

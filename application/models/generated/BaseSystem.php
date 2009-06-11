@@ -26,6 +26,7 @@ abstract class BaseSystem extends Doctrine_Record
         $this->hasColumn('confidentiality', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'na', 1 => 'low', 2 => 'moderate', 3 => 'high'), 'comment' => 'The FIPS-199 confidentiality impact'));
         $this->hasColumn('integrity', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 integrity impact'));
         $this->hasColumn('availability', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 availability impact'));
+        $this->hasColumn('visibility', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'visible', 1 => 'hidden')));
     }
 
     public function setUp()

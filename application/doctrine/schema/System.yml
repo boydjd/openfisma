@@ -17,3 +17,6 @@ System:
             type: enum
             values: [low, moderate, high]
             comment: The FIPS-199 availability impact
+        visibility:
+            type: enum
+            values: [visible, hidden]
