@@ -35,15 +35,23 @@
 class Finding extends BaseFinding
 {
     //Threshold of overdue for various status
-    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>14, 'EN'=>0, 'EA'=>21);
+    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
 
     /**
-     * Set the status as "NEW" for a new finding created and write the audit log
+     * Set the status as "NEW"  for a new finding created or as "PEND" when duplicated
+     * write the audit log
      */
     public function preInsert()
     {
-        $this->status      = 'NEW';
-        $this->updateNextDueDate($this->status);
+        $duplicateFinding  = $this->getTable()
+                                  ->findByDql("description LIKE '%$this->description%'");
+        if (!empty($duplicateFinding[0])) {
+            $this->DuplicateFinding = $duplicateFinding[0];
+            $this->status           = 'PEND';
+        } else {
+            $this->status           = 'NEW';
+        }
+        $this->_updateNextDueDate();
 
         $auditLog              = new AuditLog();
         $auditLog->User        = $this->CreatedBy;
@@ -53,17 +61,27 @@ class Finding extends BaseFinding
 
     /**
      * Write the audit logs
+     * @todo the log need to get the user who did it
      */
     public function preUpdate()
     {
         $modifyValues = $this->getModified(true);
         if (!empty($modifyValues)) {
-            $auditLog = new AuditLog();
             foreach ($modifyValues as $key=>$value) {
+                $auditLog = new AuditLog();
                 $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $this->$key;
                 $auditLog->User        = $this->CreatedBy;
                 $auditLog->description = $message;
                 $this->AuditLogs[]     = $auditLog;
+            }
+
+            if (array_key_exists('type', $modifyValues)) {
+                if ('NEW' == $this->status) {
+                    $this->status = 'DRAFT';
+                } else {
+                    //@todo english
+                    throw new Fisma_Exception_General("The finding's type can't be changed at the current status");
+                }
             }
         }
     }
@@ -118,7 +136,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception_General("The finding can't be sbumited mitigation strategy");
         }
         $this->status = 'MSA';
-        $this->updateNextDueDate($this->status);
+        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "action" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
@@ -136,7 +154,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception_General("The finding can't be revised mitigation strategy");
         }
         $this->status = 'DRAFT';
-        $this->updateNextDueDate($this->status);
+        $this->_updateNextDueDate();
         $this->CurrentEvaluation = null;
         $this->save();
     }
@@ -190,7 +208,7 @@ class Finding extends BaseFinding
                 break;
         }
         $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
-        $this->updateNextDueDate($this->status);
+        $this->_updateNextDueDate();
         $this->save();
         $conn->commit();
     }
@@ -238,7 +256,7 @@ class Finding extends BaseFinding
                 $this->CurrentEvaluation   = null;
                 break;
         }
-        $this->updateNextDueDate($this->status);
+        $this->_updateNextDueDate();
         $this->save();
         $conn->commit();
     }
@@ -253,7 +271,7 @@ class Finding extends BaseFinding
     public function uploadEvidence($fileName, User $user)
     {
         $this->status = 'EA';
-        $this->updateNextDueDate($this->status);
+        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
@@ -266,38 +284,32 @@ class Finding extends BaseFinding
     }
 
     /**
-     * Set the status to "DRAFT" automaticly where a finding' type changed at first time
-     */
-    public function setType()
-    {
-        return $this->_set('status', 'DRAFT');
-    }
-
-    /**
      * Set the nextduedate when the status has changed except 'CLOSED'
-     *
-     * @param string $status finding status
+     * @todo why the 'Y-m-d' is a wrong date
      */
-    private function updateNextDueDate($status)
+    private function _updateNextDueDate()
     {
-        switch ($status) {
+        if (in_array($this->status, array('PEND', 'CLOSED'))) {
+            return;
+        }
+        switch ($this->status) {
             case 'NEW':
                 $startDate = $this->createdTs;
                 break;
             case 'DRAFT':
                 $startDate = $this->createdTs;
                 break;
-            //@todo these hasn't  mss_ts field any more, shall we keep this?
-            //case 'MSA':
+            case 'MSA':
+                $startDate = date('Y-M-d');
             case 'EN':
                 $startDate = $this->expectedCompletionDate;
                 break;
             case 'EA':
-                $startDate = $this->expectedCompletionDate;
+                $startDate = date('Y-M-d');
                 break;
         }
-        $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
-        $nextDueDate->add($this->_overdue[$status], Zend_Date::DAY);
-        $this->nextDueDate = $nextDueDate->toString('Y-m-d');
+        $nextDueDate = new Zend_Date($startDate, 'Y-M-d');
+        $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
+        $this->nextDueDate = $nextDueDate->toString('Y-M-d');
     }
 }
