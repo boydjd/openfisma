@@ -31,7 +31,7 @@ var myColumnDefs = [
         return request;
     };
 
-    var myDataSource = new YAHOO.util.DataSource('/panel/system/sub/list/format/json');
+    var myDataSource = new YAHOO.util.DataSource('/panel/system/sub/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -70,7 +70,7 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php //if (Fisma_Acl::hasPrivilege('admin_systems','read')) { ?>
+    <?php if (Fisma_Acl::hasPrivilege('admin_systems','read')) { ?>
     myDataTable.subscribe("rowClickEvent", 
         function (oArgs) {
             var elTarget = oArgs.target;
@@ -78,6 +78,6 @@ var myColumnDefs = [
             document.location = "/panel/system/sub/view/v/view/id/" + oRecord.getData("id");
         }
     );
-    <?php //}?>
+    <?php }?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>

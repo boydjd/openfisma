@@ -52,7 +52,7 @@ class SystemController extends SecurityController
      *
      * @return Zend_Form
      */
-    public function getSystemForm()
+    private function _getSystemForm()
     {
         $form = Fisma_Form_Manager::loadForm('system');
         $organizationTreeObject = Doctrine::getTable('organization')->getTree();
@@ -92,92 +92,121 @@ class SystemController extends SecurityController
     }
 
     /**
-     * list the systems from the search, if search none, it list all systems
+     * show the list page, not for data
      */     
     public function listAction()
     {
-        //Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        
+        $this->searchbox();
+        
         $visibility = trim($this->_request->getParam('sh'));
         $value = trim($this->_request->getParam('keywords'));
-        $format = $this->_request->getParam('format');
-        $link = '';
         
-        if ($format == 'json') {
-            $sortBy = $this->_request->getParam('sortby', 'name');
-            $order = $this->_request->getParam('order', 'ASC');
-            $q = Doctrine_Query::create()
-                 ->select('o.*, s.*')
-                 ->from('Organization o')
-                 ->leftJoin('o.System s')
-                 ->where('o.orgType = ?', 'system')
-                 ->orderBy("o.$sortBy $order")
-                 ->limit($this->_paging['count'])
-                 ->offset($this->_paging['startIndex']);
-            if (!$visibility) {
-                $q->andWhere('s.visibility = ?', 'visible');
-            } else {
-                $q->andWhere('s.visibility = ?', 'hidden');
-            }
-  
-            if (!empty($value)) {
-                $this->_helper->searchQuery($value, 'system');
-                $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-                // get search results in ids
-                $systemIds = $cache->load($this->_me->id . '_system');
-                if (empty($systemIds)) {
-                    // set ids as a not exist value in database if search results is none.
-                    $systemIds = array(-1);
-                }
-                $q->whereIn('u.id', $systemIds);
-            }
-
-            $totalRecords = $q->count();
-            $organizations = $q->execute();
-            $orgArray = array();
-            $i = 0;
-            foreach ($organizations as $organization) {
-                $orgArray[$i] = $organization->toArray();
-                foreach($organization->System as $k => $v) {
-                    $orgArray[$i][$k] = $v;
-                }
-                if ($parent = $organization->getNode()->getParent()) {
-                    $orgArray[$i]['organization'] = $parent->name;
-                } else {
-                    $orgArray[$i]['organization'] = '';
-                }
-                $i ++;
-            }
-            
-            $tableData = array('table' => array(
-                'recordsReturned' => count($orgArray),
-                'totalRecords' => $totalRecords,
-                'startIndex' => $this->_paging['startIndex'],
-                'sort' => $sortBy,
-                'dir' => $order,
-                'pageSize' => $this->_paging['count'],
-                'records' => $orgArray
-            ));
-            
-            $this->_helper->layout->setLayout('ajax');
-            $this->_helper->viewRenderer->setNoRender();
-            echo json_encode($tableData);
-        }else{
-            //Display searchbox template
-            $this->searchbox();
-            empty($value) ? $link .='' : $link .= '/keywords/' . $value;
-            empty($visibility) ? $link .='' : $link .= '/sh/' . $visibility;
-            $this->view->assign('link', $link);
-            $this->view->assign('pageInfo', $this->_paging);
-            $this->render('list');
-        }
+        $link = '';
+        empty($value) ? $link .='' : $link .= '/keywords/' . $value;
+        empty($visibility) ? $link .='' : $link .= '/sh/' . $visibility;
+        $this->view->assign('link', $link);
+        $this->view->assign('pageInfo', $this->_paging);
+        $this->render('list');
     }
+    
+    /**
+     * list the systems from the search, 
+     * if search none, it list all systems
+     *
+     */
+    public function searchAction()
+    {
+        Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+        
+        $visibility = trim($this->_request->getParam('sh'));
+        $value = trim($this->_request->getParam('keywords'));
+        
+        $sortBy = $this->_request->getParam('sortby', 'name');
+        if (Doctrine::getTable('Organization')->getColumnDefinition($sortBy)) {
+            $sortBy = 'o.' . $sortBy;
+        } elseif (Doctrine::getTable('System')->getColumnDefinition($sortBy)) {
+            $sortBy = 's.' . $sortBy;
+        } else {
+            /** 
+             * @todo english 
+             */
+            throw new Fisma_Exception_General('invalid page');
+        }
+        
+        $order = $this->_request->getParam('order', 'ASC');
+        if (!in_array(strtolower($order), array('asc', 'desc'))) {
+            /** 
+             * @todo english 
+             */
+            throw new Fisma_Exception_General('invalid page');
+        }
+        
+        $q = Doctrine_Query::create()
+             ->select('o.*, s.*')
+             ->from('Organization o')
+             ->leftJoin('o.System s')
+             ->where('o.orgType = ?', 'system')
+             ->orderBy("$sortBy $order")
+             ->limit($this->_paging['count'])
+             ->offset($this->_paging['startIndex']);
+        if (!$visibility) {
+            $q->andWhere('s.visibility = ?', 'visible');
+        } else {
+            $q->andWhere('s.visibility = ?', 'hidden');
+        }
 
+        if (!empty($value)) {
+            $this->_helper->searchQuery($value, 'system');
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
+            // get search results in ids
+            $systemIds = $cache->load($this->_me->id . '_system');
+            if (empty($systemIds)) {
+                // set ids as a not exist value in database if search results is none.
+                $systemIds = array(-1);
+            }
+            $q->whereIn('u.id', $systemIds);
+        }
+
+        $totalRecords = $q->count();
+        $organizations = $q->execute();
+        $orgArray = array();
+        $i = 0;
+        foreach ($organizations as $organization) {
+            $orgArray[$i] = $organization->toArray();
+            foreach($organization->System as $k => $v) {
+                $orgArray[$i][$k] = $v;
+            }
+            if ($parent = $organization->getNode()->getParent()) {
+                $orgArray[$i]['organization'] = $parent->name;
+            } else {
+                $orgArray[$i]['organization'] = '';
+            }
+            $i ++;
+        }
+        
+        $tableData = array('table' => array(
+            'recordsReturned' => count($orgArray),
+            'totalRecords' => $totalRecords,
+            'startIndex' => $this->_paging['startIndex'],
+            'sort' => $sortBy,
+            'dir' => $order,
+            'pageSize' => $this->_paging['count'],
+            'records' => $orgArray
+        ));
+        
+        echo json_encode($tableData);
+    }
+    
     /**
      *  Render the form for searching input box the systems.
      */
     public function searchbox()
     {
-        //Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        Fisma_Acl::requirePrivilege('admin_systems', 'read');
 
         $visibility = $this->_request->getParam('sh');
         $keywords = $this->_request->getParam('keywords');
@@ -191,10 +220,10 @@ class SystemController extends SecurityController
      */
     public function createAction()
     {
-        //Fisma_Acl::requirePrivilege('admin_systems', 'create');
-        
-        $form = $this->getSystemForm('system');
+        Fisma_Acl::requirePrivilege('admin_systems', 'create');
+        $form = $this->_getSystemForm('system');
         $sysValues = $this->_request->getPost();
+        
         if ($sysValues) {
             if ($form->isValid($sysValues)) {
                 $sysValues = $form->getValues();
@@ -206,7 +235,7 @@ class SystemController extends SecurityController
                     $msg = "Failure in creation";
                     $model = self::M_WARNING;
                 } else {
-                    $organization = &$system->Organization[0];
+                    $organization = $system->Organization[0];
                     $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($sysValues['organization_id']));
                     $this->_helper->addNotification(Notification::SYSTEM_CREATED, $this->_me->username, $system->id);
 
@@ -238,10 +267,9 @@ class SystemController extends SecurityController
      */
     public function deleteAction()
     {
-        //Fisma_Acl::requirePrivilege('admin_systems', 'delete');
+        Fisma_Acl::requirePrivilege('admin_systems', 'delete');
         $id = $this->_request->getParam('id');
-        $system = new System();
-        $system = $system->getTable()->find($id);
+        $system = Doctrine::getTable('System')->find($id);
         if ($system) {
             // System table holds only attributes and will not be retrived since OrgSystem has been soft deleted.
             if ($system->Organization[0]->delete()) {
@@ -276,16 +304,18 @@ class SystemController extends SecurityController
      */
     public function viewAction()
     {
-        //Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        Fisma_Acl::requirePrivilege('admin_systems', 'read');
         $this->searchbox();
         
-        $form = $this->getSystemForm();
+        $form = $this->_getSystemForm();
         $id = $this->_request->getParam('id', 0);
         $v = $this->_request->getParam('v', 'view');
 
-        $systemObj = new System();
-        $systemObj = $systemObj->getTable()->find($id);
+        $systemObj = Doctrine::getTable('System')->find($id);
         if (!$systemObj) {
+            /** 
+             * @todo english 
+             */
             throw new Fisma_Exception_General('The system is not existed.');
         } else {
             $system = $systemObj->toArray();
@@ -317,9 +347,9 @@ class SystemController extends SecurityController
      */
     public function updateAction ()
     {
-        //Fisma_Acl::requirePrivilege('admin_systems', 'update');
+        Fisma_Acl::requirePrivilege('admin_systems', 'update');
         
-        $form = $this->getSystemForm();
+        $form = $this->_getSystemForm();
         $formValid = $form->isValid($_POST);
         $id = $this->_request->getParam('id');
         
@@ -335,7 +365,7 @@ class SystemController extends SecurityController
             
             if ($system->isModified() ||1) {
                 $system->save();
-                $organization = &$system->Organization[0]->getNode();
+                $organization = $system->Organization[0]->getNode();
                 if ($sysValues['organization_id'] != $organization->getParent()->id) {
                     $organization->moveAsLastChildOf(Doctrine::getTable('Organization')->find($sysValues['organization_id']));
                     $isModify = true;

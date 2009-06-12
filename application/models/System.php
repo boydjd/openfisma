@@ -29,6 +29,9 @@ class System extends BaseSystem
     public function setName($name)
     {
         $this->set('name', $name);
+        // if the object hasn't identity,
+        // then we think it is under the insert status.
+        // otherwise it is update status
         if (empty($this->Organization[0]->id)) {
             $this->state(Doctrine_Record::STATE_TDIRTY);
         } else {
@@ -44,6 +47,9 @@ class System extends BaseSystem
     public function setNickname($nickname)
     {
         $this->set('nickname', $nickname);
+        // if the object hasn't identity,
+        // then we think it is under the insert status.
+        // otherwise it is update status
         if (empty($this->Organization[0]->id)) {
             $this->state(Doctrine_Record::STATE_TDIRTY);
         } else {
@@ -59,6 +65,9 @@ class System extends BaseSystem
     public function setDescription($description)
     {
         $this->set('description', $description);
+        // if the object hasn't identity,
+        // then we think it is under the insert status.
+        // otherwise it is update status
         if (empty($this->Organization[0]->id)) {
             $this->state(Doctrine_Record::STATE_TDIRTY);
         } else {
