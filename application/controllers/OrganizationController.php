@@ -39,7 +39,6 @@ class OrganizationController extends SecurityController
     );
     
     /**
-     * @todo english
      * Invoked before each Action
      */
     public function preDispatch()
@@ -76,7 +75,7 @@ class OrganizationController extends SecurityController
                 $form->getElement('parent')->setValue($currOrg->getNode()->getParent()->id);
             }
         }
-        
+
         // if the organization is root, then you haven't chance to change its parent
         if ($currOrg->getNode()->isRoot()) {
             // remove the column
@@ -111,99 +110,101 @@ class OrganizationController extends SecurityController
      */
     public function searchbox()
     {
-        /**
-         * @todo add acl control
-         */
-        //Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
-        
+        Fisma_Acl::requirePrivilege('admin_organizations', 'read');
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
         $this->render('searchbox');
     }
 
     /**
-     * list the organizations from the search, if search none, it list all organizations
+     * show the list page, not for data
      */     
     public function listAction()
     {
-        /**
-         * @todo add acl control
-         */
-        //Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
+        Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
         $value = trim($this->_request->getParam('keywords'));
-        $format = $this->_request->getParam('format');
-        $link = '';
-        
-        // switch normal response or ajax response
-        if ($format == 'json') {
-            $sortBy = $this->_request->getParam('sortby', 'name');
-            $order = $this->_request->getParam('order', 'ASC');
-
-            $q = Doctrine_Query::create()
-                 ->select('*')
-                 ->from('Organization o')
-                 ->where('o.orgType IS NULL')
-                 ->orWhere('o.orgType != ?', 'system')
-                 ->orderBy("o.$sortBy $order")
-                 ->limit($this->_paging['count'])
-                 ->offset($this->_paging['startIndex']);
-
-            if (!empty($value)) {
-                $this->_helper->searchQuery($value, 'organization');
-                $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-                //@todo english  get search results in ids
-                $organizationIds = $cache->load($this->_me->id . '_organization');
-                if (empty($organizationIds)) {
-                    //@todo english  set ids as a not exist value in database if search results is none.
-                    $organizationIds = array(-1);
-                }
-                $q->whereIn('o.id', $organizationIds);
-            }
-            $totalRecords = $q->count();
-            $organizations = $q->execute();
-            
-            $tableData = array('table' => array(
-                'recordsReturned' => count($organizations->toArray()),
-                'totalRecords' => $totalRecords,
-                'startIndex' => $this->_paging['startIndex'],
-                'sort' => $sortBy,
-                'dir' => $order,
-                'pageSize' => $this->_paging['count'],
-                'records' => $organizations->toArray()
-            ));
-            
-            $this->_helper->layout->setLayout('ajax');
-            $this->_helper->viewRenderer->setNoRender();
-            echo json_encode($tableData);
-        } else {
-            if (!empty($value)) {
-                $link .= '/keywords/' . $value;
-            }
-            // Display searchbox template
-            $this->searchbox();
-            $this->view->assign('pageInfo', $this->_paging);
-            $this->view->assign('link', $link);
-            $this->render('list');
-        }
+        empty($value) ? $link = '' : $link = '/keywords/' . $value;
+        $this->searchbox();
+        $this->view->assign('pageInfo', $this->_paging);
+        $this->view->assign('link', $link);
+        $this->render('list');
     }
 
+    /**
+     * list the organizations from the search, 
+     * if search none, it list all organizations
+     * 
+     */
+    public function searchAction()
+    {
+        Fisma_Acl::requirePrivilege('admin_organizations', 'read');
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+        
+        $sortBy = $this->_request->getParam('sortby', 'name');
+        $organization = Doctrine::getTable('Organization');
+        if (!$organization->getColumnDefinition($sortBy)) {
+            /** 
+             * @todo english 
+             */
+            throw new Fisma_Exception_General('invalid page');
+        }
+        
+        $order = $this->_request->getParam('order', 'ASC');
+        if (!in_array(strtolower($order), array('asc', 'desc'))) {
+            /** 
+             * @todo english 
+             */
+            throw new Fisma_Exception_General('invalid page');
+        }
+        
+        $q = Doctrine_Query::create()
+             ->select('*')
+             ->from('Organization o')
+             ->where('o.orgType IS NULL')
+             ->orWhere('o.orgType != ?', 'system')
+             ->orderBy("o.$sortBy $order")
+             ->limit($this->_paging['count'])
+             ->offset($this->_paging['startIndex']);
+
+        if (!empty($value)) {
+            $this->_helper->searchQuery($value, 'organization');
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
+            //@todo english  get search results in ids
+            $organizationIds = $cache->load($this->_me->id . '_organization');
+            if (empty($organizationIds)) {
+                //@todo english  set ids as a not exist value in database if search results is none.
+                $organizationIds = array(-1);
+            }
+            $q->whereIn('o.id', $organizationIds);
+        }
+        $totalRecords = $q->count();
+        $organizations = $q->execute();
+        
+        $tableData = array('table' => array(
+            'recordsReturned' => count($organizations->toArray()),
+            'totalRecords' => $totalRecords,
+            'startIndex' => $this->_paging['startIndex'],
+            'sort' => $sortBy,
+            'dir' => $order,
+            'pageSize' => $this->_paging['count'],
+            'records' => $organizations->toArray()
+        ));
+        
+        echo json_encode($tableData);
+    }
+    
     /**
      * Display a single organization record with all details.
      */
     public function viewAction()
     {
-        /**
-         * @todo add acl control
-         */
-        //Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('admin_organizations', 'read'); 
         $this->searchbox();
-        
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'view');
         
-        $organization = new Organization();
-        $organization = $organization->getTable()->find($id);
+        $organization = Doctrine::getTable('Organization')->find($id);
         
         $form = $this->_getOrganizationForm($organization);
         
@@ -215,7 +216,7 @@ class OrganizationController extends SecurityController
         } else {
             $organization = $organization->toArray();
         }
-        
+
         if ($v == 'edit') {
             $this->view->assign('viewLink',
                                 "/panel/organization/sub/view/id/$id");
@@ -232,16 +233,13 @@ class OrganizationController extends SecurityController
         $this->view->assign('id', $id);
         $this->render($v);
     }
-
+    
     /**
      * Display the form for creating a new organization.
      */
     public function createAction()
     {
-        /**
-         * @todo add acl control
-         */
-        //Fisma_Acl::requirePrivilege('admin_organizations', 'create'); 
+        Fisma_Acl::requirePrivilege('admin_organizations', 'create'); 
         $form = $this->_getOrganizationForm();
         $orgValues = $this->_request->getPost();
         
@@ -299,10 +297,9 @@ class OrganizationController extends SecurityController
      */
     public function deleteAction()
     {
-        //Fisma_Acl::requirePrivilege('admin_organizations', 'delete');
+        Fisma_Acl::requirePrivilege('admin_organizations', 'delete');
         $id = $this->_request->getParam('id');
-        $organization = new Organization();
-        $organization = $organization->getTable()->find($id);
+        $organization = Doctrine::getTable('Organization')->find($id);
         if ($organization) {
             if ($organization->delete()) {
                 $this->_helper->addNotification(Notification::ORGANIZATION_DELETED, $this->_me->username, $id);
@@ -334,10 +331,7 @@ class OrganizationController extends SecurityController
      */
     public function updateAction()
     {
-        /**
-         * @todo add acl control
-         */
-        //Fisma_Acl::requirePrivilege('admin_organizations', 'update'); 
+        Fisma_Acl::requirePrivilege('admin_organizations', 'update'); 
         $id = $this->_request->getParam('id', 0);
         $organization = new Organization();
         $organization = $organization->getTable()->find($id);
@@ -363,7 +357,6 @@ class OrganizationController extends SecurityController
             }
             // if the organization is not the root and 
             // its parent id is not equal the value submited
-            
             if (!$organization->getNode()->isRoot() && 
                     (int)$orgValues['parent'] != $organization->getNode()->getParent()->id) {
                 // then move this organization to an other parent node

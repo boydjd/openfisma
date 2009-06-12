@@ -1,31 +1,17 @@
 <div class="searchFilters">
-    <span id='listButton'></span>
-    <script type='text/javascript'>
-        YAHOO.util.Event.onDOMReady(function() {
-            var button = new YAHOO.widget.Button({  
-                 type: "link",  
-                 label: "Organization List",  
-                 href: "/panel/organization/sub/list",
-                 id: "listButton",
-                 disabled: false,
-                 container: "listButton"
-            });
-        
-    });</script>
-    <?php //if(Fisma_Acl::hasPrivilege('admin_organizations', 'create')) { ?>
-    <span id='createButton'></span>
-    <script type='text/javascript'>
-        YAHOO.util.Event.onDOMReady(function() {
-            var button = new YAHOO.widget.Button({  
-                 type: "link",  
-                 label: "Add Organization",  
-                 href: "/panel/organization/sub/create",
-                 id: "createButton",
-                 disabled: false,
-                 container: "createButton"
-            });
-    });</script>
-    <?php //} ?>
+    <?php 
+    $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
+                                           array('value' => 'Organization List', 
+                                                 'href' => '/panel/organization/sub/list'));
+    echo $listButton;
+    ?>
+
+    <?php if(Fisma_Acl::hasPrivilege('admin_organizations', 'create')) {
+    $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                           array('value' => 'Add Organization', 
+                                                 'href' => '/panel/organization/sub/create'));
+    echo $createButton;
+    } ?>
     <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization')) { ?>
     <form name="query" method="post" action="/panel/organization/sub/list" style="display:inline">
     <b>Query:&nbsp;</b>
