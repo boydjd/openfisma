@@ -1,9 +1,9 @@
 <?php
 $operation = '';
-if ($this->acl->isAllowed('admin_networks','update')) {
+if (Fisma_Acl::hasPrivilege('admin_networks','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if ($this->acl->isAllowed('admin_networks','delete')) {
+if (Fisma_Acl::hasPrivilege('admin_networks','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Network Information $operation"); ?>

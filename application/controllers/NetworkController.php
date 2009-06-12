@@ -34,53 +34,17 @@
  */
 class NetworkController extends SecurityController
 {
-    private $_network = null;
     private $_paging = array(
-        'mode' => 'Sliding',
-        'append' => false,
-        'urlVar' => 'p',
-        'path' => '',
-        'currentPage' => 1,
-        'perPage' => 20
+        'startIndex' => 0,
+        'count' => 20
     );
-
-    protected $_sanity = array(
-        'data' => 'network',
-        'filter' => array(
-            '*' => array(
-                'StringTrim',
-                'StripTags'
-            )
-        ) ,
-        'validator' => array(
-            'name' => array('Alnum' => true),
-            'nickname' => array('Alnum' => true),
-            'desc' => array(
-                'allowEmpty' => TRUE
-            )
-        ) ,
-        'flag' => TRUE
-    );
-
+    
     /**
-     * @todo english
-     * init() - Initialize 
-     */
-    public function init()
-    {
-        parent::init();
-        $this->_network = new Network();
-    }
-
-    /**
-     * @todo english
      * Invoked before each Action
      */
     public function preDispatch()
     {
-        $this->_pagingBasePath = $this->_request->getBaseUrl() .
-            '/panel/network/sub/list';
-        $this->_paging['currentPage'] = $this->_request->getParam('p', 1);
+        $this->_paging['startIndex'] = $this->_request->getParam('startIndex', 0);
     }
 
     /**
@@ -88,7 +52,7 @@ class NetworkController extends SecurityController
      *
      * @return Zend_Form
      */
-    public function getNetworkForm()
+    private function _getNetworkForm()
     {
         $form = Fisma_Form_Manager::loadForm('network');
         return Fisma_Form_Manager::prepareForm($form);
@@ -99,74 +63,91 @@ class NetworkController extends SecurityController
      */
     public function searchbox()
     {
-        $this->_acl->requirePrivilege('admin_networks', 'read');
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-
-        $qv = trim($this->_request->getParam('qv'));
-        if (!empty($qv)) {
-            $ret = $this->_helper->searchQuery($qv, 'network');
-            $count = count($ret);
-            $this->_paging['fileName'] .= '/qv/'.$qv;
-        } else {
-            $count = $this->_network->count();
-        }
-
-        $this->_paging['totalItems'] = $count;
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $count);
-        $this->view->assign('links', $pager->getLinks());
+        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+        $value = trim($this->_request->getParam('keywords'));
+        $this->view->assign('keywords', $value);
         $this->render('searchbox');
     }
 
     /**
-     * List the networks according to search criterias.
+     * show the list page, not for data
      */
     public function listAction()
     {
-        $this->_acl->requirePrivilege('admin_networks', 'read');
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+
+        $value = trim($this->_request->getParam('keywords'));
         $this->searchbox();
         
-        $value = trim($this->_request->getParam('qv'));
-
-        $query = $this->_network->select()->from('networks', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
-        if (!empty($value)) {
-            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            //@todo english  get search results in ids
-            $networkIds = $cache->load($this->_me->id . '_network');
-            if (!empty($networkIds)) {
-                $ids = implode(',', $networkIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
-        }
-        $networkList = $this->_network->fetchAll($query)->toArray();
-        $this->view->assign('network_list', $networkList);
+        $link = '';
+        empty($value) ? $link .='' : $link .= '/keywords/' . $value;
+        $this->view->assign('pageInfo', $this->_paging);
+        $this->view->assign('keywords', $value);
         $this->render('list');
     }
+    
+    /**
+     * list the networks from the search, 
+     * if search none, it list all networks
+     *
+     */
+    public function searchAction()
+    {
+        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+        
+        $sortBy = $this->_request->getParam('sortby', 'name');
+        $order = $this->_request->getParam('order', 'ASC');
+        
+        $q = Doctrine_Query::create()
+             ->select('*')->from('Network')
+             ->orderBy("$sortBy $order")
+             ->limit($this->_paging['count'])
+             ->offset($this->_paging['startIndex']);
 
+        if (!empty($value)) {
+            $this->_helper->searchQuery($value, 'network');
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
+            // get search results in ids
+            $networkIds = $cache->load($this->_me->id . '_network');
+            if (!empty($networkIds)) {
+                $networkIds = implode(',', $networkIds);
+            } else {
+                // set ids as a not exist value in database if search results is none.
+                $networkIds = -1;
+            }
+            $q->where('id IN (' . $networkIds . ')');
+        }
+        
+        $totalRecords = $q->count();
+        $networks = $q->execute();
+        $tableData = array('table' => array(
+            'recordsReturned' => count($networks->toArray()),
+            'totalRecords' => $totalRecords,
+            'startIndex' => $this->_paging['startIndex'],
+            'sort' => $sortBy,
+            'dir' => $order,
+            'pageSize' => $this->_paging['count'],
+            'records' => $networks->toArray()
+        ));
+        echo json_encode($tableData);
+    }
+    
     /**
      * Display a single network record with all details.
      */
     public function viewAction()
     {
-        $this->_acl->requirePrivilege('admin_networks', 'read');
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+
         $this->searchbox();
         
-        $form = $this->getNetworkForm();
+        $form = $this->_getNetworkForm();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'view');
-
-        $res = $this->_network->find($id)->toArray();
-        $network = $res[0];
+        $network = Doctrine::getTable('Network')->find($id);
+        
         if ($v == 'edit') {
             $this->view->assign('viewLink', "/panel/network/sub/view/id/$id");
             $form->setAction("/panel/network/sub/update/id/$id");
@@ -176,7 +157,7 @@ class NetworkController extends SecurityController
             $form->setReadOnly(true);            
         }
         $this->view->assign('deleteLink', "/panel/network/sub/delete/id/$id");
-        $form->setDefaults($network);
+        $form->setDefaults($network->toArray());
         $this->view->form = $form;
         $this->view->assign('id', $id);
         $this->render($v);
@@ -187,12 +168,12 @@ class NetworkController extends SecurityController
      */
     public function createAction()
     {
-        $this->_acl->requirePrivilege('admin_networks', 'create');
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('admin_networks', 'create');
+
         $this->searchbox();
 
         // Get the network form
-        $form = $this->getNetworkForm();
+        $form = $this->_getNetworkForm();
         $form->setAction('/panel/network/sub/save');
 
         // If there is data in the _POST variable, then use that to
@@ -201,7 +182,7 @@ class NetworkController extends SecurityController
         $form->setDefaults($post);
 
         // Assign view outputs.
-        $this->view->form = Fisma_Form_Manager::prepareForm($form);
+        $this->view->form = $form;
         $this->render('create');
     }
 
@@ -211,33 +192,29 @@ class NetworkController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_acl->requirePrivilege('admin_networks', 'update');
+        Fisma_Acl::requirePrivilege('admin_networks', 'update');
         
-        $form = $this->getNetworkForm();
+        $form = $this->_getNetworkForm();
         $post = $this->_request->getPost();
-        $formValid = $form->isValid($post);
+        
         if ($form->isValid($post)) {
-            $network = $form->getValues();
-            unset($network['save']);
-            unset($network['reset']);
-            $networkId = $this->_network->insert($network);
-            if (! $networkId) {
+            $network = new Network();
+            $network->merge($form->getValues());
+
+            if (!$network->trySave()) {
                 $msg = "Failure in creation";
                 $model = self::M_WARNING;
             } else {
-                $this->_notification
-                     ->add(Notification::NETWORK_CREATED, $this->_me->account, $networkId);
-
+                $this->_helper->addNotification(Notification::NETWORK_CREATED, $this->_me->username, $network->id);
                 //Create a network index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
-                    $this->_helper->updateIndex('network', $networkId, $network);
+                    $this->_helper->updateIndex('network', $network->id, $network->toArray());
                 }
-
                 $msg = "The network is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $networkId));
+            $this->_forward('view', null, null, array('id' => $network->id));
         } else {
             $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
@@ -251,31 +228,40 @@ class NetworkController extends SecurityController
      */
     public function deleteAction()
     {
-        $this->_acl->requirePrivilege('admin_networks', 'delete');
+        Fisma_Acl::requirePrivilege('admin_networks', 'delete');
         
-        $id = $this->_request->getParam('id');
-        $db = $this->_network->getAdapter();
-        $qry = $db->select()->from('assets')->where('network_id = ' . $id);
-        $result = $db->fetchCol($qry);
-        if (!empty($result)) {
+        $id = $this->_request->getParam('id', 0);
+        $network = Doctrine::getTable('Network')->find($id);
+        if (!$network) {
+            /**
+             * @todo english
+             */
+            $msg = 'Invalid system';
+            $model = self::M_WARNING;
+        } elseif (!$network->Asset) {
+            /**
+             * @todo english
+             */
             $msg = 'This network can not be deleted because it is'.
                    ' already associated with one or more ASSETS';
             $model = self::M_WARNING;
         } else {
-            $res = $this->_network->delete('id = ' . $id);
-            if (!$res) {
+            if (!$network->delete()) {
+                /**
+                 * @todo english
+                 */
                 $msg = "Failed to delete the network";
                 $model = self::M_WARNING;
             } else {
                 //Delete network index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
-                    $this->_helper->deleteIndex('network', $id);
+                    $this->_helper->deleteIndex('network', $network->id);
                 }
 
-                $this->_notification
-                     ->add(Notification::NETWORK_DELETED,
-                         $this->_me->account, $id);
-
+                $this->_helper->addNotification(Notification::NETWORK_DELETED, $this->_me->username, $network->id);
+                /**
+                 * @todo english
+                 */
                 $msg = "network deleted successfully";
                 $model = self::M_NOTICE;
             }
@@ -287,32 +273,34 @@ class NetworkController extends SecurityController
     /**
      * Updates network information after submitting an edit form.
      */
-    public function updateAction ()
+    public function updateAction()
     {
-        $this->_acl->requirePrivilege('admin_networks', 'update');
+        Fisma_Acl::requirePrivilege('admin_networks', 'update');
         
-        $form = $this->getNetworkForm();
+        $form = $this->_getNetworkForm();
+        $id = $this->_request->getParam('id');
         $post = $this->_request->getPost();
         $formValid = $form->isValid($post);
-        $network = $form->getValues();
-
-        $id = $this->_request->getParam('id');
-        if ($formValid) {
-            unset($network['save']);
-            unset($network['reset']);
-            $res = $this->_network->update($network, 'id = ' . $id);
-            if ($res) {
-                $this->_notification
-                     ->add(Notification::NETWORK_MODIFIED, $this->_me->account, $id);
-
+        
+        if ($form->isValid($post)) {
+            $network = new Network();
+            $network = $network->getTable()->find($id);
+            $network->merge($form->getValues());
+            if ($network->trySave()) {
+                $this->_helper->addNotification(Notification::NETWORK_MODIFIED, $this->_me->username, $network->id);
                 //Update network index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/network/')) {
-                    $this->_helper->updateIndex('network', $id, $network);
+                    $this->_helper->updateIndex('network', $network->id, $network->toArray());
                 }
-
+                /**
+                 * @todo english
+                 */
                 $msg = "The network is saved";
                 $model = self::M_NOTICE;
             } else {
+                /**
+                 * @todo english
+                 */
                 $msg = "Nothing changes";
                 $model = self::M_WARNING;
             }
