@@ -214,4 +214,40 @@ class User extends BaseUser
             throw new Fisma_Exception_General("Unsupported hash type: {$hashType}");
         }
     }
+
+    /**
+     * Validate the user's e-mail change.
+     * 
+     * @param string $validateCode validate code
+     * @return bool
+     */
+    public function validateEmail($validateCode)
+    {
+        $email = empty($this->notifyEmail)?$this->email:$this->notifyEmail;
+
+        $validation = Doctrine::getTable('EmailValidation')
+                        ->findByDql("email = '$email' AND userId = $this->id");
+        if ($validateCode == $validation[0]->validationCode) {
+            $this->emailValidate = true;
+            $validation->delete();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /** 
+     * Log any creation, modification, disabling and termination of account.
+     *
+     * @param string $message log message
+     */
+    public function log($message)
+    {
+        $accountLog = new AccountLog();
+        $accountLog->ip      = $_SERVER["REMOTE_ADDR"];
+        $accountLog->message = $message;
+        $this->AccountLogs[] = $accountLog;
+        $this->save();
+    }
+
 }

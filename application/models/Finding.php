@@ -133,12 +133,12 @@ class Finding extends BaseFinding
     {
         if ('DRAFT' != $this->status) {
             //@todo english
-            throw new Fisma_Exception_General("The finding can't be sbumited mitigation strategy");
+            throw new Fisma_Exception_General("The finding can't be submited mitigation strategy");
         }
         $this->status = 'MSA';
         $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
-                                        ->findByDql('approvalGroup = "action" AND precedence = 0 ');
+                                        ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
         $this->save();
     }
@@ -203,7 +203,8 @@ class Finding extends BaseFinding
                 break;
             case 'EA':
                 if (empty($nextEvaluation['id'])) {
-                    $this->status = 'CLOSED';
+                    $this->status   = 'CLOSED';
+                    $this->closedTs = date('Y-m-d');
                 }
                 break;
         }
@@ -270,6 +271,10 @@ class Finding extends BaseFinding
      */
     public function uploadEvidence($fileName, User $user)
     {
+        if ('EN' != $this->status) {
+            //@todo english
+            throw new Fisma_Exception_General("The finding can't be uploaded evidence");
+        }
         $this->status = 'EA';
         $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
