@@ -289,14 +289,25 @@ The tooltip itself is added with YUI.
 span.tooltip {
 	padding: 0px 2px 2px 22px;
 	background: url(/images/tooltip.png) no-repeat;
+	cursor: help;
 }
 
 /* This is the style for the tooltip itself. The style must be marked !important
    so that YUI won't override it.
 */
 .yui-tt .bd {
-    border: 1px solid #c0dea7 ! important;
-    background-color: #dbfdbe ! important;
+    border: none ! important;
+    background-color: #f0f0f0 ! important;
+    opacity: .9 ! important;
+}
+
+.yui-tt-shadow-visible {
+	top: -5px ! important;
+	left: -5px ! important;
+	bottom: -5px ! important;
+	right: -5px ! important;
+    background-color: orange ! important;
+    opacity: 0.5 ! important;
 }
 
 table.fisma_crud tr td:first-child {

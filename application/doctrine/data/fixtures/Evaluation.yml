@@ -2,7 +2,7 @@ Evaluation:
     MITIGATION ISSO:
         id: 1
         name: ISSO Approval for Mitigation Strategy
-        nickname: MITIGATION ISSO
+        nickname: MS ISSO
         NextEvaluation: [MITIGATION IVV]
         precedence: 0
         approvalGroup: action
@@ -13,7 +13,7 @@ Evaluation:
     MITIGATION IVV:
         id: 2
         name: IVV Approval for Mitigation Strategy
-        nickname: MITIGATION IVV
+        nickname: MS IV&V
         precedence: 1
         approvalGroup: action
         Privilege: finding_mitigation_ivv
@@ -23,7 +23,7 @@ Evaluation:
     EVIDENCE ISSO:
         id: 3
         name: ISSO Approval for Evidence
-        nickname: EVIDENCE ISSO
+        nickname: EV ISSO
         NextEvaluation: [EVIDENCE IVV]
         precedence: 0
         approvalGroup: evidence
@@ -34,7 +34,7 @@ Evaluation:
     EVIDENCE IVV:
         id: 4
         name: IVV Approval for Evidence
-        nickname: EVIDENCE IVV
+        nickname: EV IV&V
         precedence: 1
         approvalGroup: evidence
         Privilege: finding_evidence_ivv

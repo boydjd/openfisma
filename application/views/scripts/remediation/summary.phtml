@@ -5,34 +5,74 @@ YAHOO.util.Event.onDOMReady(function () {
                                     {
                                         success: function(o) {
                                             var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            hideLoadingRow();
                                             YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);
                                         },
                                         failure: function(o) {
                                             alert('Unable to load finding summary: ' + o.statusText);
+                                            hideLoadingRow();
                                         }
                                     }, 
                                     null);
 });
+
+function hideLoadingRow() {
+    var loadingRow = document.getElementById('loadingRow');
+    loadingRow.style.display = 'none';
+}
 </script>
 
 <div class="toolbar">
 <?php
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
                                        array('value' => 'Expand All', 
+                                             'imageSrc' => '/images/expand.png',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.expandAll'));
 print $expandAll;
 
 $collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
                                          array('value' => 'Collapse All', 
-                                               'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
+                                             'imageSrc' => '/images/collapse.png',
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
 print $collapseAll;
 ?>
 </div>
 
 <table id='findingSummaryTable' class="treeTable">
     <tr>
-        <th>&nbsp;</th>
-        <?php // foreach ?>
+        <th rowspan="3">Agency Organizations &amp; Information Systems</th>
+        <th style="border-bottom: none;" colspan="<?php echo 2 + count($this->mitigationEvaluations); ?>">
+            <?php 
+                $msaTooltip = "<p><b>NEW:</b> Findings which have just been entered into the system "
+                            . "are in NEW status.</p><p><b>DRAFT:</b> Once the mitigation strategy type is set, "
+                            . "the finding enters DRAFT status to reflect the fact that a user has reviewed "
+                            . "the finding and assigned an initial remediation strategy, but has not yet "
+                            . "submitted the mitigation strategy for approval.</p>";
+                foreach ($this->mitigationEvaluations as $evaluation) {
+                    $msaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
+                }
+                echo new Fisma_Yui_Tooltip('msa', 'Mitigation Strategy', $msaTooltip); 
+            ?>
+        </th>
+        <th style="border-bottom: none;" colspan="<?php echo 1 + count($this->evidenceEvaluations); ?>">
+            <?php 
+                $eaTooltip = "<p><b>EN:</b> Evidence needed. Findings in this status are waiting for "
+                           . "uploaded documentation that the course of action has been completed.</p>";
+                foreach ($this->evidenceEvaluations as $evaluation) {
+                    $eaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
+                }
+                echo new Fisma_Yui_Tooltip('ea', 'Remediation', $eaTooltip); 
+            ?>
+        </th>
+        <th colspan="2" rowspan="2">&nbsp;</th>
+    </tr>
+    <tr>
+        <th style="border-top: none;" colspan="2">&nbsp;</th>
+        <th colspan="<?php echo count($this->mitigationEvaluations); ?>">Approval</th>
+        <th style="border-top: none;">&nbsp;</th>
+        <th colspan="<?php echo count($this->evidenceEvaluations); ?>">Approval</th>
+    </tr>
+    <tr>
         <th>NEW</th>
         <th>DRAFT</th>
         <?php 
@@ -48,5 +88,8 @@ print $collapseAll;
         ?>        
         <th>CLOSED</th>
         <th>TOTAL</th>
+    </tr>
+    <tr id='loadingRow' style="height: 10px;">
+        <th colspan="10"><p>Loading&hellip;</p><img src="/images/loading_bar.gif"></th>
     </tr>
 </table>

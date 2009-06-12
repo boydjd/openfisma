@@ -157,7 +157,7 @@ class Organization extends BaseOrganization
         // @doctrine test data
         if ($this->nickname == 'WDC') {$counts['single_ontime']['DRAFT'] = 2; $counts['single_overdue']['EN'] = 1;}
         if ($this->nickname == 'OF') {$counts['single_overdue']['EN'] = 1;}
-        if ($this->nickname == "OCIO") {$counts['single_ontime']['MITIGATION ISSO'] = 1;}
+        if ($this->nickname == "OCIO") {$counts['single_ontime']['MS ISSO'] = 1;}
 
         // Recursively get summary counts from each child and add to the running sum
         $counts['all_ontime'] = $counts['single_ontime'];
