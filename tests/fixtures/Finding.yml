@@ -1,3 +1,7 @@
+# Fixture data for Finding model test
+#
+# Finding_1 for all finding model test
+
 Finding:
     Finding_1:
         id: 1
@@ -10,27 +14,6 @@ Finding:
         type: null
         status: NEW
         currentEvaluationId: null
-        description: null
-        recommendation: null
-        mitigationStrategy: null
-        resourcesRequired: null
-        expectedCompletionDate: null
-        ecdLocked: null
-        threat: null
-        threatLevel: null
-        countermeasures: null
-        countermeasuresEffectiveness: null
-    Finding_2:
-        id: 2
-        createdTs: '2009-06-09 13:19:09'
-        modifiedTs: '2009-06-09 13:19:13'
-        discoveredDate: null
-        closedTs: null
-        nextDueDate: null
-        legacyFindingKey: null
-        type: null
-        status: MSA
-        currentEvaluationId: 2
         description: null
         recommendation: null
         mitigationStrategy: null
