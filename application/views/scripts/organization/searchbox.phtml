@@ -2,13 +2,23 @@
     <?php 
     $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                            array('value' => 'Organization List', 
+                                                 'imageSrc' => '/images/view_list.png',                                            
                                                  'href' => '/panel/organization/sub/list'));
+    echo $listButton;
+    ?>
+    
+    <?php 
+    $listButton = new Fisma_Yui_Form_Button_Link('treetButton', 
+                                           array('value' => 'Organization Tree',
+                                                 'imageSrc' => '/images/view_tree.png', 
+                                                 'href' => '/panel/organization/sub/tree'));
     echo $listButton;
     ?>
 
     <?php if(Fisma_Acl::hasPrivilege('admin_organizations', 'create')) {
     $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                            array('value' => 'Add Organization', 
+                                                 'imageSrc' => '/images/add.png',
                                                  'href' => '/panel/organization/sub/create'));
     echo $createButton;
     } ?>

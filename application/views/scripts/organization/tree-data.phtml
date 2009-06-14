@@ -2,7 +2,7 @@
 // This view script is only used for debugging and should not be invoked on production systems
 
 if (Fisma_Controller_Front::getInstance()->debug()) {
-    var_dump($this->summaryData);
+    var_dump($this->treeData);
 } else {
     throw new Fisma_Exception_General("This view is only allowed in debug mode.");
 }

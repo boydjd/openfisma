@@ -390,3 +390,41 @@ div#msgbar {
     background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;
     height:8em; /* hold some space while loading */
 }
+
+/* The following styles are for the organization tree view icons */
+.agency {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/agency-small.png) no-repeat;
+}
+
+.bureau {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/bureau-small.png) no-repeat;
+}
+
+.organization {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/organization-small.png) no-repeat;
+}
+
+.gss {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/gss-small.png) no-repeat;
+}
+
+.major {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/major-small.png) no-repeat;
+}
+
+.minor {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/minor-small.png) no-repeat;
+}
+

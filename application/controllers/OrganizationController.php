@@ -47,6 +47,13 @@ class OrganizationController extends SecurityController
         $this->_paging['startIndex'] = $req->getParam('startIndex', 0);
     }
     
+    public function init()
+    {
+        $this->_helper->contextSwitch()
+                      ->addActionContext('tree-data', 'json')
+                      ->initContext();
+    }
+    
     /**
      * Returns the standard form for creating, reading, and
      * updating organizations.
@@ -388,4 +395,91 @@ class OrganizationController extends SecurityController
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
     }
+    
+    /**
+     * Display organizations and systems in tree mode for quick restructuring of the
+     * organizational hiearchy.
+     */
+    public function treeAction() 
+    {
+        $this->searchbox();
+        $this->render('tree');        
+    }
+    
+    /**
+     * Returns a JSON object that describes the organization tree, including systems
+     */
+    public function treeDataAction() 
+    {
+        Fisma_Acl::requirePrivilege('organizations', 'read', '*');
+        
+        // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
+        // query selects all Organizations which the user has access to.
+        if ('root' == Zend_Auth::getInstance()->getIdentity()) {
+            $userOrgQuery = Doctrine_Query::create()
+                            ->select('o.name, o.nickname, o.orgType, s.type')
+                            ->from('Organization o')
+                            ->leftJoin('o.System s');
+        } else {
+            $userOrgQuery = Doctrine_Query::create()
+                            ->select('o.name, o.nickname, o.orgType, s.type')
+                            ->from('Organization o')
+                            ->innerJoin('o.Users u')
+                            ->leftJoin('o.System s')
+                            ->where('u.id = ?', $this->_me->id);
+        }
+        $orgTree = Doctrine::getTable('Organization')->getTree();
+        $orgTree->setBaseQuery($userOrgQuery);
+        $organizations = $orgTree->fetchTree();
+        $orgTree->resetBaseQuery();
+        
+        $organizations = $this->toHierarchy($organizations);
+        
+        $this->view->treeData = $organizations;        
+    }
+
+    /**
+     * Transform the flat array returned from Doctrine's nested set into a nested array
+     * 
+     * Doctrine should provide this functionality in a future
+     * 
+     * @todo review the need for this function in the future
+     */
+    public function toHierarchy($collection) 
+    { 
+        // Trees mapped 
+        $trees = array(); 
+        $l = 0; 
+        if (count($collection) > 0) { 
+            // Node Stack. Used to help building the hierarchy 
+            $stack = array(); 
+            foreach ($collection as $node) { 
+                $item = $item = ($node instanceof Doctrine_Record) ? $node->toArray() : $node;
+                $item['label'] = $item['nickname'] . ' - ' . $item['name'];
+                $item['orgType'] = $node->getType();
+                $item['orgTypeLabel'] = $node->getOrgTypeLabel();                
+                $item['children'] = array();
+                // Number of stack items 
+                $l = count($stack); 
+                // Check if we're dealing with different levels 
+                while($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
+                    array_pop($stack); 
+                    $l--; 
+                } 
+                // Stack is empty (we are inspecting the root) 
+                if ($l == 0) { 
+                    // Assigning the root node 
+                    $i = count($trees); 
+                    $trees[$i] = $item; 
+                    $stack[] = & $trees[$i]; 
+                } else { 
+                    // Add node to parent 
+                    $i = count($stack[$l - 1]['children']); 
+                    $stack[$l - 1]['children'][$i] = $item; 
+                    $stack[] = & $stack[$l - 1]['children'][$i]; 
+                } 
+            } 
+        } 
+        return $trees; 
+    }    
 }

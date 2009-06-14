@@ -126,8 +126,6 @@ class RemediationController extends PoamBaseController
     }
 
     /**
-     * Experimental code... not intended for release
-     * 
      * Presents the view which contains the summary table. The summary table loads summary data
      * asynchronously by invoking the summaryDataAction().
      */    
@@ -150,8 +148,6 @@ class RemediationController extends PoamBaseController
     
     /**
      * Invoked asynchronously to load data for the summary table.
-     * 
-     * @todo cache computed record counts
      */
     public function summaryDataAction() {
         Fisma_Acl::requirePrivilege('findings', 'read', '*');
@@ -182,9 +178,11 @@ class RemediationController extends PoamBaseController
     }
 
     /**
-     * Transform the flat array returned from Doctrine's nested set into a nested array
+     * This is duplicated from the organization controller. it would be nice to consolidate
+     * this into the organization class. Doctrine should do this at v2.0, but if not, we 
+     * should do it ourselves.
      * 
-     * Doctrine should provide this functionality in a future
+     * @todo see if the organization model's function can be used instead
      */
     public function toHierarchy($collection) 
     { 

@@ -311,7 +311,7 @@ class SystemController extends SecurityController
         $id = $this->_request->getParam('id', 0);
         $v = $this->_request->getParam('v', 'view');
 
-        $systemObj = Doctrine::getTable('System')->find($id);
+        $systemObj = Doctrine::getTable('Organization')->find($id)->System;
         if (!$systemObj) {
             /** 
              * @todo english 
