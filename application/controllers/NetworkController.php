@@ -63,7 +63,7 @@ class NetworkController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+        Fisma_Acl::requirePrivilege('networks', 'read');
         $value = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $value);
         $this->render('searchbox');
@@ -74,7 +74,7 @@ class NetworkController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+        Fisma_Acl::requirePrivilege('networks', 'read');
 
         $value = trim($this->_request->getParam('keywords'));
         $this->searchbox();
@@ -93,7 +93,7 @@ class NetworkController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+        Fisma_Acl::requirePrivilege('networks', 'read');
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
         
@@ -139,7 +139,7 @@ class NetworkController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'read');
+        Fisma_Acl::requirePrivilege('networks', 'read');
 
         $this->searchbox();
         
@@ -168,7 +168,7 @@ class NetworkController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'create');
+        Fisma_Acl::requirePrivilege('networks', 'create');
 
         $this->searchbox();
 
@@ -192,7 +192,7 @@ class NetworkController extends SecurityController
      */
     public function saveAction()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'update');
+        Fisma_Acl::requirePrivilege('networks', 'update');
         
         $form = $this->_getNetworkForm();
         $post = $this->_request->getPost();
@@ -228,7 +228,7 @@ class NetworkController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'delete');
+        Fisma_Acl::requirePrivilege('networks', 'delete');
         
         $id = $this->_request->getParam('id', 0);
         $network = Doctrine::getTable('Network')->find($id);
@@ -236,7 +236,7 @@ class NetworkController extends SecurityController
             /**
              * @todo english
              */
-            $msg = 'Invalid system';
+            $msg = 'Invalid network';
             $model = self::M_WARNING;
         } elseif (!$network->Asset) {
             /**
@@ -275,7 +275,7 @@ class NetworkController extends SecurityController
      */
     public function updateAction()
     {
-        Fisma_Acl::requirePrivilege('admin_networks', 'update');
+        Fisma_Acl::requirePrivilege('networks', 'update');
         
         $form = $this->_getNetworkForm();
         $id = $this->_request->getParam('id');

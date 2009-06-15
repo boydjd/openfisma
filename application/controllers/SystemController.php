@@ -96,7 +96,7 @@ class SystemController extends SecurityController
      */     
     public function listAction()
     {
-        Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        Fisma_Acl::requirePrivilege('systems', 'read');
         
         $this->searchbox();
         
@@ -118,7 +118,7 @@ class SystemController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        Fisma_Acl::requirePrivilege('systems', 'read');
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
         
@@ -206,7 +206,7 @@ class SystemController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        Fisma_Acl::requirePrivilege('systems', 'read');
 
         $visibility = $this->_request->getParam('sh');
         $keywords = $this->_request->getParam('keywords');
@@ -220,7 +220,7 @@ class SystemController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('admin_systems', 'create');
+        Fisma_Acl::requirePrivilege('systems', 'create');
         $form = $this->_getSystemForm('system');
         $sysValues = $this->_request->getPost();
         
@@ -267,7 +267,7 @@ class SystemController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('admin_systems', 'delete');
+        Fisma_Acl::requirePrivilege('systems', 'delete');
         $id = $this->_request->getParam('id');
         $system = Doctrine::getTable('System')->find($id);
         if ($system) {
@@ -304,7 +304,7 @@ class SystemController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege('admin_systems', 'read');
+        Fisma_Acl::requirePrivilege('systems', 'read');
         $this->searchbox();
         
         $form = $this->_getSystemForm();
@@ -347,7 +347,7 @@ class SystemController extends SecurityController
      */
     public function updateAction ()
     {
-        Fisma_Acl::requirePrivilege('admin_systems', 'update');
+        Fisma_Acl::requirePrivilege('systems', 'update');
         
         $form = $this->_getSystemForm();
         $formValid = $form->isValid($_POST);
