@@ -239,7 +239,7 @@ class ProductController extends SecurityController
             $model = self::M_WARNING;
         } elseif ($product->Assets->toArray()) {
             //@todo english
-            $msg = 'This network can not be deleted because it is already associated with one or more ASSETS';
+            $msg = 'This product can not be deleted because it is already associated with one or more ASSETS';
             $model = self::M_WARNING;
         } else {
             if (!$product->delete()) {

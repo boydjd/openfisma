@@ -68,11 +68,14 @@ class Finding extends BaseFinding
         $modifyValues = $this->getModified(true);
         if (!empty($modifyValues)) {
             foreach ($modifyValues as $key=>$value) {
-                $auditLog = new AuditLog();
-                $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $this->$key;
-                $auditLog->User        = $this->CreatedBy;
-                $auditLog->description = $message;
-                $this->AuditLogs[]     = $auditLog;
+                //We don't want to log these keys
+                if (!array_key_exists($key, array('currentEvaluationId', 'nextDueDate', 'legacyFindingKey'))) {
+                    $auditLog = new AuditLog();
+                    $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $this->$key;
+                    $auditLog->User        = $this->CreatedBy;
+                    $auditLog->description = $message;
+                    $this->AuditLogs[]     = $auditLog;
+                }
             }
 
             if (array_key_exists('type', $modifyValues)) {
