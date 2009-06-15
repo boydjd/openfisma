@@ -93,9 +93,12 @@ class Organization extends BaseOrganization
      * This is a very expensive operation, since it can result in very many DB queries to get all of
      * the data as it walks through the tree. Therefore, these numbers are all cached.
      * 
+     * @param string $type The mitigation strategy type to filter for
+     * @param int $source The id of the finding source to filter for
+     * 
      * @return array 
      */
-    public function getSummaryCounts() {
+    public function getSummaryCounts($type, $source) {
         // First get all of the business statuses
         $statusList = Finding::getAllStatuses();
 
@@ -123,6 +126,12 @@ class Organization extends BaseOrganization
                            ->andWhere('o.id = ?', array($this->id))
                            ->groupBy('f.status, e.nickname')
                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+            if (isset($type)) {
+                $onTimeQuery->andWhere('f.type = ?', $type);
+            }
+            if (isset($source)) {
+                $onTimeQuery->andWhere('f.sourceId = ?', $source);
+            }
             $onTimeFindings = $onTimeQuery->execute();
             
             foreach($onTimeFindings as $finding) {
@@ -143,6 +152,12 @@ class Organization extends BaseOrganization
                             ->andWhere('o.id = ?', array($this->id))
                             ->groupBy('f.status, e.nickname')
                             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+            if (isset($type)) {
+                $overdueQuery->andWhere('f.type = ?', $type);
+            }
+            if (isset($source)) {
+                $overdueQuery->andWhere('f.sourceId = ?', $source);
+            }
             $overdueFindings = $overdueQuery->execute();
             
             foreach($overdueFindings as $finding) {
@@ -165,7 +180,7 @@ class Organization extends BaseOrganization
         if ($this->getNode()->hasChildren()) {
             $iterator = $this->getNode()->getChildren()->getNormalIterator();
             foreach ($iterator as $child) {
-                $childCounts = $child->getSummaryCounts();
+                $childCounts = $child->getSummaryCounts($type, $source);
                 unset($childCounts['all_ontime']['TOTAL']);
                 unset($childCounts['all_overdue']['TOTAL']);
                 foreach (array_keys($childCounts['all_ontime']) as $key) {

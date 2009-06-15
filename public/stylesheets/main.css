@@ -161,20 +161,16 @@ div#footerLinks {
 }
 
 /* Used to display search criteria & filters at the top of various pages */
-table.searchFilters {
+.searchFilters {
+	text-align: center;
     background-color: #ebebeb;
     margin: 10px auto;
     border: 1px solid #cecece;
-    padding: 10px 10px;
+    padding: 5px 10px;
 }
 
-table.searchFilters td {
-    padding: 3px 8px;
-    font-weight: bold;
-}
-
-table.searchFilters td a {
-    font-weight: normal;
+.searchFilters select {
+    margin-right: 10px;
 }
 
 /* This table is used to display key-value pairs, such as on the remediation

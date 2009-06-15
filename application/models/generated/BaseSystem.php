@@ -9,6 +9,7 @@
  * @property enum $confidentiality
  * @property enum $integrity
  * @property enum $availability
+ * @property enum $visibility
  * @property Doctrine_Collection $Assets
  * @property Doctrine_Collection $Organization
  * 

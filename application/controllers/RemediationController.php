@@ -144,6 +144,8 @@ class RemediationController extends PoamBaseController
                                      ->where('approvalGroup = \'evidence\'')
                                      ->orderBy('e.precedence');
         $this->view->evidenceEvaluations = $evidenceEvaluationQuery->execute();
+        
+        $this->view->findingSources = Doctrine::getTable('Source')->findAll();
     }
     
     /**
@@ -172,7 +174,9 @@ class RemediationController extends PoamBaseController
         $organizations = $orgTree->fetchTree();
         $orgTree->resetBaseQuery();
         
-        $organizations = $this->toHierarchy($organizations);
+        $organizations = $this->toHierarchy($organizations, 
+                                            $this->getRequest()->getParam('type'), 
+                                            $this->getRequest()->getParam('source'));
         
         $this->view->summaryData = $organizations;
     }
@@ -184,7 +188,7 @@ class RemediationController extends PoamBaseController
      * 
      * @todo see if the organization model's function can be used instead
      */
-    public function toHierarchy($collection) 
+    public function toHierarchy($collection, $type, $source) 
     { 
         // Trees mapped 
         $trees = array(); 
@@ -198,7 +202,7 @@ class RemediationController extends PoamBaseController
                 $item['orgType'] = $node->getType();
                 $item['orgTypeLabel'] = $node->getOrgTypeLabel();
 
-                $summaryCounts = $node->getSummaryCounts();
+                $summaryCounts = $node->getSummaryCounts($type, $source);
                 $item = array_merge($item, $summaryCounts);
                 
                 $item['children'] = array();
