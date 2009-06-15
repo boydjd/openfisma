@@ -23,9 +23,9 @@
  * @version   $Id$
  * @package   Controller
  */
-
+ 
 /**
- * The product controller handles CRUD for product objects.
+ * Handles CRUD for product objects.
  *
  * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
@@ -34,36 +34,16 @@
 class ProductController extends SecurityController
 {
     private $_paging = array(
-        'mode' => 'Sliding',
-        'append' => false,
-        'urlVar' => 'p',
-        'path' => '',
-        'currentPage' => 1,
-        'perPage' => 20
+        'startIndex' => 0,
+        'count' => 20
     );
-
+    
     /**
-     * @todo english
-     * Initilize Class
-     */
-    public function init()
-    {
-        parent::init();
-        $this->_product = new Product();
-    }
-
-    /**
-     * @todo english
      * Invoked before each Action
      */
     public function preDispatch()
     {
-        $req = $this->getRequest();
-        $this->_pagingBasePath = $req->getBaseUrl() . '/panel/product/sub/list';
-        $this->_paging['currentPage'] = $req->getParam('p', 1);
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('search', 'html')
-                    ->initContext();
+        $this->_paging['startIndex'] = $this->_request->getParam('startIndex', 0);
     }
 
     /**
@@ -71,117 +51,104 @@ class ProductController extends SecurityController
      *
      * @return Zend_Form
      */
-    public function getProductForm()
+    private function _getProductForm()
     {
         $form = Fisma_Form_Manager::loadForm('product');
         return Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
-     * Render the form for searching the products
-     */
-    public function searchAction()
-    {
-        $this->_acl->requirePrivilege('admin_products', 'read');
-        
-        $product = new Product();
-        $req = $this->getRequest();
-        $prodId = $req->getParam('prod_list', '');
-        $prodName = $req->getParam('prod_name', '');
-        $prodVendor = $req->getParam('prod_vendor', '');
-        $prodVersion = $req->getParam('prod_version', '');
-        $qry = $product->select()->setIntegrityCheck(false)->from(array(),
-            array());
-        if (!empty($prodName)) {
-            $qry->where("name like ?", "%$prodName%");
-            $this->view->prodName = $prodName;
-        }
-        if (!empty($prodVendor)) {
-            $qry->where("vendor like ?", "%$prodVendor%");
-            $this->view->prodVendor = $prodVendor;
-        }
-        if (!empty($prodVersion)) {
-            $qry->where("version like ?", "%$prodVersion%");
-            $this->view->prodVersion = $prodVersion;
-        }
-        $qry->limit(100, 0);
-        $this->view->prod_list = $product->fetchAll($qry)->toArray();
-    }
-
-    /**
-     * List the products from the search, if search none, it list all products
+     *  render the searching boxes and keep the searching criteria
      */
     public function searchbox()
     {
-        $this->_acl->requirePrivilege('admin_products', 'read');
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-        
-        $qv = trim($this->_request->getParam('qv'));
-        if (!empty($qv)) {
-            $ret = $this->_helper->searchQuery($qv, 'product');
-            $count = count($ret);
-            $this->_paging['fileName'] .= '/qv/'.$qv;
-        } else {
-            $count = $this->_product->count();
-        }
-
-        $this->_paging['totalItems'] = $count;
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $count);
-        $this->view->assign('links', $pager->getLinks());
+        Fisma_Acl::requirePrivilege('products', 'read');
+        $value = trim($this->_request->getParam('keywords'));
+        $this->view->assign('keywords', $value);
         $this->render('searchbox');
     }
-    
+
     /**
-     * List the products according to search criterias.
+     * show the list page, not for data
      */
     public function listAction()
     {
-        $this->_acl->requirePrivilege('admin_products', 'read');
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('products', 'read');
+
+        $value = trim($this->_request->getParam('keywords'));
         $this->searchbox();
         
-        $value = trim($this->_request->getParam('qv'));
-
-        $query = $this->_product->select()->from('products', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
+        $link = '';
+        empty($value) ? $link .='' : $link .= '/keywords/' . $value;
+        $this->view->link     = $link;
+        $this->view->pageInfo = $this->_paging;
+        $this->view->keywords = $value;
+        $this->render('list');
+    }
+    
+    /**
+     * list the products from the search, 
+     * if search none, it list all products
+     *
+     */
+    public function searchAction()
+    {
+        Fisma_Acl::requirePrivilege('products', 'read');
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+        
+        $sortBy = $this->_request->getParam('sortby', 'name');
+        $order  = $this->_request->getParam('order', 'ASC');
+        $value  = $this->_request->getParam('value'); 
+        
+        $query  = Doctrine_Query::create()
+                    ->select('*')->from('Product')
+                    ->orderBy("$sortBy $order")
+                    ->limit($this->_paging['count'])
+                    ->offset($this->_paging['startIndex']);
 
         if (!empty($value)) {
+            $this->_helper->searchQuery($value, 'product');
             $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            //@todo english  get search results in ids
+            // get search results in ids
             $productIds = $cache->load($this->_me->id . '_product');
             if (!empty($productIds)) {
-                $ids = implode(',', $productIds);
+                $productIds = implode(',', $productIds);
             } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
+                // set ids as a not exist value in database if search results is none.
+                $productIds = -1;
             }
-            $query->where('id IN (' . $ids . ')');
+            $query->where('id IN (' . $productIds . ')');
         }
-        $productList = $this->_product->fetchAll($query)->toArray();
-        $this->view->assign('product_list', $productList);
-        $this->render('sublist');
+        
+        $totalRecords = $query->count();
+        $products     = $query->execute();
+        $tableData    = array('table' => array(
+                            'recordsReturned' => count($products->toArray()),
+                            'totalRecords'    => $totalRecords,
+                            'startIndex'      => $this->_paging['startIndex'],
+                            'sort'            => $sortBy,
+                            'dir'             => $order,
+                            'pageSize'        => $this->_paging['count'],
+                            'records'         => $products->toArray()
+                        ));
+        echo json_encode($tableData);
     }
-
+    
     /**
      * Display a single product record with all details.
      */
     public function viewAction()
     {
-        $this->_acl->requirePrivilege('admin_products', 'read');
+        Fisma_Acl::requirePrivilege('products', 'read');
 
-        //Display searchbox template
         $this->searchbox();
         
-        $form = $this->getProductForm();
-        $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v', 'view');
-
-        $res = $this->_product->find($id)->toArray();
-        $product = $res[0];
+        $form   = $this->_getProductForm();
+        $id     = $this->_request->getParam('id');
+        $v      = $this->_request->getParam('v', 'view');
+        $product = Doctrine::getTable('Product')->find($id);
+        
         if ($v == 'edit') {
             $this->view->assign('viewLink', "/panel/product/sub/view/id/$id");
             $form->setAction("/panel/product/sub/update/id/$id");
@@ -191,9 +158,9 @@ class ProductController extends SecurityController
             $form->setReadOnly(true);            
         }
         $this->view->assign('deleteLink', "/panel/product/sub/delete/id/$id");
-        $form->setDefaults($product);
+        $form->setDefaults($product->toArray());
         $this->view->form = $form;
-        $this->view->assign('id', $id);
+        $this->view->id   = $id;
         $this->render($v);
     }
 
@@ -201,14 +168,13 @@ class ProductController extends SecurityController
      * Display the form for creating a new product.
      */
     public function createAction()
-    {   
-        $this->_acl->requirePrivilege('admin_products', 'create');
+    {
+        Fisma_Acl::requirePrivilege('products', 'create');
 
-        //Display searchbox template
         $this->searchbox();
 
         // Get the product form
-        $form = $this->getProductForm();
+        $form = $this->_getProductForm();
         $form->setAction('/panel/product/sub/save');
 
         // If there is data in the _POST variable, then use that to
@@ -217,7 +183,7 @@ class ProductController extends SecurityController
         $form->setDefaults($post);
 
         // Assign view outputs.
-        $this->view->form = Fisma_Form_Manager::prepareForm($form);
+        $this->view->form = $form;
         $this->render('create');
     }
 
@@ -227,33 +193,29 @@ class ProductController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_acl->requirePrivilege('admin_products', 'update');
+        Fisma_Acl::requirePrivilege('products', 'update');
         
-        $form = $this->getProductForm();
+        $form = $this->_getProductForm();
         $post = $this->_request->getPost();
-        $formValid = $form->isValid($post);
+        
         if ($form->isValid($post)) {
-            $product = $form->getValues();
-            unset($product['save']);
-            unset($product['reset']);
-            $productId = $this->_product->insert($product);
-            if (! $productId) {
-                $msg = "Failure in creation";
+            $product = new Product();
+            $product->merge($form->getValues());
+
+            if (!$product->trySave()) {
+                $msg   = "Failure in creation";
                 $model = self::M_WARNING;
             } else {
-                $this->_notification
-                     ->add(Notification::PRODUCT_CREATED, $this->_me->account, $productId);
-
+                $this->_helper->addNotification(Notification::PRODUCT_CREATED, $this->_me->username, $product->id);
                 //Create a product index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    $this->_helper->updateIndex('product', $productId, $product);
+                    $this->_helper->updateIndex('product', $product->id, $product->toArray());
                 }
-
-                $msg = "The product is created";
+                $msg   = "The product is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $productId));
+            $this->_forward('view', null, null, array('id' => $product->id));
         } else {
             $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
@@ -263,36 +225,36 @@ class ProductController extends SecurityController
     }
 
     /**
-     *  Delete a specified product.
+     * Delete a product
      */
     public function deleteAction()
     {
-        $this->_acl->requirePrivilege('admin_products', 'delete');
+        Fisma_Acl::requirePrivilege('products', 'delete');
         
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $db = $this->_product->getAdapter();
-        $qry = $db->select()->from('vuln_products')->where('prod_id = ' . $id);
-        $result = $db->fetchCol($qry);
-        if (!empty($result)) {
-            $msg = 'This product cannot be deleted because it is already'
-                   .' associated with one or more vulnerabilities.';
+        $id = $this->_request->getParam('id', 0);
+        $product = Doctrine::getTable('Product')->find($id);
+        if (!$product) {
+            //@todo english
+            $msg   = 'Invalid product';
+            $model = self::M_WARNING;
+        } elseif ($product->Assets->toArray()) {
+            //@todo english
+            $msg = 'This network can not be deleted because it is already associated with one or more ASSETS';
+            $model = self::M_WARNING;
         } else {
-            $res = $this->_product->delete('id = ' . $id);
-            if (!$res) {
+            if (!$product->delete()) {
+                //@todo english
                 $msg = "Failed to delete the product";
                 $model = self::M_WARNING;
             } else {
-                $this->_notification
-                     ->add(Notification::PRODUCT_DELETED,
-                         $this->_me->account, $id);
-
-                //Delete this product index
+                //Delete product index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    $this->_helper->deleteIndex('product', $id);
+                    $this->_helper->deleteIndex('product', $product->id);
                 }
 
-                $msg = "Product deleted successfully";
+                $this->_helper->addNotification(Notification::PRODUCT_DELETED, $this->_me->username, $product->id);
+                // @todo english
+                $msg   = "product deleted successfully";
                 $model = self::M_NOTICE;
             }
         }
@@ -303,33 +265,31 @@ class ProductController extends SecurityController
     /**
      * Updates product information after submitting an edit form.
      */
-    public function updateAction ()
+    public function updateAction()
     {
-        $this->_acl->requirePrivilege('admin_products', 'update');
+        Fisma_Acl::requirePrivilege('products', 'update');
         
-        $form = $this->getProductForm();
+        $form = $this->_getProductForm();
+        $id   = $this->_request->getParam('id');
         $post = $this->_request->getPost();
         $formValid = $form->isValid($post);
-        $product = $form->getValues();
-
-        $id = $this->_request->getParam('id');
-        if ($formValid) {
-            unset($product['save']);
-            unset($product['reset']);
-            $res = $this->_product->update($product, 'id = ' . $id);
-            if ($res) {
-                $this->_notification
-                     ->add(Notification::PRODUCT_MODIFIED, $this->_me->account, $id);
-
-                //Update this product index
+        
+        if ($form->isValid($post)) {
+            $product = new Product();
+            $product = $product->getTable()->find($id);
+            $product->merge($form->getValues());
+            if ($product->trySave()) {
+                $this->_helper->addNotification(Notification::PRODUCT_MODIFIED, $this->_me->username, $product->id);
+                //Update product index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    $this->_helper->updateIndex('product', $id, $product);
+                    $this->_helper->updateIndex('product', $product->id, $product->toArray());
                 }
-
-                $msg = "The product is saved";
+                //@todo english
+                $msg   = "The product is saved";
                 $model = self::M_NOTICE;
             } else {
-                $msg = "Nothing changes";
+                //@todo english
+                $msg   = "Nothing changes";
                 $model = self::M_WARNING;
             }
             $this->message($msg, $model);

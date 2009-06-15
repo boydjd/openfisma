@@ -1,34 +1,31 @@
-<table class="searchFilters">
-    <tbody>
-        <tr>
-            <th>[<a href="/panel/product/sub/list">Products List</a>] (total: <?php echo 
-$this->total;?>)</th>
-            <?php if($this->acl->isAllowed('admin_products', 'create')) { ?>
-            <th>[<a href="/panel/product/sub/create" title="Add New Product">Add 
-Product</a>]</th>
-            <?php } ?>
-            <th>
-                <table align="center">
-                        <tr>
-                            <td><b>Page:&nbsp;</b></td>
-                            <td><?php echo $this->links['all'];?></td>
-                            <td>|</td>
-                        </tr>
-                </table>
-            </th>
-            <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product')) { ?>
-            <th>
-                <table align="center">
-                <form name="query" method="post" action="/panel/product/sub/list">
-                        <tr>
-                            <td><b>Query:&nbsp;</b></td>
-                            <td><input name="qv" value="<?php echo $this->qv;?>" title="Input your query value" size="20" maxlength="40" type="text"></td>
+<div class="searchFilters">
+    <?php
+    $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
+                                           array('value' => 'Product List', 
+                                                 'href' => '/panel/product/sub/list'));
+    echo $listButton;
+    ?>
 
-                             <td><input value="Search" title="submit your request" type="submit"></td>
-                        </tr>
-                </form>
-                </table>
-            </th>
-            <?php } ?>
-        </tr>
-</table>
+    <?php if(Fisma_Acl::hasPrivilege('products', 'create')) {
+    $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                           array('value' => 'Add Product', 
+                                                 'href' => '/panel/product/sub/create'));
+    echo $createButton;
+    } ?>
+    <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product')) { ?>
+    <form name="query" method="post" action="/panel/product/sub/list" style="display:inline">
+    <b>Query:&nbsp;</b>
+    <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
+    <span id="searchContainer"></span>
+    <script type='text/javascript'>
+       var save = new YAHOO.widget.Button({
+           type: "submit",
+           label: "Search",
+           value: "Search",
+           container: "searchContainer",
+           disabled: false
+       });
+    </script>
+    </form>
+    <?php } ?>
+</div>
