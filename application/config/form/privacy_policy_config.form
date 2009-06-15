@@ -10,6 +10,7 @@
 
 [privacy_policy_config]
 method = "post"
+action = "/panel/config/type/privacy"
 
 elements.privacy_policy.type = "textarea"
 elements.privacy_policy.options.label = "Privacy Policy"
