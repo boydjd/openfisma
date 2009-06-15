@@ -35,8 +35,6 @@ try {
     } else {
         $pl = new Fisma_Controller_Plugin_Install();
     }
-    $manager = Doctrine_Manager::getInstance();
-    $manager->setAttribute(Doctrine::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
     $front->registerPlugin($pl);
     $front->dispatch();
 } catch (Exception $exception) {
