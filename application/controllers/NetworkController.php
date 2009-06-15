@@ -238,7 +238,7 @@ class NetworkController extends SecurityController
              */
             $msg = 'Invalid network';
             $model = self::M_WARNING;
-        } elseif (!$network->Asset) {
+        } elseif (!empty($network->Assets->toArray())) {
             /**
              * @todo english
              */

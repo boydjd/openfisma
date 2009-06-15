@@ -363,7 +363,7 @@ class SystemController extends SecurityController
             $sysValues = $form->getValues();
             $system->merge($sysValues);
             
-            if ($system->isModified() ||1) {
+            if ($system->isModified()) {
                 $system->save();
                 $organization = $system->Organization[0]->getNode();
                 if ($sysValues['organization_id'] != $organization->getParent()->id) {
