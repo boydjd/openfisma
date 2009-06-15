@@ -20,10 +20,10 @@
  * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
+ * @version   $Id:$
  * @package   Controller
  */
-
+ 
 /**
  * Handles CRUD for finding source objects.
  *
@@ -34,33 +34,16 @@
 class SourceController extends SecurityController
 {
     private $_paging = array(
-        'mode' => 'Sliding',
-        'append' => false,
-        'urlVar' => 'p',
-        'path' => '',
-        'currentPage' => 1,
-        'perPage' => 20
+        'startIndex' => 0,
+        'count' => 20
     );
-
+    
     /**
-     * @todo english
-     * Initialize this Class
-     */
-    public function init()
-    {
-        parent::init();
-        $this->_source = new Source();
-    }
-
-    /**
-     * @todo english
      * Invoked before each Action
      */
     public function preDispatch()
     {
-        $req = $this->getRequest();
-        $this->_pagingBasePath = $req->getBaseUrl() . '/panel/source/sub/list';
-        $this->_paging['currentPage'] = $req->getParam('p', 1);
+        $this->_paging['startIndex'] = $this->_request->getParam('startIndex', 0);
     }
 
     /**
@@ -68,86 +51,103 @@ class SourceController extends SecurityController
      *
      * @return Zend_Form
      */
-    public function getSourceForm()
+    private function _getSourceForm()
     {
         $form = Fisma_Form_Manager::loadForm('source');
         return Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
-     * Render the form for searching the sources.
+     *  render the searching boxes and keep the searching criteria
      */
     public function searchbox()
     {
-        $this->_acl->requirePrivilege('admin_sources', 'read');
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-        
-        $qv = trim($this->_request->getParam('qv'));
-        if (!empty($qv)) {
-            $ret = $this->_helper->searchQuery($qv, 'source');
-            $count = count($ret);
-            $this->_paging['fileName'] .= '/qv/'.$qv;
-        } else {
-            $count = $this->_source->count();
-        }
-
-        $this->_paging['totalItems'] = $count;
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $count);
-        $this->view->assign('links', $pager->getLinks());
+        Fisma_Acl::requirePrivilege('finding_sources', 'read');
+        $value = trim($this->_request->getParam('keywords'));
+        $this->view->assign('keywords', $value);
         $this->render('searchbox');
     }
 
-   /**
-    * List the sources according to search criterias.
-    */
+    /**
+     * show the list page, not for data
+     */
     public function listAction()
     {
-        $this->_acl->requirePrivilege('admin_sources', 'read');
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('finding_sources', 'read');
+
+        $value = trim($this->_request->getParam('keywords'));
         $this->searchbox();
         
-        $req = $this->getRequest();
-        $value = trim($req->getParam('qv'));
-
-        $query = $this->_source->select()->from('sources', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
-        if (!empty($value)) {
-            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            //@todo english  get search results in ids
-            $sourceIds = $cache->load($this->_me->id . '_source');
-            if (!empty($sourceIds)) {
-                $ids = implode(',', $sourceIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
-        }
-        $sourceList = $this->_source->fetchAll($query)->toArray();
-        $this->view->assign('source_list', $sourceList);
+        $link = '';
+        empty($value) ? $link .='' : $link .= '/keywords/' . $value;
+        $this->view->assign('pageInfo', $this->_paging);
+        $this->view->assign('keywords', $value);
         $this->render('list');
     }
+    
+    /**
+     * list the sources from the search, 
+     * if search none, it list all sources
+     *
+     */
+    public function searchAction()
+    {
+        Fisma_Acl::requirePrivilege('finding_sources', 'read');
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+        
+        $sortBy = $this->_request->getParam('sortby', 'name');
+        $order  = $this->_request->getParam('order', 'ASC');
+        $value  = $this->_request->getParam('value'); 
+        
+        $query  = Doctrine_Query::create()
+                    ->select('*')->from('Source')
+                    ->orderBy("$sortBy $order")
+                    ->limit($this->_paging['count'])
+                    ->offset($this->_paging['startIndex']);
 
+        if (!empty($value)) {
+            $this->_helper->searchQuery($value, 'source');
+            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
+            // get search results in ids
+            $sourceIds = $cache->load($this->_me->id . '_source');
+            if (!empty($sourceIds)) {
+                $sourceIds = implode(',', $sourceIds);
+            } else {
+                // set ids as a not exist value in database if search results is none.
+                $sourceIds = -1;
+            }
+            $query->where('id IN (' . $sourceIds . ')');
+        }
+        
+        $totalRecords = $query->count();
+        $sources      = $query->execute();
+        $tableData    = array('table' => array(
+                            'recordsReturned' => count($sources->toArray()),
+                            'totalRecords'    => $totalRecords,
+                            'startIndex'      => $this->_paging['startIndex'],
+                            'sort'            => $sortBy,
+                            'dir'             => $order,
+                            'pageSize'        => $this->_paging['count'],
+                            'records'         => $sources->toArray()
+                        ));
+        echo json_encode($tableData);
+    }
+    
     /**
      * Display a single source record with all details.
      */
     public function viewAction()
     {
-        $this->_acl->requirePrivilege('admin_sources', 'read');
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('finding_sources', 'read');
+
         $this->searchbox();
         
-        $form = $this->getSourceForm();
-        $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v', 'view');
-
-        $res = $this->_source->find($id)->toArray();
-        $source = $res[0];
+        $form   = $this->_getSourceForm();
+        $id     = $this->_request->getParam('id');
+        $v      = $this->_request->getParam('v', 'view');
+        $source = Doctrine::getTable('Source')->find($id);
+        
         if ($v == 'edit') {
             $this->view->assign('viewLink', "/panel/source/sub/view/id/$id");
             $form->setAction("/panel/source/sub/update/id/$id");
@@ -157,9 +157,9 @@ class SourceController extends SecurityController
             $form->setReadOnly(true);            
         }
         $this->view->assign('deleteLink', "/panel/source/sub/delete/id/$id");
-        $form->setDefaults($source);
+        $form->setDefaults($source->toArray());
         $this->view->form = $form;
-        $this->view->assign('id', $id);
+        $this->view->id   = $id;
         $this->render($v);
     }
 
@@ -168,12 +168,12 @@ class SourceController extends SecurityController
      */
     public function createAction()
     {
-        $this->_acl->requirePrivilege('admin_sources', 'create');
-        //Display searchbox template
+        Fisma_Acl::requirePrivilege('finding_sources', 'create');
+
         $this->searchbox();
 
         // Get the source form
-        $form = $this->getSourceForm();
+        $form = $this->_getSourceForm();
         $form->setAction('/panel/source/sub/save');
 
         // If there is data in the _POST variable, then use that to
@@ -182,7 +182,7 @@ class SourceController extends SecurityController
         $form->setDefaults($post);
 
         // Assign view outputs.
-        $this->view->form = Fisma_Form_Manager::prepareForm($form);
+        $this->view->form = $form;
         $this->render('create');
     }
 
@@ -192,33 +192,29 @@ class SourceController extends SecurityController
      */
     public function saveAction()
     {
-        $this->_acl->requirePrivilege('admin_sources', 'update');
+        Fisma_Acl::requirePrivilege('finding_sources', 'update');
         
-        $form = $this->getSourceForm();
+        $form = $this->_getSourceForm();
         $post = $this->_request->getPost();
-        $formValid = $form->isValid($post);
+        
         if ($form->isValid($post)) {
-            $source = $form->getValues();
-            unset($source['save']);
-            unset($source['reset']);
-            $sourceId = $this->_source->insert($source);
-            if (! $sourceId) {
-                $msg = "Failure in creation";
+            $source = new Source();
+            $source->merge($form->getValues());
+
+            if (!$source->trySave()) {
+                $msg   = "Failure in creation";
                 $model = self::M_WARNING;
             } else {
-                $this->_notification
-                     ->add(Notification::SOURCE_CREATED, $this->_me->account, $sourceId);
-
-                //Update source index
+                $this->_helper->addNotification(Notification::SOURCE_CREATED, $this->_me->username, $source->id);
+                //Create a source index
                 if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source/')) {
-                    $this->_helper->updateIndex('source', $sourceId, $source);
+                    $this->_helper->updateIndex('source', $source->id, $source->toArray());
                 }
-
-                $msg = "The source is created";
+                $msg   = "The source is created";
                 $model = self::M_NOTICE;
             }
             $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $sourceId));
+            $this->_forward('view', null, null, array('id' => $source->id));
         } else {
             $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
@@ -228,32 +224,32 @@ class SourceController extends SecurityController
     }
 
     /**
-     * Delete a singal source
+     * Delete a source
      */
     public function deleteAction()
     {
-        $this->_acl->requirePrivilege('admin_sources', 'delete');
+        Fisma_Acl::requirePrivilege('finding_sources', 'delete');
         
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $db = $this->_source->getAdapter();
-        $qry = $db->select()->from('poams')->where('source_id = ' . $id);
-        $result = $db->fetchCol($qry);
-        if (!empty($result)) {
-            $msg = 'This finding source can not be deleted because it is'
-                   .' already associated with one or more POAMS';
+        $id = $this->_request->getParam('id', 0);
+        $source = Doctrine::getTable('Source')->find($id);
+        if (!$source) {
+            //@todo english
+            $msg   = 'Invalid source';
             $model = self::M_WARNING;
         } else {
-            $res = $this->_source->delete('id = ' . $id);
-            if (!$res) {
-                $msg = "Failed to delete the finding source";
+            if (!$source->delete()) {
+                //@todo english
+                $msg = "Failed to delete the source";
                 $model = self::M_WARNING;
             } else {
-                $this->_notification
-                     ->add(Notification::SOURCE_DELETED,
-                        $this->_me->account, $id);
+                //Delete source index
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source/')) {
+                    $this->_helper->deleteIndex('source', $source->id);
+                }
 
-                $msg = "Finding source deleted successfully";
+                $this->_helper->addNotification(Notification::SOURCE_DELETED, $this->_me->username, $source->id);
+                // @todo english
+                $msg   = "source deleted successfully";
                 $model = self::M_NOTICE;
             }
         }
@@ -264,52 +260,31 @@ class SourceController extends SecurityController
     /**
      * Updates source information after submitting an edit form.
      */
-    public function updateAction ()
+    public function updateAction()
     {
-        $this->_acl->requirePrivilege('admin_sources', 'update');
+        Fisma_Acl::requirePrivilege('finding_sources', 'update');
         
-        $form = $this->getSourceForm();
+        $form = $this->_getSourceForm();
+        $id   = $this->_request->getParam('id');
         $post = $this->_request->getPost();
         $formValid = $form->isValid($post);
-        $source = $form->getValues();
-
-        $id = $this->_request->getParam('id');
-        $ret = $this->_source->find($id)->current();
-        if (!empty($ret)) {
-            $query = $ret->name . ' ' . $ret->nickname;
-        } else {
-            throw new Exception_General("Ths source posted is not a valid source");
-        }
-        $data['source'] = $source['name'] . ' ' . $source['nickname'];
-
-        if ($formValid) {
-            unset($source['save']);
-            unset($source['reset']);
-            $res = $this->_source->update($source, 'id = ' . $id);
-            if ($res) {
-                $this->_notification
-                     ->add(Notification::SOURCE_MODIFIED, $this->_me->account, $id);
-
-                //Update findings index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding') && $query != $data['source']) {
-                    $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/finding');
-                    $hits = $index->find('source:'.$query);
-                    $ids = array();
-                    foreach ($hits as $hit) {
-                        $ids[] = $hit->id;
-                    }
-                    $this->_helper->updateIndex('finding', $ids, $data);
+        
+        if ($form->isValid($post)) {
+            $source = new Source();
+            $source = $source->getTable()->find($id);
+            $source->merge($form->getValues());
+            if ($source->trySave()) {
+                $this->_helper->addNotification(Notification::SOURCE_MODIFIED, $this->_me->username, $source->id);
+                //Update source index
+                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source/')) {
+                    $this->_helper->updateIndex('source', $source->id, $source->toArray());
                 }
-
-                //Update Source index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source')) {
-                    $this->_helper->updateIndex('source', $id, $source);
-                }
-
-                $msg = "The source is saved";
+                //@todo english
+                $msg   = "The source is saved";
                 $model = self::M_NOTICE;
             } else {
-                $msg = "Nothing changes";
+                //@todo english
+                $msg   = "Nothing changes";
                 $model = self::M_WARNING;
             }
             $this->message($msg, $model);
