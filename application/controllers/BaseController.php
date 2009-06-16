@@ -88,6 +88,13 @@ abstract class BaseController extends SecurityController
         $form   = $this->getForm();
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
+        if (!$subject) {
+            /**
+             * @todo english
+             */
+            throw new Fisma_Exception_General("Invalid {$this->_modelName}");
+        }
+        
         $this->view->assign('editLink', "/panel/{$this->_modelName}/sub/edit/id/$id");
         $form->setReadOnly(true);            
         $this->view->assign('deleteLink', "/panel/{$this->_modelName}/sub/delete/id/$id");
@@ -139,6 +146,12 @@ abstract class BaseController extends SecurityController
         $form   = $this->getForm();
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
+        if (!$subject) {
+            /**
+             * @todo english
+             */
+            throw new Fisma_Exception_General("Invalid {$this->_modelName}");
+        }
         $this->view->assign('viewLink', "/panel/{$this->_modelName}/sub/view/id/$id");
         $form->setAction("/panel/{$this->_modelName}/sub/edit/id/$id");
         $this->view->assign('deleteLink', "/panel/{$this->_modelName}/sub/delete/id/$id");

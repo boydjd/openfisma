@@ -1,4 +1,5 @@
 <?php
+echo $this->partial('network/searchbox.phtml');
 $operation = '';
 if (Fisma_Acl::hasPrivilege('admin_networks','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";

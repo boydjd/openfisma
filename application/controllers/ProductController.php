@@ -34,4 +34,33 @@
 class ProductController extends BaseController
 {
     protected $_modelName = 'Product';
+    
+    /**
+     * Delete a product
+     */
+    public function deleteAction()
+    {
+        Fisma_Acl::requirePrivilege('products', 'delete');
+        
+        $id = $this->_request->getParam('id', 0);
+        $product = Doctrine::getTable('Product')->find($id);
+        if (!$product) {
+            /** @todo English */
+            $msg   = "Invalid Product";
+            $type = self::M_WARNING;
+        } else {
+            $assets = $product->Assets->toArray();
+            if (!empty($assets)) {
+                /** 
+                 * @todo english
+                 */
+                $msg = 'This product can not be deleted because it is already associated with one or more ASSETS';
+                $type = self::M_WARNING;
+                $this->message($msg, $type);
+                $this->_forward('list');
+            } else {
+                parent::deleteAction();
+            }
+        }
+    }
 }
