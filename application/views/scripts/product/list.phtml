@@ -1,5 +1,5 @@
 <?php 
-echo $this->partial('product/searchbox.phtml');
+echo $this->partial('product/searchbox.phtml', array('keywords' => $this->keywords));
 Fisma_Format_Section::startSection("Product List <span id='searchResultsTotalFound'></span>"); 
 ?>
 <div id="list"></div>
@@ -75,7 +75,7 @@ var myColumnDefs = [
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/product/sub/view/v/view/id/" + oRecord.getData("id");
+            document.location = "/panel/product/sub/view/id/" + oRecord.getData("id");
         }
     );
     <?php }?>

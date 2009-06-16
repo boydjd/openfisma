@@ -20,7 +20,7 @@
  * @author    Jim Chen <xhorse@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: ProductController.php 1759 2009-06-15 10:18:02Z ryanyang $
+ * @version   $Id$
  * @package   Controller
  */
  
@@ -146,7 +146,6 @@ abstract class BaseController extends SecurityController
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $subject = new $this->_modelName;
                 $subject->merge($form->getValues());
                 if (!$subject->trySave()) {
                     /** @todo English. This notice span following segments */
@@ -202,11 +201,11 @@ abstract class BaseController extends SecurityController
     public function listAction()
     {
         Fisma_Acl::requirePrivilege($this->_modelName, 'read');
-        $value = trim($this->_request->getParam('keywords'));
-        $link = empty($value) ? '' : '/keywords/' . $value;
+        $keywords = trim($this->_request->getParam('keywords'));
+        $link = empty($keywords) ? '' : '/keywords/' . $keywords;
         $this->view->link     = $link;
         $this->view->pageInfo = $this->_paging;
-        $this->view->keywords = $value;
+        $this->view->keywords = $keywords;
         $this->render('list');
     }
 
@@ -250,7 +249,7 @@ abstract class BaseController extends SecurityController
                             'pageSize'        => $this->_paging['count'],
                             'records'         => array()
                         ));
-        if (!empty($value)) {
+        if (!empty($keywords)) {
             // lucene search 
             $ids = $this->_helper->searchQuery($value, strtolower($this->_modelName));
             if (!empty($ids)) {
@@ -264,7 +263,7 @@ abstract class BaseController extends SecurityController
         
         $totalRecords = $query->count();
         $rows         = $query->execute();
-        $tableData['table']['recordsReturned'] = count($products);
+        $tableData['table']['recordsReturned'] = count($rows);
         $tableData['table']['totalRecords'] = $totalRecords;
         $tableData['table']['records'] = $rows->toArray();
         return $this->_helper->json($tableData);
