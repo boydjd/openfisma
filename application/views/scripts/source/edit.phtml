@@ -1,4 +1,6 @@
-<?php Fisma_Format_Section::startSection("Finding Source Information [<a href='{$this->viewLink}'>View</a>]"); ?>
+<?php 
+echo $this->partial('source/searchbox.phtml');
+Fisma_Format_Section::startSection("Finding Source Information [<a href='{$this->viewLink}'>View</a>]"); ?>
 
 <div class="form_box">
     <?php echo $this->form ?>

@@ -12,5 +12,34 @@
  */
 class Source extends BaseSource
 {
+    public function preSave()
+    {
+        Doctrine_Manager::connection()->beginTransaction();   
+    }
+    
+    public function preDelete()
+    {
+         Doctrine_Manager::connection()->beginTransaction();       
+    }
 
+    public function postInsert()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::SOURCE_CREATED, $this->id);
+        Doctrine_Manager::connection()->commit();
+    }
+
+    public function postUpdate()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::SOURCE_MODIFIED, $this->id);
+        Doctrine_Manager::connection()->commit();
+    }
+
+    public function postDelete()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::SOURCE_DELETED, $this->id);
+        Doctrine_Manager::connection()->commit();
+    }
 }

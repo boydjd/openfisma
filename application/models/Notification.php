@@ -32,17 +32,21 @@ class Notification extends BaseNotification
     const UPDATE_FINDING_RESOURCES = 13;
     const UPDATE_EST_COMPLETION_DATE = 14;
 
-    const MITIGATION_STRATEGY_APPROVED = 15;
-    const MITIGATION_STRATEGY_SUBMIT = 54;
+    const MITIGATION_APPROVED_SSO = 15;
+    const MITIGATION_APPROVED_IVV = 52;
+    const MITIGATION_STRATEGY_SUBMIT = 53;
+    const MITIGATION_STRATEGY_REVISE = 54;
     const POAM_CLOSED = 16;
     
     const EVIDENCE_UPLOAD = 17;
-    const EVIDENCE_DENIED = 51;
+    const EVIDENCE_DENIED = 50;
+    const EVIDENCE_APPROVED_1ST = 18;
+    const EVIDENCE_APPROVED_2ND = 19;
     
     const ACCOUNT_MODIFIED = 21;
     const ACCOUNT_DELETED = 22;
     const ACCOUNT_CREATED = 23;
-    const ACCOUNT_LOCKED = 52;
+    const ACCOUNT_LOCKED = 51;
     
     const ORGANIZATION_DELETED = 24;
     const ORGANIZATION_MODIFIED = 25;
@@ -78,5 +82,45 @@ class Notification extends BaseNotification
     const ECD_EXPIRES_7_DAYS = 47;
     const ECD_EXPIRES_14_DAYS = 48;
     const ECD_EXPIRES_21_DAYS = 49;
-    
+
+    /**
+     * Add notifications for the specified event.
+     *
+     * @param int $eventId The event id
+     * @param int $record An ID or description of the object
+     * @param int $organizationId The organization id.
+     */
+    public function add($eventId, $record, $organizationId = null)
+    {
+        $event = Doctrine::getTable('Event')->find($eventId);
+        if (empty($event)) {
+            //@todo english
+            throw new Fisma_Exception_General("The event of this operation dose not exist");
+        }
+        $eventText = $event->name;
+        
+        $user      = Zend_Auth::getInstance()->getIdentity();
+        if (!empty($user)) {
+            $eventText .= " by $user";
+        }
+        $eventText .= "(Id. $record)";
+
+        if ($organizationId == null) {
+            $userEvents = Doctrine::getTable('UserEvent')->findByEventId($eventId);
+        } else {
+            $userEvents = Doctrine_Query::create()
+                            ->select('ue.eventId, ue.userId')
+                            ->from('UserEvent ue, UserOrganization uo')
+                            ->where('ue.eventId = ?', $eventId)
+                            ->addWhere('uo.organizationId = ?', $organizationId)
+                            ->execute();
+        }
+
+        foreach ($userEvents as $userEvent) {
+            $this->eventId   = $userEvent->eventId;
+            $this->userId    = $userEvent->userId;
+            $this->eventText = $eventText;
+            $this->save();
+        }
+    }
 }

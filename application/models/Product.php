@@ -12,5 +12,35 @@
  */
 class Product extends BaseProduct
 {
+    public function preSave()
+    {
+        Doctrine_Manager::connection()->beginTransaction();   
+    }
+    
+    public function preDelete()
+    {
+         Doctrine_Manager::connection()->beginTransaction();       
+    }
+
+    public function postInsert()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::PRODUCT_CREATED, $this->id);
+        Doctrine_Manager::connection()->commit();
+    }
+
+    public function postUpdate()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::PRODUCT_MODIFIED, $this->id);
+        Doctrine_Manager::connection()->commit();
+    }
+
+    public function postDelete()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::PRODUCT_DELETED, $this->id);
+        Doctrine_Manager::connection()->commit();
+    }
 
 }

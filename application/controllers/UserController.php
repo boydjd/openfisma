@@ -193,7 +193,7 @@ class UserController extends MessageController
             $inactiveDate = new Zend_Date();
             $inactiveDate->sub($inactivePeriod, Zend_Date::DAY);
             $lastLogin = new Zend_Date($user->lastLoginTs, 'YYYY-MM-DD HH-MI-SS');
-            if (!$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($inactiveDate) ) {
+            if ($lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($inactiveDate) ) {
                 $user->lockAccount(User::LOCK_TYPE_INACTIVE);
                 /** @doctrine fix logging */
                 //$this->_user->log('ACCOUNT_LOCKOUT', $_me->id, "User Account $_me->account Locked");
@@ -296,12 +296,10 @@ class UserController extends MessageController
      * logoutAction() - Close out the current user's session.
      */
     public function logoutAction() {
+        //@todo why $this->_me is just an username now?
         if (!empty($this->_me)) {
-            /** @doctrine fix logging */
-            //$this->_user->log('LOGOUT', $this->_me->id, 'Success');
-            //$notification = new Notification();
-            //$notification->add(Notification::ACCOUNT_LOGOUT, null, "User: {$this->_me->account}");
-            Zend_Auth::getInstance()->clearIdentity();
+            $user = Doctrine::getTable('User')->findOneByUserName($this->_me);
+            $user->logout();
         }
         $this->_forward('login');
     }

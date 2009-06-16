@@ -1,4 +1,6 @@
-<?php Fisma_Format_Section::startSection("Source List <span id='searchResultsTotalFound'></span>"); ?>
+<?php 
+echo $this->partial('source/searchbox.phtml', array('keywords' => $this->keywords));
+Fisma_Format_Section::startSection("Source List <span id='searchResultsTotalFound'></span>"); ?>
 <div id="list"></div>
 <script type="text/javascript">
 // Column definitions

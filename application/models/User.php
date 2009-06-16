@@ -230,10 +230,24 @@ class User extends BaseUser
         if ($validateCode == $validation[0]->validationCode) {
             $this->emailValidate = true;
             $validation->delete();
+            //@todo english
+            $this->log('Email validate successfully');
             return true;
         } else {
+            //@todo english
+            $this->log('Email validate faild');
             return false;
         }
+    }
+
+    /**
+     * Close out the current user's session
+     */
+    public function logout()
+    {
+        //@todo english
+        $this->log('Log out');
+        Zend_Auth::getInstance()->clearIdentity();
     }
 
     /** 
@@ -241,7 +255,7 @@ class User extends BaseUser
      *
      * @param string $message log message
      */
-    public function log($message)
+    private function log($message)
     {
         $accountLog = new AccountLog();
         $accountLog->ip      = $_SERVER["REMOTE_ADDR"];
