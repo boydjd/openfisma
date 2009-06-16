@@ -1,12 +1,13 @@
 <?php
+echo $this->partial('role/searchbox.phtml');
 $operation = '';
-if ($this->acl->isAllowed('admin_roles','definition')) {
+if (Fisma_Acl::hasPrivilege('admin_roles','definition')) {
     $operation .= "[<a href='{$this->rightLink}'>Right</a>]";
 }
-if ($this->acl->isAllowed('admin_roles','update')) {
+if (Fisma_Acl::hasPrivilege('roles','update')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->editLink}'>Edit</a>]";
 }
-if ($this->acl->isAllowed('admin_roles','delete')) {
+if (Fisma_Acl::hasPrivilege('admin_roles','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Role Information $operation"); ?>

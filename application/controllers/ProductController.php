@@ -42,7 +42,7 @@ class ProductController extends BaseController
     {
         Fisma_Acl::requirePrivilege('products', 'delete');
         
-        $id = $this->_request->getParam('id', 0);
+        $id = $this->_request->getParam('id');
         $product = Doctrine::getTable('Product')->find($id);
         if (!$product) {
             /** @todo English */
@@ -56,11 +56,14 @@ class ProductController extends BaseController
                  */
                 $msg = 'This product can not be deleted because it is already associated with one or more ASSETS';
                 $type = self::M_WARNING;
-                $this->message($msg, $type);
-                $this->_forward('list');
             } else {
                 parent::deleteAction();
+                // parent method will take care 
+                // of the message and forword the page
+                return;
             }
         }
+        $this->message($msg, $type);
+        $this->_forward('list');
     }
 }

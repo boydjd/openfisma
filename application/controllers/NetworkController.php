@@ -59,12 +59,15 @@ class NetworkController extends BaseController
                 $msg = 'This network can not be deleted because it is'.
                        ' already associated with one or more ASSETS';
                 $type = self::M_WARNING;
-                $this->message($msg, $type);
-                $this->_forward('list');
             } else {
                 parent::deleteAction();
+                // parent method will take care 
+                // of the message and forword the page
+                return;
             }
         }
+        $this->message($msg, $type);
+        $this->_forward('list');
     }
 
 }
