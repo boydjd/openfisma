@@ -160,8 +160,8 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
         }
         $this->addConfig($ini);
         assert_options(ASSERT_ACTIVE,0);
-        $this->_debug = (0 < $ini->debug->level);
-        if ($this->_debug) {
+        self::$_debug = (0 < $ini->debug->level);
+        if (self::$_debug) {
             assert_options(ASSERT_BAIL,1);
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
