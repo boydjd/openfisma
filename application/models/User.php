@@ -263,5 +263,85 @@ class User extends BaseUser
         $this->AccountLogs[] = $accountLog;
         $this->save();
     }
-
+    
+    /**
+     * Get the OrgSystems which are belong to specify user
+     *
+     * @param int $id user id
+     * @return collection $orgSystem
+     */
+    public function getOrgSystems($id = null)
+    {
+        // if the user id doesn't be assigned,
+        // then use specify id
+        if (is_null($id)) {
+            $id = $this->id;
+        }
+        // get the record of this user
+        $user = Doctrine::getTable('User')->find($id);
+        // if the user hasn't privileged organizations,
+        // return an empty organization collection
+        if (0 == count($user->Organizations)) {
+            return $user->Organizations;
+        } else {
+            // if the user has privileged organizations,
+            // find all system-type children which are belong to these organizations
+            $q = Doctrine_Query::create()
+                 ->select()
+                 ->from('Organization o');
+            foreach ($user->Organizations as $organization) {
+                $q->orWhere('o.lft >= ? AND o.rgt <= ? AND o.orgtype = ?',
+                            array($organization->lft, $organization->rgt, 'system'));
+            }
+            $orgSystem = $q->execute();
+            return $orgSystem;
+        }
+    }
+    
+    /**
+     * Bulid the relationship between specify user and orgSystems
+     * 
+     * The algorithm relies on the linear sequence representative logic. 
+     * <lft rgt> combination is used to determind if the two nodes are parent or child. 
+     * For example, node <2, 7> is parent of <4, 5> because 2 < 4 and 7 > 5. 
+     * 
+     * @see http://www.sitepoint.com/article/hierarchical-data-database/2/
+     * @param array $ids orgSys id
+     * @return boolean
+     */
+    public function setOrgSystems($ids)
+    {
+        $q = Doctrine_Query::create()
+             ->select()
+             ->from('Organization o')
+             ->whereIn('o.id', $ids)
+             ->orderBy('o.lft ASC');
+        // get the records of selected organizations 
+        $orgs = $q->execute()->toArray();
+        if (empty($orgs)) {
+            return false;
+        }
+        // The useless ids will be pushed in this array 
+        $discardIds = array();
+        // The first reference
+        $flagRecord = $orgs[0];
+        // loop times
+        $loopTimes = count($orgs) - 1;
+        for ($i = 0; $i < $loopTimes; $i ++) {
+            if ($flagRecord['rgt'] > $orgs[$i+1]['rgt']) {
+                $discardIds[] = $orgs[$i+1]['id'];
+            } else {
+                $flagRecord = $orgs[$i+1];
+            }
+        }
+        $keepIds = array_diff($ids, $discardIds);
+        foreach ($keepIds as $keepId) {
+            $userOrg = new UserOrganization();
+            $userOrg->userId = $this->id;
+            $userOrg->organizationId = $keepId;
+            $userOrg->save();
+        }
+        return true;
+    }
+    
 }
