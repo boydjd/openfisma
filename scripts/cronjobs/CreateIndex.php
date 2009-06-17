@@ -65,347 +65,266 @@ Class CreateIndex
             throw new Fisma_Exception_General("can't get the setting");
         }
     }
+
+    /**
+     * Create index directory
+     *
+     * @param string $name the index name
+     * return Zend_Search_Lucene
+     */
+    private function _newIndex($name)
+    {
+        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . $name, true);
+        return $index;
+    }
     
     /**
-     * Judge the index if is exist
+     * Optimize the index if the index is exist
      *
-     * @param string $index index name
+     * @param string $name index name
      * @return bool
      */
-    static function isExist($index)
+    private function _optimize($name)
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . $index)) {
+        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . $name)) {
+            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . $name);
+            $index->optimize();
+            /** @todo english */
+            print("$name index optimize successfully. \n");
             return true;
         } else {
             return false;
         }
     }
-    
+
     /**
-     * Get db instance
-     * @return Zend_Db
+     * Create luence index document
+     *
+     * @param array $data the data which need to index
+     * @return Zend_Search_Lucene_Docuemnt
      */
-    static function getDb()
+    private function _createDocument($data)
     {
-        $db = Zend_Db::factory(Zend_Registry::get('datasource'));
-        return $db;
+        if (!is_array($data)) {
+            throw new Fisma_Exception_General("Invalid data");
+        }
+        $doc = new Zend_Search_Lucene_Document();
+        foreach ($data as $key=>$value) {
+            if ('id' == $key) {
+                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($value)));
+                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $value));
+            } else {
+                $doc->addField(Zend_Search_Lucene_Field::UnStored($key, $value));
+            }
+        }
+        return $doc;
     }
 
     /**
      * Create lucene index
+     *
+     * @param string $name index name
+     * @param array  $data index data
+     */
+    private function _createIndex($name, $data)
+    {
+        if (empty($data)) {
+            return false;
+        }
+        $index = $this->_newIndex($name);
+        set_time_limit(0);
+        foreach ($data as $rowData) {
+            $doc   = $this->_createDocument($rowData);
+            $index->addDocument($doc);
+        }
+        $index->optimize();
+        chmod($this->_setting->getPath() . self::INDEX_DIR . $name, 0777);
+        /** @todo english */
+        print("$name index created successfully. \n");
+
+    }
+    
+    /**
+     * Create lucene index for each model
      */
     public function process()
     {
-        self::createFinding();
-        self::createSource();
-        self::createNetwork();
-        self::createProduct();
-        self::createRole();
-        self::createOrganization();
-        self::createSystem();
-        self::createAccount();
+        $this->_createFinding();
+        $this->_createSource();
+        $this->_createNetwork();
+        $this->_createProduct();
+        $this->_createRole();
+        $this->_createOrganization();
+        $this->_createSystem();
+        $this->_createAccount();
     }
 
-    public function createFinding()
+    private function _createFinding()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'finding')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'finding');
-            $index->optimize();
-            /** @todo english */
-            print("Findings index optimize successfully. \n");
+        if ($this->_optimize('finding')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'finding', true);
-        $query = $db->select()->from('poams', array('count'=>'count(*)'));
-        $ret   = $db->fetchRow($query);
-        $count = $ret['count'];
 
-        $query = $db->select()->from(array('p'=>'poams'), 'p.*')
-                              ->join(array('as'=>'assets'), 'p.asset_id = as.id', array())
-                              ->join(array('s'=>'sources'), 'p.source_id = s.id', array())
-                              ->join(array('sys'=>'systems'), 'p.system_id = sys.id', array())
-                              ->where('p.status != "DELETED"');
+        $findings = Doctrine::getTable('Finding')->count();
+        $query    = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('Finding');
         $offset = 100;
         for ($limit=0;$limit<=$count;$limit+=$offset) {
-            $query->limit($offset, $limit);
-            $list = $db->fetchAll($query);
-            set_time_limit(0);
-            if (!empty($list)) {
-                foreach ($list as $row) {
-                    $doc = new Zend_Search_Lucene_Document();
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                    $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('finding_data', $row['finding_data']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('action_planned', $row['action_planned']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('action_suggested',
-                                $row['action_suggested']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('action_resources',
-                                $row['action_resources']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure', $row['cmeasure']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('cmeasure_justification',
-                                $row['cmeasure_justification']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_source', $row['threat_source']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('threat_justification',
-                                $row['threat_justification']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('system',
-                                $row['system_name'] . ' ' . $row['system_nickname']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('source',
-                                $row['source_name'] . ' ' . $row['source_nickname']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('asset', $row['asset_name']));
-                    $index->addDocument($doc);
-                }
+            $findings = $query->limit($offset, $limit)->execute();
+            foreach ($findings as $finding) {
+                $data[] = array(
+                            'id' => $finding->id,
+                            'description'        => $finding->description,
+                            'recommendation'     => $finding->recommendation,
+                            'mitigationstrategy' => $finding->mitigationStrategy,
+                            'resourcesrequired'  => $finding->resourcesRequired,
+                            'countermeasures'    => $finding->countermeasures,
+                            'threat'             => $finding->threat,
+                            'organization'       => $finding->ResponsibleOrganization->name . $finding->ResponsibleOrganization->nickname,
+                            'source'             => $finding->Source->name . $finding->Source->nickname,
+                            'asset'              => $finding->Asset->name
+                        );
             }
+            $this->_createIndex('finding', $data);
         }
-        $index->optimize();
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'finding', 0777);
-        /** @todo english */
-        print("Findings index created successfully. \n");
     }
 
-    public function createSource()
+    private function _createSource()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'source')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'source');
-            $index->optimize();
-            /** @todo english */
-            print("Sources index optimize successfully. \n");
+        if ($this->_optimize('source')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'source', true);
-        $query = $db->select()->from('sources', array('id', 'name', 'nickname', 'desc'));
-        $list  = $db->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
+        $sources = Doctrine::getTable('Source')->findAll();
+        foreach ($sources as $source) {
+            $data[] = array(
+                        'id'           => $source->id,
+                        'name'         => $source->name,
+                        'nickname'     => $source->nickname,
+                        'description'  => $source->description
+                    );
         }
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'source', 0777);
-        /** @todo english */
-        print("Sources index created successfully. \n");
+        $this->_createIndex('source', $data);
     }
 
-    public function createNetwork()
+    private function _createNetwork()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'network')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'network');
-            $index->optimize();
-            /** @todo english */
-            print("Networks index optimize successfully. \n");
+        if ($this->_optimize('network')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'network', true);
-        $query = $db->select()->from('networks', array('id', 'name', 'nickname', 'desc'));
-        $list  = $db->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
+        $networks = Doctrine::getTable('Network')->findAll();
+        foreach ($networks as $network) {
+            $data[] = array(
+                        'id'           => $role->id,
+                        'name'         => $role->name,
+                        'nickName'     => $role->nickName,
+                        'description'  => $role->description
+                    );
         }
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'network', 0777);
-        /** @todo english */
-        print("Networks index created successfully. \n");
+        $this->_createIndex('network', $data);
     }
 
-    public function createProduct()
+    private function _createProduct()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'product')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'product');
-            $index->optimize();
-            /** @todo english */
-            print("Products index optimize successfully. \n");
+        if ($this->_optimize('product')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'product', true);
-        $query = $db->select()->from('products', array('count'=>'count(*)'));
-        $ret   = $db->fetchRow($query);
-        $count = $ret['count'];
-
-        $query = $db->select()->from('products',array('id', 'vendor', 'name', 'version', 'desc'));
+        $count  = Doctrine::getTable('Product')->count();
         $offset = 100;
+        $query  = Doctrine_Query::Create()
+                    ->select('*')
+                    ->from('Product');
         for ($limit=0;$limit<=$count;$limit+=$offset) {
             $query->limit($offset, $limit);
-            $list  = $db->fetchAll($query);
-            set_time_limit(0);
-            if (!empty($list)) {
-                foreach ($list as $row) {
-                    $doc = new Zend_Search_Lucene_Document();
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                    $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('vendor', $row['vendor']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('version', $row['version']));
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                    $index->addDocument($doc);
-                }
+            $products  = $query->execute();
+            foreach ($products as $product) {
+                $data[] = array(
+                            'id'          => $role->id,
+                            'name'        => $role->name,
+                            'vendor'      => $role->vendor,
+                            'version'     => $role->version,
+                            'description' => $role->description
+                            );
             }
+            $this->_createIndex('product', $data);
         }
-        $index->optimize();
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'product', 0777);
-        /** @todo english */
-        print("Products index created successfully. \n");
     }
 
-    public function createRole()
+    private function _createRole()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'role')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'role');
-            $index->optimize();
-            /** @todo english */
-            print("Roles index optimize successfully. \n");
+        if ($this->_optimize('role')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'role', true);
-        $query = $db->select()->from('roles', array('id', 'name', 'nickname', 'desc'));
-        $list  = $db->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
+        $roles = Doctrine::getTable('Role')->findAll();
+        foreach ($roles as $role) {
+            $data[] = array(
+                        'id'           => $role->id,
+                        'name'         => $role->name,
+                        'nickname'     => $role->nickname,
+                        'description'  => $role->description
+                        );
         }
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'role', 0777);
-        /** @todo english */
-        print("Roles index created successfully. \n");
+        $this->_createIndex('role', $data);
     }
 
-    public function createOrganization()
+    private function _createOrganization()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'organization')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'organization');
-            $index->optimize();
-            /** @todo english */
-            print("Organizations index optimize successfully. \n");
+        if ($this->_optimize('organization')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'organization', true);
-        $query = $db->select()->from('organizations', array('id', 'name', 'nickname'));
-        $list  = $db->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
+        $organizations = Doctrine::getTable('Organization')->findAll();
+        foreach ($organizations as $organization) {
+            $data[] = array(
+                        'id'           => $organization->id,
+                        'name'         => $organization->name,
+                        'nickname'     => $organization->nickname,
+                        'orgtype'      => $organization->orgType,
+                        'description'  => $organization->description
+                        );
         }
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'organization', 0777);
-        /** @todo english */
-        print("Organizations index created successfully. \n");
+        $this->_createIndex('organization', $data);
     }
 
-    public function createSystem()
+    private function _createSystem()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'system')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'system');
-            $index->optimize();
-            /** @todo english */
-            print("Systems index optimize successfully. \n");
+        if ($this->_optimize('system')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'system', true);
-        $query = $db->select()->from(array('s'=>'systems'), 's.*')
-                              ->join(array('o'=>'organizations'), 's.organization_id = o.id',
-                                     array('org_name'=>'o.name', 'org_nickname'=>'o.nickname'));
-        $list  = $db->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['name']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('nickname', $row['nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('organization',
-                            $row['org_name'] . ' ' . $row['org_nickname']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('desc', $row['desc']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('type', $row['type']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('confidentiality', $row['confidentiality']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('integrity', $row['integrity']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('availability', $row['availability']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('confidentiality_justification',
-                            $row['confidentiality_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('integrity_justification',
-                            $row['integrity_justification']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('availability_justification',
-                            $row['availability_justification']));
-                $index->addDocument($doc);
-            }
-            $index->optimize();
+        $systems = Doctrine::getTable('System')->findAll();
+        foreach ($systems as $system) {
+            $data[] = array(
+                        'id'              => $system->id,
+                        'name'            => $system->name,
+                        'nickname'        => $system->nickname,
+                        'type'            => $system->type,
+                        'confidentiality' => $system->confidentiality,
+                        'integrity'       => $system->integrity,
+                        'availability'    => $system->availability,
+                        'visibility'      => $system->visibility
+                        );
         }
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'system', 0777);
-        /** @todo english */
-        print("Systems index created successfully. \n");
+        $this->_createIndex('system', $data);
     }
 
-    public function createAccount()
+    private function _createAccount()
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . 'account')) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'account');
-            $index->optimize();
-            /** @todo english */
-            print("Accounts index optimize successfully. \n");
+        if ($this->_optimize('account')) {
             return false;
         }
-        $db = self::getDb();
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . 'account', true);
-        $query = $db->select()->from(array('u'=>'users'),
-                                   array('u.id', 'u.account', 'u.name_last', 'u.name_first','u.email'))
-                              ->join(array('ur'=>'user_roles'), 'u.id = ur.user_id', array())
-                              ->join(array('r'=>'roles'), 'ur.role_id = r.id',
-                                   array('role_name'=>'r.name', 'role_nickname'=>'r.nickname'));
-        $list = $db->fetchAll($query);
-        set_time_limit(0);
-        if (!empty($list)) {
-            foreach ($list as $row) {
-                $doc = new Zend_Search_Lucene_Document();
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($row['id'])));
-                $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $row['id']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('name', $row['account']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('lastname', $row['name_last']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('firstname', $row['name_first']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('email', $row['email']));
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('role',
-                            $row['role_name'] . ' ' . $row['role_nickname']));
-                $index->addDocument($doc);
+        $users = Doctrine::getTable('User')->findAll();
+        foreach ($users as $user) {
+            foreach ($user->Roles as $role) {
+                $role[] = $role['name'] . $role['nickname'];
             }
-            $index->optimize();
+            $data[] = array(
+                        'id'        => $user->id,
+                        'name'      => $user->username,
+                        'namelast'  => $user->nameLast,
+                        'namefirst' => $user->nameFirst,
+                        'email'     => $user->email . $user->notifyEmail,
+                        'role'      => empty($role) ? '' : implode(',', $role)
+                    );
         }
-        chmod($this->_setting->getPath() . self::INDEX_DIR . 'account', 0777);
-        /** @todo english */
-        print("Accounts index created successfully. \n");
+        $this->_createIndex('account', $data);
     }
 }
