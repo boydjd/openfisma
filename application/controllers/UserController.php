@@ -60,7 +60,6 @@ class UserController extends MessageController
     public function init()
     {
         $this->_user = new User();
-        $this->_me = Zend_Auth::getInstance()->getIdentity();
     }
 
     /**
@@ -296,10 +295,8 @@ class UserController extends MessageController
      * logoutAction() - Close out the current user's session.
      */
     public function logoutAction() {
-        //@todo why $this->_me is just an username now?
         if (!empty($this->_me)) {
-            $user = Doctrine::getTable('User')->findOneByUserName($this->_me);
-            $user->logout();
+            $this->_me->logout();
         }
         $this->_forward('login');
     }
