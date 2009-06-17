@@ -265,7 +265,7 @@ abstract class BaseController extends SecurityController
                         ));
         if (!empty($keywords)) {
             // lucene search 
-            $ids = $this->_helper->searchQuery($value, strtolower($this->_modelName));
+            $ids = $this->_helper->searchQuery($keywords, strtolower($this->_modelName));
             if (!empty($ids)) {
                 $ids = implode(',', $ids);
                 $query->where('id IN (' . $ids . ')');

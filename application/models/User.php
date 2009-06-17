@@ -34,6 +34,44 @@
  */
 class User extends BaseUser
 {
+    public function preSave()
+    {
+        Doctrine_Manager::connection()->beginTransaction();   
+    }
+    
+    public function preDelete()
+    {
+         Doctrine_Manager::connection()->beginTransaction();       
+    }
+
+    public function postInsert()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::ACCOUNT_CREATED, $this, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('account', $this);
+    }
+
+    public function postUpdate()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::ACCOUNT_MODIFIED, $this, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('account', $this);
+    }
+
+    public function postDelete()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::ACCOUNT_DELETED, $this, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::deleteIndex('account', $this->id);
+
+    }
+
     /**
      * The name of the cookie in which the search preference bitmask is stored.
      */
@@ -66,7 +104,6 @@ class User extends BaseUser
      */
     public static function currentUser() {
         $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
-        
         return $authSession->currentUser;        
     }
     

@@ -91,16 +91,16 @@ Event:
         name: Account Created
         Privilege: notification_admin
 
-    System Groups Deleted:
-        name: System Groups Deleted
+    Organization Deleted:
+        name: Organization Deleted
         Privilege: notification_admin
 
-    System Groups Modified :
-        name: System Groups Modified 
+    Organization Modified :
+        name: Organization Modified 
         Privilege: notification_admin
 
-    System Groups Created:
-        name: System Groups Created
+    Organization Created:
+        name: Organization Created
         Privilege: notification_admin
 
     System Deleted:
@@ -209,4 +209,7 @@ Event:
 
     Mitigation Strategy Submit:
         name: Mitigation Strategy Submit
+        Privilege: notification_finding
+    Mitigation strategy Revise:
+        name: Mitiation Strategy Revise
         Privilege: notification_finding

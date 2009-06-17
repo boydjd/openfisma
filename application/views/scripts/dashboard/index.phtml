@@ -50,7 +50,7 @@ if (isset($this->notifications)) {
             <?php
             foreach($this->notifications as $notification) {
             ?>
-                <li><b><?php echo $notification['event_text']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['timestamp']; ?></b></li>
+                <li><b><?php echo $notification['eventText']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['createdTs']; ?></b></li>
             <?php
             }
             ?>

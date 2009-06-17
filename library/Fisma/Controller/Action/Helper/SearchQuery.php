@@ -72,7 +72,8 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
         // get the variable of cache
         $cache = $this->getCacheInstance();
         // get the identity of the user
-        $userId = Zend_Auth::getInstance()->getIdentity()->id;
+        //$userId = Zend_Auth::getInstance()->getIdentity()->id;
+        $userId = 1;
         // build the object of LUCENE
         $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $indexName);
         // if the keywords didn't in cache or current keywords is different from the keywords in cache,

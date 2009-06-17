@@ -25,22 +25,29 @@ class Product extends BaseProduct
     public function postInsert()
     {
         $notification = new Notification();
-        $notification->add(Notification::PRODUCT_CREATED, $this->id);
+        $notification->add(Notification::PRODUCT_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('source', $this);
+
     }
 
     public function postUpdate()
     {
         $notification = new Notification();
-        $notification->add(Notification::PRODUCT_MODIFIED, $this->id);
+        $notification->add(Notification::PRODUCT_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('product', $this);
+
     }
 
     public function postDelete()
     {
         $notification = new Notification();
-        $notification->add(Notification::PRODUCT_DELETED, $this->id);
+        $notification->add(Notification::PRODUCT_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
-    }
 
+        Fisma_Lucene::deleteIndex('product', $this->id);
+    }
 }

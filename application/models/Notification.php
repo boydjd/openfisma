@@ -87,23 +87,19 @@ class Notification extends BaseNotification
      * Add notifications for the specified event.
      *
      * @param int $eventId The event id
-     * @param int $record An ID or description of the object
+     * @param object $record  the model which is changed
+     * @param object $user  the user object
      * @param int $organizationId The organization id.
      */
-    public function add($eventId, $record, $organizationId = null)
+    public function add($eventId, $record, $user, $organizationId = null)
     {
         $event = Doctrine::getTable('Event')->find($eventId);
         if (empty($event)) {
             //@todo english
             throw new Fisma_Exception_General("The event of this operation dose not exist");
         }
-        $eventText = $event->name;
-        
-        $user      = Zend_Auth::getInstance()->getIdentity();
-        if (!empty($user)) {
-            $eventText .= " by $user";
-        }
-        $eventText .= "(Id. $record)";
+        $eventText = $event->name . " by $user->nameLast . $user->nameFirst";
+        $eventText .= "(Id. $record->id)";
 
         if ($organizationId == null) {
             $userEvents = Doctrine::getTable('UserEvent')->findByEventId($eventId);

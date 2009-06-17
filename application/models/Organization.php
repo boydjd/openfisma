@@ -36,6 +36,50 @@
 class Organization extends BaseOrganization
 {
     /**
+     * Implements the interface for Zend_Acl_Role_Interface
+     */
+    public function getRoleId()
+    {
+        return $this->id;
+    }
+
+    public function preSave()
+    {
+        Doctrine_Manager::connection()->beginTransaction();   
+    }
+    
+    public function preDelete()
+    {
+         Doctrine_Manager::connection()->beginTransaction();       
+    }
+
+    public function postInsert()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::ORGANIZATION_CREATED, $this, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('organization', $this);
+    }
+
+    public function postUpdate()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::ORGANIZATION_MODIFIED, $this, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('organization', $this);
+    }
+
+    public function postDelete()
+    {
+        $notification = new Notification();
+        $notification->add(Notification::ORGANIZATION_DELETED, $this, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::deleteIndex('organization', $this->id);
+    }
+    /**
      * A mapping from the physical organization types to proper English terms.
      * Notice that for 'system' types, the label is returned from the System class instead.
      */

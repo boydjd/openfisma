@@ -25,21 +25,28 @@ class Source extends BaseSource
     public function postInsert()
     {
         $notification = new Notification();
-        $notification->add(Notification::SOURCE_CREATED, $this->id);
+        $notification->add(Notification::SOURCE_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('source', $this);
     }
 
     public function postUpdate()
     {
         $notification = new Notification();
-        $notification->add(Notification::SOURCE_MODIFIED, $this->id);
+        $notification->add(Notification::SOURCE_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('source', $this);
     }
 
     public function postDelete()
     {
         $notification = new Notification();
-        $notification->add(Notification::SOURCE_DELETED, $this->id);
+        $notification->add(Notification::SOURCE_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::deleteIndex('source', $this->id);
+
     }
 }
