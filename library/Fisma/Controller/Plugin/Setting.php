@@ -88,6 +88,8 @@ class Fisma_Controller_Plugin_Setting extends Zend_Controller_Plugin_Abstract
                 'library' => 'library',
                 'pear' => 'library/Pear',
                 'data' => 'data',
+                'log' => 'data/logs',
+                'cache' => 'data/cache',
                 'pub' => 'public',
                 'application' => 'application',
                 'config' => 'application/config',

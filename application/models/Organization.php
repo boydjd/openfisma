@@ -36,6 +36,11 @@
 class Organization extends BaseOrganization
 {
     /**
+     * Private cache for the organizations' finding summaries
+     */
+    private static $_findingSummaryCache;
+    
+    /**
      * Implements the interface for Zend_Acl_Role_Interface
      */
     public function getRoleId()
@@ -88,6 +93,26 @@ class Organization extends BaseOrganization
         'bureau' => 'Bureau',
         'organization' => 'Organization'
     );
+
+    private static function _getCache() 
+    {
+        if (!isset(self::$_findingSummaryCache)) {
+            $frontendOptions = array(
+                'cache_id_prefix' => 'finding_summary',
+                'automatic_serialization' => true,
+            );
+            $backendOptions = array(
+                'cache_dir' => Fisma_Controller_Front::getPath('cache'),
+                'file_name_prefix' => 'finding_summary'
+            );
+            self::$_findingSummaryCache = Zend_Cache::factory('Core',
+                                                              'File',
+                                                               $frontendOptions,
+                                                               $backendOptions);
+        }
+        
+        return self::$_findingSummaryCache;
+    }
 
     /**
      * Return the the type of this organization.  Unlike $this->type, this resolves
@@ -143,107 +168,118 @@ class Organization extends BaseOrganization
      * @return array 
      */
     public function getSummaryCounts($type, $source) {
-        // First get all of the business statuses
-        $statusList = Finding::getAllStatuses();
-
-        // Initialize single_ontime and single_overdue counts
-        $counts = array();
-        $counts['single_ontime'] = array();
-        $counts['single_overdue'] = array();
-        foreach ($statusList as $status) {
-            $counts['single_ontime'][$status] = 0;
-            $counts['single_overdue'][$status] = 0;
-        }
-        $counts['single_ontime']['TOTAL'] = 0;
-        unset($counts['single_overdue']['CLOSED']);
+        $cache = self::_getCache();
+        $cacheId = $this->nickname
+                 . (isset($type) ? "/type/$type" : '')
+                 . (isset($source) ? "/source/$source" : '');
         
-        // Count the single_ontime and single_overdue
-        /** @doctrine the system is too broken to generate test data, so this code may not be correct */
-        if ('system' == $this->orgType) {
-            $onTimeQuery = Doctrine_Query::create()
-                           ->select('COUNT(*) AS count, f.status, e.nickname')
-                           ->from('Finding f')
-                           ->innerJoin('f.CurrentEvaluation e')
-                           ->innerJoin('f.ResponsibleOrganization o')
-                           ->where("f.status <> 'PEND'")
-                           ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
-                           ->andWhere('o.id = ?', array($this->id))
-                           ->groupBy('f.status, e.nickname')
-                           ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            if (isset($type)) {
-                $onTimeQuery->andWhere('f.type = ?', $type);
-            }
-            if (isset($source)) {
-                $onTimeQuery->andWhere('f.sourceId = ?', $source);
-            }
-            $onTimeFindings = $onTimeQuery->execute();
-            
-            foreach($onTimeFindings as $finding) {
-                if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
-                    $counts['single_ontime'][$finding['nickname']] = $finding['count'];
-                } else {
-                    $counts['single_ontime'][$finding['status']] = $finding['count'];
-                }
-            }
-            
-            $overdueQuery = Doctrine_Query::create()
-                            ->select('COUNT(*) AS count, f.status, e.nickname')
-                            ->from('Finding f')
-                            ->innerJoin('f.CurrentEvaluation e')
-                            ->innerJoin('f.ResponsibleOrganization o')
-                            ->where("f.status <> 'PEND'")
-                            ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
-                            ->andWhere('o.id = ?', array($this->id))
-                            ->groupBy('f.status, e.nickname')
-                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            if (isset($type)) {
-                $overdueQuery->andWhere('f.type = ?', $type);
-            }
-            if (isset($source)) {
-                $overdueQuery->andWhere('f.sourceId = ?', $source);
-            }
-            $overdueFindings = $overdueQuery->execute();
-            
-            foreach($overdueFindings as $finding) {
-                if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
-                    $counts['single_overdue'][$finding['nickname']] = $finding['count'];
-                } else {
-                    $counts['single_overdue'][$finding['status']] = $finding['count'];
-                }
-            }
-        }
-        
-        // @doctrine test data
-        if ($this->nickname == 'WDC') {$counts['single_ontime']['DRAFT'] = 2; $counts['single_overdue']['EN'] = 1;}
-        if ($this->nickname == 'OF') {$counts['single_overdue']['EN'] = 1;}
-        if ($this->nickname == "OCIO") {$counts['single_ontime']['MS ISSO'] = 1;}
+        if (!$cache->test($cacheId)) {
+            // First get all of the business statuses
+            $statusList = Finding::getAllStatuses();
 
-        // Recursively get summary counts from each child and add to the running sum
-        $counts['all_ontime'] = $counts['single_ontime'];
-        $counts['all_overdue'] = $counts['single_overdue'];
-        if ($this->getNode()->hasChildren()) {
-            $iterator = $this->getNode()->getChildren()->getNormalIterator();
-            foreach ($iterator as $child) {
-                $childCounts = $child->getSummaryCounts($type, $source);
-                unset($childCounts['all_ontime']['TOTAL']);
-                unset($childCounts['all_overdue']['TOTAL']);
-                foreach (array_keys($childCounts['all_ontime']) as $key) {
-                    $counts['all_ontime'][$key] += $childCounts['all_ontime'][$key];
+            // Initialize single_ontime and single_overdue counts
+            $counts = array();
+            $counts['single_ontime'] = array();
+            $counts['single_overdue'] = array();
+            foreach ($statusList as $status) {
+                $counts['single_ontime'][$status] = 0;
+                $counts['single_overdue'][$status] = 0;
+            }
+            $counts['single_ontime']['TOTAL'] = 0;
+            unset($counts['single_overdue']['CLOSED']);
+        
+            // Count the single_ontime and single_overdue
+            /** @doctrine the system is too broken to generate test data, so this code may not be correct */
+            if ('system' == $this->orgType) {
+                $onTimeQuery = Doctrine_Query::create()
+                               ->select('COUNT(*) AS count, f.status, e.nickname')
+                               ->from('Finding f')
+                               ->innerJoin('f.CurrentEvaluation e')
+                               ->innerJoin('f.ResponsibleOrganization o')
+                               ->where("f.status <> 'PEND'")
+                               ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
+                               ->andWhere('o.id = ?', array($this->id))
+                               ->groupBy('f.status, e.nickname')
+                               ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                if (isset($type)) {
+                    $onTimeQuery->andWhere('f.type = ?', $type);
                 }
-                if (isset($childCounts['all_overdue'])) {
-                    foreach (array_keys($childCounts['all_overdue']) as $key) {
-                        $counts['all_overdue'][$key] += $childCounts['all_overdue'][$key];
+                if (isset($source)) {
+                    $onTimeQuery->andWhere('f.sourceId = ?', $source);
+                }
+                $onTimeFindings = $onTimeQuery->execute();
+            
+                foreach($onTimeFindings as $finding) {
+                    if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
+                        $counts['single_ontime'][$finding['nickname']] = $finding['count'];
+                    } else {
+                        $counts['single_ontime'][$finding['status']] = $finding['count'];
+                    }
+                }
+            
+                $overdueQuery = Doctrine_Query::create()
+                                ->select('COUNT(*) AS count, f.status, e.nickname')
+                                ->from('Finding f')
+                                ->innerJoin('f.CurrentEvaluation e')
+                                ->innerJoin('f.ResponsibleOrganization o')
+                                ->where("f.status <> 'PEND'")
+                                ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
+                                ->andWhere('o.id = ?', array($this->id))
+                                ->groupBy('f.status, e.nickname')
+                                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                if (isset($type)) {
+                    $overdueQuery->andWhere('f.type = ?', $type);
+                }
+                if (isset($source)) {
+                    $overdueQuery->andWhere('f.sourceId = ?', $source);
+                }
+                $overdueFindings = $overdueQuery->execute();
+            
+                foreach($overdueFindings as $finding) {
+                    if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
+                        $counts['single_overdue'][$finding['nickname']] = $finding['count'];
+                    } else {
+                        $counts['single_overdue'][$finding['status']] = $finding['count'];
                     }
                 }
             }
+        
+            // @doctrine test data
+            if ($this->nickname == 'WDC') {$counts['single_ontime']['DRAFT'] = 2; $counts['single_overdue']['EN'] = 1;}
+            if ($this->nickname == 'OF') {$counts['single_overdue']['EN'] = 1;}
+            if ($this->nickname == "OCIO") {$counts['single_ontime']['MS ISSO'] = 1;}
+
+            // Recursively get summary counts from each child and add to the running sum
+            $counts['all_ontime'] = $counts['single_ontime'];
+            $counts['all_overdue'] = $counts['single_overdue'];
+            if ($this->getNode()->hasChildren()) {
+                $iterator = $this->getNode()->getChildren()->getNormalIterator();
+                foreach ($iterator as $child) {
+                    $childCounts = $child->getSummaryCounts($type, $source);
+                    unset($childCounts['all_ontime']['TOTAL']);
+                    unset($childCounts['all_overdue']['TOTAL']);
+                    foreach (array_keys($childCounts['all_ontime']) as $key) {
+                        $counts['all_ontime'][$key] += $childCounts['all_ontime'][$key];
+                    }
+                    if (isset($childCounts['all_overdue'])) {
+                        foreach (array_keys($childCounts['all_overdue']) as $key) {
+                            $counts['all_overdue'][$key] += $childCounts['all_overdue'][$key];
+                        }
+                    }
+                }
+            }
+
+            // Now count up the totals
+            $counts['single_ontime']['TOTAL'] = array_sum($counts['single_ontime']);
+            $counts['single_ontime']['TOTAL'] += array_sum($counts['single_overdue']);
+            $counts['all_ontime']['TOTAL'] = array_sum($counts['all_ontime']);
+            $counts['all_ontime']['TOTAL'] += array_sum($counts['all_overdue']);
+            
+            $cache->save($counts, $cacheId);
+        } else {
+            $counts = $cache->load($cacheId);
         }
-
-        // Now count up the totals
-        $counts['single_ontime']['TOTAL'] = array_sum($counts['single_ontime']);
-        $counts['single_ontime']['TOTAL'] += array_sum($counts['single_overdue']);
-        $counts['all_ontime']['TOTAL'] = array_sum($counts['all_ontime']);
-        $counts['all_ontime']['TOTAL'] += array_sum($counts['all_overdue']);
-
+        
         return $counts;
     }
 }
