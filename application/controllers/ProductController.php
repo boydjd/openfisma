@@ -40,7 +40,7 @@ class ProductController extends BaseController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('products', 'delete');
+        Fisma_Acl::requirePrivilege('product', 'delete');
         
         $id = $this->_request->getParam('id');
         $product = Doctrine::getTable('Product')->find($id);
@@ -65,5 +65,38 @@ class ProductController extends BaseController
         }
         $this->message($msg, $type);
         $this->_forward('list');
+    }
+    
+    /**
+     * Render the form for searching the products
+     */
+    public function advancesearchAction()
+    {
+        Fisma_Acl::requirePrivilege('product', 'read');
+        
+        $product = new Product();
+        $req = $this->getRequest();
+        $prodId = $req->getParam('prod_list', '');
+        $prodName = $req->getParam('prod_name', '');
+        $prodVendor = $req->getParam('prod_vendor', '');
+        $prodVersion = $req->getParam('prod_version', '');
+        $qry = Doctrine_Query::create()
+               ->select()
+               ->from('Product');
+        if (!empty($prodName)) {
+            $qry->andWhere("name like ?", "%$prodName%");
+            $this->view->prodName = $prodName;
+        }
+        if (!empty($prodVendor)) {
+            $qry->andWhere("vendor like ?", "%$prodVendor%");
+            $this->view->prodVendor = $prodVendor;
+        }
+        if (!empty($prodVersion)) {
+            $qry->andWhere("version like ?", "%$prodVersion%");
+            $this->view->prodVersion = $prodVersion;
+        }
+        $qry->limit(100)
+            ->offset(0);
+        $this->view->prod_list = $qry->execute()->toArray();
     }
 }

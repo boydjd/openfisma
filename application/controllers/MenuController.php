@@ -58,7 +58,7 @@ class MenuController extends SecurityController
         }
 
         if(Fisma_Acl::hasPrivilege('assets', 'read', '*')) {
-            $assets = new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/searchbox/s/search');
+            $assets = new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list');
             $menubar->add($assets);
         }
 

@@ -315,9 +315,9 @@ function ms_comment(formname){
 }
 
 function getProdId(){
-    var trigger= document.getElementsByName('prod_list')[0];
+    var trigger= document.getElementById('productId');
     YAHOO.util.Event.on(trigger, 'change', function (){
-        document.getElementsByName('prod_id')[0].value = trigger.value;
+        document.getElementById('productId').value = trigger.value;
     });
 }
 
@@ -333,7 +333,7 @@ var searchProduct = function (){
     }
     YAHOO.util.Connect.asyncRequest('GET', url, 
     {success: function(o){
-                document.getElementsByName('prod_list')[0].innerHTML = o.responseText;
+                document.getElementById('productId').innerHTML = o.responseText;
                 getProdId();
               },
     failure: handleFailure});

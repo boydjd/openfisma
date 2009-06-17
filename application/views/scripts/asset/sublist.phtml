@@ -16,7 +16,7 @@
                                       array('value' => 'Export Excel', 
                                             'href' => "$this->url/format/xls", 
                                             'imageSrc' => '/images/xls.gif'));
-        if($this->acl->isAllowed('asset','delete')) {
+        if(Fisma_Acl::hasPrivilege('asset','delete')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('value' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
@@ -32,7 +32,7 @@
                                                       'onClickFunction' => 'deleteSelectedAssets'));
             echo $deleteButton;
         }
-        if($this->acl->isAllowed('asset','create')) {
+        if(Fisma_Acl::hasPrivilege('asset','create')) {
             echo new Fisma_Yui_Form_Button_Link('createAsset', 
                                           array('value' => 'Create Asset', 
                                                 'href' => '/asset/create'));
@@ -40,45 +40,83 @@
     ?>
     <b>Page:&nbsp;</b><?php echo $this->links['all'];?>
 </div>
-<table width="98%" align="center" border="0" class="tbframe">
-    <tr align="center">
-        <th nowrap></th>
-        <?php
-            foreach ($this->columns as $key=>$column) {
-                echo "<th>$column</th>";
-                $keys[] = $key;
+<?php Fisma_Format_Section::startSection("Assets List <span id='searchResultsTotalFound'></span>"); ?>
+<div id="list"></div>
+<script type="text/javascript">
+    var checkboxList = function(elCell, oRecord, oColumn, sData) {
+        elCell.innerHTML = "<input type='checkbox' name='aid[]' value='" + oRecord.getData("id") + "' />";
+    };
+    
+    // Column definitions
+    var myColumnDefs = [{key: 'id', label:'', formatter: checkboxList},<?php
+    $i = 0;
+    foreach ($this->columns as $k => $v) {
+        if ($i != 0) echo ',';
+        echo '{key:"' . $k . '", label:"' . $v . '"}';
+        $i ++;
+    }
+    ?>
+    ];
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+    
+        // Build custom request
+        var request = "/startIndex/" + startIndex +
+                      "/count/" + count;
+        return request;
+    };
+
+    var myDataSource = new YAHOO.util.DataSource('/panel/asset/sub/search');
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
+    
+    // DataTable configuration
+    var myConfigs = {
+        initialRequest: "/startIndex/0/count/10",
+        dynamicData: true, 
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:10,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
             }
-        ?>
-        <?php if($this->acl->isAllowed('asset','update')){
-                 echo'<th nowrap>Edit</th>';
-              }
-              if($this->acl->isAllowed('asset','read')){
-                 echo'<th nowrap>View</th>';
-              }
-        ?>
-    </tr>
-    <?php 
-    if (is_array($this->asset_list)) {
-    foreach($this->asset_list as $row){ ?>
-    <tr>
-        <?php if($this->acl->isAllowed('asset','delete')) { ?>
-            <td align="center" class="tdc"><input type="checkbox" name="aid[]" 
-                value="<?php echo $row['aid'];?>"></td>
-        <?php } else { ?>
-            <td align="center" class="tdc">&nbsp;</td>
-        <?php }
-            foreach ($keys as $v) {
-                echo '<td class="tdc">&nbsp;'.$row[$v].'</td>';
-            }
-        ?>
-        <?php if($this->acl->isAllowed('asset','update')) { ?>
-        <td class="tdc" align="center"><a href="/panel/asset/sub/view/s/edit/id/<?php echo $row['aid'];?>"><img src="/images/edit.png" border="0"></a></td>
-        <?php } if($this->acl->isAllowed('asset','read')) { ?>
-        <td class="tdc" align="center"><a href="/panel/asset/sub/view/id/<?php echo $row['aid'];?>"><img src="/images/view.gif" border="0"></a></td>
-        </tr>
-        <?php } ?>
-    <?php }
-      } ?>
-</table>
-</form>
+        ),
+        generateRequest : myRequestBuilder
+    };
+    
+    var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        if (!searchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            searchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    <?php if (Fisma_Acl::hasPrivilege('admin_assets','read')) { ?>
+    myDataTable.subscribe("rowClickEvent", 
+        function (oArgs) {
+            var elTarget = oArgs.target;
+            var oRecord = this.getRecord(elTarget);
+            //document.location = "/panel/asset/sub/view/v/view/id/" + oRecord.getData("id");
+        }
+    );
+    <?php }?>
+</script>
 <?php Fisma_Format_Section::stopSection(); ?>

@@ -36,7 +36,7 @@ abstract class BaseController extends SecurityController
     /**
      * Default paginate parameters
      */
-    private $_paging = array(
+    protected $_paging = array(
         'startIndex' => 0,
         'count' => 20
     );
@@ -69,7 +69,7 @@ abstract class BaseController extends SecurityController
     /**
      * Get the specific form of the subject model
      */
-    public function getForm() 
+    public function getForm($subject = null)
     {
         static $form = null;
         if (is_null($form)) {
@@ -85,7 +85,6 @@ abstract class BaseController extends SecurityController
     public function viewAction()
     {
         Fisma_Acl::requirePrivilege($this->_modelName, 'read');
-        $form   = $this->getForm();
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
@@ -94,6 +93,7 @@ abstract class BaseController extends SecurityController
              */
             throw new Fisma_Exception_General("Invalid {$this->_modelName}");
         }
+        $form   = $this->getForm($subject);
         
         $this->view->assign('editLink', "/panel/{$this->_modelName}/sub/edit/id/$id");
         $form->setReadOnly(true);            
@@ -143,7 +143,6 @@ abstract class BaseController extends SecurityController
     public function editAction()
     {
         Fisma_Acl::requirePrivilege($this->_modelName, 'update');
-        $form   = $this->getForm();
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
@@ -152,6 +151,8 @@ abstract class BaseController extends SecurityController
              */
             throw new Fisma_Exception_General("Invalid {$this->_modelName}");
         }
+        $form   = $this->getForm($subject);
+        
         $this->view->assign('viewLink', "/panel/{$this->_modelName}/sub/view/id/$id");
         $form->setAction("/panel/{$this->_modelName}/sub/edit/id/$id");
         $this->view->assign('deleteLink', "/panel/{$this->_modelName}/sub/delete/id/$id");
