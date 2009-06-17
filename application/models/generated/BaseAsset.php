@@ -12,10 +12,10 @@
  * @property string $addressIp
  * @property integer $addressPort
  * @property integer $productId
- * @property integer $systemId
+ * @property integer $orgSystemId
  * @property integer $networkId
  * @property Product $Product
- * @property System $System
+ * @property Organization $Organization
  * @property Network $Network
  * @property Doctrine_Collection $Findings
  * 
@@ -36,7 +36,7 @@ abstract class BaseAsset extends Doctrine_Record
         $this->hasColumn('addressIp', 'string', 15, array('type' => 'string', 'ip' => true, 'comment' => 'The IP address for this asset', 'length' => '15'));
         $this->hasColumn('addressPort', 'integer', 2, array('type' => 'integer', 'comment' => 'The IP port for this asset', 'length' => '2'));
         $this->hasColumn('productId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to product table'));
-        $this->hasColumn('systemId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to system table'));
+        $this->hasColumn('orgSystemId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to system table'));
         $this->hasColumn('networkId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to network table'));
     }
 
@@ -45,8 +45,8 @@ abstract class BaseAsset extends Doctrine_Record
         $this->hasOne('Product', array('local' => 'productId',
                                        'foreign' => 'id'));
 
-        $this->hasOne('System', array('local' => 'systemId',
-                                      'foreign' => 'id'));
+        $this->hasOne('Organization', array('local' => 'orgSystemId',
+                                            'foreign' => 'id'));
 
         $this->hasOne('Network', array('local' => 'networkId',
                                        'foreign' => 'id'));

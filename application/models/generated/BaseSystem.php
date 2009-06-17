@@ -10,7 +10,6 @@
  * @property enum $integrity
  * @property enum $availability
  * @property enum $visibility
- * @property Doctrine_Collection $Assets
  * @property Doctrine_Collection $Organization
  * 
  * @package    ##PACKAGE##
@@ -32,9 +31,6 @@ abstract class BaseSystem extends Doctrine_Record
 
     public function setUp()
     {
-        $this->hasMany('Asset as Assets', array('local' => 'id',
-                                                'foreign' => 'systemId'));
-
         $this->hasMany('Organization', array('local' => 'id',
                                              'foreign' => 'systemId'));
     }

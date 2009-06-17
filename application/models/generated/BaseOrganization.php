@@ -14,6 +14,7 @@
  * @property string $description
  * @property System $System
  * @property Doctrine_Collection $Users
+ * @property Doctrine_Collection $Assets
  * @property Doctrine_Collection $Findings
  * 
  * @package    ##PACKAGE##
@@ -43,6 +44,9 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->hasMany('User as Users', array('refClass' => 'UserOrganization',
                                               'local' => 'organizationId',
                                               'foreign' => 'userId'));
+
+        $this->hasMany('Asset as Assets', array('local' => 'id',
+                                                'foreign' => 'orgSystemId'));
 
         $this->hasMany('Finding as Findings', array('local' => 'id',
                                                     'foreign' => 'responsibleOrganizationId'));

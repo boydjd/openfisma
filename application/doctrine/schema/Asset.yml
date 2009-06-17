@@ -22,7 +22,7 @@ Asset:
         productId:
             type: integer
             comment: Foreign key to product table
-        systemId:
+        orgSystemId:
             type: integer
             comment: Foreign key to system table
         networkId:
@@ -34,8 +34,8 @@ Asset:
             local: productId
             foreign: id
             foreignAlias: Assets
-        System:
-            local: systemId
+        Organization:
+            local: orgSystemId
             foreign: id
             foreignAlias: Assets
         Network:
