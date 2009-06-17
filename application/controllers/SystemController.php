@@ -178,6 +178,9 @@ class SystemController extends SecurityController
         foreach ($organizations as $organization) {
             $orgArray[$i] = $organization->toArray();
             foreach($organization->System as $k => $v) {
+                if ($v instanceof Doctrine_Null) {
+                    $v = '';
+                }
                 $orgArray[$i][$k] = $v;
             }
             if ($parent = $organization->getNode()->getParent()) {
