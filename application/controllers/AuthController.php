@@ -34,16 +34,8 @@
 class AuthController extends MessageController
 {
     /**
-     * The current user for this session.
-     *
+     * Current User
      * @var User
-     */
-    private $_user = null;
-
-    /**
-     * The Zend_Auth identity corresponding to the current user.
-     *
-     * @var Zend_Auth
      */
     private $_me = null;
 
@@ -60,7 +52,7 @@ class AuthController extends MessageController
     public function init()
     {
         $this->_user = new User();
-        $this->_me = Zend_Auth::getInstance()->getIdentity();
+        $this->_me = User::currentUser();
     }
 
     /**
@@ -298,8 +290,9 @@ class AuthController extends MessageController
     public function logoutAction() {
         //@todo why $this->_me is just an username now?
         if (!empty($this->_me)) {
-            $user = Doctrine::getTable('User')->findOneByUserName($this->_me);
-            $user->logout();
+            //$user = Doctrine::getTable('User')->findOneByUserName($this->_me);
+            //$user->logout();
+            $this->_me->logout();
         }
         $this->_forward('login');
     }
@@ -321,34 +314,41 @@ class AuthController extends MessageController
         $form->removeElement('checkaccount');
         $form->removeElement('generate_password');
         $form->removeElement('role');
-        $form->removeElement('is_active');
+        $form->removeElement('locked');
         return $form;
     }
 
     /**
-     * profileAction() - Display the user's "Edit Profile" page.
-     *
-     * @todo Cleanup this method: comments and formatting
+     * Display the user's "Edit Profile" page and handle its updating
      */
     public function profileAction()
     {
-        // Profile Form
         $form = $this->getProfileForm();
-        $query = $this->_user
-        ->select()->setIntegrityCheck(false)
-        ->from('users',
-        array('name_last',
-        'name_first',
-        'phone_office',
-        'phone_mobile',
-        'email',
-        'title'))
-        ->where('id = ?', $this->_me->id);
-        $userProfile = $this->_user->fetchRow($query)->toArray();
-        $form->setAction("/panel/user/sub/updateprofile");
-        $form->setDefaults($userProfile);
-        $this->view->assign('form', Fisma_Form_Manager::prepareForm($form));
 
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            if ($form->isValid($post)) {
+                $this->_me->merge($form->getValues());
+                if (!$this->_me->trySave()) {
+                    /** @todo english */
+                    $message = "Failure in updating.";
+                    $model   = self::M_WARNING;
+                } else {
+                    $message = "Your profile modified successfully."; 
+                    $model   = self::M_NOTICE;
+
+
+                }
+            } else {
+                $errorString = Fisma_Form_Manager::getErrors($form);
+                $message     = "Unable to update profile:<br>" . $errorString;
+                $model       = self::M_WARNING;
+            }
+            $this->message($message, $model);
+        } else {
+            $form->setDefaults($this->_me->toArray());
+        }
+        $this->view->form    = Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
@@ -401,53 +401,6 @@ class AuthController extends MessageController
 
         $this->view->availableList = array_diff($allEvent, $enabledEvent);
         $this->view->enableList = array_intersect($allEvent, $enabledEvent);
-    }
-
-    /**
-     * updateprofileAction() - Handle any edits to a user's profile settings.
-     *
-     * @todo Cleanup this method: comments and formatting
-     * @todo This method is named incorrectly
-     */
-    public function updateprofileAction()
-    {
-        // Load the account form in order to perform validations.
-        $form = $this->getProfileForm();
-        $formValid = $form->isValid($_POST);
-        $profileData = $form->getValues();
-        unset($profileData['save']);
-
-        if ($formValid) {
-            $result = $this->_user->find($this->_me->id);
-            $originalEmail = $result->current()->email;
-            $notifyEmail = $result->current()->notify_email;
-            $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
-            if ($ret == 1) {
-                $this->_user
-                ->log('ACCOUNT_MODIFICATION',
-                $this->_me->id,
-                "User Account {$this->_me->account} Successfully Modified");
-                $msg = "Profile modified successfully.";
-
-                if ($originalEmail != $profileData['email']
-                && empty($notifyEmail)) {
-                    $this->_user->update(array('email_validate'=>0), 'id = '.$this->_me->id);
-                    $result = $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
-                    if (true == $result) {
-                        $msg .= self::VALIDATION_MESSAGE;
-                    }
-                }
-                $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
-                $this->message($msg, self::M_NOTICE);
-            } else {
-                $this->message("Unable to update account. ($ret)",
-                self::M_WARNING);
-            }
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            $this->message("Unable to update account:<br>" . $errorString, self::M_WARNING);
-        }
-        $this->_forward('profile');
     }
 
     /**

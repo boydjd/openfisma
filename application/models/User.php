@@ -62,7 +62,17 @@ class User extends BaseUser
 
     public function preSave()
     {
-        Doctrine_Manager::connection()->beginTransaction();   
+        Doctrine_Manager::connection()->beginTransaction();
+
+        $modifyValues = $this->getModified();
+        if (array_key_exists('email', $modifyValues)) {
+            $this->emailValidate = false;
+            $emailValidation     = new EmailValidation();
+            $emailValidation->email          = $modifyValues['email'];
+            $emailValidation->validationCode = md5(rand());
+            $emailValidation->User           = $this;
+            $this->EmailValidation[]         = $emailValidation;
+        }
     }
     
     public function preDelete()
