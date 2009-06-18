@@ -35,7 +35,7 @@ $plSetting = new Fisma_Controller_Plugin_Setting();
 
 if ($plSetting->installed()) {
     // Kick off the main routine:
-    $createIndex = new CreateIndex($plSetting);
+    $createIndex = new CreateIndex();
     $createIndex->process();
 } else {
     die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
@@ -44,37 +44,25 @@ if ($plSetting->installed()) {
 Class CreateIndex
 {
     /**
-     * the direcotry of the lucene index
+     * initialize the direcotry of the lucene index
      */
-    const INDEX_DIR = '/data/index/';
-    /**
-     * the object of setting plugin
-     */
-    private $_setting = null;
+    private $_indexDir = null;
     
-    /**
-     * construct the class and set setting
-     *
-     * @param object $setting
-     */
-    function __construct($setting)
+    //Set the lucene index dir
+    public function __construct() 
     {
-        if ($setting instanceof Fisma_Controller_Plugin_Setting) {
-            $this->_setting = $setting;
-        } else {
-            throw new Fisma_Exception_General("can't get the setting");
-        }
+        $this->_indexDir = Fisma_Controller_Front::getPath('data') . '/index/';
     }
-
+        
     /**
      * Create index directory
      *
      * @param string $name the index name
-     * return Zend_Search_Lucene
+     * @return Zend_Search_Lucene
      */
     private function _newIndex($name)
     {
-        $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . $name, true);
+        $index = new Zend_Search_Lucene($this->_indexDir . $name, true);
         return $index;
     }
     
@@ -82,12 +70,12 @@ Class CreateIndex
      * Optimize the index if the index is exist
      *
      * @param string $name index name
-     * @return bool
+     * @return bool if the index exists then optimize it and return true, else return false
      */
     private function _optimize($name)
     {
-        if (is_dir($this->_setting->getPath() . self::INDEX_DIR . $name)) {
-            $index = new Zend_Search_Lucene($this->_setting->getPath() . self::INDEX_DIR . $name);
+        if (is_dir($this->_indexDir . $name)) {
+            $index = new Zend_Search_Lucene($this->_indexDir . $name);
             $index->optimize();
             /** @todo english */
             print("$name index optimize successfully. \n");
@@ -138,7 +126,7 @@ Class CreateIndex
             $index->addDocument($doc);
         }
         $index->optimize();
-        chmod($this->_setting->getPath() . self::INDEX_DIR . $name, 0777);
+        chmod($this->_indexDir . $name, 0777);
         /** @todo english */
         print("$name index created successfully. \n");
 
@@ -165,13 +153,15 @@ Class CreateIndex
             return false;
         }
 
-        $findings = Doctrine::getTable('Finding')->count();
-        $query    = Doctrine_Query::create()
+        $count = Doctrine::getTable('Finding')->count();
+        $query = Doctrine_Query::create()
                         ->select('*')
                         ->from('Finding');
-        $offset = 100;
+        $offset = 1;
         for ($limit=0;$limit<=$count;$limit+=$offset) {
-            $findings = $query->limit($offset, $limit)->execute();
+            $findings = $query->limit($limit)
+                              ->offset($offset)
+                              ->execute();
             foreach ($findings as $finding) {
                 $data[] = array(
                             'id' => $finding->id,
@@ -181,7 +171,8 @@ Class CreateIndex
                             'resourcesrequired'  => $finding->resourcesRequired,
                             'countermeasures'    => $finding->countermeasures,
                             'threat'             => $finding->threat,
-                            'organization'       => $finding->ResponsibleOrganization->name . $finding->ResponsibleOrganization->nickname,
+                            'organization'       => $finding->ResponsibleOrganization->name . ',' .
+                                                    $finding->ResponsibleOrganization->nickname,
                             'source'             => $finding->Source->name . $finding->Source->nickname,
                             'asset'              => $finding->Asset->name
                         );
@@ -235,8 +226,9 @@ Class CreateIndex
                     ->select('*')
                     ->from('Product');
         for ($limit=0;$limit<=$count;$limit+=$offset) {
-            $query->limit($offset, $limit);
-            $products  = $query->execute();
+            $products = $query->limit($limit)
+                              ->offset($offset)
+                              ->execute();
             foreach ($products as $product) {
                 $data[] = array(
                             'id'          => $role->id,
@@ -321,7 +313,7 @@ Class CreateIndex
                         'name'      => $user->username,
                         'namelast'  => $user->nameLast,
                         'namefirst' => $user->nameFirst,
-                        'email'     => $user->email . $user->notifyEmail,
+                        'email'     => $user->email . ',' . $user->notifyEmail,
                         'role'      => empty($role) ? '' : implode(',', $role)
                     );
         }
