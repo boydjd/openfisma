@@ -64,16 +64,13 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
     public function searchQuery($keywords, $indexName)
     {
         if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/' . $indexName)) {
-            /** 
-             * @todo english 
-             */
+            /** @todo english */
             throw new Fisma_Exception_General('The path of creating indexes is not existed');
         }
         // get the variable of cache
-        $cache = $this->getCacheInstance();
+        $cache = $this->_getCacheInstance();
         // get the identity of the user
-        //$userId = Zend_Auth::getInstance()->getIdentity()->id;
-        $userId = 1;
+        $userId = Zend_Auth::getInstance()->getIdentity()->id;
         // build the object of LUCENE
         $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $indexName);
         // if the keywords didn't in cache or current keywords is different from the keywords in cache,
@@ -103,7 +100,7 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
      *
      * @return Zend_Cache
      */
-    public function getCacheInstance()
+    private function _getCacheInstance()
     {
         if (null == $this->_cache) {
             $frontendOptions = array(

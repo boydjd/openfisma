@@ -35,39 +35,33 @@ class Fisma_Lucene
     /**
      * Update Zend_Search_Lucene index
      *
-     * This function can create one, update one and update a number of Zend_Lucene indexes.
+     * This function can create one, update one Zend_Lucene index.
      *
-     * @param string index $name under the "data/index/" folder
-     * @param string|array $id
-     *           string specific a table primary key   
-     *                      if the id exists in the index, then update it, else create a index.
-     *           array  specific index docuement ids
-     *                      update a number of exist indexes
-     * @param array $data fields need to update
+     * @param string $name index name
+     * @param object $object an object of a model that need to udpate index
      */
     public static function updateIndex($name, $object)
     {
-        if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/'.$name)) {
-            return false;
+        if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/' . $name)) {
+            /** @todo english */
+            throw new Fisma_Exception_General("Invalid index name");
         }
-        $id   = $object->id;
-        $data = $object->toArray();
-        @ini_set("memory_limit", -1);
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/'.$name);
-        $hits = $index->find('key:'.md5($id));
+        set_time_limit(0);
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $name);
+        $hits = $index->find('key:' . md5($object->id));
         if (!empty($hits)) {
             //Update one index
             $doc = $index->getDocument($hits[0]);
-            foreach ($data as $field=>$value) {
+            foreach ($object as $field=>$value) {
                 $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
             }
             $index->addDocument($doc);
         } else {
             //Create one index
             $doc = new Zend_Search_Lucene_Document();
-            $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
-            $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
-            foreach ($data as $field=>$value) {
+            $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $object->id));
+            $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($object->id)));
+            foreach ($object as $field=>$value) {
                 $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
             }
             $index->addDocument($doc);
@@ -83,11 +77,12 @@ class Fisma_Lucene
      */
     public static function deleteIndex($name, $id)
     {
-        if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/'.$name)) {
-            return false;
+        if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/' . $name)) {
+            /** @todo english */
+            throw new Fisma_Exception_General("Invalid index name");
         }
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/'.$name);
-        $hits = $index->find('key:'.md5($id));
+        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $name);
+        $hits = $index->find('key:' . md5($id));
         $index->delete($hits[0]);
         $index->commit();
     }

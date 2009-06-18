@@ -34,6 +34,32 @@
  */
 class User extends BaseUser
 {
+    /**
+     * The name of the cookie in which the search preference bitmask is stored.
+     */
+    const SEARCH_PREF_COOKIE = 'search_columns_pref';
+
+    /**
+     * Account was manually locked by an administrator
+     */    
+    const LOCK_TYPE_MANUAL = 'manual';
+
+    /**
+     * Account was locked due to several consecutive password failures
+     */
+    const LOCK_TYPE_PASSWORD = 'password';
+
+    /**
+     * Account was locked due to a period of inactivity (i.e. not logging in)
+     */
+    const LOCK_TYPE_INACTIVE = 'inactive';
+
+    /**
+     * Account was locked due to an expired password
+     */
+    const LOCK_TYPE_EXPIRED = 'expired';
+
+
     public function preSave()
     {
         Doctrine_Manager::connection()->beginTransaction();   
@@ -69,33 +95,7 @@ class User extends BaseUser
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('account', $this->id);
-
     }
-
-    /**
-     * The name of the cookie in which the search preference bitmask is stored.
-     */
-    const SEARCH_PREF_COOKIE = 'search_columns_pref';
-
-    /**
-     * Account was manually locked by an administrator
-     */    
-    const LOCK_TYPE_MANUAL = 'manual';
-
-    /**
-     * Account was locked due to several consecutive password failures
-     */
-    const LOCK_TYPE_PASSWORD = 'password';
-
-    /**
-     * Account was locked due to a period of inactivity (i.e. not logging in)
-     */
-    const LOCK_TYPE_INACTIVE = 'inactive';
-
-    /**
-     * Account was locked due to an expired password
-     */
-    const LOCK_TYPE_EXPIRED = 'expired';
     
     /**
      * Returns an object which represents the current, authenticated user
