@@ -11,56 +11,56 @@
 ; simplicity, but at runtime the account controller will strip out the fields
 ; which do not apply to the current authentication schema (ldap or database)
 [account]
-elements.account.type = "text"
-elements.account.options.label = "Username"
-elements.account.options.required = true
-elements.account.options.attribs.size = 35
-elements.account.options.filters.lower.filter = "StringToLower"
-displayGroups.accountInfo.elements.account = "account"
+elements.username.type = "text"
+elements.username.options.label = "Username"
+elements.username.options.required = true
+elements.username.options.attribs.size = 35
+elements.username.options.filters.lower.filter = "StringToLower"
+displayGroups.usernameInfo.elements.username = "username"
 
 elements.password.type = "password"
 elements.password.options.label = "Password"
-elements.account.options.attribs.id = "password"
+elements.password.options.attribs.id = "password"
 elements.password.options.attribs.size = 35
 displayGroups.accountInfo.elements.password = "password"
 
 elements.confirmPassword.type = "password"
 elements.confirmPassword.options.label = "Confirm Password"
-elements.account.options.attribs.id = "confirmPassword"
+elements.confirmPassword.options.attribs.id = "confirmPassword"
 elements.confirmPassword.options.attribs.size = 35
 displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
 elements.generate_password.type = "Form_Button"
 elements.generate_password.options.value = "Generate Password"
 elements.generate_password.options.onClickFunction = "GeneratePassword"
-elements.account.options.attribs.id = "generatePasswordButton"
+elements.generate_password.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
 elements.checkaccount.type = "button"
 elements.checkaccount.options.value = "Check Account"
 displayGroups.accountInfo.elements.checkAccount = "checkaccount"
 
-elements.name_first.type = "text"
-elements.name_first.options.label = "First Name"
-elements.name_first.options.required = true
-elements.name_first.options.attribs.size = 35
-displayGroups.accountInfo.elements.name_first = "name_first"
+elements.nameFirst.type = "text"
+elements.nameFirst.options.label = "First Name"
+elements.nameFirst.options.required = true
+elements.nameFirst.options.attribs.size = 35
+displayGroups.accountInfo.elements.nameFirst = "nameFirst"
 
-elements.name_last.type = "text"
-elements.name_last.options.label = "Last Name"
-elements.name_last.options.required = true
-elements.name_last.options.attribs.size = 35
-displayGroups.accountInfo.elements.name_last = "name_last"
+elements.nameLast.type = "text"
+elements.nameLast.options.label = "Last Name"
+elements.nameLast.options.required = true
+elements.nameLast.options.attribs.size = 35
+displayGroups.accountInfo.elements.nameLast = "nameLast"
 
-elements.phone_office.type = "text"
-elements.phone_office.options.label = "Office Phone"
-elements.phone_office.options.attribs.size = 35
-displayGroups.accountInfo.elements.phone_office = "phone_office"
+elements.phoneOffice.type = "text"
+elements.phoneOffice.options.label = "Office Phone"
+elements.phoneOffice.options.attribs.size = 35
+displayGroups.accountInfo.elements.phoneOffice = "phoneOffice"
 
-elements.phone_mobile.type = "text"
-elements.phone_mobile.options.label = "Mobile Phone"
-elements.phone_mobile.options.attribs.size = 35
-displayGroups.accountInfo.elements.phone_mobile = "phone_mobile"
+elements.phoneMobile.type = "text"
+elements.phoneMobile.options.label = "Mobile Phone"
+elements.phoneMobile.options.attribs.size = 35
+displayGroups.accountInfo.elements.phoneMobile = "phoneMobile"
 
 elements.email.type = "text"
 elements.email.options.label = "E-Mail"
@@ -81,14 +81,15 @@ elements.title.options.label = "Title"
 elements.title.options.attribs.size = 35
 displayGroups.accountInfo.elements.title = "title"
 
-; The values in the status menu are populated dynamically. I don't think that
-; it's possible to correctly populate those values here, even though they are
-; static (ie. "Active" and "Locked").
-elements.is_active.type = "select"
-elements.is_active.options.label = "Status"
+; The values in the status menu are static so it is hardcoded here.
+; (ie. "Active" and "Locked").
+elements.locked.type = "select"
+elements.locked.options.label = "Status"
+elements.locked.options.multioptions.0 = Active
+elements.locked.options.multioptions.1 = Locked
 ; This default is overridden if in edit or view mode
-elements.is_active.options.value = "1"
-displayGroups.accountInfo.elements.is_active = "is_active"
+elements.locked.options.value = "0"
+displayGroups.accountInfo.elements.locked = "locked"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Save"
