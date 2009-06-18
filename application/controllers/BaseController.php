@@ -48,7 +48,9 @@ abstract class BaseController extends SecurityController
      */
     protected $_modelName = null;
 
-
+    /**
+     * Make sure the model has been properly set
+     */
     public function init() 
     {
         parent::init();
@@ -61,22 +63,60 @@ abstract class BaseController extends SecurityController
 
     public function preDispatch()
     {
-        /** Setting the first index of the page/table */
+        /* Setting the first index of the page/table */
         $this->_paging['startIndex'] = $this->_request->getParam('startIndex', 0);
         parent::preDispatch();
     }
 
     /**
      * Get the specific form of the subject model
+     *
+     * @param string $formName
      */
-    public function getForm($subject = null)
+    public function getForm($formName=null)
     {
         static $form = null;
         if (is_null($form)) {
-            $form = Fisma_Form_Manager::loadForm($this->_modelName);
+            if (is_null($formName)) {
+                $formName = (string)$this->_modelName;
+            }
+            $form = Fisma_Form_Manager::loadForm($formName);
             $form = Fisma_Form_Manager::prepareForm($form);
         }
         return $form;
+    }
+
+    /** 
+     * Hooks for manipulating the values before setting to a form
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     * @return Zend_Form
+     */
+    protected function setForm($subject, $form)
+    {
+        $form->setDefaults($subject->toArray());
+        return $form;
+    }
+
+    /** 
+     * Hooks for manipulating the values retrieved by Forms
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     * @return Doctrine_Record
+     */
+    protected function mergeValue($form, $subject=null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } elseif ($subject instanceof Doctrine_Record) {
+            $subject->merge($form->getValues());
+        } else {
+            /** @todo English */
+            throw new Fisma_Exception_General('Invalid parameter expecting a Record model');
+        }
+        return $subject;
     }
 
     /**
@@ -98,7 +138,7 @@ abstract class BaseController extends SecurityController
         $this->view->assign('editLink', "/panel/{$this->_modelName}/sub/edit/id/$id");
         $form->setReadOnly(true);            
         $this->view->assign('deleteLink', "/panel/{$this->_modelName}/sub/delete/id/$id");
-        $form->setDefaults($subject->toArray());
+        $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
         $this->render();
@@ -116,8 +156,7 @@ abstract class BaseController extends SecurityController
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $subject = new $this->_modelName();
-                $subject->merge($form->getValues());
+                $subject = $this->mergeValue($form);
                 if (!$subject->trySave()) {
                     /** @todo English please notice following 3 sentences*/
                     $msg   = "Failure in creation";
@@ -160,7 +199,7 @@ abstract class BaseController extends SecurityController
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $subject->merge($form->getValues());
+                $subject = $this->mergeValue($form, $subject);
                 if (!$subject->trySave()) {
                     /** @todo English. This notice span following segments */
                     $msg  = "Failure in creation";
@@ -175,7 +214,7 @@ abstract class BaseController extends SecurityController
                 $this->message("Unable to update the {$this->_modelName}:<br>$errorString", self::M_WARNING);
             }
         } else {
-            $form->setDefaults($subject->toArray());
+            $form = $this->setForm($subject, $form);
         }
         $this->view->form = $form;
         $this->view->id   = $id;
@@ -216,7 +255,7 @@ abstract class BaseController extends SecurityController
     {
         Fisma_Acl::requirePrivilege($this->_modelName, 'read');
         $keywords = trim($this->_request->getParam('keywords'));
-        $link = empty($keywords) ? '' : '/keywords/' . $keywords;
+        $link = empty($keywords) ? '' :'/keywords/'.$keywords;
         $this->view->link     = $link;
         $this->view->pageInfo = $this->_paging;
         $this->view->keywords = $keywords;
@@ -231,13 +270,12 @@ abstract class BaseController extends SecurityController
     public function searchAction()
     {
         Fisma_Acl::requirePrivilege($this->_modelName, 'read');
-        $sortBy = $this->_request->getParam('sortby', 'name');
+        $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
         $keywords  = $this->_request->getParam('keywords'); 
 
         //filter the sortby to prevent sqlinjection
         $subjectTable = Doctrine::getTable($this->_modelName);
-        $sortBy = $this->_request->getParam('sortby', 'name');
         if (!$subjectTable->getColumnDefinition($sortBy)) {
             /** @todo english */
             return $this->_helper->json('invalid parameters');
