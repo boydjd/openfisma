@@ -45,7 +45,7 @@ class ProductController extends BaseController
         $id = $this->_request->getParam('id');
         $product = Doctrine::getTable('Product')->find($id);
         if (!$product) {
-            /** @todo English */
+            /** @todo english */
             $msg   = "Invalid Product";
             $type = self::M_WARNING;
         } else {

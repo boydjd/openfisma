@@ -209,7 +209,7 @@ class Organization extends BaseOrganization
                 }
                 $onTimeFindings = $onTimeQuery->execute();
             
-                foreach($onTimeFindings as $finding) {
+                foreach ($onTimeFindings as $finding) {
                     if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
                         $counts['single_ontime'][$finding['nickname']] = $finding['count'];
                     } else {
@@ -235,7 +235,7 @@ class Organization extends BaseOrganization
                 }
                 $overdueFindings = $overdueQuery->execute();
             
-                foreach($overdueFindings as $finding) {
+                foreach ($overdueFindings as $finding) {
                     if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
                         $counts['single_overdue'][$finding['nickname']] = $finding['count'];
                     } else {

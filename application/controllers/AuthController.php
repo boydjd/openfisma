@@ -330,14 +330,12 @@ class AuthController extends MessageController
             if ($form->isValid($post)) {
                 $this->_me->merge($form->getValues());
                 if (!$this->_me->trySave()) {
-                    /** @todo english */
+                    /** @todo english please notice following 3 sentences*/
                     $message = "Failure in updating.";
                     $model   = self::M_WARNING;
                 } else {
                     $message = "Your profile modified successfully."; 
                     $model   = self::M_NOTICE;
-
-
                 }
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);

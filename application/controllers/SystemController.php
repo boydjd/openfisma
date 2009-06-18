@@ -234,7 +234,7 @@ class SystemController extends SecurityController
                 $system->merge($sysValues);
                 
                 if (!$system->trySave()) {
-                    /** @todo English */ 
+                    /** @todo english */ 
                     $msg = "Failure in creation";
                     $model = self::M_WARNING;
                 } else {
@@ -246,7 +246,7 @@ class SystemController extends SecurityController
                     if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
                         $this->_helper->updateIndex('system', $system->id, $system->toArray());
                     }
-                    /** @todo English */ 
+                    /** @todo english */ 
                     $msg = "The system is created";
                     $model = self::M_NOTICE;
                 }
@@ -255,7 +255,7 @@ class SystemController extends SecurityController
                 return;
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
-                /** @todo English */ 
+                /** @todo english */ 
                 $this->message("Unable to create system:<br>$errorString", self::M_WARNING);
             }
         }
@@ -402,7 +402,7 @@ class SystemController extends SecurityController
             $this->_forward('view', null, null, array('id' => $system->id));
         } else {
             $errorString = Fisma_Form_Manager::getErrors($form);
-            /** @todo English */ 
+            /** @todo english */ 
             $this->message("Unable to update system:<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));

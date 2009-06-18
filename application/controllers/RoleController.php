@@ -54,7 +54,7 @@ class RoleController extends BaseController
         $id = $req->getParam('id');
         $role = Doctrine::getTable('Role')->find($id);
         if (!$role) {
-            /** @todo English */
+            /** @todo english */
             $msg   = "Invalid Product";
             $type = self::M_WARNING;
         } else {

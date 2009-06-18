@@ -47,7 +47,7 @@ class NetworkController extends BaseController
         $id = $this->_request->getParam('id');
         $network = Doctrine::getTable('Network')->find($id);
         if (!$network) {
-            /** @todo English */
+            /** @todo english */
             $msg   = "Invalid Network";
             $type = self::M_WARNING;
         } else {

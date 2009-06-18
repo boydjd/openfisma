@@ -55,7 +55,7 @@ abstract class BaseController extends SecurityController
     {
         parent::init();
         if (is_null($this->_modelName)) {
-            //@todo English
+            //@todo english
             //Actually user should not be able to see this error message
             throw new Fisma_Exception_General('The subject model has not been specified');
         }
@@ -73,7 +73,7 @@ abstract class BaseController extends SecurityController
      *
      * @param string $formName
      */
-    public function getForm($formName=null)
+    public function getForm(string $formName=null)
     {
         static $form = null;
         if (is_null($form)) {
@@ -110,8 +110,8 @@ abstract class BaseController extends SecurityController
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
-        } else {
-            /** @todo English */
+        } elseif (!$subject instanceof Doctrine_Record){
+            /** @todo english */
             throw new Fisma_Exception_General('Invalid parameter expecting a Record model');
         }
         $subject->merge($form->getValues());
@@ -132,7 +132,7 @@ abstract class BaseController extends SecurityController
              */
             throw new Fisma_Exception_General("Invalid {$this->_modelName}");
         }
-        $form   = $this->getForm($subject);
+        $form   = $this->getForm();
         
         $this->view->assign('editLink', "/panel/{$this->_modelName}/sub/edit/id/$id");
         $form->setReadOnly(true);            
@@ -157,7 +157,7 @@ abstract class BaseController extends SecurityController
             if ($form->isValid($post)) {
                 $subject = $this->mergeValue($form);
                 if (!$subject->trySave()) {
-                    /** @todo English please notice following 3 sentences*/
+                    /** @todo english please notice following 3 sentences*/
                     $msg   = "Failure in creation";
                     $model = self::M_WARNING;
                 } else {
@@ -189,7 +189,7 @@ abstract class BaseController extends SecurityController
              */
             throw new Fisma_Exception_General("Invalid {$this->_modelName}");
         }
-        $form   = $this->getForm($subject);
+        $form   = $this->getForm();
         
         $this->view->assign('viewLink', "/panel/{$this->_modelName}/sub/view/id/$id");
         $form->setAction("/panel/{$this->_modelName}/sub/edit/id/$id");
@@ -200,7 +200,7 @@ abstract class BaseController extends SecurityController
             if ($form->isValid($post)) {
                 $subject = $this->mergeValue($form, $subject);
                 if (!$subject->trySave()) {
-                    /** @todo English. This notice span following segments */
+                    /** @todo english. This notice span following segments */
                     $msg  = "Failure in creation";
                     $type = self::M_WARNING;
                 } else {
@@ -229,7 +229,7 @@ abstract class BaseController extends SecurityController
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
-            /** @todo English */
+            /** @todo english */
             $msg   = "Invalid {$this->_modelName}";
             $type = self::M_WARNING;
         } else {
