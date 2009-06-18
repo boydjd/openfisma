@@ -166,8 +166,7 @@ var readyFunc = function () {
         
     });
     //
-    YAHOO.util.Event.on('search_asset', 'click', searchAsset);
-    searchAsset();
+    YAHOO.util.Event.on('searchAsset', 'click', searchAsset);
     //
     YAHOO.util.Event.on('search_product' ,'click', searchProduct);
     //
@@ -339,15 +338,15 @@ var searchProduct = function (){
     failure: handleFailure});
 }
 
-function searchAsset(){
-    var trigger = new YAHOO.util.Element('poam-system_id');
+var searchAsset = function() {
+    var trigger = new YAHOO.util.Element('orgSystemId');
     if(trigger.get('id') == undefined){
         return ;
     }
     var sys = trigger.get('value');
     var param =  '';
     if(0 != parseInt(sys)){
-        param +=  '/sid/' + sys;
+        param +=  '/system_id/' + sys;
     }
     var assetInput = YAHOO.util.Selector.query('input.assets');
     for(var i = 0;i < assetInput.length; i++) {
@@ -355,20 +354,26 @@ function searchAsset(){
             param += '/' + assetInput[i].name + '/' + assetInput[i].value;
         }
     }
-    var url = document.getElementById('poam-system_id').getAttribute("url") + param;
+    var url = document.getElementById('orgSystemId').getAttribute("url") + param;
     YAHOO.util.Connect.asyncRequest('GET', url, 
     {success:function (o){
-        document.getElementById('poam-asset_id').parentNode.innerHTML = o.responseText;
-        asset_detail();
+        document.getElementById('assetId').options.length = 0;
+        var records = YAHOO.lang.JSON.parse(o.responseText);
+        records = records.table.records;
+        for(var i=0;i < records.length;i++){
+            document.getElementById('assetId').options.add(new Option(records[i].name, records[i].id));
+        }
     },
     failure: handleFailure});
 }
 
 function asset_detail() {
-    YAHOO.util.Event.on('poam-asset_id', 'change', function (){
+    YAHOO.util.Event.on('assetId', 'change', function (){
         var url = this.getAttribute("url") + this.value;
         YAHOO.util.Connect.asyncRequest('GET', url, {
-            success:function (o){document.getElementById('asset_info').innerHTML = o.responseText},
+            success:function (o){
+                document.getElementById('asset_info').innerHTML = o.responseText
+            },
             failure: handleFailure});
     });
 }

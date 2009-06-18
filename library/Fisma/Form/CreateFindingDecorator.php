@@ -59,13 +59,13 @@ class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
     
         // Render the HTML 4.01 strict markup for the form and form elements.
         if ($element instanceof Zend_Form_Element) {
-            if (in_array($element->getName(), array('name', 'ip', 'port', 'search_asset'))) {
+            if (in_array($element->getName(), array('name', 'ip', 'port', 'searchAsset'))) {
                 $render = '<td>'
                 . $this->buildLabel()
                 . '</td><td>'
                 . $this->buildInput()
                 . '</td>';
-            } elseif ('asset_id' == $element->getName()) {
+            } elseif ('assetId' == $element->getName()) {
                 $render = '<tr><td>'
                 . $this->buildLabel()
                 . '</td><td>'

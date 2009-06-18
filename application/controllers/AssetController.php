@@ -118,7 +118,8 @@ class AssetController extends BaseController
         $products = Doctrine::getTable('Product')->findAll()->toArray();
         $productList = array();
         foreach ($products as $product) {
-            $productList[$product['id']] = $product['id'].' | '.$product['name'].' | '.$product['vendor'].' | '.$product['version'];
+            $productList[$product['id']] = $product['id'] . ' | ' . $product['name'] . ' | ' 
+                                           . $product['vendor'] . ' | ' . $product['version'];
         }
         $form->getElement('productId')->addMultiOptions($productList);
         
@@ -228,6 +229,14 @@ class AssetController extends BaseController
         if (!empty($params['version'])) {
             $q->andWhere('p.version = ?', $params['version']);
         }
+        // get the assets whitch are belongs to current user's systems
+        $orgSystems = $this->_me->getOrgSystems()->toArray();
+        $orgSystemIds = array();
+        foreach ($orgSystems as $orgSystem) {
+            $orgSystemIds[] = $orgSystem['id'];
+        }
+        $q->andWhereIn('a.orgSystemId', $orgSystemIds);
+        
         if ($this->_request->getParam('format') == null) {
             $q->limit($this->_paging['count'])
             ->offset($this->_paging['startIndex']);
@@ -238,13 +247,13 @@ class AssetController extends BaseController
         $i = 0;
         foreach ($assets as $asset) {
             $assetArray[$i] = $asset->toArray();
-            foreach($asset->Organization as $k => $v) {
+            foreach ($asset->Organization as $k => $v) {
                 if ($v instanceof Doctrine_Null) {
                     $v = '';
                 }
                 $assetArray[$i]['orgsys_'.$k] = $v;
             }
-            foreach($asset->Product as $k => $v) {
+            foreach ($asset->Product as $k => $v) {
                 if ($v instanceof Doctrine_Null) {
                     $v = '';
                 }
@@ -264,6 +273,37 @@ class AssetController extends BaseController
         } else {
             $this->view->assetColumns = $this->_assetColumns;
             $this->view->asset_list = $assetArray;
+        }
+    }
+    
+
+    /**
+     * View detail information of the subject model
+     *
+     */
+    public function viewAction()
+    {
+        // supply searching support for create finding page
+        if ($this->_request->getParam('format') == 'ajax') {
+            $this->_helper->layout->setLayout('ajax');
+            $id = $this->_request->getParam('id');
+            $asset = new Asset();
+            $asset = $asset->getTable('Asset')->find($id);
+            if (!$asset) {
+                /**
+                 * @todo english
+                 */
+                throw new Fisma_Exception_General("Invalid {$this->_modelName}");
+            }
+            $assetInfo = $asset->toArray();
+            $assetInfo['systemName'] = $asset->Organization->name;
+            $assetInfo['productName'] = $asset->Product->name;
+            $assetInfo['vendor'] = $asset->Product->vendor;
+            $assetInfo['version'] = $asset->Product->version;
+            $this->view->asset = $assetInfo;
+            $this->render('detail');
+        } else {
+            parent::viewAction();
         }
     }
     

@@ -37,43 +37,88 @@ define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class FindingController extends PoamBaseController
+class FindingController extends BaseController
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     */
+    protected $_modelName = 'Finding';
+    
     /**
      * Returns the standard form for creating finding
      *
      * @return Zend_Form
      */
-    public function getFindingForm()
+    public function getForm()
     {
         $form = Fisma_Form_Manager::loadForm('finding');
-        foreach ($this->_sourceList as $key=>$value) {
-            $form->getElement('source_id')
-                 ->addMultiOptions(array($key => $value));
+        
+        $sources = Doctrine::getTable('Source')->findAll()->toArray();
+        $form->getElement('sourceId')->addMultiOptions(array(0 => '--select--'));
+        foreach ($sources as $source) {
+            $form->getElement('sourceId')->addMultiOptions(array($source['id'] => $source['name']));
         }
     
-        $blscr = new Blscr();
-        $list = array_keys($blscr->getList('class'));
-        $blscrList = array(''=>'--Any--') + array_combine($list, $list);
-        foreach ($blscrList as $key=>$value) {
-            $form->getElement('blscr_id')
-                 ->addMultiOptions(array($key => $value));
+        $securityControls = Doctrine::getTable('SecurityControl')->findAll()->toArray();
+        $form->getElement('securityControlId')->addMultiOptions(array(0 => '--select--'));
+        foreach ($securityControls as $securityControl) {
+            $form->getElement('securityControlId')
+                 ->addMultiOptions(array($securityControl['id'] => $securityControl['code']));
         }
         
-        $systemList = array('--Any--') + $this->_systemList;
-        foreach ($systemList as $key=>$value) {
-            $form->getElement('system_id')
-                 ->addMultiOptions(array($key=>$value));
+        $systems = $this->_me->getOrgSystems();
+        $systemList[0] = "--select--";
+        foreach ($systems as $system) {
+            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
         }
+        $form->getElement('orgSystemId')->addMultiOptions($systemList);
 
-        $asset = new Asset();
-        foreach ($asset->getList('name') as $key=>$value) {
-            $form->getElement('asset_id')
-                 ->addMultiOptions(array($key=>$value));
+        // fix: Zend_Form can not support the values which are not in its configuration
+        //      The values are set after page loading by Ajax
+        $asset = Doctrine::getTable('Asset')->find($this->_request->getParam('assetId'));
+        if ($asset) {
+            $form->getElement('assetId')->addMultiOptions(array($asset['id'] => $asset['name']));
         }
+        
+        $form->setDisplayGroupDecorators(array(
+            new Zend_Form_Decorator_FormElements(),
+            new Fisma_Form_CreateFindingDecorator()
+        ));
+        
+        $form->setElementDecorators(array(new Fisma_Form_CreateFindingDecorator()));
         return $form;
     }
 
+    /** 
+     * Hooks for manipulating the values retrieved by Forms
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     * @return Doctrine_Record
+     */
+    protected function mergeValue($form, $subject=null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } else {
+            /** @todo English */
+            throw new Fisma_Exception_General('Invalid parameter expecting a Record model');
+        }
+        $values = $form->getValues();
+        
+        // find the asset record by asset id
+        $asset = Doctrine::getTable('Asset')->find($values['assetId']);
+        if ($asset) {
+            // set organization id by related asset
+            $values['responsibleOrganizationId'] = $asset->Organization->id;
+        }
+        $subject->merge($values);
+        return $subject;
+    }
+    
+    
     /**
      * Provide searching capability of findings
      * Data is limited in legal systems.
@@ -201,28 +246,13 @@ class FindingController extends PoamBaseController
             }
         }
         $this->render();
-    }    
-    /**
-     *  Display the form for creating a new finding manually
-     */
-    public function createAction()
-    {
-        $this->_acl->requirePrivilege('finding', 'create');
-        $poam = $this->_request->getPost();
-
-        $form = $this->getFindingForm();
-        $form->setDefaults($poam);
-        $this->view->form = Fisma_Form_Manager::prepareCreateFindingForm($form);
-
-        $this->view->assign('system', $this->_systemList);
-        $this->view->assign('source', $this->_sourceList);
     }
 
     /**
      * Saves information for a newly created finding
      */
-     public function saveAction()
-     {
+    public function saveAction()
+    {
         $this->_acl->requirePrivilege('finding', 'create');
         $form = $this->getFindingForm();
         $poam = $this->_request->getPost();
@@ -366,8 +396,8 @@ class FindingController extends PoamBaseController
             $blscrs = array_keys($blscr->getList('class'));
             $this->view->blscrs = $blscrs;
             if (count($this->view->blscrs) == 0) {
-                 throw new Fisma_Exception_General("The spreadsheet template can not be prepared because there are no security
-                                              controls defined.");
+                 throw new Fisma_Exception_General('The spreadsheet template can not be ' .
+                                                   'prepared because there are no security controls defined.');
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
             $this->view->templateVersion = Fisma_Inject_Excel::TEMPLATE_VERSION;
