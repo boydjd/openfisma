@@ -90,7 +90,7 @@ class SecurityController extends MessageController
     {
         if (empty($this->_me)) {
             throw new Fisma_Exception_InvalidAuthentication('Your session has expired. Please log in again to begin a new session.');
-            $this->_forward('login', 'User');
+            $this->_forward('login', 'Auth');
         }
     }
 }

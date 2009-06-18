@@ -52,12 +52,12 @@ class ErrorController extends Zend_Controller_Action
         if ($errors->exception instanceof Fisma_Exception_InvalidAuthentication) {
             $this->view->assign('error', $errors->exception->getMessage());
             //remind the user to login
-            $this->_forward('logout', 'User');
+            $this->_forward('logout', 'Auth');
         // if the user want to access an empty path.  
         } elseif (!Zend_Auth::getInstance()->hasIdentity()) {
             ///@todo English
             $this->view->assign('error', 'Access denied! Please login first.');
-            $this->_forward('logout', 'User');
+            $this->_forward('logout', 'Auth');
         // if the user has login and meeted an exception.
         } else {
             $this->getResponse()->clearBody();

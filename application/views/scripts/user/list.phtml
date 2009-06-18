@@ -1,0 +1,86 @@
+<?php
+echo $this->partial('user/searchbox.phtml', array('keywords' => $this->keywords));
+Fisma_Format_Section::startSection("User Account List <span id='searchResultsTotalFound'></span>"); 
+?>
+<div id="list"></div>
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    {key:"id", label:"id",hidden: true}
+    ,{key:"nameFirst", label:"First Name", sortable: true, hidden: false}
+    ,{key:"nameLast", label:"Last Name", sortable: true, hidden: false}
+    ,{key:"phoneOffice", label:"Office Phone", sortable: true, hidden: false}
+    ,{key:"phoneMobile", label:"Mobile Phone", sortable: true, hidden: false}
+    ,{key:"email", label:"Email", sortable: true, hidden: false}
+    ,{key:"username", label:"Username", sortable: true, hidden: false}
+    ,{key:"role", label:"Role", sortable: true, hidden: false}
+];
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+
+        // Build custom request
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        return request;
+    };
+
+    var myDataSource = new YAHOO.util.DataSource('/user/search');
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
+    
+    // DataTable configuration
+    var myConfigs = {
+        initialRequest: "<?php echo $this->link; ?>/sortby/username/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        dynamicData: true, 
+        sortedBy : {key:"username", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:<?php echo $this->pageInfo['count']?>,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ),
+        generateRequest : myRequestBuilder
+    };
+    
+    var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        if (!searchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            searchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    <?php if (Fisma_Acl::hasPrivilege('users','read')) { ?>
+    myDataTable.subscribe("rowClickEvent", 
+        function (oArgs) {
+            var elTarget = oArgs.target;
+            var oRecord = this.getRecord(elTarget);
+            document.location = "/panel/user/sub/view/id/" + oRecord.getData("id");
+        }
+    );
+    <?php }?>
+</script>
+<?php Fisma_Format_Section::stopSection(); ?>

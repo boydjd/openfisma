@@ -312,8 +312,10 @@ table.fisma_crud tr td:first-child {
 }
 
 
-table.fisma_crud tr.fisma_checkboxes td {
+table.fisma_crud ul li {
     text-align: left;
+    list-style: none;
+    padding-top:2px;
 }
 
 /* This is used for Rules of Behavior, Privacy Policy, etc. */
