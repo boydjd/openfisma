@@ -54,7 +54,7 @@ class Finding extends BaseFinding
         $this->_updateNextDueDate();
 
         $auditLog              = new AuditLog();
-        $auditLog->User        = $this->CreatedBy;
+        $auditLog->User        = User::currentUser();
         $auditLog->description = 'New Finding Created';
         $this->AuditLogs[]     = $auditLog;
     }
@@ -72,7 +72,7 @@ class Finding extends BaseFinding
                 if (!array_key_exists($key, array('currentEvaluationId', 'nextDueDate', 'legacyFindingKey'))) {
                     $auditLog = new AuditLog();
                     $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $this->$key;
-                    $auditLog->User        = $this->CreatedBy;
+                    $auditLog->User        = User::currentUser();
                     $auditLog->description = $message;
                     $this->AuditLogs[]     = $auditLog;
                 }

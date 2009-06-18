@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Ryan yang <ryan.yang@reyosoft.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: Notify.php 1633 2009-05-11 03:08:33Z woody712 $
- * @package    Cron_Job
+ * @version   $Id$
+ * @package   Script_Bin
  */
 
 /**

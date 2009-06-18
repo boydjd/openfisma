@@ -260,7 +260,7 @@ class User extends BaseUser
      */
     public function validateEmail($validateCode)
     {
-        $email = empty($this->notifyEmail)?$this->email:$this->notifyEmail;
+        $email = empty($this->notifyEmail) ? $this->email : $this->notifyEmail;
 
         $validation = Doctrine::getTable('EmailValidation')
                         ->findByDql("email = '$email' AND userId = $this->id");
@@ -268,11 +268,11 @@ class User extends BaseUser
             $this->emailValidate = true;
             $validation->delete();
             //@todo english
-            $this->log('Email validate successfully');
+            $this->_log('Email validate successfully');
             return true;
         } else {
             //@todo english
-            $this->log('Email validate faild');
+            $this->_log('Email validate faild');
             return false;
         }
     }
@@ -283,7 +283,7 @@ class User extends BaseUser
     public function logout()
     {
         //@todo english
-        $this->log('Log out');
+        $this->_log('Log out');
         Zend_Auth::getInstance()->clearIdentity();
     }
 
@@ -292,7 +292,7 @@ class User extends BaseUser
      *
      * @param string $message log message
      */
-    private function log($message)
+    private function _log($message)
     {
         $accountLog = new AccountLog();
         $accountLog->ip      = $_SERVER["REMOTE_ADDR"];
