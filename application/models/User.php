@@ -142,9 +142,8 @@ class User extends BaseUser
         if (empty($lockType)) {
             throw new Fisma_Exception_General("Lock type cannot be blank");
         }
-        
         $this->locked = true;
-        $this->lockTs = new Zend_Date();
+        $this->lockTs = date('Y-m-d H:i:s');
         $this->lockType = $lockType;
         $this->save();
     }
@@ -300,6 +299,22 @@ class User extends BaseUser
             $this->_log('Email validate faild');
             return false;
         }
+    }
+
+    /**
+     * Validate the credential
+     *
+     * @param string $password 
+     * @return bool
+     */
+    public function login($password)
+    {
+        if ($this->password == $this->hash($password)) {
+            $this->lastLoginTs = date('Y-m-d H:i:s');
+            $this->save();
+            return true;
+        }
+        return false;
     }
 
     /**

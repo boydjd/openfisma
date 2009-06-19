@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
+ * @package   Controller
  * @author    Jim Chen <xhorse@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
  */
 
 /**
@@ -59,8 +59,8 @@ class AuthController extends MessageController
      * Handling user login
      * 
      * The login process verifies the credential provided by the user. The authentication can
-     * be performed against the database or LDAP provider, 
-     * according to the application's configuration. Also, it enforces the security policies set by the
+     * be performed against the database or LDAP provider, according to the application's 
+     * configuration. Also, it enforces the security policies set by the
      * application.
      */
     public function loginAction()
@@ -88,77 +88,23 @@ class AuthController extends MessageController
                 throw new Zend_Auth_Exception("Incorrect username or password");                
             }
             
-            // If the account is locked, then check to see
-            // what the reason for the lock was and whether it can be unlocked automatically.
-            $lockMessage = '';
-            if ($user->locked) {
-                if ($user->lockType == User::LOCK_TYPE_MANUAL) {
-                    $lockMessage = 'Your account has been locked by an Administrator. '
-                                 . 'Please contact the'
-                                 . ' <a href="mailto:'
-                                 . Configuration::getConfig('contact_email')
-                                 . '">Administrator</a>.';
-                } elseif ($user->lockType == User::LOCK_TYPE_PASSWORD
-                          && 'database' == Configuration::getConfig('auth_type')) {
-                    // If this system is configured to let accounts unlock automatically,
-                    // then check whether it can be unlocked now
-                    if (Configuration::getConfig('unlock_enabled') == 1) {
-                        $unlockTs = new Zend_Date($this->lockTs);
-                        $unlockTs->add(Configuration::getConfig('unlock_duration'), Zend_Date::SECOND);
-                        $now = new Zend_Date();
-                        if ($unlockTs->isLater($now)) {
-                            $unlockTs->sub($now);
-                            $lockMessage = 'Your user account has been locked due to '
-                                         . Configuration::getConfig('failure_threshold')
-                                         . ' or more unsuccessful login attempts. Your account will be unlocked in '
-                                         . ceil($unlockTs->getTimestamp()/60)
-                                         . ' minutes. Please try again at that time.<br>'
-                                         . ' You may also contact the Administrator for further assistance.';
-                        } else {
-                            $user->unlockAccount();
-                        }
-                    } else {
-                        $lockMessage = 'Your user account has been locked due to '
-                                     . Configuration::getConfig('failure_threshold')
-                                     . ' or more unsuccessful login attempts. Please contact the <a href="mailto:'
-                                     . Configuration::getConfig('contact_email')
-                                     . '">Administrator</a>.';
-                    }
-                } elseif ($this->lockType == User::LOCK_TYPE_INACTIVE) {
-                    $lockMessage = 'Your account has been locked automatically because you have not '
-                                 . 'not logged in over '
-                                 . Configuration::getConfig('max_absent_time')
-                                 . ' days.';
-                } elseif ($this->lockType == User::LOCK_TYPE_EXPIRED
-                          && 'database' == Configuration::getConfig('auth_type')) {
-                    $lockMessage = 'Your account has been locked automatically because you have not '
-                                 . 'changed your password in over '
-                                 . Configuration::getConfig('pass_expire')
-                                 . ' days.';
-                }
-            }
-            if (!empty($lockMessage)) {
-                throw new Zend_Auth_Exception($lockMessage);
-            }
-
             // Authenticate this user based on their password
-            $db = Zend_Registry::get('db');
             $authType = Configuration::getConfig('auth_type');
-
             // The root user is always authenticated against the database.
             if ($username == 'root') {
                 $authType = 'database';
             }
 
-            // Handle LDAP or database authentication for non-root users.
+            // Any policy effect the authentication result will go inside the Auth_Adapter
             if ($authType == 'ldap') {
+                // Handle LDAP authentication 
                 $config = new Config();
                 $data = $config->getLdap();
                 $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
             } else if ($authType == 'database') {
-                $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'user', 'username', 'password');
-                $digestPass = $user->hash($password);
-                $authAdapter->setIdentity($username)->setCredential($digestPass);
+                // Handle database authentication 
+                $authAdapter = new Fisma_Auth_Adapter_Doctrine($user, 'username', 'password');
+                $authAdapter->setCredential($password);
             }
 
             $auth = Zend_Auth::getInstance();
@@ -166,70 +112,36 @@ class AuthController extends MessageController
             
             if ($authResult->isValid()) {
                 // Set up the session timeout for the authentication token
-                $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
-                $authSession->setExpirationSeconds(Configuration::getConfig('session_inactivity_period') * 60);
+                $authSession = new Zend_Session_Namespace(
+                    Zend_Auth::getInstance()->getStorage()->getNamespace()
+                );
+                $authSession->setExpirationSeconds(
+                    Configuration::getConfig('session_inactivity_period') * 60
+                );
                 $authSession->currentUser = $user;
             } else {
-                $user->failureCount++;
-                $user->save();
-                if ($user->failureCount > Configuration::getConfig('auth_type')) {
-                    $user->lockAccount(User::LOCK_TYPE_PASSWORD);
-                }
                 /** @doctrine fix logging */
                 //$this->_user->log('LOGINFAILURE',$whologin['id'],'Failure');
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
-
-            // At this point, the user is authenticated. Now check if the account is inactive.
-            $inactivePeriod = Configuration::getConfig('account_inactivity_period');
-            $inactiveDate = new Zend_Date();
-            $inactiveDate->sub($inactivePeriod, Zend_Date::DAY);
-            $lastLogin = new Zend_Date($user->lastLoginTs, 'YYYY-MM-DD HH-MI-SS');
-            if ($lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($inactiveDate) ) {
-                $user->lockAccount(User::LOCK_TYPE_INACTIVE);
-                /** @doctrine fix logging */
-                //$this->_user->log('ACCOUNT_LOCKOUT', $_me->id, "User Account $_me->account Locked");
-                throw new Zend_Auth_Exception('Your account has been locked because you have not logged in for '
-                    . $inactivePeriod
-                    . ' or more days. Please contact the <a href=\"mailto:'
-                    . Configuration::getConfig('contact_email')
-                    . '">Administrator</a>.');
-            } 
-
-            // Check password expiration (for database authentication only)
-            if ('database' == Configuration::getConfig('auth_type')) {
-                $passExpirePeriod = Configuration::getConfig('pass_expire');
-                $passExpireTs = new Zend_Date($user->passwordTs);
-                $passExpireTs->add($passExpirePeriod, Zend_Date::DAY);
-                if ($passExpireTs->isEarlier(new Zend_Date())) {
-                    $user->lockAccount(User::LOCK_TYPE_EXPIRED);
-                    /** @doctrine fix logging */
-                    //$this->_user->log('ACCOUNT_LOCKOUT',$_me->id,"User Account $_me->account Successfully Locked");
-                    throw new Zend_Auth_Exception('Your user account has been locked because you have not'
-                        . " changed your password for $passExpirePeriod or more days."
-                        . ' Please contact the '
-                        . ' <a href="mailto:'. Configuration::getConfig('contact_email')
-                        . '">Administrator</a>.');
-                }
-            }
             
-            /** @doctrine write to log and create notification */
-            //$this->_user->log('LOGIN', $_me->id, "Success");
-
             // Set cookie for 'column manager' to control the columns visible on the search page
             // Persistent cookies are prohibited on U.S. government web servers by federal law. 
             // This cookie will expire at the end of the session.
             setcookie(User::SEARCH_PREF_COOKIE, $user->searchColumnsPref, false, '/');
 
+            $passExpirePeriod = Configuration::getConfig('pass_expire');
             // Check whether the user's password is about to expire (for database authentication only)
             if ('database' == Configuration::getConfig('auth_type')) {
                 $passWarningPeriod = Configuration::getConfig('pass_warning');
                 $passWarningTs = new Zend_Date($user->passwordTs);
                 $passWarningTs->add($passExpirePeriod - $passWarningPeriod, Zend_Date::DAY);
-                if ($passWarningTs->isEarlier(new Zend_Date())) {
-                    $message = "Your password will expire in $leaveDays days, you should change it now.";
-                    $model = self::M_WARNING;
-                    $this->message($message, $model);
+                $now = Zend_Date::now();
+                if ($now->isLater($passWarningTs)) {
+                    $leaveDays = $passWarningPeriod - $now->sub($passWarningTs, Zend_Date::DAY);
+                    $message = "Your password will expire in $leaveDays days,"
+                               . " you should change it now.";
+                    $this->message($message, self::M_WARNING);
                     // redirect back to password change action
                     $this->_helper->_actionStack('header', 'Panel');
                     $this->_forward('password');
@@ -255,8 +167,8 @@ class AuthController extends MessageController
                 return $this->render('rule');
             }
             
-            // Finally, if the user has passed through all of this, send them to their original requested
-            // page. If they don't have a requested page, send them to the main dashboard.
+            // Finally, if the user has passed through all of this, 
+            // send them to their original requested page or dashboard otherwise
             $redirectInfo = new Zend_Session_Namespace('redirect_page');
             if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
                 $path = $redirectInfo->page;
@@ -266,8 +178,8 @@ class AuthController extends MessageController
                 $this->_forward('index', 'Panel');
             }
         } catch(Zend_Auth_Exception $e) {
-            // If any Auth exceptions are caught during login, then return to the login screen
-            // and display the message
+            // If any Auth exceptions are caught during login, 
+            // then return to the login screen and display the message
             $this->view->assign('error', $e->getMessage());
         }
     }
@@ -285,15 +197,13 @@ class AuthController extends MessageController
     }
 
     /**
-     * logoutAction() - Close out the current user's session.
+     * Close out the current user's session.
      */
     public function logoutAction() {
-        //@todo why $this->_me is just an username now?
         if (!empty($this->_me)) {
-            //$user = Doctrine::getTable('User')->findOneByUserName($this->_me);
-            //$user->logout();
             $this->_me->logout();
         }
+        unset($this->_me);
         $this->_forward('login');
     }
 
