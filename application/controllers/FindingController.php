@@ -45,6 +45,37 @@ class FindingController extends BaseController
      * This model is the main subject which the controller operates on.
      */
     protected $_modelName = 'Finding';
+
+    /**
+     * my OrgSystems
+     *
+     * @var array
+     */
+    private $_myOrgSystems = null;
+    
+    /**
+     * my OrgSystem ids
+     *
+     * @var array
+     */
+    private $_myOrgSystemIds = null;
+    
+    /**
+     * Enter description here...
+     *
+     */
+    public function init()
+    {
+        parent::init();
+        $orgSystems = $this->_me->getOrgSystems()->toArray();
+        $this->_myOrgSystems = $orgSystems;
+        
+        $orgSystemIds = array(0);
+        foreach ($orgSystems as $orgSystem) {
+            $orgSystemIds[] = $orgSystem['id'];
+        }
+        $this->_myOrgSystemIds = $orgSystemIds;
+    }
     
     /**
      * Returns the standard form for creating finding
@@ -160,7 +191,7 @@ class FindingController extends BaseController
      */
     public function editAction()
     {
-        $this->_acl->requirePrivilege('finding', 'update');
+        Fisma_Acl::requirePrivilege('finding', 'update');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -187,7 +218,7 @@ class FindingController extends BaseController
      */
     public function injectionAction()
     {
-        $this->_acl->requirePrivilege('finding', 'inject');
+        Fisma_Acl::requirePrivilege('finding', 'inject');
 
         /** @todo convert this to a Zend_Form */
         // If the form isn't submitted, then there is no work to do
@@ -253,7 +284,7 @@ class FindingController extends BaseController
      */
     public function saveAction()
     {
-        $this->_acl->requirePrivilege('finding', 'create');
+        Fisma_Acl::requirePrivilege('finding', 'create');
         $form = $this->getFindingForm();
         $poam = $this->_request->getPost();
 
@@ -313,7 +344,7 @@ class FindingController extends BaseController
      */
     public function deleteAction()
     {
-        $this->_acl->requirePrivilege('finding', 'delete');
+        Fisma_Acl::requirePrivilege('finding', 'delete');
         
         $req = $this->getRequest();
         $post = $req->getPost();
@@ -354,7 +385,7 @@ class FindingController extends BaseController
      */
     public function templateAction()
     {
-        $this->_acl->requirePrivilege('finding', 'inject');
+        Fisma_Acl::requirePrivilege('finding', 'inject');
         
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addContext('xls', array(
@@ -371,31 +402,44 @@ class FindingController extends BaseController
          * the spreadsheet isn't available.
          */
         try {
-            $src = new System();
-            $this->view->systems = $src->getList('nickname',
-                $this->_me->systems);
+            $this->_myOrgSystems;
+            $this->view->systems = array();
+            foreach ($this->_myOrgSystems as $orgSystem) {
+                $this->view->systems[] = $orgSystem['nickname'];
+            }
             if (count($this->view->systems) == 0) {
                 throw new Fisma_Exception_General(
                     "The spreadsheet template can not be " .
                     "prepared because there are no systems defined.");
             }
-            $src = new Network();
-            $this->view->networks = $src->getList('nickname');
+            
+            $networks = Doctrine::getTable('Network')->findAll()->toArray();
+            $this->view->networks = array();
+            foreach ($networks as $network) {
+                $this->view->networks[] = $network['nickname'];
+            }
             if (count($this->view->networks) == 0) {
                  throw new Fisma_Exception_General("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
-            $src = new Source();
-            $this->view->sources = $src->getList('nickname');
-            if (count($this->view->networks) == 0) {
+            
+            $sources = Doctrine::getTable('Source')->findAll()->toArray();
+            $this->view->sources = array();
+            foreach ($sources as $source) {
+                $this->view->sources[] = $source['nickname'];
+            }
+            if (count($this->view->sources) == 0) {
                  throw new Fisma_Exception_General("The spreadsheet template can
                      not be prepared because there are no finding sources
                      defined.");
             }
-            $blscr = new Blscr();
-            $blscrs = array_keys($blscr->getList('class'));
-            $this->view->blscrs = $blscrs;
-            if (count($this->view->blscrs) == 0) {
+            
+            $securityControls = Doctrine::getTable('SecurityControl')->findAll()->toArray();
+            $this->view->securityControls = array();
+            foreach ($securityControls as $securityControl) {
+                $this->view->securityControls[] = $securityControl['code'];
+            }
+            if (count($this->view->securityControls) == 0) {
                  throw new Fisma_Exception_General('The spreadsheet template can not be ' .
                                                    'prepared because there are no security controls defined.');
             }
@@ -425,7 +469,7 @@ class FindingController extends BaseController
      */
     public function pluginAction()
     {       
-        $this->_acl->requirePrivilege('finding', 'inject');
+        Fisma_Acl::requirePrivilege('finding', 'inject');
 
         // Load the finding plugin form
         $uploadForm = Fisma_Form_Manager::loadForm('finding_upload');
@@ -434,18 +478,36 @@ class FindingController extends BaseController
 
         // Populate the drop menu options
         $uploadForm->plugin->addMultiOption('', '');
-        $plugin = new Plugin();
-        $pluginList = $plugin->getList('name');
+        $plugins = Doctrine::getTable('Plugin')->findAll()->toArray();
+        $pluginList = array();
+        foreach ($plugins as $plugin) {
+            $pluginList[] = $plugin['name'];
+        }
         $uploadForm->plugin->addMultiOptions($pluginList);
-
+        
+        $sources = Doctrine::getTable('Source')->findAll()->toArray();
+        $sourceList = array();
+        foreach ($sources as $source) {
+            $sourceList[] = $source['nickname'] . ' - ' . $source['name'];
+        }
         $uploadForm->findingSource->addMultiOption('', '');
-        $uploadForm->findingSource->addMultiOptions($this->_sourceList);
-
+        $uploadForm->findingSource->addMultiOptions($sourceList);
+        
+        $orgSystems = $this->_me->getOrgSystems()->toArray();
+        $orgSystemList = array();
+        foreach ($orgSystems as $orgSystem) {
+            $orgSystemList[] = $orgSystem['nickname'] . ' - ' . $orgSystem['name'];
+        }
         $uploadForm->system->addMultiOption('', '');
-        $uploadForm->system->addMultiOptions($this->_systemList);
+        $uploadForm->system->addMultiOptions($orgSystemList);
 
+        $networks = Doctrine::getTable('Network')->findAll()->toArray();
+        $networkList = array();
+        foreach ($networks as $network) {
+            $networkList[] = $network['nickname'] . ' - ' . $network['name'];
+        }
         $uploadForm->network->addMultiOption('', '');
-        $uploadForm->network->addMultiOptions($this->_networkList);
+        $uploadForm->network->addMultiOptions($networkList);
         
         // Configure the file select
         $uploadForm->setAttrib('enctype', 'multipart/form-data');
@@ -531,25 +593,27 @@ class FindingController extends BaseController
      *
      * @todo Use Zend_Pager
      */
-    public function approveAction() {
-        $this->_acl->requirePrivilege('finding', 'approve');
+    public function approveAction()
+    {
+        Fisma_Acl::requirePrivilege('finding', 'approve');
         
-        $db = Zend_Registry::get('db');
-        $findings = $db->fetchAll("SELECT new_poam.id,
-                                          new_poam.finding_data,
-                                          new_poam.duplicate_poam_id,
-                                          new_poam_system.nickname,
-                                          old_poam.status old_status,
-                                          old_poam.type old_type,
-                                          old_poam_system.nickname old_nickname
-                                     FROM poams new_poam
-                               INNER JOIN systems new_poam_system ON new_poam.system_id = new_poam_system.id
-                                LEFT JOIN poams old_poam ON new_poam.duplicate_poam_id = old_poam.id
-                                LEFT JOIN systems old_poam_system ON old_poam.system_id = old_poam_system.id
-                                    WHERE new_poam.status = 'PEND'
-                                 ORDER BY new_poam.system_id,
-                                          new_poam.id");
-        
+        $q = Doctrine_Query::create()
+             ->select('f.id AS nId')
+             ->addSelect('f.description AS nDesc')
+             ->addSelect('f.duplicateFindingId AS duplicateFindingId')
+             ->addSelect('nr.nickname AS nNickname')
+             ->addSelect('df.id AS oId')
+             ->addSelect('df.status AS oStatus')
+             ->addSelect('df.type AS oType')
+             ->addSelect('or.nickname AS oNickname')
+             ->from('Finding f')
+             ->leftJoin('f.ResponsibleOrganization nr')
+             ->leftJoin('f.DuplicateFinding df')
+             ->leftJoin('df.ResponsibleOrganization or')
+             ->where('f.status = ?', 'PEND')
+             ->orderBy('f.responsibleOrganizationId, f.id');
+
+        $findings = $q->execute()->toArray();
         $this->view->assign('findings', $findings);
     }
     
@@ -559,26 +623,25 @@ class FindingController extends BaseController
      * @todo Add audit logging
      */
     public function processApprovalAction() {
-        $this->_acl->requirePrivilege('finding', 'approve');
+        Fisma_Acl::requirePrivilege('finding', 'approve');
         
         $db = Zend_Registry::get('db');
         $post = $this->getRequest()->getPost();
         if (isset($post['findings'])) {
-            $inString = mysql_real_escape_string(implode(',', $post['findings']));
-            if (isset($_POST['approve_selected'])) {
-                $poam = new Poam();
-                $now = new Zend_Db_Expr('now()');
-                $poam->update(array('status' => 'NEW', 'create_ts' => $now), "id IN ($inString)");
-
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
-                    foreach (explode(',', $inString) as $id) {
-                        $this->createIndex($id);
+            foreach ($post['findings'] as $findingId) {
+                $finding = new Finding();
+                if ($finding = $finding->getTable('Finding')->find($findingId)) {
+                    if (isset($_POST['approve_selected'])) {
+                        $finding->status = 'NEW';
+                        $finding->save();
+                        if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                            $this->createIndex($findingId);
+                        }
+                    } elseif (isset($_POST['delete_selected'])) {
+                        $finding->AuditLogs->delete();
+                        $finding->delete();
                     }
                 }
-
-            } elseif (isset($_POST['delete_selected'])) {
-                $poam = new Poam();
-                $poam->delete("id IN ($inString)");
             }
         }
         $this->_forward('approve', 'Finding');

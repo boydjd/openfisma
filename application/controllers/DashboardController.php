@@ -35,6 +35,11 @@
  */
 class DashboardController extends SecurityController
 {
+    /**
+     * my OrgSystem ids
+     *
+     * @var array
+     */
     private $_myOrgSystemIds = null;
     
     public function init()

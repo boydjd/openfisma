@@ -1,41 +1,51 @@
 <?php Fisma_Format_Section::startSection("Approve Pending Findings"); ?>
 <form method="POST" action="/panel/finding/sub/process-approval">
-    <table class="tipframe" style="width:70%" cellpadding="0" cellspacing="0">
-        <tr>
-            <th class="tdc">Select</th>
-            <th class="tdc">Id</th>
-            <th class="tdc">System</th>
-            <th class="tdc">Description</th>
-            <th class="tdc">Duplicate POAM ID</th>
-            <th class="tdc">Duplicate POAM System</th>
-            <th class="tdc">Duplicate POAM Mitigation Type</th>
-            <th class="tdc">Duplicate POAM Status</th>
-        </tr>
-<?php
-    if (count($this->findings) > 0) {
-        foreach ($this->findings as $finding) {
-            print "<tr><td align='center' class='tdc'><input type=\"checkbox\" name=\"findings[]\" value=\"{$finding['id']}\"></td>";
-            print "<td align='center' class='tdc'><a target='_blank' href=\"/panel/remediation/sub/view/id/{$finding['id']}\">{$finding['id']}</a></td>";
-            print "<td align='center' class='tdc'>{$finding['nickname']}</td>";
-            print "<td class='tdc'>{$finding['finding_data']}</td>";
-            if (isset($finding['duplicate_poam_id'])) {
-                print "<td align='center' class='tdc'>";
-                print "<a target='_blank' href=\"/panel/remediation/sub/view/id/{$finding['duplicate_poam_id']}\">{$finding['duplicate_poam_id']}</a>";
-                print "</td><td align='center' class='tdc'>{$finding['old_nickname']}</td>";
-                print "<td align='center' class='tdc'>{$finding['old_type']}</td>";
-                print "<td align='center' class='tdc'>{$finding['old_status']}</td>";
-            } else {
-                print "<td align='center' class='tdc' colspan='4'><i>No duplicate found</i></td>";
-            }
-            print "</td>";
-            print "</tr>";
+<div id="list"></div>
+<script type="text/javascript">
+    var checkboxList = function(elCell, oRecord, oColumn, sData) {
+        elCell.innerHTML = "<input type='checkbox' name='findings[]' value='" + oRecord.getData("nId") + "' />";
+    };
+    
+    var link1 = function(elCell, oRecord, oColumn, sData) {
+        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"+oRecord.getData("nId")+"'>"+oRecord.getData("nId")+"</a>";
+    };
+    
+    var link2 = function(elCell, oRecord, oColumn, sData) {
+        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"+oRecord.getData("oId")+"'>"+oRecord.getData("oId")+"</a>";
+    };
+    // Column definitions
+    var myColumnDefs = [
+        {key:"nId", label:"", hidden: false, formatter: checkboxList}
+        ,{key:"nId", label:"Id", hidden: false, formatter: link1}
+        ,{key:"nNickname", label:"System", hidden: false}
+        ,{key:"nDesc", label:"Description", hidden: false}
+        ,{key:"oId", label:"Duplicate POAM ID", hidden: false, formatter: link2}
+        ,{key:"oNickname", label:"Duplicate POAM System", hidden: false}
+        ,{key:"oType", label:"Duplicate POAM Mitigation Type", hidden: false}
+        ,{key:"oStatus", label:"Duplicate POAM Status", hidden: false}
+    ];
+     
+    var dataSource = { rows: [<?php
+    $records = array();
+    foreach ($this->findings as $finding) {
+        $record = array();
+        foreach ($finding as $k => $v) {
+            $record[] = $k . ':"' . $v . '"';
         }
-    } else {
-        print "<tr><td class='tdc' colspan='8'><i>There are no pending findings.</i></td></tr>";
-    }
-?>
+        $records[] = '{' . implode(',', $record) . '}';
+    } echo implode(',', $records); ?>] };
+     
+    var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
+    
+    // DataTable configuration
+    var myConfigs = {
+        dynamicData: false
+    };
+    var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+</script>
+<table>
         <tr>
-            <td class="tdc" colspan="8">
+            <td height="50px">
                 <?php 
                     $selectAllButton = new Fisma_Yui_Form_Button('selectAll',
                                                            array('value' => 'Select All', 
