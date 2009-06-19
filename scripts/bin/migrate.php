@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -32,23 +33,14 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-require_once('../../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
+require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
 
-if (!$plSetting->installed()) {
-    die('Please install!');
-}
+Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+Fisma::connectDb();
 
-// Initialize our DB connection
-$datasource = Zend_Registry::get('datasource');
-$dsn        = $datasource->params->toArray();
-
-$migrationDir = '../../application/doctrine/migrations/';
-
-Doctrine_Manager::connection("mysql://$dsn[username]:$dsn[password]@$dsn[host]/$dsn[dbname]");
-$migration  = new Doctrine_Migration($migrationDir);
+$migration  = new Doctrine_Migration(Fisma::getPath('migration'));
 
 //Migrate to the latest version, also ,you can type "$migration->migrate(1)" to the version 1
 $migration->migrate(0); 
 
-print('Migration successful.Current version is ' . $migration->getCurrentVersion() . '\n'); 
+print('Migration successful. Current version is ' . $migration->getCurrentVersion() . '\n'); 

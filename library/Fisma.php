@@ -144,12 +144,15 @@ class Fisma
             'pear' => 'library/Pear'
         );
         
-        // Add the include paths to PHP's path.
-        $currentPath = get_include_path();
+        // Prepend the include paths to PHP's path.
+        // I discovered that PEAR has a class called "System". If the user has this class, then PEAR's System
+        // may override OpenFISMA's. For this reason, OpenFISMA's include path is prepended to the user's default
+        // path, instead of appended... to prevent any user libraries from clashing with our own.
+        $currentPath = '';
         foreach (self::$_includePath as $path) {
             $currentPath .= PATH_SEPARATOR . realpath(self::$_rootPath . '/' . $path);
         }
-        set_include_path($currentPath);
+        set_include_path($currentPath . PATH_SEPARATOR . get_include_path());
 
         // Enable the Zend autoloader. This depends on the Zend library being in its expected place.
         require_once(self::$_rootPath . '/library/Zend/Loader.php');
@@ -157,6 +160,7 @@ class Fisma
 
         // Set up application paths. These are relative to the root path.
         self::$_applicationPath = array(
+            'application' => 'application',
             'cache' => 'data/cache',
             'config' => 'application/config',
             'controller' => 'application/controllers',

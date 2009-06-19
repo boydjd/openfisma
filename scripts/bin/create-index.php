@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -28,20 +29,11 @@
  * Create lucene index, include findings, sources, networks, products, organizations, 
  *   roles, systems, accounts. Stored them in the directory of "data/index" 
  */
-define('COMMAND_LINE', true);
 
-require_once('../../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
+$createIndex = new CreateIndex();
+$createIndex->process();
 
-if ($plSetting->installed()) {
-    // Kick off the main routine:
-    $createIndex = new CreateIndex();
-    $createIndex->process();
-} else {
-    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
-}
-
-Class CreateIndex
+class CreateIndex
 {
     /**
      * initialize the direcotry of the lucene index
@@ -51,7 +43,12 @@ Class CreateIndex
     //Set the lucene index dir
     public function __construct() 
     {
-        $this->_indexDir = Fisma::getPath('data') . '/index/';
+        require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
+
+        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+        Fisma::connectDb();
+        
+        $this->_indexDir = Fisma::getPath('index');
     }
         
     /**
@@ -62,7 +59,8 @@ Class CreateIndex
      */
     private function _newIndex($name)
     {
-        $index = new Zend_Search_Lucene($this->_indexDir . $name, true);
+        $indexPath = $this->_indexDir . "/$name";
+        $index = new Zend_Search_Lucene($indexPath, true);
         return $index;
     }
     
@@ -74,11 +72,11 @@ Class CreateIndex
      */
     private function _optimize($name)
     {
-        if (is_dir($this->_indexDir . $name)) {
-            $index = new Zend_Search_Lucene($this->_indexDir . $name);
+        $indexPath = $this->_indexDir . "/$name";
+        if (is_dir($indexPath)) {
+            $index = new Zend_Search_Lucene($indexPath);
             $index->optimize();
-            /** @todo english */
-            print("$name index optimize successfully. \n");
+            print("$name index optimized successfully ($indexPath).\n");
             return true;
         } else {
             return false;
@@ -119,6 +117,8 @@ Class CreateIndex
         if (empty($data)) {
             return false;
         }
+        $indexPath = $this->_indexDir . "/$name";
+
         $index = $this->_newIndex($name);
         set_time_limit(0);
         foreach ($data as $rowData) {
@@ -126,8 +126,7 @@ Class CreateIndex
             $index->addDocument($doc);
         }
         $index->optimize();
-        chmod($this->_indexDir . $name, 0777);
-        /** @todo english */
+        chmod($indexPath, 0777);
         print("$name index created successfully. \n");
 
     }
@@ -282,6 +281,7 @@ Class CreateIndex
         if ($this->_optimize('system')) {
             return false;
         }
+
         $systems = Doctrine::getTable('System')->findAll();
         foreach ($systems as $system) {
             $data[] = array(
