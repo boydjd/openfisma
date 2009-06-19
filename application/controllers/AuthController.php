@@ -355,30 +355,36 @@ class AuthController extends MessageController
     public function passwordAction()
     {
         // Load the change password file
-        $passwordForm = Fisma_Form_Manager::loadForm('change_password');
-        $passwordForm = Fisma_Form_Manager::prepareForm($passwordForm);
+        $form = Fisma_Form_Manager::loadForm('change_password');
+        $form = Fisma_Form_Manager::prepareForm($form);
 
-        // Prepare the password requirements explanation:
-        $requirements[] = "Length must be between "
-        . Configuration::getConfig('pass_min')
-        . " and "
-        . Configuration::getConfig('pass_max')
-        . " characters long.";
-        if (Configuration::getConfig('pass_uppercase') == 1) {
-            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
-        }
-        if (Configuration::getConfig('pass_lowercase') == 1) {
-            $requirements[] = "Must contain at least 1 lower case character (a-z)";
-        }
-        if (Configuration::getConfig('pass_numerical') == 1) {
-            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
-        }
-        if (Configuration::getConfig('pass_special') == 1) {
-            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
-        }
+        $this->view->requirements =  $this->_getPasswordRequirements();
 
-        $this->view->assign('requirements', $requirements);
-        $this->view->assign('form', $passwordForm);
+        if ($this->_request->isPost()) {
+            $post   = $this->_request->getPost();
+            $form->getElement('oldPassword')->addValidator(new Fisma_Form_Validator_PasswdMatch());
+            $form->getElement('newPassword')->addValidator(new Fisma_Form_Validator_Password());
+
+            if ($form->isValid($post)) {
+                $this->_me->password = $post['newPassword'];
+                try {
+                    $this->_me->save();
+                    /** @todo english */
+                    $message = "Your password modified successfully."; 
+                    $model   = self::M_NOTICE;
+                } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
+                    $message = $e->getMessage();
+                    $model   = self::M_WARNING;
+                }
+            } else {
+                $errorString = Fisma_Form_Manager::getErrors($form);
+                $message     = "Unable to change password:<br>" . $errorString;
+                $model       = self::M_WARNING;
+            }
+            $this->message($message, $model);
+        }
+        $this->view->form    =  $form;
     }
 
     /**
@@ -442,61 +448,6 @@ class AuthController extends MessageController
         $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
         $this->message($msg, $model);
         $this->_forward('notifications');
-    }
-
-
-    /**
-     * pwdchangeAction() - Handle any edits to a user's profile settings.
-     *
-     * @todo Cleanup this method: comments and formatting
-     * @todo This method is named incorrectly
-     */
-    public function pwdchangeAction()
-    {
-        $req = $this->getRequest();
-        $userRow = $this->_user->find($this->_me->id)->current();
-        if ('save' == $req->getParam('s')) {
-            $post = $req->getPost();
-            $passwordForm = Fisma_Form_Manager::loadForm('change_password');
-            $passwordForm = Fisma_Form_Manager::prepareForm($passwordForm);
-            $oldPassword = $passwordForm->getElement('oldPassword');
-            $oldPassword->addValidator(new Fisma_Form_Validator_PasswdMatch($userRow));
-            $password = $passwordForm->getElement('newPassword');
-            $password->addValidator(new Fisma_Form_Validator_Password($userRow));
-            $formValid = $passwordForm->isValid($post);
-            if (!$formValid) {
-                $errorString = Fisma_Form_Manager::getErrors($passwordForm);
-                // Error message
-                $msg = "Unable to change password:<br>".$errorString;
-                $model = self::M_WARNING;
-            } else {
-                $newPass = $this->_user->digest($req->newPassword);
-                $historyPass = $userRow->historyPassword;
-                $count = substr_count($historyPass, ':');
-                if (3 == $count) {
-                    $historyPass = substr($historyPass, 0, -strlen(strrchr($historyPass, ':')));
-                }
-                $historyPass = ':' . $userRow->password . $historyPass;
-                $now = date('Y-m-d H:i:s');
-                $data = array(
-                'password' => $newPass,
-                'hash'     => Configuration::getConfig('encrypt'),
-                'history_password' => $historyPass,
-                'password_ts' => $now
-                );
-                $result = $this->_user->update($data,
-                'id = ' . $this->_me->id);
-                if (!$result) {
-                    $msg = 'Failed to change the password';
-                    $model = self::M_WARNING;
-                } else {
-                    $msg = 'Password changed successfully';
-                    $model = self::M_NOTICE;
-                }
-            }
-            $this->message($msg, $model);
-        }
-        $this->_forward('password');
     }
 
     /**
@@ -568,5 +519,32 @@ class AuthController extends MessageController
         $user->setColumnPreference($this->_me->id, $_COOKIE[self::COOKIE_NAME]);
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
+    }
+
+    /**
+     * Get the password complex requirements
+     *
+     * @return array 
+     */
+    private function _getPasswordRequirements()
+    {
+        $requirements[] = "Length must be between "
+        . Configuration::getConfig('pass_min_length')
+        . " and "
+        . Configuration::getConfig('pass_max_length')
+        . " characters long.";
+        if (Configuration::getConfig('pass_uppercase') == 1) {
+            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
+        }
+        if (Configuration::getConfig('pass_lowercase') == 1) {
+            $requirements[] = "Must contain at least 1 lower case character (a-z)";
+        }
+        if (Configuration::getConfig('pass_numerical') == 1) {
+            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
+        }
+        if (Configuration::getConfig('pass_special') == 1) {
+            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
+        }
+        return $requirements;
     }
 }

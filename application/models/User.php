@@ -73,6 +73,21 @@ class User extends BaseUser
             $emailValidation->User           = $this;
             $this->EmailValidation[]         = $emailValidation;
         }
+
+        if (array_key_exists('password', $modifyValues)) {
+            $this->password        = $this->hash($modifyValues['password']);
+            $this->passwordTs      = Zend_Date::now()->toString('Y-m-d H:i:s');
+            $this->passwordHistory = $this->_generatePwdHistory();
+
+            if ($this->id == $this->currentUser()->id) {
+                /** @todo english  also see follow */
+                $this->_log("Password changed");
+            }
+        } else {
+            if ($this->id == $this->currentUser()->id && !empty($modifyValues)) {
+                $this->_log("Profile changed");
+            }
+        }
     }
     
     public function preDelete()
@@ -83,7 +98,7 @@ class User extends BaseUser
     public function postInsert()
     {
         $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_CREATED, $this, User::currentUser());
+        $notification->add(Notification::ACCOUNT_CREATED, $this, $this->currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('account', $this);
@@ -92,7 +107,7 @@ class User extends BaseUser
     public function postUpdate()
     {
         $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_MODIFIED, $this, User::currentUser());
+        $notification->add(Notification::ACCOUNT_MODIFIED, $this, $this->currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('account', $this);
@@ -101,7 +116,7 @@ class User extends BaseUser
     public function postDelete()
     {
         $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_DELETED, $this, User::currentUser());
+        $notification->add(Notification::ACCOUNT_DELETED, $this, $this->currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('account', $this->id);
@@ -248,7 +263,7 @@ class User extends BaseUser
     public function hash($password, $hashType = null) 
     {
         if (empty($hashType)) {
-            $hashType = $this->hashType;
+            $hashType = Configuration::getConfig('encrypt');
         }
         
         if ('sha1' == $hashType) {
@@ -307,8 +322,8 @@ class User extends BaseUser
         $accountLog = new AccountLog();
         $accountLog->ip      = $_SERVER["REMOTE_ADDR"];
         $accountLog->message = $message;
-        $this->AccountLogs[] = $accountLog;
-        $this->save();
+        $accountLog->userId  = $this->id;
+        $accountLog->save();
     }
     
     /**
@@ -389,6 +404,21 @@ class User extends BaseUser
             $userOrg->save();
         }
         return true;
+    }
+
+    /**
+     * Generate user history password
+     *
+     * @return string user's history password
+     */
+    private function _generatePwdHistory()
+    {
+        $pwdHistory = $this->passwordHistory;
+        if (3 == substr_count($pwdHistory, ':')) {
+            $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
+        }
+        $pwdHistory = ':' . $this->password . $pwdHistory;
+        return $pwdHistory;
     }
     
 }

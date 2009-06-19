@@ -45,26 +45,7 @@ class Fisma_Form_Validator_Password extends Zend_Validate_Abstract
     const PASS_NOTCONFIRM = "pass_notconfirm";
     const PASS_NOTINCORRECT = "pass_notincorrect";
     
-    /**
-     * The user row object
-     */
-    protected $_userRow = null;
-
-    /**
-     * @todo english
-     * Initialize $_userRow property
-     * @param Object $user 
-     */
-    public function __construct($user = null)
-    {
-        if ($user !== null) {
-            assert($user instanceof Zend_Db_Table_Row_Abstract);
-            $this->_userRow = $user;
-        }
-    }
-
     /** 
-     * @todo english
      * Check the password whether is suited for complex
      * @param string $pass password
      * @param array $context post data from client's form
@@ -93,11 +74,11 @@ class Fisma_Form_Validator_Password extends Zend_Validate_Abstract
             $errno++;
             $this->_error(self::PASS_NOTCONFIRM);
         }
-        if (strlen($pass) < Configuration::getConfig('pass_min')) {
+        if (strlen($pass) < Configuration::getConfig('pass_min_length')) {
             $errno++;
             $this->_error(self::PASS_MIN);
         }
-        if (strlen($pass) > Configuration::getConfig('pass_max')) {
+        if (strlen($pass) > Configuration::getConfig('pass_max_length')) {
             $errno++;
             $this->_error(self::PASS_MAX);
         }
@@ -125,33 +106,31 @@ class Fisma_Form_Validator_Password extends Zend_Validate_Abstract
                 $this->_error(self::PASS_SPECIAL);
             }
         }
-        
+
+        $user = User::currentUser();
         // password change
-        if ($this->_userRow !== null) {
-            $user = $this->_userRow->getTable();
-            $nameincluded = true;
-            // check last name
-            if (empty($this->_userRow->name_last)
-                || strpos($pass, $this->_userRow->name_last) === false) {
+        $nameincluded = true;
+        // check last name
+        if (empty($user->nameLast)
+            || strpos($pass, $user->nameLast) === false) {
+            $nameincluded = false;
+        }
+        if (!$nameincluded) {
+            // check first name
+            if (empty($user->nameFirst)
+                || strpos($pass, $user->nameFirst) === false) {
                 $nameincluded = false;
+            } else {
+                $nameincluded = true;
             }
-            if (!$nameincluded) {
-                // check first name
-                if (empty($this->_userRow->name_first)
-                    || strpos($pass, $this->_userRow->name_first) === false) {
-                    $nameincluded = false;
-                } else {
-                    $nameincluded = true;
-                }
-            }
-            if ($nameincluded) {
-                $errno++;
-                $this->_error(self::PASS_INCLUDE);
-            }
-            if (strpos($this->_userRow->history_password . $this->_userRow->password, $user->digest($pass)) > 0) {
-                $errno++;
-                $this->_error(self::PASS_HISTORY);
-            }
+        }
+        if ($nameincluded) {
+            $errno++;
+            $this->_error(self::PASS_INCLUDE);
+        }
+        if (strpos($user->passwordHistory, $user->hash($pass)) > 0) {
+            $errno++;
+            $this->_error(self::PASS_HISTORY);
         }
 
         if ($errno > 0) {

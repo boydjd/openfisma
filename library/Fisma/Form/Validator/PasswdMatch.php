@@ -37,33 +37,16 @@ class Fisma_Form_Validator_PasswdMatch extends Zend_Validate_Abstract
 
     protected $_messageTemplates = array(self::PASS_MISMATCH=>"is incorrect");
 
-    /**
-     * The user row object
-     */
-    protected $_userRow = null;
-
-    /**
-     * @todo english
-     * Initialize $_userRow property
-     * @param Object $user 
-     */
-    public function __construct($user)
-    {
-        assert($user instanceof Zend_Db_Table_Row_Abstract);
-        $this->_userRow = $user;
-    }
-
     /** 
-     * @todo english
      * Validate the password
      * @param string $pass password
      * @return true|false
      */
     public function isValid($pass)
     {
-        $user = $this->_userRow->getTable();
+        $user = User::currentUser();
         $this->_setValue($pass);
-        if ($user->digest($pass, $this->_userRow->account) != $this->_userRow->password) {
+        if ($user->hash($pass) != $user->password) {
             $this->_error(self::PASS_MISMATCH);
             return false;
         }
