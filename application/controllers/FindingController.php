@@ -25,11 +25,6 @@
  */
 
 /**
- * @todo move this definition into the class as a constant
- */
-define('TEMPLATE_NAME', "OpenFISMA_Injection_Template.xls");
-
-/**
  * The finding controller is used for searching, displaying, and updating
  * findings.
  *
@@ -61,7 +56,7 @@ class FindingController extends BaseController
     private $_myOrgSystemIds = null;
     
     /**
-     * Enter description here...
+     * initialize the basic information, my orgSystems
      *
      */
     public function init()
@@ -591,7 +586,7 @@ class FindingController extends BaseController
     /** 
      * approveAction() - Allows a user to approve or delete pending findings
      *
-     * @todo Use Zend_Pager
+     * @todo Use YUI pager
      */
     public function approveAction()
     {
@@ -620,7 +615,6 @@ class FindingController extends BaseController
     /**
      * processApprovalAction() - Process the form submitted from the approveAction()
      *
-     * @todo Add audit logging
      */
     public function processApprovalAction() {
         Fisma_Acl::requirePrivilege('finding', 'approve');
