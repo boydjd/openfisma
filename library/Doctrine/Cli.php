@@ -75,7 +75,7 @@ class Doctrine_Cli
      */
     public function notifyException($exception)
     {
-        echo $this->_formatter->format($exception->getMessage(), 'ERROR') . "\n";
+        echo $this->_formatter->format($exception->getMessage() . "\n" . $exception->getTraceAsString(), 'ERROR') . "\n";
     }
 
     /**
@@ -147,16 +147,16 @@ class Doctrine_Cli
         
         $this->_taskInstance->setArguments($args);
         
-        try {
+        //try {
             if ($this->_taskInstance->validate()) {
                 $this->_taskInstance->execute();
             } else {
                 echo $this->_formatter->format('Requires arguments missing!!', 'ERROR') . "\n\n";
                 echo $this->printTasks($arg1, true);
             }
-        } catch (Exception $e) {
-            throw new Doctrine_Cli_Exception($e->getMessage());
-        }
+        //} catch (Exception $e) {
+        //    throw new Doctrine_Cli_Exception($e->getMessage());
+        //}
     }
 
     /**
