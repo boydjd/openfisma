@@ -5,7 +5,7 @@ YAHOO.namespace ("fisma.TreeTable");
 YAHOO.fisma.TreeTable.treeRoot;
 
 // How many tree levels to display, by default
-YAHOO.fisma.TreeTable.defaultDisplayLevel = 3;
+YAHOO.fisma.TreeTable.defaultDisplayLevel = 2;
 
 YAHOO.fisma.TreeTable.render = function (tableId, tree) {
     // Set the global tree root first, if necessary

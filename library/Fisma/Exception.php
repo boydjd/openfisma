@@ -17,12 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  */
 
-set_include_path(dirname(dirname(__FILE__)) .'/library' . PATH_SEPARATOR . get_include_path());
-require_once 'Zend/Loader.php';
-Zend_Loader::registerAutoload();
+/**
+ * A generic exception which represents an unexpected error in the application logic
+ *
+ * @package   Fisma
+ * @subpackage Fisma_Exception
+ */
+class Fisma_Exception extends Zend_Exception
+{
+}

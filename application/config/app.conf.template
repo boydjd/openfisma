@@ -1,0 +1,62 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Copyright (c) 2008 Endeavor Systems, Inc.
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+; documentation files (the "Software"), to deal in the Software without restriction, including without limitation the 
+; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+; permit persons to whom the Software is furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in all copies or substantial portions of the 
+; Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO 
+; THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+; TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+; SOFTWARE.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; The configuration file is split into two sections, production and development. Most deployments should run in 
+; production mode.
+;
+; Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright: (c) 2008 Endeavor Systems, Inc. (http://www.endeavorsystems.com)
+; License:   http://www.openfisma.org/mw/index.php?title=License
+; Version:   $Id$
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Environment can be "production" or "development"
+environment = development
+
+; Most deployments should run in production mode
+[production]
+session.name = OpenFISMA
+session.save_path = "/sessions"
+
+db.adapter = ##DB_ADAPTER##
+db.host = ##DB_HOST##
+db.port = ##DB_PORT##
+db.username = ##DB_USER##
+db.password = ##DB_PASS##
+db.schema = ##DB_NAME##
+
+; The test DB is used for unit tests. It should be different from the main DB since the unit tests will
+; destory any data in this DB. It's left blank by default to avoid accidentaly running tests against the main DB.
+testdb.adapter = 
+testdb.host = 
+testdb.port = 
+testdb.username = 
+testdb.password = 
+testdb.schema = 
+
+php.display_errors = false
+
+; Development mode displays error messages to the user and enables some features that aid 
+; debugging but reduce performance. Development mode inherits all properties from production
+; mode unless specifically over-ridden.
+[development : production]
+debug = true
+
+php.display_errors = true

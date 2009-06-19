@@ -26,10 +26,10 @@
  */
  
 /**
- * Initialize the web application front
- * 
- * This requires that the directory layout be 
- * controllers, models, views, layouts
+ * Subclass of the Zend front controller in order to add some custom logic
+ *
+ * @package   Fisma
+ * @subpackage Fisma_Controller
  */
 class Fisma_Controller_Plugin_Web extends Zend_Controller_Plugin_Abstract
 {

@@ -1,0 +1,251 @@
+<?php
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id$
+ */
+
+/**
+ * An object which represents the application itself, and controls items such as debug mode, include paths,
+ * etc.
+ *
+ * @package   Fisma
+ */
+class Fisma
+{ 
+    /**
+     * Indicates that the application is running as a web application.
+     * 
+     * In web application mode, the application needs a front controller, authentication, sessions, etc.
+     */
+    const RUN_MODE_WEB_APP = 0;
+    
+    /**
+     * Indicates that the application is running from the command line, such as a tool or unit test
+     * 
+     * In command line mode, the application doesn't need any of the things the web app needs, but it
+     * does need to have the path setup so it can find the classes it needs
+     */
+    const RUN_MODE_COMMAND_LINE = 1;
+    
+    /**
+     * Indicates that the application is running as a web service
+     * 
+     * This mode isn't used as of version 2.3, but it's placed here for future expansion
+     */
+    const RUN_MODE_WEB_SERVICE = 2;
+    
+    /**
+     * The run mode the application is currently using. This must be set to one of the 
+     * RUN_MODE constants above.
+     */
+    public static $mode;
+    
+    /**
+     * A flag that indicates whether the Fisma class has been intialized yet
+     * 
+     * @var boolean
+     */
+    private static $_initialized = false;
+    
+    /**
+     * The application configuration, stored in application/config/app.conf
+     * 
+     * @var Zend_Config_Ini
+     */
+    private static $_appConf;
+    
+    /**
+     * The root path of the application.
+     * 
+     * @var string
+     */
+    private static $_rootPath;
+    
+    /**
+     * An array of include paths for the application. This is where PHP will search for include
+     * files, such as autoloaded classes.
+     * 
+     * @see $_includePath;
+     * @var array;
+     */
+    private static $_includePath;
+    
+    /**
+     * An array of paths to special parts of the application, such as the log directory, cache directory,
+     * etc. This is separate from $_includePath because 
+     * 
+     * @see $_includePath;
+     * @var array;
+     */
+    private static $_applicationPath;
+    
+    /**
+     * Initialize the FISMA object
+     * 
+     * This sets up the root path, include paths, application paths, and then loads the application configuration.
+     * This can be considered a bootrap of sorts.
+     * 
+     * @param int $mode One of the run modes specified as constants in this class
+     */
+    public static function initialize($mode) {
+        self::$mode = $mode;
+        
+        // Determine the root path of the application. This is based on knowing where this file is relative
+        // to the root. So if this file moves, then this logic won't work anymore.
+        self::$_rootPath = realpath(dirname(__FILE__) . '/../');
+
+        // Set up include paths. These are relative to the root path.
+        self::$_includePath = array(
+            'doctrine-models' => 'application/models/generated',
+            'library' => 'library',
+            'model' => 'application/models',
+            'pear' => 'library/Pear'
+        );
+        
+        // Add the include paths to PHP's path.
+        $currentPath = get_include_path();
+        foreach (self::$_includePath as $path) {
+            $currentPath .= realpath(self::$_rootPath . '/' . $path) . PATH_SEPARATOR;
+        }
+        set_include_path($currentPath);
+
+        // Enable the Zend autoloader. This depends on the Zend library being in its expected place.
+        require_once(self::$_rootPath . '/library/Zend/Loader.php');
+        Zend_Loader::registerAutoload();
+
+        // Set up application paths. These are relative to the root path.
+        self::$_applicationPath = array(
+            'cache' => 'data/cache',
+            'config' => 'application/config',
+            'controller' => 'application/controllers',
+            'fixture' => 'application/doctrine/data/fixtures',            
+            'index' => 'data/index',
+            'layout' => 'application/layouts/scripts',
+            'listener' => 'application/models/listener',
+            'log' => 'data/logs',
+            'migration' => 'application/doctrine/migrations',
+            'schema' => 'application/doctrine/schema',
+            'viewHelper' => 'application/views/helpers',
+            'yui' => 'public/yui'
+        );
+
+        // Load the system configuration
+        $appConfFile = self::$_rootPath . '/' . self::$_applicationPath['config'] . '/app.conf';
+        $conf = new Zend_Config_Ini($appConfFile);
+        if ('production' == $conf->environment) {
+            self::$_appConf = $conf->production;
+        } elseif ('development' == $conf->environment) {
+            self::$_appConf = $conf->development;
+        } else {
+            throw new Fisma_Exception("The environment parameter in app.conf must be either \"production\" or "
+                                    . "\"development\" but it's actually \"$conf->environment\"");
+        }
+
+        // Set up PHP configurations
+        foreach (self::$_appConf->php as $param => $value) {
+            ini_set($param, $value);
+        }
+        
+        // Set the initialized flag
+        self::$_initialized = true;
+    }
+    
+    /**
+     * Connect to the database
+     */
+    public static function connectDb() {
+        // Connect to the database
+        $db = self::$_appConf->db;
+        $connectString = "mysql://{$db->username}:{$db->password}@{$db->host}/{$db->schema}";
+        Doctrine_Manager::connection($connectString);
+        $conManager = Doctrine_Manager::getInstance();
+        $conManager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
+        Zend_Registry::set('doctrine_config', array(
+               'data_fixtures_path'  =>  self::getPath('fixture'),
+               'models_path'         =>  self::getPath('model'),
+               'migrations_path'     =>  self::getPath('migration'),
+               'yaml_schema_path'    =>  self::getPath('schema')
+        ));
+    }
+    
+    /**
+     * Configure the front controller and then dispatch it
+     * 
+     * @todo this is a bit ugly, it's got some unrelated stuff in it
+     */
+    public static function dispatch() {
+        $frontController = Zend_Controller_Front::getInstance();
+        $frontController->setControllerDirectory(Fisma::getPath('controller'));
+
+        Zend_Date::setOptions(array('format_type' => 'php'));
+        Zend_Layout::startMvc(self::getPath('layout'));
+        
+        Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Controller_Action_Helper');
+
+        // Configure the views
+        $view = Zend_Layout::getMvcInstance()->getView();
+        $view->addHelperPath(self::getPath('viewHelper'), 'View_Helper_');
+        $view->doctype('HTML4_STRICT');
+        $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+        $viewRenderer->setView($view);
+        $viewRenderer->setViewSuffix('phtml');
+
+        $frontController->dispatch();
+    }
+    /**
+     * Returns true if in debug mode, false otherwise.
+     * 
+     * @return bool
+     */
+    public static function debug() {
+        if (!self::$_initialized) {
+            throw new Fisma_Exception('The Fisma object has not been initialized.');
+        }
+        
+        return (self::$_appConf->debug == 1);
+    }
+    
+    /**
+     * Returns the path to a special part of the application, based on the provided key. 
+     * 
+     * This is just a shortcut to find common paths, and allows us to move things around without needing
+     * to rewrite a bunch of classes. To see what keys are valid, look at the initialize function.
+     * 
+     * @see Fisma::initialize()
+     * 
+     * @param string $key
+     * @return string
+     */
+    public static function getPath($key) {
+        if (!self::$_initialized) {
+            throw new Fisma_Exception('The Fisma object has not been initialized.');
+        }
+        
+        if (isset(self::$_includePath[$key])) {
+            return self::$_rootPath . '/' . self::$_includePath[$key];
+        } elseif (isset(self::$_applicationPath[$key])) {
+            return self::$_rootPath . '/' . self::$_applicationPath[$key];
+        } else {
+            throw new Fisma_Exception("No path found for key: \"$key\"");
+        }
+    }
+}

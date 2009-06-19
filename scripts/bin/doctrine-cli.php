@@ -26,11 +26,13 @@
  * @package   Doctrine
  */
 
-require_once(dirname(__FILE__) . '/../../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
+require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
 
-if ($plSetting->installed()) {
+try {
+    Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+    Fisma::connectDb();
     $cli = new Doctrine_Cli(Zend_Registry::get('doctrine_config'));
-    $cli->run($_SERVER['argv']);} else {
-    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
+    $cli->run($_SERVER['argv']);
+} catch (Zend_Config_Exception $zce) {
+    print "The application is not installed correctly. If you have not run the installer, you should do that now.";
 }
