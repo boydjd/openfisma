@@ -1,4 +1,6 @@
 System:
+    listeners: [SystemListener]
+    
     columns:    
         type:
             type: enum

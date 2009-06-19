@@ -44,7 +44,7 @@ class Fisma_Yui
      */
     function __construct() 
     {
-        throw new Fisma_Exception_General('This is a static class; do not create instances of it.');
+        throw new Fisma_Exception('This is a static class; do not create instances of it.');
     }
 
     /**

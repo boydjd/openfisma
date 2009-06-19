@@ -60,8 +60,7 @@ class Organization extends BaseOrganization
 
     public function postInsert()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ORGANIZATION_CREATED, $this, User::currentUser());
+        Notification::notify(Notification::ORGANIZATION_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('organization', $this);
@@ -69,8 +68,7 @@ class Organization extends BaseOrganization
 
     public function postUpdate()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ORGANIZATION_MODIFIED, $this, User::currentUser());
+        Notification::notify(Notification::ORGANIZATION_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('organization', $this);
@@ -78,8 +76,7 @@ class Organization extends BaseOrganization
 
     public function postDelete()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ORGANIZATION_DELETED, $this, User::currentUser());
+        Notification::notify(Notification::ORGANIZATION_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('organization', $this->id);
@@ -102,7 +99,7 @@ class Organization extends BaseOrganization
                 'automatic_serialization' => true,
             );
             $backendOptions = array(
-                'cache_dir' => Fisma_Controller_Front::getPath('cache'),
+                'cache_dir' => Fisma::getPath('cache'),
                 'file_name_prefix' => 'finding_summary'
             );
             self::$_findingSummaryCache = Zend_Cache::factory('Core',

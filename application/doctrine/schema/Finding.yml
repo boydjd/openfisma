@@ -1,4 +1,6 @@
 Finding:
+    listeners: [FindingListener]
+    
     columns:
         createdTs: timestamp
         modifiedTs: timestamp

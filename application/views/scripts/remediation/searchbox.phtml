@@ -35,7 +35,7 @@
     $this->sources = array('--Any--') + (array)$this->sources;
 
     $keywordSearch = true;
-    if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) {
+    if (!is_dir(Fisma::getPath('data') . '/index/finding')) {
         $keywordSearch = false;
     }
 ?>

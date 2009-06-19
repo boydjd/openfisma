@@ -57,7 +57,7 @@ abstract class BaseController extends SecurityController
         if (is_null($this->_modelName)) {
             //@todo english
             //Actually user should not be able to see this error message
-            throw new Fisma_Exception_General('The subject model has not been specified');
+            throw new Fisma_Exception('The subject model has not been specified');
         }
     }
 
@@ -112,7 +112,7 @@ abstract class BaseController extends SecurityController
             $subject = new $this->_modelName();
         } elseif (!$subject instanceof Doctrine_Record){
             /** @todo english */
-            throw new Fisma_Exception_General('Invalid parameter expecting a Record model');
+            throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $subject->merge($form->getValues());
         return $subject;
@@ -130,7 +130,7 @@ abstract class BaseController extends SecurityController
             /**
              * @todo english
              */
-            throw new Fisma_Exception_General("Invalid {$this->_modelName}");
+            throw new Fisma_Exception("Invalid {$this->_modelName}");
         }
         $form   = $this->getForm();
         
@@ -187,7 +187,7 @@ abstract class BaseController extends SecurityController
             /**
              * @todo english
              */
-            throw new Fisma_Exception_General("Invalid {$this->_modelName}");
+            throw new Fisma_Exception("Invalid {$this->_modelName}");
         }
         $form   = $this->getForm();
         

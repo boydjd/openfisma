@@ -57,7 +57,7 @@ class Fisma
      * The run mode the application is currently using. This must be set to one of the 
      * RUN_MODE constants above.
      */
-    public static $mode;
+    private static $_mode;
     
     /**
      * A flag that indicates whether the Fisma class has been intialized yet
@@ -65,6 +65,23 @@ class Fisma
      * @var boolean
      */
     private static $_initialized = false;
+    
+    /**
+     * True if notifications are enabled. False otherwise. 
+     * 
+     * Notifications should be disabled in some circumstances, such as running the doctrine-cli script. Defaults to 
+     * true.
+     * 
+     * @var boolean
+     */
+    private static $_notificationEnabled = true;
+    
+    /**
+     * True if doctrine listeners (preSave, postInsert, etc.) are enabled. False otherwise.
+     * 
+     * This is useful when running the doctrine CLI script to disable listeners which are not needed.
+     */
+    private static $_listenerEnabled = true;
     
     /**
      * The application configuration, stored in application/config/app.conf
@@ -107,17 +124,18 @@ class Fisma
      * @param int $mode One of the run modes specified as constants in this class
      */
     public static function initialize($mode) {
-        self::$mode = $mode;
+        self::$_mode = $mode;
         
         // Determine the root path of the application. This is based on knowing where this file is relative
         // to the root. So if this file moves, then this logic won't work anymore.
         self::$_rootPath = realpath(dirname(__FILE__) . '/../');
 
-        // Set up include paths. These are relative to the root path.
+        // Set up include paths. These are relative to the root path. The most used paths should be at the top.
         self::$_includePath = array(
             'doctrine-models' => 'application/models/generated',
-            'library' => 'library',
             'model' => 'application/models',
+            'listener' => 'application/models/listener',
+            'library' => 'library',
             'pear' => 'library/Pear'
         );
         
@@ -137,6 +155,7 @@ class Fisma
             'cache' => 'data/cache',
             'config' => 'application/config',
             'controller' => 'application/controllers',
+            'data' => 'application/data',
             'fixture' => 'application/doctrine/data/fixtures',            
             'index' => 'data/index',
             'layout' => 'application/layouts/scripts',
@@ -211,6 +230,60 @@ class Fisma
 
         $frontController->dispatch();
     }
+    
+    /**
+     * Returns the current execution mode.
+     */
+    public static function mode() {
+        return self::$_mode;
+    }
+    
+    /**
+     * Returns whether notifications are enabled
+     * 
+     * @return boolean
+     */
+    public static function getNotificationEnabled() {
+        return self::$_notificationEnabled;
+    }
+    
+    /**
+     * Sets whether notifications are enabled or not.
+     * 
+     * @param boolean $enabled
+     */
+    public static function setNotificationEnabled($enabled) {
+        self::$_notificationEnabled = $enabled;
+    }
+
+    /**
+     * Returns whether listeners are enabled
+     * 
+     * @return boolean
+     */
+    public static function getListenerEnabled() {
+        return self::$_listenerEnabled;
+    }
+    
+    /**
+     * Sets whether listeners are enabled or not.
+     * 
+     * @param boolean $enabled
+     */
+    public static function setListenerEnabled($enabled) {
+        self::$_listenerEnabled = $enabled;
+        
+        // Enumerate the models and enable/disable the listeners for each one
+        $modelDir = opendir(Fisma::getPath('model'));
+        while ($file = readdir($modelDir)) {
+            if ($match = strpos($file, '.php')) {
+                $modelName = substr($file, 0, $match);
+                require_once(Fisma::getPath('model') . '/' . $file);
+                Doctrine::getTable($modelName)->getRecordListener()->setOption('disabled', !self::$_listenerEnabled);
+            }
+        }
+    }
+    
     /**
      * Returns true if in debug mode, false otherwise.
      * 

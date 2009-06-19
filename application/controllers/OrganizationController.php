@@ -154,7 +154,7 @@ class OrganizationController extends SecurityController
             /** 
              * @todo english 
              */
-            throw new Fisma_Exception_General('invalid page');
+            throw new Fisma_Exception('invalid page');
         }
         
         $order = $this->_request->getParam('order', 'ASC');
@@ -162,7 +162,7 @@ class OrganizationController extends SecurityController
             /** 
              * @todo english 
              */
-            throw new Fisma_Exception_General('invalid page');
+            throw new Fisma_Exception('invalid page');
         }
         
         $q = Doctrine_Query::create()
@@ -219,7 +219,7 @@ class OrganizationController extends SecurityController
             /**
              * @todo english 
              */
-            throw new Fisma_Exception_General('The organization is not existed.');
+            throw new Fisma_Exception('The organization is not existed.');
         } else {
             $organization = $organization->toArray();
         }
@@ -274,7 +274,7 @@ class OrganizationController extends SecurityController
                     $this->_helper->addNotification(Notification::ORGANIZATION_CREATED,
                                                     $this->_me->username, $organization->id);
                     //Create a organization index
-                    if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                    if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
                         $this->_helper->updateIndex('organization', $organization->id, $organization->toArray());
                     }
                     $msg = "The organization is created";
@@ -311,7 +311,7 @@ class OrganizationController extends SecurityController
             if ($organization->delete()) {
                 $this->_helper->addNotification(Notification::ORGANIZATION_DELETED, $this->_me->username, $id);
                 //Delete this organization index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
                     $this->_helper->deleteIndex('organization', $id);
                 }
                 /**
@@ -376,7 +376,7 @@ class OrganizationController extends SecurityController
                 $this->_helper->addNotification(Notification::ORGANIZATION_MODIFIED, 
                                                 $this->_me->username, $organization->id);
                 //Update this organization index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
                     $this->_helper->updateIndex('organization', $id, $organization->toArray());
                 }
                 $msg = "The organization is saved";

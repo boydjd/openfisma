@@ -32,8 +32,7 @@ class Role extends BaseRole
 
     public function postInsert()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ROLE_CREATED, $this, User::currentUser());
+        Notification::notify(Notification::ROLE_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('role', $this);
@@ -41,8 +40,7 @@ class Role extends BaseRole
 
     public function postUpdate()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ROLE_MODIFIED, $this, User::currentUser());
+        Notification::notify(Notification::ROLE_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('role', $this);
@@ -50,8 +48,7 @@ class Role extends BaseRole
 
     public function postDelete()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ROLE_DELETED, $this, User::currentUser());
+        Notification::notify(Notification::ROLE_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('role', $this->id);

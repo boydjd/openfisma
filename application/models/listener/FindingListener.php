@@ -20,7 +20,7 @@
  * @author    Ryan yang <ryan.yang@reyosoft.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id:$
+ * @version   $Id$
  * @package   Listener
  */
 
@@ -31,35 +31,38 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-
-Class ListenerFinding extends Doctrine_Record_Listener
+class FindingListener extends Doctrine_Record_Listener
 {
     /**
-     * Set the status to "NEW" when a finding is created 
-     * Also save the audit log for the finding creation.
-     *
+     * Set the status as "NEW"  for a new finding created or as "PEND" when duplicated
+     * write the audit log
+     * 
      * @param Doctrine_Event $event
      */
     public function preInsert(Doctrine_Event $event)
     {
         $finding = $event->getInvoker();
-        $finding->status = 'NEW';
-        $message = 'New Finding Created';
+        /** @doctrine i found a sql injection */
+        $duplicateFinding  = $finding->getTable()
+                                     ->findByDql("description LIKE '%$user->description%'");
+        if (!empty($duplicateFinding[0])) {
+            $finding->DuplicateFinding = $duplicateFinding[0];
+            $finding->status           = 'PEND';
+        } else {
+            $finding->status           = 'NEW';
+        }
+        $finding->CreatedBy       = User::currentUser();
+        $finding->_updateNextDueDate();
 
-        $auditLog = new AuditLog();
-        $auditLog->userId      = $finding->createdByUserId;
-        $auditLog->description = $message;
-        $auditLog->save();
-
+        $auditLog              = new AuditLog();
+        $auditLog->User        = User::currentUser();
+        $auditLog->description = 'New Finding Created';
+        $finding->AuditLogs[]  = $auditLog;
     }
 
     /**
-     * Change the finding status, currentevaluationid And log the audit process
-     * Set the status to "DRAFT" where a finding' type changed at first time
-     * Set the current evaluation id when the status is "MSA"
-     * Set the current evaluation id when the status is "EA"
-     * Save the audit logs
-     *
+     * Write the audit logs
+     * @todo the log need to get the user who did it
      * @param Doctrine_Event $event
      */
     public function preUpdate(Doctrine_Event $event)
@@ -67,18 +70,24 @@ Class ListenerFinding extends Doctrine_Record_Listener
         $finding = $event->getInvoker();
         $modifyValues = $finding->getModified(true);
         if (!empty($modifyValues)) {
-            $auditLog = new AuditLog();
             foreach ($modifyValues as $key=>$value) {
-                if ('modifyTs' != $key) {
+                //We don't want to log these keys
+                if (!array_key_exists($key, array('currentEvaluationId', 'nextDueDate', 'legacyFindingKey'))) {
+                    $auditLog = new AuditLog();
                     $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $finding->$key;
-                    $auditLog->userId      = $this->createdByUserId;
+                    $auditLog->User        = User::currentUser();
                     $auditLog->description = $message;
-                    $finding->AuditLogs[]  = $auditLog;
+                    $finding->AuditLogs[]     = $auditLog;
                 }
             }
 
-            if (array_key_exists('type', $modifyValues) && 'NEW' == $finding->status) {
-                $finding->status = 'DRAFT';
+            if (array_key_exists('type', $modifyValues)) {
+                if ('NEW' == $finding->status) {
+                    $finding->status = 'DRAFT';
+                } else {
+                    //@todo english
+                    throw new Fisma_Exception("The finding's type can't be changed at the current status");
+                }
             }
         }
     }

@@ -72,7 +72,7 @@ class Fisma_Form extends Zend_Form
         if (is_bool($value)) {
             $this->_readOnly = $value;
         } else {
-            throw new Fisma_Exception_General("Invalid type for '$value'. Expected a boolean.");
+            throw new Fisma_Exception("Invalid type for '$value'. Expected a boolean.");
         }
     }
 }

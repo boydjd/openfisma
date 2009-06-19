@@ -77,7 +77,7 @@ class Notify
         if ($setting instanceof Fisma_Controller_Plugin_Setting) {
             $this->_setting = $setting;
         } else {
-            throw new Fisma_Exception_General("can't get the setting");
+            throw new Fisma_Exception("can't get the setting");
         }
     }
     

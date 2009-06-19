@@ -31,15 +31,17 @@ require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
 try {
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
     Fisma::connectDb();
+    Fisma::setNotificationEnabled(false);
+    Fisma::setListenerEnabled(false);    
     $cli = new Doctrine_Cli(Zend_Registry::get('doctrine_config'));
     $cli->run($_SERVER['argv']);
 } catch (Zend_Config_Exception $zce) {
     print "The application is not installed correctly. If you have not run the installer, you should do that now.";
 } catch (Exception $e) {
     print get_class($e) 
-        . '\n' 
+        . "\n" 
         . $e->getMessage() 
-        . '\n'
-        . '\n' 
-        . $ee->getTraceAsString();
+        . "\n"
+        . $e->getTraceAsString()
+        . "\n";
 }

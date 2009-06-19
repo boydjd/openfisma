@@ -1,4 +1,6 @@
 User:
+    listeners: [UserListener]
+    
     columns:
         createdTs: timestamp
         modifiedTs: timestamp

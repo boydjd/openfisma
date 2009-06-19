@@ -47,7 +47,7 @@ class HelpController extends Zend_Controller_Action
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
         $template = $this->getViewScript($module);
-        if (is_file(Fisma_Controller_Front::getPath('application') . '/views/scripts/' . $template)) {
+        if (is_file(Fisma::getPath('application') . '/views/scripts/' . $template)) {
             $this->render($module);
         } else {
             $this->render('notFound');

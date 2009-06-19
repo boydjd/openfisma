@@ -12,7 +12,7 @@
                                                  'href' => '/panel/product/sub/create'));
     echo $createButton;
     } ?>
-    <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product')) { ?>
+    <?php if (is_dir(Fisma::getPath('data') . '/index/product')) { ?>
     <form name="query" method="post" action="/panel/product/sub/list" style="display:inline">
     <b>Query:&nbsp;</b>
     <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">

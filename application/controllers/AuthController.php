@@ -265,7 +265,7 @@ class AuthController extends MessageController
             }
         }
 
-        $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
+        $this->view->setScriptPath(Fisma::getPath('application') . '/views/scripts');
         $this->message($msg, $model);
         $this->_forward('notifications');
     }

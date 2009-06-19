@@ -11,43 +11,6 @@
  */
 class System extends BaseSystem
 {
-    public function preSave()
-    {
-        Doctrine_Manager::connection()->beginTransaction();   
-    }
-    
-    public function preDelete()
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
-    public function postInsert()
-    {
-        $notification = new Notification();
-        $notification->add(Notification::SYSTEM_CREATED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::updateIndex('system', $this);
-    }
-
-    public function postUpdate()
-    {
-        $notification = new Notification();
-        $notification->add(Notification::SYSTEM_MODIFIED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::updateIndex('system', $this);
-    }
-
-    public function postDelete()
-    {
-        $notification = new Notification();
-        $notification->add(Notification::SYSTEM_DELETED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::deleteIndex('system', $this->id);
-    }
-
     /**
      * Map the values to Organization table
      */
@@ -110,21 +73,6 @@ class System extends BaseSystem
         } else {
             $this->state(Doctrine_Record::STATE_DIRTY);
         }
-    }
-
-    /**
-     * Save the organization with the system's name, nickname...
-     * accodingly after the system's attributes saved.
-     */
-    public function postSave()
-    {
-        $organization = $this->Organization[0];
-        $organization->System      = $this;
-        $organization->name        = $this->name;
-        $organization->nickname    = $this->nickname;
-        $organization->description = $this->description;
-        $organization->orgType = 'system';
-        $organization->save();
     }
 
     /**

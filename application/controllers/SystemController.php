@@ -134,7 +134,7 @@ class SystemController extends SecurityController
             /** 
              * @todo english 
              */
-            throw new Fisma_Exception_General('invalid page');
+            throw new Fisma_Exception('invalid page');
         }
         
         $order = $this->_request->getParam('order', 'ASC');
@@ -142,7 +142,7 @@ class SystemController extends SecurityController
             /** 
              * @todo english 
              */
-            throw new Fisma_Exception_General('invalid page');
+            throw new Fisma_Exception('invalid page');
         }
         
         $q = Doctrine_Query::create()
@@ -243,7 +243,7 @@ class SystemController extends SecurityController
                     $this->_helper->addNotification(Notification::SYSTEM_CREATED, $this->_me->username, $system->id);
 
                     //Create a system index
-                    if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
+                    if (is_dir(Fisma::getPath('data') . '/index/system/')) {
                         $this->_helper->updateIndex('system', $system->id, $system->toArray());
                     }
                     /** @todo english */ 
@@ -278,11 +278,11 @@ class SystemController extends SecurityController
             if ($system->Organization[0]->delete()) {
                 $this->_helper->addNotification(Notification::SYSTEM_DELETED, $this->_me->username, $id);
                 //Delete this system index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
+                if (is_dir(Fisma::getPath('data') . '/index/system/')) {
                     $this->_helper->deleteIndex('system', $id);
                 }
                 //Delete this organization index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization/')) {
+                if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
                     $this->_helper->deleteIndex('organization', $system->Organization[0]->id);
                 }
                 /**
@@ -319,7 +319,7 @@ class SystemController extends SecurityController
             /** 
              * @todo english 
              */
-            throw new Fisma_Exception_General('The system is not existed.');
+            throw new Fisma_Exception('The system is not existed.');
         } else {
             $system = $systemObj->toArray();
             $system['name'] = $systemObj->Organization[0]->name;
@@ -378,8 +378,8 @@ class SystemController extends SecurityController
                                                 $this->_me->username, $system->id, 1);
 
                 //Update findings index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding')) {
-                    $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/finding');
+                if (is_dir(Fisma::getPath('data') . '/index/finding')) {
+                    $index = new Zend_Search_Lucene(Fisma::getPath('data') . '/index/finding');
                     $hits = $index->find('system:'.$query);
                     $ids = array();
                     foreach ($hits as $hit) {
@@ -389,7 +389,7 @@ class SystemController extends SecurityController
                     $this->_helper->updateIndex('finding', $ids, $data['system'] = $system->name.' ' .$system->nickname);
                 }
                 //Update this system index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
+                if (is_dir(Fisma::getPath('data') . '/index/system/')) {
                     $this->_helper->updateIndex('system', $system->id, $system->toArray());
                 }
                 $msg = "The system is saved";

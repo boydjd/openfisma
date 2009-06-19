@@ -51,7 +51,7 @@ Class CreateIndex
     //Set the lucene index dir
     public function __construct() 
     {
-        $this->_indexDir = Fisma_Controller_Front::getPath('data') . '/index/';
+        $this->_indexDir = Fisma::getPath('data') . '/index/';
     }
         
     /**
@@ -94,7 +94,7 @@ Class CreateIndex
     private function _createDocument($data)
     {
         if (!is_array($data)) {
-            throw new Fisma_Exception_General("Invalid data");
+            throw new Fisma_Exception("Invalid data");
         }
         $doc = new Zend_Search_Lucene_Document();
         foreach ($data as $key=>$value) {

@@ -24,22 +24,19 @@ class Asset extends BaseAsset
 
     public function postInsert()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ASSET_CREATED, $this, User::currentUser());
+        Notification::notify(Notification::ASSET_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
     }
 
     public function postUpdate()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ASSET_MODIFIED, $this, User::currentUser());
+        Notification::notify(Notification::ASSET_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
     }
 
     public function postDelete()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ASSET_DELETED, $this, User::currentUser());
+        Notification::notify(Notification::ASSET_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
     }
 }

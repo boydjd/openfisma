@@ -24,8 +24,7 @@ class Source extends BaseSource
 
     public function postInsert()
     {
-        $notification = new Notification();
-        $notification->add(Notification::SOURCE_CREATED, $this, User::currentUser());
+        Notification::notify(Notification::SOURCE_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('source', $this);
@@ -33,8 +32,7 @@ class Source extends BaseSource
 
     public function postUpdate()
     {
-        $notification = new Notification();
-        $notification->add(Notification::SOURCE_MODIFIED, $this, User::currentUser());
+        Notification::notify(Notification::SOURCE_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('source', $this);
@@ -42,8 +40,7 @@ class Source extends BaseSource
 
     public function postDelete()
     {
-        $notification = new Notification();
-        $notification->add(Notification::SOURCE_DELETED, $this, User::currentUser());
+        Notification::notify(Notification::SOURCE_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('source', $this->id);

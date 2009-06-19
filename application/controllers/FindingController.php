@@ -130,7 +130,7 @@ class FindingController extends BaseController
             $subject = new $this->_modelName();
         } else {
             /** @todo English */
-            throw new Fisma_Exception_General('Invalid parameter expecting a Record model');
+            throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $values = $form->getValues();
         
@@ -235,7 +235,7 @@ class FindingController extends BaseController
                 Zend_Registry::get('db')->beginTransaction();
                 
                 // get upload path
-                $path = Fisma_Controller_Front::getPath('data') . '/uploads/spreadsheet/';
+                $path = Fisma::getPath('data') . '/uploads/spreadsheet/';
                 // get original file name
                 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
                 // get current time and set to a format like '_2009-05-04_11_22_02'
@@ -253,7 +253,7 @@ class FindingController extends BaseController
 
                 $injectExcel = new Fisma_Inject_Excel();
                 if (!empty($injectExcel->_findingIds)
-                            && is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                            && is_dir(Fisma::getPath('data') . '/index/finding/')) {
                     foreach ($injectExcel->_findingIds as $id) {
                         $this->createIndex($id);
                     }
@@ -303,7 +303,7 @@ class FindingController extends BaseController
             if ($poamId > 0) {
                 $this->_notification->add(Notification::FINDING_CREATED, $this->_me->account, $poamId);
                 //Create finding lucene index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                if (is_dir(Fisma::getPath('data') . '/index/finding/')) {
                     $system = new System();
                     $source = new Source();
                     $asset = new Asset();
@@ -403,7 +403,7 @@ class FindingController extends BaseController
                 $this->view->systems[] = $orgSystem['nickname'];
             }
             if (count($this->view->systems) == 0) {
-                throw new Fisma_Exception_General(
+                throw new Fisma_Exception(
                     "The spreadsheet template can not be " .
                     "prepared because there are no systems defined.");
             }
@@ -414,7 +414,7 @@ class FindingController extends BaseController
                 $this->view->networks[] = $network['nickname'];
             }
             if (count($this->view->networks) == 0) {
-                 throw new Fisma_Exception_General("The spreadsheet template can not be
+                 throw new Fisma_Exception("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
             
@@ -424,7 +424,7 @@ class FindingController extends BaseController
                 $this->view->sources[] = $source['nickname'];
             }
             if (count($this->view->sources) == 0) {
-                 throw new Fisma_Exception_General("The spreadsheet template can
+                 throw new Fisma_Exception("The spreadsheet template can
                      not be prepared because there are no finding sources
                      defined.");
             }
@@ -435,7 +435,7 @@ class FindingController extends BaseController
                 $this->view->securityControls[] = $securityControl['code'];
             }
             if (count($this->view->securityControls) == 0) {
-                 throw new Fisma_Exception_General('The spreadsheet template can not be ' .
+                 throw new Fisma_Exception('The spreadsheet template can not be ' .
                                                    'prepared because there are no security controls defined.');
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
@@ -452,7 +452,7 @@ class FindingController extends BaseController
              */                                       
             $this->getResponse()->setHeader('Pragma', 'private', true);
             $this->getResponse()->setHeader('Cache-Control', 'private', true);
-        } catch(Fisma_Exception_General $fe) {
+        } catch(Fisma_Exception $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);
             $this->_forward('injection', 'Finding');
@@ -506,7 +506,7 @@ class FindingController extends BaseController
         
         // Configure the file select
         $uploadForm->setAttrib('enctype', 'multipart/form-data');
-        $uploadForm->selectFile->setDestination(Fisma_Controller_Front::getPath('data') . '/uploads/scanreports');
+        $uploadForm->selectFile->setDestination(Fisma::getPath('data') . '/uploads/scanreports');
 
         // Setup the view
         $this->view->assign('uploadForm', $uploadForm);
@@ -551,7 +551,7 @@ class FindingController extends BaseController
                     rename($filePath, dirname($filePath) . '/' . $newName);
 
                     if (!empty($plugin->_findingIds)
-                        && is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                        && is_dir(Fisma::getPath('data') . '/index/finding/')) {
                         foreach ($plugin->_findingIds as $id) {
                             $this->createIndex($id);
                         }
@@ -628,7 +628,7 @@ class FindingController extends BaseController
                     if (isset($_POST['approve_selected'])) {
                         $finding->status = 'NEW';
                         $finding->save();
-                        if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding/')) {
+                        if (is_dir(Fisma::getPath('data') . '/index/finding/')) {
                             $this->createIndex($findingId);
                         }
                     } elseif (isset($_POST['delete_selected'])) {

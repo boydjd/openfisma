@@ -660,7 +660,7 @@ class ReportController extends PoamBaseController
                                                                                 $actOwner['integrity'],
                                                                                 $actOwner['availability']);
                         if (NULL == $securityCategorization) {
-                            throw new Fisma_Exception_General('The security categorization for ('.$actOwner['id'].')'.
+                            throw new Fisma_Exception('The security categorization for ('.$actOwner['id'].')'.
                                 $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
                                 'unless these values are defined.');
                         }
@@ -679,8 +679,8 @@ class ReportController extends PoamBaseController
                     header("Pragma: public");
                     echo file_get_contents($fname);
                     @unlink($fname);
-                } catch (Fisma_Exception_General $e) {
-                    if ($e instanceof Fisma_Exception_General) {
+                } catch (Fisma_Exception $e) {
+                    if ($e instanceof Fisma_Exception) {
                         $message = $e->getMessage();
                     }
                     $this->message($message, self::M_WARNING);
@@ -704,7 +704,7 @@ class ReportController extends PoamBaseController
         $this->_acl->requirePrivilege('report', 'read');
         
         // Build up report menu
-        $reportsConfig = new Zend_Config_Ini(Fisma_Controller_Front::getPath('application') . '/config/reports.conf');
+        $reportsConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf');
         $reports = $reportsConfig->toArray();
         $this->view->assign('reports', $reports);
     }
@@ -724,7 +724,7 @@ class ReportController extends PoamBaseController
         }
         
         // Verify that the user has permission to run this report
-        $reportConfig = new Zend_Config_Ini(Fisma_Controller_Front::getPath('application') . '/config/reports.conf', $reportName);
+        $reportConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf', $reportName);
         if ($this->_me->account != 'root') {
             $reportRoles = $reportConfig->roles;
             $report = $reportConfig->toArray();
@@ -736,16 +736,16 @@ class ReportController extends PoamBaseController
             $role = $user->getRoles($this->_me->id);
             $role = $role[0]['nickname'];
             if (!in_array($role, $reportRoles)) {
-                throw new Fisma_Exception_General("User \"{$this->_me->account}\" does not have permission to view"
+                throw new Fisma_Exception("User \"{$this->_me->account}\" does not have permission to view"
                                           . " the \"$reportName\" plug-in report.");
             }
         }
         
         // Execute the report script
-        $reportScriptFile = Fisma_Controller_Front::getPath('application') . "/config/reports/$reportName.sql";
+        $reportScriptFile = Fisma::getPath('application') . "/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         if (!$reportScriptFileHandle) {
-            throw new Fisma_Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");
+            throw new Fisma_Exception("Unable to load plug-in report SQL file: $reportScriptFile");
         }
         $reportScript = '';
         while (!feof($reportScriptFileHandle)) {

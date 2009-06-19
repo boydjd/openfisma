@@ -122,5 +122,7 @@ abstract class BaseFinding extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);
+
+    $this->addListener(new FindingListener(), 'FindingListener');
     }
 }

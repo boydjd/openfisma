@@ -85,8 +85,7 @@ class User extends BaseUser
 
     public function postInsert()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_CREATED, $this, User::currentUser());
+        Notification::notify(Notification::ACCOUNT_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('account', $this);
@@ -94,8 +93,7 @@ class User extends BaseUser
 
     public function postUpdate()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_MODIFIED, $this, User::currentUser());
+        Notification::notify(Notification::ACCOUNT_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('account', $this);
@@ -103,8 +101,7 @@ class User extends BaseUser
 
     public function postDelete()
     {
-        $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_DELETED, $this, User::currentUser());
+        Notification::notify(Notification::ACCOUNT_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('account', $this->id);
@@ -128,7 +125,7 @@ class User extends BaseUser
     public function lockAccount($lockType)
     {
         if (empty($lockType)) {
-            throw new Fisma_Exception_General("Lock type cannot be blank");
+            throw new Fisma_Exception("Lock type cannot be blank");
         }
         
         $this->locked = true;
@@ -261,7 +258,7 @@ class User extends BaseUser
         } elseif ('sha256' == $hashType) {
             return mhash(MHASH_SHA256, $password);
         } else {
-            throw new Fisma_Exception_General("Unsupported hash type: {$hashType}");
+            throw new Fisma_Exception("Unsupported hash type: {$hashType}");
         }
     }
 

@@ -38,59 +38,6 @@ class Finding extends BaseFinding
     private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
 
     /**
-     * Set the status as "NEW"  for a new finding created or as "PEND" when duplicated
-     * write the audit log
-     */
-    public function preInsert()
-    {
-        $duplicateFinding  = $this->getTable()
-                                  ->findByDql("description LIKE '%$this->description%'");
-        if (!empty($duplicateFinding[0])) {
-            $this->DuplicateFinding = $duplicateFinding[0];
-            $this->status           = 'PEND';
-        } else {
-            $this->status           = 'NEW';
-        }
-        $this->CreatedBy       = User::currentUser();
-        $this->_updateNextDueDate();
-
-        $auditLog              = new AuditLog();
-        $auditLog->User        = User::currentUser();
-        $auditLog->description = 'New Finding Created';
-        $this->AuditLogs[]     = $auditLog;
-    }
-
-    /**
-     * Write the audit logs
-     * @todo the log need to get the user who did it
-     */
-    public function preUpdate()
-    {
-        $modifyValues = $this->getModified(true);
-        if (!empty($modifyValues)) {
-            foreach ($modifyValues as $key=>$value) {
-                //We don't want to log these keys
-                if (!array_key_exists($key, array('currentEvaluationId', 'nextDueDate', 'legacyFindingKey'))) {
-                    $auditLog = new AuditLog();
-                    $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $this->$key;
-                    $auditLog->User        = User::currentUser();
-                    $auditLog->description = $message;
-                    $this->AuditLogs[]     = $auditLog;
-                }
-            }
-
-            if (array_key_exists('type', $modifyValues)) {
-                if ('NEW' == $this->status) {
-                    $this->status = 'DRAFT';
-                } else {
-                    //@todo english
-                    throw new Fisma_Exception_General("The finding's type can't be changed at the current status");
-                }
-            }
-        }
-    }
-
-    /**
      * Returns an ordered list of all business possible statuses
      * 
      * @return array
@@ -137,7 +84,7 @@ class Finding extends BaseFinding
     {
         if ('DRAFT' != $this->status) {
             //@todo english
-            throw new Fisma_Exception_General("The finding can't be submited mitigation strategy");
+            throw new Fisma_Exception("The finding can't be submited mitigation strategy");
         }
         $this->status = 'MSA';
         $this->_updateNextDueDate();
@@ -155,7 +102,7 @@ class Finding extends BaseFinding
     {
         if ('EN' != $this->status) {
             //@todo english
-            throw new Fisma_Exception_General("The finding can't be revised mitigation strategy");
+            throw new Fisma_Exception("The finding can't be revised mitigation strategy");
         }
         $this->status = 'DRAFT';
         $this->_updateNextDueDate();
@@ -175,7 +122,7 @@ class Finding extends BaseFinding
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
             //@todo english
-            throw new Fisma_Exception_General("The finding can't be approved");
+            throw new Fisma_Exception("The finding can't be approved");
         }
         
         //Start Doctrine Transaction
@@ -228,7 +175,7 @@ class Finding extends BaseFinding
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
             //@todo english
-            throw new Fisma_Exception_General("The finding can't be denied");
+            throw new Fisma_Exception("The finding can't be denied");
         }
 
         //Start Doctrine Transaction
@@ -277,7 +224,7 @@ class Finding extends BaseFinding
     {
         if ('EN' != $this->status) {
             //@todo english
-            throw new Fisma_Exception_General("The finding can't be uploaded evidence");
+            throw new Fisma_Exception("The finding can't be uploaded evidence");
         }
         $this->status = 'EA';
         $this->_updateNextDueDate();

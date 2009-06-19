@@ -168,7 +168,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is NEW
             $finding->approve($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be approved",
                 $e->getMessage());
         }
@@ -179,7 +179,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is DRAFT
             $finding->approve($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be approved",
                 $e->getMessage());
         }
@@ -195,7 +195,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EN
             $finding->approve($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be approved",
                 $e->getMessage());
         }
@@ -209,7 +209,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is CLOSED
             $finding->approve($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be approved",
                 $e->getMessage());
         }
@@ -230,7 +230,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is NEW
             $finding->deny($this->_user, $comment);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be denied",
                 $e->getMessage());
         }
@@ -241,7 +241,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is DRAFT
             $finding->deny($this->_user, $comment);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be denied",
                 $e->getMessage());
         }
@@ -265,7 +265,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EN
             $finding->deny($this->_user, $comment);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be denied",
                 $e->getMessage());
         }
@@ -287,7 +287,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is CLOSED
             $finding->deny($this->_user, $comment);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be denied",
                 $e->getMessage());
         }
@@ -307,7 +307,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is NEW
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be submited mitigation strategy",
                 $e->getMessage());
         }
@@ -320,7 +320,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is MS ISSO
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be submited mitigation strategy",
                 $e->getMessage());
         }
@@ -329,7 +329,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is MS IV&V
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be submited mitigation strategy",
                 $e->getMessage());
         }
@@ -338,7 +338,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EN
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be submited mitigation strategy",
                 $e->getMessage());
         }
@@ -347,7 +347,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EV ISSO
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be submited mitigation strategy",
                 $e->getMessage());
         }
@@ -356,7 +356,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EV IV&V
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be submited mitigation strategy",
                 $e->getMessage());
         }
@@ -365,7 +365,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is CLOSED
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be submited mitigation strategy",
                 $e->getMessage());
         }
@@ -383,7 +383,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is NEW
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be revised mitigation strategy",
                 $e->getMessage());
         }
@@ -393,7 +393,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is DRAFT
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be revised mitigation strategy",
                 $e->getMessage());
         }
@@ -402,7 +402,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is MS ISSO
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be revised mitigation strategy",
                 $e->getMessage());
         }
@@ -411,7 +411,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is MS IV&V
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be revised mitigation strategy",
                 $e->getMessage());
         }
@@ -427,7 +427,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EV ISSO
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be revised mitigation strategy",
                 $e->getMessage());
         }
@@ -436,7 +436,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EV IV&V
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be revised mitigation strategy",
                 $e->getMessage());
         }
@@ -445,7 +445,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is CLOSED
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be revised mitigation strategy",
                 $e->getMessage());
         }
@@ -465,7 +465,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is NEW
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be uploaded evidence",
                 $e->getMessage());
         }
@@ -475,7 +475,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is DRAFT
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be uploaded evidence",
                 $e->getMessage());
         }
@@ -484,7 +484,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is MS ISSO
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be uploaded evidence",
                 $e->getMessage());
         }
@@ -493,7 +493,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is MS IV&V
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be uploaded evidence",
                 $e->getMessage());
         }
@@ -506,7 +506,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EV ISSO
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be uploaded evidence",
                 $e->getMessage());
         }
@@ -515,7 +515,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is EV IV&V
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be uploaded evidence",
                 $e->getMessage());
         }
@@ -524,7 +524,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
             //Finding status is CLOSED
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
-        } catch (Fisma_Exception_General $e) {
+        } catch (Fisma_Exception $e) {
             $this->assertEquals("The finding can't be uploaded evidence",
                 $e->getMessage());
         }

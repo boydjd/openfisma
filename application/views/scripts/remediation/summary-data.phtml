@@ -4,5 +4,5 @@
 if (Fisma_Controller_Front::getInstance()->debug()) {
     var_dump($this->summaryData);
 } else {
-    throw new Fisma_Exception_General("This view is only allowed in debug mode.");
+    throw new Fisma_Exception("This view is only allowed in debug mode.");
 }

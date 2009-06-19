@@ -24,8 +24,7 @@ class Network extends BaseNetwork
 
     public function postInsert()
     {
-        $notification = new Notification();
-        $notification->add(Notification::NETWORK_CREATED, $this, User::currentUser());
+        Notification::notify(Notification::NETWORK_CREATED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('network', $this);
@@ -33,8 +32,7 @@ class Network extends BaseNetwork
 
     public function postUpdate()
     {
-        $notification = new Notification();
-        $notification->add(Notification::NETWORK_MODIFIED, $this, User::currentUser());
+        Notification::notify(Notification::NETWORK_MODIFIED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('network', $this);
@@ -42,8 +40,7 @@ class Network extends BaseNetwork
 
     public function postDelete()
     {
-        $notification = new Notification();
-        $notification->add(Notification::NETWORK_DELETED, $this, User::currentUser());
+        Notification::notify(Notification::NETWORK_DELETED, $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('network', $this->id);

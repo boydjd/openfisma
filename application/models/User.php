@@ -58,69 +58,6 @@ class User extends BaseUser
      * Account was locked due to an expired password
      */
     const LOCK_TYPE_EXPIRED = 'expired';
-
-
-    public function preSave()
-    {
-        Doctrine_Manager::connection()->beginTransaction();
-
-        $modifyValues = $this->getModified();
-        if (array_key_exists('email', $modifyValues)) {
-            $this->emailValidate = false;
-            $emailValidation     = new EmailValidation();
-            $emailValidation->email          = $modifyValues['email'];
-            $emailValidation->validationCode = md5(rand());
-            $emailValidation->User           = $this;
-            $this->EmailValidation[]         = $emailValidation;
-        }
-
-        if (array_key_exists('password', $modifyValues)) {
-            $this->password        = $this->hash($modifyValues['password']);
-            $this->passwordTs      = Zend_Date::now()->toString('Y-m-d H:i:s');
-            $this->passwordHistory = $this->_generatePwdHistory();
-
-            if ($this->id == $this->currentUser()->id) {
-                /** @todo english  also see follow */
-                $this->_log("Password changed");
-            }
-        } else {
-            if ($this->id == $this->currentUser()->id && !empty($modifyValues)) {
-                $this->_log("Profile changed");
-            }
-        }
-    }
-    
-    public function preDelete()
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
-    public function postInsert()
-    {
-        $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_CREATED, $this, $this->currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::updateIndex('account', $this);
-    }
-
-    public function postUpdate()
-    {
-        $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_MODIFIED, $this, $this->currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::updateIndex('account', $this);
-    }
-
-    public function postDelete()
-    {
-        $notification = new Notification();
-        $notification->add(Notification::ACCOUNT_DELETED, $this, $this->currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::deleteIndex('account', $this->id);
-    }
     
     /**
      * Returns an object which represents the current, authenticated user
@@ -128,8 +65,12 @@ class User extends BaseUser
      * @return User
      */
     public static function currentUser() {
-        $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
-        return $authSession->currentUser;        
+        if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
+            $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
+            return $authSession->currentUser;        
+        } else {
+            return new User();
+        }
     }
     
     /**
@@ -140,7 +81,7 @@ class User extends BaseUser
     public function lockAccount($lockType)
     {
         if (empty($lockType)) {
-            throw new Fisma_Exception_General("Lock type cannot be blank");
+            throw new Fisma_Exception("Lock type cannot be blank");
         }
         $this->locked = true;
         $this->lockTs = date('Y-m-d H:i:s');
@@ -262,7 +203,7 @@ class User extends BaseUser
     public function hash($password, $hashType = null) 
     {
         if (empty($hashType)) {
-            $hashType = Configuration::getConfig('encrypt');
+            $hashType = Configuration::getConfig('hash_type');
         }
         
         if ('sha1' == $hashType) {
@@ -272,7 +213,7 @@ class User extends BaseUser
         } elseif ('sha256' == $hashType) {
             return mhash(MHASH_SHA256, $password);
         } else {
-            throw new Fisma_Exception_General("Unsupported hash type: {$hashType}");
+            throw new Fisma_Exception("Unsupported hash type: {$hashType}");
         }
     }
 
@@ -309,6 +250,10 @@ class User extends BaseUser
      */
     public function login($password)
     {
+        if (Fisma::RUN_MODE_COMMAND_LINE == Fisma::mode()) {
+            throw new Fisma_Exception("Login is not allowed in command line mode");
+        }
+
         if ($this->password == $this->hash($password)) {
             $this->lastLoginTs = date('Y-m-d H:i:s');
             $this->save();
@@ -322,7 +267,10 @@ class User extends BaseUser
      */
     public function logout()
     {
-        //@todo english
+        if (Fisma::RUN_MODE_COMMAND_LINE == Fisma::mode()) {
+            throw new Fisma_Exception("Logout is not allowed in command line mode");
+        }
+        
         $this->_log('Log out');
         Zend_Auth::getInstance()->clearIdentity();
     }

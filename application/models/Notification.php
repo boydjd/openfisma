@@ -91,12 +91,18 @@ class Notification extends BaseNotification
      * @param object $user  the user object
      * @param int $organizationId The organization id.
      */
-    public function add($eventId, $record, $user, $organizationId = null)
+    public static function notify($eventId, $record, $user, $organizationId = null)
     {
+        if (!Fisma::getNotificationEnabled()) {
+            return;
+        }
+        
         $event = Doctrine::getTable('Event')->find($eventId);
         if (empty($event)) {
             //@todo english
-            throw new Fisma_Exception_General("The event of this operation dose not exist");
+            try{
+                throw new Fisma_Exception("The event of this operation dose not exist");
+                } catch (Fisma_Exception $ex) {print $ex->getTraceAsString();}
         }
         $eventText = $event->name . " by $user->nameLast . $user->nameFirst";
         $eventText .= "(Id. $record->id)";
@@ -105,18 +111,19 @@ class Notification extends BaseNotification
             $userEvents = Doctrine::getTable('UserEvent')->findByEventId($eventId);
         } else {
             $userEvents = Doctrine_Query::create()
-                            ->select('ue.eventId, ue.userId')
-                            ->from('UserEvent ue, UserOrganization uo')
-                            ->where('ue.eventId = ?', $eventId)
-                            ->addWhere('uo.organizationId = ?', $organizationId)
-                            ->execute();
+                ->select('ue.eventId, ue.userId')
+                ->from('UserEvent ue, UserOrganization uo')
+                ->where('ue.eventId = ?', $eventId)
+                ->addWhere('uo.organizationId = ?', $organizationId)
+                ->execute();
         }
 
         foreach ($userEvents as $userEvent) {
-            $this->eventId   = $userEvent->eventId;
-            $this->userId    = $userEvent->userId;
-            $this->eventText = $eventText;
-            $this->save();
+            $notification = new Notification();
+            $notification->eventId   = $userEvent->eventId;
+            $notification->userId    = $userEvent->userId;
+            $notification->eventText = $eventText;
+            $notification->save();
         }
     }
 }

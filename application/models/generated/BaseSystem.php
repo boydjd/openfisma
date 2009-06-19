@@ -33,5 +33,7 @@ abstract class BaseSystem extends Doctrine_Record
     {
         $this->hasMany('Organization', array('local' => 'id',
                                              'foreign' => 'systemId'));
+
+    $this->addListener(new SystemListener(), 'SystemListener');
     }
 }

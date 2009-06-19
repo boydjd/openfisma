@@ -127,7 +127,7 @@ abstract class Fisma_Inject_Abstract
                     $action = self::REVIEW_FINDING;
                 }
             } else {
-                throw new Fisma_Exception_General("Unknown mitigation type: \"{$result['type']}\"");
+                throw new Fisma_Exception("Unknown mitigation type: \"{$result['type']}\"");
             }
         } else {
             // If there is no duplicate, then the default action is to create a new finding
@@ -154,7 +154,7 @@ abstract class Fisma_Inject_Abstract
                 break;
 
             default:
-                throw new Fisma_Exception_General("\$action is not valid: \"$action\"");
+                throw new Fisma_Exception("\$action is not valid: \"$action\"");
                 break;
         }
     }

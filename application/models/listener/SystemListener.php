@@ -31,10 +31,33 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-
-Class Listener_System extends Doctrine_Record_Listener
+Class SystemListener extends Doctrine_Record_Listener
 {
-    
+    /**
+     * Begin a transaction
+     */
+    public function preSave(Doctrine_Event $event)
+    {
+        Doctrine_Manager::connection()->beginTransaction();   
+    }
+
+    /**
+     * Save the organization with the system's name, nickname...
+     * accodingly after the system's attributes saved.
+     */
+    public function postSave(Doctrine_Event $event)
+    {
+        $system = $event->getInvoker();
+        
+        $organization = $system->Organization[0];
+        $organization->System      = $system;
+        $organization->name        = $system->name;
+        $organization->nickname    = $system->nickname;
+        $organization->description = $system->description;
+        $organization->orgType = 'system';
+        $organization->save();
+    }
+
     /**
      * Insert the Organization with the name, nickname and description which is 
      * belong to the system.
@@ -44,6 +67,13 @@ Class Listener_System extends Doctrine_Record_Listener
      */
     public function postInsert(Doctrine_Event $event)
     {
+        $system = $event->getInvoker();
+        
+        Notification::notify(Notification::SYSTEM_CREATED, $system, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('system', $system);
+
          $invoker = $event->getInvoker();
          $organization = new Organization();
          $organization->systemId    = $invoker->id;
@@ -63,14 +93,20 @@ Class Listener_System extends Doctrine_Record_Listener
      */
     public function postUpdate(Doctrine_Event $event)
     {
-        $invoker = $event->getInvoker();
+        $system = $event->getInvoker();
+        
+        Notification::notify(Notification::SYSTEM_MODIFIED, $system, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::updateIndex('system', $system);
+
         $organization = Doctrine::getTable('Organization')->findOneBySystemId($invoker->id);
-        $organization->name = $invoker->name;
-        $organization->nickname = $invoker->nickname;
-        $organization->description = $invoker->description;
+        $organization->name = $system->name;
+        $organization->nickname = $system->nickname;
+        $organization->description = $system->description;
         $organization->save();
     }
-
+    
     /**
      * Delete the Organization which is related with the system.
      *
@@ -79,11 +115,24 @@ Class Listener_System extends Doctrine_Record_Listener
      */
     public function preDelete(Doctrine_Event $event)
     {
-        $invoker = $event->getInvoker();
-        $ret = Doctrine::getTable('Organization')->findOneBySystemId($invoker->id);
+        $system = $event->getInvoker();
+        
+        Doctrine_Manager::connection()->beginTransaction();       
+
+        $ret = Doctrine::getTable('Organization')->findOneBySystemId($system->id);
         Doctrine_Query::create()->delete()
                                 ->from('Organization o')
-                                ->where('o.id = '.$ret->id)
+                                ->where('o.id = ' . $ret->id)
                                 ->execute();
+    }
+    
+    public function postDelete(Doctrine_Event $event)
+    {
+        $system = $event->getInvoker();
+        
+        Notification::notify(Notification::SYSTEM_DELETED, $system, User::currentUser());
+        Doctrine_Manager::connection()->commit();
+
+        Fisma_Lucene::deleteIndex('system', $system->id);
     }
 }

@@ -48,7 +48,7 @@ class Fisma_Yui_MenuBar
         if ($item instanceof Fisma_Yui_Menu || $item instanceof Fisma_Yui_MenuItem) {
             $this->_menus[] = $item;
         } else {
-            throw new Fisma_Exception_General("Can only add Menus and MenuItems to this class.");
+            throw new Fisma_Exception("Can only add Menus and MenuItems to this class.");
         }
     }
     

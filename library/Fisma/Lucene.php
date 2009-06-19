@@ -42,11 +42,11 @@ class Fisma_Lucene
      */
     public static function updateIndex($name, $object)
     {
-        if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/' . $name)) {
+        if (!is_dir(Fisma::getPath('data') . '/index/' . $name)) {
             return;
         }
         set_time_limit(0);
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $name);
+        $index = new Zend_Search_Lucene(Fisma::getPath('data') . '/index/' . $name);
         $hits = $index->find('key:' . md5($object->id));
         if (!empty($hits)) {
             //Update one index
@@ -76,10 +76,10 @@ class Fisma_Lucene
      */
     public static function deleteIndex($name, $id)
     {
-        if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/' . $name)) {
+        if (!is_dir(Fisma::getPath('data') . '/index/' . $name)) {
             return;
         }
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $name);
+        $index = new Zend_Search_Lucene(Fisma::getPath('data') . '/index/' . $name);
         $hits = $index->find('key:' . md5($id));
         $index->delete($hits[0]);
         $index->commit();

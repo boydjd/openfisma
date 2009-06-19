@@ -293,7 +293,7 @@ class AssetController extends BaseController
                 /**
                  * @todo english
                  */
-                throw new Fisma_Exception_General("Invalid {$this->_modelName}");
+                throw new Fisma_Exception("Invalid {$this->_modelName}");
             }
             $assetInfo = $asset->toArray();
             $assetInfo['systemName'] = $asset->Organization->name;
