@@ -1,13 +1,13 @@
 <?php Fisma_Format_Section::startSection('An Error Has Occurred&hellip;'); ?>
 <?php
-    //if (Fisma_Controller_Front::debug()) {
+    if (Fisma::debug()) {
 ?>
     <p><i>Application is currently in debugging mode:</i></p>
     <p class="stacktrace"><?php echo $this->content; ?></p>
 <?php    
-    //} else {
-    //    echo $this->message;
-    //}
+    } else {
+        echo $this->message;
+    }
 ?>
 <p>
     Technical Support Contact: <?php echo Configuration::getConfig('contact_name');?><br>

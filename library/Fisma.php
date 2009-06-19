@@ -116,6 +116,11 @@ class Fisma
     private static $_applicationPath;
     
     /**
+     * A single instance of Zend_Log which the application components share
+     */
+    private static $_log;
+    
+    /**
      * Initialize the FISMA object
      * 
      * This sets up the root path, include paths, application paths, and then loads the application configuration.
@@ -320,5 +325,33 @@ class Fisma
         } else {
             throw new Fisma_Exception("No path found for key: \"$key\"");
         }
+    }
+    
+    /**
+     * Initialize the log instance
+     *
+     * As the log requires the authente information, the log should be only initialized 
+     * after the successfully login.
+     *
+     * @return Zend_Log
+     */
+    public function getLogInstance()
+    {
+        if (null === self::$_log) {
+            $write = new Zend_Log_Writer_Stream(self::getPath('log') . '/error.log');
+            $auth = Zend_Auth::getInstance();
+            if ($auth->hasIdentity()) {
+                $user = User::currentUser();
+                $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
+                    "$user->username ($user->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+            } else {
+                $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
+                    "{$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+            }
+            $formatter = new Zend_Log_Formatter_Simple($format);
+            $write->setFormatter($formatter);
+            self::$_log = new Zend_Log($write);
+        }
+        return self::$_log;
     }
 }
