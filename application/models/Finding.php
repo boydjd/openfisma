@@ -51,6 +51,7 @@ class Finding extends BaseFinding
         } else {
             $this->status           = 'NEW';
         }
+        $this->CreatedBy       = User::currentUser();
         $this->_updateNextDueDate();
 
         $auditLog              = new AuditLog();

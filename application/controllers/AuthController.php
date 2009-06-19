@@ -208,96 +208,6 @@ class AuthController extends MessageController
     }
 
     /**
-     * getProfileForm() - Returns the standard form for reading, and updating
-     * the current user's profile.
-     *
-     * @return Zend_Form
-     *
-     * @todo This function is not named correctly
-     */
-    public function getProfileForm()
-    {
-        $form = Fisma_Form_Manager::loadForm('account');
-        $form->removeElement('account');
-        $form->removeElement('password');
-        $form->removeElement('confirmPassword');
-        $form->removeElement('checkaccount');
-        $form->removeElement('generate_password');
-        $form->removeElement('role');
-        $form->removeElement('locked');
-        return $form;
-    }
-
-    /**
-     * Display the user's "Edit Profile" page and handle its updating
-     */
-    public function profileAction()
-    {
-        $form = $this->getProfileForm();
-
-        if ($this->_request->isPost()) {
-            $post = $this->_request->getPost();
-            if ($form->isValid($post)) {
-                $this->_me->merge($form->getValues());
-                if (!$this->_me->trySave()) {
-                    /** @todo english please notice following 3 sentences*/
-                    $message = "Failure in updating.";
-                    $model   = self::M_WARNING;
-                } else {
-                    $message = "Your profile modified successfully."; 
-                    $model   = self::M_NOTICE;
-                }
-            } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
-                $message     = "Unable to update profile:<br>" . $errorString;
-                $model       = self::M_WARNING;
-            }
-            $this->message($message, $model);
-        } else {
-            $form->setDefaults($this->_me->toArray());
-        }
-        $this->view->form    = Fisma_Form_Manager::prepareForm($form);
-    }
-
-    /**
-     * passwordAction() - Display the change password page
-     */
-    public function passwordAction()
-    {
-        // Load the change password file
-        $form = Fisma_Form_Manager::loadForm('change_password');
-        $form = Fisma_Form_Manager::prepareForm($form);
-
-        $this->view->requirements =  $this->_getPasswordRequirements();
-
-        if ($this->_request->isPost()) {
-            $post   = $this->_request->getPost();
-            $form->getElement('oldPassword')->addValidator(new Fisma_Form_Validator_PasswdMatch());
-            $form->getElement('newPassword')->addValidator(new Fisma_Form_Validator_Password());
-
-            if ($form->isValid($post)) {
-                $this->_me->password = $post['newPassword'];
-                try {
-                    $this->_me->save();
-                    /** @todo english */
-                    $message = "Your password modified successfully."; 
-                    $model   = self::M_NOTICE;
-                } catch (Doctrine_Exception $e) {
-                    Doctrine_Manager::connection()->rollback();
-                    $message = $e->getMessage();
-                    $model   = self::M_WARNING;
-                }
-            } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
-                $message     = "Unable to change password:<br>" . $errorString;
-                $model       = self::M_WARNING;
-            }
-            $this->message($message, $model);
-        }
-        $this->view->form    =  $form;
-    }
-
-    /**
      * notificationsAction() - Display the user's "Edit Profile" page.
      *
      * @todo Cleanup this method: comments and formatting
@@ -429,32 +339,5 @@ class AuthController extends MessageController
         $user->setColumnPreference($this->_me->id, $_COOKIE[self::COOKIE_NAME]);
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
-    }
-
-    /**
-     * Get the password complex requirements
-     *
-     * @return array 
-     */
-    private function _getPasswordRequirements()
-    {
-        $requirements[] = "Length must be between "
-        . Configuration::getConfig('pass_min_length')
-        . " and "
-        . Configuration::getConfig('pass_max_length')
-        . " characters long.";
-        if (Configuration::getConfig('pass_uppercase') == 1) {
-            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
-        }
-        if (Configuration::getConfig('pass_lowercase') == 1) {
-            $requirements[] = "Must contain at least 1 lower case character (a-z)";
-        }
-        if (Configuration::getConfig('pass_numerical') == 1) {
-            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
-        }
-        if (Configuration::getConfig('pass_special') == 1) {
-            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
-        }
-        return $requirements;
     }
 }

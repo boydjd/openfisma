@@ -139,9 +139,9 @@ class MenuController extends SecurityController
         
         $preferences = new Fisma_Yui_Menu('User Preferences');
         
-        $preferences->add(new Fisma_Yui_MenuItem('Profile', '/panel/auth/sub/profile'));
-        $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/panel/auth/sub/password'));
-        $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/panel/auth/sub/notifications'));
+        $preferences->add(new Fisma_Yui_MenuItem('Profile', '/panel/user/sub/profile'));
+        $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/panel/user/sub/password'));
+        $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/panel/user/sub/notification'));
         
         $menubar->add($preferences);
 
