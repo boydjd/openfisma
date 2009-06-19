@@ -29,6 +29,9 @@
 
 require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 
+//Replaced User class, removed session part
+require_once(realpath(dirname(__FILE__) . '/../User.php'));
+
 /**
  * Unit Model tests for Finding model
  *
@@ -48,12 +51,9 @@ class Test_Model_Finding extends Test_FismaUnitTest
     protected function setUp()
     {
         parent::setUp();
-        // Loads a finding
-        $data = realpath($this->_fixturePath . '/Finding.yml');
-        Doctrine::loadData($data);
-        $this->_finding = Doctrine::getTable('Finding')->find(1);
-        // user id 1 is exist when init database
-        $this->_user = Doctrine::getTable('User')->find(1);
+        $this->_user = new User();
+        $this->_finding = new Finding();
+        $this->_finding->save();
     }
 
     /**
@@ -62,25 +62,25 @@ class Test_Model_Finding extends Test_FismaUnitTest
      * The work flow of finding status is:
      *     NEW[mitigationType]->
      *     DRAFT[submitMitigation]->
-     *     MITIGATION ISSO[deny]->
+     *     MS ISSO[deny]->
      *     DRAFT[submitMitigation]->
-     *     MITIGATION ISSO[approve]->
-     *     MITIGATION IVV[deny]->
+     *     MS ISSO[approve]->
+     *     MS IV&V[deny]->
      *     DRAFT[submitMitigation]->
-     *     MITIGATION ISSO[approve]->
-     *     MITIGATION IVV[approve]->
+     *     MS ISSO[approve]->
+     *     MS IV&V[approve]->
      *     EN[reviseMitigation]->
      *     DRAFT[submitMitigation]->
-     *     MITIGATION ISSO[approve]->
-     *     MITIGATION IVV[approve]->
+     *     MS ISSO[approve]->
+     *     MS IV&V[approve]->
      *     EN[uploadEvidence]->
-     *     EVIDENCE ISSO[deny]->
+     *     EV ISSO[deny]->
      *     EN[uploadEvidence]->
-     *     EVIDENCE ISSO[approve]->
-     *     EVIDENCE IVV[deny]->
+     *     EV ISSO[approve]->
+     *     EV IV&V[deny]->
      *     EN[uploadEvidence]->
-     *     EVIDENCE ISSO[approve]->
-     *     EVIDENCE IVV[approve]->
+     *     EV ISSO[approve]->
+     *     EV IV&V[approve]->
      *     CLOSED 
      * 
      */
@@ -88,31 +88,31 @@ class Test_Model_Finding extends Test_FismaUnitTest
     {
         $finding = $this->_finding;
         $this->assertEquals('NEW', $finding->getStatus());
-
+        
         $finding->type = 'CAP';
         $finding->save();
         $this->assertEquals('DRAFT', $finding->getStatus());
         
         $finding->submitMitigation($this->_user); 
-        $this->assertEquals('MITIGATION ISSO', $finding->getStatus());
+        $this->assertEquals('MS ISSO', $finding->getStatus());
         
         $finding->deny($this->_user, 'comments');
         $this->assertEquals('DRAFT', $finding->getStatus());
         
         $finding->submitMitigation($this->_user); 
-        $this->assertEquals('MITIGATION ISSO', $finding->getStatus());
+        $this->assertEquals('MS ISSO', $finding->getStatus());
         
         $finding->approve($this->_user);
-        $this->assertEquals('MITIGATION IVV', $finding->getStatus());
+        $this->assertEquals('MS IV&V', $finding->getStatus());
  
         $finding->deny($this->_user, 'comments');
         $this->assertEquals('DRAFT', $finding->getStatus());
         
         $finding->submitMitigation($this->_user); 
-        $this->assertEquals('MITIGATION ISSO', $finding->getStatus());
+        $this->assertEquals('MS ISSO', $finding->getStatus());
         
         $finding->approve($this->_user);
-        $this->assertEquals('MITIGATION IVV', $finding->getStatus());
+        $this->assertEquals('MS IV&V', $finding->getStatus());
 
         $finding->approve($this->_user);
         $this->assertEquals('EN', $finding->getStatus());
@@ -121,34 +121,34 @@ class Test_Model_Finding extends Test_FismaUnitTest
         $this->assertEquals('DRAFT', $finding->getStatus());
         
         $finding->submitMitigation($this->_user); 
-        $this->assertEquals('MITIGATION ISSO', $finding->getStatus());
+        $this->assertEquals('MS ISSO', $finding->getStatus());
         
         $finding->approve($this->_user);
-        $this->assertEquals('MITIGATION IVV', $finding->getStatus());
+        $this->assertEquals('MS IV&V', $finding->getStatus());
 
         $finding->approve($this->_user);
         $this->assertEquals('EN', $finding->getStatus());
 
         $finding->uploadEvidence('file name', $this->_user);
-        $this->assertEquals('EVIDENCE ISSO', $finding->getStatus());
+        $this->assertEquals('EV ISSO', $finding->getStatus());
         
         $finding->deny($this->_user, 'comments');
         $this->assertEquals('EN', $finding->getStatus());
 
         $finding->uploadEvidence('file name', $this->_user);
-        $this->assertEquals('EVIDENCE ISSO', $finding->getStatus());
+        $this->assertEquals('EV ISSO', $finding->getStatus());
         
         $finding->approve($this->_user);
-        $this->assertEquals('EVIDENCE IVV', $finding->getStatus());
+        $this->assertEquals('EV IV&V', $finding->getStatus());
 
         $finding->deny($this->_user, 'comments');
         $this->assertEquals('EN', $finding->getStatus());
         
         $finding->uploadEvidence('file name', $this->_user);
-        $this->assertEquals('EVIDENCE ISSO', $finding->getStatus());
+        $this->assertEquals('EV ISSO', $finding->getStatus());
         
         $finding->approve($this->_user);
-        $this->assertEquals('EVIDENCE IVV', $finding->getStatus());
+        $this->assertEquals('EV IV&V', $finding->getStatus());
 
         $finding->approve($this->_user);
         $this->assertEquals('CLOSED', $finding->getStatus());
@@ -187,6 +187,8 @@ class Test_Model_Finding extends Test_FismaUnitTest
         $finding->submitMitigation($this->_user);
         $finding->approve($this->_user);
         $this->assertEquals('APPROVED', $finding->FindingEvaluations->getLast()->decision);
+        // @to test 
+        //$this->assertEquals($this->_user->id, $finding->AuditLogs->getLast()->userId);
         $finding->approve($this->_user);
         $this->assertEquals('APPROVED', $finding->FindingEvaluations->getLast()->decision);
         try {
@@ -248,6 +250,8 @@ class Test_Model_Finding extends Test_FismaUnitTest
         $finding->deny($this->_user, $comment);
         $this->assertEquals('DENIED', $finding->FindingEvaluations->getLast()->decision);
         $this->assertEquals($comment, $finding->FindingEvaluations->getLast()->comment);
+        // @to test 
+        //$this->assertEquals($this->_user->id, $finding->AuditLogs->getLast()->userId);
         $finding->submitMitigation($this->_user);
         $finding->approve($this->_user);
         $finding->deny($this->_user, $comment);
@@ -310,8 +314,10 @@ class Test_Model_Finding extends Test_FismaUnitTest
         $finding->type = 'CAP';
         $finding->save();
         $finding->submitMitigation($this->_user);
+        // @to test 
+        //$this->assertEquals($this->_user->id, $finding->AuditLogs->getLast()->userId);
         try {
-            //Finding status is MITIGATION ISSO
+            //Finding status is MS ISSO
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -320,7 +326,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         try {
-            //Finding status is MITIGATION IVV
+            //Finding status is MS IV&V
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -338,7 +344,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->UploadEvidence('file name', $this->_user);
         try {
-            //Finding status is EVIDENCE ISSO
+            //Finding status is EV ISSO
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -347,7 +353,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         try {
-            //Finding status is EVIDENCE IVV
+            //Finding status is EV IV&V
             $finding->submitMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -393,7 +399,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->submitMitigation($this->_user);
         try {
-            //Finding status is MITIGATION ISSO
+            //Finding status is MS ISSO
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -402,7 +408,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         try {
-            //Finding status is MITIGATION IVV
+            //Finding status is MS IV&V
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -411,12 +417,14 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         $finding->reviseMitigation($this->_user);
+        // @to test 
+        //$this->assertEquals($this->_user->id, $finding->AuditLogs->getLast()->userId);
         $finding->submitMitigation($this->_user);
         $finding->approve($this->_user);
         $finding->approve($this->_user);
         $finding->UploadEvidence('file name', $this->_user);
         try {
-            //Finding status is EVIDENCE ISSO
+            //Finding status is EV ISSO
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -425,7 +433,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         try {
-            //Finding status is EVIDENCE IVV
+            //Finding status is EV IV&V
             $finding->reviseMitigation($this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -473,7 +481,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->submitMitigation($this->_user);
         try {
-            //Finding status is MITIGATION ISSO
+            //Finding status is MS ISSO
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -482,7 +490,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         try {
-            //Finding status is MITIGATION IVV
+            //Finding status is MS IV&V
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -491,9 +499,11 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         $finding->uploadEvidence($file, $this->_user);
+        // @to test 
+        //$this->assertEquals($this->_user->id, $finding->AuditLogs->getLast()->userId);
         $this->assertEquals($file, $finding->Evidence->getLast()->filename);
         try {
-            //Finding status is EVIDENCE ISSO
+            //Finding status is EV ISSO
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -502,7 +512,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
         }
         $finding->approve($this->_user);
         try {
-            //Finding status is EVIDENCE IVV
+            //Finding status is EV IV&V
             $finding->uploadEvidence($file, $this->_user);
             $this->fail('An expected exception has not been raised.');
         } catch (Fisma_Exception_General $e) {
@@ -527,8 +537,8 @@ class Test_Model_Finding extends Test_FismaUnitTest
     public function testGetAllStatuses()
     {
         $this->assertEquals(
-            array('NEW', 'DRAFT', 'MITIGATION ISSO', 'MITIGATION IVV',
-                'EN', 'EVIDENCE ISSO', 'EVIDENCE IVV', 'CLOSED'),
+            array('NEW', 'DRAFT', 'MS ISSO', 'MS IV&V',
+                'EN', 'EV ISSO', 'EV IV&V', 'CLOSED'),
                 $this->_finding->getAllStatuses());
     }
 
