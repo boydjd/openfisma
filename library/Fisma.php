@@ -124,7 +124,7 @@ class Fisma
         // Add the include paths to PHP's path.
         $currentPath = get_include_path();
         foreach (self::$_includePath as $path) {
-            $currentPath .= realpath(self::$_rootPath . '/' . $path) . PATH_SEPARATOR;
+            $currentPath .= PATH_SEPARATOR . realpath(self::$_rootPath . '/' . $path);
         }
         set_include_path($currentPath);
 

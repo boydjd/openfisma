@@ -1,7 +1,0 @@
-In Zend Framework's MVC implementation, both the default 
-action controller and the default action are named 'index'. 
-
-By default, the front controller loads the ErrorHandler 
-plugin, as well as the ViewRenderer action helper plugin. 
-These are to simplify error handling and view 
-renderering in your controllers, respectively.

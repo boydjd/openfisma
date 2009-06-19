@@ -35,4 +35,11 @@ try {
     $cli->run($_SERVER['argv']);
 } catch (Zend_Config_Exception $zce) {
     print "The application is not installed correctly. If you have not run the installer, you should do that now.";
+} catch (Exception $e) {
+    print get_class($e) 
+        . '\n' 
+        . $e->getMessage() 
+        . '\n'
+        . '\n' 
+        . $ee->getTraceAsString();
 }
