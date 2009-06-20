@@ -102,6 +102,18 @@ $collapseAll = new Fisma_Yui_Form_Button('collapseAll',
                                              'imageSrc' => '/images/collapse.png',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
 print $collapseAll;
+
+$exportExcel = new Fisma_Yui_Form_Button('exportExcel', 
+                                         array('value' => 'Export to Excel', 
+                                             'imageSrc' => '/images/xls.gif',
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.exportExcel'));
+print $exportExcel;
+
+$exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
+                                       array('value' => 'Export to PDF', 
+                                             'imageSrc' => '/images/pdf.gif',
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.exportPdf'));
+print $exportPdf;
 ?>
 </div>
 

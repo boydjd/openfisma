@@ -108,6 +108,8 @@ class RemediationController extends PoamBaseController
         }
         $this->_helper->contextSwitch()
                       ->addActionContext('summary-data', 'json')
+                      ->addActionContext('summary-data', 'xls')
+                      ->addActionContext('summary-data', 'pdf')                                            
                       ->initContext();
     }
     
@@ -173,12 +175,72 @@ class RemediationController extends PoamBaseController
         $orgTree->setBaseQuery($userOrgQuery);
         $organizations = $orgTree->fetchTree();
         $orgTree->resetBaseQuery();
-        
-        $organizations = $this->toHierarchy($organizations, 
-                                            $this->getRequest()->getParam('type'), 
-                                            $this->getRequest()->getParam('source'));
-        
-        $this->view->summaryData = $organizations;
+            
+
+        // For excel and PDF requests, return a table format. For JSON requests, return a hierarchical
+        // format
+        $type = $this->getRequest()->getParam('type');
+        $source = $this->getRequest()->getParam('source');        
+        $format = $this->_helper->contextSwitch()->getCurrentContext();
+        if ('pdf' == $format || 'xls' == $format) {
+            $allStatuses = Finding::getAllStatuses();
+            array_unshift($allStatuses, 'Organization/Information System');
+            array_push($allStatuses, 'TOTAL');
+            $this->view->columns = $allStatuses;
+            
+            // Create a table of data based on the rows which need to be displayed
+            $tableData = array();
+            $expandedRows = $this->getRequest()->getParam('e');
+            if (!is_array($expandedRows)) {
+                $expandedRows = array($expandedRows);
+            }
+            $collapsedRows = $this->getRequest()->getParam('c');
+            if (!is_array($collapsedRows)) {
+                $collapsedRows = array($collapsedRows);
+            }
+            foreach ($organizations as $organization) {
+                /** @todo pad left string */
+                $indentAmount = $organization->level * 3;
+                $orgName = str_pad($organization->name, 
+                                   $indentAmount + strlen($organization->name),
+                                   ' ',
+                                   STR_PAD_LEFT);
+
+                $counts = $organization->getSummaryCounts($type, $source);
+                // Decide whether to show rolled up counts or single row counts
+                if (in_array($organization->id, $collapsedRows)) {
+                    // Show rolled up row counts
+                    $ontimeRow = array_merge(array($orgName), 
+                                             array_values($counts['all_ontime']));
+                    $tableData[] = $ontimeRow;
+                    
+                    // If there are overdues, then create another row for overdues
+                    if (array_sum($counts['all_overdue']) > 0) {
+                        $overdueRow = array_merge(array("$orgName (Overdue Items)"), 
+                                                  array_values($counts['all_overdue']));
+                        $tableData[] = $overdueRow;
+                    }
+                } elseif (in_array($organization->id, $expandedRows)) {
+                    // Show single row counts
+                    $ontimeRow = array_merge(array($orgName), 
+                                             array_values($counts['single_ontime']));
+                    $tableData[] = $ontimeRow;
+                    
+                    // If there are overdues, then create another row for overdues
+                    if (array_sum($counts['single_overdue']) > 0) {
+                        $overdueRow = array_merge(array("$orgName (Overdue Items)"), 
+                                                  array_values($counts['single_overdue']));
+                        $tableData[] = $overdueRow;
+                    }                    
+                }
+            }
+
+            $this->view->tableData = $tableData;
+        } else {
+            $organizations = $this->toHierarchy($organizations, $type, $source);
+
+            $this->view->summaryData = $organizations;
+        } 
     }
 
     /**

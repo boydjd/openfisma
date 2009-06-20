@@ -20,6 +20,9 @@ table.treeTable td {
 
 table.treeTable td a {
     color: black;
+}
+
+table.treeTable td:first-child a {
     text-decoration: none;
 }
 
