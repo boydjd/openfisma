@@ -300,7 +300,7 @@ class CreateIndex
 
     private function _createAccount()
     {
-        if ($this->_optimize('account')) {
+        if ($this->_optimize('user')) {
             return false;
         }
         $users = Doctrine::getTable('User')->findAll();
@@ -317,6 +317,6 @@ class CreateIndex
                         'role'      => empty($role) ? '' : implode(',', $role)
                     );
         }
-        $this->_createIndex('account', $data);
+        $this->_createIndex('user', $data);
     }
 }

@@ -23,15 +23,15 @@
 </div>
 <div class="panel">
     <p><em>Last Login</em></p>
-    <?php if(!empty($this->lastLogin)) { ?>
+    <?php if(!empty($this->lastLoginIp)) { ?>
         <ul>
-            <li>Last Logged in at <b><?php echo $this->lastLogin; ?></b></li>
-            <li>From IP address <b><?php echo $this->lastLoginIp;?></b></li>
-            <li>There were <b><?php echo $this->failureCount;?></b> bad login attempts since your last login.</li>
+            <li>Last Logged in at <b><?php echo $this->lastLoginTs; ?></b></li>
+            <li>From IP address <b><?php echo $this->lastLoginIp; ?></b></li>
+            <li>There were <b><?php echo $this->failureCount; ?></b> bad login attempts since your last login.</li>
         </ul>
     <?php } else { ?>
         <p>
-            This is the first time you have logged into <?php echo $this->applicationName ?>. 
+            This is the first time you have logged into <?php echo Configuration::getConfig('system_name') ?>. 
             We will begin tracking your login attempts moving forward.
         </p>
     <?php } ?>

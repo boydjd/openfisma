@@ -18,6 +18,7 @@
  * @property enum $lockType
  * @property integer $failureCount
  * @property string $lastLoginIp
+ * @property string $currentLoginIp
  * @property timestamp $lastLoginTs
  * @property string $title
  * @property string $nameFirst
@@ -67,6 +68,7 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasColumn('lockType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'manual', 1 => 'password', 2 => 'inactive', 3 => 'expired'), 'comment' => 'Manual lock means the admin locked the account. Password lock means several consecutive password failures. Inactive lock means the user has not logged in recently enough. Expired locked means the password has expired.'));
         $this->hasColumn('failureCount', 'integer', null, array('type' => 'integer', 'default' => 0));
         $this->hasColumn('lastLoginIp', 'string', 15, array('type' => 'string', 'ip' => true, 'length' => '15'));
+        $this->hasColumn('currentLoginIp', 'string', 15, array('type' => 'string', 'ip' => true, 'length' => '15'));
         $this->hasColumn('lastLoginTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('title', 'string', 255, array('type' => 'string', 'comment' => 'The users position or title within the agency', 'length' => '255'));
         $this->hasColumn('nameFirst', 'string', 255, array('type' => 'string', 'comment' => 'The users first name', 'length' => '255'));

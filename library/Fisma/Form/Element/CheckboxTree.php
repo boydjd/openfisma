@@ -98,10 +98,10 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
 
         // Render the checkbox matrix as a table, filling out the columns
         // top to bottom then left to right
-        $groupName = $this->getName();
+        $groupName = $this->getLabel();
         $render .= "<tr class='fisma_checkboxes'>"
                  . "<td colspan='2' style=\"text-align:left\">"
-                 . ucfirst($this->getName())
+                 . ucfirst($this->getLabel())
                  . "</td></tr>";
         $render .= "<tr><td colspan='2'><ul class='treelist'>";
         foreach ($this->_checkboxes as $checkbox) {

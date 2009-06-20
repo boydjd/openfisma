@@ -12,9 +12,9 @@
                                                  'href' => '/panel/system/sub/create'));
     echo $createButton;
     } ?>
-    <?php if (is_dir(Fisma::getPath('data') . '/index/system')) { ?>
+    <?php if (is_dir(Fisma::getPath('index') . '/system')) { ?>
     <form name="query" method="post" action="/panel/system/sub/list" style="display:inline">
-    <b>Query:&nbsp;</b>
+    <b>Search:&nbsp;</b>
     <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
     <span id="searchContainer"></span>
     <script type='text/javascript'>
@@ -28,17 +28,4 @@
     </script>
     </form>
     <?php } ?>
-    <form name="query" method="post" action="/panel/system/sub/list" style="display:inline">
-    <input type='checkbox' name='sh' value='1' <?php if ($this->visibility) echo 'checked'; ?>/> <b>Display Hidden Systems</b>
-    <span id="switchContainer"></span>
-    <script type='text/javascript'>
-       var save = new YAHOO.widget.Button({
-           type: "submit",
-           label: "submit your request",
-           value: "Update Listing",
-           container: "switchContainer",
-           disabled: false
-       });
-    </script>
-    </form>
 </div>

@@ -155,7 +155,7 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             if ($element->isReadOnly()) {
                 $render = '<div class=\'form\'>'
                         . $content
-                        . '</div>';            
+                        . '</div><div class="clear"></div>';            
             } else {
                 $render = "<form method='{$element->getMethod()}'"
                         . " action='{$element->getAction()}'"
@@ -164,7 +164,7 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                         . '>'
                         . '<div class=\'form\'>'
                         . $content
-                        . '</div>'
+                        . '</div><div class="clear"></div>'
                         . '</form>';
             }
         } else {

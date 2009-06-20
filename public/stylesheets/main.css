@@ -262,6 +262,7 @@ div.formValue {
 
 div.subform {
     margin: 15px 0px;
+    float: left;
 }
 
 table.fisma_crud {

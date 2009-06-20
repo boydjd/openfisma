@@ -130,7 +130,7 @@ class DashboardController extends SecurityController
         // script will show a different message.
         if (isset($user->lastLoginTs)) {
             $lastLoginDate = new Zend_Date($this->_me->lastLoginTs, Zend_Date::ISO_8601);
-            $this->view->lastLogin = $lastLoginDate->toString('l, M j, g:i a');
+            $this->view->lastLoginTs = $lastLoginDate->toString('l, M j, g:i a');
             $this->view->lastLoginIp = $this->_me->lastLoginIp;
             $this->view->failureCount = $this->_me->failureCount;
         } else {

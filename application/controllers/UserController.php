@@ -54,13 +54,13 @@ class UserController extends BaseController
                 ->from('Organization o');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
-        $checkboxMatrix = new Fisma_Form_Element_CheckboxTree('organizations');
+        $checkboxMatrix = $form->getElement('checkboxMatrix');
         foreach ($organizationTree as $organization) {
             $checkboxMatrix->addCheckbox($organization['id'], 
                                          $organization['name'],
                                          $organization['level']);
         }
-        $form->getDisplayGroup('accountInfo')->addElement($checkboxMatrix);
+
         $form = Fisma_Form_Manager::prepareForm($form);
         return $form;
     }

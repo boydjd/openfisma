@@ -233,11 +233,11 @@ class User extends BaseUser
             $this->emailValidate = true;
             $validation->delete();
             //@todo english
-            $this->_log('Email validate successfully');
+            $this->log('Email validate successfully');
             return true;
         } else {
             //@todo english
-            $this->_log('Email validate faild');
+            $this->log('Email validate faild');
             return false;
         }
     }
@@ -256,6 +256,8 @@ class User extends BaseUser
 
         if ($this->password == $this->hash($password)) {
             $this->lastLoginTs = date('Y-m-d H:i:s');
+            $this->lastLoginIp = $this->currentLoginIp;
+            $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
             $this->save();
             return true;
         }
@@ -271,7 +273,7 @@ class User extends BaseUser
             throw new Fisma_Exception("Logout is not allowed in command line mode");
         }
         
-        $this->_log('Log out');
+        $this->log('Log out');
         Zend_Auth::getInstance()->clearIdentity();
     }
 
@@ -280,7 +282,7 @@ class User extends BaseUser
      *
      * @param string $message log message
      */
-    private function _log($message)
+    public function log($message)
     {
         $accountLog = new AccountLog();
         $accountLog->ip      = $_SERVER["REMOTE_ADDR"];

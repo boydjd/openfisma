@@ -16,7 +16,7 @@ elements.username.options.label = "Username"
 elements.username.options.required = true
 elements.username.options.attribs.size = 35
 elements.username.options.filters.lower.filter = "StringToLower"
-displayGroups.usernameInfo.elements.username = "username"
+displayGroups.accountInfo.elements.username = "username"
 
 elements.password.type = "password"
 elements.password.options.label = "Password"
@@ -36,9 +36,9 @@ elements.generate_password.options.onClickFunction = "GeneratePassword"
 elements.generate_password.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
-elements.checkaccount.type = "button"
-elements.checkaccount.options.value = "Check Account"
-displayGroups.accountInfo.elements.checkAccount = "checkaccount"
+elements.checkAccount.type = "Form_Button"
+elements.checkAccount.options.value = "Check Account"
+displayGroups.accountInfo.elements.checkAccount = "checkAccount"
 
 elements.nameFirst.type = "text"
 elements.nameFirst.options.label = "First Name"
@@ -94,5 +94,9 @@ displayGroups.accountInfo.elements.locked = "locked"
 elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Save"
 displayGroups.accountInfo.elements.save = "save"
+
+elements.checkboxMatrix.type = "Element_CheckboxTree"
+elements.checkboxMatrix.options.label = "Organizations & Information Systems"
+displayGroups.organizationTree.elements.checkboxMatrix = "checkboxMatrix"
 
 ; The systems part of the account form is generated dynamically at runtime
