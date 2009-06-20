@@ -17,6 +17,7 @@
  * @property timestamp $lockTs
  * @property enum $lockType
  * @property integer $failureCount
+ * @property integer $oldFailureCount
  * @property string $lastLoginIp
  * @property string $currentLoginIp
  * @property timestamp $lastLoginTs
@@ -66,7 +67,8 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasColumn('locked', 'boolean', null, array('type' => 'boolean', 'default' => false));
         $this->hasColumn('lockTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('lockType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'manual', 1 => 'password', 2 => 'inactive', 3 => 'expired'), 'comment' => 'Manual lock means the admin locked the account. Password lock means several consecutive password failures. Inactive lock means the user has not logged in recently enough. Expired locked means the password has expired.'));
-        $this->hasColumn('failureCount', 'integer', null, array('type' => 'integer', 'default' => 0));
+        $this->hasColumn('failureCount', 'integer', null, array('type' => 'integer', 'default' => 0, 'comment' => 'How many times the user entered the wrong password before successfully logging in'));
+        $this->hasColumn('oldFailureCount', 'integer', null, array('type' => 'integer', 'default' => 0, 'comment' => 'Used to store the failure count throughout the session'));
         $this->hasColumn('lastLoginIp', 'string', 15, array('type' => 'string', 'ip' => true, 'length' => '15'));
         $this->hasColumn('currentLoginIp', 'string', 15, array('type' => 'string', 'ip' => true, 'length' => '15'));
         $this->hasColumn('lastLoginTs', 'timestamp', null, array('type' => 'timestamp'));

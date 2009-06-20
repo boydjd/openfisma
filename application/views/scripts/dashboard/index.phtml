@@ -27,7 +27,7 @@
         <ul>
             <li>Last Logged in at <b><?php echo $this->lastLoginTs; ?></b></li>
             <li>From IP address <b><?php echo $this->lastLoginIp; ?></b></li>
-            <li>There were <b><?php echo $this->failureCount; ?></b> bad login attempts since your last login.</li>
+            <li>There were <b><?php echo $this->oldFailureCount; ?></b> bad login attempts since your last login.</li>
         </ul>
     <?php } else { ?>
         <p>

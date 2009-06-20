@@ -132,7 +132,7 @@ class DashboardController extends SecurityController
             $lastLoginDate = new Zend_Date($this->_me->lastLoginTs, Zend_Date::ISO_8601);
             $this->view->lastLoginTs = $lastLoginDate->toString('l, M j, g:i a');
             $this->view->lastLoginIp = $this->_me->lastLoginIp;
-            $this->view->failureCount = $this->_me->failureCount;
+            $this->view->oldFailureCount = $this->_me->oldFailureCount;
         } else {
             $this->view->applicationName = Configuration::getConfig('system_name');
         }

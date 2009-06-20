@@ -30,6 +30,11 @@ User:
         failureCount: 
             type: integer
             default: 0
+            comment: How many times the user entered the wrong password before successfully logging in
+        oldFailureCount:
+            type: integer
+            default: 0
+            comment: Used to store the failure count throughout the session
     
         lastLoginIp:
             type: string(15)
