@@ -73,12 +73,12 @@ YAHOO.fisma.TreeTable.render = function (tableId, tree) {
 
         // Selectively display one or both rows based on current level and whether it has overdues
         if (node.level < YAHOO.fisma.TreeTable.defaultDisplayLevel) {
-            firstRow.style.display = 'table-row';
+            firstRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
             if (node.hasOverdue) {
                 firstRow.childNodes[0].rowSpan = "2";
                 firstRow.childNodes[firstRow.childNodes.length - 2].rowSpan = "2";
                 firstRow.childNodes[firstRow.childNodes.length - 1].rowSpan = "2";
-                secondRow.style.display = 'table-row';
+                secondRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
             }
         }
         
@@ -171,7 +171,7 @@ YAHOO.fisma.TreeTable.collapseNode = function (treeNode, displayOverdue) {
         ontimeRow.childNodes[0].rowSpan = "2";
         ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
         ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
-        overdueRow.style.display = 'table-row';
+        overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
 
         var i = 0;
         for (c in treeNode.all_overdue) {
@@ -220,13 +220,13 @@ YAHOO.fisma.TreeTable.showSubtree = function (nodeArray, recursive) {
 
         // Now update this node
         ontimeRow = document.getElementById(node.nickname);
-        ontimeRow.style.display = 'table-row';
+        ontimeRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
         overdueRow = document.getElementById(node.nickname + "2");
         if (node.hasOverdue) {
             ontimeRow.childNodes[0].rowSpan = "2";
             ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
             ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
-            overdueRow.style.display = 'table-row';
+            overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
         }
     }   
 }

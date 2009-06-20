@@ -21,7 +21,7 @@ YAHOO.util.Event.onDOMReady(function () {
 
 function reloadTable(url) {
     var loadingRow = document.getElementById('loadingRow');
-    loadingRow.style.display = 'table-row';
+    loadingRow.style.display = ''; // reset to table-row, work around an IE6 bug
     var orgTable = document.getElementById('findingSummaryTable');
 
     // Remove existing summary data
