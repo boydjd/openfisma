@@ -211,6 +211,38 @@ class UserController extends BaseController
     }
 
     /**
+     *  Set user's notification policy
+     */
+    public function notificationAction()
+    {
+        $user = Doctrine::getTable('User')->find($this->_me->id);
+
+        if ($this->_request->isPost()) {
+            //@todo check injection
+            $user->notifyFrequency = $this->_request->getParam('notify_frequency');
+            $user->notifyEmail     = $this->_request->getParam('notify_email');
+
+            $postEvents = $this->_request->getPost('existEvents');
+            try {
+                $user->unlink('Events');
+                $user->link('Events', $postEvents);
+                $user->save();
+                /** @todo english */
+                $message = "Notification events modified successfully.";
+                $model   = self::M_NOTICE;
+            } catch (Doctrine_Exception $e) {
+                Doctrine_Manager::connection()->rollback();
+                $message = $e->getMessage();
+                $model   = self::M_WARNING;
+            }
+            $this->message($message, $model);
+        }
+
+        $this->view->me = $user;
+    }
+
+
+    /**
      * Get the password complex requirements
      *
      * @return array 
