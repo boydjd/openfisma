@@ -67,7 +67,7 @@ class User extends BaseUser
     public static function currentUser() {
         if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
             $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
-            return $authSession->currentUser;        
+            return $authSession->currentUser;
         } else {
             return new User();
         }
@@ -225,19 +225,17 @@ class User extends BaseUser
      */
     public function validateEmail($validateCode)
     {
-        $email = empty($this->notifyEmail) ? $this->email : $this->notifyEmail;
-
-        $validation = Doctrine::getTable('EmailValidation')
-                        ->findByDql("email = '$email' AND userId = $this->id");
-        if ($validateCode == $validation[0]->validationCode) {
+        if ($validateCode == $this->EmailValidation[0]->validationCode) {
             $this->emailValidate = true;
-            $validation->delete();
+            $this->EmailValidation[0]->delete();
             //@todo english
             $this->log('Email validate successfully');
+            $this->save();
             return true;
         } else {
             //@todo english
             $this->log('Email validate faild');
+            $this->save();
             return false;
         }
     }
@@ -387,5 +385,47 @@ class User extends BaseUser
         $pwdHistory = ':' . $this->password . $pwdHistory;
         return $pwdHistory;
     }
-    
+
+    /**
+     * Get user's exist events
+     *
+     * @return array
+     */
+    public function getExistEvents()
+    {
+        $existEvents = null;
+        foreach ($this->Events as $event) {
+            $existEvents[$event['id']] = $event['name'];
+        }
+        return $existEvents;
+    }
+
+    /**
+     * Get user's available events for received notifications
+     *
+     * @return array
+     */
+    public function getAvailableEvents()
+    {
+        $availableEvents = null;
+        $query = Doctrine_Query::Create()
+                    ->select('e.*')
+                    ->from('Event e')
+                    ->innerJoin('e.Privilege p')
+                    ->innerJoin('p.Role r')
+                    ->innerJoin('r.Users u')
+                    ->where('u.id = ?', $this->id)
+                    ->orderBy('e.name')
+                    ->execute();
+        
+        foreach ($query as $event) {
+            $availableEvents[$event->id] = $event->name;
+        }
+
+        $existEvents = $this->getExistEvents();
+        if (!empty($existEvents)) {
+            $availableEvents = array_diff($availableEvents, $existEvents);
+        }
+        return $availableEvents;
+    }
 }

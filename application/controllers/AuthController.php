@@ -291,7 +291,7 @@ class AuthController extends MessageController
     }
 
     /**
-     * emailvalidateAction() - Validate the user's e-mail change.
+     * Validate the user's e-mail change.
      *
      * @todo Cleanup this method: comments and formatting
      */
@@ -303,12 +303,7 @@ class AuthController extends MessageController
 
         $user   = Doctrine::getTable('User')->find($userId);
         if (!empty($user)) {
-            $validationCode = $user->EmailValidation[0]->validationCode;
-
-            if ($code == $validationCode) {
-                $user->EmailValidation[0]->delete();
-                $user->emailValidate = true;
-                $user->save();
+            if ($user->validateEmail($code)) {
                 /** @todo english, also see the follow */
                 $message =  'Your e-mail address has been validated. You may close this window ' .
                   'or click <a href="/">here</a> to enter ' . Configuration::getConfig('system_name');
