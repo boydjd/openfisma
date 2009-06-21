@@ -298,30 +298,28 @@ class AuthController extends MessageController
     public function emailvalidateAction()
     {
         $userId = $this->_request->getParam('id');
-        $ret = $this->_user->find($userId);
-        $userEmail = $ret->current()->email;
-        $notifyEmail = $ret->current()->notify_email;
-        $email = !empty($notifyEmail)?$notifyEmail:$userEmail;
-        $query = $this->_user
-        ->getAdapter()
-        ->select()
-        ->from('validate_emails', 'validate_code')
-        ->where('user_id = ?', $userId)
-        ->where('email = ?', $email)
-        ->order('id DESC');
-        $ret = $this->_user->getAdapter()->fetchRow($query);
-        if ($this->_request->getParam('code') == $ret['validate_code']) {
-            $this->_user->getAdapter()->delete('validate_emails', 'user_id = '.$userId);
-            $this->_user->update(array('email_validate'=>1), 'id = '.$userId);
-            $msg = "Your e-mail address has been validated. You may close this window or click <a href='http://"
-            . $_SERVER['HTTP_HOST']
-            . "'>here</a> to enter "
-            . Configuration::getConfig('system_name')
-            . '.';
-        } else {
-            $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
+        $code   = $this->_request->getParam('code');
+        $error  = true;
+
+        $user   = Doctrine::getTable('User')->find($userId);
+        if (!empty($user)) {
+            $validationCode = $user->EmailValidation[0]->validationCode;
+
+            if ($code == $validationCode) {
+                $user->EmailValidation[0]->delete();
+                $user->emailValidate = true;
+                $user->save();
+                /** @todo english, also see the follow */
+                $message =  'Your e-mail address has been validated. You may close this window ' .
+                  'or click <a href="/">here</a> to enter ' . Configuration::getConfig('system_name');
+                $error = false;
+            }
         }
-        $this->view->msg = $msg;
+        
+        if ($error) {
+            $message = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
+        }
+        $this->view->msg = $message;
     }
     
     

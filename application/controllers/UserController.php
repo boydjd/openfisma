@@ -79,10 +79,11 @@ class UserController extends BaseController
         $form->removeElement('account');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
-        $form->removeElement('checkaccount');
+        $form->removeElement('checkAccount');
         $form->removeElement('generate_password');
         $form->removeElement('role');
         $form->removeElement('locked');
+        $form->removeElement('checkboxMatrix');
         return $form;
     }
 
@@ -138,15 +139,21 @@ class UserController extends BaseController
     public function profileAction()
     {
         $form = $this->_getProfileForm();
+        $user = Doctrine::getTable('User')->find($this->_me->id);
 
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $this->_me->merge($form->getValues());
+                $user->merge($form->getValues());
                 try {
-                    $this->_me->save();
+                    $user->save();
                     $message = "Your profile modified successfully."; 
                     $model   = self::M_NOTICE;
+
+                    if (array_key_exists('email', $post)) {
+                        $mail = new Fisma_Mail();
+                        $mail->validateEmail($this->_me);
+                    }
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $message = $e->getMessage();
@@ -159,7 +166,7 @@ class UserController extends BaseController
             }
             $this->message($message, $model);
         } else {
-            $form->setDefaults($this->_me->toArray());
+            $form->setDefaults($user->toArray());
         }
         $this->view->form    = Fisma_Form_Manager::prepareForm($form);
     }
@@ -181,9 +188,10 @@ class UserController extends BaseController
             $form->getElement('newPassword')->addValidator(new Fisma_Form_Validator_Password());
 
             if ($form->isValid($post)) {
-                $this->_me->password = $post['newPassword'];
+                $user = Doctrine::getTable('User')->find($this->_me->id);
+                $user->password = $post['newPassword'];
                 try {
-                    $this->_me->save();
+                    $user->save();
                     /** @todo english */
                     $message = "Your password modified successfully."; 
                     $model   = self::M_NOTICE;
