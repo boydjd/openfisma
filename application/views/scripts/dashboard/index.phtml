@@ -79,14 +79,14 @@ if (isset($this->notifications)) {
               <td align="center">
                 <?php echo $this->partial('/dashboard/chart.phtml', array(
                             'source_url'=> urlencode(
-                                '/dashboard/total-status/format/xml/type/3d column'),
+                                '/dashboard/totalstatus/format/xml'),
                             'width'=>380,
                             'height'=>275) );
                 ?>
               </td>
               <td align="center">
                 <?php echo $this->partial('/dashboard/chart.phtml', array(
-                            'source_url'=> '/dashboard/total-type/format/xml',
+                            'source_url'=> '/dashboard/totaltype/format/xml',
                             'width'=>380,
                             'height'=>275 ));
                 ?>
