@@ -81,8 +81,6 @@ class AuthController extends MessageController
             
             // If the user name isn't found, then display an error message
             if (!$user) {
-                /** @doctrine fix the logging function */
-                //$this->_user->log('LOGINFAILURE', '', 'Failure');
                 // Notice that we don't tell the user whether the username is correct or not.
                 // This is a security feature to prevent bruteforcing usernames.
                 throw new Zend_Auth_Exception("Incorrect username or password");                
@@ -120,8 +118,6 @@ class AuthController extends MessageController
                 );
                 $authSession->currentUser = $user;
             } else {
-                /** @doctrine fix logging */
-                //$this->_user->log('LOGINFAILURE',$whologin['id'],'Failure');
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             

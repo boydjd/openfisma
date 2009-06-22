@@ -87,8 +87,6 @@ class User extends BaseUser
         $this->lockTs = date('Y-m-d H:i:s');
         $this->lockType = $lockType;
         $this->save();
-        /** @todo english */
-        $this->log("Account locked");
     }
     
     /**

@@ -104,8 +104,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         $this->_authenticateSetup();
         $this->_authenticatePolicyCheck();
 
-        /** @doctrine write to log and create notification */
-        //$this->_user->log('LOGIN', $_me->id, "Success");
         if ($this->_identity->login($this->_credential)) {
             /** @todo english */
             $authResult = new Zend_Auth_Result(
@@ -173,25 +171,24 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         $lockMessage = '';
         $contactEmail = Configuration::getConfig('contact_email');
         $inactivePeriod = Configuration::getConfig('account_inactivity_period');
-
         $inactivePeriod = new Zend_Date();
         $inactivePeriod->sub($inactivePeriod, Zend_Date::DAY);
         $lastLogin = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
-        if ($user->lastLoginTs == '0000-00-00 00:00:00'
+        if ($user->lastLoginTs != '0000-00-00 00:00:00'
                 && $inactivePeriod->isLater($user->lastLoginTs)) {
-            /** @doctrine fix logging */
-            //$this->_user->log('ACCOUNT_LOCKOUT', $_me->id, "User Account $_me->account Locked");
             $user->lockAccount(User::LOCK_TYPE_INACTIVE);
+            /** @todo english */
+            $user->log("Account locked by account inactivity");
         } 
 
         // Check password expiration (for database authentication only)
         $passExpirePeriod = Configuration::getConfig('pass_expire');
-        $passExpireTs = new Zend_Date($user->passwordTs);
+        $passExpireTs = new Zend_Date($user->passwordTs, 'Y-m-d');
         $passExpireTs->add($passExpirePeriod, Zend_Date::DAY);
         if ($passExpireTs->isEarlier(new Zend_Date())) {
             $user->lockAccount(User::LOCK_TYPE_EXPIRED);
-            /** @doctrine fix logging */
-            //$this->_user->log('ACCOUNT_LOCKOUT',$_me->id,"User Account $_me->account Successfully Locked");
+            /** @todo english */
+            $user->log("Account locked by password expired");
         }
 
         if ($user->locked) {
@@ -232,7 +229,7 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
             case User::LOCK_TYPE_INACTIVE:
                 $lockMessage = 'Your account has been locked automatically '
                      .' because you have not logged in over '
-                     . Configuration::getConfig('max_absent_time') . ' days.';
+                     . Configuration::getConfig('account_inactivity_period') . ' days.';
                 break;
             case User::LOCK_TYPE_EXPIRED:
                 $lockMessage = 'Your account has been locked automatically '
