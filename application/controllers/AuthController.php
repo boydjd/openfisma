@@ -150,7 +150,7 @@ class AuthController extends MessageController
                          . ' You will need to change your password in order to upgrade your account.';
                 $this->message($message, self::M_WARNING);
                 $this->_helper->_actionStack('header', 'Panel');
-                $this->_forward('user', 'Panel', null, array('sub'=>'password'));
+                $this->_forward('password', 'User');
                 return;
             }
             
@@ -159,7 +159,7 @@ class AuthController extends MessageController
             // the dashboard.
             $nextRobReview = new Zend_Date($user->lastRob);
             $nextRobReview->add(Configuration::getConfig('rob_duration'), Zend_Date::DAY);
-            if ($nextRobReview->isEarlier(new Zend_Date())) {
+            if (is_null($user->lastRob) || $nextRobReview->isEarlier(new Zend_Date())) {
                 $this->_helper->layout->setLayout('notice');
                 return $this->render('rule');
             }
@@ -185,11 +185,10 @@ class AuthController extends MessageController
      * store user last accept rob
      * create a audit event
      */
-    public function acceptrobAction() {
-        $now = new Zend_Date();
-        $nowSqlString = $now->toString('Y-m-d H:i:s');
-        $this->_user->update(array('last_rob'=>$nowSqlString), 'id = '.$this->_me->id);
-        $this->_user->log('ROB_ACCEPT', $this->_me->id, 'Digitally accepted the Rules of Behavior');
+    public function acceptRobAction() {
+        $user = User::currentUser();
+        $user->lastRob = Fisma::now();
+        $user->save();
         $this->_forward('index', 'Panel');
     }
 

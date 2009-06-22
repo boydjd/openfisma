@@ -193,6 +193,9 @@ class Fisma
             ini_set($param, $value);
         }
         
+        // Set up session configuration
+        Zend_Session::setOptions(self::$_appConf->session->toArray());
+        
         // Set the initialized flag
         self::$_initialized = true;
     }
@@ -339,7 +342,7 @@ class Fisma
      *
      * @return Zend_Log
      */
-    public function getLogInstance()
+    public static function getLogInstance()
     {
         if (null === self::$_log) {
             $write = new Zend_Log_Writer_Stream(self::getPath('log') . '/error.log');
@@ -357,5 +360,19 @@ class Fisma
             self::$_log = new Zend_Log($write);
         }
         return self::$_log;
+    }
+    
+    /**
+     * Returns the current timestamp in DB friendly format
+     * 
+     * This function is provided as a convenience for getting a timestamp which can be inserted
+     * into the database without needing to know the database's format for datetime strings. The
+     * timestamp is captured during initialization and frozen throughout execution of the script.
+     * 
+     * @todo this is designed to work with Mysql... would it work with Oracle? Db2? Dunno...
+     * @return string A database friendly representation of the current time
+     */
+    public static function now() {
+        return date('Y-m-d H:i:s');
     }
 }

@@ -9,6 +9,7 @@
  * @property timestamp $modifiedTs
  * @property string $username
  * @property string $password
+ * @property string $passwordSalt
  * @property timestamp $passwordTs
  * @property string $passwordHistory
  * @property enum $hashType
@@ -59,6 +60,7 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('username', 'string', 255, array('type' => 'string', 'unique' => true, 'comment' => 'This users unique authentication credential', 'length' => '255'));
         $this->hasColumn('password', 'string', 255, array('type' => 'string', 'length' => '255'));
+        $this->hasColumn('passwordSalt', 'string', 10, array('type' => 'string', 'fixed' => 1, 'comment' => 'A randomly generated salt, used to discourage rainbow table attacks against the password database', 'length' => '10'));
         $this->hasColumn('passwordTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('passwordHistory', 'string', null, array('type' => 'string'));
         $this->hasColumn('hashType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'md5', 1 => 'sha1', 2 => 'sha224', 3 => 'sha256', 4 => 'sha384', 5 => 'sha512')));

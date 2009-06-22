@@ -32,7 +32,7 @@ YAHOO.util.Event.onDOMReady(function () {
 </div>
 <div id="logout">
     <?php echo new Fisma_Yui_Form_Button_Link('logoutButton', array('value' => 'Log Out', 'imageSrc' => '/images/logout.png', 'href' => '/auth/logout')); ?>
-    <p><b><?php echo User::currentUser()->nameLast . User::currentUser()->nameFirst?></b> is currently logged in</p>
+    <p><b><?php echo User::currentUser()->nameFirst . ' ' . User::currentUser()->nameLast; ?></b> is currently logged in</p>
 </div>
 
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>

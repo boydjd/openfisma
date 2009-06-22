@@ -10,6 +10,10 @@ User:
             unique: true
             comment: This users unique authentication credential
         password: string(255)
+        passwordSalt:
+            type: string(10)
+            fixed: true
+            comment: A randomly generated salt, used to discourage rainbow table attacks against the password database
         passwordTs: timestamp
         passwordHistory: string
         hashType:

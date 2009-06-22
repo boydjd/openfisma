@@ -104,7 +104,23 @@ class UserController extends BaseController
         }
         $values = $form->getValues();
         $roleId = $values['role'];
+        if (empty($values['password'])) {
+            unset($values['password']);
+        }
         $subject->merge($values);
+
+        // Update organizations
+        $q = Doctrine_Query::create() 
+             ->delete('UserOrganization') 
+             ->addWhere('userId = ?', $subject->id);
+        $deleted = $q->execute();
+        foreach ($values['organizations'] as $organizationId) {
+            $userOrg = new UserOrganization(); 
+            $userOrg->userId = $subject; 
+            $userOrg->organizationId = $organizationId; 
+            $userOrg->save(); 
+        }        
+
         /** @todo Transaction */
         if ($subject->state() != Doctrine_Record::STATE_TDIRTY) {
             $q = Doctrine_Query::create()

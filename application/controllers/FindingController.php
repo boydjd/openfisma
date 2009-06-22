@@ -62,7 +62,7 @@ class FindingController extends BaseController
     public function init()
     {
         parent::init();
-        $orgSystems = $this->_me->getOrgSystems()->toArray();
+        $orgSystems = $this->_me->Organizations->toArray();
         $this->_myOrgSystems = $orgSystems;
         
         $orgSystemIds = array(0);
@@ -94,7 +94,7 @@ class FindingController extends BaseController
                  ->addMultiOptions(array($securityControl['id'] => $securityControl['code']));
         }
         
-        $systems = $this->_me->getOrgSystems();
+        $systems = $this->_me->Organizations;
         $systemList[0] = "--select--";
         foreach ($systems as $system) {
             $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
@@ -426,7 +426,7 @@ class FindingController extends BaseController
         $uploadForm->findingSource->addMultiOption('', '');
         $uploadForm->findingSource->addMultiOptions($sourceList);
         
-        $orgSystems = $this->_me->getOrgSystems()->toArray();
+        $orgSystems = $this->_me->Organizations->toArray();
         $orgSystemList = array();
         foreach ($orgSystems as $orgSystem) {
             $orgSystemList[$orgSystem['id']] = $orgSystem['nickname'] . ' - ' . $orgSystem['name'];

@@ -34,37 +34,46 @@ class UserListener extends Doctrine_Record_Listener
     {
         $user = $event->getInvoker();
         
-        $modifyValues = $user->getModified();
-        if (empty($modifyValues)) {
+        $modified = $user->getModified();
+        if (is_null($modified)) {
             return;
         }
-        extract($modifyValues);
 
         if ($user->id == User::currentUser()->id) {
-            if ($email || $notifyEmail) {
+            if ($modified['email'] || $modified['notifyEmail']) {
                 $user->emailValidate = false;
                 $emailValidation  = new EmailValidation();
-                $emailValidation->email          = !empty($email) ? $email : $notifyEmail;
+                $emailValidation->email          = !empty($email) ? $modified['email'] : $modified['notifyEmail'];
                 $emailValidation->validationCode = md5(rand());
                 $emailValidation->User           = $user;
-                $user->EmailValidation[]         = $emailValidation;
+                $user->EmailValidation[]         = $modified['emailValidation'];
             }
-
-            if ($password) {
-                $user->password        = $user->hash($modifyValues['password']);
-                $user->passwordTs      = Zend_Date::now()->toString('Y-m-d H:i:s');
-                // Generate user's password history
-                $pwdHistory = $user->passwordHistory;
-                if (3 == substr_count($pwdHistory, ':')) {
-                    $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
-                }
-                $user->passwordHistory = ':' . $user->password . $pwdHistory;
-
-                /** @todo english */
-                $user->log("Password changed");
-            }
-
         }
+
+        if (isset($modified['password'])) {
+            $user->generateSalt();
+            $user->password        = $user->hash($modified['password']);
+            $user->passwordTs      = Fisma::now();
+            // Generate user's password history
+            $pwdHistory = $user->passwordHistory;
+            if (3 == substr_count($pwdHistory, ':')) {
+                $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
+            }
+            $user->passwordHistory = ':' . $user->password . $pwdHistory;
+
+            $user->log("Password changed");
+        }
+        
+        if (isset($modified['lastRob'])) {
+            $user->log("Accepted Rules of Behavior");
+        }
+    }
+
+    public function preInsert(Doctrine_Event $event) {
+        $user = $event->getInvoker();
+        
+        $user->passwordTs = Fisma::now();
+        $user->hashType = Configuration::getConfig('hash_type');
     }
     
     public function postInsert(Doctrine_Event $event)

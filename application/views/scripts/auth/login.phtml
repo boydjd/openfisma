@@ -16,9 +16,11 @@
 
     <form id='loginForm' method="post" action="/auth/login">
         <table>
-            <tr><td>Username:</td><td><input type="text" name="username"
+            <tr><td>Username:</td><td><input type="text" name="username" 
+            <?php if (!Fisma::debug()) {echo ' autocomplete="off" ';} ?>
             value="<?php echo isset($this->username)?$this->username:'';?>" ></td></tr>
-            <tr><td>Password:</td><td><input type="password" name="userpass"
+            <tr><td>Password:</td><td><input type="password" name="userpass" autocomplete="off"
+            <?php if (!Fisma::debug()) {echo ' autocomplete="off" ';} ?>
             value="<?php echo isset($this->password)?$this->password:'';?>" ></td></tr>
             <tr><td>&nbsp;</td><td><?php echo new Fisma_Yui_Form_Button_Submit('loginButton', array('value' => 'Log In')); ?></td>
         </table>

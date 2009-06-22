@@ -101,7 +101,7 @@ class AssetController extends BaseController
     {
         $form = Fisma_Form_Manager::loadForm($this->_modelName);
         
-        $systems = $this->_me->getOrgSystems();
+        $systems = $this->_me->Organizations;
         $systemList[0] = "--select--";
         foreach ($systems as $system) {
             $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
@@ -172,7 +172,7 @@ class AssetController extends BaseController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'create');
+        Fisma_Acl::requirePrivilege('assets', 'create');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
@@ -182,10 +182,10 @@ class AssetController extends BaseController
      */
     public function searchboxAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'read');
+        Fisma_Acl::requirePrivilege('assets', 'read');
         
         $params = $this->parseCriteria();
-        $systems = $this->_me->getOrgSystems();
+        $systems = $this->_me->Organizations;
         $systemList[0] = "--select--";
         foreach ($systems as $system) {
             $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
@@ -203,7 +203,7 @@ class AssetController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'read');
+        Fisma_Acl::requirePrivilege('assets', 'read');
 
         $params = $this->parseCriteria();
         $q = Doctrine_Query::create()
@@ -230,7 +230,7 @@ class AssetController extends BaseController
             $q->andWhere('p.version = ?', $params['version']);
         }
         // get the assets whitch are belongs to current user's systems
-        $orgSystems = $this->_me->getOrgSystems()->toArray();
+        $orgSystems = $this->_me->Organizations->toArray();
         $orgSystemIds = array();
         foreach ($orgSystems as $orgSystem) {
             $orgSystemIds[] = $orgSystem['id'];
@@ -312,7 +312,7 @@ class AssetController extends BaseController
      */
     public function multideleteAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'delete');
+        Fisma_Acl::requirePrivilege('assets', 'delete');
 
         $req = $this->getRequest();
         $post = $req->getPost();

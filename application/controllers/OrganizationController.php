@@ -450,9 +450,12 @@ class OrganizationController extends SecurityController
         $l = 0; 
         if (count($collection) > 0) { 
             // Node Stack. Used to help building the hierarchy 
+            $rootLevel = $collection[0]->level;
+            var_dump($rootLevel);die;
             $stack = array(); 
             foreach ($collection as $node) { 
-                $item = $item = ($node instanceof Doctrine_Record) ? $node->toArray() : $node;
+                $item = ($node instanceof Doctrine_Record) ? $node->toArray() : $node;
+                $item['level'] -= $rootLevel;
                 $item['label'] = $item['nickname'] . ' - ' . $item['name'];
                 $item['orgType'] = $node->getType();
                 $item['orgTypeLabel'] = $node->getOrgTypeLabel();                

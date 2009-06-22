@@ -174,7 +174,8 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         $inactivePeriod = new Zend_Date();
         $inactivePeriod->sub($inactivePeriod, Zend_Date::DAY);
         $lastLogin = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
-        if ($user->lastLoginTs != '0000-00-00 00:00:00'
+
+        if (!is_null($user->lastLoginTs)
                 && $inactivePeriod->isLater($user->lastLoginTs)) {
             $user->lockAccount(User::LOCK_TYPE_INACTIVE);
             /** @todo english */

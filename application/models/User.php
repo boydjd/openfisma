@@ -208,13 +208,15 @@ class User extends BaseUser
         if (empty($hashType)) {
             $hashType = Configuration::getConfig('hash_type');
         }
+
+        $hashString = $this->passwordSalt . $password;
         
         if ('sha1' == $hashType) {
-            return sha1($password);
+            return sha1($hashString);
         } elseif ('md5' == $hashType) {
-            return md5($password);
+            return md5($hashString);
         } elseif ('sha256' == $hashType) {
-            return mhash(MHASH_SHA256, $password);
+            return mhash(MHASH_SHA256, $hashString);
         } else {
             throw new Fisma_Exception("Unsupported hash type: {$hashType}");
         }
@@ -256,7 +258,7 @@ class User extends BaseUser
         }
 
         if ($this->password == $this->hash($password)) {
-            $this->lastLoginTs = date('Y-m-d H:i:s');
+            $this->lastLoginTs = Fisma::now();
             $this->lastLoginIp = $this->currentLoginIp;
             $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
             $this->oldFailureCount = $this->failureCount;
@@ -291,93 +293,12 @@ class User extends BaseUser
     public function log($message)
     {
         $accountLog = new AccountLog();
-        $accountLog->ip      = $_SERVER["REMOTE_ADDR"];
+        $accountLog->ip = $_SERVER["REMOTE_ADDR"];
         $accountLog->message = $message;
-        $accountLog->userId  = $this->id;
+        // Assigning the ID instead of the user object prevents doctrine from calling the preSave hook on the 
+        // User object
+        $accountLog->userId = $this->id;
         $accountLog->save();
-    }
-    
-    /**
-     * Get the OrgSystems which are belong to specify user
-     *
-     * @param int $id user id
-     * @return collection $orgSystem
-     */
-    public function getOrgSystems($id = null)
-    {
-        // if the user id doesn't be assigned,
-        // then use specify id
-        if (is_null($id)) {
-            $id = $this->id;
-        }
-        // get the record of this user
-        $user = Doctrine::getTable('User')->find($id);
-        // if the user hasn't privileged organizations,
-        // return an empty organization collection
-        if (0 == count($user->Organizations)) {
-            return $user->Organizations;
-        } else {
-            // if the user has privileged organizations,
-            // find all system-type children which are belong to these organizations
-            $q = Doctrine_Query::create()
-                 ->select()
-                 ->from('Organization o');
-            foreach ($user->Organizations as $organization) {
-                $q->orWhere('o.lft >= ? AND o.rgt <= ? AND o.orgtype = ?',
-                            array($organization->lft, $organization->rgt, 'system'));
-            }
-            $orgSystem = $q->execute();
-            return $orgSystem;
-        }
-    }
-    
-    /**
-     * Replace the relationship between the organization to user. 
-     *
-     * If an organization is specified as the parameter, not only itself but also all the 
-     * decendents are related to the user. 
-     * 
-     * The algorithm relies on the linear sequence representative logic. 
-     * <lft rgt> combination is used to determind if the two nodes are parent or child. 
-     * For example, node <2, 7> is parent of <4, 5> because 2 < 4 and 7 > 5. 
-     * 
-     * @see http://www.sitepoint.com/article/hierarchical-data-database/2/
-     * @param array $ids organization id(s)
-     * @return boolean
-     */
-    public function setOrganizations($ids)
-    {
-        $q = Doctrine_Query::create()
-             ->select()
-             ->from('Organization o')
-             ->whereIn('o.id', $ids)
-             ->orderBy('o.lft ASC');
-        // get the records of selected organizations 
-        $orgs = $q->execute()->toArray();
-        if (empty($orgs)) {
-            return false;
-        }
-        // The useless ids will be pushed in this array 
-        $discardIds = array();
-        // The first reference
-        $flagRecord = $orgs[0];
-        // loop times
-        $loopTimes = count($orgs) - 1;
-        for ($i = 0; $i < $loopTimes; $i ++) {
-            if ($flagRecord['rgt'] > $orgs[$i+1]['rgt']) {
-                $discardIds[] = $orgs[$i+1]['id'];
-            } else {
-                $flagRecord = $orgs[$i+1];
-            }
-        }
-        $keepIds = array_diff($ids, $discardIds);
-        if ($this->state() == Doctrine_Record::STATE_TDIRTY) {
-            $this->save();
-        } else {
-            $this->unlink('Organizations', null, true);
-        }
-        $ret = $this->link('Organizations', $keepIds, true);
-        return $ret;
     }
 
     /**
@@ -421,5 +342,19 @@ class User extends BaseUser
             $availableEvents = array_diff($availableEvents, $existEvents);
         }
         return $availableEvents;
+    }
+    
+    /**
+     * Generate a random password salt for this user
+     */
+    public function generateSalt() {
+        /** @todo remove contstant value 10, which is the length of the salt. */
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+        $length = strlen($chars) - 1;
+        $salt = '';
+        for ($i = 1; $i <= 10; $i++) {
+            $salt .= $chars{rand(0, $length)};
+        }
+        $this->passwordSalt = $salt;
     }
 }
