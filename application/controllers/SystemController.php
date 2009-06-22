@@ -55,7 +55,7 @@ class SystemController extends SecurityController
     private function _getSystemForm()
     {
         $form = Fisma_Form_Manager::loadForm('system');
-        $organizationTreeObject = Doctrine::getTable('organization')->getTree();
+        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
         $q = Doctrine_Query::create()
                 ->select('o.*')
                 ->from('Organization o')
@@ -240,7 +240,6 @@ class SystemController extends SecurityController
                 } else {
                     $organization = $system->Organization[0];
                     $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($sysValues['organization_id']));
-                    $this->_helper->addNotification(Notification::SYSTEM_CREATED, $this->_me->username, $system->id);
 
                     //Create a system index
                     if (is_dir(Fisma::getPath('data') . '/index/system/')) {
@@ -251,7 +250,7 @@ class SystemController extends SecurityController
                     $model = self::M_NOTICE;
                 }
                 $this->message($msg, $model);
-                $this->_forward('view', null, null, array('id' => $system->id));
+                $this->_forward('create', null, null, array('id' => $system->id));
                 return;
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
@@ -276,7 +275,6 @@ class SystemController extends SecurityController
         if ($system) {
             // System table holds only attributes and will not be retrived since OrgSystem has been soft deleted.
             if ($system->Organization[0]->delete()) {
-                $this->_helper->addNotification(Notification::SYSTEM_DELETED, $this->_me->username, $id);
                 //Delete this system index
                 if (is_dir(Fisma::getPath('data') . '/index/system/')) {
                     $this->_helper->deleteIndex('system', $id);
@@ -373,9 +371,6 @@ class SystemController extends SecurityController
                     $organization->moveAsLastChildOf(Doctrine::getTable('Organization')->find($sysValues['organization_id']));
                     $isModify = true;
                 }
-                
-                $this->_helper->addNotification(Notification::SYSTEM_MODIFIED,
-                                                $this->_me->username, $system->id, 1);
 
                 //Update findings index
                 if (is_dir(Fisma::getPath('data') . '/index/finding')) {

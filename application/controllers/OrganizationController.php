@@ -271,8 +271,6 @@ class OrganizationController extends SecurityController
                         $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                     }
                     
-                    $this->_helper->addNotification(Notification::ORGANIZATION_CREATED,
-                                                    $this->_me->username, $organization->id);
                     //Create a organization index
                     if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
                         $this->_helper->updateIndex('organization', $organization->id, $organization->toArray());
