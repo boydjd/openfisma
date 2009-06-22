@@ -72,20 +72,18 @@ class SystemController extends SecurityController
             $form->getElement('organization_id')->addMultiOptions(array(0 => 'NONE'));
         }
         
-        $system = new System();
-        $visibilityArray = $system->getTable()->getEnumValues('visibility');
-        $form->getElement('visibility')->addMultiOptions(array_combine($visibilityArray, $visibilityArray));
+        $systemTable = Doctrine::getTable('System');
         
-        $array = $system->getTable()->getEnumValues('confidentiality');
+        $array = $systemTable->getEnumValues('confidentiality');
         $form->getElement('confidentiality')->addMultiOptions(array_combine($array, $array));
         
-        $array = $system->getTable()->getEnumValues('integrity');
+        $array = $systemTable->getEnumValues('integrity');
         $form->getElement('integrity')->addMultiOptions(array_combine($array, $array));
         
-        $array = $system->getTable()->getEnumValues('availability');
+        $array = $systemTable->getEnumValues('availability');
         $form->getElement('availability')->addMultiOptions(array_combine($array, $array));
         
-        $type = $system->getTable()->getEnumValues('type');
+        $type = $systemTable->getEnumValues('type');
         $form->getElement('type')->addMultiOptions(array_combine($type, $type));
         
         return Fisma_Form_Manager::prepareForm($form);
@@ -153,11 +151,6 @@ class SystemController extends SecurityController
              ->orderBy("$sortBy $order")
              ->limit($this->_paging['count'])
              ->offset($this->_paging['startIndex']);
-        if (!$visibility) {
-            $q->andWhere('s.visibility = ?', 'visible');
-        } else {
-            $q->andWhere('s.visibility = ?', 'hidden');
-        }
 
         if (!empty($value)) {
             $this->_helper->searchQuery($value, 'system');

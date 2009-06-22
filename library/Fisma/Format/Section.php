@@ -12,6 +12,6 @@ class Fisma_Format_Section {
     }
     
     static function stopSection() {
-        print "</div>\n";
+        print "<div class='clear'></div></div>\n";
     }
 }

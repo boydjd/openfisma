@@ -6,7 +6,7 @@
 ; Author    Ryan yang <ryan.yang@reyosoft.com
 ; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
-; Version   $Id:$
+; Version   $Id$
 
 [system]
 method = "post"
@@ -33,16 +33,6 @@ elements.organization_id.options.validators.strlen.options.min = "1"
 elements.organization_id.options.validators.strlen.options.max = "10"
 elements.organization_id.options.required = true
 displayGroups.system.elements.organization_id = "organization_id"
-
-elements.visibility.type = "select"
-elements.visibility.options.label = "Visibility"
-elements.visibility.options.validators.alnum.validator = "NotEmpty"
-elements.visibility.options.validators.strlen.validator = "StringLength"
-elements.visibility.options.validators.strlen.options.min = "1"
-elements.visibility.options.validators.strlen.options.max = "10"
-elements.visibility.options.required = true
-displayGroups.system.elements.visibility = "visibility"
-
 
 elements.type.type = "select"
 elements.type.options.label = "Type"

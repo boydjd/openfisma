@@ -112,7 +112,7 @@ class System extends BaseSystem
     }
     
     /**
-     * Calculate Security categorization.
+     * Calculate FIPS-199 Security categorization.
      *
      * The calculation over enumeration fields {LOW, MODERATE, HIGH} is tricky here. The algorithm 
      * is up to their mapping value, which is decided by the appear consequence in TABLE definition.
@@ -120,7 +120,7 @@ class System extends BaseSystem
      * mapping value: LOW=0, MODERATE=1, HIGH=2. The value calculated is the maximum of C, I, A. And 
      * is transferred back to enumeration name again.
      * 
-     * @return string security_categorization
+     * @return string
      */
     public function fipsSecurityCategory()
     {

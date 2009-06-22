@@ -75,14 +75,14 @@ class UserController extends BaseController
     private function _getProfileForm()
     {
         $form = Fisma_Form_Manager::loadForm('account');
-        $form->removeElement('account');
+        $form->removeElement('username');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
         $form->removeElement('checkAccount');
         $form->removeElement('generate_password');
         $form->removeElement('role');
         $form->removeElement('locked');
-        $form->removeElement('checkboxMatrix');
+        $form->removeElement('organizations');
         return $form;
     }
 

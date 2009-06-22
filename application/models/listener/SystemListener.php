@@ -39,6 +39,16 @@ Class SystemListener extends Doctrine_Record_Listener
     public function preSave(Doctrine_Event $event)
     {
         Doctrine_Manager::connection()->beginTransaction();   
+        
+        $system = $event->getInvoker();
+        $modified = $event->getModified();
+        
+        // Update FIPS 199 categorization
+        if (isset($modified['confidentiality'])
+            || isset($modified['integrity'])
+            || isset($modified['availability'])) {
+            $system->fipsCategory = $system->fipsSecurityCategory();
+        }
     }
 
     /**

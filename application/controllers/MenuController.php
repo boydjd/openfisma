@@ -57,12 +57,7 @@ class MenuController extends SecurityController
             $menubar->add($dashboard);
         }
 
-        if(Fisma_Acl::hasPrivilege('assets', 'read', '*')) {
-            $assets = new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list');
-            $menubar->add($assets);
-        }
-
-        if(Fisma_Acl::hasPrivilege('findings', 'read', '*')) {
+        if (Fisma_Acl::hasPrivilege('findings', 'read', '*')) {
             $findings = new Fisma_Yui_Menu('Findings');
             
             $findings->add(new Fisma_Yui_MenuItem('Summary', '/panel/remediation/sub/summary'));
@@ -84,11 +79,21 @@ class MenuController extends SecurityController
             $menubar->add($findings);
         }
 
-        if(Fisma_Acl::hasPrivilege('areas','reports')) {
+        if (Fisma_Acl::hasPrivilege('systems', 'read')) {
+            $systems = new Fisma_Yui_Menu('System Inventory');
+
+            $systems->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
+            
+            if (Fisma_Acl::hasPrivilege('assets', 'read', '*')) {
+                $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
+            }
+            
+            $menubar->add($systems);
+        }
+        
+        if (Fisma_Acl::hasPrivilege('areas','reports')) {
             $reports = new Fisma_Yui_Menu('Reports');
             
-            //POA&M report should probably be removed. The search feature does all the same things.
-            //$reports->add(new Fisma_Yui_MenuItem('POA&M Report', '/panel/report/sub/poam'));
             $reports->add(new Fisma_Yui_MenuItem('FISMA Report', '/panel/report/sub/fisma'));
             //This section needs a huge overhaul
             //$reports->add(new Fisma_Yui_MenuItem('General Report', '/panel/report/sub/general'));
@@ -99,7 +104,7 @@ class MenuController extends SecurityController
             $menubar->add($reports);
         }
         
-        if(Fisma_Acl::hasPrivilege('areas','admin')) {
+        if (Fisma_Acl::hasPrivilege('areas','admin')) {
             $admin = new Fisma_Yui_Menu('Administration');
             
             if(Fisma_Acl::hasPrivilege('areas', 'configuration')) {
@@ -124,10 +129,6 @@ class MenuController extends SecurityController
 
             if(Fisma_Acl::hasPrivilege('organizations', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/list'));
-            }
-
-            if(Fisma_Acl::hasPrivilege('systems', 'read')) {
-                $admin->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
             }
 
             if(Fisma_Acl::hasPrivilege('users', 'read')) {
