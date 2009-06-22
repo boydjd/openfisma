@@ -42,9 +42,8 @@ class FindingListener extends Doctrine_Record_Listener
     public function preInsert(Doctrine_Event $event)
     {
         $finding = $event->getInvoker();
-        /** @doctrine i found a sql injection */
         $duplicateFinding  = $finding->getTable()
-                                     ->findByDql("description LIKE '%$user->description%'");
+                                     ->findByDql("description LIKE '%?%'", $finding->description);
         if (!empty($duplicateFinding[0])) {
             $finding->DuplicateFinding = $duplicateFinding[0];
             $finding->status           = 'PEND';
@@ -52,7 +51,7 @@ class FindingListener extends Doctrine_Record_Listener
             $finding->status           = 'NEW';
         }
         $finding->CreatedBy       = User::currentUser();
-        $finding->_updateNextDueDate();
+        $finding->updateNextDueDate();
 
         $auditLog              = new AuditLog();
         $auditLog->User        = User::currentUser();

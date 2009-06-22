@@ -159,7 +159,6 @@ class DashboardController extends SecurityController
              ->leftJoin('f.CurrentEvaluation e')
              ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
              ->groupBy('f.status, e.nickname');
-             //echo $q->getSql();die();
         $results = $q->execute();
         
         // initialize 3 basic status

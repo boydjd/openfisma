@@ -87,7 +87,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("The finding can't be submited mitigation strategy");
         }
         $this->status = 'MSA';
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
@@ -105,7 +105,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("The finding can't be revised mitigation strategy");
         }
         $this->status = 'DRAFT';
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $this->CurrentEvaluation = null;
         $this->save();
     }
@@ -160,7 +160,7 @@ class Finding extends BaseFinding
                 break;
         }
         $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $this->save();
         $conn->commit();
     }
@@ -208,7 +208,7 @@ class Finding extends BaseFinding
                 $this->CurrentEvaluation   = null;
                 break;
         }
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $this->save();
         $conn->commit();
     }
@@ -227,7 +227,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("The finding can't be uploaded evidence");
         }
         $this->status = 'EA';
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
@@ -243,7 +243,7 @@ class Finding extends BaseFinding
      * Set the nextduedate when the status has changed except 'CLOSED'
      * @todo why the 'Y-m-d' is a wrong date
      */
-    private function _updateNextDueDate()
+    public function updateNextDueDate()
     {
         if (in_array($this->status, array('PEND', 'CLOSED'))) {
             return;
