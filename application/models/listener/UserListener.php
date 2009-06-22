@@ -43,7 +43,6 @@ class UserListener extends Doctrine_Record_Listener
         if ($user->id == User::currentUser()->id) {
             if ($email || $notifyEmail) {
                 $user->emailValidate = false;
-
                 $emailValidation  = new EmailValidation();
                 $emailValidation->email          = !empty($email) ? $email : $notifyEmail;
                 $emailValidation->validationCode = md5(rand());
@@ -54,7 +53,13 @@ class UserListener extends Doctrine_Record_Listener
             if ($password) {
                 $user->password        = $user->hash($modifyValues['password']);
                 $user->passwordTs      = Zend_Date::now()->toString('Y-m-d H:i:s');
-                $user->passwordHistory = $user->generatePwdHistory();
+                // Generate user's password history
+                $pwdHistory = $user->passwordHistory;
+                if (3 == substr_count($pwdHistory, ':')) {
+                    $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
+                }
+                $user->passwordHistory = ':' . $user->password . $pwdHistory;
+
                 /** @todo english */
                 $user->log("Password changed");
             }
@@ -82,4 +87,5 @@ class UserListener extends Doctrine_Record_Listener
         Notification::notify(Notification::ACCOUNT_DELETED, $user, User::currentUser());
         Fisma_Lucene::deleteIndex('account', $user->id);
     }    
+
 }
