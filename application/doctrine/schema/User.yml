@@ -8,7 +8,7 @@ User:
         username: 
             type: string(255)
             unique: true
-            comment: TESTING USERNAME COMMENTS
+            comment: This users unique authentication credential
         password: string(255)
         passwordTs: timestamp
         passwordHistory: string
@@ -78,7 +78,7 @@ User:
         notifyEmail:
             type: string(255)
             email: true
-
+            
     relations:
         # Roles is a many-to-many relation
         Roles:
