@@ -71,11 +71,11 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      *
      * @return boolean Always returns true
      */
-    function isValid($dataItem) {
-        $this->_defaults = $dataItem;
+    function isValid($value, $context=null) {
+        $this->setValue($value);
         return true;
     }
-
+    
     /**
      * render() - Renders the checkbox matrix into a table.
      *
@@ -98,7 +98,7 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
 
         // Render the checkbox matrix as a table, filling out the columns
         // top to bottom then left to right
-        $groupName = $this->getLabel();
+        $groupName = $this->getName();
         $render .= "<tr class='fisma_checkboxes'>"
                  . "<td colspan='2' style=\"text-align:left\">"
                  . ucfirst($this->getLabel())
@@ -106,8 +106,7 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
         $render .= "<tr><td colspan='2'><ul class='treelist'>";
         foreach ($this->_checkboxes as $checkbox) {
             $render .= "<li style=\"padding-left:".(2*$checkbox['level'])."em\">";
-            $checked = in_array($checkbox['name'], $this->_defaults)
-                       ? ' checked=\'checked\'' : '';
+            $checked = in_array($checkbox['name'], $this->_defaults) ? ' checked=\'checked\'' : '';
             $render .= "<input type='checkbox'"
                      . " id =\"{$groupName}[{$checkbox['name']}]\""
                      . " name=\"{$groupName}[]\""
