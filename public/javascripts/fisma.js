@@ -129,19 +129,27 @@ var readyFunc = function () {
         var options = YAHOO.util.Selector.query('#availableEvents option');
         for (var i = 0; i < options.length; i ++) {
             if (options[i].selected == true) {
-                document.getElementById('enableEvents').appendChild(options[i]);
+                document.getElementById('existEvents').appendChild(options[i]);
             }
         }
     });
     //
     YAHOO.util.Event.on('removeNotificationEvents', 'click', function (){
-        var options = YAHOO.util.Selector.query('#enableEvents option');
+        var options = YAHOO.util.Selector.query('#existEvents option');
         for (var i = 0; i < options.length; i ++) {
             if (options[i].selected == true) {
                 document.getElementById('availableEvents').appendChild(options[i]);
             }
         }
     });
+
+    YAHOO.util.Event.on('event_form', 'submit', function (){
+        var options = YAHOO.util.Selector.query('#existEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            options[i].selected = true;
+        }
+    });
+
     //
     YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=assign_right]'), 'submit', 
     function (){

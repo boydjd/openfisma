@@ -36,9 +36,10 @@ class Fisma_Mail extends Zend_Mail
      * Validate the user's e-mail change.
      *
      * @param object @user User
+     * @param string $email the email need to validate
      * @return true|false
      */
-    public function validateEmail($user)
+    public function validateEmail($user, $email)
     {
         $this->setFrom(Configuration::getConfig('sender'), Configuration::getConfig('system_name'));
         $this->addTo($email);

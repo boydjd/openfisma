@@ -14,6 +14,6 @@ Event:
         # Users is a many-to-many relation
         Users:
             class: User
-            local: id
+            local: eventId
             foreign: userId
             refClass: UserEvent

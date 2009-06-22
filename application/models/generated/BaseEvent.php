@@ -11,7 +11,6 @@
  * @property Doctrine_Collection $Users
  * @property Doctrine_Collection $Evaluations
  * @property Doctrine_Collection $Notifications
- * @property Doctrine_Collection $User
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -33,7 +32,7 @@ abstract class BaseEvent extends Doctrine_Record
                                          'foreign' => 'id'));
 
         $this->hasMany('User as Users', array('refClass' => 'UserEvent',
-                                              'local' => 'id',
+                                              'local' => 'eventId',
                                               'foreign' => 'userId'));
 
         $this->hasMany('Evaluation as Evaluations', array('local' => 'id',
@@ -41,9 +40,5 @@ abstract class BaseEvent extends Doctrine_Record
 
         $this->hasMany('Notification as Notifications', array('local' => 'id',
                                                               'foreign' => 'eventId'));
-
-        $this->hasMany('User', array('refClass' => 'UserEvent',
-                                     'local' => 'eventId',
-                                     'foreign' => 'id'));
     }
 }

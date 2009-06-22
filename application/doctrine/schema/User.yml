@@ -97,7 +97,7 @@ User:
         # Events is a many-to-many relation
         Events:
             class: Event
-            local: id
+            local: userId
             foreign: eventId
             refClass: UserEvent
 

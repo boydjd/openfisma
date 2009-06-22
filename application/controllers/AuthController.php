@@ -208,69 +208,6 @@ class AuthController extends MessageController
     }
 
     /**
-     * notificationsAction() - Display the user's "Edit Profile" page.
-     *
-     * @todo Cleanup this method: comments and formatting
-     */
-    public function notificationsAction()
-    {
-        // assign notification events
-        $event = new Event();
-
-        $ret = $this->_user->find($this->_me->id);
-        $this->view->notify_frequency = $ret->current()->notify_frequency;
-        $this->view->notify_email = $ret->current()->notify_email;
-        $allEvent = $event->getUserAllEvents($this->_me->id);
-        $enabledEvent = $event->getEnabledEvents($this->_me->id);
-
-        $this->view->availableList = array_diff($allEvent, $enabledEvent);
-        $this->view->enableList = array_intersect($allEvent, $enabledEvent);
-    }
-
-    /**
-     * savenotifyAction() - Handle any edits to a user's notification settings.
-     *
-     * @todo Cleanup this method: comments and formatting
-     * @todo This method is named incorrectly
-     */
-    public function savenotifyAction()
-    {
-        $event = new Event();
-        $data = $this->_request->getPost();
-        $row = $this->_user->find($this->_me->id);
-        $originalEmail = $row->current()->notify_email;
-
-        if (!isset($data['enableEvents'])) {
-            $data['enableEvents'] = array();
-        }
-        $event->saveEnabledEvents($this->_me->id, $data['enableEvents']);
-        $notifyData = array('notify_frequency' => $data['notify_frequency'],
-        'notify_email' => $data['notify_email']);
-        $ret = $this->_user->update($notifyData, "id = " . $this->_me->id);
-        if ($ret > 0 || 0 == $ret) {
-            $msg = "Notification events modified successfully.";
-            $model = self::M_NOTICE;
-        } else {
-            $msg = "Failed to update the notification events.";
-            $model = self::M_WARNING;
-        }
-
-
-        if ($originalEmail != $data['notify_email'] && $data['notify_email'] != '') {
-            $this->_user
-            ->update(array('email_validate'=>0), 'id = ' . $this->_me->id);
-            $result = $this->emailvalidate($this->_me->id, $data['notify_email'], 'update');
-            if (true == $result) {
-                $msg .= self::VALIDATION_MESSAGE;
-            }
-        }
-
-        $this->view->setScriptPath(Fisma::getPath('application') . '/views/scripts');
-        $this->message($msg, $model);
-        $this->_forward('notifications');
-    }
-
-    /**
      * privacyAction() - Display the system's privacy policy.
      *
      * @todo the business logic is stored in the view instead of the controller

@@ -18,8 +18,8 @@ abstract class BaseUserEvent extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->setTableName('user_event');
-        $this->hasColumn('userId', 'integer', null, array('type' => 'integer'));
-        $this->hasColumn('eventId', 'integer', null, array('type' => 'integer'));
+        $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'primary' => true));
+        $this->hasColumn('eventId', 'integer', null, array('type' => 'integer', 'primary' => true));
     }
 
 }

@@ -224,6 +224,8 @@ class User extends BaseUser
 
     /**
      * Validate the user's e-mail change.
+     * @todo an user has multiple emails(email, notifyEmail), current database can't give the correct 
+     * way to show which email is validated
      * 
      * @param string $validateCode validate code
      * @return bool
@@ -382,7 +384,7 @@ class User extends BaseUser
      *
      * @return string user's history password
      */
-    private function _generatePwdHistory()
+    public function generatePwdHistory()
     {
         $pwdHistory = $this->passwordHistory;
         if (3 == substr_count($pwdHistory, ':')) {

@@ -34,66 +34,52 @@ class UserListener extends Doctrine_Record_Listener
     {
         $user = $event->getInvoker();
         
-        Doctrine_Manager::connection()->beginTransaction();
-
         $modifyValues = $user->getModified();
-        if (array_key_exists('email', $modifyValues)) {
-            $user->emailValidate = false;
-            $emailValidation     = new EmailValidation();
-            $emailValidation->email          = $modifyValues['email'];
-            $emailValidation->validationCode = md5(rand());
-            $emailValidation->User           = $user;
-            $user->EmailValidation[]         = $emailValidation;
+        if (empty($modifyValues)) {
+            return;
         }
+        extract($modifyValues);
 
-        if (array_key_exists('password', $modifyValues)) {
-            $user->password        = $user->hash($modifyValues['password']);
-            $user->passwordTs      = Zend_Date::now()->toString('Y-m-d H:i:s');
-            $user->passwordHistory = $user->_generatePwdHistory();
+        if ($user->id == User::currentUser()->id) {
+            if ($email || $notifyEmail) {
+                $user->emailValidate = false;
 
-            if ($user->id == $user->currentUser()->id) {
-                /** @todo english  also see follow */
+                $emailValidation  = new EmailValidation();
+                $emailValidation->email          = !empty($email) ? $email : $notifyEmail;
+                $emailValidation->validationCode = md5(rand());
+                $emailValidation->User           = $user;
+                $user->EmailValidation[]         = $emailValidation;
+            }
+
+            if ($password) {
+                $user->password        = $user->hash($modifyValues['password']);
+                $user->passwordTs      = Zend_Date::now()->toString('Y-m-d H:i:s');
+                $user->passwordHistory = $user->generatePwdHistory();
+                /** @todo english */
                 $user->log("Password changed");
             }
-        } else {
-            if ($user->id == $user->currentUser()->id && !empty($modifyValues)) {
-                $user->log("Profile changed");
-            }
+
         }
     }
     
-    public function preDelete(Doctrine_Event $event)
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
     public function postInsert(Doctrine_Event $event)
     {
         $user = $event->getInvoker();
-        
         Notification::notify(Notification::ACCOUNT_CREATED, $user, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('account', $user);
     }
 
     public function postUpdate(Doctrine_Event $event)
     {
         $user = $event->getInvoker();
-        
         Notification::notify(Notification::ACCOUNT_MODIFIED, $user, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('account', $user);
     }
 
     public function postDelete(Doctrine_Event $event)
     {
         $user = $event->getInvoker();
-        
         Notification::notify(Notification::ACCOUNT_DELETED, $user, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::deleteIndex('account', $user->id);
     }    
 }

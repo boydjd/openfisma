@@ -1,4 +1,8 @@
 UserEvent:
     columns:
-        userId: integer
-        eventId: integer
+        userId:
+            type: integer
+            primary: true
+        eventId:
+            type: integer
+            primary: true

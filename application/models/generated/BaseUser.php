@@ -39,7 +39,6 @@
  * @property Doctrine_Collection $AuditLogs
  * @property Doctrine_Collection $Comments
  * @property Doctrine_Collection $EmailValidation
- * @property Doctrine_Collection $Event
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Findings
  * @property Doctrine_Collection $FindingEvaluations
@@ -96,7 +95,7 @@ abstract class BaseUser extends Doctrine_Record
                                                               'foreign' => 'organizationId'));
 
         $this->hasMany('Event as Events', array('refClass' => 'UserEvent',
-                                                'local' => 'id',
+                                                'local' => 'userId',
                                                 'foreign' => 'eventId'));
 
         $this->hasMany('AccountLog as AccountLogs', array('local' => 'id',
@@ -110,10 +109,6 @@ abstract class BaseUser extends Doctrine_Record
 
         $this->hasMany('EmailValidation', array('local' => 'id',
                                                 'foreign' => 'userId'));
-
-        $this->hasMany('Event', array('refClass' => 'UserEvent',
-                                      'local' => 'userId',
-                                      'foreign' => 'id'));
 
         $this->hasMany('Evidence', array('local' => 'id',
                                          'foreign' => 'userId'));

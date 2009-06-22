@@ -150,11 +150,6 @@ class UserController extends BaseController
                     $user->save();
                     $message = "Your profile modified successfully."; 
                     $model   = self::M_NOTICE;
-
-                    if (array_key_exists('email', $post)) {
-                        $mail = new Fisma_Mail();
-                        $mail->validateEmail($this->_me);
-                    }
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $message = $e->getMessage();
@@ -225,11 +220,22 @@ class UserController extends BaseController
 
             $postEvents = $this->_request->getPost('existEvents');
             try {
+                Doctrine_Manager::connection()->beginTransaction();
+                $modifyValues = $user->getModified();
+
                 $user->unlink('Events');
                 $user->link('Events', $postEvents);
                 $user->save();
+                Doctrine_Manager::connection()->commit();
+
                 /** @todo english */
                 $message = "Notification events modified successfully.";
+                if ($modifyValues['notifyEmail']) {
+                    $mail = new Fisma_Mail();
+                    $mail->validateEmail($user, $modifyValues['notifyEmail']);
+                    $message .= " And a validation email has sent to your new notify email, " . 
+                        "you will not receive the follow events notifications until you validate it.";
+                }
                 $model   = self::M_NOTICE;
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
