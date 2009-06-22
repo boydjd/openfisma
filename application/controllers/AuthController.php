@@ -130,7 +130,7 @@ class AuthController extends MessageController
             // Check whether the user's password is about to expire (for database authentication only)
             if ('database' == Configuration::getConfig('auth_type')) {
                 $passWarningPeriod = Configuration::getConfig('pass_warning');
-                $passWarningTs = new Zend_Date($user->passwordTs);
+                $passWarningTs = new Zend_Date($user->passwordTs, 'Y-m-d');
                 $passWarningTs->add($passExpirePeriod - $passWarningPeriod, Zend_Date::DAY);
                 $now = Zend_Date::now();
                 if ($now->isLater($passWarningTs)) {
@@ -139,8 +139,8 @@ class AuthController extends MessageController
                                . " you should change it now.";
                     $this->message($message, self::M_WARNING);
                     // redirect back to password change action
-                    $this->_helper->_actionStack('header', 'Panel');
-                    $this->_forward('password');
+                    $this->_forward('user', 'Panel', null, array('sub'=>'password'));
+                    return;
                 }
             }
             
@@ -150,7 +150,8 @@ class AuthController extends MessageController
                          . ' You will need to change your password in order to upgrade your account.';
                 $this->message($message, self::M_WARNING);
                 $this->_helper->_actionStack('header', 'Panel');
-                $this->_forward('password');
+                $this->_forward('user', 'Panel', null, array('sub'=>'password'));
+                return;
             }
             
             // Check to see if the user needs to review the rules of behavior.

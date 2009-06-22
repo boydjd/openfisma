@@ -188,9 +188,9 @@ class UserController extends BaseController
         $form = Fisma_Form_Manager::prepareForm($form);
 
         $this->view->requirements =  $this->_getPasswordRequirements();
+        $post   = $this->_request->getPost();
 
-        if ($this->_request->isPost()) {
-            $post   = $this->_request->getPost();
+        if ($post['oldPassword']) {
             $form->getElement('oldPassword')->addValidator(new Fisma_Form_Validator_PasswdMatch());
             $form->getElement('newPassword')->addValidator(new Fisma_Form_Validator_Password());
 
