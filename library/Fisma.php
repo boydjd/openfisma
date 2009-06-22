@@ -193,6 +193,9 @@ class Fisma
         foreach (self::$_appConf->php as $param => $value) {
             ini_set($param, $value);
         }
+        foreach (self::$_appConf->xdebug as $param => $value) {
+            ini_set("xdebug.$param", $value);
+        }
         
         // Set up session configuration
         Zend_Session::setOptions(self::$_appConf->session->toArray());

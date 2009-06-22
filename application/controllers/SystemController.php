@@ -144,13 +144,14 @@ class SystemController extends SecurityController
         }
         
         $q = Doctrine_Query::create()
-             ->select('o.*, s.*')
+             ->select('o.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
              ->from('Organization o')
              ->leftJoin('o.System s')
              ->where('o.orgType = ?', 'system')
              ->orderBy("$sortBy $order")
              ->limit($this->_paging['count'])
-             ->offset($this->_paging['startIndex']);
+             ->offset($this->_paging['startIndex'])
+             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         if (!empty($value)) {
             $this->_helper->searchQuery($value, 'system');
@@ -166,34 +167,17 @@ class SystemController extends SecurityController
 
         $totalRecords = $q->count();
         $organizations = $q->execute();
-        $orgArray = array();
-        $i = 0;
-        foreach ($organizations as $organization) {
-            $orgArray[$i] = $organization->toArray();
-            foreach($organization->System as $k => $v) {
-                if ($v instanceof Doctrine_Null) {
-                    $v = '';
-                }
-                $orgArray[$i][$k] = $v;
-            }
-            if ($parent = $organization->getNode()->getParent()) {
-                $orgArray[$i]['organization'] = $parent->name;
-            } else {
-                $orgArray[$i]['organization'] = '';
-            }
-            $i ++;
-        }
-        
+
         $tableData = array('table' => array(
-            'recordsReturned' => count($orgArray),
+            'recordsReturned' => count($organizations),
             'totalRecords' => $totalRecords,
             'startIndex' => $this->_paging['startIndex'],
             'sort' => $sortBy,
             'dir' => $order,
             'pageSize' => $this->_paging['count'],
-            'records' => $orgArray
+            'records' => $organizations
         ));
-        
+
         echo json_encode($tableData);
     }
     
@@ -302,21 +286,17 @@ class SystemController extends SecurityController
         $this->searchbox();
         
         $form = $this->_getSystemForm();
-        $id = $this->_request->getParam('id', 0);
+        $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'view');
 
-        $systemObj = Doctrine::getTable('Organization')->find($id)->System;
-        if (!$systemObj) {
-            /** 
-             * @todo english 
-             */
-            throw new Fisma_Exception('The system is not existed.');
+        $organization = Doctrine::getTable('Organization')->find($id);
+        if (!$organization) {
+            throw new Fisma_Exception("Invalid organizationd ID: '$id'");
         } else {
-            $system = $systemObj->toArray();
-            $system['name'] = $systemObj->Organization[0]->name;
-            $system['nickname'] = $systemObj->Organization[0]->nickname;
-            $system['organization_id'] = $systemObj->Organization[0]->getNode()->getParent()->id;
-            $system['description'] = $systemObj->Organization[0]->description;
+            $system = array();
+            $system['name'] = $organization->name;
+            $system['nickname'] = $organization->nickname;
+            $system['description'] = $organization->description;
         }
         
         if ($v == 'edit') {

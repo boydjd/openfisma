@@ -60,3 +60,4 @@ php.display_errors = false
 debug = true
 
 php.display_errors = true
+xdebug.var_display_max_depth = 3

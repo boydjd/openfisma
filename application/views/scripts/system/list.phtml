@@ -3,21 +3,21 @@
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"id", label:"id",hidden: true}
-    ,{key:"name", label:"System Name", sortable: true, hidden: false}
-    ,{key:"nickname", label:"Acronym", sortable: true, hidden: false}
-    ,{key:"type", label:"Type", sortable: true, hidden: false}
-    ,{key:"organization", label:"Organization", sortable: true, hidden: false}
-    ,{key:"confidentiality", label:"Confidentiality", sortable: true, hidden: false}
-    ,{key:"integrity", label:"Integrity", sortable: true, hidden: false}
-    ,{key:"availability", label:"Availability", sortable: true, hidden: false}
+    {key:"o_id", label:"id",hidden: true}
+    ,{key:"o_name", label:"System Name", sortable: true, hidden: false}
+    ,{key:"o_nickname", label:"Acronym", sortable: true, hidden: false}
+    ,{key:"s_type", label:"Application Type", sortable: true, hidden: false}
+    ,{key:"s_confidentiality", label:"Confidentiality", sortable: true, hidden: false}
+    ,{key:"s_integrity", label:"Integrity", sortable: true, hidden: false}
+    ,{key:"s_availability", label:"Availability", sortable: true, hidden: false}
+    ,{key:"s_fipsCategory", label:"FIPS-199 Categorization", sortable: true, hidden: false}
 ];
 
     // A function which builds the query string
     var myRequestBuilder = function(oState, oSelf) {
         // Get states or use defaults
         oState = oState || {pagination:null, sortedBy:null};
-        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "o_id";
         var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
         var startIndex = oState.pagination.recordOffset;
         var count = oState.pagination.rowsPerPage;
@@ -44,7 +44,7 @@ var myColumnDefs = [
     var myConfigs = {
         initialRequest: "<?php echo $this->link; ?>/sortby/name/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
         dynamicData: true, 
-        sortedBy : {key:"name", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        sortedBy : {key:"o_name", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
             {
                 rowsPerPage:<?php echo $this->pageInfo['count']?>,
@@ -75,7 +75,7 @@ var myColumnDefs = [
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/system/sub/view/v/view/id/" + oRecord.getData("id");
+            document.location = "/panel/system/sub/view/v/view/id/" + oRecord.getData("o_ id");
         }
     );
     <?php }?>
