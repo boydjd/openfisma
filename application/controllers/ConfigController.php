@@ -93,13 +93,13 @@ class ConfigController extends SecurityController
                     $values = $form->getValues();
                     //array_intersect_key requires PHP > 5.1.0
                     $validVals = array(
-                        Config::SYSTEM_NAME =>0,
-                        Config::MAX_ABSENT  =>0,
-                        Config::AUTH_TYPE   =>0,
-                        Config::EXPIRING_TS =>0,
-                        Config::USE_NOTIFICATION =>0,
-                        Config::BEHAVIOR_RULE =>0,
-                        Config::ROB_DURATION  =>0
+                        Configuration::SYSTEM_NAME =>0,
+                        Configuration::MAX_ABSENT  =>0,
+                        Configuration::AUTH_TYPE   =>0,
+                        Configuration::EXPIRING_TS =>0,
+                        Configuration::USE_NOTIFICATION =>0,
+                        Configuration::BEHAVIOR_RULE =>0,
+                        Configuration::ROB_DURATION  =>0
                     );
 
                     $values = array_intersect_key($values, $validVals);
@@ -313,7 +313,6 @@ class ConfigController extends SecurityController
                     unset($data['reset']);
                     unset($data['submit']);
                     foreach ($data as $k => $v) {
-                        echo $k;
                         $config = Doctrine::getTable('Configuration')->findOneByName($k);
                         $config->value = $v;
                         $config->save();
@@ -385,7 +384,7 @@ class ConfigController extends SecurityController
                     unset($values['reset']);
                     unset($values['submit']);
                     foreach ($values as $k => $v) {
-                        if ($k == Config::UNLOCK_DURATION) {
+                        if ($k == Configuration::UNLOCK_DURATION) {
                             $v *=  60;//Convert to sencond
                         }
                         $config = Doctrine::getTable('Configuration')->findOneByName($k);
