@@ -232,9 +232,9 @@ class User extends BaseUser
      */
     public function validateEmail($validateCode)
     {
-        if ($validateCode == $this->EmailValidation[0]->validationCode) {
+        if ($validateCode == $this->EmailValidation->getLast()->validationCode) {
             $this->emailValidate = true;
-            $this->EmailValidation[0]->delete();
+            $this->EmailValidation->getLast()->delete();
             $this->save();
             //@todo english,aslo see the follow
             $this->log('Email validate successfully');
