@@ -232,7 +232,7 @@ class FindingController extends BaseController
         } else {
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
-                Zend_Registry::get('db')->beginTransaction();
+                Doctrine_Manager::connection()->beginTransaction();
                 
                 // get upload path
                 $path = Fisma::getPath('data') . '/uploads/spreadsheet/';
@@ -244,12 +244,10 @@ class FindingController extends BaseController
                 // define new file name
                 $newName = str_replace($originalName, $originalName . $dateTime, $file['name']);
                 // organize upload data
-                $data = array('user_id' => $this->_me->id,
-                              'upload_ts' => date('YmdHis', $ts),
-                              'filename' => $newName);
-                $this->_poam->getAdapter()->insert('uploads', $data);
-                // get the upload id
-                $uploadId = $this->_poam->getAdapter()->lastInsertId();
+                $upload = new Upload();
+                $upload->userId = $this->_me->id;
+                $upload->fileName = $newName;
+                $upload->save();
 
                 $injectExcel = new Fisma_Inject_Excel();
                 if (!empty($injectExcel->_findingIds)
@@ -259,79 +257,19 @@ class FindingController extends BaseController
                     }
                 }
 
-                $rowsProcessed = $injectExcel->inject($file['tmp_name'], $uploadId);
+                $rowsProcessed = $injectExcel->inject($file['tmp_name'], $upload->id);
                 // upload file after the file parsed
                 move_uploaded_file($file['tmp_name'], $path . $newName);
                 
-                Zend_Registry::get('db')->commit();
+                Doctrine_Manager::connection()->commit();
                 $this->message("$rowsProcessed findings were created.", self::M_NOTICE);
             } catch (Fisma_Exception_InvalidFileFormat $e) {
-                Zend_Registry::get('db')->rollback();
+                Doctrine_Manager::connection()->rollback();
                 $this->message("The file cannot be processed due to an error.<br>{$e->getMessage()}",
                                self::M_WARNING);
             }
         }
         $this->render();
-    }
-
-    /**
-     * Saves information for a newly created finding
-     */
-    public function saveAction()
-    {
-        Fisma_Acl::requirePrivilege('finding', 'create');
-        $form = $this->getFindingForm();
-        $poam = $this->_request->getPost();
-
-        $formValid = $form->isValid($poam);
-        if ($formValid) {
-            unset($poam['name'], $poam['ip'], $poam['port'], $poam['save'], $poam['search_asset']);
-            if ($poam['blscr_id'] == '0') {
-                unset($poam['blscr_id']);
-            }
-
-            $asset = new Asset();
-            $ret = $asset->find($poam['asset_id']);
-            $poam['system_id'] = $ret->current()->system_id;
-
-            $poam['status'] = 'NEW';
-            $discoverTs = new Zend_Date($poam['discover_ts'], 'Y-m-d');
-            $poam['discover_ts'] = $discoverTs->toString("Y-m-d");
-            $poam['create_ts'] = self::$now->toString('Y-m-d H:i:s');
-            $poam['created_by'] = $this->_me->id;
-            $poamId = $this->_poam->insert($poam);
-            if ($poamId > 0) {
-                $this->_notification->add(Notification::FINDING_CREATED, $this->_me->account, $poamId);
-                //Create finding lucene index
-                if (is_dir(Fisma::getPath('data') . '/index/finding/')) {
-                    $system = new System();
-                    $source = new Source();
-                    $asset = new Asset();
-                    $ret = $system->find($poam['system_id'])->current();
-                    if (!empty($ret)) {
-                        $indexData['system'] = $ret->name . ' ' . $ret->nickname;
-                    }
-                    $ret = $source->find($poam['source_id'])->current();
-                    if (!empty($ret)) {
-                        $indexData['source'] = $ret->name . ' ' . $ret->nickname;
-                    }
-                    $ret = $asset->find($poam['asset_id'])->current();
-                    if (!empty($ret)) {
-                        $indexData['asset'] = $ret->name;
-                    }
-                    $indexData['finding_data'] = $poam['finding_data'];
-                    $indexData['action_suggested'] = $poam['action_suggested'];
-                    $this->_helper->updateIndex('finding', $poamId, $indexData);
-                }
-                $message = "Finding created successfully";
-                $model = self::M_NOTICE;
-                $this->message($message, $model);
-            }
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            $this->message("Unable to create finding:<br>$errorString", self::M_WARNING);
-        }
-        $this->_forward('create');
     }
 
     /**
@@ -400,7 +338,7 @@ class FindingController extends BaseController
             $this->_myOrgSystems;
             $this->view->systems = array();
             foreach ($this->_myOrgSystems as $orgSystem) {
-                $this->view->systems[] = $orgSystem['nickname'];
+                $this->view->systems[$orgSystem['id']] = $orgSystem['nickname'];
             }
             if (count($this->view->systems) == 0) {
                 throw new Fisma_Exception(
@@ -411,7 +349,7 @@ class FindingController extends BaseController
             $networks = Doctrine::getTable('Network')->findAll()->toArray();
             $this->view->networks = array();
             foreach ($networks as $network) {
-                $this->view->networks[] = $network['nickname'];
+                $this->view->networks[$network['id']] = $network['nickname'];
             }
             if (count($this->view->networks) == 0) {
                  throw new Fisma_Exception("The spreadsheet template can not be
@@ -421,7 +359,7 @@ class FindingController extends BaseController
             $sources = Doctrine::getTable('Source')->findAll()->toArray();
             $this->view->sources = array();
             foreach ($sources as $source) {
-                $this->view->sources[] = $source['nickname'];
+                $this->view->sources[$source['id']] = $source['nickname'];
             }
             if (count($this->view->sources) == 0) {
                  throw new Fisma_Exception("The spreadsheet template can
@@ -432,7 +370,7 @@ class FindingController extends BaseController
             $securityControls = Doctrine::getTable('SecurityControl')->findAll()->toArray();
             $this->view->securityControls = array();
             foreach ($securityControls as $securityControl) {
-                $this->view->securityControls[] = $securityControl['code'];
+                $this->view->securityControls[$securityControl['id']] = $securityControl['code'];
             }
             if (count($this->view->securityControls) == 0) {
                  throw new Fisma_Exception('The spreadsheet template can not be ' .
@@ -476,14 +414,14 @@ class FindingController extends BaseController
         $plugins = Doctrine::getTable('Plugin')->findAll()->toArray();
         $pluginList = array();
         foreach ($plugins as $plugin) {
-            $pluginList[] = $plugin['name'];
+            $pluginList[$plugin['id']] = $plugin['name'];
         }
         $uploadForm->plugin->addMultiOptions($pluginList);
         
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
         $sourceList = array();
         foreach ($sources as $source) {
-            $sourceList[] = $source['nickname'] . ' - ' . $source['name'];
+            $sourceList[$source['id']] = $source['nickname'] . ' - ' . $source['name'];
         }
         $uploadForm->findingSource->addMultiOption('', '');
         $uploadForm->findingSource->addMultiOptions($sourceList);
@@ -491,7 +429,7 @@ class FindingController extends BaseController
         $orgSystems = $this->_me->getOrgSystems()->toArray();
         $orgSystemList = array();
         foreach ($orgSystems as $orgSystem) {
-            $orgSystemList[] = $orgSystem['nickname'] . ' - ' . $orgSystem['name'];
+            $orgSystemList[$orgSystem['id']] = $orgSystem['nickname'] . ' - ' . $orgSystem['name'];
         }
         $uploadForm->system->addMultiOption('', '');
         $uploadForm->system->addMultiOptions($orgSystemList);
@@ -499,7 +437,7 @@ class FindingController extends BaseController
         $networks = Doctrine::getTable('Network')->findAll()->toArray();
         $networkList = array();
         foreach ($networks as $network) {
-            $networkList[] = $network['nickname'] . ' - ' . $network['name'];
+            $networkList[$network['id']] = $network['nickname'] . ' - ' . $network['name'];
         }
         $uploadForm->network->addMultiOption('', '');
         $uploadForm->network->addMultiOptions($networkList);
@@ -514,23 +452,24 @@ class FindingController extends BaseController
         // Handle the file upload, if necessary
         $fileReceived = false;
         $postValues = $this->_request->getPost();
-
-        if (isset($_POST['upload'])) {
+        if ($postValues) {
             if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
+                $values = $uploadForm->getValues();
+                
                 // Get information about the plugin, and then create a new instance of the plugin.
-                $pluginTable = new Plugin();
-                $pluginInfo = $plugin->find($postValues['plugin'])->getRow(0);
-                $pluginClass = 'Fisma_' . $pluginInfo->class;
-                $pluginName = $pluginInfo->name;
+                $pluginTbl = new Plugin();
+                $pluginTbl = $pluginTbl->getTable('Plugin')->find($values['plugin']);
+                $pluginClass = $pluginTbl->class;
+                $pluginName = $pluginTbl->name;
                 $plugin = new $pluginClass($filePath,
-                                           $postValues['network'],
-                                           $postValues['system'],
-                                           $postValues['findingSource']);
-
+                                           $values['network'],
+                                           $values['system'],
+                                           $values['findingSource']);
+                
                 // Execute the plugin with the received file
                 try {
-                    Zend_Registry::get('db')->beginTransaction();
+                    Doctrine_Manager::connection()->beginTransaction();
                     // get original file name
                     $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
                     // get current time and set to a format like '_2009-05-04_11_22_02'
@@ -539,14 +478,13 @@ class FindingController extends BaseController
                     // define new file name
                     $newName = str_replace($originalName, $originalName . $dateTime, basename($filePath));
                     // organize upload data
-                    $data = array('user_id' => $this->_me->id,
-                                  'upload_ts' => date('YmdHis', $ts),
-                                  'filename' => $newName);
-                    $this->_poam->getAdapter()->insert('uploads', $data);
-                    // get the upload id
-                    $uploadId = $this->_poam->getAdapter()->lastInsertId();
+                    $upload = new Upload();
+                    $upload->userId = $this->_me->id;
+                    $upload->fileName = $newName;
+                    $upload->save();
+                    
                     // parse the file
-                    $plugin->parse($uploadId);
+                    $plugin->parse($upload->id);
                     // rename the file by ts
                     rename($filePath, dirname($filePath) . '/' . $newName);
 
@@ -561,11 +499,11 @@ class FindingController extends BaseController
                                    . "{$plugin->reviewed} findings need review.<br>"
                                    . "{$plugin->deleted} findings were suppressed.",
                                    self::M_NOTICE);
-                    Zend_Registry::get('db')->commit();
+                    Doctrine_Manager::connection()->commit();
                 } catch (Fisma_Exception_InvalidFileFormat $e) {
                     $this->message("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
                                    self::M_WARNING);
-                    Zend_Registry::get('db')->rollback();
+                    Doctrine_Manager::connection()->rollback();
                 }
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($uploadForm);

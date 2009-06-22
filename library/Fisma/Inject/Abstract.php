@@ -36,13 +36,8 @@ abstract class Fisma_Inject_Abstract
 {
     protected $_file;
     protected $_networkId;
-    protected $_systemId;
+    protected $_orgSystemId;
     protected $_findingSourceId;
-
-	/**
-	 * insert finding ids
-	 */
-	public $_findingIds = array();
     
     private $_totalFindings = array('created' => 0,
                                     'deleted' => 0,
@@ -68,7 +63,7 @@ abstract class Fisma_Inject_Abstract
     {
         $this->_file = $file;
         $this->_networkId = $networkId;
-        $this->_systemId = $systemId;
+        $this->_orgSystemId = $systemId;
         $this->_findingSourceId = $findingSourceId;
     }
 
@@ -84,35 +79,22 @@ abstract class Fisma_Inject_Abstract
      * action was taken.
      */
     protected function _commit($finding) {
-        static $findingTable;
-        static $db;
-        
-        // Get static references to the finding table and db handle
-        if (!isset($findingTable)) {
-            $findingTable = new Finding();
-            $db = $findingTable->getAdapter();
-        }
+        $findingTable = new Finding();
         
         // See if any existing finding contains the same finding description as this finding.
-        $findingData = $db->quote($finding['finding_data']);
-        $result = $db->fetchRow("SELECT id,
-                                        system_id,
-                                        type,
-                                        status
-                                   FROM poams
-                                  WHERE finding_data LIKE $findingData
-                               ORDER BY id");
+        $result = $findingTable->getTable('Finding')->findOneByDescription($finding['description']);
 
         // Decide what action to take with this finding: 1) create 2) delete 3) review
         $action = null;
-        if (is_array($result)) {
+        if ($result) {
             // Assign the duplicate id to the current finding
-            $finding['duplicate_poam_id'] = $result['id'];
+            $finding['duplicateFindingId'] = $result->id;
             
             // If a duplicate exists, then run the Injection Filtering rules
-            if ($result['type'] == 'NONE' || $result['type'] == 'CAP' || $result['type'] == 'FP') {
-                if ($result['system_id'] == $finding['system_id']) {
-                    if ($result['status'] == 'CLOSED') {
+            $types = $findingTable->getTable('Finding')->getEnumValues('type');
+            if (in_array($result->type, $types)) {
+                if ($result->systemId == $finding['systemId']) {
+                    if ($result->status == 'CLOSED') {
                         $action = self::CREATE_FINDING;
                     } else {
                         $action = self::DELETE_FINDING;
@@ -120,26 +102,27 @@ abstract class Fisma_Inject_Abstract
                 } else {
                     $action = self::REVIEW_FINDING;
                 }
-            } elseif ($result['type'] == 'AR') {
-                if ($result['system_id'] == $finding['system_id']) {
+            } elseif ($result->type == 'AR') {
+                if ($result->systemId == $finding['systemId']) {
                     $action = self::DELETE_FINDING;
                 } else {
                     $action = self::REVIEW_FINDING;
                 }
             } else {
-                throw new Fisma_Exception("Unknown mitigation type: \"{$result['type']}\"");
+                throw new Fisma_Exception("Unknown mitigation type: \"{$result->type}\"");
             }
         } else {
             // If there is no duplicate, then the default action is to create a new finding
             $action = self::CREATE_FINDING;
         }
 
+        $findingTable->merge($finding);
         // Now take action on the current finding
         switch ($action) {
             case self::CREATE_FINDING:
                 $finding['status'] = 'NEW';
-                $findingId = $findingTable->insert($finding);
-				$this->_findingIds[] = $findingId;
+                $findingTable->save();
+                $this->_findingIds[] = $findingTable->id;
                 $this->_totalFindings['created']++;
                 break;
 
@@ -149,7 +132,7 @@ abstract class Fisma_Inject_Abstract
 
             case self::REVIEW_FINDING:
                 $finding['status'] = 'PEND';
-                $findingId = $findingTable->insert($finding);
+                $findingTable->save();
                 $this->_totalFindings['reviewed']++;
                 break;
 

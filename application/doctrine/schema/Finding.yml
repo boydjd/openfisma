@@ -86,7 +86,10 @@ Finding:
         assignedToUserId:
             type: integer
             comment: Foreign key to the user who is assigned to this finding
-        
+        uploadId:
+            type: integer
+            comment: Foreign key to the upload log
+            
     relations:
         DuplicateFinding:
             class: Finding
@@ -123,7 +126,11 @@ Finding:
             class: Evaluation
             local: currentEvaluationId
             foreign: id
-
+        Upload:
+            local: uploadId
+            foreign: id
+            foreignAlias: Findings
+            
     actAs:
         Timestampable:
             created:

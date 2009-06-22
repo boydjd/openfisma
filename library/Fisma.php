@@ -30,7 +30,7 @@
  * @package   Fisma
  */
 class Fisma
-{ 
+{
     /**
      * Indicates that the application is running as a web application.
      * 
@@ -164,7 +164,7 @@ class Fisma
             'cache' => 'data/cache',
             'config' => 'application/config',
             'controller' => 'application/controllers',
-            'data' => 'application/data',
+            'data' => 'data',
             'fixture' => 'application/doctrine/data/fixtures',            
             'index' => 'data/index',
             'layout' => 'application/layouts/scripts',

@@ -31,6 +31,7 @@
  * @property integer $securityControlId
  * @property integer $createdByUserId
  * @property integer $assignedToUserId
+ * @property integer $uploadId
  * @property Finding $DuplicateFinding
  * @property Asset $Asset
  * @property Organization $ResponsibleOrganization
@@ -39,6 +40,7 @@
  * @property User $CreatedBy
  * @property User $AssignedTo
  * @property Evaluation $CurrentEvaluation
+ * @property Upload $Upload
  * @property Doctrine_Collection $AuditLogs
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Finding
@@ -80,6 +82,7 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasColumn('securityControlId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the security control associated with this finding'));
         $this->hasColumn('createdByUserId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the user who created this finding'));
         $this->hasColumn('assignedToUserId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the user who is assigned to this finding'));
+        $this->hasColumn('uploadId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the upload log'));
     }
 
     public function setUp()
@@ -107,6 +110,9 @@ abstract class BaseFinding extends Doctrine_Record
 
         $this->hasOne('Evaluation as CurrentEvaluation', array('local' => 'currentEvaluationId',
                                                                'foreign' => 'id'));
+
+        $this->hasOne('Upload', array('local' => 'uploadId',
+                                      'foreign' => 'id'));
 
         $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
                                                       'foreign' => 'findingId'));

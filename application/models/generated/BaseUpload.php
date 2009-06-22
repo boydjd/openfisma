@@ -9,6 +9,7 @@
  * @property string $fileName
  * @property integer $userId
  * @property User $User
+ * @property Doctrine_Collection $Findings
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -29,6 +30,9 @@ abstract class BaseUpload extends Doctrine_Record
     {
         $this->hasOne('User', array('local' => 'userId',
                                     'foreign' => 'id'));
+
+        $this->hasMany('Finding as Findings', array('local' => 'id',
+                                                    'foreign' => 'uploadId'));
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);

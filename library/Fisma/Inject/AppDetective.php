@@ -83,12 +83,10 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         if (in_array('urn:crystal-reports:schemas', $checkCrystalReport)) {
             throw new Fisma_Exception_InvalidFileFormat('This is a Crystal Report, not an App Detective report.');
         }
-        
         // Apply mapping rules
         $this->_asset = $this->_mapAsset($report);
         $this->_product = $this->_mapProduct($report);
         $this->_findings = $this->_mapFindings($report, $uploadId);
-        
         // Free resources used by XML object
         unset($report);
 
@@ -131,7 +129,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 "Unable to parse the IP address from the appName field: \"$reportAppName\""
             );
         }
-        $asset['address_ip'] = $ipAddress[0]; // the regex only has one match by its definition
+        $asset['addressIp'] = $ipAddress[0]; // the regex only has one match by its definition
         
         // Parse out port number
         $port = array();
@@ -140,20 +138,27 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 "Unable to parse the port number from the appName field: \"$reportAppName\""
             );
         }
-        $asset['address_port'] = $port[1]; // match the parenthesized part of the regex
+        $asset['addressPort'] = $port[1]; // match the parenthesized part of the regex
 
         // Remaining mappings
-        $asset['network_id'] = $this->_networkId;
-        $asset['system_id'] = $this->_systemId;
+        $asset['networkId'] = $this->_networkId;
+        $asset['orgSystemId'] = $this->_orgSystemId;
         $now = new Zend_Date();
-        $asset['create_ts'] = $now->toString('Y-m-d H:i:s');
         $asset['source'] = 'SCAN';
-        
         // Verify whether asset exists or not
-        $asset['id'] = Asset::getAssetId($asset['network_id'],
-                                         $asset['address_ip'],
-                                         $asset['address_port']);
-        
+        $q = Doctrine_Query::create()
+             ->select()
+             ->from('Asset a')
+             ->where('a.networkId = ?', $asset['networkId'])
+             ->andWhere('a.addressIp = ?', $asset['addressIp'])
+             ->andWhere('a.addressPort = ?', $asset['addressPort']);
+        $assetRecord = $q->execute();
+        if ($assetRecord) {
+            $assetRecord->toArray();
+            $asset['id'] = $assetRecord[0]['id'];
+        } else {
+            $asset['id'] = 0;
+        }
         return $asset;
     }
 
@@ -174,7 +179,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         if (count($reportCpeItem) == 1) {
             $reportCpeItem = $reportCpeItem[0];
         } else {
-            throw new Fisma_Exception_InvalidFileFormat('Expected 1 cpe-item field, but found ' . count($reportCpeItem));
+            throw new Fisma_Exception_InvalidFileFormat('Expected 1 cpe-item field, but found ' 
+                                                        . count($reportCpeItem));
         }
 
         // Create a CPE object and use that to map the fields
@@ -187,9 +193,9 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             // If the CPE is not valid, then return NULL for the product object
             return null;
         }
-                
+
         $product['name'] = $cpe->product;
-        $product['cpe_name'] = $cpe->cpeName;
+        $product['cpeName'] = $cpe->cpeName;
         $product['vendor'] = $cpe->vendor;
         $product['version'] = $cpe->version;
 
@@ -212,7 +218,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         if (count($testDateString) == 1) {
             $testDateString = $testDateString[0];
         } else {
-            throw new Fisma_Exception_InvalidFileFormat('Expected 1 testDate field, but found ' . count($testDateString));
+            throw new Fisma_Exception_InvalidFileFormat('Expected 1 testDate field, but found ' 
+                                                        . count($testDateString));
         }
         $testDate = array();
         if (!preg_match('/\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [AP]M/', $testDateString, $testDate)) {
@@ -238,19 +245,18 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 $finding = array();
                 
                 // The finding's asset ID is set during the commit, since the asset may not exist yet.
-                $finding['upload_id'] = $uploadId;
-                $finding['discover_ts'] = $discoveredDate->toString('Y-m-d H:i:s');
-                $finding['create_ts'] = $creationDate->toString('Y-m-d H:i:s');
-                $finding['source_id'] = $this->_findingSourceId;
-                $finding['system_id'] = $this->_systemId;
-                $finding['action_suggested'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);
-                $finding['action_suggested'] = $this->textToHtml($finding['action_suggested']);
-                $finding['threat_level'] = strtoupper($reportFinding->risk);
+                $finding['uploadId'] = $uploadId;
+                $finding['discoverTs'] = $discoveredDate->toString('Y-m-d H:i:s');
+                $finding['sourceId'] = $this->_findingSourceId;
+                $finding['systemId'] = $this->_orgSystemId;
+                $finding['recommendation'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);
+                $finding['recommendation'] = $this->textToHtml($finding['recommendation']);
+                $finding['threatLevel'] = strtoupper($reportFinding->risk);
                 //todo english translate "medium" into "MODERATE" to adapt OpenFISMA
-            	if ('MEDIUM' == $finding['threat_level']) {
-					$finding['threat_level'] = 'MODERATE';
+                if ('MEDIUM' == $finding['threatLevel']) {
+                    $finding['threatLevel'] = 'MODERATE';
                 }
-                $finding['threat_source'] = $this->textToHtml($reportFinding->overview);
+                $finding['threat'] = $this->textToHtml($reportFinding->overview);
 
                 // The mapping for finding_data is a little more complicated
                 // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
@@ -271,7 +277,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                     }
                     $findingData .= '</ul>';
                 }
-                $finding['finding_data'] = $this->textToHtml($findingData);
+                $finding['description'] = $this->textToHtml($findingData);
                 
                 // Add this finding to the total findings array
                 $findings[] = $finding;
@@ -291,36 +297,39 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         // If the asset id is null, then create a new asset with the specified asset information. Save the asset Id
         // in order to persist the findings.
         $assetId = $this->_asset['id'];
-        if (!isset($assetId)) {
-            $assetTable = new Asset();
-            $assetId = $assetTable->insert($this->_asset);
+        
+        $asset = new Asset();
+        if (empty($assetId)) {
+            $asset->merge($this->_asset);
+            $asset->save();
+            $assetId = $asset->id;
+        } else {
+            $asset = $asset->getTable('Asset')->find($assetId);
         }
-        $assetTable = new Asset();
-        $asset = $assetTable->fetchRow("id = $assetId")->toArray();
 
         if (isset($this->_product)) {
             // If the asset does not have a product associated with it, then re-use an existing asset or 
             // create a new asset if necessary.
-            $productTable = new Product();
-            $quotedCpeName = $productTable->getAdapter()->quote($this->_product['cpe_name']);
-            if (empty($asset['prod_id'])) {
-                $productId;
-                $existingProduct = $productTable->fetchRow("cpe_name LIKE $quotedCpeName");
-                if ($existingProduct) {
+            $product = new Product();
+            if (empty($asset->productId)) {
+                $product = $product->getTable('Product')->findOneByCpeName($this->_product['cpeName']);
+                if ($product) {
                     // Use the existing product if one is found
-                    $productId = $existingProduct->id;
+                    $asset->productId = $product->id;
                 } else {
                     // If no existing product, create a new one
-                    $productId = $productTable->insert($this->_product);
+                    $product->merge($this->_product);
+                    $product->save();
+                    $asset->productId = $product->id;
                 }
-                $assetTable->update(array('prod_id' => $productId), "id = $assetId");
+                $asset->save();
             } else {
                 // If the asset does have a product, then do not modify it unless the CPE name is null,
                 // in which case update the CPE name.
-                $existingProduct = $productTable->fetchRow("id LIKE {$asset['prod_id']}")->toArray();
-                if ($existingProduct && empty($existingProduct['cpe_name'])) {
-                    $tempProduct = array('cpe_name' => $this->_product['cpe_name']);
-                    $productTable->update($tempProduct, "id = {$existingProduct['id']}");
+                $product = $product->getTable('Product')->find($asset->productId)->toArray();
+                if ($product && empty($product->cpeName)) {
+                    $product->cpeName = $this->_product['cpeName'];
+                    $product->save();
                 }
             }
         }
@@ -328,7 +337,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         // Commit the findings
         foreach ($this->_findings as $finding) {
             // First set the asset ID
-            $finding['asset_id'] = $assetId;
+            $finding['assetId'] = $assetId;
             
             // Now commit the finding
             $this->_commit($finding);
