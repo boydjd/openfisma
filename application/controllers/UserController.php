@@ -54,13 +54,12 @@ class UserController extends BaseController
                 ->from('Organization o');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
-        $checkboxMatrix = $form->getElement('checkboxMatrix');
+        $orgs = $form->getElement('organizations');
         foreach ($organizationTree as $organization) {
-            $checkboxMatrix->addCheckbox($organization['id'], 
+            $orgs->addCheckbox($organization['id'], 
                                          $organization['name'],
                                          $organization['level']);
         }
-
         $form = Fisma_Form_Manager::prepareForm($form);
         return $form;
     }
@@ -105,18 +104,19 @@ class UserController extends BaseController
         }
         $values = $form->getValues();
         $roleId = $values['role'];
-        /** @todo Transaction */
         $subject->merge($values);
-        $ret = $subject->trySave();
-        $q = Doctrine_Query::create()
-            ->delete('UserRole')
-            ->addWhere('userId = ?', $subject->id);
-        $deleted = $q->execute();
-        $userRole = new UserRole;
-        $userRole->userId = $subject->id;
-        $userRole->roleId = $roleId;
-        $userRole->save();
-        return $ret;
+        /** @todo Transaction */
+        if ($subject->state() != Doctrine_Record::STATE_TDIRTY) {
+            $q = Doctrine_Query::create()
+                ->delete('UserRole')
+                ->addWhere('userId = ?', $subject->id);
+            $deleted = $q->execute();
+            $userRole = new UserRole;
+            $userRole->userId = $subject->id;
+            $userRole->roleId = $roleId;
+            $userRole->save();
+        }
+        $subject->save();
     }
 
     /**
@@ -131,6 +131,12 @@ class UserController extends BaseController
         $roleId = $subject->Roles[0]->id;
         $form->setDefaults($subject->toArray());
         $form->getElement('role')->setValue($roleId);
+        $orgs = $subject->Organizations;
+        $orgIds = array();
+        foreach ($orgs as $o) {
+            $orgIds[] = $o->id;
+        }
+        $form->getElement('organizations')->setValue($orgIds);
         return $form;
     }
 
@@ -293,4 +299,5 @@ class UserController extends BaseController
         }
         return $requirements;
     }
+
 }

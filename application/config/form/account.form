@@ -95,8 +95,9 @@ elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Save"
 displayGroups.accountInfo.elements.save = "save"
 
-elements.checkboxMatrix.type = "Element_CheckboxTree"
-elements.checkboxMatrix.options.label = "Organizations & Information Systems"
-displayGroups.organizationTree.elements.checkboxMatrix = "checkboxMatrix"
+elements.organizations.type = "Element_CheckboxTree"
+elements.organizations.options.name = "organizations"
+elements.organizations.options.label = "Organizations & Information Systems"
+displayGroups.organizationTree.elements.organizations = "organizations"
 
 ; The systems part of the account form is generated dynamically at runtime

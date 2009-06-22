@@ -141,7 +141,7 @@ class FindingController extends BaseController
             $values['responsibleOrganizationId'] = $asset->Organization->id;
         }
         $subject->merge($values);
-        return $subject->trySave();
+        $subject->save();
     }
     
     

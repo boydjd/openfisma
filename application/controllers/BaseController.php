@@ -104,7 +104,6 @@ abstract class BaseController extends SecurityController
      *
      * @param Zend_Form $form
      * @param Doctrine_Record|null $subject
-     * @return bool indicating the record is saved successfully or not
      */
     protected function saveValue($form, $subject=null)
     {
@@ -115,7 +114,7 @@ abstract class BaseController extends SecurityController
             throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $subject->merge($form->getValues());
-        return $subject->trySave();
+        $subject->save();
     }
 
     /**
@@ -155,14 +154,20 @@ abstract class BaseController extends SecurityController
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $result = $this->saveValue($form);
-                if (!$result) {
-                    /** @todo english please notice following 3 sentences*/
-                    $msg   = "Failure in creation";
-                    $model = self::M_WARNING;
-                } else {
+                try {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $this->saveValue($form);
+                    Doctrine_Manager::connection()->commit();
                     $msg   = "The {$this->_modelName} is created";
                     $model = self::M_NOTICE;
+                } catch (Doctrine_Exception $e) {
+                    /** @todo english please notice following 3 sentences*/
+                    Doctrine_Manager::connection()->rollback();
+                    $msg   = "Failure in creation. ";
+                    if (Fisma::debug()) {
+                        $msg .= $e->getMessage();
+                    }
+                    $model = self::M_WARNING;
                 }
                 $this->message($msg, $model);
             } else {
@@ -198,14 +203,20 @@ abstract class BaseController extends SecurityController
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $result = $this->saveValue($form, $subject);
-                if (!$result) {
+                try {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $result = $this->saveValue($form, $subject);
+                    Doctrine_Manager::connection()->commit();
                     /** @todo english. This notice span following segments */
-                    $msg  = "Failure in creation";
-                    $type = self::M_WARNING;
-                } else {
                     $msg   = "The {$this->_modelName} is updated";
                     $model = self::M_NOTICE;
+                } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
+                    $msg  = "Failure in saving ";
+                    if (Fisma::debug()) {
+                        $msg .= $e->getMessage();
+                    }
+                    $type = self::M_WARNING;
                 }
                 $this->message($msg, $model);
             } else {

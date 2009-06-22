@@ -36,14 +36,14 @@
  * @property Doctrine_Collection $Organizations
  * @property Doctrine_Collection $Events
  * @property Doctrine_Collection $AccountLogs
- * @property Doctrine_Collection $AuditLogs
- * @property Doctrine_Collection $Comments
- * @property Doctrine_Collection $EmailValidation
+ * @property Doctrine_Collection $Notifications
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Findings
- * @property Doctrine_Collection $FindingEvaluations
- * @property Doctrine_Collection $Notifications
  * @property Doctrine_Collection $Uploads
+ * @property Doctrine_Collection $EmailValidation
+ * @property Doctrine_Collection $AuditLogs
+ * @property Doctrine_Collection $Comments
+ * @property Doctrine_Collection $FindingEvaluations
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -101,14 +101,8 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasMany('AccountLog as AccountLogs', array('local' => 'id',
                                                           'foreign' => 'userId'));
 
-        $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
-                                                      'foreign' => 'userId'));
-
-        $this->hasMany('Comment as Comments', array('local' => 'id',
-                                                    'foreign' => 'userId'));
-
-        $this->hasMany('EmailValidation', array('local' => 'id',
-                                                'foreign' => 'userId'));
+        $this->hasMany('Notification as Notifications', array('local' => 'id',
+                                                              'foreign' => 'userId'));
 
         $this->hasMany('Evidence', array('local' => 'id',
                                          'foreign' => 'userId'));
@@ -116,16 +110,24 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasMany('Finding as Findings', array('local' => 'id',
                                                     'foreign' => 'createdByUserId'));
 
-        $this->hasMany('FindingEvaluation as FindingEvaluations', array('local' => 'id',
-                                                                        'foreign' => 'userId'));
-
-        $this->hasMany('Notification as Notifications', array('local' => 'id',
-                                                              'foreign' => 'userId'));
-
         $this->hasMany('Upload as Uploads', array('local' => 'id',
                                                   'foreign' => 'userId'));
 
+        $this->hasMany('EmailValidation', array('local' => 'id',
+                                                'foreign' => 'userId'));
+
+        $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
+                                                      'foreign' => 'userId'));
+
+        $this->hasMany('Comment as Comments', array('local' => 'id',
+                                                    'foreign' => 'userId'));
+
+        $this->hasMany('FindingEvaluation as FindingEvaluations', array('local' => 'id',
+                                                                        'foreign' => 'userId'));
+
+        $softdelete0 = new Doctrine_Template_SoftDelete();
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
+        $this->actAs($softdelete0);
         $this->actAs($timestampable0);
 
     $this->addListener(new UserListener(), 'UserListener');

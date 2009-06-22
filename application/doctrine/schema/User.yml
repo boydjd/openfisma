@@ -102,6 +102,7 @@ User:
             refClass: UserEvent
 
     actAs:
+        SoftDelete:
         Timestampable:
             created:
                 name: createdTs

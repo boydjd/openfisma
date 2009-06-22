@@ -332,17 +332,20 @@ class User extends BaseUser
     }
     
     /**
-     * Bulid the relationship between specify user and orgSystems
+     * Replace the relationship between the organization to user. 
+     *
+     * If an organization is specified as the parameter, not only itself but also all the 
+     * decendents are related to the user. 
      * 
      * The algorithm relies on the linear sequence representative logic. 
      * <lft rgt> combination is used to determind if the two nodes are parent or child. 
      * For example, node <2, 7> is parent of <4, 5> because 2 < 4 and 7 > 5. 
      * 
      * @see http://www.sitepoint.com/article/hierarchical-data-database/2/
-     * @param array $ids orgSys id
+     * @param array $ids organization id(s)
      * @return boolean
      */
-    public function setOrgSystems($ids)
+    public function setOrganizations($ids)
     {
         $q = Doctrine_Query::create()
              ->select()
@@ -368,28 +371,13 @@ class User extends BaseUser
             }
         }
         $keepIds = array_diff($ids, $discardIds);
-        foreach ($keepIds as $keepId) {
-            $userOrg = new UserOrganization();
-            $userOrg->userId = $this->id;
-            $userOrg->organizationId = $keepId;
-            $userOrg->save();
+        if ($this->state() == Doctrine_Record::STATE_TDIRTY) {
+            $this->save();
+        } else {
+            $this->unlink('Organizations', null, true);
         }
-        return true;
-    }
-
-    /**
-     * Generate user history password
-     *
-     * @return string user's history password
-     */
-    public function generatePwdHistory()
-    {
-        $pwdHistory = $this->passwordHistory;
-        if (3 == substr_count($pwdHistory, ':')) {
-            $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
-        }
-        $pwdHistory = ':' . $this->password . $pwdHistory;
-        return $pwdHistory;
+        $ret = $this->link('Organizations', $keepIds, true);
+        return $ret;
     }
 
     /**
