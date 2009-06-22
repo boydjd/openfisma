@@ -118,13 +118,13 @@ class FindingController extends BaseController
     }
 
     /** 
-     * Hooks for manipulating the values retrieved by Forms
+     * Overriding Hooks
      *
      * @param Zend_Form $form
      * @param Doctrine_Record|null $subject
      * @return Doctrine_Record
      */
-    protected function mergeValue($form, $subject=null)
+    protected function saveValue($form, $subject=null)
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
@@ -141,7 +141,7 @@ class FindingController extends BaseController
             $values['responsibleOrganizationId'] = $asset->Organization->id;
         }
         $subject->merge($values);
-        return $subject;
+        return $subject->trySave();
     }
     
     

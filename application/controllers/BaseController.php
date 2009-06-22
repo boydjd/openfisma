@@ -100,13 +100,13 @@ abstract class BaseController extends SecurityController
     }
 
     /** 
-     * Hooks for manipulating the values retrieved by Forms
+     * Hooks for manipulating and saveing the values retrieved by Forms
      *
      * @param Zend_Form $form
      * @param Doctrine_Record|null $subject
-     * @return Doctrine_Record
+     * @return bool indicating the record is saved successfully or not
      */
-    protected function mergeValue($form, $subject=null)
+    protected function saveValue($form, $subject=null)
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
@@ -115,7 +115,7 @@ abstract class BaseController extends SecurityController
             throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $subject->merge($form->getValues());
-        return $subject;
+        return $subject->trySave();
     }
 
     /**
@@ -155,8 +155,8 @@ abstract class BaseController extends SecurityController
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $subject = $this->mergeValue($form);
-                if (!$subject->trySave()) {
+                $result = $this->saveValue($form);
+                if (!$result) {
                     /** @todo english please notice following 3 sentences*/
                     $msg   = "Failure in creation";
                     $model = self::M_WARNING;
@@ -198,8 +198,8 @@ abstract class BaseController extends SecurityController
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
-                $subject = $this->mergeValue($form, $subject);
-                if (!$subject->trySave()) {
+                $result = $this->saveValue($form, $subject);
+                if (!$result) {
                     /** @todo english. This notice span following segments */
                     $msg  = "Failure in creation";
                     $type = self::M_WARNING;

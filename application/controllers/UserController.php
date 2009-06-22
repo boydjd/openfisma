@@ -95,7 +95,7 @@ class UserController extends BaseController
      * @param Doctrine_Record|null $subject
      * @return Doctrine_Record
      */
-    protected function mergeValue($form, $subject=null)
+    protected function saveValue($form, $subject=null)
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
@@ -106,6 +106,8 @@ class UserController extends BaseController
         $values = $form->getValues();
         $roleId = $values['role'];
         /** @todo Transaction */
+        $subject->merge($values);
+        $ret = $subject->trySave();
         $q = Doctrine_Query::create()
             ->delete('UserRole')
             ->addWhere('userId = ?', $subject->id);
@@ -114,8 +116,7 @@ class UserController extends BaseController
         $userRole->userId = $subject->id;
         $userRole->roleId = $roleId;
         $userRole->save();
-        $subject->merge($values);
-        return $subject;
+        return $ret;
     }
 
     /**
