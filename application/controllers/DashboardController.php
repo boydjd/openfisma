@@ -71,13 +71,13 @@ class DashboardController extends SecurityController
     public function indexAction()
     {
         Fisma_Acl::requirePrivilege('areas', 'dashboard');
-        $user = User::currentUser();
-        
+        $user = new User();
+        $user = $user->getTable()->find($this->_me->id);
         // Check to see if we got passed a "dismiss" parameter to dismiss notifications
-        $dismiss = $this->getRequest()->getParam('dismiss');
-        if (isset($dismiss) && 'notifications' == $dimiss) {
+        $dismiss = $this->_request->getParam('dismiss');
+        if (isset($dismiss) && 'notifications' == $dismiss) {
             $user->Notifications->delete();
-            $user->notifyTs = new Zend_Date();
+            $user->mostRecentNotifyTs = Zend_Date::now()->toString('Y-m-d H:i:s');
             $user->save();
         }
 
@@ -137,8 +137,6 @@ class DashboardController extends SecurityController
             $this->view->applicationName = Configuration::getConfig('system_name');
         }
         
-        // Alert the user if there are notifications pending
-        $user = User::currentUser();
         if ($user->Notifications->count() > 0) {
             $this->view->notifications = $user->Notifications;
             $this->view->dismissUrl = "/panel/dashboard/dismiss/notifications";
