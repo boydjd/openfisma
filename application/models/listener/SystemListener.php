@@ -41,7 +41,7 @@ Class SystemListener extends Doctrine_Record_Listener
         Doctrine_Manager::connection()->beginTransaction();   
         
         $system = $event->getInvoker();
-        $modified = $event->getModified();
+        $modified = $system->getModified();
         
         // Update FIPS 199 categorization
         if (isset($modified['confidentiality'])
