@@ -87,6 +87,8 @@ class User extends BaseUser
         $this->lockTs = date('Y-m-d H:i:s');
         $this->lockType = $lockType;
         $this->save();
+        /** @todo english */
+        $this->log("Account unlocked by $lockType");
     }
     
     /**
@@ -232,9 +234,10 @@ class User extends BaseUser
      */
     public function validateEmail($validateCode)
     {
-        if ($validateCode == $this->EmailValidation->getLast()->validationCode) {
+        $emailValidation = $this->EmailValidation->getLast();
+        if ($validateCode == $emailValidation->validationCode) {
             $this->emailValidate = true;
-            $this->EmailValidation->getLast()->delete();
+            $emailValidation->delete();
             $this->save();
             //@todo english,aslo see the follow
             $this->log('Email validate successfully');
@@ -265,7 +268,7 @@ class User extends BaseUser
             $this->failureCount = 0;
             $this->save();
             //@todo english, also see the follow
-            $this->log("Login success");
+            $this->log("Login successfully");
             return true;
         }
         $this->log("Login failure");

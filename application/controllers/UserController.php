@@ -167,14 +167,14 @@ class UserController extends BaseController
             if ($form->isValid($post)) {
                 $user->merge($form->getValues());
                 try {
-                    $modifyValues = $user->getModified();
+                    $modified = $user->getModified();
 
                     $user->save();
                     /** @todo english */
                     $message = "Your profile modified successfully."; 
-                    if ($modifyValues['email']) {
+                    if ($modified['email']) {
                         $mail = new Fisma_Mail();
-                        if ($mail->validateEmail($user, $modifyValues['email'])) {
+                        if ($mail->validateEmail($user, $modified['email'])) {
                             /** @todo english */
                             $message .= "<br>And a validation email has sent to your new email, " . 
                                 "you will not receive the system notices until you validate it.";
@@ -252,7 +252,7 @@ class UserController extends BaseController
             $postEvents = $this->_request->getPost('existEvents');
             try {
                 Doctrine_Manager::connection()->beginTransaction();
-                $modifyValues = $user->getModified();
+                $modified = $user->getModified();
 
                 $user->unlink('Events');
                 $user->link('Events', $postEvents);
@@ -262,9 +262,9 @@ class UserController extends BaseController
                 /** @todo english, also see the follow */
                 $message = "Notification events modified successfully.";
                 $model   = self::M_NOTICE;
-                if ($modifyValues['notifyEmail']) {
+                if ($modified['notifyEmail']) {
                     $mail = new Fisma_Mail();
-                    if ($mail->validateEmail($user, $modifyValues['notifyEmail'])) {
+                    if ($mail->validateEmail($user, $modified['notifyEmail'])) {
                         /** @todo english, also see the follow */
                         $message .= "<br>And a validation email has sent to your new notify email, " . 
                          "you will not receive the follow events notifications until you validate it.";

@@ -49,8 +49,9 @@ class Fisma_Mail extends Zend_Mail
         $view       = new Zend_View();
         $contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
 
+        $contentTpl->host         =  Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
         $contentTpl->account      = $user->nameLast . ' ' . $user->nameFirst;
-        $contentTpl->validateCode = $user->EmailValidation[0]->validationCode;
+        $contentTpl->validateCode = $user->EmailValidation->getLast()->validationCode;
         $contentTpl->userId       = $user->id;
 
         $content    = $contentTpl->render('validate.phtml');

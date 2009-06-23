@@ -178,8 +178,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         if (!is_null($user->lastLoginTs)
                 && $inactivePeriod->isLater($user->lastLoginTs)) {
             $user->lockAccount(User::LOCK_TYPE_INACTIVE);
-            /** @todo english */
-            $user->log("Account locked by account inactivity");
         } 
 
         // Check password expiration (for database authentication only)
@@ -188,8 +186,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         $passExpireTs->add($passExpirePeriod, Zend_Date::DAY);
         if ($passExpireTs->isEarlier(new Zend_Date())) {
             $user->lockAccount(User::LOCK_TYPE_EXPIRED);
-            /** @todo english */
-            $user->log("Account locked by password expired");
         }
 
         if ($user->locked) {
