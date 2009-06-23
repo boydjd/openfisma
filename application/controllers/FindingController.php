@@ -114,6 +114,10 @@ class FindingController extends BaseController
         ));
         
         $form->setElementDecorators(array(new Fisma_Form_CreateFindingDecorator()));
+        $dateElement = $form->getElement('discoveredDate');
+        $dateElement->clearDecorators();
+        $dateElement->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
+        $dateElement->addDecorator(new Fisma_Form_CreateFindingDecorator());
         return $form;
     }
 
