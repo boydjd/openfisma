@@ -52,7 +52,7 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      * @param array $value
      */
     function setValue($value) {
-        $this->_defaults = $value;
+        $this->_defaults = (array)$value;
     }
 
     /**

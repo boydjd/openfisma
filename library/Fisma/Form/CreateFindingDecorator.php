@@ -69,7 +69,7 @@ class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
                 $render = '<tr><td>'
                 . $this->buildLabel()
                 . '</td><td>'
-                . $this->buildInput()
+                . $this->buildInput() 
                 . '</td>'
                 . $this->buildProduct()
                 . '</tr>';
@@ -77,7 +77,7 @@ class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
                 $render = '<tr><td>'
                 . $this->buildLabel()
                 . '</td><td>'
-                . $this->buildInput()
+                . $this->buildInput(). $content
                 . '</td></tr>';
             }
         } elseif ($element instanceof Zend_Form_DisplayGroup) {
