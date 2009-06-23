@@ -31,7 +31,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Fisma_Form_Validator_Password extends Zend_Validate_Abstract
+class Fisma_Form_Validate_Password extends Zend_Validate_Abstract
 {
     const PASS_MIN = "pass_min";
     const PASS_MAX = "pass_max";

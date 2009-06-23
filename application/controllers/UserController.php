@@ -211,8 +211,6 @@ class UserController extends BaseController
         $post   = $this->_request->getPost();
 
         if ($post['oldPassword']) {
-            $form->getElement('oldPassword')->addValidator(new Fisma_Form_Validator_PasswdMatch());
-            $form->getElement('newPassword')->addValidator(new Fisma_Form_Validator_Password());
 
             if ($form->isValid($post)) {
                 $user = Doctrine::getTable('User')->find($this->_me->id);

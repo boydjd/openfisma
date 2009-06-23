@@ -10,7 +10,12 @@
 ; The username, password, and ldap fields are all defined here for the sake of
 ; simplicity, but at runtime the account controller will strip out the fields
 ; which do not apply to the current authentication schema (ldap or database)
+
 [account]
+elementPrefixPath.prefix = Fisma_Form
+elementPrefixPath.path = Fisma/Form
+elementPrefixPath.type = Validate
+
 elements.username.type = "text"
 elements.username.options.label = "Username"
 elements.username.options.required = true
@@ -22,6 +27,7 @@ elements.password.type = "password"
 elements.password.options.label = "Password"
 elements.password.options.attribs.id = "password"
 elements.password.options.attribs.size = 35
+elements.password.options.validators.a = Password
 displayGroups.accountInfo.elements.password = "password"
 
 elements.confirmPassword.type = "password"
