@@ -110,18 +110,6 @@ class UserController extends BaseController
         $subject->merge($values);
         $subject->save();
 
-        // Update organizations
-        $q = Doctrine_Query::create() 
-             ->delete('UserOrganization') 
-             ->addWhere('userId = ?', $subject->id);
-        $deleted = $q->execute();
-        foreach ($values['organizations'] as $organizationId) {
-            $userOrg = new UserOrganization(); 
-            $userOrg->userId = $subject->id; 
-            $userOrg->organizationId = $organizationId; 
-            $userOrg->save(); 
-        }
-
         // Update roles
         $q = Doctrine_Query::create()
             ->delete('UserRole')
@@ -131,6 +119,18 @@ class UserController extends BaseController
         $userRole->userId = $subject->id;
         $userRole->roleId = $roleId;
         $userRole->save();
+        
+        // Update organizations
+        $q = Doctrine_Query::create() 
+             ->delete('UserOrganization') 
+             ->addWhere('userId = ?', $subject->id);
+        $deleted = $q->execute();
+        foreach ($values['organizations'] as $organizationId) {
+            $userOrg = new UserOrganization(); 
+            $userOrg->userId = $subject; 
+            $userOrg->organizationId = $organizationId; 
+            $userOrg->save(); 
+        }
     }
 
     /**
