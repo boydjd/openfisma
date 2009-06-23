@@ -199,8 +199,10 @@ class Fisma
         }
         
         // Set up session configuration
-        Zend_Session::setOptions(self::$_appConf->session->toArray());
-        
+	$sessionOptions = self::$_appConf->session->toArray();
+	$sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
+        Zend_Session::setOptions($sessionOptions);
+
         // Set the initialized flag
         self::$_initialized = true;
     }
