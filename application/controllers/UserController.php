@@ -108,6 +108,7 @@ class UserController extends BaseController
             unset($values['password']);
         }
         $subject->merge($values);
+        $subject->save();
 
         // Update organizations
         $q = Doctrine_Query::create() 
@@ -116,23 +117,20 @@ class UserController extends BaseController
         $deleted = $q->execute();
         foreach ($values['organizations'] as $organizationId) {
             $userOrg = new UserOrganization(); 
-            $userOrg->userId = $subject; 
+            $userOrg->userId = $subject->id; 
             $userOrg->organizationId = $organizationId; 
             $userOrg->save(); 
-        }        
-
-        /** @todo Transaction */
-        if ($subject->state() != Doctrine_Record::STATE_TDIRTY) {
-            $q = Doctrine_Query::create()
-                ->delete('UserRole')
-                ->addWhere('userId = ?', $subject->id);
-            $deleted = $q->execute();
-            $userRole = new UserRole;
-            $userRole->userId = $subject->id;
-            $userRole->roleId = $roleId;
-            $userRole->save();
         }
-        $subject->save();
+
+        // Update roles
+        $q = Doctrine_Query::create()
+            ->delete('UserRole')
+            ->addWhere('userId = ?', $subject->id);
+        $deleted = $q->execute();
+        $userRole = new UserRole;
+        $userRole->userId = $subject->id;
+        $userRole->roleId = $roleId;
+        $userRole->save();
     }
 
     /**
