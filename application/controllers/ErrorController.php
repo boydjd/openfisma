@@ -85,7 +85,7 @@ class ErrorController extends Zend_Controller_Action
                 //clear the action stack to prevent additional exceptions would be throwed
                 while($stack->popStack());
             }
-    	    $this->_helper->actionStack('header', 'panel');
+            $this->_helper->actionStack('header', 'panel');
         }
     }
 

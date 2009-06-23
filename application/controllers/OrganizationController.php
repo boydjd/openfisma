@@ -463,7 +463,7 @@ class OrganizationController extends SecurityController
                 // Number of stack items 
                 $l = count($stack); 
                 // Check if we're dealing with different levels 
-                while($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
+                while ($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
                     array_pop($stack); 
                     $l--; 
                 } 

@@ -109,7 +109,7 @@ abstract class BaseController extends SecurityController
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
-        } elseif (!$subject instanceof Doctrine_Record){
+        } elseif (!$subject instanceof Doctrine_Record) {
             /** @todo english */
             throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }

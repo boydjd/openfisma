@@ -274,7 +274,7 @@ class RemediationController extends PoamBaseController
                 // Number of stack items 
                 $l = count($stack); 
                 // Check if we're dealing with different levels 
-                while($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
+                while ($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
                     array_pop($stack); 
                     $l--; 
                 } 
@@ -818,7 +818,7 @@ class RemediationController extends PoamBaseController
             throw new Fisma_Exception('Wrong link');
         }
         $result= array_pop($result);
-        if(!in_array((int)$result['system_id'], array_keys($this->_systemList)))
+        if (!in_array((int)$result['system_id'], array_keys($this->_systemList)))
         {
             /**
              * @todo english
@@ -828,7 +828,7 @@ class RemediationController extends PoamBaseController
         $fileName = $result['submission'];
         $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $result['poam_id'] . '/';
 
-        if(file_exists($filePath . $fileName)) {
+        if (file_exists($filePath . $fileName)) {
             $this->_helper->layout->disableLayout(true);
             $this->_helper->viewRenderer->setNoRender();
             ob_end_clean();
