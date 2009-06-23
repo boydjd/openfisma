@@ -173,6 +173,7 @@ class Fisma
             'log' => 'data/logs',
             'migration' => 'application/doctrine/migrations',
             'schema' => 'application/doctrine/schema',
+            'test' => 'tests',
             'viewHelper' => 'application/views/helpers',
             'yui' => 'public/yui'
         );

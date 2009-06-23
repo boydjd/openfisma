@@ -27,18 +27,24 @@
  * @package   Test
  */
 
-/**
- * @ignore
- * Run the application bootstrap in command line mode
- */
-require_once('../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
-if (!$plSetting->installed()) {
-    die('Please install!');
+// Bootstrap the application's CLI mode if it has not already been done
+require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
+if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
+    try {
+        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+        Fisma::connectDb();
+        Fisma::setNotificationEnabled(false);
+    } catch (Zend_Config_Exception $zce) {
+        print "The application is not installed correctly. If you have not run the installer, you should do that now.";
+    } catch (Exception $e) {
+        print get_class($e) 
+            . "\n" 
+            . $e->getMessage() 
+            . "\n"
+            . $e->getTraceAsString()
+            . "\n";
+    }
 }
-
-// Load the base class
-require_once 'PHPUnit/Extensions/SeleniumTestCase.php';
 
 /**
  * The selenium config file contains the server address (or name), user name, and password for connecting to the
