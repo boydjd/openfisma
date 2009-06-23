@@ -46,7 +46,7 @@ class UserListener extends Doctrine_Record_Listener
                 $emailValidation->email          = !empty($email) ? $modified['email'] : $modified['notifyEmail'];
                 $emailValidation->validationCode = md5(rand());
                 $emailValidation->User           = $user;
-                $user->EmailValidation[]         = $modified['emailValidation'];
+                $user->EmailValidation[]         = $emailValidation;
             }
         }
 
