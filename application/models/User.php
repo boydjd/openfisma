@@ -326,15 +326,19 @@ class User extends BaseUser
     public function getAvailableEvents()
     {
         $availableEvents = null;
-        $query = Doctrine_Query::Create()
-                    ->select('e.*')
-                    ->from('Event e')
-                    ->innerJoin('e.Privilege p')
-                    ->innerJoin('p.Role r')
-                    ->innerJoin('r.Users u')
-                    ->where('u.id = ?', $this->id)
-                    ->orderBy('e.name')
-                    ->execute();
+        if ('root' == $this->username) {
+            $query = Doctrine::getTable('Event')->findAll();
+        } else {
+            $query = Doctrine_Query::Create()
+                        ->select('e.*')
+                        ->from('Event e')
+                        ->innerJoin('e.Privilege p')
+                        ->innerJoin('p.Role r')
+                        ->innerJoin('r.Users u')
+                        ->where('u.id = ?', $this->id)
+                        ->orderBy('e.name')
+                        ->execute();
+        }
         
         foreach ($query as $event) {
             $availableEvents[$event->id] = $event->name;
