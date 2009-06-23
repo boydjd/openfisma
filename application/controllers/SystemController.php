@@ -124,18 +124,10 @@ class SystemController extends SecurityController
         $value = trim($this->_request->getParam('keywords'));
         
         $sortBy = $this->_request->getParam('sortby', 'name');
-        if (Doctrine::getTable('Organization')->getColumnDefinition($sortBy)) {
-            $sortBy = 'o.' . $sortBy;
-        } elseif (Doctrine::getTable('System')->getColumnDefinition($sortBy)) {
-            $sortBy = 's.' . $sortBy;
-        } else {
-            /** 
-             * @todo english 
-             */
-            throw new Fisma_Exception('invalid page');
-        }
-        
+        // Replace the HYDRATE_SCALAR alias syntax with the regular Doctrine alias syntax
+        $sortBy = str_replace('_', '.', $sortBy);
         $order = $this->_request->getParam('order', 'ASC');
+        
         if (!in_array(strtolower($order), array('asc', 'desc'))) {
             /** 
              * @todo english 
@@ -332,8 +324,8 @@ class SystemController extends SecurityController
         }
         if ($formValid) {
             $isModify = false;
-            $system = new System();
-            $system = $system->getTable()->find($id);
+            $organization = Doctrine::getTable('Organization')->find($id);
+            $system = $organization->System;
             $sysValues = $form->getValues();
             $system->merge($sysValues);
             
@@ -356,10 +348,7 @@ class SystemController extends SecurityController
                     }
                     $this->_helper->updateIndex('finding', $ids, $data['system'] = $system->name.' ' .$system->nickname);
                 }
-                //Update this system index
-                if (is_dir(Fisma::getPath('data') . '/index/system/')) {
-                    $this->_helper->updateIndex('system', $system->id, $system->toArray());
-                }
+
                 $msg = "The system is saved";
                 $model = self::M_NOTICE;
             } else {

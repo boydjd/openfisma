@@ -104,13 +104,11 @@ Class SystemListener extends Doctrine_Record_Listener
     public function postUpdate(Doctrine_Event $event)
     {
         $system = $event->getInvoker();
-        
         Notification::notify(Notification::SYSTEM_MODIFIED, $system, User::currentUser());
+        Fisma_Lucene::updateIndex('system', $system);
         Doctrine_Manager::connection()->commit();
 
-        Fisma_Lucene::updateIndex('system', $system);
-
-        $organization = Doctrine::getTable('Organization')->findOneBySystemId($invoker->id);
+        $organization = $system->Organization[0];
         $organization->name = $system->name;
         $organization->nickname = $system->nickname;
         $organization->description = $system->description;

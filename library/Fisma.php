@@ -213,8 +213,9 @@ class Fisma
         $db = self::$_appConf->db;
         $connectString = "mysql://{$db->username}:{$db->password}@{$db->host}/{$db->schema}";
         Doctrine_Manager::connection($connectString);
-        $conManager = Doctrine_Manager::getInstance();
-        $conManager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
+        $manager = Doctrine_Manager::getInstance();
+        $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
+        $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
         Zend_Registry::set('doctrine_config', array(
                'data_fixtures_path'  =>  self::getPath('fixture'),
                'models_path'         =>  self::getPath('model'),
