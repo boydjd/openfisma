@@ -68,8 +68,8 @@ class Fisma_Inject_Excel
         'findingSource',
         'findingDescription',
         'findingRecommendation',
-        'findingActionType',
-        'findingActionDesc',
+        'findingType',
+        'findingMitigationStrategy',
         'ecdDate',
         'securityControl',
         'threatLevel',
@@ -95,11 +95,6 @@ class Fisma_Inject_Excel
      * The row to start on in the excel template. The template has 3 header rows, so start at the 4th row.
      */
     private $_excelTemplateStartRow = 4;
-
-    /**
-     * insert finding ids
-     */
-    private $_findingIds = array();
     
     /**
      * Parses and loads the findings in the specified excel file. Expects XML spreadsheet format from Excel 2007.
@@ -212,13 +207,13 @@ class Fisma_Inject_Excel
                 $poam['description'] .= "<br>Point of Contact: {$finding['contactInfo']}";
             }
             $poam['recommendation'] = $finding['findingRecommendation'];
-            $poam['type'] = $finding['findingActionType'];
+            $poam['type'] = $finding['findingType'];
             if (empty($poam['type'])) {
                 $poam['type'] = 'NONE';
             } else {
                 $poam['status'] = 'DRAFT';
             }
-            $poam['mitigationStrategy'] = $finding['findingActionDesc'];
+            $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
             $poam['expectedCompletionDate'] = $finding['ecdDate'];
             $poam['discoveredDate'] = $finding['discoveredDate'];
             $poam['threatLevel'] = $finding['threatLevel'];

@@ -39,6 +39,11 @@ abstract class Fisma_Inject_Abstract
     protected $_orgSystemId;
     protected $_findingSourceId;
     
+    /**
+     * insert finding ids
+     */
+    private $_findingIds = array();
+    
     private $_totalFindings = array('created' => 0,
                                     'deleted' => 0,
                                     'reviewed' => 0);

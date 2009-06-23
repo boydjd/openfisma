@@ -248,7 +248,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 $finding['uploadId'] = $uploadId;
                 $finding['discoverTs'] = $discoveredDate->toString('Y-m-d H:i:s');
                 $finding['sourceId'] = $this->_findingSourceId;
-                $finding['systemId'] = $this->_orgSystemId;
+                $finding['responsibleOrganizationId'] = $this->_orgSystemId;
                 $finding['recommendation'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);
                 $finding['recommendation'] = $this->textToHtml($finding['recommendation']);
                 $finding['threatLevel'] = strtoupper($reportFinding->risk);
@@ -312,10 +312,10 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             // create a new asset if necessary.
             $product = new Product();
             if (empty($asset->productId)) {
-                $product = $product->getTable('Product')->findOneByCpeName($this->_product['cpeName']);
-                if ($product) {
+                $existedProduct = $product->getTable('Product')->findOneByCpeName($this->_product['cpeName']);
+                if ($existedProduct) {
                     // Use the existing product if one is found
-                    $asset->productId = $product->id;
+                    $asset->productId = $existedProduct->id;
                 } else {
                     // If no existing product, create a new one
                     $product->merge($this->_product);
