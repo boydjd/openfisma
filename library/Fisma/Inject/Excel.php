@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * author    Mark E. Haase <mhaaseendeavorsystems.com>
- * copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * license   http://www.openfisma.org/mw/index.php?title=License
- * version   $Id: Excel.php 1523 2009-03-26 17:01:44Z mehaase $
+ * @author    Mark E. Haase <mhaaseendeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @version   $Id: Excel.php 1523 2009-03-26 17:01:44Z mehaase $
  */
 
 /**
@@ -30,9 +30,9 @@
  * This plug-in makes heavy use of the SimpleXML xpath() function, which makes code easier to maintain, but could also
  * be a performance bottleneck for large spreadsheets. Currently there has not been any load-testing for this plugin.
  *
- * package   Inject
- * copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * license   http://www.openfisma.org/mw/index.php?title=License\
+ * @package   Inject
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License\
  */
 class Fisma_Inject_Excel
 {
@@ -52,7 +52,7 @@ class Fisma_Inject_Excel
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
      * column's logical names. Excel starts indexes at 1 instead of 0.
      *
-     * todo Move this definition and related items into a separate classs... this is too much stuff to put into the
+     * @todo Move this definition and related items into a separate classs... this is too much stuff to put into the
      * controller
      */
     private $_excelTemplateColumns = array(
@@ -257,7 +257,7 @@ class Fisma_Inject_Excel
             // Now persist these objects. Check assets and products to see whether they exist before creating new
             // ones.
             if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
-                /** todo this isn't a very efficient way to lookup products, but there might be no good alternative */
+                /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
                 $query = Doctrine_Query::create()
                          ->select()
                          ->from('Product')
