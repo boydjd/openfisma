@@ -35,7 +35,7 @@ class UserListener extends Doctrine_Record_Listener
         $user = $event->getInvoker();
         
         $modified = $user->getModified();
-        if (is_null($modified)) {
+        if (is_null($modified) || (isset($modified['searchColumnsPref']) && count($modified) == 1)) {
             return;
         }
 

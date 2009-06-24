@@ -1,33 +1,14 @@
 <?php
-$output_cols = array(
-'id' => 'ID#',
-'source_name' => 'Source',
-'system_name' => 'System',
-'asset_name' => 'Asset',
-'type' => 'Type',
-'status' => 'Status',
-'duetime' => 'On Time?',
-'finding_data' => 'Description',
-'action_suggested' => 'Recommendation',
-'action_planned' => 'Corrective Action',
-'blscr_id' => 'Blscr',
-'threat_level' => 'Threat Level',
-'threat_source' => 'Threat Description',
-'cmeasure_effectiveness' => 'Cmeasures Effectiveness',
-'cmeasure' => 'Cmeasures Description',
-'attachments' => 'Attachments',
-'action_current_date' => 'ECD');
-
+$outputCols = array();
 $i = 0;
-$columnPreference = $_COOKIE['search_columns_pref'];
-foreach ($output_cols as $key=>$row) {
-    if (!($columnPreference & (1 << $i))) {
-        unset($output_cols[$key]);
+foreach ($this->columns as $k => $v) {
+    if ($this->columnPreference & (1 << $i)) {
+        $outputCols[$k] = $v['label'];
     }
     $i++;
 }
 
-$count_cols = count($output_cols);
+$count_cols = count($outputCols);
 // Taking Spreadsheet_Excel_Writer to generate the excel file
 // Refer to http://pear.php.net/package/Spreadsheet_Excel_Writer
 require_once ('Spreadsheet/Excel/Writer.php');
@@ -69,11 +50,11 @@ $worksheet->setColumn(11,14,15);
 //inject the titles
 
 
-$worksheet->writeRow($rowi++,0,$output_cols,$format_times);
+$worksheet->writeRow($rowi++,0,$outputCols,$format_times);
 
 foreach( $this->list as $p) {
     $data = array();
-    foreach ($output_cols as $key => $val) {
+    foreach ($outputCols as $key => $val) {
         if (isset($p[$key])) {
             array_push($data, $p[$key]);
         } else {

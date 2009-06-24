@@ -21,26 +21,6 @@ var readyFunc = function () {
         YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));
     }
     
-    // enable or disable 'on time' type by finding status
-    var filterStatus = function () {
-        if (document.getElementById('poamSearchStatus')) {
-            var value = document.getElementById('poamSearchStatus').value.trim();
-        } else {
-            return ;
-        }
-        if (!(value == '0' 
-            || value == 'CLOSED'
-            || value == 'NOT-CLOSED'
-            || value == 'NOUP-30'
-            || value == 'NOUP-60'
-            || value == 'NOUP-90')) {
-            document.getElementById('poamSearchOnTime').disabled = false;
-        } else {
-            document.getElementById('poamSearchOnTime').disabled = true;
-        }
-    }
-    YAHOO.util.Event.on('poamSearchStatus', 'change', filterStatus);
-    filterStatus();
     // switch Aging Totals or Date Opened and End 
     var searchAging = function (){
         if (document.getElementById('remediationSearchAging')) {

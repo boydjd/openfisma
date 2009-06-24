@@ -271,7 +271,7 @@ class UserController extends BaseController
                         "notify email, and you will not receive the follow events notifications." .
                         "Please check your email";
                         $model = self::M_WARNING;
-                   }
+                    }
                 }
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
@@ -312,4 +312,13 @@ class UserController extends BaseController
         return $requirements;
     }
 
+    public function setColumnPreferenceAction()
+    {
+        $me = Doctrine::getTable('User')->find($this->_me->id);
+        $me->searchColumnsPref = $_COOKIE['search_columns_pref'];
+        $me->save();
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+    }
+    
 }

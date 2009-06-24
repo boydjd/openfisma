@@ -50,9 +50,9 @@ var stringToDate = function(sData) {
 var myDataSource = new YAHOO.util.DataSource("/remediation/search2/format/json");
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.responseSchema = {
-    resultsList: "poam.records",
+    resultsList: "findings.records",
     metaFields: {
-        totalRecords: "poam.totalRecords"
+        totalRecords: "findings.totalRecords"
     }
 };
 
@@ -68,7 +68,7 @@ var myRequestBuilder = function(oState, oSelf) {
     // Build custom request
     var request = "<?php echo $this->link; ?>" + 
                   "/sortby/" + sort +
-                  "/order/" + dir +
+                  "/dir/" + dir +
                   "/startIndex/" + startIndex +
                   "/count/" + count;
     return request;
@@ -83,12 +83,12 @@ var myRowClickHandler = function(clickEvent) {
 
 // DataTable configuration
 var myConfigs = {
-    initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/<?php echo $this->rowCount; ?>",
+    initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['count']; ?>",
     dynamicData: true, 
     sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
     paginator: new YAHOO.widget.Paginator(
         { 
-            rowsPerPage:<?php echo $this->rowCount; ?>,
+            rowsPerPage:<?php echo $this->pageInfo['count']; ?>,
             template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
         }
     ), 
