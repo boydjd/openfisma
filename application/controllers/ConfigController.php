@@ -407,6 +407,7 @@ class ConfigController extends SecurityController
         foreach ($columns as $column) {
             $configs[$column] = Configuration::getConfig($column);
         }
+        $configs[Configuration::UNLOCK_DURATION] /= 60 ;//Convert to minutes
         $form->setDefaults($configs);
         $this->view->form = $form;
         $this->render();
