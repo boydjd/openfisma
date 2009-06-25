@@ -104,13 +104,13 @@ class DashboardController extends SecurityController
                             ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
         $result = $draftFindingsQuery->fetchOne();
         $alert['DRAFT']  = $result['count'];
-        
+
         $enFindingsQuery = Doctrine_Query::create()
                             ->select('COUNT(*) as count')
                             ->from('Finding f')
                             ->where('f.status = ? and nextDueDate >= NOW()', 'EN')
                             ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
-        $result = $draftFindingsQuery->fetchOne();
+        $result = $enFindingsQuery->fetchOne();
         $alert['EN']  = $result['count'];
 
         $eoFindingsQuery = Doctrine_Query::create()
@@ -121,7 +121,7 @@ class DashboardController extends SecurityController
         $result = $draftFindingsQuery->fetchOne();
         $alert['EO']  = $result['count'];
         
-        $url = '/panel/remediation/sub/search/status/';
+        $url = '/panel/remediation/sub/searchbox/status/';
 
         $this->view->url = $url;
         $this->view->alert = $alert;
@@ -196,7 +196,6 @@ class DashboardController extends SecurityController
     {
         Fisma_Acl::requirePrivilege('dashboard', 'read');
         $this->view->summary = array(
-            'NONE' => 0,
             'CAP' => 0,
             'FP' => 0,
             'AR' => 0
@@ -213,8 +212,6 @@ class DashboardController extends SecurityController
         foreach ($results as $result) {
             if (in_array($result['type'], $types)) {
                 $this->view->summary["{$result['type']}"] ++;
-            } else {
-                $this->view->summary['NONE'] ++;
             }
         }
         // Headers Required for IE+SSL (see bug #2039290) to stream XML

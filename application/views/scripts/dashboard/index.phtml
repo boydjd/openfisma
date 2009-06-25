@@ -62,13 +62,13 @@ if (isset($this->notifications)) {
 
 <script type="text/javascript">
     function barChartClick(status) {
-        document.location = "/panel/remediation/sub/searchbox/s/search/status/" + status;
+        document.location = "/panel/remediation/sub/searchbox/status/" + status;
     }
     function pieChartClick(columnNumber) {
         // Lookup table for converting the column number to the remediation type code
-        var columns = ['NONE', 'CAP', 'FP', 'AR'];
+        var columns = ['CAP', 'FP', 'AR'];
         var type = columns[columnNumber-1];
-        document.location = "/panel/remediation/sub/searchbox/s/search/type/" + type;
+        document.location = "/panel/remediation/sub/searchbox/type/" + type;
     }
 </script>
 <?php if ( !empty( $this->alert['TOTAL'] ) ) { ?>

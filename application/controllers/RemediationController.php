@@ -1211,7 +1211,7 @@ class RemediationController extends SecurityController
                 $params['ids'] = -1;
             }
         }
-                          
+        
         // JSON requests are handled differently from PDF and XLS requests, so we need
         // to determine which request type this is.
         $format = $this->_request->getParam('format');
