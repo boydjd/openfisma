@@ -59,8 +59,8 @@ Event:
         name: Mitigation Strategy Approved TO SSO
         Privilege: notification_finding
 
-    POA&M Closed:
-        name: POA&M Closed
+    Finding Closed:
+        name: Finding Closed
         Privilege: notification_finding
 
     Evidence Upload:

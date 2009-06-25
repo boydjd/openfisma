@@ -34,6 +34,31 @@
 class FindingListener extends Doctrine_Record_Listener
 {
     /**
+     * these keys don't catch logs
+     */
+    private static $unLogKeys = array(
+                            'currentEvaluationId',
+                            'status',
+                            'ecdLocked',
+                            'nextDueDate',
+                            'legacyFindingKey',
+                            'modifiedTs',
+                            'closedTs'
+                         );
+
+    /**
+     * Notification type with each keys
+     */
+    private static $notificationKeys = array(
+                               'mitigationStrategy'        => Notification::UPDATE_COURSE_OF_ACTION,
+                               'securityControlId'         => Notification::UPDATE_CONTROL_ASSIGNMENT,
+                               'responsibleOrganizationId' => Notification::UPDATE_FINDING_ASSIGNMENT,
+                               'countermeasures'           => Notification::UPDATE_COUNTERMEASURES,
+                               'threat'                    => Notification::UPDATE_THREAT,
+                               'resourcesRequired'         => Notification::UPDATE_FINDING_RESOURCES,
+                               'expectedCompletionDate'    => Notification::UPDATE_EST_COMPLETION_DATE,
+                                            );
+    /**
      * Set the status as "NEW"  for a new finding created or as "PEND" when duplicated
      * write the audit log
      * 
@@ -52,11 +77,8 @@ class FindingListener extends Doctrine_Record_Listener
         }
         $finding->CreatedBy       = User::currentUser();
         $finding->updateNextDueDate();
-
-        $auditLog              = new AuditLog();
-        $auditLog->User        = User::currentUser();
-        $auditLog->description = 'New Finding Created';
-        $finding->AuditLogs[]  = $auditLog;
+        $finding->log('New Finding Created');
+        Notification::notify(Notification::FINDING_CREATED, $finding, User::currentUser(), $finding->responsibleOrganizationId);
     }
 
     /**
@@ -71,7 +93,7 @@ class FindingListener extends Doctrine_Record_Listener
         if (!empty($modifyValues)) {
             foreach ($modifyValues as $key=>$value) {
                 $newValue = $finding->$key;
-                $continue = false;
+                $type     = null;
                 switch ($key) {
                     case 'type':
                         if ('NEW' == $finding->status) {
@@ -92,42 +114,55 @@ class FindingListener extends Doctrine_Record_Listener
                         $value    = Doctrine::getTable('Organization')->find($value)->name;
                         $newValue = $finding->ResponsibleOrganization->name;
                         break;
-                    case 'currentEvaluationId':
-                        $key      = 'status';
-                        $value    = $finding->getStatus();
-                        $newValue = $finding->CurrentEvaluation->NextEvaluation->nickname;
-                        break;
                     case 'status':
-                        if ('MSA' == $this->status || 'EA' == $this->status) {
-                            $continue = true;
+                        if ('DRAFT' == $value) {
+                            $type = Notification::MITIGATION_STRATEGY_SUBMIT;
+                        }
+                        if ('EN' == $value && 'DRAFT' == $newValue) {
+                            $type = Notification::MITIGATION_STRATEGY_REVISE;
+                        }
+                        if ('EA' == $newValue) {
+                            $type = Notification::EVIDENCE_UPLOAD;
+                        }
+                        if ('EA' == $value && 'EN' == $newValue) {
+                            $type = Notification::EVIDENCE_DENIED;
                         }
                         break;
-                    case 'ecdLocked':
-                        $continue = true;
-                    case 'nextDueDate':
-                        $continue = true;
+                    case 'currentEvaluationId':
+                        $evaluation = Doctrine::getTable('Evaluation')->find($value);
+                        if ('MSA' == $finding->status) {
+                            if ('0' == $evaluation->precedence) {
+                                $type = Notification::MITIGATION_APPROVED_SSO;
+                            }
+                            if ('1' == $evaluation->precedence) {
+                                $type = Notification::MITIGATION_APPROVED_IVV;
+                            }
+                        }
+                        if ('EA' == $finding->status) {
+                            if ('0' == $evaluation->precedence) {
+                                $type = Notification::EVIDENCE_APPROVED_1ST;
+                            }
+                            if ('1' == $evaluation->precedence) {
+                                $type = Notification::EVIDENCE_APPROVED_2ND;
+                            }
+                        }
                         break;
-                    case 'legacyFindingKey':
-                        $continue = true;
-                        break;
-                    case 'modifiedTs':
-                        $continue = true;
-                        break;
-                    case 'closedTs':
-                        $continue = true;
                     default:
                         break;
                 }
-                //those keys change will not write to the logs
-                if ($continue) {
+                if (array_key_exists($key, self::$notificationKeys)) {
+                    $type = self::$notificationKeys[$key];
+                }
+                if (!empty($type)) {
+                    Notification::notify($type, $finding, User::currentUser(), $finding->responsibleOrganizationId);
+                }
+                if (in_array($key, self::$unLogKeys)) {
                     continue;
                 }
-                $auditLog = new AuditLog();
                 $value = $value ? $value : 'NULL';
                 $message = 'Update: ' . $key . '<br> <b>Original</b>: ' . $value . ' <b>NEW:</b>' . $newValue;
-                $auditLog->User        = User::currentUser();
-                $auditLog->description = $message;
-                $finding->AuditLogs[]     = $auditLog;
+                $finding->log($message);
+                Fisma_Lucene::updateIndex('finding', $finding);
             }
         }
     }

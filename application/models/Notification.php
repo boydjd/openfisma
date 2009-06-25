@@ -36,7 +36,7 @@ class Notification extends BaseNotification
     const MITIGATION_APPROVED_IVV = 52;
     const MITIGATION_STRATEGY_SUBMIT = 53;
     const MITIGATION_STRATEGY_REVISE = 54;
-    const POAM_CLOSED = 16;
+    const FINDING_CLOSED = 16;
     
     const EVIDENCE_UPLOAD = 17;
     const EVIDENCE_DENIED = 50;

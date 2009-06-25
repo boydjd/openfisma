@@ -91,25 +91,8 @@ class Finding extends BaseFinding
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
-        
-        //this action is did after the revise mitigation
-        $findingEvaluation  = Doctrine_Query::Create()
-                                ->select('fe.*')
-                                ->from('FindingEvaluation fe')
-                                ->innerJoin('fe.Evaluation e')
-                                ->where('e.approvalGroup = "action" AND fe.findingId = ' . $this->id)
-                                ->orderBy('fe.id DESC')
-                                ->limit(1)
-                                ->execute();
-        if ('APPROVED' == $findingEvaluation[0]->decision) {
-            $findingEvaluation  = Doctrine_Query::Create()
-                                ->select('fe.*')
-                                ->from('FindingEvaluation fe')
-                                ->innerJoin('fe.Evaluation e')
-                                ->where('e.approvalGroup = "action" AND fe.findingId = ' . $this->id)
-                                ->execute();
-            $findingEvaluation->delete();
-        }
+        $this->log('Submit mitigation strategy');
+
         $this->save();
     }
 
@@ -126,6 +109,8 @@ class Finding extends BaseFinding
         $this->status = 'DRAFT';
         $this->updateNextDueDate();
         $this->CurrentEvaluation = null;
+        $this->log('Revise mitigation strategy');
+
         $this->save();
     }
 
@@ -144,10 +129,6 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("The finding can't be approved");
         }
         
-        //Start Doctrine Transaction
-        $conn = Doctrine_Manager::connection();
-        $conn->beginTransaction();
-
         $findingEvaluation = new FindingEvaluation();
         if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
             $findingEvaluation->Evidence   = $this->Evidence->getLast();
@@ -158,10 +139,7 @@ class Finding extends BaseFinding
         $findingEvaluation->User       = $user;
         $this->FindingEvaluations[]    = $findingEvaluation;
 
-        $auditLog = new AuditLog();
-        $auditLog->User      = $this->CreatedBy;
-        $auditLog->description = 'Update: ' . $this->status . ' Original: "NONE" New: "APPROVED"';
-        $this->AuditLogs[] = $auditLog;
+        $this->log('Approve ' . $this->getStatus());
 
         switch ($this->status) {
             case 'MSA':
@@ -180,7 +158,6 @@ class Finding extends BaseFinding
         $this->currentEvaluationId = $this->CurrentEvaluation->nextId;
         $this->updateNextDueDate();
         $this->save();
-        $conn->commit();
     }
 
     /**
@@ -196,10 +173,6 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("The finding can't be denied");
         }
 
-        //Start Doctrine Transaction
-        $conn = Doctrine_Manager::connection();
-        $conn->beginTransaction();
-
         $findingEvaluation = new FindingEvaluation();
         if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
             $findingEvaluation->Evidence   = $this->Evidence->getLast();
@@ -211,10 +184,7 @@ class Finding extends BaseFinding
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $auditLog = new AuditLog();
-        $auditLog->User      = $this->CreatedBy;
-        $auditLog->description = 'Update: ' . $this->status . ' Original: "NONE" New: "DENIED"';
-        $this->AuditLogs[] = $auditLog;
+        $this->log('Deny ' . $this->getStatus() . ' : ' . $comment);
 
         switch ($this->status) {
             case 'MSA':
@@ -228,7 +198,6 @@ class Finding extends BaseFinding
         }
         $this->updateNextDueDate();
         $this->save();
-        $conn->commit();
     }
 
     /**
@@ -254,7 +223,9 @@ class Finding extends BaseFinding
         $evidence->filename = $fileName;
         $evidence->Finding  = $this;
         $evidence->User     = $user;
-        $this->Evidence[]  = $evidence;
+        $this->Evidence[]   = $evidence;
+
+        $this->log('Upload evidence: ' . $fileName);
         $this->save();
     }
 
@@ -307,6 +278,20 @@ class Finding extends BaseFinding
             }
         }
         return $findingEvaluations;
+    }
+
+    /**
+     * write the audit log
+     * 
+     * @param string $description log message
+     * @return this
+     */
+    public function log($description)
+    {
+        $auditLog = new AuditLog();
+        $auditLog->User        = User::currentUser();
+        $auditLog->description = $description;
+        $this->AuditLogs[]     = $auditLog;
     }
 
 }
