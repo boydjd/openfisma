@@ -64,3 +64,5 @@ debug = true
 
 php.display_errors = true
 xdebug.var_display_max_depth = 3
+
+session.cookie_secure = false
