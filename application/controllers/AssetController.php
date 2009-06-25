@@ -215,19 +215,19 @@ class AssetController extends BaseController
             $q->andWhere('a.orgSystemId = ?', $params['system_id']);
         }
         if (!empty($params['name'])) {
-            $q->andWhere('p.name=?', $params['name']);
+            $q->andWhere('p.name = ?', $params['name']);
         }
         if (!empty($params['ip'])) {
-            $q->andWhere('a.addressIp = ?', $params['ip']);
+            $q->andWhere('a.addressIp LIKE ?', $params['ip'] . '%');
         }
         if (!empty($params['port'])) {
-            $q->andWhere('a.addressPort = ?', $params['port']);
+            $q->andWhere('a.address LIKE ?', $params['port'] . '%');
         }
         if (!empty($params['vendor'])) {
-            $q->andWhere('p.vendor = ?', $params['vendor']);
+            $q->andWhere('p.vendor LIKE ?"', $params['vendor'] . '%');
         }
         if (!empty($params['version'])) {
-            $q->andWhere('p.version = ?', $params['version']);
+            $q->andWhere('p.version LIKE ?', $params['version'] . '%');
         }
         // get the assets whitch are belongs to current user's systems
         $orgSystems = $this->_me->Organizations->toArray();
