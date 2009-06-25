@@ -214,8 +214,8 @@ class AssetController extends BaseController
         if (!empty($params['system_id'])) {
             $q->andWhere('a.orgSystemId = ?', $params['system_id']);
         }
-        if (!empty($params['name'])) {
-            $q->andWhere('p.name = ?', $params['name']);
+        if (!empty($params['product'])) {
+            $q->andWhere('p.name LIKE ?', $params['product'] . '%');
         }
         if (!empty($params['ip'])) {
             $q->andWhere('a.addressIp LIKE ?', $params['ip'] . '%');
