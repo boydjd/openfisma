@@ -9,14 +9,14 @@
 
     $eval = new Evaluation();
     
-    $mpEvalList = $eval->getTable()->findByApprovalGroup('action')->toArray();
-    $epEvalList = $eval->getTable()->findByApprovalGroup('evidence')->toArray();
+    $mpEvalList = $eval->getTable()->findByApprovalGroup('action');
+    $epEvalList = $eval->getTable()->findByApprovalGroup('evidence');
 
     foreach ($mpEvalList as $row) {
-        $mpStatus[$row['nickname']] = '('.$row['nickname'].')'.$row['name'];
+        $mpStatus[$row->nickname] = '(' . $row->nickname . ')' . $row->name;
     }
     foreach ($epEvalList as $row) {
-        $epStatus[$row['nickname']] = '('.$row['nickname'].')'.$row['name'];
+        $epStatus[$row->nickname] = '(' . $row->nickname . ')' . $row->name;
     }
 
     $filter_status = array(  0   =>'--Any--',
