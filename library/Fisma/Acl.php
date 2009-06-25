@@ -87,6 +87,13 @@ class Fisma_Acl extends Zend_Acl
      */
     static function requirePrivilege($resource, $privilege, $organization = null)
     {
+        $identity = Zend_Auth::getInstance()->getIdentity();
+        
+        // Root can do anything
+        if ('root' == $identity) {
+            return ;
+        }
+
         if (!self::hasPrivilege($resource, $privilege, $organization)) {
             if (isset($organization)) {
                 throw new Fisma_Exception_InvalidPrivilege("User does not have the privilege for "
