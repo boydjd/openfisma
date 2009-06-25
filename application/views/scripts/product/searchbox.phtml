@@ -6,7 +6,7 @@
     echo $listButton;
     ?>
 
-    <?php if(Fisma_Acl::hasPrivilege('products', 'create')) {
+    <?php if(Fisma_Acl::hasPrivilege('product', 'create')) {
     $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                            array('value' => 'Add Product', 
                                                  'href' => '/panel/product/sub/create'));

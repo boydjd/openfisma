@@ -109,12 +109,12 @@
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('admin_assets','read')) { ?>
+    <?php if (Fisma_Acl::hasPrivilege('asset','read')) { ?>
     myDataTable.subscribe("rowClickEvent", 
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            //document.location = "/panel/asset/sub/view/v/view/id/" + oRecord.getData("id");
+            document.location = "/panel/asset/sub/view/id/" + oRecord.getData("id");
         }
     );
     <?php }?>

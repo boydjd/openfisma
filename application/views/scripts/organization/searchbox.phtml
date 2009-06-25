@@ -15,7 +15,7 @@
     echo $listButton;
     ?>
 
-    <?php if(Fisma_Acl::hasPrivilege('admin_organizations', 'create')) {
+    <?php if(Fisma_Acl::hasPrivilege('organization', 'create')) {
     $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                            array('value' => 'Add Organization', 
                                                  'imageSrc' => '/images/add.png',

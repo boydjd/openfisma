@@ -1,10 +1,10 @@
 <?php
 echo $this->partial('user/searchbox.phtml');
 $operation = '';
-if (Fisma_Acl::hasPrivilege('users','update')) {
+if (Fisma_Acl::hasPrivilege('user','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Acl::hasPrivilege('users','delete')) {
+if (Fisma_Acl::hasPrivilege('user','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("User Account Information $operation"); ?>

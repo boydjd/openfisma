@@ -6,7 +6,7 @@
     echo $listButton;
     ?>
 
-    <?php if(Fisma_Acl::hasPrivilege('assets', 'create')) {
+    <?php if(Fisma_Acl::hasPrivilege('asset', 'create')) {
     $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                            array('value' => 'Add Asset', 
                                                  'href' => '/panel/asset/sub/create'));

@@ -126,7 +126,6 @@ class FindingController extends BaseController
      *
      * @param Zend_Form $form
      * @param Doctrine_Record|null $subject
-     * @return Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
     {

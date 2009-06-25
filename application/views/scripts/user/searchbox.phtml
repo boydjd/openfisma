@@ -6,7 +6,7 @@
     echo $listButton;
     ?>
 
-    <?php if(Fisma_Acl::hasPrivilege('users', 'create')) {
+    <?php if(Fisma_Acl::hasPrivilege('user', 'create')) {
     $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                            array('value' => 'Add Account', 
                                                  'href' => '/panel/user/sub/create'));

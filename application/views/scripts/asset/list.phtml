@@ -53,7 +53,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
     foreach ($this->columns as $k => $v) {
         echo ',{key:"' . $k . '", label:"' . $v . '"}';
     }
-    if (Fisma_Acl::hasPrivilege('admin_assets','read')) { ?>,{key: 'id', label:'', formatter: operation}<?php }?>];
+    if (Fisma_Acl::hasPrivilege('asset','read')) { ?>,{key: 'id', label:'', formatter: operation}<?php }?>];
 
     // A function which builds the query string
     var myRequestBuilder = function(oState, oSelf) {

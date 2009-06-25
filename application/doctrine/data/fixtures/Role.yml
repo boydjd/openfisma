@@ -8,11 +8,13 @@ Role:
         name: Reviewer
         nickname: REVIEWER
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Reviewer Group gives users the ability to view all information on the Plan of Actions and Milestones report for the information system. They do not have the ability to create, edit, or delete any information.</p>
+        Privileges: [areas_dashboard, findings_read, product_read, source_read, notification_finding]
 
     IVV:
         name: Independent Verification and Validation
         nickname: IV&V
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Independent Verification and Validation group serves as a third party independent of the correction process who validates whether or not the security weakness has been successfully closed. They have the ability to view all agency Plan of Actions and Milestone information and the ability to close an open item.</p>
+        Privileges: [areas_dashboard, findings_read, product_read, source_read, notification_finding]
 
     SAISO:
         name: Senior Agency Information Security Officer

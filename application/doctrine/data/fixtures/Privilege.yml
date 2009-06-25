@@ -1,56 +1,56 @@
 Privilege:
     # High-level privileges
     areas_dashboard:
-        resource: areas
+        resource: area
         action: dashboard
         description: View Dashboard
         orgSpecific: false
     areas_reports:
-        resource: areas
+        resource: area
         action: reports
         description: View Reports
         orgSpecific: false
     areas_admin:
-        resource: areas
+        resource: area
         action: admin
         description: View Administration Menu
         orgSpecific: false
     areas_configuration:
-        resource: areas
+        resource: area
         action: configuration
         description: Configure Application
         orgSpecific: false
 
     # Findings CRUD
     findings_create:
-        resource: findings
+        resource: finding
         action: create
         description: Create Findings
         orgSpecific: true
     findings_read:
-        resource: findings
+        resource: finding
         action: read
         description: View Findings
         orgSpecific: true
     findings_update:
-        resource: findings
+        resource: finding
         action: update
         description: Edit Findings
         orgSpecific: true
     findings_delete:
-        resource: findings
+        resource: finding
         action: delete
         description: Delete Findings
         orgSpecific: true
                     
     # Granular finding privileges
     findings_inject:
-        resource: findings
+        resource: finding
         action: inject
         description: Inject Findings
         orgSpecific: true
     findings_approve:
-        resource: findings
+        resource: finding
         action: approve
         description: Approve Pending Findings
         orgSpecific: true
@@ -134,110 +134,110 @@ Privilege:
 
     # Assets CRUD
     asset_create:
-        resource: assets
+        resource: asset
         action: create
         description: Create Assets
         orgSpecific: true
     asset_read:
-        resource: assets
+        resource: asset
         action: read
         description: View Assets
         orgSpecific: true
     asset_update:
-        resource: assets
+        resource: asset
         action: update
         description: Edit Assets
         orgSpecific: true
     asset_delete:
-        resource: assets
+        resource: asset
         action: delete
         description: Delete Assets
         orgSpecific: true
 
     # Users CRUD
     user_create:
-        resource: users
+        resource: user
         action: create
         description: Create Users
         orgSpecific: false
     user_read:
-        resource: users
+        resource: user
         action: read
         description: View Users
         orgSpecific: false
     user_update:
-        resource: users
+        resource: user
         action: update
         description: Edit Users
         orgSpecific: false
     user_delete:
-        resource: users
+        resource: user
         action: delete
         description: Delete Users
         orgSpecific: false
     
     # Organizations CRUD
     organization_create:
-        resource: organizations
+        resource: organization
         action: create
         description: Create Organizations
         orgSpecific: false
     organization_read:
-        resource: organizations
+        resource: organization
         action: read
         description: View Organizations
         orgSpecific: false
     organization_update:
-        resource: organizations
+        resource: organization
         action: update
         description: Edit Organizations
         orgSpecific: false
     organization_delete:
-        resource: organizations
+        resource: organization
         action: delete
         description: Delete Organizations
         orgSpecific: false
 
     # Systems CRUD
     system_create:
-        resource: systems
+        resource: system
         action: create
         description: Create Systems
         orgSpecific: false
     system_read:
-        resource: systems
+        resource: system
         action: read
         description: View Systems
         orgSpecific: false
     system_update:
-        resource: systems
+        resource: system
         action: update
         description: Edit Systems
         orgSpecific: false
     system_delete:
-        resource: systems
+        resource: system
         action: delete
         description: Delete Systems
         orgSpecific: false
 
     # Products CRUD
     product_create:
-        resource: products
+        resource: product
         action: create
         description: Create Products
         orgSpecific: false
     product_read:
-        resource: products
+        resource: product
         action: read
         description: View Products
         orgSpecific: false
     product_update:
-        resource: products
+        resource: product
         action: update
         description: Edit Products
         orgSpecific: false
     product_delete:
-        resource: products
+        resource: product
         action: delete
         description: Delete Products
         orgSpecific: false
@@ -266,44 +266,44 @@ Privilege:
     
     # Roles CRUD
     roles_create:
-        resource: roles
+        resource: role
         action: create
         description: Create Roles
         orgSpecific: false
     roles_read:
-        resource: roles
+        resource: role
         action: read
         description: View Roles
         orgSpecific: false
     roles_update:
-        resource: roles
+        resource: role
         action: update
         description: Edit Roles
         orgSpecific: false
     roles_delete:
-        resource: roles
+        resource: role
         action: delete
         description: Delete Roles
         orgSpecific: false
 
     # Networks CRUD
     networks_create:
-        resource: networks
+        resource: network
         action: create
         description: Create Networks
         orgSpecific: false
     networks_read:
-        resource: networks
+        resource: network
         action: read
         description: View Networks
         orgSpecific: false
     networks_update:
-        resource: networks
+        resource: network
         action: update
         description: Edit Networks
         orgSpecific: false
     networks_delete:
-        resource: networks
+        resource: network
         action: delete
         description: Delete Networks
         orgSpecific: false

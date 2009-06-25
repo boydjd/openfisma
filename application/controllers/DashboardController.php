@@ -70,7 +70,7 @@ class DashboardController extends SecurityController
      */
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'dashboard');
+        Fisma_Acl::requirePrivilege('area', 'dashboard');
         $user = new User();
         $user = $user->getTable()->find($this->_me->id);
         // Check to see if we got passed a "dismiss" parameter to dismiss notifications

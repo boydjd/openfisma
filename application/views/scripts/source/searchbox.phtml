@@ -6,7 +6,7 @@
     echo $listButton;
     ?>
 
-    <?php if(Fisma_Acl::hasPrivilege('finding_sources', 'create')) {
+    <?php if(Fisma_Acl::hasPrivilege('source', 'create')) {
     $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                            array('value' => 'Add Source', 
                                                  'href' => '/panel/source/sub/create'));
