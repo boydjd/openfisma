@@ -34,26 +34,11 @@
 class AuthController extends MessageController
 {
     /**
-     * Current User
-     * @var User
-     */
-    private $_me = null;
-
-    /**
      * The message displayed to the user when their e-mail address needs validation.
      */
     const VALIDATION_MESSAGE = "<br />Because you changed your e-mail address, we have sent you a confirmation message.
                                 <br />You will need to confirm the validity of your new e-mail address before you will
                                 receive any e-mail notifications.";
-    
-    /**
-     * init() - Initialize internal data structures.
-     */         
-    public function init()
-    {
-        $this->_user = new User();
-        $this->_me = User::currentUser();
-    }
 
     /**
      * Handling user login
@@ -101,23 +86,15 @@ class AuthController extends MessageController
                 $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
             } else if ($authType == 'database') {
                 // Handle database authentication 
-                $authAdapter = new Fisma_Auth_Adapter_Doctrine($user, 'username', 'password');
+                $authAdapter = new Fisma_Auth_Adapter_Doctrine($user);
                 $authAdapter->setCredential($password);
             }
 
             $auth = Zend_Auth::getInstance();
-            $authResult = $auth->authenticate($authAdapter);
+            $auth->setStorage(new Fisma_Auth_Storage_Session());
+            $authResult = $auth->authenticate($authAdapter); 
             
-            if ($authResult->isValid()) {
-                // Set up the session timeout for the authentication token
-                $authSession = new Zend_Session_Namespace(
-                    Zend_Auth::getInstance()->getStorage()->getNamespace()
-                );
-                $authSession->setExpirationSeconds(
-                    Configuration::getConfig('session_inactivity_period') * 60
-                );
-                $authSession->currentUser = $user;
-            } else {
+            if (!$authResult->isValid()) {
                 throw new Zend_Auth_Exception("Incorrect username or password");
             }
             
@@ -182,24 +159,13 @@ class AuthController extends MessageController
     }
 
     /**
-     * store user last accept rob
-     * create a audit event
-     */
-    public function acceptRobAction() {
-        $user = User::currentUser();
-        $user->lastRob = Fisma::now();
-        $user->save();
-        $this->_forward('index', 'Panel');
-    }
-
-    /**
      * Close out the current user's session.
      */
     public function logoutAction() {
-        if (!empty($this->_me)) {
-            $this->_me->logout();
+        $user = User::currentUser();
+        if (!empty($user)) {
+            $user->logout();
         }
-        unset($this->_me);
         $this->_forward('login');
     }
 
@@ -222,6 +188,7 @@ class AuthController extends MessageController
     public function robAction()
     {
     }
+
 
     /**
      * Validate the user's e-mail change.
@@ -248,22 +215,5 @@ class AuthController extends MessageController
             $message = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
         }
         $this->view->msg = $message;
-    }
-    
-    
-    /**
-     * This function is callback function.
-     * When you selected a option, 
-     * the values of options is not only saved in cookie
-     * but also saved in database.
-     * This part deals saving in database.
-     * 
-     */
-    public function setColumnPreferenceAction()
-    {
-        $user = new User();
-        $user->setColumnPreference($this->_me->id, $_COOKIE[self::COOKIE_NAME]);
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
     }
 }

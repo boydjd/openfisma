@@ -103,7 +103,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
     {
         $this->_authenticateSetup();
         $this->_authenticatePolicyCheck();
-
         if ($this->_identity->login($this->_credential)) {
             /** @todo english */
             $authResult = new Zend_Auth_Result(
@@ -117,11 +116,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
                 $this->_identity->username,
                 array('Supplied credential is invalid.')
             );
-            $this->_identity->failureCount++;
-            $this->_identity->save();
-            if ($this->_identity->failureCount > Configuration::getConfig('failure_threshold')) {
-                $this->_identity->lockAccount(User::LOCK_TYPE_PASSWORD);
-            }
         }
         return $authResult;
     }

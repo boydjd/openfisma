@@ -66,8 +66,13 @@ class User extends BaseUser
      */
     public static function currentUser() {
         if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
-            $authSession = new Zend_Session_Namespace(Zend_Auth::getInstance()->getStorage()->getNamespace());
-            return $authSession->currentUser;
+            $auth = Zend_Auth::getInstance();
+            $auth->setStorage(new Fisma_Auth_Storage_Session());
+            $identity = $auth->getIdentity();
+            if ($identity) {
+                $identity = Doctrine::getTable('User')->findonebyUsername($identity);
+            }
+            return $identity;
         } else {
             return new User();
         }
@@ -260,19 +265,27 @@ class User extends BaseUser
             throw new Fisma_Exception("Login is not allowed in command line mode");
         }
 
+        $loginRet = false;
+        $this->getTable()->getRecordListener()->setOption('disabled', true);
         if ($this->password == $this->hash($password)) {
             $this->lastLoginTs = Fisma::now();
             $this->lastLoginIp = $this->currentLoginIp;
             $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
             $this->oldFailureCount = $this->failureCount;
             $this->failureCount = 0;
-            $this->save();
             //@todo english, also see the follow
             $this->log("Login successfully");
-            return true;
+            $loginRet = true;
+        } else {
+            $this->failureCount++;
+            if ($this->failureCount > Configuration::getConfig('failure_threshold')) {
+                $this->lockAccount(User::LOCK_TYPE_PASSWORD);
+            }
         }
+        $this->save();
+        $this->getTable()->getRecordListener()->setOption('enabled', true);
         $this->log("Login failure");
-        return false;
+        return $loginRet;
     }
 
     /**

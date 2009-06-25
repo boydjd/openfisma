@@ -321,4 +321,14 @@ class UserController extends BaseController
         $this->_helper->viewRenderer->setNoRender();
     }
     
+    /**
+     * store user last accept rob
+     * create a audit event
+     */
+    public function acceptRobAction() {
+        $user = User::currentUser();
+        $user->lastRob = Fisma::now();
+        $user->save();
+        $this->_forward('index', 'Panel');
+    }
 }
