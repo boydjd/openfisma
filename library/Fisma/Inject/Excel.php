@@ -170,7 +170,7 @@ class Fisma_Inject_Excel
             // Validate that required row attributes are filled in:
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
                 if (empty($finding[$columnName])) {
-                    throw new Fisma_Fisma_Exception_InvalidFileFormat("Row $rowNumber: Required column \"$columnDescription\"
+                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Required column \"$columnDescription\"
                                                           is empty");
                 }
             }
@@ -182,14 +182,14 @@ class Fisma_Inject_Excel
             $poam['uploadId'] = $uploadId;
             $organization = Doctrine::getTable('Organization')->findOneByNickname($finding['systemNickname']);
             if (!$organization) {
-                throw new Fisma_Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid system selected. Your template may
+                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid system selected. Your template may
                                                       be out of date. Please try downloading it again.");
             }
             $poam['responsibleOrganizationId'] = $organization->id;
 
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
-                throw new Fisma_Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
+                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
                                                       template may
                                                       be out of date. Please try downloading it again.");
             }
@@ -197,7 +197,7 @@ class Fisma_Inject_Excel
             
             $securityControlTable = Doctrine::getTable('SecurityControl')->findOneByCode($finding['securityControl']);
             if (!$securityControlTable) {
-                throw new Fisma_Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
+                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
                                                       template may
                                                       be out of date. Please try downloading it again.");
             }
@@ -231,7 +231,7 @@ class Fisma_Inject_Excel
             $asset = array();  
             $networkTable = Doctrine::getTable('Network')->findOneByNickname($finding['network']);
             if (!$networkTable) {
-                throw new Fisma_Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
+                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
                                                       template may
                                                       be out of date. Please try downloading it again.");
             }
@@ -260,14 +260,15 @@ class Fisma_Inject_Excel
                 /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
                 $query = Doctrine_Query::create()
                          ->select()
-                         ->from('Product')
-                         ->where("name like '%?%'", $product['name'])
-                         ->andWhere("vendor like '%?%'", $product['vendor'])
-                         ->andWhere("version like '%?%'", $product['version']);
+                         ->from('Product p')
+                         ->where('p.name = ?', $product['name'])
+                         ->andWhere('p.vendor = ?', $product['vendor'])
+                         ->andWhere('p.version = ?', $product['version']);
                 $productRecord = $query->execute()->toArray();
                 if (empty($productRecord)) {
                     $productRecord = new Product();
                     $productRecord->merge($product);
+                    $productRecord->save();
                     $productId = $productRecord->id;
                 } else {
                     $productId = $productRecord[0]['id'];
@@ -277,7 +278,6 @@ class Fisma_Inject_Excel
             // Persist the asset, if necessary
             if (!empty($asset['networkId']) && !empty($asset['addressIp']) && !empty($asset['addressPort'])) {
                 $asset['productId'] = $productId;
-                
                 // Verify whether asset exists or not
                 $q = Doctrine_Query::create()
                      ->select()

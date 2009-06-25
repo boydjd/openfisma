@@ -43,6 +43,7 @@ class SystemController extends SecurityController
      */
     public function preDispatch()
     {
+        parent::preDispatch();
         $req = $this->getRequest();
         $this->_paging['startIndex'] = $req->getParam('startIndex', 0);
     }
