@@ -50,7 +50,7 @@ class LogController extends PoamBaseController
      */
     public function searchbox()
     {
-        $this->_acl->requirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('user', 'read');
         
         $user = new User();
         $userCount = $user->count();
@@ -96,7 +96,7 @@ class LogController extends PoamBaseController
      */
     public function viewAction()
     {
-        $this->_acl->requirePrivilege('admin_users', 'read');
+        $this->_acl->requirePrivilege('user', 'read');
         //Display searchbox template
         $this->searchbox();
         

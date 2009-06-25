@@ -172,7 +172,7 @@ class AssetController extends BaseController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('assets', 'create');
+        Fisma_Acl::requirePrivilege('asset', 'create');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
@@ -182,7 +182,7 @@ class AssetController extends BaseController
      */
     public function searchboxAction()
     {
-        Fisma_Acl::requirePrivilege('assets', 'read');
+        Fisma_Acl::requirePrivilege('asset', 'read');
         
         $params = $this->parseCriteria();
         $systems = $this->_me->Organizations;
@@ -203,7 +203,7 @@ class AssetController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('assets', 'read');
+        Fisma_Acl::requirePrivilege('asset', 'read');
 
         $params = $this->parseCriteria();
         $q = Doctrine_Query::create()
@@ -312,7 +312,7 @@ class AssetController extends BaseController
      */
     public function multideleteAction()
     {
-        Fisma_Acl::requirePrivilege('assets', 'delete');
+        Fisma_Acl::requirePrivilege('asset', 'delete');
 
         $req = $this->getRequest();
         $post = $req->getPost();

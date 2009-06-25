@@ -42,7 +42,7 @@ class NetworkController extends BaseController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('networks', 'delete');
+        Fisma_Acl::requirePrivilege('network', 'delete');
         
         $id = $this->_request->getParam('id');
         $network = Doctrine::getTable('Network')->find($id);

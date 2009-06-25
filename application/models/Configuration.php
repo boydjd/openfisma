@@ -93,7 +93,7 @@ class Configuration extends BaseConfiguration
      * @param string|int $value
      */
     public static function setConfig($name, $value) {
-        Fisma_Acl::requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $config = Doctrine::getTable('Configuration')->findOneByName($name);
         $config->value = $value;

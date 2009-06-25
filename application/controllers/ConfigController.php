@@ -70,7 +70,7 @@ class ConfigController extends SecurityController
      */
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         $this->_helper->viewRenderer->setNoRender();
         $this->_helper->actionStack('password');
         $this->_helper->actionStack('notification');
@@ -83,7 +83,7 @@ class ConfigController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
 
         $form = $this->getConfigForm('general_config');
         if ($this->_request->isPost()) {
@@ -172,7 +172,7 @@ class ConfigController extends SecurityController
      */
     public function contactAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('contact_config');
         if ($this->_request->isPost()) {
@@ -212,7 +212,7 @@ class ConfigController extends SecurityController
      */
     public function ldapupdateAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('ldap');
         $id = $this->_request->getParam('id');
@@ -250,7 +250,7 @@ class ConfigController extends SecurityController
      */
     public function ldapdelAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $id = $this->_request->getParam('id');
         Doctrine::getTable('LdapConfig')->find($id)->delete();
@@ -266,7 +266,7 @@ class ConfigController extends SecurityController
      */
     public function ldapvalidAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('ldap');
         if ($this->_request->isPost()) {
@@ -301,7 +301,7 @@ class ConfigController extends SecurityController
      */
     public function notificationAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('notification_config');
         if ($this->_request->isPost()) {
@@ -341,7 +341,7 @@ class ConfigController extends SecurityController
      */
     public function privacyAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('privacy_policy_config');
         if ($this->_request->isPost()) {
@@ -372,7 +372,7 @@ class ConfigController extends SecurityController
      */
     public function passwordAction()
     {
-        Fisma_Acl::requirePrivilege('areas', 'configuration');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('password_config');
         if ($this->_request->isPost()) {

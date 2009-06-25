@@ -48,7 +48,7 @@ class RoleController extends BaseController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('roles', 'delete');
+        Fisma_Acl::requirePrivilege('role', 'delete');
         
         $req = $this->getRequest();
         $id = $req->getParam('id');
@@ -84,7 +84,7 @@ class RoleController extends BaseController
      */
     public function rightAction()
     {
-        Fisma_Acl::requirePrivilege('roles', 'definition');
+        Fisma_Acl::requirePrivilege('role', 'definition');
         $req = $this->getRequest();
         $do = $req->getParam('do');
         $roleId = $req->getParam('id');
