@@ -35,8 +35,7 @@
 class MetainfoController extends PoamBaseController
 {
     /**
-     * @todo english
-     * init() - Initialize 
+     * Initialize 
      */
     public function init()
     {
@@ -46,48 +45,45 @@ class MetainfoController extends PoamBaseController
     }
 
     /**
-     * @todo english
      * List meta data on the remediation detail page
      */
     public function listAction()
     {
-        $req = $this->getRequest();
-        $module = $req->getParam('o');
-        $this->view->selected = $req->getParam('value', '');
-        if ($module == 'system') {
-            $list = & $this->_systemList;
+        $module = $this->_request->getParam('o');
+        $this->view->selected = $this->_request->getParam('value', '');
+        if ($module == 'organization') {
+            $organizations  = Doctrine::getTable('Organization')->findAll();
+            foreach ($organizations as $organization) {
+                $list[$organization->id] = "($organization->nickname)-" . $organization->name;
+            }
         }
-        if ($module == 'blscr') {
-            $m = new Blscr();
-            $list = $m->getList('class');
-            $list = array_keys($list);
-            $list = array_combine($list, $list);
+        if ($module == 'security_control') {
+            $securityControls = Doctrine::getTable('SecurityControl')->findAll();
+            foreach ($securityControls as $securityControl) {
+                $list[$securityControl->id] = $securityControl->code;
+            }
         }
-        if (in_array($module, array(
-            'threat_level',
-            'cmeasure_effectiveness'
-        ))) {
+        if (in_array($module, array('threat_level', 'countermeasures-effectiveness'))) {
             $list = array(
-                "NONE" => "NONE",
-                "LOW" => "LOW",
+                "NONE"     => "NONE",
+                "LOW"      => "LOW",
                 "MODERATE" => "MODERATE",
-                "HIGH" => "HIGH"
+                "HIGH"     => "HIGH"
             );
         }
         if ($module == 'decision') {
             $list = array(
                 "APPROVED" => "APPROVED",
-                "DENIED" => "DENIED"
+                "DENIED"   => "DENIED"
             );
         }
         if ($module == 'type') {
             $list = array(
                 "CAP" => "(CAP) Corrective Action Plan",
-                "AR" => "(AR) Accepted Risk",
-                "FP" => "(FP) False Positive"
+                "AR"  => "(AR) Accepted Risk",
+                "FP"  => "(FP) False Positive"
             );
-            $this->view->selected = isset($list[$this->view->selected])? 
-                $list[$this->view->selected]:'CAP';
+            $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'CAP';
         }
         $this->view->list = $list;
     }

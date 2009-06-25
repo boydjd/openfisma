@@ -130,7 +130,7 @@ class RemediationController extends SecurityController
      */    
     public function summaryAction()
     {
-        Fisma_Acl::requirePrivilege('findings', 'read', '*');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         $mitigationEvaluationQuery = Doctrine_Query::create()
                                      ->from('Evaluation e')
@@ -151,7 +151,7 @@ class RemediationController extends SecurityController
      * Invoked asynchronously to load data for the summary table.
      */
     public function summaryDataAction() {
-        Fisma_Acl::requirePrivilege('findings', 'read', '*');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
@@ -459,120 +459,46 @@ class RemediationController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $this->view->assign('keywords', $req->getParam('keywords'));
-        
-        $poamDetail = $this->_poam->getDetail($id);
-        if (empty($poamDetail)) {
-            throw new Fisma_Exception("POAM($id) is not found,
-                Make sure a valid ID is inputed");
-        }
-        $this->view->assign('poam', $poamDetail);
-        
-        // Get the evidence artifacts for this finding so that the count can be determined.
-        /** @todo this could obviously be a more efficient mechanism for getting the evidence count */
-        $evEvaluation = $this->_poam->getEvEvaluation($id);
-        $evs = array();
-        foreach ($evEvaluation as $evEval) {
-            $evid = & $evEval['id'];
-            if (!isset($evs[$evid]['ev'])) {
-                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
-            }
-            $evs[$evid]['acl'] = $this->_acl;
-            $evs[$evid]['eval'][$evEval['eval_name']] =
-                array_slice($evEval, 5);
-        }
-        $this->view->assign('ev_evals', $evs);
+        $this->_viewFinding();
+        $this->view->keywords =  $this->_request->getParam('keywords');
     }
     
     /**
-     * modifyAction() - ???
+     * Modify the finding
      *
-     * @todo Do fine-grained access-control here
      */
     public function modifyAction()
     {
-        $this->_acl->requirePrivilege('remediation', 'update_finding');
+        Fisma_Acl::requirePrivilege('finding', 'update');
         
-        $req = $this->getRequest();
+        $id          = $this->_request->getParam('id');
+        $findingData = $this->_request->getPost('finding');
 
-        $id = $req->getParam('id');
-        $poam = $req->getPost('poam');
-        if (!empty($poam)) {
-            try {
-                $oldpoam = $this->_poam->find($id)->toArray();
-                if (empty($oldpoam)) {
-                    throw new Fisma_Exception("incorrect ID specified for poam");
-                } else {
-                    $oldpoam = $oldpoam[0];
-                }
-                if (!empty($oldpoam['action_est_date'])
-                    && !empty($poam['action_current_date'])
-                    && empty($poam['ecd_justification'])) {
-                    throw new Fisma_Exception("The ECD date cannot be changed unless you".
-                        " provide a justification in the field below the date.");
-                }
-                $where = $this->_poam->getAdapter()->quoteInto('id = ?', $id);
-                $logContent = "Changed:";
-                //@todo sanity check
-                //@todo this should be encapsulated in a single transaction
-                foreach ($poam as $k => $v) {
-                    if ($k == 'type' && $oldpoam['status'] == 'NEW') {
-                        assert(empty($poam['status']));
-                        $poam['status'] = 'DRAFT';
-                        $poam['modify_ts'] = self::$now->toString('Y-m-d H:i:s');
-                    }
-                    ///@todo SSO can only approve the action after all the required
-                    // info provided
-                }
-                $result = $this->_poam->update($poam, $where);
-                        
-                // Generate notifications and audit records if the update is
-                // successful
-                $notificationsSent = array();
-                if ( $result > 0 ) {
-                    foreach ($poam as $k => &$v) {
-                        // We shouldn't send the same type of notification twice
-                        // in one update. $notificationsSent is a set which
-                        // tracks which notifications we have already created.
-                        if (array_key_exists($k, $this->_notificationArray)
-                            && !array_key_exists($this->_notificationArray[$k],
-                                                 $notificationsSent)) {
-                            $this->_notification->add($this->_notificationArray[$k],
-                                $this->_me->account,
-                                "PoamID: $id",
-                                isset($poam['system_id'])?$poam['system_id']: $oldpoam['system_id']);
-                            $notificationsSent[$this->_notificationArray[$k]] = 1;
-                        }
-
-                        $logContent =
-                            "Update: $k\nOriginal: \"{$oldpoam[$k]}\" New: \"$v\"";
-                        $this->_poam->writeLogs($id, $this->_me->id, 'MODIFICATION', $logContent);
-                    }
-
-                    if (is_dir(Fisma::getPath('data') . '/index/finding/')) {
-                        //Update finding index
-                        if (!empty($poam['system_id'])) {
-                                $poam['system'] = $this->_systemList[$poam['system_id']];
-                                unset($poam['system_id']);
-                        }
-                        $this->_helper->updateIndex('finding', $id, $poam);
-                    }
-                }
-            } catch (Fisma_Exception $e) {
-                if ($e instanceof Fisma_Exception) {
-                    $message = $e->getMessage();
-                } else {
-                    $message = "Failed to modify the poam.";
-                }
-                $this->message($message, self::M_WARNING);
-            }
+        $finding = new Finding();
+        $finding = $finding->getTable()->find($id);
+        if (empty($finding)) {
+            throw new Fisma_Exception("FINDING($id) is not found, Make sure a valid ID is specified");
         }
-        
-        //throw new Fisma_Excpection('POAM not updated for some reason');
+
+        try {
+            Doctrine_Manager::connection()->beginTransaction();
+            foreach ($findingData as &$value) {
+                if (is_string($value)) {
+                    $value = addslashes($value);
+                }
+            } 
+            $finding->merge($findingData);
+            $finding->save();
+            Doctrine_Manager::connection()->commit();
+        } catch (Doctrine_Exception $e) {
+            Doctrine_Manager::connection()->rollback();
+            $message = "Failure in changing. ";
+            if (Fisma::debug()) {
+                $message .= $e->getMessage();
+            }
+            $model = self::M_WARNING;
+            $this->message($message, $model);
+        }
         $this->_forward('view', null, null, array('id' => $id));
     }
 
@@ -581,101 +507,38 @@ class RemediationController extends SecurityController
      */
     public function msaAction()
     {
-        $poamId = $this->_request->getParam('id');
-        $evalId = $this->_request->getParam('eval_id');
-        $isMsa  = $this->_request->getParam('is_msa');
+        $id       = $this->_request->getParam('id');
+        $do       = $this->_request->getParam('do');
         $decision = $this->_request->getPost('decision');
-        $oldpoam = $this->_poam->find($poamId)->toArray();
-        if (empty($oldpoam)) {
-            throw new Fisma_Exception('incorrect ID specified for poam');
-        } else {
-                $oldpoam = $oldpoam[0];
-        }
-        if (isset($isMsa)) {
-            if (!in_array($isMsa, array(0, 1))) {
-                throw new Fisma_Exception('incorrect mitigation strategy operate');
-            }
-            //Submit Mitiagtion Strategy
-            if (1 == $isMsa) {
-                $poam['status'] = 'MSA';
-                $poam['mss_ts'] = self::$now->toString('Y-m-d H:i:s');
 
-                //Get next status from evaluations table
-                $rst = $this->_poam->getAdapter()->select()->from('evaluations')
-                              ->where("`group` = 'ACTION'")
-                              ->order('precedence_id ASC')->limit(1);
-                $nextEvaluation = $this->_poam->getAdapter()->fetchRow($rst);
-                $newStatus = $nextEvaluation['nickname'];
-                
-                $msEvaluation = $this->_poam->getActEvaluation($poamId);
-                /** @todo english 
-                 * Delete old approval logs while the mitigation strategy was submit after revised.
-                 */
-                if (!empty($msEvaluation) && 'APPROVED' == $msEvaluation[count($msEvaluation)-1]['decision']) {
-                    $this->_poam->getAdapter()->delete('poam_evaluations', 'group_id = '.$poamId.' AND '.
-                    ' eval_id IN (SELECT id FROM `evaluations` WHERE `group` = "ACTION")');
-                }
-                if (empty($oldpoam['action_est_date'])) {
-                    $poam['action_est_date'] = $oldpoam['action_current_date'];
-                }
-                
-                $this->_notification->add(Notification::MITIGATION_STRATEGY_SUBMIT,
-                                          $this->_me->account,
-                                          "PoamId: $poamId",
-                                          $oldpoam['system_id']);
-                $logContent = "Update: status\n Original: \"{$oldpoam['status']}\" New: \"{$newStatus}\"";
-            //Revise Mitigation Strategy
-            } else {
-                $poam['status'] = 'DRAFT';
-                $logContent = "Update: status Original: \"{$oldpoam['status']}\" New: \"{$poam['status']}\"";
-            }
-            
-            $this->_poam->writeLogs($poamId, $this->_me->id, 'MODIFICATION', $logContent);
+        $finding = new Finding();
+        $finding = $finding->getTable()->find($id);
+        if (empty($finding)) {
+            throw new Fisma_Exception("FINDING($id) is not found, Make sure a valid ID is specified");
         }
 
         if (!empty($decision)) {
-            $poamEvalId = $this->_poam->reviewEv($poamId, array('decision' => $decision,
-                                                               'eval_id'  => $evalId,
-                                                               'user_id'  => $this->_me->id,
-                                                               'date'     => self::$now->toString('Y-m-d')));
-            $evaluation = new Evaluation();
-            $msEvalList = $evaluation->getEvalList('ACTION');
-            $ret = $evaluation->find($evalId);
-            $evalNickname = $ret->current()->nickname;
-            $logContent = "Update: $evalNickname\nOriginal: \"NONE\" New: \"".$decision."\"";
-            
-            $this->_notification->add($ret->current()->event_id,
-                        $this->_me->account,
-                        "PoamID: $poamId",
-                        $oldpoam['system_id']);
-
-            if ('APPROVED' == $decision) {
-                if ($evalId == $msEvalList[count($msEvalList)-1]['id']) {
-                    $poam['status'] = 'EN';
-                }
-            }
-            if ('DENIED' == $decision) {
-                $poam['status'] = 'DRAFT';
-                $comment = $this->_request->getParam('comment');
-                $body = $this->_request->getParam('reject');
-                $comm = new Comments();
-                $comm->insert(array('poam_evaluation_id' => $poamEvalId,
-                                    'user_id' => $this->_me->id,
-                                    'content' => $comment));
-                $logContent .=" Status: DRAFT. Justification: $comment";
-            }
-
-            if (!empty($logContent)) {
-                 $this->_poam->writeLogs($poamId, $this->_me->id, 'MODIFICATION', $logContent);
-            }
+            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action);
         }
 
-        if (!empty($poam)) {
-            $this->_poam->update($poam, 'id = '. $poamId);
+        if ('submitmitigation' == $do) {
+            Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_submit');
+            $finding->submitMitigation(User::currentUser());
         }
-        $this->_redirect('/panel/remediation/sub/view/id/' . $poamId, array(
-            'exit'
-        ));
+        if ('revisemitigation' == $do) {
+            Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_revise');
+            $finding->reviseMitigation(User::currentUser());
+        }
+
+        if ('APPROVED' == $decision) {
+            $finding->approve(User::currentUser());
+        }
+
+        if ('DENIED' == $decision) {
+            $comment = $this->_request->getParam('comment');
+            $finding->deny(User::currentUser(), $comment);
+        }
+        $this->_forward('view', null, null, array('id' => $id));
     }
 
     /**
@@ -683,24 +546,18 @@ class RemediationController extends SecurityController
      */
     public function uploadevidenceAction()
     {
-        $this->_acl->requirePrivilege('remediation', 'update_evidence');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
+        Fisma_Acl::requirePrivilege('finding', 'upload_evidence');
+
+        $id = $this->_request->getParam('id');
+        $finding = new Finding();
+        $finding = $finding->getTable()->find($id);
+        if (empty($finding)) {
+            throw new Fisma_Exception("FINDING($id) is not found, Make sure a valid ID is specified");
+        }
+
         define('EVIDENCE_PATH', Fisma::getPath('data') . '/uploads/evidence');
         $file = $_FILES['evidence'];
         if ($file['name']) {
-            $poam = $this->_poam->find($id)->toArray();
-            if (empty($poam)) {
-                throw new Fisma_Exception('incorrect ID specified for poam');
-            } else {
-                $poam = $poam[0];
-            }
-            if ($poam['status'] != 'EN') {
-                throw new Exception('Cannot upload evidence unless the finding is in EN status.');
-            }
-            $userId = $this->_me->id;
-            $nowStr = self::$now->toString('Y-m-d-his');
             if (!file_exists(EVIDENCE_PATH)) {
                 mkdir(EVIDENCE_PATH, 0755);
             }
@@ -712,47 +569,22 @@ class RemediationController extends SecurityController
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             if ($count > 0) {
-                $resultMove =
-                    move_uploaded_file($file['tmp_name'],
-                        $absFile);
+                $resultMove = move_uploaded_file($file['tmp_name'], $absFile);
                 if ($resultMove) {
                     chmod($absFile, 0755);
                 } else {
-                    throw new Fisma_Exception('Failed in move_uploaded_file(). '
-                        . $absFile . "\n" . $file['error']);
+                    throw new Fisma_Exception('Failed in move_uploaded_file(). ' . $absFile . "\n" . $file['error']);
                 }
             } else {
                 throw new Fisma_Exception('The filename is not valid');
             }
-            $today = substr($nowStr, 0, 10);
-            $data = array(
-                'poam_id' => $id,
-                'submission' => $filename,
-                'submitted_by' => $userId
-            );
-            $db = Zend_Registry::get('db');
-            $result = $db->insert('evidences', $data);
-            $evidenceId = $db->LastInsertId();
-            $this->_notification->add(Notification::EVIDENCE_APPROVAL_1ST,
-                $this->_me->account,
-                "PoamId: $id",
-                $poam['system_id']);
 
-            $updateData = array(
-                'status' => 'EA',
-                'action_actual_date' => $today
-            );
-            $result = $this->_poam->update($updateData, "id = $id");
-            if ($result > 0) {
-                $logContent = "Changed: status: EA . Upload evidence:"
-                              ." $filename OK";
-                $this->_poam->writeLogs($id, $userId, 'UPLOAD EVIDENCE', $logContent);
-            }
+            $finding->uploadEvidence($filename, User::currentUser());
         } else {
             $this->message("You did not select a file to upload. Please select a file and try again.",
                            self::M_WARNING);
         }
-        $this->_forward('view', 'Remediation', null, array('id'=>$id));
+        $this->_forward('view', null, null, array('id' => $id));
     }
     
     /**
@@ -761,26 +593,25 @@ class RemediationController extends SecurityController
      */
     public function downloadevidenceAction()
     {
-        $this->_acl->requirePrivilege('remediation', 'read_evidence');
-        $id = $this->getRequest()->getParam('id', 0);
-        $evidences = $this->_poam->getAdapter()
-                     ->query('SELECT * FROM evidences AS e LEFT JOIN poams AS p ON p.id = e.poam_id WHERE e.id = '.$id);
-        $result = $evidences->fetchAll();
-        if (empty($result)) {
-            /**
-             * @todo english
-             */
+        Fisma_Acl::requirePrivilege('finding', 'read_evidence');
+
+        $id = $this->_request->getParam('id');
+        $evidence = new Evidence();
+        $evidence = $evidence->getTable()->find($id);
+        if (empty($evidence)) {
+            /** @todo english */
             throw new Fisma_Exception('Wrong link');
         }
-        $result= array_pop($result);
-        if (!in_array((int)$result['system_id'], array_keys($this->_systemList))) {
-            /**
-             * @todo english
-             */
+
+        if (!in_array($evidence->Finding->ResponsibleOrganization, $this->_me->Organizations)
+            && 'root' != $this->_me->username)
+        {
+            /** @todo english */
             throw new Fisma_Exception('You have no rights to access this file');
         }
-        $fileName = $result['submission'];
-        $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $result['poam_id'] . '/';
+
+        $fileName = $evidence->filename;
+        $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $evidence->findingId . '/';
 
         if (file_exists($filePath . $fileName)) {
             $this->_helper->layout->disableLayout(true);
@@ -797,9 +628,7 @@ class RemediationController extends SecurityController
             }
             fclose($fp);
         } else {
-            /**
-             * @todo english
-             */
+            /** @todo english */
             throw new Fisma_Exception('No such file or path.');
         }
     }
@@ -810,87 +639,28 @@ class RemediationController extends SecurityController
      */
     public function evidenceAction()
     {
-        $req = $this->getRequest();
-        $evalId = $req->getParam('evaluation');
-        $precedenceId = $req->getParam('precedence');
-        $decision = $req->getParam('decision');
-        $eid = $req->getPost('evidence_id');
-        $ev = new Evidence();
-        $evDetail = $ev->find($eid);
+        $id       = $this->_request->getParam('id');
+        $decision = $this->_request->getPost('decision');
 
-        $eval = new Evaluation();
-        $evalList = $eval->getEvalList('EVIDENCE');
-
-        // Get the poam data because we need system_id to generate the
-        // notification
-        $poam = $this->_poam->find($evDetail->current()->poam_id)->toArray();
-        if (empty($poam)) {
-            throw new Fisma_Exception('POAM id not specified or POAM does not exist');
-        } else {
-            $poam = $poam[0];
+        $finding = new Finding();
+        $finding = $finding->getTable()->find($id);
+        if (empty($finding)) {
+            throw new Fisma_Exception("FINDING($id) is not found, Make sure a valid ID is specified");
         }
-        
-        if (empty($evDetail)) {
-            throw new Fisma_Exception('Wrong evidence id:' . $eid);
+
+        if (!empty($decision)) {
+            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action);
         }
-        if ($decision == 'APPROVE') {
-            $decision = 'APPROVED';
-        } else if ($decision == 'DENY') {
-            $decision = 'DENIED';
-        } else {
-            throw new Fisma_Exception('Wrong decision:' . $decision);
+
+        if ('APPROVED' == $decision) {
+            $finding->approve(User::currentUser());
         }
-        $poamId = $evDetail->current()->poam_id;
-        $logContent = "";
-        if (in_array($decision, array(
-            'APPROVED',
-            'DENIED'
-        ))) {
-            $logContent = "";
-            $evvId = $this->_poam->reviewEv($eid, array(
-                'decision' => $decision,
-                'eval_id' => $evalId,
-                'user_id' => $this->_me->id,
-            ));
 
-            $logContent.= $evalList[$precedenceId]['nickname'] ." Decision: $decision.";
-
-            if ('APPROVED' == $decision) {
-                $this->_notification->add($evalList[$precedenceId]['event_id'], $this->_me->account,
-                                          "PoamId: $poamId", $poam['system_id']);
-
-                
-                if ($precedenceId == count($evalList)-1) {
-                    $logContent.= " Status: CLOSED";
-                    $this->_poam->update(array('status' => 'CLOSED', 'close_ts' => self::$now->toString('Y-m-d')),
-                                               'id=' . $poamId);
-            
-                    $this->_notification->add(Notification::POAM_CLOSED, $this->_me->account, 
-                                         "PoamId: $poamId", $poam['system_id']);
-                }
-            } else {
-                $this->_poam->update(array('status' => 'EN', 'action_actual_date' => null), 'id=' . $poamId);
-                $content = $req->getParam('comment');
-                $body = $req->getParam('reject');
-                $comm = new Comments();
-                $comm->insert(array('poam_evaluation_id' => $evvId,
-                                    'user_id' => $this->_me->id,
-                                    'content' => $content));
-
-                $logContent .= " Status: EN. Justification: $content";
-                $this->_notification->add(Notification::EVIDENCE_DENIED,
-                                          $this->_me->account,
-                                          "PoamId: $poamId",
-                                          $poam['system_id']);
-            }
-            if (!empty($logContent)) {
-                $logContent = "Changed: $logContent";
-                $this->_poam->writeLogs($poamId, $this->_me->id, 'EVIDENCE EVALUATION', $logContent);
-            }
+        if ('DENIED' == $decision) {
+            $comment = $this->_request->getParam('comment');
+            $finding->deny(User::currentUser(), $comment);
         }
-        $this->_redirect('/panel/remediation/sub/view/id/' . $poamId, array(
-            'exit'
-        ));
+        $this->_forward('view', null, null, array('id' => $id));
     }
 
     /**
@@ -900,53 +670,48 @@ class RemediationController extends SecurityController
      */
     public function rafAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_system_rafs');
-        
-        $id = $this->_req->getParam('id');
-        $poamDetail = $this->_poam->getDetail($id);
-        try {
-            if (empty($poamDetail)) {
-                throw new Fisma_Exception(
-                    "Not able to get details for this POAM ID ($id)");
-            }
+        Fisma_Acl::requirePrivilege('report', 'generate_system_rafs');
 
-            if ($poamDetail['threat_source'] == '' ||
-                $poamDetail['threat_level'] == 'NONE' ||
-                $poamDetail['cmeasure'] == '' ||
-                $poamDetail['cmeasure_effectiveness'] == 'NONE') {
+        $id = $this->_request->getParam('id');
+        $finding = new Finding();
+        $finding = $finding->getTable()->find($id);
+        if (empty($finding)) {
+            throw new Fisma_Exception("FINDING($id) is not found, Make sure a valid ID is specified");
+        }
+        try {
+            if ($finding->threat == '' ||
+                $finding->threatLevel == 'NONE' ||
+                $finding->countermeasures == '' ||
+                $finding->countermeasuresEffectiveness == 'NONE') {
                 throw new Fisma_Exception("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
-
-            $system = new System();
-            $ret = $system->find($poamDetail['system_id']);
-            $actOwner = $ret->current()->toArray();
-
-            $securityCategorization = $system->calcSecurityCategory($actOwner['confidentiality'],
-                                                                    $actOwner['integrity'],
-                                                                    $actOwner['availability']);
+            
+            $system   = new System();
+            $actOwner = $finding->ResponsibleOrganization;
+            $securityCategorization = $system->calcSecurityCategory($actOwner->confidentiality,
+                                                                    $actOwner->integrity,
+                                                                    $actOwner->availability);
 
             if (NULL == $securityCategorization) {
-                throw new Fisma_Exception('The security categorization for ('.$actOwner['id'].')'.
-                    $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
+                throw new Fisma_Exception('The security categorization for (' . $actOwner->id . ')' .
+                    $actOwner->name . ' is not defined. An analysis of risk cannot be generated ' .
                     'unless these values are defined.');
             }
-            $this->view->assign('securityCategorization', $securityCategorization);
+            $this->view->securityCategorization = $securityCategorization;
         } catch (Fisma_Exception $e) {
             if ($e instanceof Fisma_Exception) {
                 $message = $e->getMessage();
             }
             $this->message($message, self::M_WARNING);
-            $this->_forward('remediation', 'Panel', null, array('id' => $id, 'sub'=>'view'));
+            $this->_forward('view', null, null, array('id' => $id));
         }
 
         $this->_helper->contextSwitch()
                ->setHeader('pdf', 'Content-Disposition', "attachement;filename={$id}_raf.pdf")
                ->initContext();
         
-        $this->view->assign('poam', $poamDetail);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('source_list', $this->_sourceList);
+        $this->view->finding = $finding;
     }
 
     /**
@@ -987,160 +752,37 @@ class RemediationController extends SecurityController
      * Display basic data about the finding and the affected asset
      */
     function findingAction() {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        $this->_helper->layout->disableLayout();
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $poamDetail = $this->_poam->getDetail($id);
-        if (empty($poamDetail)) {
-            throw new Fisma_Exception("POAM($id) is not found, Make sure a valid ID is inputed");
-        }
-
-        if (!empty($poamDetail['action_est_date'])
-            && $poamDetail['action_est_date'] != $poamDetail['action_current_date']) {
-            $query = $this->_poam->getAdapter()->select()
-                          ->from(array('al'=>'audit_logs'), 'date_format(timestamp, "%Y-%m-%d") as time')
-                          ->join(array('u'=>'users'), 'al.user_id = u.id', 'u.account')
-                          ->where('al.poam_id = ?', $id)
-                          ->where('al.description like "%action_current_date%"')
-                          ->order('al.id DESC');
-            $justification = $this->_poam->getAdapter()->fetchRow($query);
-            $this->view->assign('justification', $justification);
-        }
-        
-
-        $this->view->assign('poam', $poamDetail);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('keywords', $req->getParam('keywords'));
+        $this->_viewFinding();
+        $this->view->keywords = $this->_request->getParam('keywords');
     }
 
     /**
      * Fields for defining the mitigation strategy
      */
     function mitigationStrategyAction() {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        $this->_helper->layout->disableLayout();
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $poamDetail = $this->_poam->getDetail($id);
-        if (empty($poamDetail)) {
-            throw new Fisma_Exception("POAM($id) is not found,
-                Make sure a valid ID is inputed");
-        }
-
-        if (!empty($poamDetail['action_est_date'])
-            && $poamDetail['action_est_date'] != $poamDetail['action_current_date']) {
-            $query = $this->_poam->getAdapter()->select()
-                          ->from(array('al'=>'audit_logs'), 'date_format(timestamp, "%Y-%m-%d") as time')
-                          ->join(array('u'=>'users'), 'al.user_id = u.id', 'u.account')
-                          ->where('al.poam_id = ?', $id)
-                          ->where('al.description like "%action_current_date%"')
-                          ->order('al.id DESC');
-            $justification = $this->_poam->getAdapter()->fetchRow($query);
-            $this->view->assign('justification', $justification);
-        }
-        
-        $msEvaluation = $this->_poam->getActEvaluation($id);
-        $evalModel = new Evaluation();
-        $msEvallist = $evalModel->getEvalList('ACTION');
-        $mss = array();
-        if (!empty($msEvaluation)) {
-            $i = 0;
-            foreach ($msEvaluation as $k=>$row) {
-                if ($k != 0 && !($row['precedence_id'] > $msEvaluation[$k-1]['precedence_id'])) {
-                    $i++;
-                }
-                $mss[$i][] = $row;
-                if ($k == count($msEvaluation)-1) {
-                    if ($row['decision'] == 'DENIED') {
-                        //If denied, it should start a new round of evaluation 
-                        //however, none of this happens in DRAFT
-                        if ($poamDetail['status']!= 'DRAFT') {
-                            $mss[$i+1] = $msEvallist;
-                        }
-                    } else {
-                        // Get the list of remaining evaluation 
-                        $remainingEval = array_slice($msEvallist, $row['precedence_id']+1);
-                        // To keep the evaluation in the same round,re-organization the index
-                        foreach ($remainingEval as $v) {
-                            $mss[$i][] = $v;
-                        }
-                    }
-                }
-            }
-        } else {
-            $mss[] = $msEvallist;
-        }
-
-        $this->view->assign('poam', $poamDetail);
-        $this->view->assign('ms_evals', $mss);
-        $this->view->assign('ms_evaluation', $msEvaluation);
+        $this->_viewFinding();
     }
 
     /**
      * Display fields related to risk analysis such as threats and countermeasures
      */
     function riskAnalysisAction() {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        $this->_helper->layout->disableLayout();
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $poamDetail = $this->_poam->getDetail($id);
-        if (empty($poamDetail)) {
-            throw new Fisma_Exception("POAM($id) is not found,
-                Make sure a valid ID is inputed");
-        }
-
-        $this->view->assign('poam', $poamDetail);
-        $this->view->assign('keywords', $req->getParam('keywords'));
+        $this->_viewFinding();
+        $this->view->keywords = $this->_request->getParam('keywords');
     }
 
     /**
      * Display fields related to risk analysis such as threats and countermeasures
      */
     function artifactsAction() {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        $this->_helper->layout->disableLayout();
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $poamDetail = $this->_poam->getDetail($id);
-        if (empty($poamDetail)) {
-            throw new Fisma_Exception("POAM($id) is not found,
-                Make sure a valid ID is used");
-        }
-
-        $evEvaluation = $this->_poam->getEvEvaluation($id);
-        $evs = array();
-        foreach ($evEvaluation as $evEval) {
-            $evid = & $evEval['id'];
-            if (!isset($evs[$evid]['ev'])) {
-                $evs[$evid]['ev'] = array_slice($evEval, 0, 5);
-            }
-            $evs[$evid]['acl'] = $this->_acl;
-            $evs[$evid]['eval'][$evEval['eval_name']] =
-                array_slice($evEval, 5);
-        }
-
-        $this->view->assign('id', $id);
-        $this->view->assign('poam', $poamDetail);
-        $this->view->assign('ev_evals', $evs);
+        $this->_viewFinding();
     }
         
     /**
      * Display the audit log associated with a finding
      */
     function auditLogAction() {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        $this->_helper->layout->disableLayout();
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $this->view->assign('logs', $this->_poam->getLogs($id));
+        $this->_viewFinding();
     }
     
 
@@ -1335,16 +977,7 @@ class RemediationController extends SecurityController
      */
     function securityControlAction() 
     {
-        $this->_acl->requirePrivilege('remediation', 'read');
-        $this->_helper->layout->disableLayout();
-    
-        $id = $this->getRequest()->getParam('id');
-        $poamDetail = $this->_poam->getDetail($id);
-        if (empty($poamDetail)) {
-            throw new Fisma_Exception("POAM($id) is not found, Make sure a valid ID is specified");
-        }
-
-        $this->view->assign('poam', $poamDetail);
+        $this->_viewFinding();
     }
     
     /** 
@@ -1352,6 +985,24 @@ class RemediationController extends SecurityController
      */
     function uploadFormAction() {
         $this->_helper->layout()->disableLayout();
+    }
+
+    /**
+     * Check the finding and assign it to view
+     *
+     */
+    private function _viewFinding()
+    {
+        Fisma_Acl::requirePrivilege('finding', 'read');
+
+        $findingId = $this->_request->getParam('id');
+        $finding = new Finding();
+        $finding = $finding->getTable()->find($findingId);
+        if (empty($finding)) {
+            throw new Fisma_Exception("FINDING($findingId) is not found, Make sure a valid ID is specified");
+        }
+
+        $this->view->finding = $finding;
     }
     
     /**

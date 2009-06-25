@@ -1,6 +1,4 @@
-<?php
-Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
-?>
+<?php Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');?>
 <table class="keyValues">
     <tr>
         <td width="200">
@@ -8,16 +6,17 @@ Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
                 Control ID:
             </div>
         </td>
-        <td width="*">
-            <span id="blscr" type="select" name="poam[blscr_id]" href="/metainfo/list/o/blscr/format/html/"
+        <td>
+            <span id="security_control" type="select" name="finding[securityControlId]" href="/metainfo/list/o/security_control/format/html/"
                 <?php
-                if ($this->acl->isAllowed('remediation', 'update_control_assignment')) {
-                    echo "class='editable' target='blscr'";
+                if (Fisma_Acl::hasPrivilege('finding', 'update_control_assignment')) {
+                    echo "class='editable' target='security_control'";
                 }
-                echo '>';
-                
-                if (!empty($this->poam['blscr_id'])) {
-                    echo "{$this->poam['blscr_id']}";
+                ?>>
+
+                <?php
+                if (!empty($this->finding->securityControlId)) {
+                    echo "{$this->finding->SecurityControl->code}";
                 } else {
                     // nbsp is a hack to make the pencil appear in the right place
                     echo 'NONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -26,25 +25,26 @@ Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
             </span>
         </td>
     </tr>
-    <?php if(!empty($this->poam['blscr'])) { 
-        $blscr = $this->poam['blscr']; ?>
+    <?php if(!empty($this->finding->securityControlId)) {
+        $securityControl = $this->finding->SecurityControl; 
+    ?>
         <tr>
             <td>Class:</td>
-            <td><?php echo $blscr['class'];?></td>
+            <td><?php echo $securityControl->class;?></td>
         </tr>
         <tr>
             <td>Family:</td>
-            <td><?php echo $blscr['family'];?></td>
+            <td><?php echo $securityControlId->family;?></td>
         </tr>
         <tr>
             <td>Subclass:</td>
-            <td><?php echo $blscr['subclass'];?></td>
+            <td><?php echo $securityControl->subclass;?></td>
         </tr>
         <tr>
             <td>Low Impact System:</td>
             <td>
                 <?php 
-                echo 'LOW' == $blscr['control_level']? 'Control Required' : 'Control Not Required'; 
+                echo 'LOW' == $securityControl->controlLevel ? 'Control Required' : 'Control Not Required'; 
                 ?>
             </td>
         </tr>
@@ -52,7 +52,8 @@ Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
             <td>Moderate Impact System:</td>
             <td>
                 <?php
-                echo 'LOW' == $blscr['control_level'] || 'MODERATE' == $blscr['control_level'] ? 
+                echo 'LOW'      == $securityControl->controlLevel || 
+                     'MODERATE' == $securityControl->controlLevel ? 
                      'Control Required' : 
                      'Control Not Required';
                 ?>
@@ -62,9 +63,9 @@ Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
             <td>High Impact System:</td>
             <td>
                 <?php
-                echo 'LOW' == $blscr['control_level'] || 
-                     'MODERATE' == $blscr['control_level'] || 
-                     'HIGH' == $blscr['control_level'] ? 
+                echo 'LOW'      == $securityControl->controlLevel || 
+                     'MODERATE' == $securityControl->controlLevel || 
+                     'HIGH'     == $securityControl->controlLevel ? 
                      'Control Required' : 
                      'Control Not Required';
                 ?>
@@ -72,21 +73,21 @@ Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
         </tr>
         <tr>
             <td>Control:</td>
-            <td><?php echo $blscr['control'];?></td>
+            <td><?php echo $securityControl->control;?></td>
         </tr>
         <tr>
             <td>Guidance:</td>
-            <td><?php echo $blscr['guidance'];?></td></tr>
+            <td><?php echo $securityControl->guidance;?></td></tr>
         <tr>
             <td>Enhancements:</td>
             <td>
-                <?php echo $blscr['enhancements']; ?>
+                <?php echo $securityControl->enhancements; ?>
             </td>
         </tr>
         <tr>
             <td>Supplement:</td>
             <td>
-                <?php echo $blscr['supplement']; ?>
+                <?php echo $securityControl->supplement; ?>
             </td>
         </tr>
     <?php } ?>

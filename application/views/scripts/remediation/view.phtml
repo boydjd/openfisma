@@ -12,7 +12,7 @@ function discardChanges(event) {
     window.location.reload();
 }
 </script>
-<form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
+<form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?php echo $this->finding->id;?>" 
       method="post" 
       id="finding_detail"
       name="finding_detail">
@@ -75,8 +75,8 @@ function discardChanges(event) {
             
             // Finding tab
             var findingTab = new YAHOO.widget.Tab({
-                label: 'Finding #<?php echo $this->poam['id']; ?>',
-                dataSrc: '/remediation/finding/id/<?php echo $this->poam['id']; ?>',
+                label: 'Finding #<?php echo $this->finding->id; ?>',
+                dataSrc: '/remediation/finding/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             findingTab.subscribe("dataLoadedChange", prepareTab);
@@ -84,7 +84,7 @@ function discardChanges(event) {
         
             var mitigationTab = new YAHOO.widget.Tab({
                 label: 'Mitigation Strategy',
-                dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             mitigationTab.subscribe("dataLoadedChange", prepareTab);        
@@ -92,7 +92,7 @@ function discardChanges(event) {
         
             var riskTab = new YAHOO.widget.Tab({
                 label: 'Risk Analysis',
-                dataSrc: '/remediation/risk-analysis/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/risk-analysis/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             riskTab.subscribe("dataLoadedChange", prepareTab);                
@@ -100,15 +100,15 @@ function discardChanges(event) {
 
             var securityControlTab = new YAHOO.widget.Tab({
                 label: 'Security Control',
-                dataSrc: '/remediation/security-control/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/security-control/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             securityControlTab.subscribe("dataLoadedChange", prepareTab);                
             tabView.addTab(securityControlTab);
 
             var artifactsTab = new YAHOO.widget.Tab({
-                label: 'Artifacts (<?php echo count($this->ev_evals); ?>)',
-                dataSrc: '/remediation/artifacts/id/<?php echo $this->poam['id']; ?>',
+                label: 'Artifacts (<?php echo $this->finding->Evidence->count(); ?>)',
+                dataSrc: '/remediation/artifacts/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             artifactsTab.subscribe("dataLoadedChange", prepareTab);                
@@ -116,7 +116,7 @@ function discardChanges(event) {
             
             var auditTab = new YAHOO.widget.Tab({
                 label: 'Audit Log',
-                dataSrc: '/remediation/audit-log/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/audit-log/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             auditTab.subscribe("dataLoadedChange", prepareTab);        
@@ -129,10 +129,10 @@ function discardChanges(event) {
             // then by the cookie.
             var tab = location.hash.substring(1);
             if (!tab || tab < 0 || tab > 4) {
-                if (YAHOO.util.Cookie.get("currentFindingId") == <?php echo $this->poam['id']; ?>) {
+                if (YAHOO.util.Cookie.get("currentFindingId") == <?php echo $this->finding->id; ?>) {
                     tab = YAHOO.util.Cookie.get("activeTab");
                 } else {
-                    YAHOO.util.Cookie.set("currentFindingId", <?php echo $this->poam['id']; ?>, {path: '/'});
+                    YAHOO.util.Cookie.set("currentFindingId", <?php echo $this->finding->id; ?>, {path: '/'});
                     YAHOO.util.Cookie.set("activeTab", 0, {path: '/'}); 
                     tab = 0;
                 }

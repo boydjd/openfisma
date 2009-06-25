@@ -205,7 +205,7 @@ function search_function() {
 var handleFailure = function(o){alert('error');}
 
 function upload_evidence() {
-    if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
+    if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
         return false;
     }
     // set the encoding for a file upload
@@ -215,7 +215,7 @@ function upload_evidence() {
 }
 
 function ev_deny(formname){
-    if (!form_confirm(document.poam_detail, 'deny the evidence')) {
+    if (!form_confirm(document.finding_detail, 'deny the evidence')) {
         return false;
     }
 
@@ -247,11 +247,11 @@ function ev_deny(formname){
             var comment = document.getElementById('dialog_comment').value;
         }
         form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'DENY';
+        form2.elements['decision'].value = 'DENIED';
         var submitMsa = document.createElement('input');
         submitMsa.type = 'hidden';
         submitMsa.name = 'submit_ea';
-        submitMsa.value = 'DENY';
+        submitMsa.value = 'DENIED';
         form2.appendChild(submitMsa);
         form2.submit();
     }
@@ -295,7 +295,7 @@ function ms_comment(formname){
         var submitMsa = document.createElement('input');
         submitMsa.type = 'hidden';
         submitMsa.name = 'submit_msa';
-        submitMsa.value = 'DENY';
+        submitMsa.value = 'DENIED';
         form2.appendChild(submitMsa);
         form2.submit();
     }
@@ -523,7 +523,7 @@ function switchYear(step){
 function form_confirm (check_form, action) {
     var changed = false;
     
-    elements = YAHOO.util.Selector.query("[name*='poam']");
+    elements = YAHOO.util.Selector.query("[name*='finding']");
     for (var i = 0;i < elements.length; i ++) {
         var tag_name = elements[i].tagName.toUpperCase();
         if (tag_name == 'INPUT') {

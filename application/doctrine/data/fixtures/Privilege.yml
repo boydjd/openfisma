@@ -61,7 +61,7 @@ Privilege:
         orgSpecific: true
     findings_update_findings_assignment:
         resource: finding
-        action: update_findings_assignment
+        action: update_assignment
         description: Edit Responsible System
         orgSpecific: true
     findings_update_control_assignment:
@@ -81,12 +81,12 @@ Privilege:
         orgSpecific: true
     findings_update_finding_recommendation:
         resource: finding
-        action: update_finding_recommendation
+        action: update_recommendation
         description: Edit Finding Recommendation
         orgSpecific: true
     findings_update_finding_resources:
         resource: finding
-        action: update_finding_resources
+        action: update_resources
         description: Edit Resources Required
         orgSpecific: true
     findings_update_est_completion_date:

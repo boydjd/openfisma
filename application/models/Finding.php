@@ -91,6 +91,25 @@ class Finding extends BaseFinding
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
+        
+        //this action is did after the revise mitigation
+        $findingEvaluation  = Doctrine_Query::Create()
+                                ->select('fe.*')
+                                ->from('FindingEvaluation fe')
+                                ->innerJoin('fe.Evaluation e')
+                                ->where('e.approvalGroup = "action" AND fe.findingId = ' . $this->id)
+                                ->orderBy('fe.id DESC')
+                                ->limit(1)
+                                ->execute();
+        if ('APPROVED' == $findingEvaluation[0]->decision) {
+            $findingEvaluation  = Doctrine_Query::Create()
+                                ->select('fe.*')
+                                ->from('FindingEvaluation fe')
+                                ->innerJoin('fe.Evaluation e')
+                                ->where('e.approvalGroup = "action" AND fe.findingId = ' . $this->id)
+                                ->execute();
+            $findingEvaluation->delete();
+        }
         $this->save();
     }
 
@@ -144,22 +163,21 @@ class Finding extends BaseFinding
         $auditLog->description = 'Update: ' . $this->status . ' Original: "NONE" New: "APPROVED"';
         $this->AuditLogs[] = $auditLog;
 
-        $nextEvaluation = $this->CurrentEvaluation->NextEvaluation->toArray();
         switch ($this->status) {
             case 'MSA':
                 //@todo is there any way to judge the NextEvaluation is empty unless use toArray()
-                if (empty($nextEvaluation['id'])) {
+                if ($this->CurrentEvaluation->nextId == null) {
                     $this->status = 'EN';
                 }
                 break;
             case 'EA':
-                if (empty($nextEvaluation['id'])) {
+                if ($this->CurrentEvaluation->nextId == null) {
                     $this->status   = 'CLOSED';
                     $this->closedTs = date('Y-m-d');
                 }
                 break;
         }
-        $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
+        $this->currentEvaluationId = $this->CurrentEvaluation->nextId;
         $this->updateNextDueDate();
         $this->save();
         $conn->commit();
@@ -226,7 +244,8 @@ class Finding extends BaseFinding
             //@todo english
             throw new Fisma_Exception("The finding can't be uploaded evidence");
         }
-        $this->status = 'EA';
+        $this->status    = 'EA';
+        $this->ecdLocked = true;
         $this->updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
@@ -256,16 +275,38 @@ class Finding extends BaseFinding
                 $startDate = $this->createdTs;
                 break;
             case 'MSA':
-                $startDate = date('Y-M-d');
+                $startDate = date('Y-m-d');
             case 'EN':
                 $startDate = $this->expectedCompletionDate;
                 break;
             case 'EA':
-                $startDate = date('Y-M-d');
+                $startDate = date('Y-m-d');
                 break;
         }
-        $nextDueDate = new Zend_Date($startDate, 'Y-M-d');
+        $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
         $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
-        $this->nextDueDate = $nextDueDate->toString('Y-M-d');
+        $this->nextDueDate = $nextDueDate->toString('Y-m-d');
     }
+
+    /**
+     * Get the finding evaluations by approval group
+     *
+     * @param string $approvalGroup evaluation approval group
+     * @return array
+     */
+    public function getFindingEvaluations($approvalGroup)
+    {
+        if (!in_array($approvalGroup, array('action', 'evidence'))) {
+            /** @todo english */
+            throw new Fisma_Exception("Invalid approval group");
+        }
+        $findingEvaluations = array();
+        foreach ($this->FindingEvaluations as $findingEvaluation) {
+            if ($approvalGroup == $findingEvaluation->Evaluation->approvalGroup) {
+                $findingEvaluations[] = $findingEvaluation;
+            }
+        }
+        return $findingEvaluations;
+    }
+
 }

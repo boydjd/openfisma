@@ -70,23 +70,64 @@ class FindingListener extends Doctrine_Record_Listener
         $modifyValues = $finding->getModified(true);
         if (!empty($modifyValues)) {
             foreach ($modifyValues as $key=>$value) {
-                //We don't want to log these keys
-                if (!array_key_exists($key, array('currentEvaluationId', 'nextDueDate', 'legacyFindingKey'))) {
-                    $auditLog = new AuditLog();
-                    $message = 'Update: ' . $key . ' Original: ' . $value . ' NEW: ' . $finding->$key;
-                    $auditLog->User        = User::currentUser();
-                    $auditLog->description = $message;
-                    $finding->AuditLogs[]     = $auditLog;
+                $newValue = $finding->$key;
+                $continue = false;
+                switch ($key) {
+                    case 'type':
+                        if ('NEW' == $finding->status) {
+                            $finding->status = 'DRAFT';
+                            $finding->updateNextDueDate();
+                        } else {
+                             /** @todo english */
+                            throw new Fisma_Exception("The finding's type can't be changed at the current status");                           
+                        }
+                        break;
+                    case 'securityControlId':
+                        $key      = 'Security Control';
+                        $value    = Doctrine::getTable('SecurityControl')->find($value)->code;
+                        $newValue = $finding->SecurityControl->code;
+                        break;
+                    case 'responsibleOrganizationId':
+                        $key      = 'Responsible Organization';
+                        $value    = Doctrine::getTable('Organization')->find($value)->name;
+                        $newValue = $finding->ResponsibleOrganization->name;
+                        break;
+                    case 'currentEvaluationId':
+                        $key      = 'status';
+                        $value    = $finding->getStatus();
+                        $newValue = $finding->CurrentEvaluation->NextEvaluation->nickname;
+                        break;
+                    case 'status':
+                        if ('MSA' == $this->status || 'EA' == $this->status) {
+                            $continue = true;
+                        }
+                        break;
+                    case 'ecdLocked':
+                        $continue = true;
+                    case 'nextDueDate':
+                        $continue = true;
+                        break;
+                    case 'legacyFindingKey':
+                        $continue = true;
+                        break;
+                    case 'modifiedTs':
+                        $continue = true;
+                        break;
+                    case 'closedTs':
+                        $continue = true;
+                    default:
+                        break;
                 }
-            }
-
-            if (array_key_exists('type', $modifyValues)) {
-                if ('NEW' == $finding->status) {
-                    $finding->status = 'DRAFT';
-                } else {
-                    //@todo english
-                    throw new Fisma_Exception("The finding's type can't be changed at the current status");
+                //those keys change will not write to the logs
+                if ($continue) {
+                    continue;
                 }
+                $auditLog = new AuditLog();
+                $value = $value ? $value : 'NULL';
+                $message = 'Update: ' . $key . '<br> <b>Original</b>: ' . $value . ' <b>NEW:</b>' . $newValue;
+                $auditLog->User        = User::currentUser();
+                $auditLog->description = $message;
+                $finding->AuditLogs[]     = $auditLog;
             }
         }
     }

@@ -291,8 +291,7 @@ class CreateIndex
                         'type'            => $system->type,
                         'confidentiality' => $system->confidentiality,
                         'integrity'       => $system->integrity,
-                        'availability'    => $system->availability,
-                        'visibility'      => $system->visibility
+                        'availability'    => $system->availability
                         );
         }
         $this->_createIndex('system', $data);

@@ -1,84 +1,70 @@
 <?php 
-Fisma_Format_Section::startSection('Artifacts (' . count($this->ev_evals) . ')');
-if (count($this->ev_evals) == 0) {
-    print "<p><i>There are no artifacts for this finding.</i></p>";
-}
-foreach ($this->ev_evals as $e) {
-    $evidence = $e['ev'];
-    $evaluation = $e['eval'];
-    $comment = new Comments();
+    Fisma_Format_Section::startSection('Artifacts (' . $this->finding->Evidence->count() . ')');
+    if (count($this->finding->Evidence) == 0) {
+        print "<p><i>There are no artifacts for this finding.</i></p>";
+    }
+    foreach ($this->finding->Evidence as $key=>$evidence) {
 ?>
         <div class="approvalHeader">
             <b>File: </b>
-            <a href='/remediation/downloadevidence/id/<?php echo $evidence['id'];?>' target='_blank'><?php echo $evidence['submission']; ?></a>
-            (submitted by <?php echo $evidence['submitted_by']; ?> on <?php echo $evidence['submit_ts']; ?>)
+            <a href='/remediation/downloadevidence/id/<?php echo $evidence->id;?>' target='_blank'><?php echo $evidence->filename; ?></a>
+            (submitted by <?php echo $evidence->User->nameFirst . $evidence->User->nameLast; ?> on <?php echo $evidence->createdTs; ?>)
         </div>
         <div class="approval">
-            <?php 
-            $value = 'NONE';
-            $editable = true;
-            $eval_model = new Evaluation();
-            $ev_evallist = $eval_model->getEvalList('EVIDENCE');
-            foreach($ev_evallist as $k=>$v) {
-                $name = &$v['name'];
-                if(isset($evaluation[$name])) {
-                    if( $evaluation[$name]['group'] != 'EVIDENCE' ) {
-                        continue;
-                    }
-                    $value = &$evaluation[$v['name']]['decision'];
-                    $username = isset($evaluation[$name]['username'])?$evaluation[$name]['username']:'...';
-                    $date = isset($evaluation[$name]['date'])?$evaluation[$name]['date']:'';
-                } else {
-                    if($value == 'DENIED' ) {
-                        $value = 'EXCLUDED';
-                    } elseif ($value == 'APPROVED') {
-                        $value = 'NONE';
-                    }
-                }
-                echo  "<p><b>$name:&nbsp;</b>";
-                if($value=='NONE' && $editable){
-                    if($e['acl']->isAllowed('remediation',$v['function'])) {
-                        echo '<input type="hidden" name="evaluation" value="'.$v['id'].'"/>';
-                        echo '<input type="hidden" name="evidence_id" value="'.$evidence['id'].'"/>';
-                        echo '<input type="hidden" name="precedence" value="'.$v['precedence_id'].'"/>';
-                        echo '<input type="hidden" name="topic" value="" />';
-                        echo '<input type="hidden" name="reject" value="" />';
-                        echo '<input type="hidden" name="comment" value="" />';
-                        echo '<input type="hidden" name="decision" value="APPROVE" />';
-                        echo '<input name="submit_ea" type="submit" value="APPROVE"
-                            onclick="return form_confirm(document.finding_detail, \'approve ' . $name . '\');">&nbsp;';
-                        echo '<input type="button" value="DENY" onclick="ev_deny(document.finding_detail);">';
-                    } else {
-                        echo "$value";
-                    }
-                    $editable=false;
-                } else {
-                    if ($value == 'APPROVED') {
-                        echo "<span class='approved'>$value ($username on $date)</span>";
-                    } elseif ($value == 'DENIED') {
-                        $row = $comment->fetchRow('poam_evaluation_id = '.$evaluation[$name]['eval_id']);
-                        echo "<span class='denied'>$value";
-                        if( !empty($row) ) {
-                            echo " &mdash; $row->content ";
-                        }
-                        echo "($username on $date)</span>";
-                    } else {
-                        echo "$value";
-                    }
-                }
-                echo "</p>";
+        <?php
+        foreach($evidence->FindingEvaluations as $findingEvaluation) {
+            $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
+            $decision = $findingEvaluation->decision;
+            echo  "<p><b>{$findingEvaluation->Evaluation->name}:&nbsp;</b>";
+            if ('APPROVED' == $decision) {
+                echo "<span class=\"approved\">$decision ($userName on {$findingEvaluation->createdTs})</span>";
             }
-            ?>
-        </div>
-<?php
-}
+            if ('DENIED' == $decision) {
+                echo "<span class=\"denied\">$decision";
+                echo " &mdash; \"{$findingEvaluation->comment}\" ";
+                echo "($userName on $findingEvaluation->createdTs)</span>";
+            }
+            echo "</p>";
+        }
+        //control the div box
+        if ($key != $this->finding->Evidence->count()-1) {
+            echo "</div>";
+        }
+    }
+    $activeEvaluation = $this->finding->CurrentEvaluation;
+    if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'evidence') {
+        echo "<p><b>{$activeEvaluation->name}</b>";
+        if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action)) {
+            echo '<input type="hidden" name="comment" value="" />';
+            echo '<input type="hidden" name="decision" value="APPROVED" />';
+            echo '<input name="submit_ea" type="submit" value="APPROVED"
+                onclick="return form_confirm(document.finding_detail, \'approve ' . $evaluation->name . '\');"/>&nbsp;';
+            echo '<input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />';
+        } else {
+            echo "EXCLUDED";
+        }
+    }
 
-$uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
-                                            array('value' => 'Upload Evidence', 
-                                                  'onClickFunction' => 'upload_evidence'));
-if('EN' != $this->poam['status'] || !$this->acl->isAllowed('remediation', 'update_evidence')) {
-    $uploadEvidenceButton->readOnly = true;
-}
-echo "<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
-      <div class='toolbar'>$uploadEvidenceButton</div>";
+    $disableEvaluations = array();
+    $currentEvaluation  = $this->finding->CurrentEvaluation;
+    if ($currentEvaluation->approvalGroup == 'evidence') {
+        while (null != $currentEvaluation->nextId)  {
+            $currentEvaluation = $currentEvaluation->NextEvaluation;
+            $disableEvaluations[] = $currentEvaluation;
+        }
+    }
+
+    foreach ($disableEvaluations as $evaluation) {
+        echo "<p><b>{$evaluation->name}</b>";
+        echo "EXCLUDED";
+    }
+    echo "</div>";
+    $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
+                                                array('value' => 'Upload Evidence', 
+                                                      'onClickFunction' => 'upload_evidence'));
+    if('EN' != $this->finding->status || !Fisma_Acl::hasPrivilege('finding', 'upload_evidence')) {
+        $uploadEvidenceButton->readOnly = true;
+    }
+    echo "<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+          <div class='toolbar'>$uploadEvidenceButton</div>";
 ?>
