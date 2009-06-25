@@ -73,7 +73,7 @@ elements.port.options.style = "width:60px"
 displayGroups.searchasset.elements.port = "port"
 
 elements.searchAsset.type = "button"
-elements.searchAsset.options.value = "Search Assets"
+elements.searchAsset.options.label = "Search Assets"
 displayGroups.searchasset.elements.searchAsset = "searchAsset"
 
 elements.assetId.type = "select"

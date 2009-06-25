@@ -47,7 +47,7 @@ elements.description.options.rows = "7"
 displayGroups.organization.elements.description = "description"
 
 elements.save.type = "Form_Button_Submit"
-elements.save.options.value = "Save"
+elements.save.options.label = "Save"
 displayGroups.organization.elements.save = "save"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

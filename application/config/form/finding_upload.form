@@ -43,5 +43,5 @@ elements.selectFile.options.validators.extension.validator = "Extension"
 elements.selectFile.options.validators.extension.options.extension = "xml"
 
 elements.upload.type = "Form_Button_Submit"
-elements.upload.options.value = "Upload"
+elements.upload.options.label = "Upload"
 displayGroups.finding_upload.elements.submit = "upload"

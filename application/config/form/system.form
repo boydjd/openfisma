@@ -1,5 +1,3 @@
-; This is the form for system configuration.
-;
 ; This form should be loaded through FormManager::loadForm() in order to recieve
 ; the proper decorators, filters, etc.
 ;
@@ -66,7 +64,7 @@ elements.availability.options.required = true
 displayGroups.system.elements.availability = "availability"
 
 elements.save.type = "Form_Button_Submit"
-elements.save.options.value = "Save Changes"
+elements.save.options.label = "Save Changes"
 displayGroups.system.elements.save = "save"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

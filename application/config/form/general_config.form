@@ -65,7 +65,7 @@ elements.behavior_rule.options.required = true
 displayGroups.general.elements.behavior_rule = "behavior_rule"
 
 elements.saveGeneral.type = "Form_Button_Submit"
-elements.saveGeneral.options.value = "Save Changes"
+elements.saveGeneral.options.label = "Save Changes"
 displayGroups.general.elements.saveGeneral = "saveGeneral"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

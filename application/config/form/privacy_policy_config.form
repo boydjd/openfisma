@@ -21,7 +21,7 @@ elements.privacy_policy.options.rows = "10"
 displayGroups.general.elements.privacy_policy = "privacy_policy"
 
 elements.savePrivacyPolicy.type = "Form_Button_Submit"
-elements.savePrivacyPolicy.options.value = "Save Changes"
+elements.savePrivacyPolicy.options.label = "Save Changes"
 displayGroups.general.elements.savePrivacyPolicy = "savePrivacyPolicy"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

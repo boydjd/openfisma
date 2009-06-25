@@ -83,7 +83,20 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
     {
         $element = $this->getElement();
         $helper  = $element->helper;
+
+        $_buttonTypes = array(
+            'Zend_Form_Element_Button',
+            'Zend_Form_Element_Reset',
+            'Zend_Form_Element_Submit'
+        );
+
         $value = $element->getValue();
+        foreach ($_buttonTypes as $type) {
+            if ($element instanceof $type) {
+                $value = $element->getLabel();
+            }
+        }
+
         $render = '';
         
         if ($element->readOnly) {

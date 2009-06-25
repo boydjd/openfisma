@@ -42,5 +42,5 @@ elements.networkId.options.style = "width:250px"
 displayGroups.assetInfo.elements.networkId = "networkId"
 
 elements.save.type = "Form_Button_Submit"
-elements.save.options.value = "Save"
+elements.save.options.label = "Save"
 displayGroups.assetInfo.elements.save = "save"

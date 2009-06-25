@@ -82,7 +82,7 @@ elements.accountCanonical.options.validators.strlen.options.max = "1"
 displayGroups.general.elements.accountCanonical = "accountCanonical"
 
 elements.SaveLdap.type = "Form_Button_Submit"
-elements.SaveLdap.options.value = "submit"
+elements.SaveLdap.options.label = "submit"
 displayGroups.general.elements.SaveLdap = "SaveLdap"
 
 ;elements.Reset.type = "reset"

@@ -56,7 +56,7 @@ elements.smtp_password.options.size = 30
 displayGroups.general.elements.smtp_password = "smtp_password"
 
 elements.saveNotificationConfig.type = "Form_Button_Submit"
-elements.saveNotificationConfig.options.value = "Save Changes"
+elements.saveNotificationConfig.options.label = "Save Changes"
 displayGroups.general.elements.saveNotificationConfig = "saveNotificationConfig"
 
 ; Disabling this because I don't know how to make this work. see the comments

@@ -42,7 +42,7 @@ class Fisma_Yui_Form_Button_Reset extends Fisma_Yui_Form_Button
      */
      function renderSelf() 
      {
-         $render = "<input id='{$this->getName()}' type='reset' name='{$this->getName()}' value='{$this->getValue()}'>
+         $render = "<input id='{$this->getName()}' type='reset' name='{$this->getName()}' value='{$this->getLabel()}'>
                     <script type='text/javascript'>
                     YAHOO.util.Event.onDOMReady(function () {
                         var {$this->getName()} = new YAHOO.widget.Button(\"{$this->getName()}\");
