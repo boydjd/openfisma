@@ -309,7 +309,7 @@ class ConfigController extends SecurityController
             if ('notification' == $this->_request->getParam('type')) {
                 if ($form->isValid($data)) {
                     $data = $form->getValues();
-                    unset($data['save']);
+                    unset($data['saveNotificationConfig']);
                     unset($data['reset']);
                     unset($data['submit']);
                     foreach ($data as $k => $v) {

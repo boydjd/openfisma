@@ -285,7 +285,7 @@ class SystemController extends SecurityController
         if (!$organization) {
             throw new Fisma_Exception("Invalid organizationd ID: '$id'");
         } else {
-            $system = array();
+            $system = $organization->System->toArray();
             $system['name'] = $organization->name;
             $system['nickname'] = $organization->nickname;
             $system['description'] = $organization->description;
