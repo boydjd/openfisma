@@ -59,9 +59,9 @@
             <input type="text" name="keywords" size="50" value='<?php echo $this->params['keywords'];?>' <?php echo $keywordSearch?'':'disabled="disabled"';?>>
         </td>
         <td><?php echo new Fisma_Yui_Form_Button_Submit('remediationSearchSubmit',
-                                                  array('value' => 'Search')); ?></td>
+                                                  array('label' => 'Search')); ?></td>
         <td><?php echo new Fisma_Yui_Form_Button('advanced_search',
-                                                array('value' => 'Toggle Advanced Search Options',
+                                                array('label' => 'Toggle Advanced Search Options',
                                                       'onClickFunction' => 'toggleSearchOptions')); ?></td>
         <td>
             <?php 
