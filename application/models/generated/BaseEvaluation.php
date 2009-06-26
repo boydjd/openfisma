@@ -15,8 +15,8 @@
  * @property Evaluation $NextEvaluation
  * @property Event $Event
  * @property Privilege $Privilege
- * @property Doctrine_Collection $Finding
  * @property Doctrine_Collection $PreviousEvaluation
+ * @property Doctrine_Collection $Finding
  * @property Doctrine_Collection $FindingEvaluations
  * 
  * @package    ##PACKAGE##
@@ -49,11 +49,11 @@ abstract class BaseEvaluation extends Doctrine_Record
         $this->hasOne('Privilege', array('local' => 'privilegeId',
                                          'foreign' => 'id'));
 
-        $this->hasMany('Finding', array('local' => 'id',
-                                        'foreign' => 'currentEvaluationId'));
-
         $this->hasMany('Evaluation as PreviousEvaluation', array('local' => 'id',
                                                                  'foreign' => 'nextId'));
+
+        $this->hasMany('Finding', array('local' => 'id',
+                                        'foreign' => 'currentEvaluationId'));
 
         $this->hasMany('FindingEvaluation as FindingEvaluations', array('local' => 'id',
                                                                         'foreign' => 'evaluationId'));

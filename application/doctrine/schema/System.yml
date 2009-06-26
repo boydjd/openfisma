@@ -22,4 +22,43 @@ System:
         fipsCategory:
             type: enum
             values: [low, moderate, high]
-            comment: The FIPS-199 security categorization
+            comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
+        
+        # FISMA Report Criteria:
+        controlledBy:
+            type: enum
+            values: [AGENCY, CONTRACTOR]
+            comment: Is this system principally controlled by the agency or by a contractor?
+        securityAuthorizationDt:
+            type: date
+            comment: The last date on which this system underwent a security authorization (formerly known as C&A)
+        contingencyPlanTestDt:
+            type: date
+            comment: The last date on which the contingency plan for this system was tested
+        controlAssessmentDt:
+            type: date
+            comment: The last time the security controls were tested for this system
+        continuousMonitoringPolicy:
+            type: string
+            comment: An HTML field to store the system's CM policy
+        hasFiif:
+            type: boolean
+            comment: Whether the system contains any Federal Information in Identifiable Form
+        hasPii:
+            type: boolean
+            comment: Whether the system contains any Personally Identifiable Information
+        piaRequired:
+            type: boolean
+            comment: Whether this system requires a Privacy Impact Analysis
+        piaUrl:
+            type: string
+            comment: A URL pointing to the Privacy Impact Analysis
+        sornRequired:
+            type: boolean
+            comment: Whether a System Of Record Notice is required
+        sornUrl:
+            type: string
+            comment: A URL pointing to the System Of Record Notice
+        uniqueProjectId:
+            type: string
+            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"        
