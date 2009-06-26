@@ -147,13 +147,6 @@ var readyFunc = function () {
         }
     });
     //
-    YAHOO.util.Event.on('checkaccount', 'click', function () {
-        var account = document.getElementsByName('account')[0].value;
-        account = encodeURIComponent(account);
-        var url = "/account/checkaccount/format/html/account/"+account;
-        
-    });
-    //
     YAHOO.util.Event.on('searchAsset', 'click', searchAsset);
     //
     YAHOO.util.Event.on('search_product' ,'click', searchProduct);

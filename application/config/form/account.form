@@ -44,6 +44,7 @@ displayGroups.accountInfo.elements.generate_password = "generate_password"
 
 elements.checkAccount.type = "Form_Button"
 elements.checkAccount.options.label = "Check Account"
+elements.checkAccount.options.onClickFunction = "check_account"
 displayGroups.accountInfo.elements.checkAccount = "checkAccount"
 
 elements.nameFirst.type = "text"

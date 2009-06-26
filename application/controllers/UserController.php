@@ -35,6 +35,19 @@ class UserController extends BaseController
 {
     protected $_modelName = 'User';
 
+
+    /**
+     * init() - Initialize internal members.
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_user = new User();
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('checkaccount', 'html')
+                    ->initContext();
+    }
+    
     /**
      * Get the specific form of the subject model
      */
@@ -330,5 +343,96 @@ class UserController extends BaseController
         $user->lastRob = Fisma::now();
         $user->save();
         $this->_forward('index', 'Panel');
+    }
+    
+    /**
+     * generate a password that meet the application's password complexity requirements.
+     */
+    public function generatePasswordAction()
+    {
+        $passLengthMin = Configuration::getConfig('pass_min_length');
+        $passLengthMax = Configuration::getConfig('pass_max_length');
+        $passNum = Configuration::getConfig('pass_numerical');
+        $passUpper = Configuration::getConfig('pass_uppercase');
+        $passLower = Configuration::getConfig('pass_lowercase');
+        $passSpecial = Configuration::getConfig('pass_special');
+        
+        $flag = 0;
+        $password = "";
+        $length = rand($passLengthMin, $passLengthMax);
+        if (true == $passUpper) {
+            $possibleCharactors[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            $flag++;
+        }
+        if (true == $passLower) {
+            $possibleCharactors[] = "abcdefghijklmnopqrstuvwxyz";
+            $flag++;
+        }
+        if (true == $passNum) {
+            $possibleCharactors[] = "0123456789";
+            $flag++;
+        }
+        if (true == $passSpecial) {
+            $possibleCharactors[] = "!@#$%^&*()_+=-`~\|':;?><,.[]{}/";
+            $flag++;
+        }
+
+        while (strlen($password) < $length) {
+            if (0 == $flag) {
+                $password .= rand();
+            } else {
+                foreach ($possibleCharactors as $row) {
+                    if (strlen($password) < $length) {
+                        $password .= substr($row, (rand()%(strlen($row))), 1);
+                    }
+                }
+            }
+        }
+        echo $password;
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+    }
+    
+    /**
+     * checkaccountAction() - Check to see if the specified LDAP
+     * distinguished name (Account) exists in the system's specified LDAP directory.
+     * @todo code finish this function later
+     */
+    public function checkAccountAction()
+    {
+        Fisma_Acl::requirePrivilege('user', 'read');
+        /*
+        $config = new Config();
+        $data = $config->getLdap();
+        $account = $this->_request->getParam('account');
+        $msg = '';
+        if (empty($data)) {
+            $type = 'warning';
+            // to do Engilish
+            $msg .= "Ldap doesn't exist or no data";
+        }
+        foreach ($data as $opt) {
+            unset($opt['id']);
+            $srv = new Zend_Ldap($opt);
+            try {
+                $type = 'message';
+                $dn = $srv->getCanonicalAccountName($account,
+                            Zend_Ldap::ACCTNAME_FORM_DN); 
+                $msg = "$account exists, the dn is: $dn";
+            } catch (Zend_Ldap_Exception $e) {
+                $type = 'warning';
+                // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
+                // DN does not exist.
+                if ($e->getErrorCode() ==
+                    Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
+                    $msg = "$account does NOT exist";
+                } else {
+                    $msg .= 'Unknown error while checking Account: '
+                          . $e->getMessage();
+                }
+            }
+        }
+        echo json_encode(array('msg' => $msg, 'type' => $type));
+        $this->_helper->viewRenderer->setNoRender();*/
     }
 }
