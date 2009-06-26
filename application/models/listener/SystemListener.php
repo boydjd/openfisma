@@ -58,6 +58,12 @@ Class SystemListener extends Doctrine_Record_Listener
                 ->insertAsLastChildOf($org->getTable()
                                           ->find($system->organizationid));
         }
+        $organization = $system->Organization[0];
+        $organization->name = $system->name;
+        $organization->nickname = $system->nickname;
+        $organization->description = $system->description;
+        $organization->orgType = 'system';
+        $organization->save();
     }
 
     /**
@@ -75,14 +81,6 @@ Class SystemListener extends Doctrine_Record_Listener
         //Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('system', $system);
-
-        $organization = new Organization();
-        $organization->systemId    = $system->id;
-        $organization->name        = $system->name;
-        $organization->nickname    = $system->nickname;
-        $organization->description = $system->description;
-        $organization->orgType     = 'system';
-        $organization->save();
     }
 
     /**
@@ -97,12 +95,6 @@ Class SystemListener extends Doctrine_Record_Listener
         $system = $event->getInvoker();
         Notification::notify(Notification::SYSTEM_MODIFIED, $system, User::currentUser());
         Fisma_Lucene::updateIndex('system', $system);
-
-        $organization = $system->Organization[0];
-        $organization->name = $system->name;
-        $organization->nickname = $system->nickname;
-        $organization->description = $system->description;
-        $organization->save();
     }
     
     /**

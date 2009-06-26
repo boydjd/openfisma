@@ -219,4 +219,13 @@ class System extends BaseSystem
         $this->_threatLikelihoodMatrix['LOW']['MODERATE'] = 'LOW';
         $this->_threatLikelihoodMatrix['LOW']['HIGH']     = 'LOW';
     }
+
+    /**
+     * Delegate the delete to organization delete
+     */
+    public function delete(Doctrine_Connection $conn = null)
+    {
+        $org = $this->Organization[0];
+        return $org->delete($conn);
+    }
 }
