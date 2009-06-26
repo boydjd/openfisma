@@ -927,7 +927,11 @@ class RemediationController extends SecurityController
             $row = array();
             $row['id'] = $result->id;
             $row['type'] = $result->type;
-            $row['status'] = $result->status;
+            if ($result->CurrentEvaluation) {
+                $row['status'] = $result->CurrentEvaluation->nickname;
+            } else {
+                $row['status'] = $result->status;
+            }
             $row['threatLevel'] = $result->threatLevel;
             $row['expectedCompletionDate'] = $result->expectedCompletionDate;
             $row['countermeasuresEffectiveness'] = $result->countermeasuresEffectiveness;
@@ -943,17 +947,19 @@ class RemediationController extends SecurityController
             // select the finding whether have attachments
             $row['attachments'] = count($result->Evidence) > 0 ? 'Y' : 'N';
 
-            if (strtotime($result->nextDueDate) > time()) {
+            if (is_null($result->nextDueDate)) {
+                $row['duetime'] = 'N/A';
+            } elseif(strtotime($result->nextDueDate) > time()) {
                 $row['duetime'] = 'On time';
             } else {
                 $row['duetime'] = 'Due time';
             }
             if ($format == 'pdf' || $format == 'xls') {
-                $row['description'] = trim(html_entity_decode($result->description));
-                $row['recommendation'] = trim(html_entity_decode($result->recommendation));
-                $row['mitigationStrategy'] = trim(html_entity_decode($result->mitigationStrategy));
-                $row['threat'] = trim(html_entity_decode($result->threat));
-                $row['countermeasures'] = trim(html_entity_decode($result->countermeasures));
+                $row['description'] = trim(strip_tags($result->description));
+                $row['recommendation'] = trim(strip_tags($result->recommendation));
+                $row['mitigationStrategy'] = trim(strip_tags($result->mitigationStrategy));
+                $row['threat'] = trim(strip_tags($result->threat));
+                $row['countermeasures'] = trim(strip_tags($result->countermeasures));
             } else {
                 $row['description'] = $this->view->ShowLongText(strip_tags($result->description), 
                                                                 $this->view->keywords);
