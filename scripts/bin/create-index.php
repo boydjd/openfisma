@@ -305,7 +305,7 @@ class CreateIndex
         $users = Doctrine::getTable('User')->findAll();
         foreach ($users as $user) {
             foreach ($user->Roles as $role) {
-                $role[] = $role['name'] . $role['nickname'];
+                $roleName[] = $role->name . ' ' . $role->nickname;
             }
             $data[] = array(
                         'id'        => $user->id,
@@ -313,7 +313,7 @@ class CreateIndex
                         'namelast'  => $user->nameLast,
                         'namefirst' => $user->nameFirst,
                         'email'     => $user->email . ',' . $user->notifyEmail,
-                        'role'      => empty($role) ? '' : implode(',', $role)
+                        'role'      => isset($roleName) ? '' : implode(',', $roleName)
                     );
         }
         $this->_createIndex('user', $data);

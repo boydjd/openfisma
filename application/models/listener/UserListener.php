@@ -77,25 +77,22 @@ class UserListener extends Doctrine_Record_Listener
         $user->hashType = Configuration::getConfig('hash_type');
     }
     
-    public function postInsert(Doctrine_Event $event)
+    /**
+     * Insert or Update finding lucene index
+     */
+    public function postSave(Doctrine_Event $event)
     {
-        $user = $event->getInvoker();
-        Notification::notify(Notification::ACCOUNT_CREATED, $user, User::currentUser());
-        Fisma_Lucene::updateIndex('account', $user);
+        $user     = $event->getInvoker();
+        $modified = $user->getModified($old=false, $last=true);
+        Fisma_Lucene::updateIndex('user', $user->id, $modified);
     }
 
-    public function postUpdate(Doctrine_Event $event)
-    {
-        $user = $event->getInvoker();
-        Notification::notify(Notification::ACCOUNT_MODIFIED, $user, User::currentUser());
-        Fisma_Lucene::updateIndex('account', $user);
-    }
-
+    /**
+     * Delete a finding lucene index
+     */
     public function postDelete(Doctrine_Event $event)
     {
         $user = $event->getInvoker();
-        Notification::notify(Notification::ACCOUNT_DELETED, $user, User::currentUser());
-        Fisma_Lucene::deleteIndex('account', $user->id);
+        Fisma_Lucene::deleteIndex('user', $user->id);
     }    
-
 }

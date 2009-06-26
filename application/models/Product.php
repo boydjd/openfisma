@@ -12,23 +12,31 @@
  */
 class Product extends BaseProduct
 {
-    public function postInsert()
+    public function preInsert()
     {
         Notification::notify(Notification::PRODUCT_CREATED, $this, User::currentUser());
-        Fisma_Lucene::updateIndex('source', $this);
-
     }
 
-    public function postUpdate()
+    public function preUpdate()
     {
         Notification::notify(Notification::PRODUCT_MODIFIED, $this, User::currentUser());
-        Fisma_Lucene::updateIndex('product', $this);
-
     }
 
-    public function postDelete()
+    public function preDelete()
     {
         Notification::notify(Notification::PRODUCT_DELETED, $this, User::currentUser());
-        Fisma_Lucene::deleteIndex('product', $this->id);
+    }
+
+    public function postSave(Doctrine_Event $event)
+    {
+        $product  = $event->getInvoker();
+        $modified = $product->getModified($old=false, $last=true);
+        Fisma_Lucene::updateIndex('product', $product->id, $modified);
+    }
+
+    public function postDelete(Doctrine_Event $event)
+    {
+        $product  = $event->getInvoker();
+        Fisma_Lucene::deleteIndex('product', $product->id);
     }
 }

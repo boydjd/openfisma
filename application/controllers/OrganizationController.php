@@ -272,11 +272,6 @@ class OrganizationController extends SecurityController
                         // insert as a child to a specify parent organization
                         $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                     }
-                    
-                    //Create a organization index
-                    if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
-                        $this->_helper->updateIndex('organization', $organization->id, $organization->toArray());
-                    }
                     $msg = "The organization is created";
                     $model = self::M_NOTICE;
                 }
@@ -309,11 +304,6 @@ class OrganizationController extends SecurityController
         $organization = Doctrine::getTable('Organization')->find($id);
         if ($organization) {
             if ($organization->delete()) {
-                $this->_helper->addNotification(Notification::ORGANIZATION_DELETED, $this->_me->username, $id);
-                //Delete this organization index
-                if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
-                    $this->_helper->deleteIndex('organization', $id);
-                }
                 /**
                  * @todo english
                  */
@@ -373,12 +363,6 @@ class OrganizationController extends SecurityController
             }
             
             if ($isModify) {
-                $this->_helper->addNotification(Notification::ORGANIZATION_MODIFIED, 
-                                                $this->_me->username, $organization->id);
-                //Update this organization index
-                if (is_dir(Fisma::getPath('data') . '/index/organization/')) {
-                    $this->_helper->updateIndex('organization', $id, $organization->toArray());
-                }
                 $msg = "The organization is saved";
                 $model = self::M_NOTICE;
             } else {

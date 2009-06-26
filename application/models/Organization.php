@@ -48,23 +48,34 @@ class Organization extends BaseOrganization
         return $this->id;
     }
 
-    public function postInsert()
+    public function preInsert()
     {
         Notification::notify(Notification::ORGANIZATION_CREATED, $this, User::currentUser());
-        Fisma_Lucene::updateIndex('organization', $this);
     }
 
-    public function postUpdate()
+    public function preUpdate()
     {
         Notification::notify(Notification::ORGANIZATION_MODIFIED, $this, User::currentUser());
-        Fisma_Lucene::updateIndex('organization', $this);
     }
 
-    public function postDelete()
+    public function preDelete()
     {
         Notification::notify(Notification::ORGANIZATION_DELETED, $this, User::currentUser());
-        Fisma_Lucene::deleteIndex('organization', $this->id);
     }
+
+    public function postSave(Doctrine_Event $event)
+    {
+        $organization  = $event->getInvoker();
+        $modified = $organization->getModified($old=false, $last=true);
+        Fisma_Lucene::updateIndex('organization', $organization->id, $modified);
+    }
+
+    public function postDelete(Doctrine_Event $event)
+    {
+        $organization  = $event->getInvoker();
+        Fisma_Lucene::deleteIndex('organization', $organization->id);
+    }
+
     /**
      * A mapping from the physical organization types to proper English terms.
      * Notice that for 'system' types, the label is returned from the System class instead.

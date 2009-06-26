@@ -12,22 +12,31 @@
  */
 class Source extends BaseSource
 {
-    public function postInsert()
+    public function preInsert()
     {
         Notification::notify(Notification::SOURCE_CREATED, $this, User::currentUser());
-        Fisma_Lucene::updateIndex('source', $this);
     }
-
-    public function postUpdate()
+    
+    public function preUpdate()
     {
         Notification::notify(Notification::SOURCE_MODIFIED, $this, User::currentUser());
-        Fisma_Lucene::updateIndex('source', $this);
     }
-
-    public function postDelete()
+    
+    public function preDelete()
     {
         Notification::notify(Notification::SOURCE_DELETED, $this, User::currentUser());
-        Fisma_Lucene::deleteIndex('source', $this->id);
+    }
 
+    public function postSave(Doctrine_Event $event)
+    {
+        $source  = $event->getInvoker();
+        $modified = $source->getModified($old=false, $last=true);
+        Fisma_Lucene::updateIndex('source', $source->id, $modified);
+    }
+
+    public function postDelete(Doctrine_Event $event)
+    {
+        $source  = $event->getInvoker();
+        Fisma_Lucene::deleteIndex('source', $source->id);
     }
 }

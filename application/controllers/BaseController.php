@@ -155,10 +155,13 @@ abstract class BaseController extends SecurityController
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
                 try {
+                    Doctrine_Manager::connection()->beginTransaction();
                     $this->saveValue($form);
+                    Doctrine_Manager::connection()->commit();
                     $msg   = "The {$this->_modelName} is created";
                     $model = self::M_NOTICE;
                 } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
                     /** @todo english please notice following 3 sentences*/
                     $msg   = "Failure in creation. ";
                     if (Fisma::debug()) {
@@ -239,15 +242,21 @@ abstract class BaseController extends SecurityController
             $msg   = "Invalid {$this->_modelName}";
             $type = self::M_WARNING;
         } else {
-            if (!$subject->delete()) {
-                /** @todo english */
-                $msg = "Failed to delete the {$this->_modelName}";
-                $type = self::M_WARNING;
-            } else {
-                // @todo english
+            try {
+                Doctrine_Manager::connection()->beginTransaction();
+                $subject->delete();
+                Doctrine_Manager::connection()->commit();
+                 // @todo english
                 $msg   = "{$this->_modelName} is deleted successfully";
                 $type = self::M_NOTICE;
-            }
+            } catch (Doctrine_Exception $e) {
+                Doctrine_Manager::connection()->rollback();
+                /** @todo english */
+                if (Fisma::debug()) {
+                    $msg .= $e->getMessage();
+                }
+                $type = self::M_WARNING;
+            } 
         }
         $this->message($msg, $type);
         $this->_forward('list');

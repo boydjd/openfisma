@@ -38,30 +38,35 @@ class Fisma_Lucene
      * This function can create one, update one Zend_Lucene index.
      *
      * @param string $name index name
-     * @param object $object an object of a model that need to udpate index
+     * @param int $id
+     * @param array $data the data that need to insert/udpate into index
      */
-    public static function updateIndex($name, $object)
+    public static function updateIndex($name, $id, $data)
     {
         if (!is_dir(Fisma::getPath('data') . '/index/' . $name)) {
             return;
         }
         set_time_limit(0);
         $index = new Zend_Search_Lucene(Fisma::getPath('data') . '/index/' . $name);
-        $hits = $index->find('key:' . md5($object->id));
+        $hits = $index->find('key:' . md5($id));
         if (!empty($hits)) {
             //Update one index
             $doc = $index->getDocument($hits[0]);
-            foreach ($object as $field=>$value) {
-                $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+            foreach ($data as $field=>$value) {
+                if (is_string($value)) {
+                   $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+                }
             }
             $index->addDocument($doc);
         } else {
             //Create one index
             $doc = new Zend_Search_Lucene_Document();
-            $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $object->id));
-            $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($object->id)));
-            foreach ($object as $field=>$value) {
-                $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+            $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
+            $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
+            foreach ($data as $field=>$value) {
+                if (is_string($value)) {
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+                }
             }
             $index->addDocument($doc);
         }

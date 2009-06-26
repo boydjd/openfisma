@@ -157,8 +157,17 @@ class FindingListener extends Doctrine_Record_Listener
                 $value = $value ? $value : 'NULL';
                 $message = 'Update: ' . $key . '<br> <b>Original</b>: ' . $value . ' <b>NEW:</b>' . $newValue;
                 $finding->log($message);
-                Fisma_Lucene::updateIndex('finding', $finding);
             }
         }
+    }
+
+    /**
+     * Insert or Update finding lucene index
+     */
+    public function postSave(Doctrine_Event $event)
+    {
+        $finding  = $event->getInvoker();
+        $modified = $finding->getModified($old=false, $last=true);
+        Fisma_Lucene::updateIndex('finding', $finding->id, $modified);
     }
 }

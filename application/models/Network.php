@@ -12,37 +12,31 @@
  */
 class Network extends BaseNetwork
 {
-    public function preSave()
+    public function preInsert()
     {
-        Doctrine_Manager::connection()->beginTransaction();   
+        Notification::notify(Notification::NETWORK_CREATED, $this, User::currentUser());
+    }
+    
+    public function preUpdate()
+    {
+        Notification::notify(Notification::NETWORK_MODIFIED, $this, User::currentUser());
     }
     
     public function preDelete()
     {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
-    public function postInsert()
-    {
-        Notification::notify(Notification::NETWORK_CREATED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::updateIndex('network', $this);
-    }
-
-    public function postUpdate()
-    {
-        Notification::notify(Notification::NETWORK_MODIFIED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::updateIndex('network', $this);
-    }
-
-    public function postDelete()
-    {
         Notification::notify(Notification::NETWORK_DELETED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
+    }
 
-        Fisma_Lucene::deleteIndex('network', $this->id);
+    public function postSave(Doctrine_Event $event)
+    {
+        $network  = $event->getInvoker();
+        $modified = $network->getModified($old=false, $last=true);
+        Fisma_Lucene::updateIndex('network', $network->id, $modified);
+    }
+
+    public function postDelete(Doctrine_Event $event)
+    {
+        $network  = $event->getInvoker();
+        Fisma_Lucene::deleteIndex('network', $network->id);
     }
 }

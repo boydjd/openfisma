@@ -33,6 +33,16 @@
  */
 Class SystemListener extends Doctrine_Record_Listener
 {
+    public function preInsert(Doctrine_Event $event)
+    {
+        Notification::notify(Notification::SYSTEM_CREATED, $this, User::currentUser());
+    }
+    
+    public function preUpdate(Doctrine_Event $event)
+    {
+        Notification::notify(Notification::SYSTEM_MODIFIED, $this, User::currentUser());
+    }
+    
     /**
      * Begin a transaction
      */
@@ -58,45 +68,18 @@ Class SystemListener extends Doctrine_Record_Listener
                 ->insertAsLastChildOf($org->getTable()
                                           ->find($system->organizationid));
         }
+
         $organization = $system->Organization[0];
         $organization->name = $system->name;
         $organization->nickname = $system->nickname;
         $organization->description = $system->description;
         $organization->orgType = 'system';
         $organization->save();
+
+        $modified = $system->getModified($old=false, $last=true);
+        Fisma_Lucene::updateIndex('system', $system->id, $modified);
     }
 
-    /**
-     * Insert the Organization with the name, nickname and description which is 
-     * belong to the system.
-     *
-     * @param Doctrine_Event $event
-     * @return void
-     */
-    public function postInsert(Doctrine_Event $event)
-    {
-        $system = $event->getInvoker();
-        
-        Notification::notify(Notification::SYSTEM_CREATED, $system, User::currentUser());
-        //Doctrine_Manager::connection()->commit();
-
-        Fisma_Lucene::updateIndex('system', $system);
-    }
-
-    /**
-     * Update the Organization with the name, nickname and description which is 
-     * belong to the system.
-     *
-     * @param Doctrine_Event $event
-     * @return void
-     */
-    public function postUpdate(Doctrine_Event $event)
-    {
-        $system = $event->getInvoker();
-        Notification::notify(Notification::SYSTEM_MODIFIED, $system, User::currentUser());
-        Fisma_Lucene::updateIndex('system', $system);
-    }
-    
     /**
      * Delete the Organization which is related with the system.
      *
@@ -111,12 +94,12 @@ Class SystemListener extends Doctrine_Record_Listener
                                 ->from('Organization o')
                                 ->where('o.id = ' . $ret->id)
                                 ->execute();
+
     }
-    
+
     public function postDelete(Doctrine_Event $event)
     {
         $system = $event->getInvoker();
-        Notification::notify(Notification::SYSTEM_DELETED, $system, User::currentUser());
         Fisma_Lucene::deleteIndex('system', $system->id);
     }
 }
