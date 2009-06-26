@@ -20,37 +20,21 @@ class Role extends BaseRole
         return $this->id;
     }
 
-    public function preSave()
-    {
-        Doctrine_Manager::connection()->beginTransaction();   
-    }
-    
-    public function preDelete()
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
     public function postInsert()
     {
         Notification::notify(Notification::ROLE_CREATED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('role', $this);
     }
 
     public function postUpdate()
     {
         Notification::notify(Notification::ROLE_MODIFIED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('role', $this);
     }
 
     public function postDelete()
     {
         Notification::notify(Notification::ROLE_DELETED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::deleteIndex('role', $this->id);
     }
 }

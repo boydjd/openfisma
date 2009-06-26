@@ -23,14 +23,14 @@ elements.nickname.options.validators.strlen.validator = "StringLength"
 elements.nickname.options.required = true
 displayGroups.system.elements.nickname = "nickname"
 
-elements.organization_id.type = "select"
-elements.organization_id.options.label = "Organization"
-elements.organization_id.options.validators.alnum.validator = "NotEmpty"
-elements.organization_id.options.validators.strlen.validator = "StringLength"
-elements.organization_id.options.validators.strlen.options.min = "1"
-elements.organization_id.options.validators.strlen.options.max = "10"
-elements.organization_id.options.required = true
-displayGroups.system.elements.organization_id = "organization_id"
+elements.organizationid.type = "select"
+elements.organizationid.options.label = "Organization"
+elements.organizationid.options.validators.alnum.validator = "NotEmpty"
+elements.organizationid.options.validators.strlen.validator = "StringLength"
+elements.organizationid.options.validators.strlen.options.min = "1"
+elements.organizationid.options.validators.strlen.options.max = "10"
+elements.organizationid.options.required = true
+displayGroups.system.elements.organizationid = "organizationid"
 
 elements.type.type = "select"
 elements.type.options.label = "Type"

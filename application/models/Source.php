@@ -12,37 +12,21 @@
  */
 class Source extends BaseSource
 {
-    public function preSave()
-    {
-        Doctrine_Manager::connection()->beginTransaction();   
-    }
-    
-    public function preDelete()
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
     public function postInsert()
     {
         Notification::notify(Notification::SOURCE_CREATED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('source', $this);
     }
 
     public function postUpdate()
     {
         Notification::notify(Notification::SOURCE_MODIFIED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('source', $this);
     }
 
     public function postDelete()
     {
         Notification::notify(Notification::SOURCE_DELETED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::deleteIndex('source', $this->id);
 
     }

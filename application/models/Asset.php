@@ -12,31 +12,18 @@
  */
 class Asset extends BaseAsset
 {
-    public function preSave()
-    {
-        Doctrine_Manager::connection()->beginTransaction();   
-    }
-    
-    public function preDelete()
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
     public function postInsert()
     {
         Notification::notify(Notification::ASSET_CREATED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
     }
 
     public function postUpdate()
     {
         Notification::notify(Notification::ASSET_MODIFIED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
     }
 
     public function postDelete()
     {
         Notification::notify(Notification::ASSET_DELETED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
     }
 }

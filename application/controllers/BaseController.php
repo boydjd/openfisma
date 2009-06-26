@@ -155,14 +155,11 @@ abstract class BaseController extends SecurityController
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
                 try {
-                    Doctrine_Manager::connection()->beginTransaction();
                     $this->saveValue($form);
-                    Doctrine_Manager::connection()->commit();
                     $msg   = "The {$this->_modelName} is created";
                     $model = self::M_NOTICE;
                 } catch (Doctrine_Exception $e) {
                     /** @todo english please notice following 3 sentences*/
-                    Doctrine_Manager::connection()->rollback();
                     $msg   = "Failure in creation. ";
                     if (Fisma::debug()) {
                         $msg .= $e->getMessage();
@@ -204,14 +201,12 @@ abstract class BaseController extends SecurityController
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
                 try {
-                    Doctrine_Manager::connection()->beginTransaction();
                     $result = $this->saveValue($form, $subject);
-                    Doctrine_Manager::connection()->commit();
                     /** @todo english. This notice span following segments */
                     $msg   = "The {$this->_modelName} is updated";
                     $model = self::M_NOTICE;
                 } catch (Doctrine_Exception $e) {
-                    Doctrine_Manager::connection()->rollback();
+                    //Doctrine_Manager::connection()->rollback();
                     $msg  = "Failure in saving ";
                     if (Fisma::debug()) {
                         $msg .= $e->getMessage();

@@ -41,9 +41,9 @@
  * @property User $AssignedTo
  * @property Evaluation $CurrentEvaluation
  * @property Upload $Upload
- * @property Doctrine_Collection $AuditLogs
  * @property Doctrine_Collection $Evidence
  * @property Doctrine_Collection $Finding
+ * @property Doctrine_Collection $AuditLogs
  * @property Doctrine_Collection $FindingEvaluations
  * 
  * @package    ##PACKAGE##
@@ -114,14 +114,14 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasOne('Upload', array('local' => 'uploadId',
                                       'foreign' => 'id'));
 
-        $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
-                                                      'foreign' => 'findingId'));
-
         $this->hasMany('Evidence', array('local' => 'id',
                                          'foreign' => 'findingId'));
 
         $this->hasMany('Finding', array('local' => 'id',
                                         'foreign' => 'duplicateFindingId'));
+
+        $this->hasMany('AuditLog as AuditLogs', array('local' => 'id',
+                                                      'foreign' => 'findingId'));
 
         $this->hasMany('FindingEvaluation as FindingEvaluations', array('local' => 'id',
                                                                         'foreign' => 'findingId'));

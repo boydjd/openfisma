@@ -1,4 +1,6 @@
 <?php
+echo $this->partial('system/searchbox.phtml');
+
 $operation = '';
 if (Fisma_Acl::hasPrivilege('system','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
@@ -6,7 +8,8 @@ if (Fisma_Acl::hasPrivilege('system','update')) {
 if (Fisma_Acl::hasPrivilege('system','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
-Fisma_Format_Section::startSection("System Information $operation"); ?>
+Fisma_Format_Section::startSection("System Information $operation"); 
+?>
 <div>
     <?php echo $this->form ?>
 </div>

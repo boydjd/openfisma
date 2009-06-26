@@ -48,37 +48,21 @@ class Organization extends BaseOrganization
         return $this->id;
     }
 
-    public function preSave()
-    {
-        Doctrine_Manager::connection()->beginTransaction();   
-    }
-    
-    public function preDelete()
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
     public function postInsert()
     {
         Notification::notify(Notification::ORGANIZATION_CREATED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('organization', $this);
     }
 
     public function postUpdate()
     {
         Notification::notify(Notification::ORGANIZATION_MODIFIED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('organization', $this);
     }
 
     public function postDelete()
     {
         Notification::notify(Notification::ORGANIZATION_DELETED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::deleteIndex('organization', $this->id);
     }
     /**

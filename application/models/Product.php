@@ -12,21 +12,9 @@
  */
 class Product extends BaseProduct
 {
-    public function preSave()
-    {
-        Doctrine_Manager::connection()->beginTransaction();   
-    }
-    
-    public function preDelete()
-    {
-         Doctrine_Manager::connection()->beginTransaction();       
-    }
-
     public function postInsert()
     {
         Notification::notify(Notification::PRODUCT_CREATED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('source', $this);
 
     }
@@ -34,8 +22,6 @@ class Product extends BaseProduct
     public function postUpdate()
     {
         Notification::notify(Notification::PRODUCT_MODIFIED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::updateIndex('product', $this);
 
     }
@@ -43,8 +29,6 @@ class Product extends BaseProduct
     public function postDelete()
     {
         Notification::notify(Notification::PRODUCT_DELETED, $this, User::currentUser());
-        Doctrine_Manager::connection()->commit();
-
         Fisma_Lucene::deleteIndex('product', $this->id);
     }
 }
