@@ -121,13 +121,26 @@ class CreateIndex
 
         $index = $this->_newIndex($name);
         set_time_limit(0);
+        $count = 0;
+        $status = "$name: 0 rows";
+        fwrite(STDOUT, $status);        
+        $statusLength = strlen($status);
         foreach ($data as $rowData) {
             $doc   = $this->_createDocument($rowData);
             $index->addDocument($doc);
+            $count++;
+            if (0 == $count % 100) {
+                $index->optimize();
+                fwrite(STDOUT, str_repeat(chr(0x8), $statusLength));
+                $status = "$name: $count rows";
+                fwrite(STDOUT, "$status");
+                $statusLength = strlen($status);
+            }
         }
         $index->optimize();
         chmod($indexPath, 0777);
-        print("$name index created successfully. \n");
+        fwrite(STDOUT, str_repeat(chr(0x8), $statusLength));
+        fwrite(STDOUT, "$name index created successfully ($count rows). \n");
 
     }
     
@@ -219,11 +232,14 @@ class CreateIndex
         if ($this->_optimize('product')) {
             return false;
         }
+        
         $count  = Doctrine::getTable('Product')->count();
-        $offset = 100;
+        $offset = 500;
         $query  = Doctrine_Query::Create()
                     ->select('*')
-                    ->from('Product');
+                    ->from('Product')
+                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                    
         for ($limit=0;$limit<=$count;$limit+=$offset) {
             $products = $query->limit($limit)
                               ->offset($offset)
@@ -312,8 +328,7 @@ class CreateIndex
                         'name'      => $user->username,
                         'namelast'  => $user->nameLast,
                         'namefirst' => $user->nameFirst,
-                        'email'     => $user->email . ',' . $user->notifyEmail,
-                        'role'      => isset($roleName) ? '' : implode(',', $roleName)
+                        'email'     => $user->email . ',' . $user->notifyEmail
                     );
         }
         $this->_createIndex('user', $data);
