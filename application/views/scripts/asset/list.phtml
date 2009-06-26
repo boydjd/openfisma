@@ -19,17 +19,17 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
                                             'imageSrc' => '/images/xls.gif'));
         if(Fisma_Acl::hasPrivilege('asset','delete')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
-                                                   array('value' => 'Select All', 
+                                                   array('label' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
             echo $selectAllButton;
 
             $selectNoneButton = new Fisma_Yui_Form_Button('selectNone',
-                                                    array('value' => 'Select None', 
+                                                    array('label' => 'Select None', 
                                                           'onClickFunction' => 'selectNoneUnsafe'));
             echo $selectNoneButton;
 
             $deleteButton = new Fisma_Yui_Form_Button('deleteSelected',
-                                                array('value' => 'Delete Selected', 
+                                                array('label' => 'Delete Selected', 
                                                       'onClickFunction' => 'deleteSelectedAssets'));
             echo $deleteButton;
         }

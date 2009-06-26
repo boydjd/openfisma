@@ -92,25 +92,25 @@ function menuHandler(source) {
 <div class="toolbar">
 <?php
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
-                                       array('value' => 'Expand All', 
+                                       array('label' => 'Expand All', 
                                              'imageSrc' => '/images/expand.png',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.expandAll'));
 print $expandAll;
 
 $collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
-                                         array('value' => 'Collapse All', 
+                                         array('label' => 'Collapse All', 
                                              'imageSrc' => '/images/collapse.png',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
 print $collapseAll;
 
 $exportExcel = new Fisma_Yui_Form_Button('exportExcel', 
-                                         array('value' => 'Export to Excel', 
+                                         array('label' => 'Export to Excel', 
                                              'imageSrc' => '/images/xls.gif',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.exportExcel'));
 print $exportExcel;
 
 $exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
-                                       array('value' => 'Export to PDF', 
+                                       array('label' => 'Export to PDF', 
                                              'imageSrc' => '/images/pdf.gif',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.exportPdf'));
 print $exportPdf;

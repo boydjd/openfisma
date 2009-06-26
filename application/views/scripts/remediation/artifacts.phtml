@@ -60,7 +60,7 @@
     }
     echo "</div>";
     $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
-                                                array('value' => 'Upload Evidence', 
+                                                array('label' => 'Upload Evidence', 
                                                       'onClickFunction' => 'upload_evidence'));
     if('EN' != $this->finding->status || !Fisma_Acl::hasPrivilege('finding', 'upload_evidence')) {
         $uploadEvidenceButton->readOnly = true;

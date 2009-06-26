@@ -96,7 +96,7 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
           be fully completed before this can be submitted for approval.</i></p>';
 
     $submitMitigationButton = new Fisma_Yui_Form_Button('submitMitigation', 
-                                                  array('value' => 'Submit Mitigation Strategy', 
+                                                  array('label' => 'Submit Mitigation Strategy', 
                                                         'onClickFunction' => 'submitMitigationStrategy')    );
     if (false == $complete
         || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')
@@ -118,7 +118,7 @@ if ('EN' == $finding->status && Fisma_Acl::hasPrivilege('finding', 'mitigation_s
             }
           </script>";
     $reviseMitigationButton = new Fisma_Yui_Form_Button('reviseMitigationButton',
-                                                  array('value' => 'Revise Mitigation Strategy', 
+                                                  array('label' => 'Revise Mitigation Strategy', 
                                                         'onClickFunction' => 'reviseMitigationStrategy'));
     echo "<div class='toolbar'>$reviseMitigationButton</div>";
 }  

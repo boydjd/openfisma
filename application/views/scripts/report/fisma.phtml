@@ -43,7 +43,7 @@ YAHOO.util.Event.onDOMReady(function () {
             echo isset($this->criteria['enddate'])?$this->criteria['enddate']:'';
             ?>" size="10" maxlength="10" url="" onfocus="this.blur()"><button type="button" id="enddate_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
         <td>
-            <?php echo new Fisma_Yui_Form_Button_Submit('generateFismaReport', array('value' => 'Generate Report')); ?>
+            <?php echo new Fisma_Yui_Form_Button_Submit('generateFismaReport', array('label' => 'Generate Report')); ?>
         </td>
     </tr>
     <tr>
