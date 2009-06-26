@@ -9,12 +9,12 @@ Organization:
             extra:
                 purify: plaintext
         nickname:
-            type: string
-            unique: true;
+            type: string(255)
+            unique: true
             extra:
                 purify: plaintext
         orgType:
-            type: enum()
+            type: enum
             values: [agency, bureau, organization, system]
         systemId:
             type: integer

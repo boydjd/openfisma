@@ -10,10 +10,9 @@ Role:
             extra:
                 purify: plaintext
         nickname: 
-            type: 
-                type: string
-                extra:
-                    purify: plaintext                
+            type: string(255)
+            extra:
+                purify: plaintext                
             unique: true;
         description: 
             type: string

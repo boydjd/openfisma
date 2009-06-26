@@ -30,8 +30,8 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('name', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
-        $this->hasColumn('nickname', 'string', null, array('type' => 'string', 'unique' => 'true;', 'extra' => array('purify' => 'plaintext')));
-        $this->hasColumn('orgType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'agency', 1 => 'bureau', 2 => 'organization', 3 => 'system'), 'length' => ''));
+        $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'unique' => true, 'extra' => array('purify' => 'plaintext'), 'length' => '255'));
+        $this->hasColumn('orgType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'agency', 1 => 'bureau', 2 => 'organization', 3 => 'system')));
         $this->hasColumn('systemId', 'integer', null, array('type' => 'integer'));
         $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
     }

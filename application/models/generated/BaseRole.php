@@ -8,7 +8,7 @@
  * @property timestamp $createdTs
  * @property timestamp $modifiedTs
  * @property string $name
- * @property Array $nickname
+ * @property string $nickname
  * @property string $description
  * @property Doctrine_Collection $Users
  * @property Doctrine_Collection $Privileges
@@ -26,7 +26,7 @@ abstract class BaseRole extends Doctrine_Record
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('name', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
-        $this->hasColumn('nickname', 'Array', null, array('type' => 'Array', 'unique' => 'true;'));
+        $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'unique' => 'true;', 'length' => '255'));
         $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html')));
     }
 

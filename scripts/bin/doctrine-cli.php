@@ -29,12 +29,21 @@
 require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
 
 try {
+    $startTime = time();
+    
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
     Fisma::connectDb();
     Fisma::setNotificationEnabled(false);
     Fisma::setListenerEnabled(false);    
+
+    /** @todo temporary hack to load large datasets */
+    ini_set('memory_limit', '512M');
+
     $cli = new Doctrine_Cli(Zend_Registry::get('doctrine_config'));
     $cli->run($_SERVER['argv']);
+    
+    $stopTime = time();
+    print("Elapsed time: " . ($stopTime - $startTime) . " seconds\n");
 } catch (Zend_Config_Exception $zce) {
     print "The application is not installed correctly. If you have not run the installer, you should do that now.";
 } catch (Exception $e) {
