@@ -30,6 +30,7 @@
  */
 class UserListener extends Doctrine_Record_Listener
 {
+
     public function preSave(Doctrine_Event $event)
     {
         $user = $event->getInvoker();
@@ -39,7 +40,7 @@ class UserListener extends Doctrine_Record_Listener
             return;
         }
 
-        if ($user->id == User::currentUser()->id) {
+        if ($user == User::currentUser($user)) {
             if ($modified['email'] || $modified['notifyEmail']) {
                 $user->emailValidate = false;
                 $emailValidation  = new EmailValidation();
