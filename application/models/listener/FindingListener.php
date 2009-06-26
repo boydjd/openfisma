@@ -96,13 +96,8 @@ class FindingListener extends Doctrine_Record_Listener
                 $type     = null;
                 switch ($key) {
                     case 'type':
-                        if ('NEW' == $finding->status) {
-                            $finding->status = 'DRAFT';
-                            $finding->updateNextDueDate();
-                        } else {
-                             /** @todo english */
-                            throw new Fisma_Exception("The finding's type can't be changed at the current status");                           
-                        }
+                        $finding->status = 'DRAFT';
+                        $finding->updateNextDueDate();
                         break;
                     case 'securityControlId':
                         $key      = 'Security Control';

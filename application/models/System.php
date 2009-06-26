@@ -12,6 +12,14 @@
 class System extends BaseSystem
 {
     /**
+     * Defines the way counter measure effectiveness and threat level combine to produce the threat likelihood. This
+     * array is indexed as: $_threatLikelihoodMatrix[THREAT_LEVEL][COUNTERMEASURE_EFFECTIVENESS] == THREAT_LIKELIHOOD
+     *
+     * @see _initThreatLikelihoodMatrix()
+     */
+    private $_threatLikelihoodMatrix;
+
+    /**
      * Map the values to Organization table
      */
     public function construct()
@@ -151,5 +159,64 @@ class System extends BaseSystem
         $index = max((int)$confidentiality, (int)$integrity, (int)$availability);
         return $array[$index];
     }
+
+    /**
+     * Calculate min level
+     *
+     * @see calcSecurityCategory
+     *
+     * @param string $levelA
+     * @param string $levelB
+     * @param return string min of $levelA and $levelB
+     */
+    public function calcMin($levelA, $levelB)
+    {
+        $cloumns = $this->getTable()->getEnumValues('availability');
+        assert(in_array($levelA, $cloumns));
+        assert(in_array($levelB, $cloumns));
+        $senseMap = array_flip($cloumns);
+        $ret = min($senseMap[$levelA], $senseMap[$levelB]);
+        return $cloumns[$ret];
+    }
     
+    /**
+     * Calcuate overall threat level
+     *
+     * @see calcSecurityCategory
+     *
+     * @param string $threat threat level
+     * @param string $countermeasure countermeasure level
+     * @return string overall threat
+     */
+    public function calculateThreatLikelihood($threat, $countermeasure)
+    {
+        // Initialize the threat likelihood matrix if necessary
+        if (!$this->_threatLikelihoodMatrix) {
+            $this->_initThreatLikelihoodMatrix();
+        }
+        
+        // Map the parameters into the matrix and return the mapped value
+        return $this->_threatLikelihoodMatrix[$threat][$countermeasure];
+    }
+    
+    /**
+     * Initializes the threat likelihood matrix. This is hardcoded because these values are defined in NIST SP 800-30
+     * and are not likely to change very often.
+     *
+     * @link http://csrc.nist.gov/publications/nistpubs/800-30/sp800-30.pdf
+     */
+    private function _initThreatLikelihoodMatrix()
+    {
+        $this->_threatLikelihoodMatrix['HIGH']['LOW']      = 'HIGH';
+        $this->_threatLikelihoodMatrix['HIGH']['MODERATE'] = 'MODERATE';
+        $this->_threatLikelihoodMatrix['HIGH']['HIGH']     = 'LOW';
+        
+        $this->_threatLikelihoodMatrix['MODERATE']['LOW']      = 'MODERATE';
+        $this->_threatLikelihoodMatrix['MODERATE']['MODERATE'] = 'MODERATE';
+        $this->_threatLikelihoodMatrix['MODERATE']['HIGH']     = 'LOW';
+
+        $this->_threatLikelihoodMatrix['LOW']['LOW']      = 'LOW';
+        $this->_threatLikelihoodMatrix['LOW']['MODERATE'] = 'LOW';
+        $this->_threatLikelihoodMatrix['LOW']['HIGH']     = 'LOW';
+    }
 }

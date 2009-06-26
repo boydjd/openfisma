@@ -705,18 +705,13 @@ class RemediationController extends SecurityController
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
             
-            $system   = new System();
-            $actOwner = $finding->ResponsibleOrganization;
-            $securityCategorization = $system->calcSecurityCategory($actOwner->confidentiality,
-                                                                    $actOwner->integrity,
-                                                                    $actOwner->availability);
-
-            if (NULL == $securityCategorization) {
-                throw new Fisma_Exception('The security categorization for (' . $actOwner->id . ')' .
-                    $actOwner->name . ' is not defined. An analysis of risk cannot be generated ' .
+            $system = $finding->ResponsibleOrganization->System;
+            if (NULL == $system->fipsCategory) {
+                throw new Fisma_Exception('The security categorization for (' . $system->id . ')' .
+                    $system->name . ' is not defined. An analysis of risk cannot be generated ' .
                     'unless these values are defined.');
             }
-            $this->view->securityCategorization = $securityCategorization;
+            $this->view->securityCategorization = $system->fipsCategory;
         } catch (Fisma_Exception $e) {
             if ($e instanceof Fisma_Exception) {
                 $message = $e->getMessage();
@@ -724,11 +719,6 @@ class RemediationController extends SecurityController
             $this->message($message, self::M_WARNING);
             $this->_forward('view', null, null, array('id' => $id));
         }
-
-        $this->_helper->contextSwitch()
-               ->setHeader('pdf', 'Content-Disposition', "attachement;filename={$id}_raf.pdf")
-               ->initContext();
-        
         $this->view->finding = $finding;
     }
 

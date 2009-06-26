@@ -5,14 +5,14 @@
 <p>
     <b>Type:</b>
 
-    <span name="finding[type]" id="type" type="select" href="/metainfo/list/o/type/format/html/"
-        <?php
+    <span type="select" name="finding[type]" href="/metainfo/list/o/type/format/html/" id="type"
+        <?php 
             if (('NEW' == $finding->status || 'DRAFT' == $finding->status) 
                 && Fisma_Acl::hasPrivilege('finding','update_course_of_action')) {
                 echo 'class="editable" target="type"';
             }
         ?>>
-        <?php echo $finding->type;?>
+        <?php echo $finding->type;?>&nbsp;&nbsp;
     </span>
 </p>
             
