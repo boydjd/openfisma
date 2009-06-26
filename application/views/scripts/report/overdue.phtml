@@ -22,11 +22,11 @@
     <tr>
         <td><b>System </b></td>
         <td>
-        <?php echo $this->formSelect('system_id',
-                                     isset($this->params['system_id'])?$this->params['system_id']:0, 
+        <?php echo $this->formSelect('orgSystemId',
+                                     isset($this->params['orgSystemId'])?$this->params['orgSystemId']:0, 
                                      null,$this->system_list);
-              if( !empty($this->params['system_id']) ) {
-                  $url .= '/system_id/'.$this->params['system_id'];
+              if( !empty($this->params['orgSystemId']) ) {
+                  $url .= '/system_id/'.$this->params['orgSystemId'];
               }
         ?>
         </td>
@@ -50,21 +50,21 @@
         ?>
         </td>-->
     </tr>
-    <tr id="advanced_searchbox" style="<?php if (empty($this->params['overdue_type']) && empty($this->params['source_id'])) { ?>display:none<?php } ?>">
+    <tr id="advanced_searchbox" style="<?php if (empty($this->params['overdueType']) && empty($this->params['sourceId'])) { ?>display:none<?php } ?>">
         <td><b>Overdue type</b></td>
         <td >
-        <?php echo $this->formSelect('overdue_type',
-                                    isset($this->params['overdue_type'])?$this->params['overdue_type']:0,
-                                    null,$overdue['type']);
+        <?php echo $this->formSelect('overdueType',
+                                    isset($this->params['overdueType'])?$this->params['overdueType']:0,
+                                    null, $overdue['type']);
         ?>
         </td>
         <td><b>Source</b></td>
         <td>
-        <?php echo $this->formSelect('source_id',
-                                     isset($this->params['source_id'])?$this->params['source_id']:0, 
+        <?php echo $this->formSelect('sourceId',
+                                     isset($this->params['sourceId'])?$this->params['sourceId']:0, 
                                      null,$this->source_list);
-              if( !empty($this->params['source_id']) ) {
-                  $url .= '/source_id/'.$this->params['source_id'];
+              if( !empty($this->params['sourceId']) ) {
+                  $url .= '/sourceId/'.$this->params['sourceId'];
               }
         ?>
         </td>
@@ -101,7 +101,7 @@ var myColumnDefs = [
           if (!isset($i)) { $i = true; } else { echo ','; } ?>
           {<?php  foreach ($this->columns as $key => $val) { 
                     if (!isset($n)) { $n = true; } else { echo ','; }
-                    if ($key != 'systemName' && $key != 'type') {
+                    if ($key != 'orgSystemName' && $key != 'type') {
                         echo $key . ':' . $row[$key];
                     } else {
                         echo $key . ":'" . $row[$key] . "'";
@@ -115,7 +115,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         dynamicData: false,
-        sortedBy : {key:"systemName", dir:YAHOO.widget.DataTable.CLASS_ASC}
+        sortedBy : {key:"orgSystemName", dir:YAHOO.widget.DataTable.CLASS_ASC}
     };
     var myDataTable = new YAHOO.widget.DataTable("overdue_report", myColumnDefs, myDataSource, myConfigs);
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 

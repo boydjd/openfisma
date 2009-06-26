@@ -35,21 +35,16 @@
 class Fisma_Controller_Action_Helper_OverdueStatistic extends Zend_Controller_Action_Helper_Abstract
 {
     /**
-     * the seconds in a day
-     *
-     */
-    const INTERVAL_DAY_SECONDS = 86400;
-    /**
      * make a statistics for overdue records
      * 
-     * @param array $list all overdue records
+     * @param object Collection $list all overdue records
      * @return array $result
      */
     public function overdueStatistic($list)
     {
         $result = $this->_overdueSort($list);
         foreach ($result as &$v) {
-            $v['systemName'] = $v['systemNickname'] . ' - ' . $v['systemName'];
+            $v['orgSystemName'] = $v['orgSystemNickname'] . ' - ' . $v['orgSystemName'];
             unset($v['systemNickname']);
             $totalOverdue = $v['lessThan30'] + $v['moreThan30'] + $v['moreThan60'] 
                             + $v['moreThan90'] + $v['moreThan120'];
@@ -65,7 +60,7 @@ class Fisma_Controller_Action_Helper_OverdueStatistic extends Zend_Controller_Ac
     /**
      * sort overdue records by overdue days and status
      *
-     * @param array $list all overdue records
+     * @param object Collection $list all overdue records
      * @return array $result
      */  
     private function _overdueSort($list)
@@ -73,28 +68,22 @@ class Fisma_Controller_Action_Helper_OverdueStatistic extends Zend_Controller_Ac
         $mitigationStrategyStatus = array('NEW', 'DRAFT', 'MSA');
         $correctiveAction = array('EN', 'EA');
         $result = array();
-        $date = new Zend_Date(null, Zend_Date::ISO_8601);
         foreach ($list as $row) {
-            $now = clone $date;
-            $duetime = new Zend_Date($row['duetime'], Zend_Date::ISO_8601);
-            $differDay = floor($now->sub($duetime)/self::INTERVAL_DAY_SECONDS);
-            $row['diffDay'] = $differDay + 1;
-            
-            if (in_array($row['oStatus'], $mitigationStrategyStatus)) {
+            if (in_array($row->status, $mitigationStrategyStatus)) {
                 $overdueType = 'MS';
             }
-            if (in_array($row['oStatus'], $correctiveAction)) {
+            if (in_array($row->status, $correctiveAction)) {
                 $overdueType = 'CA';
             }
-            $key = $row['system_nickname'] . $row['system_id'].'_'.$overdueType;
+            $key = $row->ResponsibleOrganization->nickname . $row->responsibleOrganizationId . '_' . $overdueType;
             if (!isset($result[$key])) {
-                $result[$row['system_nickname'] . $row['system_id'].'_'.$overdueType] = array();
+                $result[$key] = array();
             }
-            if (!isset($result[$key]['systemName'])) {
-                $result[$key]['systemName'] = $row['system_name'];
+            if (!isset($result[$key]['orgSystemName'])) {
+                $result[$key]['orgSystemName'] = $row->ResponsibleOrganization->name;
             }
-            if (!isset($result[$key]['systemNickname'])) {
-                $result[$key]['systemNickname'] = $row['system_nickname'];
+            if (!isset($result[$key]['orgSystemNickname'])) {
+                $result[$key]['orgSystemNickname'] = $row->ResponsibleOrganization->nickname;
             }
             if (!isset($result[$key]['type'])) {
                 if ($overdueType == 'MS') {
@@ -107,37 +96,37 @@ class Fisma_Controller_Action_Helper_OverdueStatistic extends Zend_Controller_Ac
             if (!isset($result[$key]['lessThan30'])) {
                 $result[$key]['lessThan30'] = 0;
             }
-            if ($row['diffDay'] < 30) {
+            if ($row->diffDay < 30) {
                 $result[$key]['lessThan30'] ++;
             }
             if (!isset($result[$key]['moreThan30'])) {
                 $result[$key]['moreThan30'] = 0;
             }
-            if ($row['diffDay'] >= 30 && $row['diffDay'] < 60) {
+            if ($row->diffDay >= 30 && $row->diffDay < 60) {
                 $result[$key]['moreThan30'] ++;
             }
             if (!isset($result[$key]['moreThan60'])) {
                 $result[$key]['moreThan60'] = 0;
             }
-            if ($row['diffDay'] >= 60 && $row['diffDay'] < 90) {
+            if ($row->diffDay >= 60 && $row->diffDay < 90) {
                 $result[$key]['moreThan60'] ++;
             }
             if (!isset($result[$key]['moreThan90'])) {
                 $result[$key]['moreThan90'] = 0;
             }
-            if ($row['diffDay'] >= 90 && $row['diffDay'] < 120) {
+            if ($row->diffDay >= 90 && $row->diffDay < 120) {
                 $result[$key]['moreThan90'] ++;
             }
             if (!isset($result[$key]['moreThan120'])) {
                 $result[$key]['moreThan120'] = 0;
             }
-            if ($row['diffDay'] >= 120) {
+            if ($row->diffDay >= 120) {
                 $result[$key]['moreThan120'] ++;
             }
             if (!isset($result[$key]['diffDay'])) {
-                $result[$key]['diffDay'] = array($row['diffDay']);
+                $result[$key]['diffDay'] = array($row->diffDay);
             } else {
-                $result[$key]['diffDay'][] = $row['diffDay'];
+                $result[$key]['diffDay'][] = $row->diffDay;
             }
         }
         return $result;

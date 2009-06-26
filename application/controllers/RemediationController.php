@@ -420,7 +420,7 @@ class RemediationController extends SecurityController
     {
         Fisma_Acl::requirePrivilege('finding', 'read');
         $params = $this->_parseCriteria();
-        $link = $this->_makeUrlParams($params);
+        $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/remediation/search2' . $link);
         $this->view->assign('columns', $this->_getColumns());
@@ -1038,26 +1038,5 @@ class RemediationController extends SecurityController
         return $finding;
     }
     
-    /**
-     * Translate the criteria to a string which can be used in an URL
-     *
-     * The string can be parsed by the application to form the criteria again later.
-     *
-     * @param array $criteria
-     * @return string
-     */
-    private function _makeUrlParams($criteria)
-    {
-        $urlPart = '';
-        foreach ($criteria as $key => $value) {
-            if (!empty($value)) {
-                if ($value instanceof Zend_Date) {
-                    $urlPart .= '/' . $key . '/' . $value->toString('Ymd') . '';
-                } else {
-                    $urlPart .= '/' . $key . '/' . urlencode($value) . '';
-                }
-            }
-        }
-        return $urlPart;
-    }  
+
 }
