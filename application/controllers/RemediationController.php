@@ -887,9 +887,9 @@ class RemediationController extends SecurityController
                     $q->andWhere("f.createdTs < ?", $v);
                 } elseif ($k == 'ontime') {
                     if ($v == 'ontime') {
-                        $q->andWhere("f.nextduedate >= ?", date('Y-m-d'));
+                        $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) <= 0');
                     } else {
-                        $q->andWhere("f.nextduedate < ?", date('Y-m-d'));
+                        $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) > 0');
                     }
                 } elseif ($k == 'ids') {
                     $sqlPart = array();
@@ -939,7 +939,7 @@ class RemediationController extends SecurityController
 
             if (is_null($result->nextDueDate)) {
                 $row['duetime'] = 'N/A';
-            } elseif(strtotime($result->nextDueDate) > time()) {
+            } elseif(strtotime($result->nextDueDate) >= strtotime(date('Y-m-d'))) {
                 $row['duetime'] = 'On time';
             } else {
                 $row['duetime'] = 'Due time';

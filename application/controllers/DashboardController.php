@@ -116,9 +116,9 @@ class DashboardController extends SecurityController
         $eoFindingsQuery = Doctrine_Query::create()
                             ->select('COUNT(*) as count')
                             ->from('Finding f')
-                            ->where('f.status = ? AND nextDueDate < NOW()', 'DRAFT')
+                            ->where('f.status = ? AND nextDueDate < NOW()', 'EN')
                             ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
-        $result = $draftFindingsQuery->fetchOne();
+        $result = $eoFindingsQuery->fetchOne();
         $alert['EO']  = $result['count'];
         
         $url = '/panel/remediation/sub/searchbox/status/';
