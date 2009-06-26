@@ -8,7 +8,7 @@
  * @property timestamp $createdTs
  * @property timestamp $modifiedTs
  * @property string $name
- * @property string $nickname
+ * @property Array $nickname
  * @property string $description
  * @property Doctrine_Collection $Users
  * @property Doctrine_Collection $Privileges
@@ -25,9 +25,9 @@ abstract class BaseRole extends Doctrine_Record
         $this->setTableName('role');
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'unique' => 'true;', 'length' => '255'));
-        $this->hasColumn('description', 'string', null, array('type' => 'string'));
+        $this->hasColumn('name', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('nickname', 'Array', null, array('type' => 'Array', 'unique' => 'true;'));
+        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html')));
     }
 
     public function setUp()
@@ -42,5 +42,7 @@ abstract class BaseRole extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

@@ -20,7 +20,7 @@ abstract class BaseEmailValidation extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->setTableName('email_validation');
-        $this->hasColumn('email', 'string', 255, array('type' => 'string', 'comment' => 'The e-mail address which needs validation', 'length' => '255'));
+        $this->hasColumn('email', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The e-mail address which needs validation', 'length' => '255'));
         $this->hasColumn('validationCode', 'string', 255, array('type' => 'string', 'comment' => 'A code which the user must possess in order to validate', 'length' => '255'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the user whos email needs validation'));
     }
@@ -29,5 +29,7 @@ abstract class BaseEmailValidation extends Doctrine_Record
     {
         $this->hasOne('User', array('local' => 'userId',
                                     'foreign' => 'id'));
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

@@ -29,11 +29,11 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->setTableName('organization');
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'unique' => 'true;', 'length' => '255'));
+        $this->hasColumn('name', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('nickname', 'string', null, array('type' => 'string', 'unique' => 'true;', 'extra' => array('purify' => 'plaintext')));
         $this->hasColumn('orgType', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'agency', 1 => 'bureau', 2 => 'organization', 3 => 'system'), 'length' => ''));
         $this->hasColumn('systemId', 'integer', null, array('type' => 'integer'));
-        $this->hasColumn('description', 'string', 255, array('type' => 'string', 'length' => '255'));
+        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
     }
 
     public function setUp()
@@ -57,5 +57,7 @@ abstract class BaseOrganization extends Doctrine_Record
         $this->actAs($nestedset0);
         $this->actAs($softdelete0);
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

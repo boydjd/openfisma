@@ -1,12 +1,20 @@
 Configuration:
+    listeners: [XssListener]
+        
     columns:
         name: 
             type: string(255)
+            extra:
+                purify: plaintext
             comment: A string which logically represents a unique configuration item
         value:
             type: string
+            extra:
+                purify: html
             comment: The value of this unique configuration item
         description:
             type: string(255)
+            extra:
+                purify: plaintext
             comment: A description of the configuration attribute which will be displayed to the user
             

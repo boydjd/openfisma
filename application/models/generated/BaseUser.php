@@ -58,7 +58,7 @@ abstract class BaseUser extends Doctrine_Record
         $this->setTableName('user');
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('username', 'string', 255, array('type' => 'string', 'unique' => true, 'comment' => 'This users unique authentication credential', 'length' => '255'));
+        $this->hasColumn('username', 'string', 255, array('type' => 'string', 'unique' => true, 'extra' => array('purify' => 'plaintext'), 'comment' => 'This users unique authentication credential', 'length' => '255'));
         $this->hasColumn('password', 'string', 255, array('type' => 'string', 'length' => '255'));
         $this->hasColumn('passwordSalt', 'string', 10, array('type' => 'string', 'fixed' => 1, 'comment' => 'A randomly generated salt, used to discourage rainbow table attacks against the password database', 'length' => '10'));
         $this->hasColumn('passwordTs', 'timestamp', null, array('type' => 'timestamp'));
@@ -73,13 +73,13 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasColumn('lastLoginIp', 'string', 15, array('type' => 'string', 'ip' => true, 'length' => '15'));
         $this->hasColumn('currentLoginIp', 'string', 15, array('type' => 'string', 'ip' => true, 'length' => '15'));
         $this->hasColumn('lastLoginTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('title', 'string', 255, array('type' => 'string', 'comment' => 'The users position or title within the agency', 'length' => '255'));
-        $this->hasColumn('nameFirst', 'string', 255, array('type' => 'string', 'comment' => 'The users first name', 'length' => '255'));
-        $this->hasColumn('nameLast', 'string', 255, array('type' => 'string', 'comment' => 'The users last name', 'length' => '255'));
-        $this->hasColumn('email', 'string', 255, array('type' => 'string', 'email' => true, 'comment' => 'The users primary e-mail address', 'length' => '255'));
+        $this->hasColumn('title', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The users position or title within the agency', 'length' => '255'));
+        $this->hasColumn('nameFirst', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The users first name', 'length' => '255'));
+        $this->hasColumn('nameLast', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The users last name', 'length' => '255'));
+        $this->hasColumn('email', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'email' => true, 'comment' => 'The users primary e-mail address', 'length' => '255'));
         $this->hasColumn('emailValidate', 'boolean', null, array('type' => 'boolean', 'default' => false, 'comment' => 'Whether the user has validated their e-mail address'));
-        $this->hasColumn('phoneOffice', 'string', 10, array('type' => 'string', 'fixed' => 1, 'comment' => 'U.S. 10 digit phone number; stored without punctuation', 'length' => '10'));
-        $this->hasColumn('phoneMobile', 'string', 10, array('type' => 'string', 'fixed' => 1, 'comment' => 'U.S. 10 digit phone number; stored without punctuation', 'length' => '10'));
+        $this->hasColumn('phoneOffice', 'string', 10, array('type' => 'string', 'fixed' => 1, 'extra' => array('purify' => 'plaintext'), 'comment' => 'U.S. 10 digit phone number; stored without punctuation', 'length' => '10'));
+        $this->hasColumn('phoneMobile', 'string', 10, array('type' => 'string', 'fixed' => 1, 'extra' => array('purify' => 'plaintext'), 'comment' => 'U.S. 10 digit phone number; stored without punctuation', 'length' => '10'));
         $this->hasColumn('searchColumnsPref', 'integer', null, array('type' => 'integer', 'comment' => 'A bitmask corresponding to visible columns on the search page'));
         $this->hasColumn('notifyFrequency', 'integer', null, array('type' => 'integer'));
         $this->hasColumn('mostRecentNotifyTs', 'timestamp', null, array('type' => 'timestamp'));
@@ -132,6 +132,7 @@ abstract class BaseUser extends Doctrine_Record
         $this->actAs($softdelete0);
         $this->actAs($timestampable0);
 
+    $this->addListener(new XssListener(), 'XssListener');
     $this->addListener(new UserListener(), 'UserListener');
     }
 }

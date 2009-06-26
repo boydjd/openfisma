@@ -31,7 +31,7 @@ abstract class BaseAsset extends Doctrine_Record
         $this->setTableName('asset');
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('modifiedTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'comment' => 'The name of this asset', 'length' => '255'));
+        $this->hasColumn('name', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The name of this asset'));
         $this->hasColumn('source', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'manual', 1 => 'scan'), 'default' => 'manual', 'comment' => 'Whether this asset was created manually or by an automated scanner'));
         $this->hasColumn('addressIp', 'string', 15, array('type' => 'string', 'ip' => true, 'comment' => 'The IP address for this asset', 'length' => '15'));
         $this->hasColumn('addressPort', 'integer', 2, array('type' => 'integer', 'comment' => 'The IP port for this asset', 'length' => '2'));
@@ -56,5 +56,7 @@ abstract class BaseAsset extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

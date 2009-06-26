@@ -27,17 +27,21 @@ abstract class BaseLdapConfig extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->setTableName('ldap_config');
-        $this->hasColumn('host', 'string', 255, array('type' => 'string', 'length' => '255'));
+        $this->hasColumn('host', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
         $this->hasColumn('port', 'integer', 2, array('type' => 'integer', 'length' => '2'));
-        $this->hasColumn('domainName', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('domainShort', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('username', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('password', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('basedn', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('accountFilter', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('accountCanonical', 'string', 255, array('type' => 'string', 'length' => '255'));
+        $this->hasColumn('domainName', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('domainShort', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('username', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('password', 'string', null, array('type' => 'string'));
+        $this->hasColumn('basedn', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('accountFilter', 'string', null, array('type' => 'string'));
+        $this->hasColumn('accountCanonical', 'string', null, array('type' => 'string'));
         $this->hasColumn('bindRequiresDn', 'boolean', null, array('type' => 'boolean'));
         $this->hasColumn('useSsl', 'boolean', null, array('type' => 'boolean'));
     }
 
+    public function setUp()
+    {
+        $this->addListener(new XssListener(), 'XssListener');
+    }
 }

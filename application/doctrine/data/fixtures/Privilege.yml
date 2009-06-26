@@ -119,7 +119,7 @@ Privilege:
     finding_mitigation_ivv:
         resource: finding
         action: mitigation_ivv
-        description: Mitigation Strategy - IV&V Approval
+        description: Mitigation Strategy - IV&amp;V Approval
         orgSpecific: true
     finding_evidence_isso:
         resource: finding
@@ -129,7 +129,7 @@ Privilege:
     finding_evidence_ivv:
         resource: finding
         action: evidence_ivv
-        description: Evidence Artifacts - IV&V Approval
+        description: Evidence Artifacts - IV&amp;V Approval
         orgSpecific: true
 
     # Assets CRUD

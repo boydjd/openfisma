@@ -12,8 +12,8 @@ Evaluation:
 
     MITIGATION IVV:
         id: 2
-        name: Awaiting IV&V Approval for Mitigation Strategy
-        nickname: MS IV&V
+        name: Awaiting IV&amp;V Approval for Mitigation Strategy
+        nickname: MS IV&amp;V
         precedence: 1
         approvalGroup: action
         Privilege: finding_mitigation_ivv
@@ -33,8 +33,8 @@ Evaluation:
 
     EVIDENCE IVV:
         id: 4
-        name: Awaiting IV&V Approval for Evidence
-        nickname: EV IV&V
+        name: Awaiting IV&amp;V Approval for Evidence
+        nickname: EV IV&amp;V
         precedence: 1
         approvalGroup: evidence
         Privilege: finding_evidence_ivv

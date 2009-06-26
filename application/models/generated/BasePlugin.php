@@ -19,9 +19,13 @@ abstract class BasePlugin extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->setTableName('plugin');
-        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('class', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('description', 'string', null, array('type' => 'string'));
+        $this->hasColumn('name', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('class', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html')));
     }
 
+    public function setUp()
+    {
+        $this->addListener(new XssListener(), 'XssListener');
+    }
 }

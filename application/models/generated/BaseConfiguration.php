@@ -19,9 +19,13 @@ abstract class BaseConfiguration extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->setTableName('configuration');
-        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'comment' => 'A string which logically represents a unique configuration item', 'length' => '255'));
-        $this->hasColumn('value', 'string', null, array('type' => 'string', 'comment' => 'The value of this unique configuration item'));
-        $this->hasColumn('description', 'string', 255, array('type' => 'string', 'comment' => 'A description of the configuration attribute which will be displayed to the user', 'length' => '255'));
+        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'A string which logically represents a unique configuration item', 'length' => '255'));
+        $this->hasColumn('value', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'The value of this unique configuration item'));
+        $this->hasColumn('description', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'A description of the configuration attribute which will be displayed to the user', 'length' => '255'));
     }
 
+    public function setUp()
+    {
+        $this->addListener(new XssListener(), 'XssListener');
+    }
 }

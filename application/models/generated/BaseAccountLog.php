@@ -24,7 +24,7 @@ abstract class BaseAccountLog extends Doctrine_Record
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp', 'comment' => 'The time at which this event occurred'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'comment' => 'The user who caused this event, if applicable'));
         $this->hasColumn('ip', 'string', 15, array('type' => 'string', 'notnull' => true, 'comment' => 'The IP address where this event originated from', 'length' => '15'));
-        $this->hasColumn('message', 'string', null, array('type' => 'string', 'comment' => 'A description of the event'));
+        $this->hasColumn('message', 'string', null, array('type' => 'string', 'comment' => 'A description of the event', 'extra' => array('purify' => 'plaintext')));
     }
 
     public function setUp()
@@ -34,5 +34,7 @@ abstract class BaseAccountLog extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

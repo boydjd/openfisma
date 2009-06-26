@@ -1,17 +1,27 @@
 Organization:    
+    listeners: [XssListener]
+
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
-        name: string(255)
+        name: 
+            type: string
+            extra:
+                purify: plaintext
         nickname:
-            type: string(255)
+            type: string
             unique: true;
+            extra:
+                purify: plaintext
         orgType:
             type: enum()
             values: [agency, bureau, organization, system]
         systemId:
             type: integer
-        description: string(255)
+        description: 
+            type: string
+            extra:
+                purify: plaintext
 
     relations:
         System:

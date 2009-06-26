@@ -22,7 +22,7 @@ abstract class BaseUpload extends Doctrine_Record
     {
         $this->setTableName('upload');
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('fileName', 'string', 255, array('type' => 'string', 'comment' => 'Name of the uploaded file', 'length' => '255'));
+        $this->hasColumn('fileName', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'Name of the uploaded file', 'length' => '255'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the user who uploaded this file'));
     }
 
@@ -36,5 +36,7 @@ abstract class BaseUpload extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

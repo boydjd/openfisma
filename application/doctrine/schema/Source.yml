@@ -1,5 +1,16 @@
 Source:
+    listeners: [XssListener]
+        
     columns:
-        name: string(255)
-        nickname: string(255)
-        description: string
+        name: 
+            type: string
+            extra:
+                purify: plaintext
+        nickname: 
+            type: string
+            extra:
+                purify: plaintext
+        description: 
+            type: string
+            extra:
+                purify: html

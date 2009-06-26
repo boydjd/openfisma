@@ -1,13 +1,24 @@
 Role:
+    listeners: [XssListener]
+    
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
         
-        name: string(255)
+        name: 
+            type: string
+            extra:
+                purify: plaintext
         nickname: 
-            type: string(255)
+            type: 
+                type: string
+                extra:
+                    purify: plaintext                
             unique: true;
-        description: string
+        description: 
+            type: string
+            extra:
+                purify: html
 
     relations:
         # Users is a many-to-many relation

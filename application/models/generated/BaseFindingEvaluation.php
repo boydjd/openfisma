@@ -34,7 +34,7 @@ abstract class BaseFindingEvaluation extends Doctrine_Record
         $this->hasColumn('evaluationId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the type of evaluation which this represents against the finding'));
         $this->hasColumn('decision', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'APPROVED', 1 => 'DENIED'), 'comment' => 'The approve result'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the user who completed this evaluation'));
-        $this->hasColumn('comment', 'string', null, array('type' => 'string', 'comment' => 'The deny comment'));
+        $this->hasColumn('comment', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The deny comment'));
     }
 
     public function setUp()
@@ -56,5 +56,7 @@ abstract class BaseFindingEvaluation extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

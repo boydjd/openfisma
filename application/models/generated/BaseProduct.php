@@ -21,15 +21,17 @@ abstract class BaseProduct extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->setTableName('product');
-        $this->hasColumn('vendor', 'string', 255, array('type' => 'string', 'comment' => 'The name of the vendor who brands this product', 'length' => '255'));
-        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'comment' => 'Name of the product', 'length' => '255'));
-        $this->hasColumn('version', 'string', 255, array('type' => 'string', 'comment' => 'Version of the product', 'length' => '255'));
-        $this->hasColumn('cpeName', 'string', 255, array('type' => 'string', 'comment' => 'The common platform enumeration (CPE) for this product, if known', 'length' => '255'));
+        $this->hasColumn('vendor', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The name of the vendor who brands this product', 'length' => '255'));
+        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'Name of the product', 'length' => '255'));
+        $this->hasColumn('version', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'Version of the product', 'length' => '255'));
+        $this->hasColumn('cpeName', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The common platform enumeration (CPE) for this product, if known', 'length' => '255'));
     }
 
     public function setUp()
     {
         $this->hasMany('Asset as Assets', array('local' => 'id',
                                                 'foreign' => 'productId'));
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

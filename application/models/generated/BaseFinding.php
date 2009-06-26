@@ -61,19 +61,19 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasColumn('discoveredDate', 'date', null, array('type' => 'date', 'comment' => 'The when the finding was discovered. This is self-reported by users'));
         $this->hasColumn('closedTs', 'timestamp', null, array('type' => 'timestamp', 'comment' => 'The timestamp when this finding was closed'));
         $this->hasColumn('nextDueDate', 'date', null, array('type' => 'date', 'comment' => 'The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.'));
-        $this->hasColumn('legacyFindingKey', 'string', 255, array('type' => 'string', 'unique' => true, 'comment' => 'This field can be used by end clients to track findings under a legacy tracking system', 'length' => '255'));
+        $this->hasColumn('legacyFindingKey', 'string', 255, array('type' => 'string', 'unique' => true, 'extra' => array('purify' => 'plaintext'), 'comment' => 'This field can be used by end clients to track findings under a legacy tracking system', 'length' => '255'));
         $this->hasColumn('type', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'CAP', 1 => 'AR', 2 => 'FP'), 'comment' => 'The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)'));
         $this->hasColumn('status', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'PEND', 1 => 'NEW', 2 => 'DRAFT', 3 => 'MSA', 4 => 'EN', 5 => 'EA', 6 => 'CLOSED'), 'comment' => 'The current status. MSA and EA are physical status codes that need to be translated into logical status codes before displaying to the user'));
         $this->hasColumn('currentEvaluationId', 'integer', null, array('type' => 'integer', 'comment' => 'Points to the current evaluation level when the status is MSA or EA. Null otherwise.'));
-        $this->hasColumn('description', 'string', null, array('type' => 'string', 'comment' => 'Description of the finding'));
-        $this->hasColumn('recommendation', 'string', null, array('type' => 'string', 'comment' => 'The auditors recommendation to remediate this finding'));
-        $this->hasColumn('mitigationStrategy', 'string', null, array('type' => 'string', 'comment' => 'The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)'));
-        $this->hasColumn('resourcesRequired', 'string', null, array('type' => 'string', 'comment' => 'Any additional resources (financial) required to complete this course of action'));
+        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'Description of the finding'));
+        $this->hasColumn('recommendation', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'The auditors recommendation to remediate this finding'));
+        $this->hasColumn('mitigationStrategy', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)'));
+        $this->hasColumn('resourcesRequired', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'Any additional resources (financial) required to complete this course of action'));
         $this->hasColumn('expectedCompletionDate', 'date', null, array('type' => 'date', 'comment' => 'The date when the course of action or business case is planned to be completed'));
         $this->hasColumn('ecdLocked', 'boolean', null, array('type' => 'boolean', 'comment' => 'If false, then no user is allowed to modify the ECD.'));
-        $this->hasColumn('threat', 'string', null, array('type' => 'string', 'comment' => 'Description of the threat source which affects this finding'));
+        $this->hasColumn('threat', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'Description of the threat source which affects this finding'));
         $this->hasColumn('threatLevel', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'LOW', 1 => 'MODERATE', 2 => 'HIGH'), 'comment' => 'A subjective assessment of the probability and impact of exploiting this finding'));
-        $this->hasColumn('countermeasures', 'string', null, array('type' => 'string', 'comment' => 'The countermeasures in place against the threat source'));
+        $this->hasColumn('countermeasures', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'The countermeasures in place against the threat source'));
         $this->hasColumn('countermeasuresEffectiveness', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'LOW', 1 => 'MODERATE', 2 => 'HIGH'), 'comment' => 'A subjective assessment of the effectivness of the in-place countermeasures against the described threat'));
         $this->hasColumn('duplicateFindingId', 'integer', null, array('type' => 'integer', 'comment' => 'If this finding is a duplicate of an existing finding, then this is a foreign key to that finding; otherwise its null'));
         $this->hasColumn('responsibleOrganizationId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the organization which is responsible for addressing this finding'));
@@ -129,6 +129,7 @@ abstract class BaseFinding extends Doctrine_Record
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));
         $this->actAs($timestampable0);
 
+    $this->addListener(new XssListener(), 'XssListener');
     $this->addListener(new FindingListener(), 'FindingListener');
     }
 }

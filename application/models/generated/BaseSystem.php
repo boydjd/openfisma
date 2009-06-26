@@ -43,14 +43,14 @@ abstract class BaseSystem extends Doctrine_Record
         $this->hasColumn('securityAuthorizationDt', 'date', null, array('type' => 'date', 'comment' => 'The last date on which this system underwent a security authorization (formerly known as C&A)'));
         $this->hasColumn('contingencyPlanTestDt', 'date', null, array('type' => 'date', 'comment' => 'The last date on which the contingency plan for this system was tested'));
         $this->hasColumn('controlAssessmentDt', 'date', null, array('type' => 'date', 'comment' => 'The last time the security controls were tested for this system'));
-        $this->hasColumn('continuousMonitoringPolicy', 'string', null, array('type' => 'string', 'comment' => 'An HTML field to store the system\'s CM policy'));
+        $this->hasColumn('continuousMonitoringPolicy', 'string', null, array('type' => 'string', 'comment' => 'An HTML field to store the system\\\'s CM policy'));
         $this->hasColumn('hasFiif', 'boolean', null, array('type' => 'boolean', 'comment' => 'Whether the system contains any Federal Information in Identifiable Form'));
         $this->hasColumn('hasPii', 'boolean', null, array('type' => 'boolean', 'comment' => 'Whether the system contains any Personally Identifiable Information'));
         $this->hasColumn('piaRequired', 'boolean', null, array('type' => 'boolean', 'comment' => 'Whether this system requires a Privacy Impact Analysis'));
-        $this->hasColumn('piaUrl', 'string', null, array('type' => 'string', 'comment' => 'A URL pointing to the Privacy Impact Analysis'));
+        $this->hasColumn('piaUrl', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'A URL pointing to the Privacy Impact Analysis'));
         $this->hasColumn('sornRequired', 'boolean', null, array('type' => 'boolean', 'comment' => 'Whether a System Of Record Notice is required'));
-        $this->hasColumn('sornUrl', 'string', null, array('type' => 'string', 'comment' => 'A URL pointing to the System Of Record Notice'));
-        $this->hasColumn('uniqueProjectId', 'string', null, array('type' => 'string', 'comment' => 'The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"'));
+        $this->hasColumn('sornUrl', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'A URL pointing to the System Of Record Notice'));
+        $this->hasColumn('uniqueProjectId', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"'));
     }
 
     public function setUp()
@@ -58,6 +58,7 @@ abstract class BaseSystem extends Doctrine_Record
         $this->hasMany('Organization', array('local' => 'id',
                                              'foreign' => 'systemId'));
 
+    $this->addListener(new XssListener(), 'XssListener');
     $this->addListener(new SystemListener(), 'SystemListener');
     }
 }

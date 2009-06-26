@@ -1,7 +1,11 @@
 EmailValidation:
+    listeners: [XssListener]
+        
     columns:
         email: 
             type: string(255)
+            extra:
+                purify: plaintext
             comment: The e-mail address which needs validation
         validationCode:
             type: string(255)

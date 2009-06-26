@@ -1,10 +1,14 @@
 Asset:
+    listeners: [XssListener]
+        
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
 
         name:
-            type: string(255)
+            type: string
+            extra:
+                purify: plaintext
             comment: The name of this asset
         source:
             type: enum

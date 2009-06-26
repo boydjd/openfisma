@@ -20,14 +20,16 @@ abstract class BaseNetwork extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->setTableName('network');
-        $this->hasColumn('name', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('nickname', 'string', 255, array('type' => 'string', 'length' => '255'));
-        $this->hasColumn('description', 'string', null, array('type' => 'string'));
+        $this->hasColumn('name', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('nickname', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext')));
+        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html')));
     }
 
     public function setUp()
     {
         $this->hasMany('Asset as Assets', array('local' => 'id',
                                                 'foreign' => 'networkId'));
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

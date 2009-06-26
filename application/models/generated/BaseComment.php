@@ -23,7 +23,7 @@ abstract class BaseComment extends Doctrine_Record
     {
         $this->setTableName('comment');
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('content', 'string', null, array('type' => 'string', 'comment' => 'The text of the comment'));
+        $this->hasColumn('content', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The text of the comment'));
         $this->hasColumn('findingEvaluationId', 'integer', null, array('type' => 'integer'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer'));
     }
@@ -38,5 +38,7 @@ abstract class BaseComment extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

@@ -1,5 +1,16 @@
 Plugin:
+    listeners: [XssListener]
+
     columns:
-        name: string(255)
-        class: string(255)
-        description: string
+        name: 
+            type: string
+            extra:
+                purify: plaintext
+        class:
+            type: string
+            extra:
+                purify: plaintext
+        description: 
+            type: string
+            extra:
+                purify: html

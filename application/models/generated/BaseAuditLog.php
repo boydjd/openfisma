@@ -23,7 +23,7 @@ abstract class BaseAuditLog extends Doctrine_Record
     {
         $this->setTableName('audit_log');
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
-        $this->hasColumn('description', 'string', null, array('type' => 'string', 'comment' => 'Description of the audit log event'));
+        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'Description of the audit log event'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to user table'));
         $this->hasColumn('findingId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to finding table'));
     }
@@ -38,5 +38,7 @@ abstract class BaseAuditLog extends Doctrine_Record
 
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('disabled' => true)));
         $this->actAs($timestampable0);
+
+    $this->addListener(new XssListener(), 'XssListener');
     }
 }

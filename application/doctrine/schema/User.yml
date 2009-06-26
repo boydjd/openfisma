@@ -1,5 +1,5 @@
 User:
-    listeners: [UserListener]
+    listeners: [XssListener, UserListener]
     
     columns:
         createdTs: timestamp
@@ -8,6 +8,8 @@ User:
         username: 
             type: string(255)
             unique: true
+            extra:
+                purify: plaintext
             comment: This users unique authentication credential
         password: string(255)
         passwordSalt:
@@ -50,15 +52,23 @@ User:
     
         title: 
             type: string(255)
+            extra:
+                purify: plaintext
             comment: The users position or title within the agency
         nameFirst: 
             type: string(255)
+            extra:
+                purify: plaintext
             comment: The users first name
         nameLast: 
             type: string(255)
+            extra:
+                purify: plaintext
             comment: The users last name
         email: 
             type: string(255)
+            extra:
+                purify: plaintext
             email: true
             comment: The users primary e-mail address
         emailValidate: 
@@ -68,10 +78,14 @@ User:
         phoneOffice: 
             type: string(10)
             fixed: true
+            extra:
+                purify: plaintext
             comment: U.S. 10 digit phone number; stored without punctuation
         phoneMobile:
             type: string(10)
             fixed: true
+            extra:
+                purify: plaintext
             comment: U.S. 10 digit phone number; stored without punctuation
         searchColumnsPref:
             type: integer

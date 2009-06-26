@@ -1,4 +1,6 @@
 AccountLog:
+    listeners: [XssListener]
+    
     columns:
         createdTs: 
             type: timestamp
@@ -13,6 +15,8 @@ AccountLog:
         message:
             type: string
             comment: A description of the event
+            extra: 
+                purify: plaintext
 
     relations:
         User:
