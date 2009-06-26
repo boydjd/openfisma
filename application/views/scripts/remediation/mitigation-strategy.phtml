@@ -3,9 +3,8 @@
     $finding = $this->finding;
 ?>
 <p>
-    <b>
-        Type:
-    </b>
+    <b>Type:</b>
+
     <span name="finding[type]" id="type" type="select" href="/metainfo/list/o/type/format/html/"
         <?php
             if (('NEW' == $finding->status || 'DRAFT' == $finding->status) 
@@ -18,11 +17,11 @@
 </p>
             
 <p>
-    <b
+    <b target="mitigation_strategy"
         <?php 
             if (in_array($finding->status, array('NEW', 'DRAFT'))
                 && Fisma_Acl::hasPrivilege('finding','update_course_of_action')) {
-               echo 'class="editable" target="mitigation_strategy"';
+               echo 'class="editable"';
             }
         ?>>
         Description:
@@ -99,7 +98,9 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
     $submitMitigationButton = new Fisma_Yui_Form_Button('submitMitigation', 
                                                   array('value' => 'Submit Mitigation Strategy', 
                                                         'onClickFunction' => 'submitMitigationStrategy')    );
-    if (false == $complete || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')) {
+    if (false == $complete
+        || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')
+        || 'CAP' != $finding->type) {
         $submitMitigationButton->readOnly = true;
     }
     echo "<div class='toolbar'>$submitMitigationButton</div>";
