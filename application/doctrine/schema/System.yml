@@ -48,13 +48,16 @@ System:
         #    type: string
         #    comment: An HTML field to store the system\'s CM policy
         hasFiif:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"] # YAML converts YES to a boolean unless its quoted
             comment: Whether the system contains any Federal Information in Identifiable Form
         hasPii:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             comment: Whether the system contains any Personally Identifiable Information
         piaRequired:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             comment: Whether this system requires a Privacy Impact Analysis
         piaUrl:
             type: string
@@ -62,7 +65,8 @@ System:
                 purify: plaintext
             comment: A URL pointing to the Privacy Impact Analysis
         sornRequired:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             comment: Whether a System Of Record Notice is required
         sornUrl:
             type: string

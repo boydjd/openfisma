@@ -99,13 +99,12 @@ class MetainfoController extends PoamBaseController
                 "CONTRACTOR"  => "CONTRACTOR"
             );
             $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'CAP';
-        } elseif ($module == 'boolean') {
+        } elseif ($module == 'yesNo') {
             $list = array(
-                "true" => "true",
-                "false"  => "false"
+                "YES" => "YES",
+                "NO"  => "NO"
             );
-            $selected = urldecode($this->getRequest()->getParam('value'));
-            $this->view->selected = $list[array_search($selected, $list)];
+            $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'YES';
         } elseif ($module == 'systemType') {
             $list = array(
                 "gss" => "General Support System",
