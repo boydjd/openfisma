@@ -1,0 +1,112 @@
+<?php
+Fisma_Format_Section::startSection('Confidentiality');
+?>
+<table class="keyValues">
+    <tr>
+        <td>Confidentiality: </td>
+        <td width="200px">
+            <span id="confidentiality" 
+                  class="editable" 
+                  target="confidentiality" 
+                  name="confidentiality" 
+                  type="select" 
+                  href="/metainfo/list/o/confidentiality/format/html/">
+                <?php echo $this->system->confidentiality; ?>&nbsp;
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>Description: </td>
+        <td>
+            <div id="confidentialityDescription" 
+                  class="editable" 
+                  target="confidentialityDescription" 
+                  name="confidentialityDescription" 
+                  type="textarea" 
+                  rows="4"
+                  cols="80">
+                <?php echo $this->system->confidentialityDescription; ?>&nbsp;
+            </div>
+        </td>
+    </tr> 
+</table>
+<?php
+Fisma_Format_Section::stopSection();
+Fisma_Format_Section::startSection('Integrity');
+?>
+<table class="keyValues">   
+    <tr>
+        <td>Integrity: </td>
+        <td width="200px">
+            <span id="integrity" 
+                  class="editable" 
+                  target="integrity" 
+                  name="integrity" 
+                  type="select" 
+                  href="/metainfo/list/o/integrity/format/html/">
+                  <?php echo $this->system->integrity; ?>&nbsp;
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>Description: </td>
+        <td>
+            <div id="integrityDescription" 
+                  class="editable" 
+                  target="integrityDescription" 
+                  name="integrityDescription" 
+                  type="textarea" 
+                  rows="4"
+                  cols="80">
+                  <?php echo $this->system->integrityDescription; ?>&nbsp;
+            </div>
+        </td>
+    </tr>    
+</table>
+<?php
+Fisma_Format_Section::stopSection();
+Fisma_Format_Section::startSection('Availability');
+?>
+<table class="keyValues">    
+    <tr>
+        <td>Availability: </td>
+        <td width="200px">
+            <span id="availability" 
+                  class="editable" 
+                  target="availability" 
+                  name="availability" 
+                  type="select" 
+                  href="/metainfo/list/o/availability/format/html/">        
+            <?php echo $this->system->availability; ?>&nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td>Description: </td>
+        <td>
+            <div id="availabilityDescription" 
+                  class="editable" 
+                  target="availabilityDescription" 
+                  name="availabilityDescription" 
+                  type="textarea" 
+                  rows="4"
+                  cols="80">
+                  <?php echo $this->system->availabilityDescription; ?>&nbsp;
+            </div>
+        </td>
+    </tr>
+</table>
+<?php
+Fisma_Format_Section::stopSection();
+Fisma_Format_Section::startSection('FIPS-199 Security Categorization');
+?>
+<table class="keyValues">
+    <tr>
+        <td>FIPS-199 Categorization: </td>
+        <td>
+            <?php echo $this->system->fipsCategory; ?>
+        </td>
+    </tr>
+</table>
+<?php
+Fisma_Format_Section::stopSection();
+?>

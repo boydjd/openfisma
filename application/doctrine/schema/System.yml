@@ -6,19 +6,25 @@ System:
             type: enum
             values: [gss, major, minor]
             comment: General Support System, Major Application, or Minor Application
-        
+
         confidentiality:
             type: enum
             values: [na, low, moderate, high]
             comment: The FIPS-199 confidentiality impact
+        confidentialityDescription:
+            type: string
         integrity:
             type: enum
             values: [low, moderate, high]
             comment: The FIPS-199 integrity impact
+        integrityDescription:
+            type: string
         availability:
             type: enum
             values: [low, moderate, high]
             comment: The FIPS-199 availability impact
+        availabilityDescription:
+            type: string
         fipsCategory:
             type: enum
             values: [low, moderate, high]
@@ -38,9 +44,9 @@ System:
         controlAssessmentDt:
             type: date
             comment: The last time the security controls were tested for this system
-        continuousMonitoringPolicy:
-            type: string
-            comment: An HTML field to store the system\'s CM policy
+        #continuousMonitoringPolicy:
+        #    type: string
+        #    comment: An HTML field to store the system\'s CM policy
         hasFiif:
             type: boolean
             comment: Whether the system contains any Federal Information in Identifiable Form

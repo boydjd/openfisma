@@ -1,0 +1,53 @@
+<?php
+Fisma_Format_Section::startSection('Details');
+?>
+<table class="keyValues">
+    <tr>
+        <td>System Name: </td>
+        <td>
+            <span id="name" class="editable" target="name" name="name" type="text">
+                <?php echo $this->organization->name; ?>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>System Nickname: </td>
+        <td>
+            <span id="nickname" class="editable" target="nickname" name="nickname" type="text">
+                <?php echo $this->organization->nickname; ?>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>System Type: </td>
+        <td>
+            <span id="type" 
+                  class="editable" 
+                  target="type" 
+                  name="type" 
+                  type="select" 
+                  href="/metainfo/list/o/systemType/format/html/">
+                <?php echo $this->organization->getOrgTypeLabel(); ?>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>Parent Organization: </td>
+        <td>
+            <?php echo $this->parentOrganization; ?>
+        </td>
+    </tr>
+</table>
+<?php
+Fisma_Format_Section::stopSection();
+
+if (Fisma_Acl::hasPrivilege('system','update')) {
+    Fisma_Format_Section::startSection('System Description', 'system_description');
+} else {
+    Fisma_Format_Section::startSection('System Description');
+}
+?>
+<div name="description" id="system_description" type="textarea" rows="3" cols="120"> 
+    <?php echo $this->organization->description; ?>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>

@@ -21,7 +21,7 @@ Organization:
         description: 
             type: string
             extra:
-                purify: plaintext
+                purify: html
 
     relations:
         System:

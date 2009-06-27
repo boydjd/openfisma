@@ -50,12 +50,25 @@ Class SystemListener extends Doctrine_Record_Listener
     {
         $system = $event->getInvoker();
         $modified = $system->getModified();
-        
-        // Update FIPS 199 categorization
+
+        // Update FIPS 199
         if (isset($modified['confidentiality'])
             || isset($modified['integrity'])
             || isset($modified['availability'])) {
             $system->fipsCategory = $system->fipsSecurityCategory();
+        }
+        
+        // Format the Exhibit 53 UPI like: xxx-xx-xx-xx-xx-xxxx-xx
+        if (isset($modified['uniqueProjectId'])) {
+            $tempUpi = str_replace('-', '', $modified['uniqueProjectId']);
+            $tempUpi = str_pad($tempUpi, 17, '0');
+            $system->uniqueProjectId = substr($tempUpi, 0, 3) . '-'
+                                     . substr($tempUpi, 3, 2) . '-'
+                                     . substr($tempUpi, 5, 2) . '-'
+                                     . substr($tempUpi, 7, 2) . '-'
+                                     . substr($tempUpi, 9, 2) . '-'
+                                     . substr($tempUpi, 11, 4) . '-'
+                                     . substr($tempUpi, 15, 2);
         }
     }
 
@@ -63,18 +76,6 @@ Class SystemListener extends Doctrine_Record_Listener
     {
         $system = $event->getInvoker();
         $org = $system->Organization[0];
-        if ($system->organizationid) {
-            $org->getNode()
-                ->insertAsLastChildOf($org->getTable()
-                                          ->find($system->organizationid));
-        }
-
-        $organization = $system->Organization[0];
-        $organization->name = $system->name;
-        $organization->nickname = $system->nickname;
-        $organization->description = $system->description;
-        $organization->orgType = 'system';
-        $organization->save();
 
         $modified = $system->getModified($old=false, $last=true);
         Fisma_Lucene::updateIndex('system', $system->id, $modified);

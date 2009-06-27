@@ -7,8 +7,11 @@
  * 
  * @property enum $type
  * @property enum $confidentiality
+ * @property string $confidentialityDescription
  * @property enum $integrity
+ * @property string $integrityDescription
  * @property enum $availability
+ * @property string $availabilityDescription
  * @property enum $fipsCategory
  * @property enum $controlledBy
  * @property date $securityAuthorizationDt
@@ -36,8 +39,11 @@ abstract class BaseSystem extends Doctrine_Record
         $this->setTableName('system');
         $this->hasColumn('type', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'gss', 1 => 'major', 2 => 'minor'), 'comment' => 'General Support System, Major Application, or Minor Application'));
         $this->hasColumn('confidentiality', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'na', 1 => 'low', 2 => 'moderate', 3 => 'high'), 'comment' => 'The FIPS-199 confidentiality impact'));
+        $this->hasColumn('confidentialityDescription', 'string', null, array('type' => 'string'));
         $this->hasColumn('integrity', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 integrity impact'));
+        $this->hasColumn('integrityDescription', 'string', null, array('type' => 'string'));
         $this->hasColumn('availability', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 availability impact'));
+        $this->hasColumn('availabilityDescription', 'string', null, array('type' => 'string'));
         $this->hasColumn('fipsCategory', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above'));
         $this->hasColumn('controlledBy', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'AGENCY', 1 => 'CONTRACTOR'), 'comment' => 'Is this system principally controlled by the agency or by a contractor?'));
         $this->hasColumn('securityAuthorizationDt', 'date', null, array('type' => 'date', 'comment' => 'The last date on which this system underwent a security authorization (formerly known as C&A)'));

@@ -19,7 +19,7 @@ function setupEditFields() {
              var cur_val = target.innerText ? target.innerText : target.textContent;
              var cur_html = target.innerHTML;
              if (type == 'text') {
-                 target.outerHTML = '<input name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
+                 target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
                      target.onfocus = function () {this.blur()};

@@ -95,7 +95,7 @@ class XssListener extends Doctrine_Record_Listener
             $config->set('HTML', 'Doctype', 'HTML 4.01 Strict'); /** @todo put the purifier into the registry */
             // Make sure to keep the following line in sync with Tiny MCE so users aren't surprised when their
             // data looks different before storage and after retreival.
-            $config->set('HTML', 'Allowed', 'a[href],p[style],strong,em,span[style],ul,li,ol,table,tr,th,td');
+            $config->set('HTML', 'Allowed', 'a[href],p[style],b,i,strong,em,span[style],ul,li,ol,table,tr,th,td');
             $config->set('HTML', 'TidyLevel', 'medium'); // Conform user submitted HTML to our doctype
             $config->set('AutoFormat', 'Linkify', true); // Turn text URLS into <a> links
             $config->set('AutoFormat', 'RemoveEmpty', true); // Remove tags which do not contain semantic information

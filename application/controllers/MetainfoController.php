@@ -56,35 +56,66 @@ class MetainfoController extends PoamBaseController
             foreach ($organizations as $organization) {
                 $list[$organization->id] = "($organization->nickname)-" . $organization->name;
             }
-        }
-        if ($module == 'security_control') {
+        } elseif ($module == 'security_control') {
             $securityControls = Doctrine::getTable('SecurityControl')->findAll();
             foreach ($securityControls as $securityControl) {
                 $list[$securityControl->id] = $securityControl->code;
             }
-        }
-        if (in_array($module, array('threat_level', 'countermeasures-effectiveness'))) {
+        } elseif (in_array($module, array('threat_level', 'countermeasures-effectiveness'))) {
             $list = array(
                 "NONE"     => "NONE",
                 "LOW"      => "LOW",
                 "MODERATE" => "MODERATE",
                 "HIGH"     => "HIGH"
             );
-        }
-        if ($module == 'decision') {
+        } elseif ('confidentiality' == $module) {
+            $list = array(
+                "na"       => "na",
+                "low"      => "low",
+                "moderate" => "moderate",
+                "high"     => "high"
+            );
+        } elseif (in_array($module, array('integrity', 'availability'))) {
+            $list = array(
+                "low"      => "low",
+                "moderate" => "moderate",
+                "high"     => "high"
+            );
+        } elseif ($module == 'decision') {
             $list = array(
                 "APPROVED" => "APPROVED",
                 "DENIED"   => "DENIED"
             );
-        }
-        if ($module == 'type') {
+        } elseif ($module == 'type') {
             $list = array(
                 "CAP" => "(CAP) Corrective Action Plan",
                 "AR"  => "(AR) Accepted Risk",
                 "FP"  => "(FP) False Positive"
             );
             $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'CAP';
+        } elseif ($module == 'controlledBy') {
+            $list = array(
+                "AGENCY" => "AGENCY",
+                "CONTRACTOR"  => "CONTRACTOR"
+            );
+            $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'CAP';
+        } elseif ($module == 'boolean') {
+            $list = array(
+                "true" => "true",
+                "false"  => "false"
+            );
+            $selected = urldecode($this->getRequest()->getParam('value'));
+            $this->view->selected = $list[array_search($selected, $list)];
+        } elseif ($module == 'systemType') {
+            $list = array(
+                "gss" => "General Support System",
+                "major"  => "Major Application",
+                "minor"  => "Minor Application"
+            );
+            $selected = urldecode($this->getRequest()->getParam('value'));
+            $this->view->selected = $list[array_search($selected, $list)];
         }
+
         $this->view->list = $list;
     }
 }

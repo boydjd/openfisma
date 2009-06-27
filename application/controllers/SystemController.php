@@ -36,63 +36,13 @@ class SystemController extends BaseController
     protected $_modelName = 'System';
 
     /**
-     * Returns the standard form for creating, reading, and updating systems.
-     *
-     * @return Zend_Form
-     */
-    public function getForm()
-    {
-        $form = Fisma_Form_Manager::loadForm('system');
-        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $q = Doctrine_Query::create()
-                ->select('o.*')
-                ->from('Organization o')
-                ->where('o.orgType != ?', 'system');
-        $organizationTreeObject->setBaseQuery($q);
-        $organizationTree = $organizationTreeObject->fetchTree();
-        if (!empty($organizationTree)) {
-            foreach ($organizationTree as $organization) {
-                $value = $organization['id'];
-                $text = str_repeat('--', $organization['level']) . $organization['name'];
-                $form->getElement('organizationid')->addMultiOptions(array($value => $text));
-            }
-        } else {
-            $form->getElement('organizationid')->addMultiOptions(array(0 => 'NONE'));
-        }
-        
-        $systemTable = Doctrine::getTable('System');
-        
-        $array = $systemTable->getEnumValues('confidentiality');
-        $form->getElement('confidentiality')->addMultiOptions(array_combine($array, $array));
-        
-        $array = $systemTable->getEnumValues('integrity');
-        $form->getElement('integrity')->addMultiOptions(array_combine($array, $array));
-        
-        $array = $systemTable->getEnumValues('availability');
-        $form->getElement('availability')->addMultiOptions(array_combine($array, $array));
-        
-        $type = $systemTable->getEnumValues('type');
-        $form->getElement('type')->addMultiOptions(array_combine($type, $type));
-        
-        return Fisma_Form_Manager::prepareForm($form);
-    }
-
-    protected function setForm($system, $form) 
-    {
-        $system->name = $system->Organization[0]->name;
-        $system->nickname = $system->Organization[0]->nickname;
-        $system->description = $system->Organization[0]->description;
-        return parent::setForm($system, $form);
-    }
-
-    /**
      * list the systems from the search, 
      * if search none, it list all systems
      *
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('system', 'read');
+        Fisma_Acl::requirePrivilege('Organization', 'read');
         
         $value = trim($this->_request->getParam('keywords'));
         
@@ -109,7 +59,7 @@ class SystemController extends BaseController
         }
         
         $q = Doctrine_Query::create()
-             ->select('s.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
+             ->select('o.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
              ->from('Organization o')
              ->leftJoin('o.System s')
              ->where('o.orgType = ?', 'system')
@@ -144,5 +94,139 @@ class SystemController extends BaseController
         ));
 
         $this->_helper->json($tableData);
+    }
+    
+    public function viewAction() 
+    {
+        $id = $this->getRequest()->getParam('id');        
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->organization = $organization;
+        $this->view->system = $organization->System;
+
+        $this->render();
+    }
+    
+    /**
+     * Display basic system properties such as name, creation date, etc.
+     */
+    public function systemAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
+        
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
+
+        // Assign the parent organization link
+        $parentOrganization = $this->view->organization->getNode()->getParent();
+        if (isset($parentOrganization)) {
+            if (Fisma_Acl::hasPrivilege('Organization', 'read', $parentOrganization->id)) {
+                if ('system' == $this->parentOrganization->type) {
+                    $this->view->parentOrganization = "<a href='/panel/system/sub/view/id/"
+                                                    . $parentOrganization->id
+                                                    . "'>"
+                                                    . "$parentOrganization->nickname - $parentOrganization->name"
+                                                    . "</a>";
+                } else {
+                    $this->view->parentOrganization = "<a href='/panel/organization/sub/view/id/"
+                                                    . $parentOrganization->id
+                                                    . "'>"
+                                                    . "$parentOrganization->nickname - $parentOrganization->name"
+                                                    . "</a>";
+                
+                }
+            } else {
+                $this->view->parentOrganization = "$parentOrganization->nickname - $parentOrganization->name";
+            }
+        } else {
+            $this->view->parentOrganization = "<i>None</i>";
+        }
+        
+        $this->render();
+    }
+    
+    /**
+     * Display CIA criteria and FIPS-199 categorization
+     */
+    public function fipsAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
+        
+        $this->render();
+    }
+    
+    /**
+     * Display FISMA attributes for the system
+     */
+    public function fismaAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
+        
+        $this->render();        
+    }
+
+    /**
+     * Display FISMA attributes for the system
+     */
+    public function artifactsAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
+        
+        $this->render();        
+    }
+
+    /**
+     * Edit the system data
+     */
+    public function editAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $system = $organization->System;
+
+        $post = $this->_request->getPost();
+        if ($post) {
+            $organization->merge($post);
+            $organization->save();
+
+            $system->merge($post);
+            $system->save();
+        }
+        
+        $this->_redirect("/panel/system/sub/view/id/$id");
+    }
+
+    /**
+     * Upload file artifacts for a system
+     */
+    public function attachFileAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
     }
 }

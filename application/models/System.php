@@ -228,4 +228,12 @@ class System extends BaseSystem
         $org = $this->Organization[0];
         return $org->delete($conn);
     }
+    
+    /**
+     * Return system name with proper formatting
+     */
+    public function getName() 
+    {
+        return $this->Organization[0]->nickname . ' - ' . $this->Organization[0]->name;
+    }
 }
