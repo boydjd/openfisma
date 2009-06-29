@@ -91,7 +91,6 @@ class RemediationController extends SecurityController
                    'headers' => array(
                         'Content-Disposition' => "attachement;filename=export.pdf",
                         'Content-Type' => 'application/pdf')))
-                   ->addActionContext('raf', array('pdf'))
                    ->addActionContext('search2', array('pdf'))
                    ->setAutoDisableLayout(true);
         }
@@ -473,7 +472,7 @@ class RemediationController extends SecurityController
         Fisma_Acl::requirePrivilege('finding', 'update');
         
         $id          = $this->_request->getParam('id');
-        $findingData = $this->_request->getPost('finding');
+        $findingData = $this->_request->getPost('finding', array());
 
         $finding     = $this->_getFinding($id);
 
@@ -707,9 +706,11 @@ class RemediationController extends SecurityController
             
             $system = $finding->ResponsibleOrganization->System;
             if (NULL == $system->fipsCategory) {
-                throw new Fisma_Exception('The security categorization for (' . $system->id . ')' .
-                    $system->name . ' is not defined. An analysis of risk cannot be generated ' .
-                    'unless these values are defined.');
+                /** @todo english */
+                throw new Fisma_Exception('The security categorization for ' .
+                     '(' . $finding->responsibleOrganizationId . ')' . 
+                     $finding->ResponsibleOrganization->name . ' is not defined. An analysis of ' .
+                     'risk cannot be generated unless these values are defined.');
             }
             $this->view->securityCategorization = $system->fipsCategory;
         } catch (Fisma_Exception $e) {
@@ -718,7 +719,12 @@ class RemediationController extends SecurityController
             }
             $this->message($message, self::M_WARNING);
             $this->_forward('view', null, null, array('id' => $id));
+            return;
         }
+        $this->_helper->contextSwitch()
+               ->setHeader('pdf', 'Content-Disposition', "attachement;filename={$id}_raf.pdf")
+               ->addActionContext('raf', array('pdf'))
+               ->initContext();
         $this->view->finding = $finding;
     }
 
