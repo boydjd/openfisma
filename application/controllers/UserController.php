@@ -407,18 +407,16 @@ class UserController extends BaseController
     public function checkAccountAction()
     {
         Fisma_Acl::requirePrivilege('user', 'read');
-        /*
-        $config = new Config();
-        $data = $config->getLdap();
+        $ldapConfig = new LdapConfig();
+        $data = $ldapConfig->getLdaps();
         $account = $this->_request->getParam('account');
         $msg = '';
-        if (empty($data)) {
+        if (count($data) == 0) {
             $type = 'warning';
             // to do Engilish
             $msg .= "Ldap doesn't exist or no data";
         }
         foreach ($data as $opt) {
-            unset($opt['id']);
             $srv = new Zend_Ldap($opt);
             try {
                 $type = 'message';
@@ -439,6 +437,7 @@ class UserController extends BaseController
             }
         }
         echo json_encode(array('msg' => $msg, 'type' => $type));
-        $this->_helper->viewRenderer->setNoRender();*/
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
     }
 }
