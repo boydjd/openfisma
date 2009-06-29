@@ -1,0 +1,25 @@
+SystemDocument:
+    of_ssp:
+        mimeType: application/msword
+        fileName: System_Security_Plan.doc
+        description: Initial version of the System Security Plan for OpenFISMA
+        version: 1
+        DocumentType: ssp
+        User: root
+        System: OF_SYS
+    of_cp:
+        mimeType: application/msword
+        fileName: Contingency_Plan.doc
+        description: Initial version of the Contingency Plan for OpenFISMA
+        version: 1
+        DocumentType: cp
+        User: root
+        System: OF_SYS
+    of_ctp:
+        mimeType: application/msexcel
+        fileName: System_Security_Plan.xls
+        description: Initial version of the Contingency Test Plan for OpenFISMA
+        version: 1
+        DocumentType: cpt
+        User: root
+        System: OF_SYS

@@ -25,6 +25,7 @@
  * @property string $sornUrl
  * @property string $uniqueProjectId
  * @property Doctrine_Collection $Organization
+ * @property Doctrine_Collection $Documents
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -61,6 +62,9 @@ abstract class BaseSystem extends Doctrine_Record
     {
         $this->hasMany('Organization', array('local' => 'id',
                                              'foreign' => 'systemId'));
+
+        $this->hasMany('SystemDocument as Documents', array('local' => 'id',
+                                                            'foreign' => 'systemId'));
 
     $this->addListener(new XssListener(), 'XssListener');
     $this->addListener(new SystemListener(), 'SystemListener');

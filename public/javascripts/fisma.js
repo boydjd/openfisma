@@ -565,7 +565,7 @@ function dump(arr) {
 } 
 
 /* temporary helper function to fix a bug in evidence upload for IE6/IE7 */
-function panel(title, parent, src, html) {
+function panel(title, parent, src, html, callback) {
     var newPanel = new YAHOO.widget.Panel('panel', {width:"540px", modal:true} );
     newPanel.setHeader(title);
     newPanel.setBody("Loading...");
@@ -583,6 +583,8 @@ function panel(title, parent, src, html) {
                                                 o.argument.setBody(o.responseText);
                                                 // Re-center the panel (because the content has changed)
                                                 o.argument.center();
+                                                
+                                                callback();
                                             },
                                             failure: function(o) {alert('Failed to load the specified panel.');},
                                             argument: newPanel

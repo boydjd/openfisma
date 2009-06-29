@@ -87,6 +87,10 @@ class MenuController extends SecurityController
             if (Fisma_Acl::hasPrivilege('asset', 'read', '*')) {
                 $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
+
+            if (Fisma_Acl::hasPrivilege('system', 'read', '*')) {
+                $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/document/sub/list'));
+            }
             
             $menubar->add($systems);
         }

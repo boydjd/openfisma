@@ -187,8 +187,19 @@ class SystemController extends BaseController
         Fisma_Acl::requirePrivilege('Organization', 'read', $id);
         $this->_helper->layout()->disableLayout();
 
-        $this->view->organization = Doctrine::getTable('Organization')->find($id);
-        $this->view->system = $this->view->organization->System;
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $system = $organization->System;
+        $documents = $system->Documents;
+        
+        $this->view->organization = $organization;
+        $this->view->system = $system;
+        
+        // Get all documents for current system, sorted alphabetically on the document type name
+        $documentQuery = Doctrine_Query::create()
+                         ->from('SystemDocument d INNER JOIN d.DocumentType t')
+                         ->where('d.systemId = ?', $system->id)
+                         ->orderBy('t.name');
+        $this->view->documents = $documentQuery->execute();
         
         $this->render();        
     }
@@ -228,5 +239,97 @@ class SystemController extends BaseController
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
+    }
+    
+    /**
+     * Display a form inside a panel for uploading a document
+     */
+    public function uploadDocumentFormAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organizationId = $id;        
+        $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();
+    }
+  
+    /**
+     * Display a form inside a panel for uploading a document
+     */
+    public function uploadDocumentAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $documentTypeId = $this->getRequest()->getParam('documentTypeId');
+        $description = $this->getRequest()->getParam('description');
+
+        // Get the existing document
+        $documentQuery = Doctrine_Query::create()
+                         ->from('SystemDocument sd')
+                         ->where('sd.systemId = ? AND sd.documentTypeId = ?',
+                                 array($organization->System->id, $documentTypeId))
+                         ->limit(1);
+        $documents = $documentQuery->execute();
+    
+        // If no existing document, then create a new one
+        if (count($documents) == 0) {
+            $document = new SystemDocument();
+            $document->documentTypeId = $documentTypeId;
+            $document->System = $organization->System;
+            $document->User = User::currentUser();
+        } else {
+            $document = $documents[0];
+        }
+
+        // Move file into its correct place
+        $error = '';
+        $file = $_FILES['Filedata'];
+        $destinationPath = Fisma::getPath('systemDocument') . "/$id";
+        if (!is_dir($destinationPath)) {
+            mkdir($destinationPath);
+        }
+        $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . date('Ymd-His') . '.$2', $file['name'], 2, $count);
+        $filePath = "$destinationPath/$fileName";
+        if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+            $error = 'Cannot move uploaded file.';
+        }
+    
+        // Update the document object and save
+        $document->description = $description;
+        $document->fileName = $fileName;
+        $document->mimeType = $file['type'];
+        $document->save();
+        
+        // Send back a JSON status
+        $success = empty($error) ? true : false;
+        echo(json_encode(array('success' => $success, 'error' => $error)));
+    }  
+    
+    /**
+     * Download the specified system document
+     */
+    public function downloadDocumentAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $document = Doctrine::getTable('SystemDocument')->find($id);
+        if (is_null($document)) {
+            throw new Fisma_Exception("Requested file does not exist.");
+        }
+
+        Fisma_Acl::requirePrivilege('Organization', 'update', $document->System->Organization->id);
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        /** @todo better error checking */
+        $path = $document->getPath();
+        $this->getResponse()
+             ->setHeader('Content-Type', $document->mimeType)
+             ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
+         readfile($path);
     }
 }

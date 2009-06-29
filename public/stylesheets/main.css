@@ -427,3 +427,36 @@ div#msgbar {
 	background: url(/images/minor-small.png) no-repeat;
 }
 
+/* 
+Styles for displaying system documentation
+*/
+table.systemDocuments {
+    border: 1px solid lightgrey;
+}
+
+table.systemDocuments th {
+    font-weight: bold;
+    padding: 10px;
+    background: lightgrey;
+}
+
+table.systemDocuments td {
+    padding: 10px;
+    margin-top: 10px;
+}
+
+table.systemDocuments td:first-child:hover {
+    border: 1px solid orange;
+    background-color: #fff0c5;
+    margin-top: 10px;
+}
+
+table.systemDocuments td a {
+    color: black;
+}
+
+table.systemDocuments td img {
+	float: left;
+	margin-right: 10px;
+}
+

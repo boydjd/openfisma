@@ -64,6 +64,7 @@ class SecurityController extends MessageController
         $auth = Zend_Auth::getInstance();
         //use the consistent storage
         $auth->setStorage(new Fisma_Auth_Storage_Session());
+
         if ($auth->hasIdentity()) {
             if (isset($redirectInfo->page)) {
                 unset($redirectInfo->page);
@@ -74,7 +75,6 @@ class SecurityController extends MessageController
              
             // Store a reference to the ACL inside the view object
             $this->view->assign('acl', $this->_me->acl());
-
         } else {
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their

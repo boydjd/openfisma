@@ -137,8 +137,6 @@ class MessageController extends Zend_Controller_Action
         }
     }
 
-
-
     /**
      * _getTransport() - Return the appropriate Zend_Mail_Transport subclass,
      * based on the system's configuration.

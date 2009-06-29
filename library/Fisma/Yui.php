@@ -48,7 +48,9 @@ class Fisma_Yui
     }
 
     /**
-     * Adds the specified YUI library into the include list. The include list is a set, meaning that
+     * Adds the specified YUI library into the include list. 
+     * 
+     * The include list is a set, meaning that
      * each item can only occur in the list once. To achieve this, the array key holds the name of the
      * library, and the value is just a placeholder.
      * 

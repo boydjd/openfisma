@@ -167,12 +167,14 @@ class Fisma
             'data' => 'data',
             'fixture' => 'application/doctrine/data/fixtures',
             'form' => 'application/config/form',
+            'image' => 'public/images',
             'index' => 'data/index',
             'layout' => 'application/layouts/scripts',
             'listener' => 'application/models/listener',
             'log' => 'data/logs',
             'migration' => 'application/doctrine/migrations',
             'schema' => 'application/doctrine/schema',
+            'systemDocument' => 'data/system-document',
             'test' => 'tests',
             'viewHelper' => 'application/views/helpers',
             'yui' => 'public/yui'
@@ -232,6 +234,13 @@ class Fisma
      * @todo this is a bit ugly, it's got some unrelated stuff in it
      */
     public static function dispatch() {
+        // This is a hack to accomodate the flash file uploader. Flash can't send cookies, so it posts the session
+        // ID instead.
+        /** @todo review this -- is it any kind of a security risk? */
+        if (isset($_POST['sessionId'])) {
+            Zend_Session::setId($_POST['sessionId']);
+        }
+        
         $frontController = Zend_Controller_Front::getInstance();
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
 

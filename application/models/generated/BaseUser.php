@@ -124,8 +124,8 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasMany('Notification as Notifications', array('local' => 'id',
                                                               'foreign' => 'userId'));
 
-        $this->hasMany('Upload as Uploads', array('local' => 'id',
-                                                  'foreign' => 'userId'));
+        $this->hasMany('SystemDocument as Uploads', array('local' => 'id',
+                                                          'foreign' => 'userId'));
 
         $softdelete0 = new Doctrine_Template_SoftDelete();
         $timestampable0 = new Doctrine_Template_Timestampable(array('created' => array('name' => 'createdTs', 'type' => 'timestamp'), 'updated' => array('name' => 'modifiedTs', 'type' => 'timestamp')));

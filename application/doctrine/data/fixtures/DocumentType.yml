@@ -1,0 +1,9 @@
+DocumentType:
+    ssp:
+        name: System Security Plan
+    cp:
+        name: Contingency Plan
+    cpt:
+        name: Contingency Test Plan
+    drp:
+        name: Disaster Recovery Plan
