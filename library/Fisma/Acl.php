@@ -50,8 +50,6 @@ class Fisma_Acl extends Zend_Acl
      */
     static function hasPrivilege($resource, $privilege, $organization = null)
     {
-        var_dump($_POST);die;
-
         $identity = Zend_Auth::getInstance()->getIdentity();
         
         // Root can do anything
