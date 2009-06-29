@@ -141,7 +141,6 @@ class CreateIndex
         chmod($indexPath, 0777);
         fwrite(STDOUT, str_repeat(chr(0x8), $statusLength));
         fwrite(STDOUT, "$name index created successfully ($count rows). \n");
-
     }
     
     /**
@@ -169,10 +168,10 @@ class CreateIndex
         $query = Doctrine_Query::create()
                         ->select('*')
                         ->from('Finding');
-        $offset = 1;
-        for ($limit=0;$limit<=$count;$limit+=$offset) {
-            $findings = $query->limit($limit)
-                              ->offset($offset)
+        $offset = 100;
+        for ($limit=0;$limit<$count;$limit+=$offset) {
+            $findings = $query->limit($offset)
+                              ->offset($limit)
                               ->execute();
             foreach ($findings as $finding) {
                 $data[] = array(
@@ -185,7 +184,7 @@ class CreateIndex
                             'threat'             => $finding->threat,
                             'organization'       => $finding->ResponsibleOrganization->name . ',' .
                                                     $finding->ResponsibleOrganization->nickname,
-                            'source'             => $finding->Source->name . $finding->Source->nickname,
+                            'source'             => $finding->Source->name . ',' . $finding->Source->nickname,
                             'asset'              => $finding->Asset->name
                         );
             }
@@ -240,9 +239,9 @@ class CreateIndex
                     ->from('Product')
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
                     
-        for ($limit=0;$limit<=$count;$limit+=$offset) {
-            $products = $query->limit($limit)
-                              ->offset($offset)
+        for ($limit=0;$limit<$count;$limit+=$offset) {
+            $products = $query->limit($offset)
+                              ->offset($limit)
                               ->execute();
             foreach ($products as $product) {
                 $data[] = array(
@@ -320,9 +319,6 @@ class CreateIndex
         }
         $users = Doctrine::getTable('User')->findAll();
         foreach ($users as $user) {
-            foreach ($user->Roles as $role) {
-                $roleName[] = $role->name . ' ' . $role->nickname;
-            }
             $data[] = array(
                         'id'        => $user->id,
                         'name'      => $user->username,
