@@ -290,7 +290,7 @@ abstract class BaseController extends SecurityController
 
         //filter the sortby to prevent sqlinjection
         $subjectTable = Doctrine::getTable($this->_modelName);
-        if (!$subjectTable->getColumnDefinition($sortBy)) {
+        if (!in_array(strtolower($sortBy), $subjectTable->getColumnNames())) {
             /** @todo english */
             return $this->_helper->json('invalid parameters');
         }
