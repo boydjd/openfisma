@@ -73,6 +73,12 @@ class UserController extends BaseController
                                          $organization['name'],
                                          $organization['level']);
         }
+        if (Configuration::getConfig('auth_type') == 'database') {
+            $form->removeElement('checkAccount');
+        } else {
+            $form->removeElement('generate_password');
+        }
+        
         $form = Fisma_Form_Manager::prepareForm($form);
         return $form;
     }
