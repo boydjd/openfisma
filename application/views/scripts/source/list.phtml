@@ -29,7 +29,7 @@ var myColumnDefs = [
         return request;
     };
 
-    var myDataSource = new YAHOO.util.DataSource('/panel/source/sub/search');
+    var myDataSource = new YAHOO.util.DataSource('/source/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -73,7 +73,7 @@ var myColumnDefs = [
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/source/sub/view/v/view/id/" + oRecord.getData("id");
+            document.location = "/panel/source/sub/view/id/" + oRecord.getData("id");
         }
     );
     <?php }?>

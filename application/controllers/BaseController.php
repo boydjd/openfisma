@@ -295,6 +295,7 @@ abstract class BaseController extends SecurityController
             return $this->_helper->json('invalid parameters');
         }
 
+        $order = strtoupper($order);
         if ($order != 'DESC') {
             $order = 'ASC'; //ignore other values
         }
