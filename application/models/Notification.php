@@ -104,7 +104,10 @@ class Notification extends BaseNotification
                 throw new Fisma_Exception("The event of this operation dose not exist");
                 } catch (Fisma_Exception $ex) {print $ex->getTraceAsString();}
         }
-        $eventText = $event->name . " by $user->nameLast . $user->nameFirst";
+        $eventText = $event->name;
+        if (!is_null($user)) {
+            $eventText .= " by $user->nameLast . $user->nameFirst";
+        }
         $eventText .= "(Id. $record->id)";
 
         if ($organizationId == null) {

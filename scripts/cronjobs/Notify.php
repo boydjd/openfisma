@@ -25,25 +25,6 @@
  */
 
 /**
- * @ignore
- * Indicates that we're running a command line tool, not responding to an http
- * request. This prevents the interface from being rendered.
- */
-define('COMMAND_LINE', true);
-
-require_once('../../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
-
-if ($plSetting->installed()) {
-    // Kick off the main routine:
-    $notify = new Notify($plSetting);
-    $notify->processNotificationQueue();
-} else {
-    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
-}
-
-
-/**
  * This static class is responsible for scanning for notifications which need to
  * be delivered, delivering the notifications, and then removing the sent
  * notifications from the queue.
@@ -57,63 +38,38 @@ if ($plSetting->installed()) {
  * @todo need to adjust for timezone difference between DB and application when
  * displaying timestamps
  */
+
+$notify = new Notify();
+$notify->processNotificationQueue();
+
 class Notify
 {
-    const EMAIL_VIEW_PATH = '/scripts/mail';
-    const EMAIL_VIEW = 'notification.phtml';
-
-    /**
-     * the object of setting plugin
-     */
-    private $_setting = null;
-    
-    /**
-     * construct the class and set setting
-     *
-     * @param object $setting
-     */
-    function __construct($setting)
+    public function __construct()
     {
-        if ($setting instanceof Fisma_Controller_Plugin_Setting) {
-            $this->_setting = $setting;
-        } else {
-            throw new Fisma_Exception("can't get the setting");
-        }
+        require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
+
+        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+        Fisma::connectDb();
     }
     
     /**
-     * processNotificationQueue() - Iterate through the users and check who has
+     * Iterate through the users and check who has
      * notifications pending.
      *
      * @todo log the email send results
      */
     function processNotificationQueue() {
-        $db = Zend_Db::factory(Zend_Registry::get('datasource'));
-        Zend_Db_Table::setDefaultAdapter($db);
-        Zend_Registry::set('db', $db);
-        
         // Get all notifications grouped by user_id
-        $query = "SELECT n.id,
-                         n.user_id,
-                         n.event_text,
-                         n.timestamp,
-                         e.name AS event_name,
-                         u.name_first,
-                         u.name_last,
-                         u.email,
-                         u.email_validate,
-                         u.notify_email,
-                         u.notify_frequency,
-                         u.most_recent_notify_ts
-                    FROM notifications n
-              INNER JOIN events e on e.id = n.event_id
-              INNER JOIN users u ON u.id = n.user_id
-                   WHERE u.email_validate = 1
-                     AND DATE_ADD(u.most_recent_notify_ts,
-                                  INTERVAL (u.notify_frequency * 60) MINUTE) < NOW()
-                ORDER BY n.user_id";
-        $statement = $db->query($query);
-        $notifications = $statement->fetchAll();
+        $query = Doctrine_Query::create()
+                    ->select('n.*, u.email, u.notifyFrequency')
+                    ->from('Notification n')
+                    ->innerJoin('n.User u')
+                    ->innerJoin('n.Event e')
+                    ->where('u.emailValidate = 1')
+                    ->addWhere(time() . ' > ? ',
+                        strtotime("'u.mostRecentNotifyTs'") + "'u.notifyFrequency'" * 3600 )
+                    ->orderBy('n.userId');
+        $notifications = $query->execute();
 
         // Loop through the groups of notifications, concatenate all messages
         // per user into a single array, then call the e-mail function for
@@ -127,15 +83,12 @@ class Notify
             // user ID, then this current message is completed and should be
             // e-mailed to the user.
             if ($i == (count($notifications) - 1)
-                || ($notifications[$i]['user_id'] !=
-                    $notifications[$i+1]['user_id'])) {
+                || ($notifications[$i]->userId !=
+                    $notifications[$i+1]->userId)) {
 
                 Notify::sendNotificationEmail($currentNotifications);
-                Notify::purgeNotifications($db, $currentNotifications);
-                Notify::updateUserNotificationTimestamp(
-                    $db,
-                    $notifications[$i]['user_id']
-                );
+                Notify::purgeNotifications($currentNotifications);
+                Notify::updateUserNotificationTimestamp($notifications[$i]->userId);
 
                 // Move onto the next user
                 $currentNotifications = array();
@@ -145,7 +98,7 @@ class Notify
     }
 
     /**
-     * sendNotificationEmail() - Compose and send the notification email for
+     * Compose and send the notification email for
      * this user.
      *
      * Notice that there is a bit of a hack -- the addressing information is
@@ -154,104 +107,41 @@ class Notify
      * @param array $notifications A group of rows from the notification table
      */
     static function sendNotificationEmail($notifications) {
-        // If the hostUrl isn't set, then fetch it from the install.conf file.
-        // This will only execute one per script execution.
-        static $hostUrl;
-        if (!isset($hostUrl)) {
-            $config = new Zend_Config_Ini($plSetting->getPath('config') . '/install.conf', 'general');
-            $hostUrl = $config->hostUrl;
-        }
-        
-        $mail = new Zend_Mail();
-        $contentTpl = new Zend_View();
-        $contentTpl->setScriptPath($plSetting->getPath('application') . '/views/' . self::EMAIL_VIEW_PATH);
-
-        // Set the from: header
-        $mail->setFrom($plSetting->getConfig('sender'), Fisma_Controller_Plugin_Setting::getConfig('system_name'));
-
-        // Set the to: header
-        $receiveEmail = !empty($notifications[0]['notify_email'])?
-            $notifications[0]['notify_email']:$notifications[0]['email'];
-        $mail->addTo(
-            $receiveEmail,
-            "{$notifications[0]['name_first']} {$notifications[0]['name_last']}"
-        );
-        
-        // Set the subject: header
-        $mail->setSubject($plSetting->getConfig('subject'));
-
-        // Render the message body
-        $contentTpl->notifyData = $notifications;
-        $contentTpl->hostUrl = $hostUrl;
-        $content = $contentTpl->render(self::EMAIL_VIEW);
-        $mail->setBodyText($content);
-        
+        $mail = new Fisma_Mail();
         // Send the e-mail
-        try {
-            $mail->send(Notify::getTransport());
-            print(new Zend_Date()." Email was sent to $receiveEmail\n");
-        } catch (Exception $exception) {
-            print($exception->getMessage() . "\n");
-            exit();
-        }
+        $mail->sendNotification($notifications);
     }
 
     /**
-     * purgeNotifications() - Remove notifications from the queue table.
+     * Remove notifications from the queue table.
      *
-     * @param Zend_Db $db The database connection handle
      * @param array $notifications A group of rows from the notifications table
      */
-    static function purgeNotifications($db, $notifications) {
+    static function purgeNotifications($notifications) {
         $notificationIds = array();
         foreach ($notifications as $notification) {
             $notificationIds[] = $notification['id'];
         }
-        $notificationString = implode(', ', $notificationIds);
-        
-        $query = "DELETE FROM notifications
-                        WHERE id IN ($notificationString)";
-        $db->query($query);
+
+        Doctrine_Query::create()
+            ->delete()
+            ->from('Notification')
+            ->whereIn('id', $notificationIds)
+            ->execute();
     }
 
     /**
-     * updateUserNotificationTimestamp() - Updates the timestamp for the
+     * Updates the timestamp for the
      * specified user so that he will not receieve too many e-mail in too short
      * of a time period.
      *
-     * @param Zend_Db $db The database connection handle
      * @param integer $userId The Id of the user to update
      */
-    static function updateUserNotificationTimestamp($db, $userId) {
-        $query = "UPDATE users
-                     SET most_recent_notify_ts = NOW()
-                   WHERE id = $userId";
-        $db->query($query);
-    }
-
-    
-    /** 
-     *  getTransport() - Make the instance of proper transport method according
-     *  to the config.
-     *
-     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail
-     */
-    static function getTransport() {
-        $transport = null;
-        if ( 'smtp' == $plSetting->getConfig('send_type')) {
-            $config = array('auth' => 'login',
-                'username' => $plSetting->getConfig('smtp_username'),
-                'password' => $plSetting->getConfig('smtp_password'),
-                'port' => $plSetting->getConfig('smtp_port'));
-            $transport =
-                new Zend_Mail_Transport_Smtp(
-                    $plSetting->getConfig('smtp_host'),
-                    $config
-                );
-        } else {
-            $transport = new Zend_Mail_Transport_Sendmail();
-        }
-        return $transport;
+    static function updateUserNotificationTimestamp($userId) {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+        $user->mostRecentNotifyTs = Fisma::now();
+        $user->save();
     }
 }
 

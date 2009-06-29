@@ -32,6 +32,17 @@
  */
 class Fisma_Mail extends Zend_Mail
 {
+    protected $_contentTpl = null;
+
+    public function __construct()
+    {
+        $view       = new Zend_View();
+        $contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
+        $this->_contentTpl = $contentTpl;
+        $this->setFrom(Configuration::getConfig('sender'), Configuration::getConfig('system_name'));
+        $this->setSubject(Configuration::getConfig('subject'));
+    }
+
    /**
      * Validate the user's e-mail change.
      *
@@ -41,20 +52,16 @@ class Fisma_Mail extends Zend_Mail
      */
     public function validateEmail($user, $email)
     {
-        $this->setFrom(Configuration::getConfig('sender'), Configuration::getConfig('system_name'));
         $this->addTo($email);
         /** @todo english */
         $this->setSubject("Confirm Your E-mail Address");
 
-        $view       = new Zend_View();
-        $contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
+        $contentTpl->host  = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->account      = $user->nameLast . ' ' . $user->nameFirst;
+        $this->_contentTpl->validateCode = $user->EmailValidation->getLast()->validationCode;
+        $this->_contentTpl->userId       = $user->id;
 
-        $contentTpl->host         =  Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
-        $contentTpl->account      = $user->nameLast . ' ' . $user->nameFirst;
-        $contentTpl->validateCode = $user->EmailValidation->getLast()->validationCode;
-        $contentTpl->userId       = $user->id;
-
-        $content    = $contentTpl->render('validate.phtml');
+        $content    = $this->_contentTpl->render('validate.phtml');
         $this->setBodyText($content);
         try {
             $this->send($this->_getTransport());
@@ -63,6 +70,35 @@ class Fisma_Mail extends Zend_Mail
             return false;
         }
     }
+
+    /**
+     * Compose and send the notification email for user.
+     *
+     * @todo hostUrl can't be get in the CLI script
+     *
+     * @param array $notifications A group of rows from the notification table
+     */
+    public function sendNotification($notifications)
+    {
+        $user   = new User();
+        $userId = $notifications[0]->userId;
+        $user   = $user->getTable()->find($userId);
+        $receiveEmail = $user->notifyEmail ? $user->notifyEmail : $user->email;
+
+        $this->addTo($receiveEmail, $user->nameFirst . $user->nameLast);
+        $this->_contentTpl->notifyData = $notifications;
+        $content = $this->_contentTpl->render('notification.phtml');
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());    
+            print(Fisma::now() . " Email was sent to $receiveEmail\n");
+        } catch (Exception $e) {
+            print($e->getMessage() . "\n");
+            exit();
+        }
+    }
+
 
     /**
      * Return the appropriate Zend_Mail_Transport subclass,

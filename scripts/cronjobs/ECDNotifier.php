@@ -28,15 +28,13 @@
  * Indicates that we're running a command line tool, not responding to an http
  * request. This prevents the interface from being rendered.
  */
- 
-require_once('../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
-
-if ($plSetting->installed()) {
-    // Kick off the main routine:
-    ECDNotifier::run();
-} else {
-    die('This script cannot run because OpenFISMA has not been configured yet. Run the installer and try again.');
+try {
+    $ecdNotifier = new ECDNotifier();
+    $ecdNotifier->run();
+    /** @todo english */
+    print ("Finding expiring notification sent successfully\n");
+} catch (Exception $e) {
+    print $e->getMessage();
 }
 
 /**
@@ -53,37 +51,36 @@ if ($plSetting->installed()) {
  */
 class ECDNotifier
 {
+    public function __construct()
+    {
+        require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
+
+        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+        Fisma::connectDb();
+    }
+
     /**
-     * run() - Iterate through all findings in the system and create
+     * Iterate through all findings in the system and create
      * notifications for those which have ECDs expiring today,
      */
     static function run() {
-        $db = Zend_Db::factory(Zend_Registry::get('datasource'));
-        Zend_Db_Table::setDefaultAdapter($db);
-        Zend_Registry::set('db', $db);
-        
         // Get all findings which expire today, or 7/14/21 days from now
-        $query = "SELECT p.id,
-                         p.system_id,
-                         DATE_FORMAT(p.action_est_date, '%m/%e/%y') ecd,
-                         DATEDIFF(p.action_est_date, CURDATE()) days_remaining
-                    FROM poams p
-                   WHERE p.status <> 'CLOSED'
-                     AND (   DATE(p.action_est_date) = CURDATE()
-                          OR DATE(p.action_est_date) =
-                             DATE_ADD(CURDATE(), INTERVAL 7 DAY)
-                          OR DATE(p.action_est_date) =
-                             DATE_ADD(CURDATE(), INTERVAL 14 DAY)
-                          OR DATE(p.action_est_date) =
-                             DATE_ADD(CURDATE(), INTERVAL 21 DAY))";
-        $statement = $db->query($query);
-        $expiringPoams = $statement->fetchAll();
+        $query = Doctrine_Query::create()
+                    ->select('f.id, f.expectedCompletionDate, f.responsibleOrganizationId')
+                    ->from('Finding f')
+                    ->where('f.status != ?', 'CLOSED')
+                    ->addWhere('f.expectedCompletionDate = ?', date('Y-m-d'))
+                    ->orWhere('f.expectedCompletionDate = ?', date('Y-m-d', time() + 7 * 3600 * 24))
+                    ->orWhere('f.expectedCompletionDate = ?', date('Y-m-d', time() + 14 * 3600 * 24))
+                    ->orWhere('f.expectedCompletionDate = ?', date('Y-m-d', time() + 21 * 3600 * 24));
+        $expiringFindings = $query->execute();
 
-        // Now iterate through the poams and create the appropriate
+        // Now iterate through the findings and create the appropriate
         // notifications
         $notification = new Notification();
-        foreach($expiringPoams as $poam) {
-            switch($poam['days_remaining']) {
+        foreach($expiringFindings as $finding) {
+            $daysRemaining = ceil((strtotime($finding->expectedCompletionDate) - time()) / (3600 * 24));
+            switch($daysRemaining) {
                 case 0:
                     $notificationType = Notification::ECD_EXPIRES_TODAY;
                     break;
@@ -101,12 +98,7 @@ class ECDNotifier
                     // to exclude it.
                     throw new Exception("ECD Notifier has an internal error.");
             }
-            $notification->add(
-                $notificationType,
-                null,
-                "PoamId: {$poam['id']}, ECD: {$poam['ecd']}",
-                $poam['system_id']
-            );
+            Notification::notify($notificationType, $finding, null, $finding->responsibleOrganizationId);
         }
     }
 }
