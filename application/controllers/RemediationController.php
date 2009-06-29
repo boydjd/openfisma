@@ -817,6 +817,20 @@ class RemediationController extends SecurityController
             'securityControl' => 'sc.code'
         );
         
+        $tableData = array(
+            'recordsReturned' => 0,
+            'totalRecords' => $total = 0,
+            'startIndex' => $this->_paging['startIndex'],
+            'sort' => null,
+            'dir' => 'asc',
+            'pageSize' => $this->_paging['count'],
+            'records' => array()
+        );
+        
+        // JSON requests are handled differently from PDF and XLS requests, so we need
+        // to determine which request type this is.
+        $format = $this->_request->getParam('format');
+        
         $params = $this->_parseCriteria();
         
         if (in_array($params['sortby'], array_keys($columnMap))) {
@@ -859,16 +873,52 @@ class RemediationController extends SecurityController
         // Use Zend Lucene to find all POAM ids which match the keyword query
         if (!empty($params['keywords'])) {
             $poamIds = $this->_helper->searchQuery($params['keywords'], 'finding');
-            if ($params['ids']) {
+            if ($params['ids'] && $poamIds) {
                 $params['ids'] = array_intersect($poamIds, $params['ids']);
-            } else {
+                if (!$params['ids']) {
+                    $list = array();
+                }
+            } elseif ($poamIds) {
                 $params['ids'] = $poamIds;
             }
             $this->view->assign('keywords', $this->getKeywords($params['keywords']));
         }
-        // JSON requests are handled differently from PDF and XLS requests, so we need
-        // to determine which request type this is.
-        $format = $this->_request->getParam('format');
+        
+        if (!isset($list)) {
+            $list = $this->_getResults($params, $format, $total);
+        }
+        
+        if ($format == 'pdf' || $format == 'xls') {
+            $this->view->columnPreference = Doctrine::getTable('User')
+                                            ->find($this->_me->id)
+                                            ->searchColumnsPref;
+            $this->view->columns = $this->_getColumns();
+            /**
+             * @todo to support free sorting in exporting PDF and Excel like in datatable
+             */
+            $this->view->list = $list;
+        } else {
+            $this->_helper->contextSwitch()
+                          ->addActionContext('search2', 'json')
+                          ->initContext();
+            $tableData['recordsReturned'] = count($list);
+            $tableData['totalRecords'] = $total;
+            $tableData['sort'] = $params['sortby'];
+            $tableData['dir'] = $params['dir'];
+            $tableData['records'] = $list;
+            $this->view->assign('findings', $tableData);
+        }
+    }
+    
+    /**
+     * analyze the criterias and merge the DQL query for getting results
+     * 
+     * @param array $params criterias
+     * @param string $format json xls pdf
+     * @return array $list results
+     */
+    private function _getResults($params, $format, &$total)
+    {
         $q = Doctrine_Query::create()
              ->select()
              ->from('Finding f')
@@ -974,33 +1024,9 @@ class RemediationController extends SecurityController
             }
             $list[] = $row;
         }
-
-        if ($format == 'pdf' || $format == 'xls') {
-            $this->view->columnPreference = Doctrine::getTable('User')
-                                            ->find($this->_me->id)
-                                            ->searchColumnsPref;
-            $this->view->columns = $this->_getColumns();
-            /**
-             * @todo to support free sorting in exporting PDF and Excel like in datatable
-             */
-            $this->view->list = $list;
-        } else {
-            $this->_helper->contextSwitch()
-                          ->addActionContext('search2', 'json')
-                          ->initContext();
-            $tableData = array(
-                'recordsReturned' => count($list),
-                'totalRecords' => $total,
-                'startIndex' => $this->_paging['startIndex'],
-                'sort' => null,
-                'dir' => 'asc',
-                'pageSize' => $this->_paging['count'],
-                'records' => $list
-            );
-            $this->view->assign('findings', $tableData);
-        }
+        return $list;
     }
-
+    
     /**
      * Display the NIST SP 800-53 control mapping and related information
      */
