@@ -72,6 +72,8 @@ class FindingListener extends Doctrine_Record_Listener
         if (!empty($duplicateFinding[0])) {
             $finding->DuplicateFinding = $duplicateFinding[0];
             $finding->status           = 'PEND';
+        } elseif ($finding->type != null) {
+            $finding->status           = 'DRAFT';
         } else {
             $finding->status           = 'NEW';
         }
