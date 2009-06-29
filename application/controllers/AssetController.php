@@ -114,17 +114,49 @@ class AssetController extends BaseController
             $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
         }
         $form->getElement('networkId')->addMultiOptions($networkList);
-        
-        $products = Doctrine::getTable('Product')->findAll()->toArray();
-        $productList = array();
-        foreach ($products as $product) {
-            $productList[$product['id']] = $product['id'] . ' | ' . $product['name'] . ' | ' 
-                                           . $product['vendor'] . ' | ' . $product['version'];
-        }
-        $form->getElement('productId')->addMultiOptions($productList);
-        
+        $form->getElement('productId')->setRegisterInArrayValidator(false);
         $form = Fisma_Form_Manager::prepareForm($form);
         return $form;
+    }
+    
+    /** 
+     * Hooks for manipulating the values before setting to a form
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     * @return Zend_Form
+     */
+    protected function setForm($subject, $form)
+    {
+        $product = $subject->Product;
+        $form->getElement('productId')->addMultiOptions(array($product->id => $product->id 
+                                        . ' | ' . $product->name . ' | ' . $product->vendor
+                                        . ' | ' . $product->version));
+        $form->setDefaults($subject->toArray());
+        return $form;
+    }
+    
+    /** 
+     * Hooks for manipulating and saveing the values retrieved by Forms
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     */
+    protected function saveValue($form, $subject=null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } elseif (!$subject instanceof Doctrine_Record) {
+            /** @todo english */
+            throw new Fisma_Exception('Invalid parameter expecting a Record model');
+        }
+        $values = $form->getValues();
+        $product = Doctrine::getTable('Product')->find($values['productId']);
+        $form->getElement('productId')->addMultiOptions(array($product->id => $product->id 
+                                        . ' | ' . $product->name . ' | ' . $product->vendor
+                                        . ' | ' . $product->version));
+        $subject->merge($values);
+        $subject->save();
     }
     
     /**
