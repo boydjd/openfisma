@@ -800,7 +800,7 @@ class RemediationController extends SecurityController
      */
     public function search2Action() {
         Fisma_Acl::requirePrivilege('finding', 'read');
-
+        
         /* @todo A hack to translate column names in the data table to column names
          * which can be sorted... this could probably be done in a much better way.
          */
@@ -847,7 +847,19 @@ class RemediationController extends SecurityController
                     break;
             }
         }
-        
+        if ($params['ids']) {
+            $params['ids'] = explode(',', $params['ids']);
+        }
+        // Use Zend Lucene to find all POAM ids which match the keyword query
+        if (!empty($params['keywords'])) {
+            $poamIds = $this->_helper->searchQuery($params['keywords'], 'finding');
+            if ($params['ids']) {
+                $params['ids'] = array_intersect($poamIds, $params['ids']);
+            } else {
+                $params['ids'] = $poamIds;
+            }
+            $this->view->assign('keywords', $this->getKeywords($params['keywords']));
+        }
         // JSON requests are handled differently from PDF and XLS requests, so we need
         // to determine which request type this is.
         $format = $this->_request->getParam('format');
@@ -861,62 +873,41 @@ class RemediationController extends SecurityController
              ->leftJoin('f.CurrentEvaluation ce')
              ->whereIn('f.responsibleOrganizationId', $this->_organizations->toKeyValueArray('id', 'id'))
              ->orderBy($params['sortby'] . ' ' . $params['dir']);
-        
+
         foreach ($params as $k => $v) {
             if ($v) {
-                switch ($k) {
-                    case 'estDateBegin':
-                        $v = $v->toString('Y-m-d H:i:s');
-                        $q->andWhere("f.expectedCompletionDate > ?", $v);
-                        break;
-                    case 'estDateEnd':
-                        $v = $v->addDay(1);
-                        $v = $v->toString('Y-m-d H:i:s');
-                        $q->andWhere("f.expectedCompletionDate < ?", $v);
-                        break;
-                    case 'createdDateBegin':
-                        $v = $v->toString('Y-m-d H:i:s');
-                        $q->andWhere("f.createdTs > ?", $v);
-                        break;
-                    case 'createdDateEnd':
-                        $v = $v->addDay(1);
-                        $v = $v->toString('Y-m-d H:i:s');
-                        $q->andWhere("f.createdTs < ?", $v);
-                        break;
-                    case 'ontime':
-                        if ($v == 'ontime') {
-                            $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) <= 0');
-                        } else {
-                            $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) > 0');
+                if ($k == 'estDateBegin') {
+                    $v = $v->toString('Y-m-d H:i:s');
+                    $q->andWhere("f.expectedCompletionDate > ?", $v);
+                } elseif ($k == 'estDateEnd') {
+                    $v = $v->addDay(1);
+                    $v = $v->toString('Y-m-d H:i:s');
+                    $q->andWhere("f.expectedCompletionDate < ?", $v);
+                } elseif ($k == 'createdDateBegin') {
+                    $v = $v->toString('Y-m-d H:i:s');
+                    $q->andWhere("f.createdTs > ?", $v);
+                } elseif ($k == 'createdDateEnd') {
+                    $v = $v->addDay(1);
+                    $v = $v->toString('Y-m-d H:i:s');
+                    $q->andWhere("f.createdTs < ?", $v);
+                } elseif ($k == 'ontime') {
+                    if ($v == 'ontime') {
+                        $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) <= 0');
+                    } else {
+                        $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) > 0');
+                    }
+                } elseif ($k == 'ids') {
+                    $sqlPart = array();
+                    foreach ($v as $id) {
+                        if (is_numeric($id)) {
+                            $sqlPart[] = 'f.id = ' . $id;
                         }
-                        break;
-                    case 'keywords':
-                        $this->view->assign('keywords', $this->getKeywords($v));
-                        $ids = $this->_helper->searchQuery($v, 'finding');
-                        if (!empty($ids)) {
-                            $k = 'ids';
-                            $v = $ids;
-                        } else {
-                            //No records found
-                            $q->addWhere("f.id = 0");
-                            break;
-                        }
-                    case 'ids':
-                        $sqlPart = array();
-                        foreach ($v as $id) {
-                            if (is_numeric($id)) {
-                                $sqlPart[] = 'f.id = ' . $id;
-                            }
-                        }
-                        if (!empty($sqlPart)) {
-                            $q->andWhere(implode(' OR ', $sqlPart));
-                        }
-                        break;
-                    default:
-                        if ($k != 'keywords' && $k != 'dir' && $k != 'sortby') {
-                            $q->andWhere("f.$k = ?", $v);
-                        }
-                        break;
+                    }
+                    if (!empty($sqlPart)) {
+                        $q->andWhere(implode(' OR ', $sqlPart));
+                    }
+                } elseif ($k != 'keywords' && $k != 'dir' && $k != 'sortby') {
+                    $q->andWhere("f.$k = ?", $v);
                 }
             }
         }
