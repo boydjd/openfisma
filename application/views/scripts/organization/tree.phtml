@@ -71,15 +71,18 @@ function contextMenuHandler(event, eventArgs) {
     // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
     parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvitem");
 
-    // Now the organization Id & type can be looked up in the treemap
-    var organizationId = treeMap[parent.id]['id'];
+    // Now the organization or system Id & type can be looked up in the treemap
     var type = treeMap[parent.id]['type'];
 
     // Set to 'system' if the object is a system; set to 'organization' otherwise
     var model = (type == 'agency' || type == 'bureau' || type == 'organization') 
               ? 'organization'
               : 'system';
-    
+
+    var organizationId = (type == 'agency' || type == 'bureau' || type == 'organization') 
+              ? treeMap[parent.id]['id']
+              : treeMap[parent.id]['systemId'];   
+
     // Now check which menu item was selected and redirect
     var menuItem = eventArgs[1];
     var action = (menuItem.index == 0) ? 'view' : 'edit';
@@ -99,7 +102,8 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
         // from an element Id
         treeMap[yuiNode.getElId()] = {
             id: treeNode.id,
-            type: treeNode.orgType
+            type: treeNode.orgType,
+            systemId: treeNode.systemId
         };
 
         // Automatically expand the first 2 levels
