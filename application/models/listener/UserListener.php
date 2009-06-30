@@ -76,14 +76,34 @@ class UserListener extends Doctrine_Record_Listener
         $user->passwordTs = Fisma::now();
         $user->hashType = Configuration::getConfig('hash_type');
     }
-    
+
     /**
-     * Insert or Update finding lucene index
+     * Send an email to a new created user, tell he/she how to log in the system
+     * Create the finding lucene index
      */
-    public function postSave(Doctrine_Event $event)
+    public function postInsert(Doctrine_Event $event) 
     {
         $user     = $event->getInvoker();
-        $modified = $user->getModified($old=false, $last=true);
+        $modified = $user->getModified($old=true, $last=true);
+        $user->password = $modified['password'];
+        $mail = new Fisma_Mail();
+        $mail->sendAccountInfo($user);
+        Fisma_Lucene::updateIndex('user', $user->id, $modified);
+    }
+    
+    /**
+     * Send an email to tell user what the new password is
+     * Update finding lucene index
+     */
+    public function postUpdate(Doctrine_Event $event)
+    {
+        $user     = $event->getInvoker();
+        $modified = $user->getModified($old=true, $last=true);
+        if ($modified['password']) {
+            $user->password = $modified['password'];
+            $mail = new Fisma_Mail();
+            $mail->sendPassword($user);
+        }
         Fisma_Lucene::updateIndex('user', $user->id, $modified);
     }
 

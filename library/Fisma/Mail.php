@@ -21,6 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @todo english  Please check the email subject, content.
  */
 
 /**
@@ -40,7 +41,6 @@ class Fisma_Mail extends Zend_Mail
         $contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
         $this->_contentTpl = $contentTpl;
         $this->setFrom(Configuration::getConfig('sender'), Configuration::getConfig('system_name'));
-        $this->setSubject(Configuration::getConfig('subject'));
     }
 
    /**
@@ -56,10 +56,9 @@ class Fisma_Mail extends Zend_Mail
         /** @todo english */
         $this->setSubject("Confirm Your E-mail Address");
 
-        $contentTpl->host  = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
-        $this->_contentTpl->account      = $user->nameLast . ' ' . $user->nameFirst;
+        $this->_contentTpl->host  = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
         $this->_contentTpl->validateCode = $user->EmailValidation->getLast()->validationCode;
-        $this->_contentTpl->userId       = $user->id;
+        $this->_contentTpl->user         = $user;
 
         $content    = $this->_contentTpl->render('validate.phtml');
         $this->setBodyText($content);
@@ -86,7 +85,9 @@ class Fisma_Mail extends Zend_Mail
         $receiveEmail = $user->notifyEmail ? $user->notifyEmail : $user->email;
 
         $this->addTo($receiveEmail, $user->nameFirst . $user->nameLast);
+        $this->setSubject("Your notifications for " . Configuration::getConfig('system_name'));
         $this->_contentTpl->notifyData = $notifications;
+        $this->_contentTpl->user       = $user;
         $content = $this->_contentTpl->render('notification.phtml');
         $this->setBodyText($content);
 
@@ -99,6 +100,61 @@ class Fisma_Mail extends Zend_Mail
         }
     }
 
+    /**
+     * Send email to a new created user to tell user what the username and password is.
+     *
+     * @param object $user include the unencrypt password
+     * @throw
+     */
+    public function sendAccountInfo(User $user)
+    {
+        $systemName = Configuration::getConfig('system_name');
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("Your new account for $systemName has been created");
+        $this->_contentTpl->user = $user;
+        $this->_contentTpl->host = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $content = $this->_contentTpl->render('sendaccountinfo.phtml');
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+            /** @todo english */
+            $message = 'Faild to send email to this user';
+            if (Fisma::debug()) {
+                $message .= $excetpion->getMessage();
+            }
+            throw new Fisma_Exception($message);
+        }
+    }
+
+    /**
+     * Send the new password to the user
+     *
+     * @param object $user include the unencrypt password
+     * @return bool
+     */
+    public function sendPassword(User $user)
+    {
+        $systemName = Configuration::getConfig('system_name');
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("Your password for $systemName has been changed");
+        $this->_contentTpl->user = $user;
+        $this->_contentTpl->host = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $content = $this->_contentTpl->render('sendpassword.phtml');
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+            /** @todo english */
+            $message = 'Faild to send email to this user';
+            if (Fisma::debug()) {
+                $message .= $excetpion->getMessage();
+            }
+            throw new Fisma_Exception($message);
+        }
+    }
 
     /**
      * Return the appropriate Zend_Mail_Transport subclass,
@@ -121,6 +177,4 @@ class Fisma_Mail extends Zend_Mail
         }
         return $transport;
     }
-
-
 }
