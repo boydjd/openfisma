@@ -554,76 +554,28 @@ class FindingController extends BaseController
     }
     
     /**
-     * processApprovalAction() - Process the form submitted from the approveAction()
-     *
+     *  Process the form submitted from the approveAction()
      */
     public function processApprovalAction() {
         Fisma_Acl::requirePrivilege('finding', 'approve');
-        
-        $db = Zend_Registry::get('db');
-        $post = $this->getRequest()->getPost();
-        if (isset($post['findings'])) {
-            foreach ($post['findings'] as $findingId) {
-                $finding = new Finding();
-                if ($finding = $finding->getTable('Finding')->find($findingId)) {
-                    if (isset($_POST['approve_selected'])) {
+
+        $findings = $this->_request->getPost('findings', array());
+        foreach ($findings as $id) {
+            $finding = new Finding();
+            if ($finding = $finding->getTable()->find($id)) {
+                if (isset($_POST['approve_selected'])) {
+                    if (in_array($finding->type, array('CAP', 'AR' ,'FP'))) {
+                        $finding->status = 'DRAFT';
+                    } else {
                         $finding->status = 'NEW';
-                        $finding->save();
-                        if (is_dir(Fisma::getPath('data') . '/index/finding/')) {
-                            $this->createIndex($findingId);
-                        }
-                    } elseif (isset($_POST['delete_selected'])) {
-                        $finding->AuditLogs->delete();
-                        $finding->delete();
                     }
+                    $finding->save();
+                } elseif (isset($_POST['delete_selected'])) {
+                    $finding->AuditLogs->delete();
+                    $finding->delete();
                 }
             }
         }
         $this->_forward('approve', 'Finding');
-    }
-
-    /**
-     * Create finding lucene index
-     *
-     * @param int $id a specific id
-     */
-    private function createIndex($id)
-    {
-        set_time_limit(0);
-        $result = $this->_poam->find($id)->current();
-        $systemId = $result->system_id;
-        $sourceId = $result->source_id;
-        $assetId  = $result->asset_id;
-        $indexData['finding_data']           = $result->finding_data;
-        $indexData['action_suggested']       = $result->action_suggested;
-        $indexData['action_planned']         = $result->action_planned;
-        $indexData['action_resources']       = $result->action_resources;
-        $indexData['threat_source']          = $result->threat_source;
-        $indexData['threat_justification']   = $result->threat_justification;
-        $indexData['cmeasure']               = $result->cmeasure;
-        $indexData['cmeasure_justification'] = $result->cmeasure_justification;
-        $indexData['action_resources']       = $result->action_resources;
-        $indexData['threat_source']          = $result->threat_source;
-
-        $system = new System();
-        $source = new Source();
-        $asset  = new Asset();
-
-        $ret = $system->find($systemId)->current();
-        if (!empty($ret)) {
-            $indexData['system'] = $ret->name . ' ' . $ret->nickname;
-        }
-
-        $ret = $source->find($sourceId)->current();
-        if (!empty($ret)) {
-            $indexData['source'] = $ret->name . ' ' . $ret->nickname;
-        }
-
-        $ret = $asset->find($assetId)->current();
-        if (!empty($ret)) {
-            $indexData['asset']  = $ret->name;
-        }
-
-        $this->_helper->updateIndex('finding', $id, $indexData);
     }
 }

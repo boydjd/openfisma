@@ -172,4 +172,13 @@ class FindingListener extends Doctrine_Record_Listener
         $modified = $finding->getModified($old=false, $last=true);
         Fisma_Lucene::updateIndex('finding', $finding->id, $modified);
     }
+
+    /**
+     * Delete a finding lucene index
+     */
+    public function postDelete(Doctrine_Event $event)
+    {
+        $finding  = $event->getInvoker();
+        Fisma_Lucene::deleteIndex('finding', $finding->id);
+    }
 }
