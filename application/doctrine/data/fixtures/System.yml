@@ -1,63 +1,63 @@
 System:
     WDC_SYS:
         type: gss
-        confidentiality: moderate
-        integrity: high
-        availability: high
-        fipsCategory: high
+        confidentiality: MODERATE
+        integrity: HIGH
+        availability: HIGH
+        fipsCategory: HIGH
         
     OF_SYS:
         type: major
-        confidentiality: moderate
-        integrity: moderate
-        availability: low
-        fipsCategory: moderate
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: LOW
+        fipsCategory: MODERATE
 
     OSC_SYS:
         type: minor
-        confidentiality: low
-        integrity: low
-        availability: low
-        fipsCategory: low
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
 
     FMS_SYS:
         type: major
-        confidentiality: low
-        integrity: high
-        availability: low
-        fipsCategory: high
+        confidentiality: LOW
+        integrity: HIGH
+        availability: LOW
+        fipsCategory: HIGH
 
     TETS_SYS:
         type: major
-        confidentiality: low
-        integrity: low
-        availability: low
-        fipsCategory: low
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
 
     IAD_SYS:
         type: minor
-        confidentiality: low
-        integrity: low
-        availability: low
-        fipsCategory: low
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
 
     CIT_SYS:
         type: major
-        confidentiality: low
-        integrity: low
-        availability: low
-        fipsCategory: low
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
 
     SCMS_SYS:
         type: major
-        confidentiality: low
-        integrity: low
-        availability: low
-        fipsCategory: low
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
 
     CRMS_SYS:
         type: major
-        confidentiality: low
-        integrity: low
-        availability: low
-        fipsCategory: low
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW

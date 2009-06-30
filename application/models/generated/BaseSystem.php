@@ -24,8 +24,8 @@
  * @property enum $sornRequired
  * @property string $sornUrl
  * @property string $uniqueProjectId
- * @property Doctrine_Collection $Organization
  * @property Doctrine_Collection $Documents
+ * @property Doctrine_Collection $Organization
  * 
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
@@ -38,13 +38,13 @@ abstract class BaseSystem extends Doctrine_Record
     {
         $this->setTableName('system');
         $this->hasColumn('type', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'gss', 1 => 'major', 2 => 'minor'), 'comment' => 'General Support System, Major Application, or Minor Application'));
-        $this->hasColumn('confidentiality', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'na', 1 => 'low', 2 => 'moderate', 3 => 'high'), 'comment' => 'The FIPS-199 confidentiality impact'));
+        $this->hasColumn('confidentiality', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'na', 1 => 'LOW', 2 => 'MODERATE', 3 => 'HIGH'), 'comment' => 'The FIPS-199 confidentiality impact'));
         $this->hasColumn('confidentialityDescription', 'string', null, array('type' => 'string'));
-        $this->hasColumn('integrity', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 integrity impact'));
+        $this->hasColumn('integrity', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'LOW', 1 => 'MODERATE', 2 => 'HIGH'), 'comment' => 'The FIPS-199 integrity impact'));
         $this->hasColumn('integrityDescription', 'string', null, array('type' => 'string'));
-        $this->hasColumn('availability', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 availability impact'));
+        $this->hasColumn('availability', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'LOW', 1 => 'MODERATE', 2 => 'HIGH'), 'comment' => 'The FIPS-199 availability impact'));
         $this->hasColumn('availabilityDescription', 'string', null, array('type' => 'string'));
-        $this->hasColumn('fipsCategory', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'low', 1 => 'moderate', 2 => 'high'), 'comment' => 'The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above'));
+        $this->hasColumn('fipsCategory', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'LOW', 1 => 'MODERATE', 2 => 'HIGH'), 'comment' => 'The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above'));
         $this->hasColumn('controlledBy', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'AGENCY', 1 => 'CONTRACTOR'), 'comment' => 'Is this system principally controlled by the agency or by a contractor?'));
         $this->hasColumn('securityAuthorizationDt', 'date', null, array('type' => 'date', 'comment' => 'The last date on which this system underwent a security authorization (formerly known as C&A)'));
         $this->hasColumn('contingencyPlanTestDt', 'date', null, array('type' => 'date', 'comment' => 'The last date on which the contingency plan for this system was tested'));
@@ -55,16 +55,16 @@ abstract class BaseSystem extends Doctrine_Record
         $this->hasColumn('piaUrl', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'A URL pointing to the Privacy Impact Analysis'));
         $this->hasColumn('sornRequired', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'YES', 1 => 'NO'), 'comment' => 'Whether a System Of Record Notice is required'));
         $this->hasColumn('sornUrl', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'A URL pointing to the System Of Record Notice'));
-        $this->hasColumn('uniqueProjectId', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"'));
+        $this->hasColumn('uniqueProjectId', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the folLOWing format: "xxx-xx-xx-xx-xx-xxxx-xx"'));
     }
 
     public function setUp()
     {
-        $this->hasMany('Organization', array('local' => 'id',
-                                             'foreign' => 'systemId'));
-
         $this->hasMany('SystemDocument as Documents', array('local' => 'id',
                                                             'foreign' => 'systemId'));
+
+        $this->hasMany('Organization', array('local' => 'id',
+                                             'foreign' => 'systemId'));
 
     $this->addListener(new XssListener(), 'XssListener');
     $this->addListener(new SystemListener(), 'SystemListener');
