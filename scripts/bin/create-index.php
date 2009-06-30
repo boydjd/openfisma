@@ -84,23 +84,38 @@ class CreateIndex
     }
 
     /**
+     * Get the column type of a specific field (the index name is same to the table name)
+     *
+     * @param string $indexName the index name
+     * @param string $field  a specific field in a talbe
+     * @return string 
+     */
+    private function _getColumnType($indexName, $field)
+    {
+        $indexTable       =  Doctrine::getTable(ucfirst($indexName));
+        $columnDefinition = $indexTable->getColumnDefinition(strtolower($field));
+        return $columnDefinition['type'];
+    }
+
+
+    /**
      * Create luence index document
      *
-     * @param array $data the data which need to index
+     * @param Doctrine_Connection $record the record which need to index
      * @return Zend_Search_Lucene_Docuemnt
      */
-    private function _createDocument($data)
+    private function _createDocument($indexName, $record)
     {
-        if (!is_array($data)) {
-            throw new Fisma_Exception("Invalid data");
-        }
         $doc = new Zend_Search_Lucene_Document();
-        foreach ($data as $key=>$value) {
-            if ('id' == $key) {
+        foreach ($record as $field=>$value) {
+            if ('id' == $field) {
                 $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($value)));
                 $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $value));
             } else {
-                $doc->addField(Zend_Search_Lucene_Field::UnStored($key, $value));
+                //index the string type fields
+                if ('string' == $this->_getColumnType($indexName, $field)) {
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+                }
             }
         }
         return $doc;
@@ -110,11 +125,11 @@ class CreateIndex
      * Create lucene index
      *
      * @param string $name index name
-     * @param array  $data index data
+     * @param Doctrine_Connection  $records  Doctrine Connections
      */
-    private function _createIndex($name, $data)
+    private function _createIndex($name, $records)
     {
-        if (empty($data)) {
+        if (empty($records)) {
             return false;
         }
         $indexPath = $this->_indexDir . "/$name";
@@ -125,8 +140,8 @@ class CreateIndex
         $status = "$name: 0 rows";
         fwrite(STDOUT, $status);        
         $statusLength = strlen($status);
-        foreach ($data as $rowData) {
-            $doc   = $this->_createDocument($rowData);
+        foreach ($records as $record) {
+            $doc   = $this->_createDocument($name, $record);
             $index->addDocument($doc);
             $count++;
             if (0 == $count % 100) {
@@ -173,22 +188,7 @@ class CreateIndex
             $findings = $query->limit($offset)
                               ->offset($limit)
                               ->execute();
-            foreach ($findings as $finding) {
-                $data[] = array(
-                            'id' => $finding->id,
-                            'description'        => $finding->description,
-                            'recommendation'     => $finding->recommendation,
-                            'mitigationstrategy' => $finding->mitigationStrategy,
-                            'resourcesrequired'  => $finding->resourcesRequired,
-                            'countermeasures'    => $finding->countermeasures,
-                            'threat'             => $finding->threat,
-                            'organization'       => $finding->ResponsibleOrganization->name . ',' .
-                                                    $finding->ResponsibleOrganization->nickname,
-                            'source'             => $finding->Source->name . ',' . $finding->Source->nickname,
-                            'asset'              => $finding->Asset->name
-                        );
-            }
-            $this->_createIndex('finding', $data);
+            $this->_createIndex('finding', $findings);
         }
     }
 
@@ -198,15 +198,7 @@ class CreateIndex
             return false;
         }
         $sources = Doctrine::getTable('Source')->findAll();
-        foreach ($sources as $source) {
-            $data[] = array(
-                        'id'           => $source->id,
-                        'name'         => $source->name,
-                        'nickname'     => $source->nickname,
-                        'description'  => $source->description
-                    );
-        }
-        $this->_createIndex('source', $data);
+        $this->_createIndex('source', $sources);
     }
 
     private function _createNetwork()
@@ -215,15 +207,7 @@ class CreateIndex
             return false;
         }
         $networks = Doctrine::getTable('Network')->findAll();
-        foreach ($networks as $network) {
-            $data[] = array(
-                        'id'           => $role->id,
-                        'name'         => $role->name,
-                        'nickName'     => $role->nickName,
-                        'description'  => $role->description
-                    );
-        }
-        $this->_createIndex('network', $data);
+        $this->_createIndex('network', $networks);
     }
 
     private function _createProduct()
@@ -243,16 +227,7 @@ class CreateIndex
             $products = $query->limit($offset)
                               ->offset($limit)
                               ->execute();
-            foreach ($products as $product) {
-                $data[] = array(
-                            'id'          => $role->id,
-                            'name'        => $role->name,
-                            'vendor'      => $role->vendor,
-                            'version'     => $role->version,
-                            'description' => $role->description
-                            );
-            }
-            $this->_createIndex('product', $data);
+            $this->_createIndex('product', $products);
         }
     }
 
@@ -262,15 +237,7 @@ class CreateIndex
             return false;
         }
         $roles = Doctrine::getTable('Role')->findAll();
-        foreach ($roles as $role) {
-            $data[] = array(
-                        'id'           => $role->id,
-                        'name'         => $role->name,
-                        'nickname'     => $role->nickname,
-                        'description'  => $role->description
-                        );
-        }
-        $this->_createIndex('role', $data);
+        $this->_createIndex('role', $roles);
     }
 
     private function _createOrganization()
@@ -279,16 +246,7 @@ class CreateIndex
             return false;
         }
         $organizations = Doctrine::getTable('Organization')->findAll();
-        foreach ($organizations as $organization) {
-            $data[] = array(
-                        'id'           => $organization->id,
-                        'name'         => $organization->name,
-                        'nickname'     => $organization->nickname,
-                        'orgtype'      => $organization->orgType,
-                        'description'  => $organization->description
-                        );
-        }
-        $this->_createIndex('organization', $data);
+        $this->_createIndex('organization', $organizations);
     }
 
     private function _createSystem()
@@ -298,18 +256,7 @@ class CreateIndex
         }
 
         $systems = Doctrine::getTable('System')->findAll();
-        foreach ($systems as $system) {
-            $data[] = array(
-                        'id'              => $system->id,
-                        'name'            => $system->name,
-                        'nickname'        => $system->nickname,
-                        'type'            => $system->type,
-                        'confidentiality' => $system->confidentiality,
-                        'integrity'       => $system->integrity,
-                        'availability'    => $system->availability
-                        );
-        }
-        $this->_createIndex('system', $data);
+        $this->_createIndex('system', $systems);
     }
 
     private function _createAccount()
@@ -318,15 +265,6 @@ class CreateIndex
             return false;
         }
         $users = Doctrine::getTable('User')->findAll();
-        foreach ($users as $user) {
-            $data[] = array(
-                        'id'        => $user->id,
-                        'name'      => $user->username,
-                        'namelast'  => $user->nameLast,
-                        'namefirst' => $user->nameFirst,
-                        'email'     => $user->email . ',' . $user->notifyEmail
-                    );
-        }
-        $this->_createIndex('user', $data);
+        $this->_createIndex('user', $users);
     }
 }

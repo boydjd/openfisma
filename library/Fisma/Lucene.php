@@ -53,7 +53,7 @@ class Fisma_Lucene
             //Update one index
             $doc = $index->getDocument($hits[0]);
             foreach ($data as $field=>$value) {
-                if (is_string($value)) {
+                if ('string' == self::getColumnType($name, $field)) {
                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
                 }
             }
@@ -64,7 +64,7 @@ class Fisma_Lucene
             $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $id));
             $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($id)));
             foreach ($data as $field=>$value) {
-                if (is_string($value)) {
+                if ('string' == self::getColumnType($name, $field)) {
                     $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
                 }
             }
@@ -88,5 +88,19 @@ class Fisma_Lucene
         $hits = $index->find('key:' . md5($id));
         $index->delete($hits[0]);
         $index->commit();
+    }
+
+    /**
+     * Get the column type of a specific field (the index name is same to the table name)
+     *
+     * @param string $indexName the index name
+     * @param string $field  a specific field in a talbe
+     * @return string 
+     */
+    private static function getColumnType($indexName, $field)
+    {
+        $indexTable       =  Doctrine::getTable(ucfirst($indexName));
+        $columnDefinition = $indexTable->getColumnDefinition(strtolower($field));
+        return $columnDefinition['type'];
     }
 }
