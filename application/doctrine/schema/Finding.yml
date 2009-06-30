@@ -24,7 +24,8 @@ Finding:
         
         type:
             type: enum
-            values: [CAP, AR, FP]
+            values: [NONE, CAP, AR, FP]
+            default: NONE
             comment: The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)
         status:
             type: enum

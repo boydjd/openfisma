@@ -4,12 +4,14 @@
     <chart_data>
         <row>
             <null />
+            <string>None</string>
             <string>CAP: Corrective Action Plan</string>
             <string>FP: False Positive</string>
             <string>AR: Accepted Risk</string>
         </row>
         <row>
             <string>count</string>
+            <number tooltip='<?php echo $this->summary['NONE']; ?> findings without a mitigation strategy'><?php echo $this->summary['NONE']; ?></number>
             <number tooltip='<?php echo $this->summary['CAP']; ?> CAP findings'><?php echo $this->summary['CAP']; ?></number>
             <number tooltip='<?php echo $this->summary['FP']; ?> FP findings'><?php echo $this->summary['FP']; ?></number>
             <number tooltip='<?php echo $this->summary['AR']; ?> AR findings'><?php echo $this->summary['AR']; ?></number>
@@ -48,12 +50,14 @@
             height='100' />
 
     <series_color>
+        <color>ff9933</color>
         <color>66ff66</color>
         <color>33cc33</color>
         <color>ff3333</color>
     </series_color>
 
     <series_explode>
+        <number>5</number>
         <number>5</number>
         <number>5</number>
         <number>5</number>

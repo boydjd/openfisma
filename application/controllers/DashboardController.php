@@ -196,6 +196,7 @@ class DashboardController extends SecurityController
     {
         Fisma_Acl::requirePrivilege('dashboard', 'read');
         $this->view->summary = array(
+            'NONE' => 0,
             'CAP' => 0,
             'FP' => 0,
             'AR' => 0
@@ -211,7 +212,7 @@ class DashboardController extends SecurityController
         $types = array_keys($this->view->summary);
         foreach ($results as $result) {
             if (in_array($result['type'], $types)) {
-                $this->view->summary["{$result['type']}"] ++;
+                $this->view->summary["{$result['type']}"] = $result['typeCount'];
             }
         }
         // Headers Required for IE+SSL (see bug #2039290) to stream XML
