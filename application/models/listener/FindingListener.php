@@ -68,11 +68,11 @@ class FindingListener extends Doctrine_Record_Listener
     {
         $finding = $event->getInvoker();
         $duplicateFinding  = $finding->getTable()
-                                     ->findByDql("description LIKE '%?%'", $finding->description);
+                                     ->findByDql("description LIKE '%{$finding->description}%'");
         if (!empty($duplicateFinding[0])) {
             $finding->DuplicateFinding = $duplicateFinding[0];
             $finding->status           = 'PEND';
-        } elseif ($finding->type != null) {
+        } elseif (in_array($finding->type, array('CAP', 'AR', 'FP'))) {
             $finding->status           = 'DRAFT';
         } else {
             $finding->status           = 'NEW';
