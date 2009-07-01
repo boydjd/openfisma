@@ -110,22 +110,13 @@ class ConfigController extends SecurityController
                         if (in_array($k, array(Configuration::EXPIRING_TS, Configuration::UNLOCK_DURATION))) {
                             $v *= 60; //convert to second
                         }
-                        if (in_array($k, array(Configuration::USE_NOTIFICATION,Configuration::BEHAVIOR_RULE))) {
-                            $config->description = $v;
-                            if ($config->isModified()) {
-                                $config->save();
-                                array_push($records, $k);
-                            }
-                        } else {
-                            $config->value = $v;
-                            if ($config->isModified()) {
-                                $config->save();
-                                array_push($records, $k);
-                            }
+                        $config->value = $v;
+                        if ($config->isModified()) {
+                            $config->save();
+                            array_push($records, $k);
                         }
                     }
-                    
-                    $msg = 'Configuration updated successfully';
+                    $msg = 'Configuration updated successfully, ' . implode(',', $records) . ' was(were) changed';
                     $this->message($msg, self::M_NOTICE);
                 } else {
                     $errorString = Fisma_Form_Manager::getErrors($form);
@@ -141,9 +132,6 @@ class ConfigController extends SecurityController
         foreach ($configs as $config) {
             if (in_array($config->name, array(Configuration::EXPIRING_TS, Configuration::UNLOCK_DURATION))) {
                 $config->value /= 60; //convert to minute from second
-            }
-            if (in_array($config->name, array(Configuration::USE_NOTIFICATION, Configuration::BEHAVIOR_RULE))) {
-                $config->value = $config->description;
             }
             $configArray[$config->name] = $config->value;
         }
