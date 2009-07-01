@@ -53,7 +53,7 @@ function setupEditFields() {
 }
 
 function validateEcd() {
-    var obj = document.getElementById('action_est_date');
+    var obj = document.getElementById('expectedCompletionDate');
     var inputDate = obj.value;
     var oDate= new Date();
     var Year = oDate.getFullYear();
@@ -62,7 +62,7 @@ function validateEcd() {
     if (Month < 10) {Month = '0'+Month;}
     var Day = oDate.getDate();
     if (Day < 10) {Day = '0' + Day;}
-    if (inputDate <= parseInt(""+Year+""+Month+""+Day)) {
+    if (inputDate.replace(/\-/g, "") <= parseInt(""+Year+""+Month+""+Day)) {
         //@todo english
         alert("The ECD date can'be in the past!");
     }
