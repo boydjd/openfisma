@@ -84,21 +84,6 @@ class CreateIndex
     }
 
     /**
-     * Get the column type of a specific field (the index name is same to the table name)
-     *
-     * @param string $indexName the index name
-     * @param string $field  a specific field in a talbe
-     * @return string 
-     */
-    private function _getColumnType($indexName, $field)
-    {
-        $indexTable       =  Doctrine::getTable(ucfirst($indexName));
-        $columnDefinition = $indexTable->getColumnDefinition(strtolower($field));
-        return $columnDefinition['type'];
-    }
-
-
-    /**
      * Create luence index document
      *
      * @param Doctrine_Connection $record the record which need to index
@@ -113,7 +98,7 @@ class CreateIndex
                 $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $value));
             } else {
                 //index the string type fields
-                if ('string' == $this->_getColumnType($indexName, $field)) {
+                if ('string' == Fisma_Lucene::getColumnType($indexName, $field)) {
                     $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
                 }
             }

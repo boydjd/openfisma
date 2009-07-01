@@ -97,7 +97,7 @@ class Fisma_Lucene
      * @param string $field  a specific field in a talbe
      * @return string 
      */
-    private static function getColumnType($indexName, $field)
+    public static function getColumnType($indexName, $field)
     {
         $indexTable       =  Doctrine::getTable(ucfirst($indexName));
         $columnDefinition = $indexTable->getColumnDefinition(strtolower($field));
