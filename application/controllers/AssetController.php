@@ -242,7 +242,7 @@ class AssetController extends BaseController
              ->select()
              ->from('Asset a')
              ->leftJoin('a.Product p')
-             ->orderBy('name ASC');
+             ->orderBy('a.name ASC');
         if (!empty($params['system_id'])) {
             $q->andWhere('a.orgSystemId = ?', $params['system_id']);
         }
@@ -253,10 +253,10 @@ class AssetController extends BaseController
             $q->andWhere('a.addressIp LIKE ?', $params['ip'] . '%');
         }
         if (!empty($params['port'])) {
-            $q->andWhere('a.address LIKE ?', $params['port'] . '%');
+            $q->andWhere('a.addressport LIKE ?', $params['port'] . '%');
         }
         if (!empty($params['vendor'])) {
-            $q->andWhere('p.vendor LIKE ?"', $params['vendor'] . '%');
+            $q->andWhere('p.vendor LIKE ?', $params['vendor'] . '%');
         }
         if (!empty($params['version'])) {
             $q->andWhere('p.version LIKE ?', $params['version'] . '%');
