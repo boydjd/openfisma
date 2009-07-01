@@ -173,6 +173,7 @@ class Fisma
             'listener' => 'application/models/listener',
             'log' => 'data/logs',
             'migration' => 'application/doctrine/migrations',
+            'sampleData' => 'application/doctrine/data/sample',
             'schema' => 'application/doctrine/schema',
             'systemDocument' => 'data/system-document',
             'test' => 'tests',
@@ -196,8 +197,10 @@ class Fisma
         foreach (self::$_appConf->php as $param => $value) {
             ini_set($param, $value);
         }
-        foreach (self::$_appConf->xdebug as $param => $value) {
-            ini_set("xdebug.$param", $value);
+        if (isset(self::$_appConf->xdebug)) {
+            foreach (self::$_appConf->xdebug as $param => $value) {
+                ini_set("xdebug.$param", $value);
+            }
         }
         
         // Set up session configuration
