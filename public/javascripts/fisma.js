@@ -680,12 +680,12 @@ function showCalendar(block, trigger){
                 var mStr = (selDate.getMonth()+1 < 10) ? '0'+(selDate.getMonth()+1) : (selDate.getMonth()+1);
                 var yStr = selDate.getFullYear();
 
-                Dom.get(block).value = yStr + '' + mStr + '' + dStr;
+                Dom.get(block).value = yStr + '-' + mStr + '-' + dStr;
             } else {
                 Dom.get(block).value = "";
             }
             dialog.hide();
-            if ('poam[action_current_date]' == Dom.get(block).name) {
+            if ('finding[expectedCompletionDate]' == Dom.get(block).name) {
                 validateEcd();
             }
         });

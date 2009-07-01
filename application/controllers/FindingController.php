@@ -183,34 +183,6 @@ class FindingController extends BaseController
         $this->render('search');
     }
 
-
-    /**
-     * Edit finding information
-     */
-    public function editAction()
-    {
-        Fisma_Acl::requirePrivilege('finding', 'update');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        assert($id);
-        $finding = new Finding();
-        $do = $req->getParam('do');
-        if ($do == 'update') {
-            $status = $req->getParam('status');
-            $db = Zend_Registry::get('db');
-            $result = $db->query("UPDATE FINDINGS SET finding_status = '$status'
-                                  WHERE finding_id = $id");
-            if ($result) {
-                $this->view->assign('msg', "Finding updated successfully");
-            } else {
-                $this->view->assign('msg', "Failed to update the finding");
-            }
-        }
-        $this->view->assign('act', 'edit');
-        $this->_forward('view', 'Finding');
-    }
-    
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
      */
@@ -275,44 +247,6 @@ class FindingController extends BaseController
         $this->render();
     }
 
-    /**
-     *  Delete findings
-     */
-    public function deleteAction()
-    {
-        Fisma_Acl::requirePrivilege('finding', 'delete');
-        
-        $req = $this->getRequest();
-        $post = $req->getPost();
-        $errno = 0;
-        $successno = 0;
-        $poam = new poam();
-        foreach ($post as $key => $id) {
-            if (substr($key, 0, 3) == 'id_') {
-                $poamId[] = $id;
-                $res = $poam->update(array(
-                    'status' => 'DELETED'
-                ), 'id = ' . $id);
-                if ($res) {
-                    $successno++;
-                } else {
-                    $errno++;
-                }
-            }
-        }
-        $msg = 'Delete ' . $successno . ' Findings Successfully,'
-                . $errno . ' Failed!';
-        // @todo The delete action isn't support right now, but when it is,
-        // the notification needs to be limited to the system from which the
-        // finding is being deleted.
-        //$this->_notification->add(Notification::FINDING_DELETED,
-        //    $this->_me->account, $poamId);
-        $this->message($msg, self::M_NOTICE);
-        $this->_forward('searchbox', 'finding', null, array(
-            's' => 'search'
-        ));
-    }
-    
     /** 
      * Downloading a excel file which is used as a template 
      * for uploading findings.

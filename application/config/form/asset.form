@@ -16,10 +16,12 @@ displayGroups.assetInfo.elements.name = "name"
 
 elements.addressIp.type = "text"
 elements.addressIp.options.label = "Address IP"
+elements.addressIp.options.validators.addressIp.validator = "ip"
 displayGroups.assetInfo.elements.addressIp = "addressIp"
 
 elements.addressPort.type = "text"
 elements.addressPort.options.label = "Address Port"
+elements.addressPort.options.validators.alnum.validator = "Digits"
 displayGroups.assetInfo.elements.addressPort = "addressPort"
 
 elements.productId.type = "select"

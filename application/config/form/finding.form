@@ -17,6 +17,7 @@ elements.discoveredDate.type = "text"
 elements.discoveredDate.options.label = "Discovered Date"
 elements.discoveredDate.options.class = "date"
 elements.discoveredDate.options.required = true
+elements.discoveredDate.options.validators.discoveredDate.validator = "date"
 displayGroups.finding.elements.discoveredDate = "discoveredDate"
 
 elements.sourceId.type = "select"
