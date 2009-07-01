@@ -26,6 +26,7 @@ Finding:
             type: enum
             values: [NONE, CAP, AR, FP]
             default: NONE
+            notnull: true
             comment: The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)
         status:
             type: enum

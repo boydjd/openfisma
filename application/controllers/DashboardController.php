@@ -60,7 +60,10 @@ class DashboardController extends SecurityController
     {
         parent::preDispatch();
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
-        $contextSwitch->addActionContext('totalstatus', 'xml')
+        // Headers Required for IE+SSL (see bug #2039290) to stream XML
+        $contextSwitch->addHeader('xml', 'Pragma', 'private')
+                      ->addHeader('xml', 'Cache-Control', 'private')
+                      ->addActionContext('totalstatus', 'xml')
                       ->addActionContext('totaltype', 'xml')
                       ->initContext();
     }
@@ -184,9 +187,6 @@ class DashboardController extends SecurityController
         }
         
         $this->view->summary = $arrTotal;
-        // Headers Required for IE+SSL (see bug #2039290) to stream XML
-        header('Pragma:private');
-        header('Cache-Control:private');
     }
 
     /**
@@ -215,8 +215,5 @@ class DashboardController extends SecurityController
                 $this->view->summary["{$result['type']}"] = $result['typeCount'];
             }
         }
-        // Headers Required for IE+SSL (see bug #2039290) to stream XML
-        header('Pragma:private');
-        header('Cache-Control:private');
     }
 }
