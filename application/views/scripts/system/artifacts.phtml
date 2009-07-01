@@ -30,6 +30,7 @@ Fisma_Format_Section::startSection('System Documentation');
 <table border="1" class="systemDocuments">
     <tr>
         <th>File Name</th>
+        <th>Size</th>
         <th>Version</th>
         <th>Version Notes</th>
         <th>Last Modified By User</th>
@@ -43,11 +44,12 @@ foreach ($this->documents as $document) {
         . "<td><a href='/system/download-document/id/{$document->id}'>"
         . "<img src='{$document->getIconUrl()}'>"
         . "<div>{$document->DocumentType->name}</div></a></td>"
+        . "<td>{$document->getSizeKb()}</td>"
         . "<td align='center'>{$document->version}</td>"
         . "<td>{$document->description}</td>"
         . "<td>{$document->User->username}</td>"
         . "<td>{$document->updated_at}</td>"
-        . "<td>TODO: Add button</td>"
+        . "<td><a href='/panel/system-document/sub/view/id/$document->id'>Version History</a></td>"
         . "</tr>";
 }
 ?>

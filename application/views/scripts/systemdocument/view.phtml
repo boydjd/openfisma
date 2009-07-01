@@ -1,0 +1,77 @@
+<?php
+echo $this->partial('systemdocument/searchbox.phtml');
+
+Fisma_Format_Section::startSection($this->document->DocumentType->name
+                                 . " for " 
+                                 . $this->document->System->Organization[0]->name);
+?>
+    
+<table class="keyValues">
+    <tr>
+        <td>File Name:</td>
+        <td>
+            <a href="/system/download-document/id/<?php echo $this->document->id ?>">
+                <?php echo $this->document->fileName; ?>
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>Creation Date:</td>
+        <td><?php echo $this->document->createdTs; ?></td>
+    </tr>
+    <tr>
+        <td>Last Modification Date:</td>
+        <td><?php echo $this->document->updated_at; ?></td>
+    </tr>
+    <tr>
+        <td>Document Type:</td>
+        <td><?php echo $this->document->DocumentType->name; ?></td>
+    </tr>
+    <tr>
+        <td>Size:</td>
+        <td><?php echo $this->document->getSizeKb(); ?></td>
+    </tr>
+    <tr>
+        <td>System:</td>
+        <td>
+            <a href="/panel/system/sub/view/id/<?php echo $this->document->System->Organization[0]->id; ?>">
+                <?php echo $this->document->System->Organization[0]->name; ?>
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>Version:</td>
+        <td><?php echo $this->document->version; ?></td>
+    </tr>
+    <tr>
+        <td>Version Notes:</td>
+        <td><?php echo $this->document->description; ?></td>
+    </tr>
+</table>
+
+
+<?php 
+    Fisma_Format_Section::stopSection(); 
+    Fisma_Format_Section::startSection('Version History'); 
+?>
+
+<table class="auditLog">
+    <tr>
+        <th>File Name</th><th>Version</th><th>Version Notes</th>
+    </tr>
+    <?php
+        foreach ($this->versionHistory as $history) {
+            echo '<tr><td>'
+               . "<a href='/system/download-document/id/$history->id/version/$history->version'>"
+               . $history->fileName
+               . '</a></td><td>'
+               . $history->version
+               . '</td><td>'
+               . $history->description
+               . '</td></tr>';
+        }
+    ?>
+</table>
+<?php 
+    Fisma_Format_Section::stopSection();
+?>

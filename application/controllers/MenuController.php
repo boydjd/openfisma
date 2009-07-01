@@ -79,17 +79,17 @@ class MenuController extends SecurityController
             $menubar->add($findings);
         }
 
-        if (Fisma_Acl::hasPrivilege('system', 'read')) {
+        if (Fisma_Acl::hasPrivilege('System', 'read')) {
             $systems = new Fisma_Yui_Menu('System Inventory');
 
             $systems->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
             
-            if (Fisma_Acl::hasPrivilege('asset', 'read', '*')) {
+            if (Fisma_Acl::hasPrivilege('Asset', 'read', '*')) {
                 $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
 
-            if (Fisma_Acl::hasPrivilege('system', 'read', '*')) {
-                $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/document/sub/list'));
+            if (Fisma_Acl::hasPrivilege('System', 'read', '*')) {
+                $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
             }
             
             $menubar->add($systems);

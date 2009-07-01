@@ -231,11 +231,11 @@ class PanelController extends SecurityController
      * @todo english
      * Forward to user Controller
      */
-    public function documentAction()
+    public function systemDocumentAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Document');
+        $this->_helper->actionStack($sub, 'SystemDocument');
         $this->_helper->actionStack('header');
     }
 

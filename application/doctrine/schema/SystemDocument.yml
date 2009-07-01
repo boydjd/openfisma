@@ -21,6 +21,9 @@ SystemDocument:
             extra:
                 purify: plaintext
             comment: Name of the uploaded file
+        size:
+            type: integer
+            comment: Size of the file in bytes
         description:
             type: string
             extra:

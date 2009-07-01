@@ -156,6 +156,7 @@ class CreateIndex
         $this->_createOrganization();
         $this->_createSystem();
         $this->_createAccount();
+        $this->_createSystemDocument();
     }
 
     private function _createFinding()
@@ -251,5 +252,14 @@ class CreateIndex
         }
         $users = Doctrine::getTable('User')->findAll();
         $this->_createIndex('user', $users);
+    }
+
+    private function _createSystemDocument()
+    {
+        if ($this->_optimize('systemdocument')) {
+            return false;
+        }
+        $documents = Doctrine::getTable('SystemDocument')->findAll()->loadRelated();
+        $this->_createIndex('systemdocument', $documents);
     }
 }

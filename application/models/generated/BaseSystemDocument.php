@@ -8,6 +8,7 @@
  * @property timestamp $createdTs
  * @property string $mimeType
  * @property string $fileName
+ * @property integer $size
  * @property string $description
  * @property integer $documentTypeId
  * @property integer $userId
@@ -29,8 +30,9 @@ abstract class BaseSystemDocument extends Doctrine_Record
         $this->hasColumn('createdTs', 'timestamp', null, array('type' => 'timestamp'));
         $this->hasColumn('mimeType', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'Store the MIME type of this uploaded file', 'length' => '255'));
         $this->hasColumn('fileName', 'string', 255, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'Name of the uploaded file', 'length' => '255'));
-        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'A place for the user to enter version comments'));
-        $this->hasColumn('documentTypeId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to a table which describes what type of document this, e.g. system security plan, etc.'));
+        $this->hasColumn('size', 'integer', null, array('type' => 'integer', 'comment' => 'Size of the file in bytes'));
+        $this->hasColumn('description', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'plaintext'), 'comment' => 'A place for the user to enter version comments'));
+        $this->hasColumn('documentTypeId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to a table which describes what type of document this is, e.g. system security plan, etc.'));
         $this->hasColumn('userId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the user who uploaded this file'));
         $this->hasColumn('systemId', 'integer', null, array('type' => 'integer', 'comment' => 'Foreign key to the system which this file belongs to'));
 

@@ -1,9 +1,19 @@
 DocumentType:
-    ssp:
-        name: System Security Plan
+    bia: 
+        name: Business Impact Assessment
+    cmp:
+        name: Configuration Management Plan
     cp:
         name: Contingency Plan
     cpt:
         name: Contingency Test Plan
     drp:
         name: Disaster Recovery Plan
+    pia:
+        name: Privacy Impact Assessment
+    ra:
+        name: Risk Assessment
+    sar:
+        name: Security Assessment Report
+    ssp:
+        name: System Security Plan

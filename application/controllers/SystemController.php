@@ -303,6 +303,7 @@ class SystemController extends BaseController
         $document->description = $description;
         $document->fileName = $fileName;
         $document->mimeType = $file['type'];
+        $document->size = $file['size'];
         $document->save();
         
         // Send back a JSON status
@@ -316,20 +317,30 @@ class SystemController extends BaseController
     public function downloadDocumentAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $document = Doctrine::getTable('SystemDocument')->find($id);
-        if (is_null($document)) {
-            throw new Fisma_Exception("Requested file does not exist.");
-        }
+        $version = $this->getRequest()->getParam('version');
 
         Fisma_Acl::requirePrivilege('Organization', 'update', $document->System->Organization->id);
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
+        $document = Doctrine::getTable('SystemDocument')->find($id);
+        if (isset($version)) {
+            $versionInfo = $document->getAuditLog()->getVersion($document, $version);
+            // This is awkward. Doctrine's Versionable returns versions as arrays, not objects.
+            // So we have to create a temporary object in order to execute the required logic.
+            $document = new SystemDocument();
+            $document->merge($versionInfo[0]);
+        }
+
+        if (is_null($document)) {
+            throw new Fisma_Exception("Requested file does not exist.");
+        }
+
         /** @todo better error checking */
-        $path = $document->getPath();
         $this->getResponse()
              ->setHeader('Content-Type', $document->mimeType)
              ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
+         $path = $document->getPath();
          readfile($path);
     }
 }
