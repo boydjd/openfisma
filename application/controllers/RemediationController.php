@@ -848,20 +848,20 @@ class RemediationController extends SecurityController
         }
         
         if (!empty($params['status'])) {
-            $now = clone parent::$now;
+            $now = new Zend_Date(null, 'Y-m-d');
             switch ($params['status']) {
                 case 'NOT-CLOSED': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
                     break;
                 case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(30, Zend_Date::DAY);
+                     $params['modify_ts'] = $now->subDay(30);
                     break;
                 case 'NOUP-60':
                      $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(60, Zend_Date::DAY);
+                     $params['modify_ts'] = $now->subDay(60);
                     break;
                 case 'NOUP-90':
                      $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->sub(90, Zend_Date::DAY);
+                     $params['modify_ts'] = $now->subDay(90);
                     break;
                 case 'NEW':  case 'DRAFT':  case 'EN': case 'CLOSED': default : 
                     break;
@@ -946,6 +946,17 @@ class RemediationController extends SecurityController
                     $v = $v->addDay(1);
                     $v = $v->toString('Y-m-d H:i:s');
                     $q->andWhere("f.createdTs < ?", $v);
+                } elseif ($k == 'status') {
+                    if (is_array($v)) {
+                        $q->andWhereIn("f.status", $v);
+                    } elseif (in_array($v, array('NEW', 'DRAFT', 'EN', 'CLOSED'))) {
+                        $q->andWhere("f.status = ?", $v);
+                    } else {
+                        $q->andWhere("ce.nickname = ?", $v);
+                    }
+                } elseif ($k == 'modify_ts') {
+                    $v = $v->toString('Y-m-d H:i:s');
+                    $q->andWhere("f.modifiedTs < ?", $v);
                 } elseif ($k == 'ontime') {
                     if ($v == 'ontime') {
                         $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) <= 0');
