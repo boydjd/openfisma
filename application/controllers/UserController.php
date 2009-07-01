@@ -56,6 +56,7 @@ class UserController extends BaseController
         $form = Fisma_Form_Manager::loadForm('account');
         if ('create' == $this->_request->getActionName()) {
             $form->getElement('password')->setRequired(true);
+            $this->view->requirements =  $this->_getPasswordRequirements();
         }
         $roles  = Doctrine_Query::create()
                     ->select('*')
@@ -368,7 +369,7 @@ class UserController extends BaseController
         
         $flag = 0;
         $password = "";
-        $length = rand($passLengthMin, $passLengthMax);
+        $length = rand($passLengthMin ? $passLengthMin : 1, $passLengthMax);
         if (true == $passUpper) {
             $possibleCharactors[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             $flag++;
@@ -388,7 +389,7 @@ class UserController extends BaseController
 
         while (strlen($password) < $length) {
             if (0 == $flag) {
-                $password .= rand();
+                $password .= rand(0, 9);
             } else {
                 foreach ($possibleCharactors as $row) {
                     if (strlen($password) < $length) {
