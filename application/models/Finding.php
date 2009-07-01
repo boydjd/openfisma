@@ -236,6 +236,7 @@ class Finding extends BaseFinding
     public function updateNextDueDate()
     {
         if (in_array($this->status, array('PEND', 'CLOSED'))) {
+            $this->nextDueDate = null;
             return;
         }
         switch ($this->status) {
