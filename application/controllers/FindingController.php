@@ -82,7 +82,7 @@ class FindingController extends BaseController
         $form = Fisma_Form_Manager::loadForm('finding');
         
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
-        $form->getElement('sourceId')->addMultiOptions(array(0 => '--select--'));
+        $form->getElement('sourceId')->addMultiOptions(array('' => '--select--'));
         foreach ($sources as $source) {
             $form->getElement('sourceId')->addMultiOptions(array($source['id'] => $source['name']));
         }
@@ -136,6 +136,9 @@ class FindingController extends BaseController
             throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $values = $form->getValues();
+        if (empty($values['securityControlId'])) {
+            unset($values['securityControlId']);
+        }
         
         // find the asset record by asset id
         $asset = Doctrine::getTable('Asset')->find($values['assetId']);
