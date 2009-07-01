@@ -1,5 +1,5 @@
 --
--- Author:    Ryan yang <ryanyang@reyosoft.com>
+-- Author:    Ryan Yang <ryan@users.sourceforge.net>
 -- Copyright: (c) 2008 Endeavor Systems, Inc.
 -- License:   http://www.openfisma.org/mw/index.php?title=License
 -- Version:   $Id$
