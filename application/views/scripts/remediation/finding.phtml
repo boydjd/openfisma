@@ -34,7 +34,15 @@
         <?php if ($status != 'CLOSED') { ?>
         <tr>
             <td>On Time:</td>
-            <td><?php echo time() < strtotime($finding->nextDueDate) ? 'On Time' : 'Overdue';?></td>
+            <td>
+            <?php
+                if (is_null($finding->nextDueDate)) {
+                    echo 'N/A';
+                } else {
+                    echo time() < strtotime($finding->nextDueDate) ? 'On Time' : 'Overdue';
+                }
+            ?>
+            </td>
         </tr>
         <?php } ?>
         <tr>
