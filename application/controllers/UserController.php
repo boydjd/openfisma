@@ -54,6 +54,9 @@ class UserController extends BaseController
     public function getForm() 
     {
         $form = Fisma_Form_Manager::loadForm('account');
+        if ('create' == $this->_request->getActionName()) {
+            $form->getElement('password')->setRequired(true);
+        }
         $roles  = Doctrine_Query::create()
                     ->select('*')
                     ->from('Role')
