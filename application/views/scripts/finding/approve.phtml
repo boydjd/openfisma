@@ -27,13 +27,20 @@
      
     var dataSource = { rows: [<?php
     $records = array();
+    $i = 0;
     foreach ($this->findings as $finding) {
-        $record = array();
-        foreach ($finding as $k => $v) {
-            $record[] = $k . ':"' . $v . '"';
-        }
-        $records[] = '{' . implode(',', $record) . '}';
-    } echo implode(',', $records); ?>] };
+        $records[$i] = '{';
+        $records[$i] .= "nId: " . $finding->id . ",";
+        $records[$i] .= "nId: " . $finding->id . ",";
+        $records[$i] .= "nNickname: '" . $finding->ResponsibleOrganization->nickname . "',";
+        $records[$i] .= "nDesc: '" . addslashes(strip_tags($finding->description)) . "',";
+        $records[$i] .= "oId: " . $finding->DuplicateFinding->id . ",";
+        $records[$i] .= "oNickname: '" . $finding->DuplicateFinding->ResponsibleOrganization->nickname . "',";
+        $records[$i] .= "oType: '" . $finding->DuplicateFinding->type . "',";
+        $records[$i] .= "oStatus: '" . $finding->DuplicateFinding->status . "'";
+        $records[$i] .= '}';
+        $i++;
+    } echo implode(',', $records)?>] };
      
     var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
     

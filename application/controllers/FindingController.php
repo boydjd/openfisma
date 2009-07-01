@@ -534,22 +534,10 @@ class FindingController extends BaseController
         Fisma_Acl::requirePrivilege('finding', 'approve');
         
         $q = Doctrine_Query::create()
-             ->select('f.id AS nId')
-             ->addSelect('f.description AS nDesc')
-             ->addSelect('f.duplicateFindingId AS duplicateFindingId')
-             ->addSelect('nr.nickname AS nNickname')
-             ->addSelect('df.id AS oId')
-             ->addSelect('df.status AS oStatus')
-             ->addSelect('df.type AS oType')
-             ->addSelect('or.nickname AS oNickname')
+             ->select('*')
              ->from('Finding f')
-             ->leftJoin('f.ResponsibleOrganization nr')
-             ->leftJoin('f.DuplicateFinding df')
-             ->leftJoin('df.ResponsibleOrganization or')
-             ->where('f.status = ?', 'PEND')
-             ->orderBy('f.responsibleOrganizationId, f.id');
-
-        $findings = $q->execute()->toArray();
+             ->where('f.status = ?', 'PEND');
+        $findings = $q->execute();
         $this->view->assign('findings', $findings);
     }
     
