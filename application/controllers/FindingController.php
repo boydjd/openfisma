@@ -557,6 +557,7 @@ class FindingController extends BaseController
                     } else {
                         $finding->status = 'NEW';
                     }
+                    $finding->updateNextDueDate();
                     $finding->save();
                 } elseif (isset($_POST['delete_selected'])) {
                     $finding->AuditLogs->delete();
