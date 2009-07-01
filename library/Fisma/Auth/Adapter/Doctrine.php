@@ -164,13 +164,12 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         // what the reason for the lock was and whether it can be unlocked automatically.
         $lockMessage = '';
         $contactEmail = Configuration::getConfig('contact_email');
-        $inactivePeriod = Configuration::getConfig('account_inactivity_period');
         $inactivePeriod = new Zend_Date();
-        $inactivePeriod->sub($inactivePeriod, Zend_Date::DAY);
+        $inactivePeriod->subDay(Configuration::getConfig('account_inactivity_period'));
         $lastLogin = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
 
         if (!is_null($user->lastLoginTs)
-                && $inactivePeriod->isLater($user->lastLoginTs)) {
+                && $inactivePeriod->isLater($lastLogin)) {
             $user->lockAccount(User::LOCK_TYPE_INACTIVE);
         } 
 
