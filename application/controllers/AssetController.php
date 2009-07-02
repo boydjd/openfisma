@@ -353,8 +353,7 @@ class AssetController extends BaseController
             $type = self::M_WARNING;
         } else {
             try {
-                if (count($asset->Product) > 0 || count($asset->Organization) > 0
-                    || count($asset->Network) > 0 || count($asset->Findings)) {
+                if (count($asset->Findings)) {
                     /** @todo english **/
                     $msg   = $msg = 'This asset have been used, You could not to delete';
                     $type = self::M_WARNING;
@@ -397,8 +396,7 @@ class AssetController extends BaseController
                 if (!$res) {
                     $errno++;
                 } else {
-                    if (count($res->Product) > 0 || count($res->Organization) > 0
-                        || count($res->Network) > 0 || count($res->Findings)) {
+                    if (count($res->Findings)) {
                         $errno++;
                     } else {
                         $res->delete();
