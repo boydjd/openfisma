@@ -885,6 +885,8 @@ class RemediationController extends SecurityController
                 }
             } elseif ($poamIds) {
                 $params['ids'] = $poamIds;
+            } else {
+                $list = array();
             }
             $this->view->assign('keywords', $this->getKeywords($params['keywords']));
         }
