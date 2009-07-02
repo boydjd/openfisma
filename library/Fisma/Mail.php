@@ -119,12 +119,6 @@ class Fisma_Mail extends Zend_Mail
         try {
             $this->send($this->_getTransport());
         } catch (Exception $excetpion) {
-            /** @todo english */
-            $message = 'Faild to send email to this user';
-            if (Fisma::debug()) {
-                $message .= $excetpion->getMessage();
-            }
-            throw new Fisma_Exception($message);
         }
     }
 
@@ -147,12 +141,6 @@ class Fisma_Mail extends Zend_Mail
         try {
             $this->send($this->_getTransport());
         } catch (Exception $excetpion) {
-            /** @todo english */
-            $message = 'Faild to send email to this user';
-            if (Fisma::debug()) {
-                $message .= $excetpion->getMessage();
-            }
-            throw new Fisma_Exception($message);
         }
     }
 

@@ -126,34 +126,13 @@ class UserController extends BaseController
             throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $values = $form->getValues();
-        $roleId = $values['role'];
-        if (empty($values['password'])) {
-            unset($values['password']);
-        }
         $subject->merge($values);
-        $subject->save();
+        $subject->unlink('Roles');
+        $subject->link('Roles', $values['role']);
 
-        // Update roles
-        $q = Doctrine_Query::create()
-            ->delete('UserRole')
-            ->addWhere('userId = ?', $subject->id);
-        $deleted = $q->execute();
-        $userRole = new UserRole;
-        $userRole->userId = $subject->id;
-        $userRole->roleId = $roleId;
-        $userRole->save();
-        
-        // Update organizations
-        $q = Doctrine_Query::create() 
-             ->delete('UserOrganization') 
-             ->addWhere('userId = ?', $subject->id);
-        $deleted = $q->execute();
-        foreach ($values['organizations'] as $organizationId) {
-            $userOrg = new UserOrganization(); 
-            $userOrg->userId = $subject; 
-            $userOrg->organizationId = $organizationId; 
-            $userOrg->save(); 
-        }
+        $subject->unlink('Organizations');
+        $subject->link('Organizations', $values['organizations']);
+        $subject->save();
     }
 
     /**
