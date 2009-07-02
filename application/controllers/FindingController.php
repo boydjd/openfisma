@@ -281,6 +281,7 @@ class FindingController extends BaseController
                 $this->view->systems[$orgSystem['id']] = $orgSystem['nickname'];
             }
             if (count($this->view->systems) == 0) {
+                /** @todo english **/
                 throw new Fisma_Exception(
                     "The spreadsheet template can not be " .
                     "prepared because there are no systems defined.");
@@ -292,7 +293,8 @@ class FindingController extends BaseController
                 $this->view->networks[$network['id']] = $network['nickname'];
             }
             if (count($this->view->networks) == 0) {
-                 throw new Fisma_Exception("The spreadsheet template can not be
+                /** @todo english **/
+                throw new Fisma_Exception("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
             
@@ -302,9 +304,10 @@ class FindingController extends BaseController
                 $this->view->sources[$source['id']] = $source['nickname'];
             }
             if (count($this->view->sources) == 0) {
-                 throw new Fisma_Exception("The spreadsheet template can
-                     not be prepared because there are no finding sources
-                     defined.");
+                /** @todo english **/
+                throw new Fisma_Exception("The spreadsheet template can
+                    not be prepared because there are no finding sources
+                    defined.");
             }
             
             $securityControls = Doctrine::getTable('SecurityControl')->findAll()->toArray();
@@ -333,7 +336,7 @@ class FindingController extends BaseController
         } catch(Fisma_Exception $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->message($fe->getMessage(), self::M_WARNING);
-            $this->_forward('injection', 'Finding');
+            $this->_forward('finding', 'panel', null, array('sub' => 'injection'));
         }
     }
 
