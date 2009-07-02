@@ -330,10 +330,24 @@ abstract class BaseController extends SecurityController
         
         $totalRecords = $query->count();
         $rows         = $query->execute();
+        $rows         = $this->handleCollection($rows);
         $tableData['table']['recordsReturned'] = count($rows);
         $tableData['table']['totalRecords'] = $totalRecords;
-        $tableData['table']['records'] = $rows->toArray();
+        $tableData['table']['records'] = $rows;
         return $this->_helper->json($tableData);
+    }
+
+    /**
+     * Return array of the collection.
+     * If an collection need to change its keys to some other value, please override it
+     *    in the controller which is inherited from this Controller
+     *
+     * @param Doctrine_Collections $rows
+     * @return array()
+     */
+    public function handleCollection($rows)
+    {
+        return $rows->toArray();
     }
 
 }

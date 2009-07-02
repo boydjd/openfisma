@@ -17,110 +17,37 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Woody Lee <woody712@users.sourceforge.net>
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package    Controller
+ * @package   Controller
  */
-
+ 
 /**
- * The log controller deals with managing user logs on the system.
+ * displaying account logs.
  *
- * @package    Controller
+ * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class LogController extends PoamBaseController
+class LogController extends BaseController
 {
-    protected $_log = null;
-
-    /**
-     * @todo english
-     * init() - Initialize 
-     */
-    function init()
-    {
-        parent::init();
-        $this->_log = new Log();
-    }
-
-    /**
-     * Render the form for searching the logs.
-     */
-    public function searchbox()
-    {
-        $this->_acl->requirePrivilege('user', 'read');
-        
-        $user = new User();
-        $userCount = $user->count();
-        // These are the fields which can be searched, the key is the physical
-        // name and the value is the logical name which is displayed in the
-        // interface.
-        $criteria = array(
-            'event'=>'Event Name',
-            'account'=>'Account Name');
-        
-        $accountLog = $this->_log->select();
-        $query = $accountLog
-                      ->from(array('al'=>'account_logs'), array('count'=>'COUNT(al.user_id)'));
-
-        $fid = $this->_request->getParam('fid');
-        $qv = $this->_request->getParam('qv');
-        $urlLink = '';
-        if (!empty($qv) && in_array($fid, array('event', 'account'))) {
-            $query->setIntegrityCheck(false)
-                  ->joinLeft(array('u'=>'users'), 'al.user_id = u.id', array())
-                  ->where("$fid like ?", "%$qv%");
-            $urlLink = "/fid/$fid/qv/$qv";
-        }
-        $ret = $this->_log->fetchRow($query);
-        $logCount = $ret->count;
-        $this->_paging['totalItems'] = $logCount;
-        $this->_paging['fileName'] = "/panel/log/sub/view/p/%d".$urlLink;
-        $pager = &Pager::factory($this->_paging);
-        $temp = $pager->getLinks();
-
-        // Assign view outputs
-        $this->view->assign('criteria', $criteria);
-        $this->view->assign('fid', $fid);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $userCount);
-        $this->view->assign('postAction', '/panel/log/sub/view/');
-        $this->view->assign('links', $pager->getLinks());
-        $this->render('searchbox');
-    }
+    protected $_modelName = 'AccountLog';
     
     /**
-     * List all the logs.
+     * handle the records from searchAction if necessary
+     *
+     * @param Doctrine_Collections $logs
+     * @return array $array
      */
-    public function viewAction()
+    public function handleCollection($logs)
     {
-        $this->_acl->requirePrivilege('user', 'read');
-        //Display searchbox template
-        $this->searchbox();
-        
-        // Set up the query to get the full list of user logs
-        $qry = $this->_log->select()
-                  ->from(array('al' => 'account_logs'),
-                         array('timestamp', 'ip', 'event', 'user_id', 'message'))
-                  ->setIntegrityCheck(false)
-                  ->joinLeft(array('u'=>'users'),
-                             'al.user_id = u.id',
-                             'account');
-
-        $qv = $this->_request->getParam('qv');
-        $fid = $this->_request->getParam('fid');
-        if (!empty($qv) && in_array($fid, array('event', 'account'))) {
-            $qry->where("$fid like ?", "%$qv%");
+        $array = array();
+        foreach ($logs as $key=>$log) {
+            $array[$key] = $log->toArray();
+            $array[$key]['username'] = $log->User->nameFirst . ' ' . $log->User->nameLast;
         }
-        $qry->order("timestamp DESC");
-        $qry->limitPage($this->_paging['currentPage'], 
-                        $this->_paging['perPage']);
-        $logList = $this->_log->fetchAll($qry);
-        // Assign view outputs
-        $this->view->assign('logList', $logList);
-        $this->render('view');
+        return $array;
     }
-
 }

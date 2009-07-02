@@ -137,6 +137,7 @@ class MenuController extends SecurityController
 
             if (Fisma_Acl::hasPrivilege('user', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Users', '/panel/account/sub/list'));
+                $admin->add(new Fisma_Yui_MenuItem('Account Logs', '/panel/log/sub/list'));
             }
             
             $menubar->add($admin);
