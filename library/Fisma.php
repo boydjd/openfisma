@@ -175,7 +175,7 @@ class Fisma
             'migration' => 'application/doctrine/migrations',
             'sampleData' => 'application/doctrine/data/sample',
             'schema' => 'application/doctrine/schema',
-            'systemDocument' => 'data/system-document',
+            'systemDocument' => 'data/uploads/system-document',
             'test' => 'tests',
             'viewHelper' => 'application/views/helpers',
             'yui' => 'public/yui'
@@ -193,17 +193,20 @@ class Fisma
                                     . "\"development\" but it's actually \"$conf->environment\"");
         }
 
-        // Set up PHP configurations
-        foreach (self::$_appConf->php as $param => $value) {
+        // PHP configuration
+        $phpOptions = self::$_appConf->php->toArray();
+        foreach ($phpOptions as $param => $value) {
             ini_set($param, $value);
         }
+
+        // Xdebug configuration
         if (isset(self::$_appConf->xdebug)) {
             foreach (self::$_appConf->xdebug as $param => $value) {
                 ini_set("xdebug.$param", $value);
             }
         }
         
-        // Set up session configuration
+        // Session configuration
         $sessionOptions = self::$_appConf->session->toArray();
         $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
         Zend_Session::setOptions($sessionOptions);

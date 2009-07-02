@@ -124,7 +124,7 @@ class SystemController extends BaseController
         $parentOrganization = $this->view->organization->getNode()->getParent();
         if (isset($parentOrganization)) {
             if (Fisma_Acl::hasPrivilege('Organization', 'read', $parentOrganization->id)) {
-                if ('system' == $this->parentOrganization->type) {
+                if ('system' == $parentOrganization->orgType) {
                     $this->view->parentOrganization = "<a href='/panel/system/sub/view/id/"
                                                     . $parentOrganization->id
                                                     . "'>"
@@ -288,13 +288,14 @@ class SystemController extends BaseController
 
         // Move file into its correct place
         $error = '';
-        $file = $_FILES['Filedata'];
+        $file = $_FILES['systemdoc'];
         $destinationPath = Fisma::getPath('systemDocument') . "/$id";
         if (!is_dir($destinationPath)) {
             mkdir($destinationPath);
         }
         $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . date('Ymd-His') . '.$2', $file['name'], 2, $count);
         $filePath = "$destinationPath/$fileName";
+
         if (!move_uploaded_file($file['tmp_name'], $filePath)) {
             $error = 'Cannot move uploaded file.';
         }

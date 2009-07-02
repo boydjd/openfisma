@@ -9,6 +9,7 @@ YAHOO.util.Dom.setStyle(overlay, 'height', uiLayer.bottom-uiLayer.top + "px");
 YAHOO.widget.Uploader.SWFURL = "/yui/uploader/assets/uploader.swf";
 
 // Instantiate the uploader and write it to its placeholder div.
+
 var uploader = new YAHOO.widget.Uploader( "uploaderOverlay" );
 
 // Add event listeners to various events on the uploader.
@@ -60,10 +61,11 @@ function handleClick () {
 // When contentReady event is fired, you can call methods on the uploader.
 function handleContentReady () {		
 	// Disallows multiple file selection in "Browse" dialog.
-	uploader.setAllowMultipleFiles(false);
-	                   
+    uploader.setAllowLogging(true);
+    uploader.setAllowMultipleFiles(false);
+	                   // @todo doctrine set file filters 
 	// Apply new set of file filters to the uploader.
-	uploader.setFileFilters(ff);
+	//uploader.setFileFilters(ff);
 }
 
 // Actually uploads the files. Since we are only allowing one file
@@ -76,16 +78,16 @@ function upload() {
         alert("You must enter the version notes before uploading.");
         return;
     }
-	if (fileID != null) {
-	    document.getElementById('selectedFileDisplay').style.display = "block";
-		uploader.upload(fileID, 
+    if (fileID != null) {
+        uploader.upload(fileID, 
 		                "/system/upload-document/id/<?php echo $this->organizationId; ?>", 
 		                "POST", 
 		                {
 		                    description : document.getElementById("versionNotes").value,
 						    documentTypeId : document.getElementById("documentType").value,
 						    sessionId : YAHOO.util.Cookie.get('OpenFISMA') //@todo can't hardcode openfisma here
-						}); 
+						},
+                        'systemdoc');
 	} else {
 	    alert('Please select a file first.');
 	}
@@ -103,32 +105,32 @@ function onFileSelect(event) {
 		}
 	}
 	
-	this.progressReport = document.getElementById("progressReport");
-	this.progressReport.value = "Selected " + event.fileList[fileID].name;
+    document.getElementById('selectedFileDisplay').style.display = "block";
+	document.getElementById('progressReport').value = "Ready to upload: " + event.fileList[fileID].name;
 }
 
 
 // When the upload starts, we inform the user about it via
 // the progress report textfield. 
 function onUploadStart(event) {
-	this.progressReport.value = "Starting upload...";
+	document.getElementById('progressReport').value = "Starting upload...";
 }
 
 // As upload progresses, we report back to the user via the
 // progress report textfield.
 function onUploadProgress(event) {
 	prog = Math.round(100*(event["bytesLoaded"]/event["bytesTotal"]));
-	this.progressReport.value = prog + "% uploaded...";
+	document.getElementById('progressReport').value = prog + "% uploaded...";
 }
 
 // Report back to the user that the upload has completed.
 function onUploadComplete(event) {
-	this.progressReport.value = "Upload complete.";
+	document.getElementById('progressReport').value = "Upload complete.";
 }
 
 // Report back to the user if there has been an error.
 function onUploadError(event) {
-	this.progressReport.value = "Upload error.";
+	document.getElementById('progressReport').value = "Upload error.";
 }
 
 // Do something if an upload is canceled.
@@ -171,6 +173,6 @@ function onUploadResponse(event) {
 		</div>
 		<div id="uploadFilesLink"><a id="uploadLink" href="#">Upload File</a></div><br/>
 		<div id="selectedFileDisplay" style="display: none;">
-		    <b>Uploading </b><input type="text" cols="50" id="progressReport" value="" readonly /><br/><br/>
+		    <input type="text" size="50" id="progressReport" value="" readonly /><br/><br/>
 		</div>
 </div>
