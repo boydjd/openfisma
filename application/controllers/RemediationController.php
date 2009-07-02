@@ -768,6 +768,7 @@ class RemediationController extends SecurityController
     function findingAction() {
         $this->_viewFinding();
         $this->view->keywords = $this->_request->getParam('keywords');
+        $this->_helper->layout->setLayout('ajax');
     }
 
     /**
@@ -775,6 +776,7 @@ class RemediationController extends SecurityController
      */
     function mitigationStrategyAction() {
         $this->_viewFinding();
+        $this->_helper->layout->setLayout('ajax');
     }
 
     /**
@@ -783,6 +785,7 @@ class RemediationController extends SecurityController
     function riskAnalysisAction() {
         $this->_viewFinding();
         $this->view->keywords = $this->_request->getParam('keywords');
+        $this->_helper->layout->setLayout('ajax');
     }
 
     /**
@@ -790,6 +793,7 @@ class RemediationController extends SecurityController
      */
     function artifactsAction() {
         $this->_viewFinding();
+        $this->_helper->layout->setLayout('ajax');
     }
         
     /**
@@ -797,6 +801,7 @@ class RemediationController extends SecurityController
      */
     function auditLogAction() {
         $this->_viewFinding();
+        $this->_helper->layout->setLayout('ajax');
     }
     
 
@@ -1044,6 +1049,7 @@ class RemediationController extends SecurityController
     function securityControlAction() 
     {
         $this->_viewFinding();
+        $this->_helper->layout->setLayout('ajax');
     }
     
     /** 
@@ -1081,6 +1087,4 @@ class RemediationController extends SecurityController
         }
         return $finding;
     }
-    
-
 }
