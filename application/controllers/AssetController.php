@@ -340,6 +340,46 @@ class AssetController extends BaseController
     }
     
     /**
+     * Delete a asset
+     */
+    public function deleteAction()
+    {
+        Fisma_Acl::requirePrivilege($this->_modelName, 'delete');
+        $id = $this->_request->getParam('id');
+        $asset = Doctrine::getTable($this->_modelName)->find($id);
+        if (!$asset) {
+            /** @todo english */
+            $msg   = "Invalid {$this->_modelName}";
+            $type = self::M_WARNING;
+        } else {
+            try {
+                if (count($asset->Product) > 0 || count($asset->Organization) > 0
+                    || count($asset->Network) > 0 || count($asset->Findings)) {
+                    /** @todo english **/
+                    $msg   = $msg = 'This asset have been used, You could not to delete';
+                    $type = self::M_WARNING;
+                } else {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $asset->delete();
+                    Doctrine_Manager::connection()->commit();
+                    /** @todo english **/
+                    $msg   = "{$this->_modelName} is deleted successfully";
+                    $type = self::M_NOTICE;
+                }
+            } catch (Doctrine_Exception $e) {
+                Doctrine_Manager::connection()->rollback();
+                /** @todo english */
+                if (Fisma::debug()) {
+                    $msg .= $e->getMessage();
+                }
+                $type = self::M_WARNING;
+            } 
+        }
+        $this->message($msg, $type);
+        $this->_forward('list');
+    }
+    
+    /**
      *  Delete assets
      */
     public function multideleteAction()
@@ -357,7 +397,12 @@ class AssetController extends BaseController
                 if (!$res) {
                     $errno++;
                 } else {
-                    $res->delete();
+                    if (count($res->Product) > 0 || count($res->Organization) > 0
+                        || count($res->Network) > 0 || count($res->Findings)) {
+                        $errno++;
+                    } else {
+                        $res->delete();
+                    }
                 }
             }
         } else {
