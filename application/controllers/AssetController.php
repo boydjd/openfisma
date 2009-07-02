@@ -102,14 +102,12 @@ class AssetController extends BaseController
         $form = Fisma_Form_Manager::loadForm($this->_modelName);
         
         $systems = $this->_me->Organizations;
-        $systemList[0] = "--select--";
         foreach ($systems as $system) {
             $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
         }
         $form->getElement('orgSystemId')->addMultiOptions($systemList);
         
         $networks = Doctrine::getTable('Network')->findAll()->toArray();
-        $networkList[0] = "--select--";
         foreach ($networks as $network) {
             $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
         }
