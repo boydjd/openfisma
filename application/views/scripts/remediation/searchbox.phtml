@@ -131,20 +131,20 @@
                 <tr>
                     <td ><b>Estimated Completion Date:</b></td>
                     <td > From: <input type="text" class="date" id="estDateBegin" name="estDateBegin" value="<?php
-                        echo isset($this->params['estDateBegin'])?$this->params['estDateBegin']:'';
+                        echo !empty($this->params['estDateBegin'])?$this->params['estDateBegin']->toString('Y-m-d'):'';
                         ?>" size="12" maxlength="10" onfocus="this.blur()"><button type="button" id="estDateBegin_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
                         
                     <td > To: <input type="text" class="date" id="estDateEnd" name="estDateEnd" value="<?php
-                        echo isset($this->params['estDateEnd'])?$this->params['estDateEnd']:'';
+                        echo !empty($this->params['estDateEnd'])?$this->params['estDateEnd']->toString('Y-m-d'):'';
                         ?>" size="12" maxlength="10" onfocus="this.blur()"><button type="button" id="estDateEnd_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
                         
                     <td ><b>Date Created: </b></td>
                     <td > From: <input type="text" class="date" id="createdDateBegin" name="createdDateBegin" value="<?php
-                       echo isset($this->params['createdDateBegin'])?$this->params['createdDateBegin']:'';
+                       echo !empty($this->params['createdDateBegin'])?$this->params['createdDateBegin']->toString('Y-m-d'):'';
                         ?>" size="12" maxlength="10" onfocus="this.blur()"><button type="button" id="createdDateBegin_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
                         
                     <td > To: <input type="text" class="date" id="createdDateEnd" name="createdDateEnd" value="<?php
-                        echo isset($this->params['createdDateEnd'])?$this->params['createdDateEnd']:'';
+                        echo !empty($this->params['createdDateEnd'])?$this->params['createdDateEnd']->toString('Y-m-d'):'';
                         ?>" size="12" maxlength="10" onfocus="this.blur()"><button type="button" id="createdDateEnd_show" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
                 </tr>
             </table>
