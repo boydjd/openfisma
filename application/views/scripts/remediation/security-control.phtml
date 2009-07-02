@@ -81,7 +81,7 @@
         <tr>
             <td>Enhancements:</td>
             <td>
-                <?php echo $securityControl->enhancements; ?>
+                <?php echo str_replace("\\n", "<br>", $securityControl->enhancements); ?>
             </td>
         </tr>
         <tr>
