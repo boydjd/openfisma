@@ -156,8 +156,9 @@ class FindingListener extends Doctrine_Record_Listener
                 if (in_array($key, self::$unLogKeys)) {
                     continue;
                 }
-                $value = $value ? $value : 'NULL';
-                $message = 'Update: ' . $key . '<br> <b>Original</b>: ' . $value . ' <b>NEW:</b>' . $newValue;
+                $value    = $value ? strip_tags($value) : 'NULL';
+                $newValue = strip_tags($newValue);
+                $message = "Update: $key\n Original: $value  NEW: $newValue";
                 $finding->log($message);
             }
         }
