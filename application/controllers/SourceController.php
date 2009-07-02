@@ -35,4 +35,42 @@ class SourceController extends BaseController
 {
     protected $_modelName = 'Source';
     
+    /**
+     * Delete a subject model
+     */
+    public function deleteAction()
+    {
+        Fisma_Acl::requirePrivilege($this->_modelName, 'delete');
+        $id = $this->_request->getParam('id');
+        $source = Doctrine::getTable($this->_modelName)->find($id);
+        if (!$source) {
+            /** @todo english */
+            $msg   = "Invalid {$this->_modelName}";
+            $type = self::M_WARNING;
+        } else {
+            try {
+                if (count($source->Findings) > 0) {
+                    /** @todo english **/
+                    $msg   = $msg = 'This source have been used, You could not to delete';
+                    $type = self::M_WARNING;
+                } else {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $source->delete();
+                    Doctrine_Manager::connection()->commit();
+                    /** @todo english **/
+                    $msg   = "{$this->_modelName} is deleted successfully";
+                    $type = self::M_NOTICE;
+                }
+            } catch (Doctrine_Exception $e) {
+                Doctrine_Manager::connection()->rollback();
+                /** @todo english */
+                if (Fisma::debug()) {
+                    $msg .= $e->getMessage();
+                }
+                $type = self::M_WARNING;
+            } 
+        }
+        $this->message($msg, $type);
+        $this->_forward('list');
+    }
 }
