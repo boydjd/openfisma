@@ -1,5 +1,5 @@
 Role:
-    listeners: [XssListener]
+    listeners: [XssListener, BaseListener]
     
     columns:
         createdTs: timestamp

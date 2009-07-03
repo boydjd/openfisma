@@ -19,32 +19,4 @@ class Role extends BaseRole
     {
         return $this->id;
     }
-
-    public function preInsert()
-    {
-        Notification::notify(Notification::ROLE_CREATED, $this, User::currentUser());
-    }
-
-    public function preUpdate()
-    {
-        Notification::notify(Notification::ROLE_MODIFIED, $this, User::currentUser());
-    }
-
-    public function preDelete()
-    {
-        Notification::notify(Notification::ROLE_DELETED, $this, User::currentUser());
-    }
-
-    public function postSave(Doctrine_Event $event)
-    {
-        $role  = $event->getInvoker();
-        $modified = $role->getModified($old=false, $last=true);
-        Fisma_Lucene::updateIndex('role', $role->id, $modified);
-    }
-
-    public function postDelete(Doctrine_Event $event)
-    {
-        $role  = $event->getInvoker();
-        Fisma_Lucene::deleteIndex('role', $role->id);
-    }
 }

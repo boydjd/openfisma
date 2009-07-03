@@ -43,10 +43,10 @@ class Notification extends BaseNotification
     const EVIDENCE_APPROVED_1ST = 18;
     const EVIDENCE_APPROVED_2ND = 19;
     
-    const ACCOUNT_MODIFIED = 21;
-    const ACCOUNT_DELETED = 22;
-    const ACCOUNT_CREATED = 23;
-    const ACCOUNT_LOCKED = 51;
+    const USER_MODIFIED = 21;
+    const USER_DELETED = 22;
+    const USER_CREATED = 23;
+    const USER_LOCKED = 51;
     
     const ORGANIZATION_DELETED = 24;
     const ORGANIZATION_MODIFIED = 25;
@@ -74,9 +74,9 @@ class Notification extends BaseNotification
     
     const CONFIGURATION_MODIFIED = 42;
     
-    const ACCOUNT_LOGIN_SUCCESS = 43;
-    const ACCOUNT_LOGIN_FAILURE = 44;
-    const ACCOUNT_LOGOUT = 45;
+    const USER_LOGIN_SUCCESS = 43;
+    const USER_LOGIN_FAILURE = 44;
+    const USER_LOGOUT = 45;
     
     const ECD_EXPIRES_TODAY = 46;
     const ECD_EXPIRES_7_DAYS = 47;

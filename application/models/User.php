@@ -111,6 +111,7 @@ class User extends BaseUser
         $this->save();
         /** @todo english */
         $this->log("Account unlocked by $lockType");
+        Notification::notify(Notification::USER_LOCKED, $this, self::currentUser());
     }
     
     /**
@@ -281,7 +282,7 @@ class User extends BaseUser
         if (Fisma::RUN_MODE_COMMAND_LINE == Fisma::mode()) {
             throw new Fisma_Exception("Login is not allowed in command line mode");
         }
-
+        
         $loginRet = false;
         $this->getTable()->getRecordListener()->setOption('disabled', true);
         if ($this->password == $this->hash($password)) {
@@ -292,16 +293,17 @@ class User extends BaseUser
             $this->failureCount = 0;
             //@todo english, also see the follow
             $this->log("Login successfully");
+            Notification::notify(Notification::USER_LOGIN_SUCCESS, $this, self::currentUser());
             $loginRet = true;
         } else {
             $this->failureCount++;
             if ($this->failureCount > Configuration::getConfig('failure_threshold')) {
                 $this->lockAccount(User::LOCK_TYPE_PASSWORD);
             }
+            $this->log("Login failure");
+            Notification::notify(Notification::USER_LOGIN_FAILURE, $this, self::currentUser());
         }
         $this->save();
-        $this->getTable()->getRecordListener()->setOption('enabled', true);
-        $this->log("Login failure");
         return $loginRet;
     }
 

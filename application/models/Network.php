@@ -12,31 +12,4 @@
  */
 class Network extends BaseNetwork
 {
-    public function preInsert()
-    {
-        Notification::notify(Notification::NETWORK_CREATED, $this, User::currentUser());
-    }
-    
-    public function preUpdate()
-    {
-        Notification::notify(Notification::NETWORK_MODIFIED, $this, User::currentUser());
-    }
-    
-    public function preDelete()
-    {
-        Notification::notify(Notification::NETWORK_DELETED, $this, User::currentUser());
-    }
-
-    public function postSave(Doctrine_Event $event)
-    {
-        $network  = $event->getInvoker();
-        $modified = $network->getModified($old=false, $last=true);
-        Fisma_Lucene::updateIndex('network', $network->id, $modified);
-    }
-
-    public function postDelete(Doctrine_Event $event)
-    {
-        $network  = $event->getInvoker();
-        Fisma_Lucene::deleteIndex('network', $network->id);
-    }
 }

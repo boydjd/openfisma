@@ -12,18 +12,4 @@
  */
 class Asset extends BaseAsset
 {
-    public function preInsert()
-    {
-        Notification::notify(Notification::ASSET_CREATED, $this, User::currentUser());
-    }
-
-    public function preUpdate()
-    {
-        Notification::notify(Notification::ASSET_MODIFIED, $this, User::currentUser());
-    }
-
-    public function preDelete()
-    {
-        Notification::notify(Notification::ASSET_DELETED, $this, User::currentUser());
-    }
 }

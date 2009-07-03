@@ -51,7 +51,7 @@ class UserListener extends Doctrine_Record_Listener
             }
         }
 
-        if (isset($modified['password'])) {
+        if (!empty($modified['password'])) {
             $user->generateSalt();
             $user->password        = $user->hash($modified['password']);
             $user->passwordTs      = Fisma::now();
@@ -88,7 +88,6 @@ class UserListener extends Doctrine_Record_Listener
         $user->password = $modified['password'];
         $mail = new Fisma_Mail();
         $mail->sendAccountInfo($user);
-        Fisma_Lucene::updateIndex('user', $user->id, $modified);
     }
     
     /**
@@ -104,15 +103,5 @@ class UserListener extends Doctrine_Record_Listener
             $mail = new Fisma_Mail();
             $mail->sendPassword($user);
         }
-        Fisma_Lucene::updateIndex('user', $user->id, $modified);
     }
-
-    /**
-     * Delete a finding lucene index
-     */
-    public function postDelete(Doctrine_Event $event)
-    {
-        $user = $event->getInvoker();
-        Fisma_Lucene::deleteIndex('user', $user->id);
-    }    
 }

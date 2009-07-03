@@ -33,16 +33,6 @@
  */
 Class SystemListener extends Doctrine_Record_Listener
 {
-    public function preInsert(Doctrine_Event $event)
-    {
-        Notification::notify(Notification::SYSTEM_CREATED, $this, User::currentUser());
-    }
-    
-    public function preUpdate(Doctrine_Event $event)
-    {
-        Notification::notify(Notification::SYSTEM_MODIFIED, $this, User::currentUser());
-    }
-    
     /**
      * Begin a transaction
      */
@@ -76,9 +66,6 @@ Class SystemListener extends Doctrine_Record_Listener
     {
         $system = $event->getInvoker();
         $org = $system->Organization[0];
-
-        $modified = $system->getModified($old=false, $last=true);
-        Fisma_Lucene::updateIndex('system', $system->id, $modified);
     }
 
     /**
@@ -96,11 +83,5 @@ Class SystemListener extends Doctrine_Record_Listener
                                 ->where('o.id = ' . $ret->id)
                                 ->execute();
 
-    }
-
-    public function postDelete(Doctrine_Event $event)
-    {
-        $system = $event->getInvoker();
-        Fisma_Lucene::deleteIndex('system', $system->id);
     }
 }

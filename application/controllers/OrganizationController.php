@@ -263,6 +263,7 @@ class OrganizationController extends SecurityController
                     $msg = "Failure in creation";
                     $model = self::M_WARNING;
                 } else {
+                    $organization->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
                     // the organization hasn't parent, so it is a root
                     if ((int)$orgValues['parent'] == 0) {
                         $treeObject = Doctrine::getTable('Organization')->getTree();

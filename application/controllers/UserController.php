@@ -329,6 +329,7 @@ class UserController extends BaseController
      */
     public function acceptRobAction() {
         $user = User::currentUser();
+        $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
         $user->lastRob = Fisma::now();
         $user->save();
         $this->_forward('index', 'Panel');
