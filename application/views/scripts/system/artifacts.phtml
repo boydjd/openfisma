@@ -1,23 +1,3 @@
-<script type="text/javascript">
-function showUploadPanel() {
-    panel('Upload Document', document.body, '/system/upload-document-form/id/<?php echo $this->organization->id; ?>', null, executeScript);
-}
-
-function executeScript() {
-    var scriptEl = document.getElementById('uploadDocumentScript');
-    if (scriptEl.getAttribute('executeFlag') != 'true') {
-        try {
-            eval(scriptEl.text);
-        } catch (e) {
-            alert('Not able to execute one of the scripts embedded in this page: '
-                  + e.message);
-        } 
-        // Set a flag that prevents this script from being executed more than once
-        scriptEl.setAttribute('executeFlag', 'true');
-    }
-}
-</script>
-
 <?php
 $uploadPanelButton = new Fisma_Yui_Form_Button('uploadPanelButton', 
                                                array('label' => 'Upload Document', 

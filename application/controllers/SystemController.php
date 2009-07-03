@@ -243,6 +243,8 @@ class SystemController extends BaseController
     
     /**
      * Display a form inside a panel for uploading a document
+     * 
+     * Notice that IE has its own method, since it does not support the flash uploader
      */
     public function uploadDocumentFormAction()
     {
@@ -262,54 +264,76 @@ class SystemController extends BaseController
         $id = $this->getRequest()->getParam('id');
 
         Fisma_Acl::requirePrivilege('Organization', 'update', $id);
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
+                
         $organization = Doctrine::getTable('Organization')->find($id);
         $documentTypeId = $this->getRequest()->getParam('documentTypeId');
         $description = $this->getRequest()->getParam('description');
 
-        // Get the existing document
-        $documentQuery = Doctrine_Query::create()
-                         ->from('SystemDocument sd')
-                         ->where('sd.systemId = ? AND sd.documentTypeId = ?',
-                                 array($organization->System->id, $documentTypeId))
-                         ->limit(1);
-        $documents = $documentQuery->execute();
+        try {
+            // Get the existing document
+            $documentQuery = Doctrine_Query::create()
+                             ->from('SystemDocument sd')
+                             ->where('sd.systemId = ? AND sd.documentTypeId = ?',
+                                     array($organization->System->id, $documentTypeId))
+                             ->limit(1);
+            $documents = $documentQuery->execute();
     
-        // If no existing document, then create a new one
-        if (count($documents) == 0) {
-            $document = new SystemDocument();
-            $document->documentTypeId = $documentTypeId;
-            $document->System = $organization->System;
-            $document->User = User::currentUser();
-        } else {
-            $document = $documents[0];
-        }
+            // If no existing document, then create a new one
+            if (count($documents) == 0) {
+                $document = new SystemDocument();
+                $document->documentTypeId = $documentTypeId;
+                $document->System = $organization->System;
+                $document->User = User::currentUser();
+            } else {
+                $document = $documents[0];
+            }
 
-        // Move file into its correct place
-        $error = '';
-        $file = $_FILES['systemdoc'];
-        $destinationPath = Fisma::getPath('systemDocument') . "/$id";
-        if (!is_dir($destinationPath)) {
-            mkdir($destinationPath);
-        }
-        $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . date('Ymd-His') . '.$2', $file['name'], 2, $count);
-        $filePath = "$destinationPath/$fileName";
+            // Move file into its correct place
+            $error = '';
+            if (empty($_FILES['systemdoc']['name'])) {
+                throw new Fisma_Exception("You did not specify a file to upload.");
+            }
+            $file = $_FILES['systemdoc'];
+            $destinationPath = Fisma::getPath('systemDocument') . "/$id";
+            if (!is_dir($destinationPath)) {
+                mkdir($destinationPath);
+            }
+            $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . date('Ymd-His') . '.$2', $file['name'], 2, $count);
+            $filePath = "$destinationPath/$fileName";
 
-        if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-            $error = 'Cannot move uploaded file.';
-        }
+            if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+                throw new Fisma_Exception("The file could not be stored due to the server's permissions settings.");
+            }
     
-        // Update the document object and save
-        $document->description = $description;
-        $document->fileName = $fileName;
-        $document->mimeType = $file['type'];
-        $document->size = $file['size'];
-        $document->save();
+            // Update the document object and save
+            if (empty($description)) {
+                throw new Fisma_Exception("You did not enter the version notes.");
+            }
+            $document->description = $description;
+            $document->fileName = $fileName;
+            $document->mimeType = $file['type'];
+            $document->size = $file['size'];
+            $document->save();
+        } catch (Fisma_Exception $e) {
+            $error = "Upload failed: " . $e->getMessage();
+        }
         
-        // Send back a JSON status
-        $success = empty($error) ? true : false;
-        echo(json_encode(array('success' => $success, 'error' => $error)));
+        if ('ie' == $this->getRequest()->getParam('browser')) {
+            // Special handling for IE
+            if (!empty($error)) {
+                $this->message($error, self::M_WARNING);
+                $this->_forward('system', 'Panel', null, array('sub' => 'upload-for-ie', 'error' => $error));
+            } else {
+                $this->_redirect("/panel/system/sub/view/id/$id");
+            }
+        } else {
+            // For all other browsers, send back a JSON status
+            $this->_helper->layout()->disableLayout();
+            $this->_helper->viewRenderer->setNoRender(true);
+            
+            $success = empty($error) ? true : false;
+            echo(json_encode(array('success' => $success, 'error' => $error)));
+        }
     }  
     
     /**
@@ -343,5 +367,29 @@ class SystemController extends BaseController
              ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
          $path = $document->getPath();
          readfile($path);
+    }
+    
+    /**
+     * A special upload page just for IE.
+     * 
+     * IE doesn't work with the flash uploader, so it uses a static upload page.
+     */
+    public function uploadForIeAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+
+        $error = $this->getRequest()->getParam('error');
+
+        // Give the user some notice that IE is limiting the features they can use
+        if (!isset($error)) {
+            $error = 'Uploading files has better support in standards-compliant browsers, '
+                   . 'such as Firefox, Safari, and Chrome.';
+        }
+
+        $this->message($error, self::M_WARNING);
+
+        $this->view->organizationId = $id;        
+        $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();        
     }
 }

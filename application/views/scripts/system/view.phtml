@@ -2,6 +2,29 @@
 function discardChanges(event) {
     window.location.reload();
 }
+
+function showUploadPanel() {
+    // IE can't handle the flash uploader. Send it to a separate upload page
+    if (0 < YAHOO.env.ua.ie) {
+        window.location = "/panel/system/sub/upload-for-ie/id/<?php echo $this->organization->id; ?>";
+    } else {
+        panel('Upload Document', document.body, '/system/upload-document-form/id/<?php echo $this->organization->id; ?>', null, executeScript);        
+    }
+}
+
+function executeScript() {
+    var scriptEl = document.getElementById('uploadDocumentScript');
+    if (scriptEl.getAttribute('executeFlag') != 'true') {
+        try {
+            eval(scriptEl.text);
+        } catch (e) {
+            alert('Not able to execute one of the scripts embedded in this page: '
+                  + e.message);
+        } 
+        // Set a flag that prevents this script from being executed more than once
+        scriptEl.setAttribute('executeFlag', 'true');
+    }
+}
 </script>
 
 <form enctype="multipart/form-data" action="/panel/system/sub/edit/id/<?php echo $this->organization->id; ?>" 
