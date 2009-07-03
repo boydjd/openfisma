@@ -9,6 +9,9 @@
 ; Version   $Id$
 
 [finding]
+elementPrefixPath.prefix = Fisma_Form
+elementPrefixPath.path = Fisma/Form
+elementPrefixPath.type = Validate
 method = "post"
 elementFilters.trim = "StringTrim"
 elementFilters.tags = "StripTags"
@@ -26,6 +29,7 @@ elements.sourceId.options.required = true
 displayGroups.finding.elements.sourceId = "sourceId"
 
 elements.description.type = "textarea"
+elements.description.options.validators.mce.validator = "MceNotEmpty"
 elements.description.options.label = "Enter Description of Finding"
 elements.description.options.cols = "70%"
 elements.description.options.rows = "7"
@@ -33,6 +37,7 @@ elements.description.options.required = true
 displayGroups.finding.elements.description = "description"
 
 elements.recommendation.type = "textarea"
+elements.recommendation.options.validators.mce.validator = "MceNotEmpty"
 elements.recommendation.options.label = "Recommendation"
 elements.recommendation.options.cols = "70%"
 elements.recommendation.options.rows = "7"

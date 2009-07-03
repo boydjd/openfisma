@@ -9,6 +9,10 @@
 ; Version   $Id:$
 
 [general_config]
+elementPrefixPath.prefix = Fisma_Form
+elementPrefixPath.path = Fisma/Form
+elementPrefixPath.type = Validate
+
 method = "post"
 action = "/panel/config/type/genernal"
 elementFilters.trim = "StringTrim"
@@ -48,8 +52,7 @@ displayGroups.general.elements.rob_duration = "rob_duration"
 
 elements.use_notification.type = "textarea"
 elements.use_notification.options.label = "Warning Banner"
-elements.use_notification.options.validators.strlen.validator = "StringLength"
-elements.use_notification.options.validators.strlen.options.min = "1"
+elements.use_notification.options.validators.mce.validator = "MceNotEmpty"
 elements.use_notification.options.cols = "70%"
 elements.use_notification.options.rows = "7"
 elements.use_notification.options.required = true
@@ -57,8 +60,7 @@ displayGroups.general.elements.use_notification = "use_notification"
 
 elements.behavior_rule.type = "textarea"
 elements.behavior_rule.options.label = "Rules Of Behavior"
-elements.behavior_rule.options.validators.strlen.validator = "StringLength"
-elements.behavior_rule.options.validators.strlen.options.min = "1"
+elements.behavior_rule.options.validators.strlen.validator = "MceNotEmpty"
 elements.behavior_rule.options.cols = "70%"
 elements.behavior_rule.options.rows = "7"
 elements.behavior_rule.options.required = true

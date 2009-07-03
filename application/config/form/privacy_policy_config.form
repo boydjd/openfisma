@@ -9,13 +9,15 @@
 ; Version   $Id:$
 
 [privacy_policy_config]
+elementPrefixPath.prefix = Fisma_Form
+elementPrefixPath.path = Fisma/Form
+elementPrefixPath.type = Validate
 method = "post"
 action = "/panel/config/type/privacy"
 
 elements.privacy_policy.type = "textarea"
 elements.privacy_policy.options.label = "Privacy Policy"
-elements.privacy_policy.options.validators.strlen.validator = "StringLength"
-elements.privacy_policy.options.validators.strlen.options.min = "1"
+elements.privacy_policy.options.validators.strlen.validator = "MceNotEmpty"
 elements.privacy_policy.options.cols = "80"
 elements.privacy_policy.options.rows = "10"
 displayGroups.general.elements.privacy_policy = "privacy_policy"
