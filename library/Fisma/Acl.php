@@ -59,6 +59,7 @@ class Fisma_Acl extends Zend_Acl
         
         // Otherwise, check the ACL
         try {
+            $resource = strtolower($resource);
             $acl = Zend_Registry::get('acl');
             if (isset($organization)) {
                 // See User::acl() for explanation of how $organization is used
