@@ -124,10 +124,13 @@ class FindingListener extends Doctrine_Record_Listener
                         if ('EA' == $value && 'EN' == $newValue) {
                             $type = Notification::EVIDENCE_DENIED;
                         }
+                        if ('EA' == $value && 'CLOSED' == $newValue) {
+                            $type = Notification::FINDING_CLOSED;
+                        }
                         break;
                     case 'currentEvaluationId':
                         $evaluation = Doctrine::getTable('Evaluation')->find($value);
-                        if ('MSA' == $finding->status) {
+                        if ('action' == $evaluation->approvalGroup && 'DRAFT' != $finding->status) {
                             if ('0' == $evaluation->precedence) {
                                 $type = Notification::MITIGATION_APPROVED_SSO;
                             }
@@ -135,7 +138,7 @@ class FindingListener extends Doctrine_Record_Listener
                                 $type = Notification::MITIGATION_APPROVED_IVV;
                             }
                         }
-                        if ('EA' == $finding->status) {
+                        if ('evidence' == $evaluation->approvalGroup && 'EN' != $finding->status) {
                             if ('0' == $evaluation->precedence) {
                                 $type = Notification::EVIDENCE_APPROVED_1ST;
                             }

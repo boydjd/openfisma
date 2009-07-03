@@ -247,12 +247,13 @@ class Finding extends BaseFinding
                 $startDate = $this->createdTs;
                 break;
             case 'MSA':
-                $startDate = date('Y-m-d');
+                $startDate = Fisma::now();
+                break;
             case 'EN':
                 $startDate = $this->expectedCompletionDate;
                 break;
             case 'EA':
-                $startDate = date('Y-m-d');
+                $startDate = Fisma::now();
                 break;
         }
         $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
