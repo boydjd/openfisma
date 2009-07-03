@@ -622,19 +622,8 @@ function showCalendar(block, trigger){
         });
         
         function resetHandler() {
-            // Reset the current calendar page to the select date, or 
-            // to today if nothing is selected.
-            var selDates = calendar.getSelectedDates();
-            var resetDate;
-
-            if (selDates.length > 0) {
-                resetDate = selDates[0];
-            } else {
-                resetDate = calendar.today;
-            }
-
-            calendar.cfg.setProperty("pagedate", resetDate);
-            calendar.render();
+            Dom.get(block).value = '';
+            closeHandler();
         }
 
         function closeHandler() {
@@ -644,8 +633,8 @@ function showCalendar(block, trigger){
         dialog = new YAHOO.widget.Dialog("container", {
             visible:false,
             context:["show", "tl", "bl"],
-            buttons:[ {text:"Reset", handler: resetHandler, isDefault:true}, {text:"Close", handler: closeHandler}],
-            draggable:false,
+            buttons:[ {text:"Clear", handler: resetHandler}, {text:"Close", handler: closeHandler, isDefault:true}],
+            draggable:true,
             close:true
         });
         dialog.setHeader('Pick A Date');
