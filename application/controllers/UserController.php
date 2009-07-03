@@ -126,6 +126,9 @@ class UserController extends BaseController
             throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $values = $form->getValues();
+        if (empty($values['password'])) {
+            unset($values['password']);
+        }
         $subject->merge($values);
         $subject->unlink('Roles');
         $subject->link('Roles', $values['role']);
