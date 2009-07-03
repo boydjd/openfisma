@@ -1,5 +1,4 @@
 <script id='uploadDocumentScript' type="text/javascript">
-
 var uiLayer = YAHOO.util.Dom.getRegion('selectLink');
 var overlay = YAHOO.util.Dom.get('uploaderOverlay');
 YAHOO.util.Dom.setStyle(overlay, 'width', uiLayer.right-uiLayer.left + "px");
@@ -59,13 +58,15 @@ function handleClick () {
 }
 
 // When contentReady event is fired, you can call methods on the uploader.
-function handleContentReady () {		
+function handleContentReady (a) {	
 	// Disallows multiple file selection in "Browse" dialog.
     uploader.setAllowLogging(true);
     uploader.setAllowMultipleFiles(false);
-	                   // @todo doctrine set file filters 
+    uploader.clearFileList();
+    // @todo doctrine set file filters 
 	// Apply new set of file filters to the uploader.
 	//uploader.setFileFilters(ff);
+	uploaderInitialized = true;
 }
 
 // Actually uploads the files. Since we are only allowing one file
@@ -79,15 +80,21 @@ function upload() {
         return;
     }
     if (fileID != null) {
-        uploader.upload(fileID, 
-		                "/system/upload-document/id/<?php echo $this->organizationId; ?>", 
-		                "POST", 
-		                {
-		                    description : document.getElementById("versionNotes").value,
-						    documentTypeId : document.getElementById("documentType").value,
-						    sessionId : YAHOO.util.Cookie.get('OpenFISMA') //@todo can't hardcode openfisma here
-						},
-                        'systemdoc');
+        try {
+            uploader.upload(fileID, 
+    		                "/system/upload-document/id/<?php echo $this->organizationId; ?>", 
+    		                "POST", 
+    		                {
+    		                    description : document.getElementById("versionNotes").value,
+    						    documentTypeId : document.getElementById("documentType").value,
+    						    sessionId : YAHOO.util.Cookie.get('OpenFISMA') //@todo can't hardcode openfisma here
+    						},
+                            'systemdoc');
+        } catch (e) {
+            alert('The upload failed. Please reselect the file and try again. (' + e + ')');
+            uploader.clearFileList();
+            document.getElementById('progressReport').value = "Select a file";
+        }
 	} else {
 	    alert('Please select a file first.');
 	}
@@ -104,33 +111,33 @@ function onFileSelect(event) {
 			fileID = event.fileList[file].id;
 		}
 	}
-	
-    document.getElementById('selectedFileDisplay').style.display = "block";
-	document.getElementById('progressReport').value = "Ready to upload: " + event.fileList[fileID].name;
+
+	document.getElementById('status').innerHTML = "Ready to upload: " + event.fileList[fileID].name;
 }
 
 
 // When the upload starts, we inform the user about it via
 // the progress report textfield. 
 function onUploadStart(event) {
-	document.getElementById('progressReport').value = "Starting upload...";
+	document.getElementById('status').innerHTML = "Starting upload...";
 }
 
 // As upload progresses, we report back to the user via the
 // progress report textfield.
 function onUploadProgress(event) {
 	prog = Math.round(100*(event["bytesLoaded"]/event["bytesTotal"]));
-	document.getElementById('progressReport').value = prog + "% uploaded...";
+	document.getElementById('status').innerHTML = prog + "% uploaded...";
+	document.getElementById('progressBarInner').style.width = prog + "%";
 }
 
 // Report back to the user that the upload has completed.
 function onUploadComplete(event) {
-	document.getElementById('progressReport').value = "Upload complete.";
+	document.getElementById('status').innerHTML = "Upload complete. Verifying the file.";
 }
 
 // Report back to the user if there has been an error.
 function onUploadError(event) {
-	document.getElementById('progressReport').value = "Upload error.";
+	document.getElementById('status').innerHTML = "Upload error. Please try again.";
 }
 
 // Do something if an upload is canceled.
@@ -145,7 +152,7 @@ function onUploadResponse(event) {
     if (returnData.success) {
         window.location.reload();
     } else {
-        alert ("Error: " + returnData.error);
+        document.getElementById('status').innerHTML =  "Error: " + returnData.error;
     }
 }
 </script>
@@ -172,7 +179,12 @@ function onUploadResponse(event) {
 			<div id="selectFilesLink" style="z-index:1"><a id="selectLink" href="#">Select File</a></div>
 		</div>
 		<div id="uploadFilesLink"><a id="uploadLink" href="#">Upload File</a></div><br/>
-		<div id="selectedFileDisplay" style="display: none;">
-		    <input type="text" size="50" id="progressReport" value="" readonly /><br/><br/>
+		<div id="status" style="font-weight: bold; margin-bottom: 10px;">
+		    Please select a file&hellip;
+		</div>
+		<div id="progressBarOuter" style="border: 2px solid #416ed7; background-color: white;">
+		    <div id="progressBarInner" style="height: 18px; width: 0%; background-color: #416ed7;">
+		        &nbsp;
+		    </div>
 		</div>
 </div>
