@@ -348,11 +348,13 @@ class RemediationController extends SecurityController
     private function _getColumns(){
         // Set up the data for the columns in the search results table
         $me = Doctrine::getTable('User')->find($this->_me->id);
-        if (empty($me->searchColumnsPref)) {
+        if (isset($_COOKIE['search_columns_pref'])) {
+            $visibleColumns = $_COOKIE['search_columns_pref'];
+        } elseif (empty($me->searchColumnsPref)) {
             $me->searchColumnsPref = $visibleColumns = 66037;
             $me->save();
         } else {
-            $visibleColumns = $_COOKIE['search_columns_pref'];
+            $visibleColumns = $me->searchColumnsPref;
         }
         $columns = array(
             'id' => array('label' => 'ID', 
