@@ -313,7 +313,7 @@ var searchProduct = function (){
     }
     YAHOO.util.Connect.asyncRequest('GET', url, 
     {success: function(o){
-                document.getElementById('productId').innerHTML = o.responseText;
+                document.getElementById('productId').parentNode.innerHTML = o.responseText;
                 getProdId();
               },
     failure: handleFailure});

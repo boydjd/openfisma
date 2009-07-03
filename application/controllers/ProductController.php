@@ -73,7 +73,7 @@ class ProductController extends BaseController
     public function advancesearchAction()
     {
         Fisma_Acl::requirePrivilege('product', 'read');
-        
+        $this->_helper->layout->setLayout('ajax');
         $product = new Product();
         $req = $this->getRequest();
         $prodId = $req->getParam('prod_list', '');
