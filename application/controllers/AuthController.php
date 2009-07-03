@@ -82,8 +82,8 @@ class AuthController extends MessageController
             // Any policy effect the authentication result will go inside the Auth_Adapter
             if ($authType == 'ldap') {
                 // Handle LDAP authentication 
-                $config = new Config();
-                $data = $config->getLdap();
+                $config = new LdapConfig();
+                $data = $config->getLdaps();
                 $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
             } else if ($authType == 'database') {
                 // Handle database authentication 
