@@ -3,7 +3,10 @@ $validateLDAP = new Fisma_Yui_Form_Button('columnOptions',
                                            array('label' => 'Test Configuration', 
                                                  'onClickFunction' => 'validateLDAP'));
 
-Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>' . $validateLDAP); ?>
+//@todo we can't send the form data at current time, so let's disable the configuration test method,
+//and fix it in the feature.
+
+Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>'); ?>
 
 <div class="block">
 <?php
