@@ -194,14 +194,17 @@ class Fisma_Inject_Excel
                                                       be out of date. Please try downloading it again.");
             }
             $poam['sourceId'] = $sourceTable->id;
-            
-            $securityControlTable = Doctrine::getTable('SecurityControl')->findOneByCode($finding['securityControl']);
-            if (!$securityControlTable) {
-                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
-                                                      template may
-                                                      be out of date. Please try downloading it again.");
+            if (!empty($finding['securityControl'])) {
+                $securityControlTable = Doctrine::getTable('SecurityControl')->findOneByCode($finding['securityControl']);
+                if (!$securityControlTable) {
+                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
+                                                          template may
+                                                          be out of date. Please try downloading it again.");
+                }
+                $poam['securityControlId'] = $securityControlTable->id;
+            } else {
+                $poam['securityControlId'] = null;
             }
-            $poam['securityControlId'] = $securityControlTable->id;
             $poam['description'] = $finding['findingDescription'];
             if (!empty($finding['contactInfo'])) {
                 $poam['description'] .= "<br>Point of Contact: {$finding['contactInfo']}";

@@ -84,66 +84,38 @@ abstract class Fisma_Inject_Abstract
      * action was taken.
      */
     protected function _commit($finding) {
+        Doctrine_Manager::connection()->beginTransaction();
         $findingTable = new Finding();
-        
-        // See if any existing finding contains the same finding description as this finding.
-        $result = $findingTable->getTable('Finding')->findOneByDescription($finding['description']);
-
-        // Decide what action to take with this finding: 1) create 2) delete 3) review
-        $action = null;
-        if ($result) {
-            // Assign the duplicate id to the current finding
-            $finding['duplicateFindingId'] = $result->id;
-            
+        $findingTable->merge($finding);
+        $findingTable->save();
+        if ($findingTable->status == 'PEND') {
+            $duplicate = Doctrine::getTable('Finding')->find($findingTable->duplicateFindingId);
             // If a duplicate exists, then run the Injection Filtering rules
-            $types = $findingTable->getTable('Finding')->getEnumValues('type');
-            if (in_array($result->type, $types)) {
-                if ($result->systemId == $finding['systemId']) {
-                    if ($result->status == 'CLOSED') {
-                        $action = self::CREATE_FINDING;
+            if ($duplicate->type == 'NONE' || $duplicate->type == 'CAP' || $duplicate->type == 'FP') {
+                if ($findingTable->responsibleOrganizationId == $duplicate->responsibleOrganizationId) {
+                    if ($duplicate->status == 'CLOSED') {
+                        $this->_totalFindings['created']++;
+                        Doctrine_Manager::connection()->commit();
                     } else {
-                        $action = self::DELETE_FINDING;
+                        $this->_totalFindings['deleted']++;
+                        Doctrine_Manager::connection()->rollback();
                     }
                 } else {
-                    $action = self::REVIEW_FINDING;
+                    $this->_totalFindings['reviewed']++;
+                    Doctrine_Manager::connection()->commit();
                 }
             } elseif ($result->type == 'AR') {
-                if ($result->systemId == $finding['systemId']) {
-                    $action = self::DELETE_FINDING;
+                if ($duplicate->responsibleOrganizationId == $findingTable->responsibleOrganizationId) {
+                    $this->_totalFindings['deleted']++;
+                    Doctrine_Manager::connection()->rollback();
                 } else {
-                    $action = self::REVIEW_FINDING;
+                    $this->_totalFindings['reviewed']++;
+                    Doctrine_Manager::connection()->commit();
                 }
-            } else {
-                throw new Fisma_Exception("Unknown mitigation type: \"{$result->type}\"");
             }
         } else {
-            // If there is no duplicate, then the default action is to create a new finding
-            $action = self::CREATE_FINDING;
-        }
-
-        $findingTable->merge($finding);
-        // Now take action on the current finding
-        switch ($action) {
-            case self::CREATE_FINDING:
-                $finding['status'] = 'NEW';
-                $findingTable->save();
-                $this->_findingIds[] = $findingTable->id;
-                $this->_totalFindings['created']++;
-                break;
-
-            case self::DELETE_FINDING:
-                $this->_totalFindings['deleted']++;
-                break;
-
-            case self::REVIEW_FINDING:
-                $finding['status'] = 'PEND';
-                $findingTable->save();
-                $this->_totalFindings['reviewed']++;
-                break;
-
-            default:
-                throw new Fisma_Exception("\$action is not valid: \"$action\"");
-                break;
+            $this->_totalFindings['created']++;
+            Doctrine_Manager::connection()->commit();
         }
     }
     
