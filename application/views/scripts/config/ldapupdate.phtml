@@ -3,10 +3,7 @@ $validateLDAP = new Fisma_Yui_Form_Button('columnOptions',
                                            array('label' => 'Test Configuration', 
                                                  'onClickFunction' => 'validateLDAP'));
 
-//@todo we can't send the form data at current time, so let's disable the configuration test method,
-//and fix it in the feature.
-
-Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>'); ?>
+Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>' . $validateLDAP); ?>
 
 <div class="block">
 <?php
@@ -16,6 +13,8 @@ Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/"
 </div>
 <script>
     var validateLDAP = function(){
+        var form = document.getElementById('ldapUpdate');
+        YAHOO.util.Connect.setForm(form);
         YAHOO.util.Connect.asyncRequest('POST', '/config/ldapvalid/format/html', {
             success:function (o){ldapResult(o.responseText, o.statusText)},
             failure: handleFailure});
