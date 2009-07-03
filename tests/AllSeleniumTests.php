@@ -35,7 +35,8 @@ if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
         Fisma::connectDb();
         Fisma::setNotificationEnabled(false);
     } catch (Zend_Config_Exception $zce) {
-        print "The application is not installed correctly. If you have not run the installer, you should do that now.";
+        print "The application is not installed correctly." .
+            " If you have not run the installer, you should do that now.";
     } catch (Exception $e) {
         print get_class($e) 
             . "\n" 
@@ -63,9 +64,9 @@ class AllSeleniumTests
     }
 
     /**
-     * suite() - Creates a phpunit test suite for all Selenium tests in the project.
-     * The controller recurses through all subdirectories and loads all of the .php
-     * files found.
+     * Creates a phpunit test suite for all Selenium tests in the project.
+     * The controller recurses through all subdirectories and loads all of
+     * the .php * files found.
      *
      * Notice that each test file should be named following the ZF standards in
      * order for this to work.
@@ -78,8 +79,18 @@ class AllSeleniumTests
         
         // Load in all files which are in subdirectories of the Selenium
         // directory
-        chdir(TEST);
-        self::loadAllTests('.', 'Selenium', $suite);
+        //$suite->addTestSuite('Test_Selenium_NetworkTest');
+        $directory = opendir(Fisma::getPath('test'));
+        while (false !== ($subdirectory = readdir($directory))) {
+            // Ignore directories prefixed with a '.'
+            if (preg_match('/^\./', $subdirectory) == 0
+                && is_dir($subdirectory)
+                && 'selenium' != $subdirectory
+                && 'Model' != $subdirectory
+                && 'fixtures' != $subdirectory) {
+                self::loadAllTests('.', $subdirectory, $suite);
+            }
+        }
 
         return $suite;
     }
