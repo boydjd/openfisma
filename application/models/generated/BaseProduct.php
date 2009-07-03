@@ -33,5 +33,6 @@ abstract class BaseProduct extends Doctrine_Record
                                                 'foreign' => 'productId'));
 
     $this->addListener(new XssListener(), 'XssListener');
+    $this->addListener(new BaseListener(), 'BaseListener');
     }
 }

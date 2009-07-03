@@ -31,5 +31,6 @@ abstract class BaseSource extends Doctrine_Record
                                                     'foreign' => 'sourceId'));
 
     $this->addListener(new XssListener(), 'XssListener');
+    $this->addListener(new BaseListener(), 'BaseListener');
     }
 }

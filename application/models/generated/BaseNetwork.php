@@ -31,5 +31,6 @@ abstract class BaseNetwork extends Doctrine_Record
                                                 'foreign' => 'networkId'));
 
     $this->addListener(new XssListener(), 'XssListener');
+    $this->addListener(new BaseListener(), 'BaseListener');
     }
 }

@@ -67,6 +67,7 @@ abstract class BaseSystem extends Doctrine_Record
                                                             'foreign' => 'systemId'));
 
     $this->addListener(new XssListener(), 'XssListener');
+    $this->addListener(new BaseListener(), 'BaseListener');
     $this->addListener(new SystemListener(), 'SystemListener');
     }
 }

@@ -133,6 +133,7 @@ abstract class BaseUser extends Doctrine_Record
         $this->actAs($timestampable0);
 
     $this->addListener(new XssListener(), 'XssListener');
+    $this->addListener(new BaseListener(), 'BaseListener');
     $this->addListener(new UserListener(), 'UserListener');
     }
 }

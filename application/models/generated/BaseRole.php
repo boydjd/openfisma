@@ -44,5 +44,6 @@ abstract class BaseRole extends Doctrine_Record
         $this->actAs($timestampable0);
 
     $this->addListener(new XssListener(), 'XssListener');
+    $this->addListener(new BaseListener(), 'BaseListener');
     }
 }
