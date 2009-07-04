@@ -22,13 +22,12 @@ function setupEditFields() {
                  target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
-                     target.onfocus = function () {this.blur()};
-                     var btn = document.createElement('BUTTON');
-                     btn.id = t_name + '_show';
-                     if (window.HTMLElement) btn.type = 'button';
-                     btn.title = 'Show Calendar';
-                     btn.innerHTML = '<img src="/images/calendar.gif" width="18" height="18" alt="Calendar" >';
-                     target.parentNode.appendChild(btn);
+                     target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
+                     calendarIcon = document.createElement('img');
+                     calendarIcon.id = t_name + "_show";
+                     calendarIcon.src = "/images/calendar.gif";
+                     calendarIcon.alt = "Calendar";
+                     target.parentNode.appendChild(calendarIcon);
                      YAHOO.util.Event.on(t_name+'_show', "click", function() {
                         showCalendar(t_name, t_name+'_show');
                      });

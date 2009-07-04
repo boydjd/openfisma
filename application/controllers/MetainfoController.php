@@ -52,10 +52,8 @@ class MetainfoController extends PoamBaseController
         $module = $this->_request->getParam('o');
         $this->view->selected = $this->_request->getParam('value', '');
         if ($module == 'organization') {
-            $organizations  = Doctrine::getTable('Organization')->findAll();
-            foreach ($organizations as $organization) {
-                $list[$organization->id] = "($organization->nickname)-" . $organization->name;
-            }
+            $organizations  = User::currentUser()->getOrganizations();
+            $list = $this->view->treeToSelect($organizations, 'nickname');
         } elseif ($module == 'security_control') {
             $securityControls = Doctrine::getTable('SecurityControl')->findAll();
             foreach ($securityControls as $securityControl) {

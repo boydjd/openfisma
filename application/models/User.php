@@ -397,4 +397,17 @@ class User extends BaseUser
         $this->passwordSalt = $salt;
     }
 
+    /**
+     * Get the user's organizations.
+     * 
+     * Useful for getting the root user's organizations
+     */
+    public function getOrganizations() 
+    {
+        if ('root' == $this->username) {
+            return Doctrine::getTable('Organization')->findAll();
+        } else {
+            return $this->Organizations;
+        }
+    }
 }

@@ -310,7 +310,7 @@ YAHOO.fisma.TreeTable.updateCellCount = function(cell, count, orgId, status, ont
 }
 
 YAHOO.fisma.TreeTable.makeLink = function(orgId, status, ontime) {
-    var uri = '/remediation/search/ontime/'
+    var uri = '/panel/remediation/sub/search/ontime/'
             + ontime
             + '/orgId/'
             + orgId

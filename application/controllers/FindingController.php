@@ -94,12 +94,9 @@ class FindingController extends BaseController
                  ->addMultiOptions(array($securityControl['id'] => $securityControl['code']));
         }
         
-        $systems = $this->_me->Organizations;
-        $systemList[0] = "--select--";
-        foreach ($systems as $system) {
-            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
-        }
-        $form->getElement('orgSystemId')->addMultiOptions($systemList);
+        $systems = $this->_me->getOrganizations();
+        $selectArray = $this->view->treeToSelect($systems, 'nickname');
+        $form->getElement('orgSystemId')->addMultiOptions($selectArray);
 
         // fix: Zend_Form can not support the values which are not in its configuration
         //      The values are set after page loading by Ajax
@@ -369,13 +366,10 @@ class FindingController extends BaseController
         $uploadForm->findingSource->addMultiOption('', '');
         $uploadForm->findingSource->addMultiOptions($sourceList);
         
-        $orgSystems = $this->_me->Organizations->toArray();
-        $orgSystemList = array();
-        foreach ($orgSystems as $orgSystem) {
-            $orgSystemList[$orgSystem['id']] = $orgSystem['nickname'] . ' - ' . $orgSystem['name'];
-        }
-        $uploadForm->system->addMultiOption('', '');
-        $uploadForm->system->addMultiOptions($orgSystemList);
+        $systems = $this->_me->getOrganizations();
+        $selectArray = $this->view->treeToSelect($systems, 'nickname');
+        $uploadForm->system->addMultiOptions(array('' => ''));
+        $uploadForm->system->addMultiOptions($selectArray);
 
         $networks = Doctrine::getTable('Network')->findAll()->toArray();
         $networkList = array();

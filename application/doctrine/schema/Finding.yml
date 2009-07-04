@@ -155,7 +155,3 @@ Finding:
             updated:
                 name: modifiedTs
                 type: timestamp
-# Ideal way to add HTML Purifier?
-#        Html:
-#            columns: [description, recommendation, ...]
-         

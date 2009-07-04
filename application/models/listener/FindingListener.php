@@ -175,6 +175,10 @@ class FindingListener extends Doctrine_Record_Listener
         $finding  = $event->getInvoker();
         $modified = $finding->getModified($old=false, $last=true);
         Fisma_Lucene::updateIndex('finding', $finding->id, $modified);
+        
+        // Invalidate the caches that contain this finding. This will ensure that user's always see
+        // accurate summary counts on the finding summary screen.
+        $finding->ResponsibleOrganization->invalidateCache();
     }
 
     /**

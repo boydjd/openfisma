@@ -7,7 +7,7 @@
     <?php foreach ($this->finding->AuditLogs as $log) { ?>
         <tr>
             <td><?php echo $log->createdTs; ?></td>
-            <td><?php echo $log->User->nameFirst . ' ' . $log->User->nameLast; ?></td>
+            <td><?php echo $log->User->username; ?></td>
             <td><?php echo str_replace("\n","<br>",$log->description); ?></td>
         </tr>
     <?php } ?>

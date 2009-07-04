@@ -314,6 +314,7 @@ var searchProduct = function (){
     YAHOO.util.Connect.asyncRequest('GET', url, 
     {success: function(o){
                 document.getElementById('productId').parentNode.innerHTML = o.responseText;
+                document.getElementById('productId').style.width = "400px";
                 getProdId();
               },
     failure: handleFailure});
@@ -602,6 +603,7 @@ var e = YAHOO.util.Event;
 e.onDOMReady(readyFunc);
 
 function callCalendar(evt, ele){
+    alert('ele is ' + ele);
     showCalendar(ele, ele+'_show');
 }
 
@@ -610,17 +612,11 @@ function showCalendar(block, trigger){
 
     var showBtn = Dom.get(trigger);
     
+    var dialog;
+    var calendar;
+    
     // Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, until the first time the button is clicked.
     if (!dialog) {
-        // Hide Calendar if we click anywhere in the document other than the calendar
-        Event.on(document, "click", function(e) {
-            var el = Event.getTarget(e);
-            var dialogEl = dialog.element;
-            if (el != dialogEl && !Dom.isAncestor(dialogEl, el) && el != showBtn && !Dom.isAncestor(showBtn, el)) {
-                dialog.hide();
-            }
-        });
-        
         function resetHandler() {
             Dom.get(block).value = '';
             closeHandler();
@@ -632,14 +628,17 @@ function showCalendar(block, trigger){
 
         dialog = new YAHOO.widget.Dialog("container", {
             visible:false,
-            context:["show", "tl", "bl"],
-            buttons:[ {text:"Clear", handler: resetHandler}, {text:"Close", handler: closeHandler, isDefault:true}],
+            context:[block, "tl", "bl"],
             draggable:true,
             close:true
         });
+        
         dialog.setHeader('Pick A Date');
-        dialog.setBody('<div id="cal"></div>');
+        dialog.setBody('<div id="cal"></div><div class="clear"></div>');
         dialog.render(document.body);
+
+        dialogEl = document.getElementById('container');
+        dialogEl.style.padding = "0px"; // doesn't format itself correctly in safari, for some reason
 
         dialog.showEvent.subscribe(function() {
             if (YAHOO.env.ua.ie) {

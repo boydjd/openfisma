@@ -133,10 +133,8 @@ class Organization extends BaseOrganization
      */
     public function getSummaryCounts($type, $source) {
         $cache = self::_getCache();
-        $cacheId = $this->nickname
-                 . (isset($type) ? "/type/$type" : '')
-                 . (isset($source) ? "/source/$source" : '');
-        
+        $cacheId = $this->getCacheId(array('type' => $type, 'source' => $source));
+                     
         if (!$cache->test($cacheId)) {
             // First get all of the business statuses
             $statusList = Finding::getAllStatuses();
@@ -153,58 +151,56 @@ class Organization extends BaseOrganization
             unset($counts['single_overdue']['CLOSED']);
         
             // Count the single_ontime and single_overdue
-            /** @doctrine the system is too broken to generate test data, so this code may not be correct */
-            if ('system' == $this->orgType) {
-                $onTimeQuery = Doctrine_Query::create()
-                               ->select('COUNT(*) AS count, f.status, e.nickname')
-                               ->from('Finding f')
-                               ->innerJoin('f.CurrentEvaluation e')
-                               ->innerJoin('f.ResponsibleOrganization o')
-                               ->where("f.status <> 'PEND'")
-                               ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
-                               ->andWhere('o.id = ?', array($this->id))
-                               ->groupBy('f.status, e.nickname')
-                               ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-                if (isset($type)) {
-                    $onTimeQuery->andWhere('f.type = ?', $type);
+            $onTimeQuery = Doctrine_Query::create()
+                           ->select('COUNT(*) AS count, f.status, e.nickname')
+                           ->from('Finding f')
+                           ->leftJoin('f.CurrentEvaluation e')
+                           ->innerJoin('f.ResponsibleOrganization o')
+                           ->where("f.status <> 'PEND'")
+                           ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
+                           ->andWhere('o.id = ?', array($this->id))
+                           ->groupBy('f.status, e.nickname')
+                           ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+            if (isset($type)) {
+                $onTimeQuery->andWhere('f.type = ?', $type);
+            }
+            if (isset($source)) {
+                $onTimeQuery->andWhere('f.sourceId = ?', $source);
+            }
+            $onTimeFindings = $onTimeQuery->execute();
+        
+            foreach ($onTimeFindings as $finding) {
+                if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
+                    $counts['single_ontime'][$finding['nickname']] = $finding['count'];
+                } else {
+                    $counts['single_ontime'][$finding['status']] = $finding['count'];
                 }
-                if (isset($source)) {
-                    $onTimeQuery->andWhere('f.sourceId = ?', $source);
-                }
-                $onTimeFindings = $onTimeQuery->execute();
-            
-                foreach ($onTimeFindings as $finding) {
-                    if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
-                        $counts['single_ontime'][$finding['nickname']] = $finding['count'];
-                    } else {
-                        $counts['single_ontime'][$finding['status']] = $finding['count'];
-                    }
-                }
-            
-                $overdueQuery = Doctrine_Query::create()
-                                ->select('COUNT(*) AS count, f.status, e.nickname')
-                                ->from('Finding f')
-                                ->innerJoin('f.CurrentEvaluation e')
-                                ->innerJoin('f.ResponsibleOrganization o')
-                                ->where("f.status <> 'PEND'")
-                                ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
-                                ->andWhere('o.id = ?', array($this->id))
-                                ->groupBy('f.status, e.nickname')
-                                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-                if (isset($type)) {
-                    $overdueQuery->andWhere('f.type = ?', $type);
-                }
-                if (isset($source)) {
-                    $overdueQuery->andWhere('f.sourceId = ?', $source);
-                }
-                $overdueFindings = $overdueQuery->execute();
-            
-                foreach ($overdueFindings as $finding) {
-                    if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
-                        $counts['single_overdue'][$finding['nickname']] = $finding['count'];
-                    } else {
-                        $counts['single_overdue'][$finding['status']] = $finding['count'];
-                    }
+            }
+        
+            $overdueQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) AS count, f.status, e.nickname')
+                            ->from('Finding f')
+                            ->leftJoin('f.CurrentEvaluation e')
+                            ->innerJoin('f.ResponsibleOrganization o')
+                            ->where("f.status <> 'PEND'")
+                            ->andWhere("f.nextDueDate < NOW()")
+                            ->andWhere('o.id = ?', array($this->id))
+                            ->groupBy('f.status, e.nickname')
+                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+            if (isset($type)) {
+                $overdueQuery->andWhere('f.type = ?', $type);
+            }
+            if (isset($source)) {
+                $overdueQuery->andWhere('f.sourceId = ?', $source);
+            }
+            $overdueFindings = $overdueQuery->execute();
+        
+            foreach ($overdueFindings as $finding) {
+                if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
+                    $counts['single_overdue'][$finding['nickname']] = $finding['count'];
+                } else {
+                    $counts['single_overdue'][$finding['status']] = $finding['count'];
                 }
             }
 
@@ -234,11 +230,65 @@ class Organization extends BaseOrganization
             $counts['all_ontime']['TOTAL'] = array_sum($counts['all_ontime']);
             $counts['all_ontime']['TOTAL'] += array_sum($counts['all_overdue']);
             
-            $cache->save($counts, $cacheId);
+            $cache->save($counts, $cacheId, array($this->getCacheTag()));
         } else {
             $counts = $cache->load($cacheId);
         }
         
         return $counts;
+    }
+
+    /**
+     * Invalidate the summary counts for this organization and all of its parents.
+     * 
+     * Since the summary counts are cached, other classes need a way of telling the Organization class to 
+     * clear the cache and recalculate the summary counts. This method will recursively invalidate the
+     * cache all the way up the tree so that parent node caches get recalculated, too.
+     */
+    public function invalidateCache() 
+    {
+        $cache = self::_getCache();
+        
+        $cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG,
+                      array($this->getCacheTag()));
+                      
+        $parent = $this->getNode()->getParent();
+        if ($parent) {
+            $parent->invalidateCache();
+        }
+    }
+
+    /**
+     * Generate a unique cache id based on the query parameters
+     * 
+     * @param array Query parameters
+     * @return string
+     */
+    public function getCacheId($parameters)
+    {
+        $cacheId = $this->id;
+        
+        // Add any query parameters to the cache ID. This prevents us from confusing filtered counts and unfiltered
+        // counts.
+        foreach ($parameters as $key => $value) {
+            if (!empty($value)) {
+                // The cache only allows alphanumeric IDs and underscores
+                $safeValue = preg_replace('/[^a-zA-Z0-9_]/', '_', $value);
+                $cacheId .= "_{$key}_{$safeValue}";
+            }
+        }
+            
+        return $cacheId;
+    }
+
+
+    /**
+     * Returns a cache tag that is unique to this organization
+     * 
+     * @return string
+     */
+    public function getCacheTag()
+    {
+        return "organization_$this->id";
     }
 }
