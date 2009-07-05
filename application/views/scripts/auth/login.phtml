@@ -1,10 +1,10 @@
-<div id='systemUseNotification'>
-    <div id="systemName">
-        <?php echo Configuration::getConfig('system_name');?>
-    </div>
+<div class="hd">
+    <?php echo Configuration::getConfig('system_name');?>
+</div>
 
-    <div><?php echo Configuration::getConfig('use_notification');?></div>
-
+<div class="bd">
+    <?php echo Configuration::getConfig('use_notification');?>
+    
     <p class="message">
         <?php 
             if(isset($this->error) ) {
@@ -26,6 +26,7 @@
         </table>
     </form>
 </div>
+
 
 
 
