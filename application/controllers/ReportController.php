@@ -82,132 +82,69 @@ class ReportController extends SecurityController
     }
 
     /**
+     * Returns the due date for the next quarterly FISMA report
+     * 
+     * @return Zend_Date
+     */
+    public function getNextQuarterlyFismaReportDate()
+    {
+        // The quarterly reports are due on 3/1, 6/1, 9/1 and 12/1
+        $reportDate = new Zend_Date();
+        if (1 == $reportDate->getDay()) {
+            $reportDate->subMonth(1);
+        }
+        $reportDate->setDay(1);
+        switch ((int)$reportDate->getMonth()->toString('m')) {
+            case 12:
+            case 1:
+            case 2:
+                $reportDate->setMonth(3);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                $reportDate->setMonth(6);
+                break;
+            case 6:
+            case 7:
+            case 8:
+                $reportDate->setMonth(9);
+                break;
+            case 9:
+            case 10:
+            case 11:
+                $reportDate->setMonth(12);
+                break;
+        }
+        return $reportDate;
+    }
+
+    /**
+     * Returns the due date for the next annual FISMA report
+     * 
+     * @return Zend_Date
+     */
+    public function getNextAnnualFismaReportDate()
+    {
+        // The annual report is due Oct 1 of each year
+        $reportDate = new Zend_Date();
+        $reportDate->setMonth(10);
+        $reportDate->setDay(1);
+        if (-1 == $reportDate->compare(new Zend_Date())) {
+            $reportDate->addYear(1);
+        }
+        return $reportDate;
+    }
+
+    /**
      * fismaAction() - Genenerate fisma report
      */
     public function fismaAction()
     {
         Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
-
-        $req = $this->getRequest();
-        $criteria['year'] = $req->getParam('y');
-        $criteria['quarter'] = $req->getParam('q');
-        $criteria['systemId'] = $systemId = $req->getParam('system');
-        $criteria['startdate'] = $req->getParam('startdate');
-        $criteria['enddate'] = $req->getParam('enddate');
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('criteria', $criteria);
-        $this->view->assign('year', empty($criteria['year'])?date('Y'):$criteria['year']);
-        $dateBegin = '';
-        $dateEnd = '';
-        if ('search' == $req->getParam('s') || 
-            'pdf' == $req->getParam('format') || 
-            'xls' == $req->getParam('format')) {
-            if (!empty($criteria['startdate']) && 
-                !empty($criteria['enddate'])) {
-                $dateBegin = new 
-                    Zend_Date($criteria['startdate'], 'Y-m-d');
-                $dateEnd = new 
-                    Zend_Date($criteria['enddate'], 'Y-m-d');
-            }
-            if (!empty($criteria['year'])) {
-                if (!empty($criteria['quarter'])) {
-                    switch ($criteria['quarter']) {
-                    case 1:
-                        $startdate = $criteria['year'] . '-01-01';
-                        $enddate = $criteria['year'] . '-03-31';
-                        break;
-
-                    case 2:
-                        $startdate = $criteria['year'] . '-04-01';
-                        $enddate = $criteria['year'] . '-06-30';
-                        break;
-
-                    case 3:
-                        $startdate = $criteria['year'] . '-07-01';
-                        $enddate = $criteria['year'] . '-09-30';
-                        break;
-
-                    case 4:
-                        $startdate = $criteria['year'] . '-10-01';
-                        $enddate = $criteria['year'] . '-12-31';
-                        break;
-                    }
-                } else {
-                    $startdate = $criteria['year'] . '-01-01';
-                    $enddate = $criteria['year'] . '-12-31';
-                }
-                $dateBegin = new Zend_Date($startdate, 'Y-m-d');
-                $dateEnd = new Zend_Date($enddate, 'Y-m-d');
-            }
-            $systemArray = array(
-                'systemId' => $systemId
-            );
-            $aawArray = array(
-                'createdDateEnd' => $dateBegin,
-                'closedDateBegin' => $dateEnd
-            ); //or close_ts is null
-            $bawArray = array(
-                'createdDateEnd' => $dateEnd,
-                'estDateEnd' => $dateEnd,
-                'actualDateBegin' => $dateBegin,
-                'actionDateEnd' => $dateEnd
-            );
-            $cawArray = array(
-                'createdDateEnd' => $dateEnd,
-                'estDateBegin' => $dateEnd
-            ); // and actual_date_begin is null
-            $dawArray = array(
-                'estDateEnd' => $dateEnd,
-                'actualDateBegin' => $dateEnd
-            ); //or action_actual_date is null
-            $eawArray = array(
-                'createdDateBegin' => $dateBegin,
-                'createdDateEnd' => $dateEnd
-            );
-            $fawArray = array(
-                'createdDateEnd' => $dateEnd,
-                'closedDateBegin' => $dateEnd
-            ); //or close_ts is null
-            $criteriaAaw = array_merge($systemArray, $aawArray);
-            $criteriaBaw = array_merge($systemArray, $bawArray);
-            $criteriaCaw = array_merge($systemArray, $cawArray);
-            $criteriaDaw = array_merge($systemArray, $dawArray);
-            $criteriaEaw = array_merge($systemArray, $eawArray);
-            $criteriaFaw = array_merge($systemArray, $fawArray);
-            $summary = array(
-                'AAW' => 0,
-                'AS' => 0,
-                'BAW' => 0,
-                'BS' => 0,
-                'CAW' => 0,
-                'CS' => 0,
-                'DAW' => 0,
-                'DS' => 0,
-                'EAW' => 0,
-                'ES' => 0,
-                'FAW' => 0,
-                'FS' => 0
-            );
-            $summary['AAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaAaw);
-            $summary['BAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaBaw);
-            $summary['CAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaCaw);
-            $summary['DAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaDaw);
-            $summary['EAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaEaw);
-            $summary['FAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaFaw);
-            $this->view->assign('summary', $summary);
-        }
+        
+        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('Y-m-d');
+        $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('Y-m-d');
     }
     
     /**

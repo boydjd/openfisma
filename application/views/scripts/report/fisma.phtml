@@ -1,87 +1,23 @@
-<script>
-YAHOO.util.Event.onDOMReady(function () {
-    switchYear();
-});
-</script>
-<?php 
-    $url ="/panel/report/sub/fisma/s/search";
-    if(! empty($this->criteria['systemId'])) {
-        $url .='/system/'.$this->criteria['systemId'];
-    }
-    if(! empty($this->criteria['year'])) {
-        $url .='/y/'.$this->criteria['year'];
-    }
-    if(! empty($this->criteria['quarter'])) {
-        $url .='/q/'.$this->criteria['quarter'];
-    }
-    if(! empty($this->criteria['startdate'])) {
-        $url .='/startdate/'.$this->criteria['startdate'];
-    }
-    if(! empty($this->criteria['enddate'])) {
-        $url .='/enddate/'.$this->criteria['enddate'];
-    }
-?>
-<?php //Fisma_Format_Section::startSection("FISMA Report to OMB"); ?>
 <div class="searchFilters">
-    <form name="filter" method="post" action="/panel/report/sub/fisma/s/search">
-        <p>
-            <?php 
-                $this->system_list[0] = 'All Systems';
-                echo $this->formSelect('system',
-                                       isset($this->criteria['systemId'])?$this->criteria['systemId']:0,
-                                       null,$this->system_list);
-            ?>
-        
-            <b>From:</b>
-            <input type="text" 
-                   class="date" 
-                   id="startdate" 
-                   name="startdate" 
-                   value="<?php 
-                            echo isset($this->criteria['startdate'])
-                                 ? $this->criteria['startdate']
-                                 : ''; ?>" 
-                   size="10" 
-                   maxlength="10">
-            <img id="startdate_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar">
-            <b>To:</b>
-            <input type="text" 
-                   class="date" 
-                   id="enddate" 
-                   name="enddate" 
-                   value="<?php 
-                            echo isset($this->criteria['enddate'])
-                                 ? $this->criteria['enddate']
-                                 : ''; ?>" 
-                   size="10" 
-                   maxlength="10">
-            <img id="enddate_show" 
-                 src="/images/calendar.gif" 
-                 width="18" 
-                 height="18" 
-                 alt="Calendar">     
-            <?php echo new Fisma_Yui_Form_Button_Submit('generateFismaReport', array('label' => 'Generate Report')); ?>
-        </p>
-        <p>
-            Generate Report shortcut:
-            <span name="gen_shortcut" 
-                  id="gen_shortcut" 
-                  url="/panel/report/sub/fisma/s/search/y/" 
-                  year="<?php echo $this->year; ?>">
-                <a href="javascript:switchYear(-1);" style="text-decoration: none;" >&lt;&lt;</a>&nbsp
-                <a href="" style="text-decoration: none;" ><span name="year"></span></a>&nbsp;
-                <a href="" style="text-decoration: none;" ><span name="q1">Q1</span></a>&nbsp;
-                <a href="" style="text-decoration: none;" ><span name="q2">Q2</span></a>&nbsp;
-                <a href="" style="text-decoration: none;" ><span name="q3">Q3</span></a>&nbsp;
-                <a href="" style="text-decoration: none;" ><span name="q4">Q4</span></a>&nbsp;
-                <a href="javascript:switchYear(1);" style="text-decoration: none;">&gt;&gt;</a>
-            </span>
-        </p>
-    </form>
+    <p>
+        <span class="searchField">
+            <b>The next quarterly FISMA report is due on: <?php echo $this->nextQuarterlyReportDate; ?></b>
+        </span>
+        <?php
+            echo new Fisma_Yui_Form_Button_Link('quarterly',
+                                                array('value' => 'Generate Quarterly Report',
+                                                      'href' => "/report/fismaQuarterly"));
+        ?>
+    </p>
+    
+    <p>
+        <span class="searchField">
+            <b>The next annual FISMA report is due on: <?php echo $this->nextAnnualReportDate; ?></b>
+        </span>
+        <?php
+            echo new Fisma_Yui_Form_Button_Link('annual',
+                                                array('value' => 'Generate Annual Report',
+                                                      'href' => "/report/fismaAnnual"));
+        ?>
+    </p>
 </div>
-
-<?php
-    if(isset($this->summary)){
-        echo $this->partial('report/fismasearch.phtml',array('summary'=>&$this->summary,'url'=>&$url));
-    }
-?>
