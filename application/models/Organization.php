@@ -160,7 +160,7 @@ class Organization extends BaseOrganization
                            ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
                            ->andWhere('o.id = ?', array($this->id))
                            ->groupBy('f.status, e.nickname')
-                           ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                           ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
             if (isset($type)) {
                 $onTimeQuery->andWhere('f.type = ?', $type);
@@ -169,15 +169,15 @@ class Organization extends BaseOrganization
                 $onTimeQuery->andWhere('f.sourceId = ?', $source);
             }
             $onTimeFindings = $onTimeQuery->execute();
-        
+                    
             foreach ($onTimeFindings as $finding) {
-                if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
-                    $counts['single_ontime'][$finding['nickname']] = $finding['count'];
+                if ('MSA' == $finding['f_status'] || 'EA' == $finding['f_status']) {
+                    $counts['single_ontime'][$finding['e_nickname']] = $finding['f_count'];
                 } else {
-                    $counts['single_ontime'][$finding['status']] = $finding['count'];
+                    $counts['single_ontime'][$finding['f_status']] = $finding['f_count'];
                 }
             }
-        
+            
             $overdueQuery = Doctrine_Query::create()
                             ->select('COUNT(*) AS count, f.status, e.nickname')
                             ->from('Finding f')
@@ -187,7 +187,7 @@ class Organization extends BaseOrganization
                             ->andWhere("f.nextDueDate < NOW()")
                             ->andWhere('o.id = ?', array($this->id))
                             ->groupBy('f.status, e.nickname')
-                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
             if (isset($type)) {
                 $overdueQuery->andWhere('f.type = ?', $type);
             }
@@ -197,10 +197,10 @@ class Organization extends BaseOrganization
             $overdueFindings = $overdueQuery->execute();
         
             foreach ($overdueFindings as $finding) {
-                if ('MSA' == $finding['status'] || 'EA' == $finding['status']) {
-                    $counts['single_overdue'][$finding['nickname']] = $finding['count'];
+                if ('MSA' == $finding['f_status'] || 'EA' == $finding['f_status']) {
+                    $counts['single_overdue'][$finding['e_nickname']] = $finding['f_count'];
                 } else {
-                    $counts['single_overdue'][$finding['status']] = $finding['count'];
+                    $counts['single_overdue'][$finding['f_status']] = $finding['f_count'];
                 }
             }
 
