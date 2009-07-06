@@ -152,6 +152,14 @@ class MenuController extends SecurityController
         
         $menubar->add($preferences);
 
+        if (Fisma::debug()) {
+            $debug = new Fisma_Yui_Menu('Debug');
+            
+            $debug->add(new Fisma_Yui_MenuItem('PHP Info', '/debug/phpinfo'));
+            
+            $menubar->add($debug);
+        }
+
         $this->view->menubar = $menubar->getMenus();
     }
 }

@@ -400,19 +400,4 @@ class ConfigController extends SecurityController
         $this->view->form = $form;
         $this->render();
     }
-    
-    /**
-     * Display phpinfo()
-     */
-    public function phpinfoAction()
-    {
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
-        if (Fisma::debug()) {
-            phpinfo();
-        } else {
-            throw new Fisma_Exception("PhpInfo is only allowed in debug mode");
-        }
-    }
 }
