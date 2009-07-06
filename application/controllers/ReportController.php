@@ -324,7 +324,7 @@ class ReportController extends SecurityController
         $params['year'] = $req->getParam('year');
 
         $this->view->assign('source_list', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
-        $this->view->assign('system_list', $this->_me->Organizations->toKeyValueArray('id', 'name'));
+        $this->view->assign('system_list', $this->_me->getOrganizations()->toKeyValueArray('id', 'name'));
         $this->view->assign('network_list', Doctrine::getTable('Network')->findAll()->toKeyValueArray('id', 'name'));
         $this->view->assign('params', $params);
         $this->view->assign('url', '/report/overdue' . $this->_helper->makeUrlParams($params));
