@@ -66,6 +66,11 @@ Class SystemListener extends Doctrine_Record_Listener
     {
         $system = $event->getInvoker();
         $org = $system->Organization[0];
+        $org->name = $system->name;
+        $org->nickname = $system->nickname;
+        $org->description = $system->description;
+        $org->orgType = 'system';
+        $org->getNode()->insertAsLastChildOf($org->getTable()->find($system->organizationId));
     }
 
     /**

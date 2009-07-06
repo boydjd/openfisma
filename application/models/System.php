@@ -24,7 +24,7 @@ class System extends BaseSystem
      */
     public function construct()
     {
-        $this->mapValue('organizationid');
+        $this->mapValue('organizationId');
         $this->mapValue('name');
         $this->mapValue('nickname');
         $this->mapValue('description');
@@ -35,9 +35,9 @@ class System extends BaseSystem
      *
      * @param int $id
      */
-    public function setOrganizationid($id)
+    public function setOrganizationId($id)
     {
-        $this->set('organizationid', $id);
+        $this->set('organizationId', $id);
     }
 
     /**

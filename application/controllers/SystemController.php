@@ -36,6 +36,48 @@ class SystemController extends BaseController
     protected $_modelName = 'System';
 
     /**
+     * Returns the standard form for creating, reading, and updating systems.
+     *
+     * @return Zend_Form
+     */
+    public function getForm()
+    {
+        $form = Fisma_Form_Manager::loadForm('system');
+        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
+        $q = Doctrine_Query::create()
+                ->select('o.*')
+                ->from('Organization o')
+                ->where('o.orgType != ?', 'system');
+        $organizationTreeObject->setBaseQuery($q);
+        $organizationTree = $organizationTreeObject->fetchTree();
+        if (!empty($organizationTree)) {
+            foreach ($organizationTree as $organization) {
+                $value = $organization['id'];
+                $text = str_repeat('--', $organization['level']) . $organization['name'];
+                $form->getElement('organizationId')->addMultiOptions(array($value => $text));
+            }
+        } else {
+            $form->getElement('organizationId')->addMultiOptions(array(0 => 'NONE'));
+        }
+        
+        $systemTable = Doctrine::getTable('System');
+        
+        $array = $systemTable->getEnumValues('confidentiality');
+        $form->getElement('confidentiality')->addMultiOptions(array_combine($array, $array));
+        
+        $array = $systemTable->getEnumValues('integrity');
+        $form->getElement('integrity')->addMultiOptions(array_combine($array, $array));
+        
+        $array = $systemTable->getEnumValues('availability');
+        $form->getElement('availability')->addMultiOptions(array_combine($array, $array));
+        
+        $type = $systemTable->getEnumValues('type');
+        $form->getElement('type')->addMultiOptions(array_combine($type, $type));
+        
+        return Fisma_Form_Manager::prepareForm($form);
+    }
+    
+    /**
      * list the systems from the search, 
      * if search none, it list all systems
      *
