@@ -44,6 +44,9 @@ class ErrorController extends Zend_Controller_Action
     {
         // If an error occurs in any context other than the default, then the view suffix will have changed; therefore,
         // we should always reset the view suffix before rendering an error message.
+        $auth = Zend_Auth::getInstance();
+        $auth->setStorage(new Fisma_Auth_Storage_Session());
+
         $this->_helper->viewRenderer->setViewSuffix('phtml');
         $content = null;
         $errors = $this->_getParam('error_handler');
@@ -54,7 +57,7 @@ class ErrorController extends Zend_Controller_Action
             //remind the user to login
             $this->_forward('logout', 'Auth');
         // if the user want to access an empty path.  
-        } elseif (!Zend_Auth::getInstance()->hasIdentity()) {
+        } elseif (!$auth->hasIdentity()) {
             ///@todo English
             $this->view->assign('error', 'Access denied! Please login first.');
             $this->_forward('logout', 'Auth');

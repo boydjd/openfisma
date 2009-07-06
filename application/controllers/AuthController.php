@@ -167,6 +167,9 @@ class AuthController extends MessageController
         if (!empty($user)) {
             $user->logout();
         }
+        $auth = Zend_Auth::getInstance();
+        $auth->setStorage(new Fisma_Auth_Storage_Session());
+        $auth->clearIdentity();
         $this->_forward('login');
     }
 
