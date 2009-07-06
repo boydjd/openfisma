@@ -67,6 +67,10 @@ class User extends BaseUser
      * @return User
      */
     public static function currentUser($user = null) {
+        static $_cacheUser = null;
+        if ($_cacheUser) {
+            return $_cacheUser;
+        }
         if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
             $auth = Zend_Auth::getInstance();
             $auth->setStorage(new Fisma_Auth_Storage_Session());
@@ -76,7 +80,8 @@ class User extends BaseUser
             } elseif ($identity ) {
                 $identity = Doctrine::getTable('User')->findonebyUsername($identity);
             }
-            return $identity;
+            $_cacheUser = $identity;
+            return $_cacheUser
         } else {
             return new User();
         }

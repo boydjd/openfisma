@@ -172,9 +172,11 @@ class UserController extends BaseController
             if ($form->isValid($post)) {
                 $user->merge($form->getValues());
                 try {
+                    Doctrine_Manager::connection()->beginTransaction();
                     $modified = $user->getModified();
 
                     $user->save();
+                    Doctrine_Manager::connection()->commit();
                     /** @todo english */
                     $message = "Your profile modified successfully."; 
                     if ($modified['email']) {
@@ -264,6 +266,7 @@ class UserController extends BaseController
 
                 $user->unlink('Events');
                 $user->link('Events', $postEvents);
+                $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
                 $user->save();
                 Doctrine_Manager::connection()->commit();
 
@@ -326,6 +329,7 @@ class UserController extends BaseController
     {
         $me = Doctrine::getTable('User')->find($this->_me->id);
         $me->searchColumnsPref = $_COOKIE['search_columns_pref'];
+        $me->getTable()->getRecordListener()->setOption('disabled', true);
         $me->save();
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
