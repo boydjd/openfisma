@@ -81,7 +81,7 @@ class User extends BaseUser
                 $identity = Doctrine::getTable('User')->findonebyUsername($identity);
             }
             $_cacheUser = $identity;
-            return $_cacheUser
+            return $_cacheUser;
         } else {
             return new User();
         }
