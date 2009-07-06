@@ -67,12 +67,11 @@ div#footer {
     bottom: 10px;
     width: 100%;
     text-align: right;
-    z-index: -1;
 }
 
 div#footerLinks {
-	color: white;
-	font-weight: bold;
+    color: white;
+    font-weight: bold;
     padding-right: 10px;
 }
 
