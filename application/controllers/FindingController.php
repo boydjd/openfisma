@@ -81,6 +81,8 @@ class FindingController extends BaseController
     {
         $form = Fisma_Form_Manager::loadForm('finding');
         
+        $form->getElement('discoveredDate')->setValue(date('Y-m-d'));
+        
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
         $form->getElement('sourceId')->addMultiOptions(array('' => '--select--'));
         foreach ($sources as $source) {

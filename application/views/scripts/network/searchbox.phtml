@@ -1,34 +1,40 @@
 <div class="searchFilters">
-    <?php
-    $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
-                                           array('value' => 'Network List', 
-                                                 'href' => '/panel/network/sub/list'));
-    echo $listButton;
-    ?>
+    <div class="left">
+        <?php
+        $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
+                                               array('value' => 'Network List', 
+                                                     'href' => '/panel/network/sub/list'));
+        echo $listButton;
+        ?>
 
-    <?php if(Fisma_Acl::hasPrivilege('network', 'create')) {
-    $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
-                                           array('value' => 'Add Network', 
-                                                 'href' => '/panel/network/sub/create'));
-    echo $createButton;
-    } ?>
+        <?php if(Fisma_Acl::hasPrivilege('network', 'create')) {
+        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                               array('value' => 'Add Network', 
+                                                     'href' => '/panel/network/sub/create'));
+        echo $createButton;
+        } ?>
+    </div>
     <?php if (is_dir(Fisma::getPath('index') . '/network')) { ?>
-    <form name="query" method="post" action="/panel/network/sub/list" style="display:inline">
-    <b>Search:&nbsp;</b>
-    <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
-    <span id="searchContainer"></span>
-    <script type='text/javascript'>
-       var save = new YAHOO.widget.Button({
-           type: "submit",
-           label: "Search",
-           value: "Search",
-           container: "searchContainer",
-           disabled: false
-       });
-    </script>
-    </form>
+    <div class="right">
+        <form name="query" method="post" action="/panel/network/sub/list" style="display:inline">
+        <span class="searchField">
+            <b>Search:&nbsp;</b>
+            <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
+        </span>
+        <span id="searchContainer"></span>
+        <script type='text/javascript'>
+           var save = new YAHOO.widget.Button({
+               type: "submit",
+               label: "Search",
+               value: "Search",
+               container: "searchContainer",
+               disabled: false
+           });
+        </script>
+        </form>
+    </div>
     <?php } else {
-        //@todo english
-        echo '<b>Please built the network index for the keywords searching</b>';
+        echo '<b>The search index needs to be built</b>';
     } ?>
+    <div class="clear"></div>
 </div>

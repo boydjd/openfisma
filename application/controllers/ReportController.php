@@ -672,7 +672,7 @@ class ReportController extends SecurityController
         Fisma_Acl::requirePrivilege('report', 'read');
         
         // Verify a plugin report name was passed to this action
-        $reportName = $this->_req->getParam('name');
+        $reportName = $this->getRequest()->getParam('name');
         if (!isset($reportName)) {
             $this->_forward('plugin');
             return;
@@ -680,17 +680,14 @@ class ReportController extends SecurityController
         
         // Verify that the user has permission to run this report
         $reportConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf', $reportName);
-        if ($this->_me->account != 'root') {
+        if ($this->_me->username != 'root') {
             $reportRoles = $reportConfig->roles;
             $report = $reportConfig->toArray();
             $reportRoles = $report['roles'];
             if (!is_array($reportRoles)) {
                 $reportRoles = array($reportRoles);
             }
-            $user = new User();
-            $role = $user->getRoles($this->_me->id);
-            $role = $role[0]['nickname'];
-            if (!in_array($role, $reportRoles)) {
+            if (!in_array($this->_me->Roles, $reportRoles)) {
                 throw new Fisma_Exception("User \"{$this->_me->account}\" does not have permission to view"
                                           . " the \"$reportName\" plug-in report.");
             }
@@ -706,10 +703,17 @@ class ReportController extends SecurityController
         while (!feof($reportScriptFileHandle)) {
             $reportScript .= fgets($reportScriptFileHandle);
         }
-        $userSystems = implode(',', $this->_me->systems);
-        $reportScript = str_replace('##SYSTEMS##', $userSystems, $reportScript);
-        $db = Zend_Db::factory(Zend_Registry::get('datasource'));
-        $reportData = $db->fetchAll($reportScript);
+        $myOrganizations = array();
+        foreach ($this->_me->getOrganizations() as $organization) {
+            $myOrganizations[] = $organization->id;
+        }
+        $reportScript = str_replace('##ORGANIZATIONS##', implode(',', $myOrganizations), $reportScript);
+        $dbh = Doctrine_Manager::connection()->getDbh(); 
+        $rawResults = $dbh->query($reportScript, PDO::FETCH_ASSOC);
+        $reportData = array();
+        foreach ($rawResults as $rawResult) {
+            $reportData[] = $rawResult;
+        }
         
         // Render the report results
         if (isset($reportData[0])) {
@@ -720,8 +724,10 @@ class ReportController extends SecurityController
             $this->_forward('plugin');
             return;
         }
+        
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
+        $this->view->assign('url', "/panel/report/sub/plugin-report/name/$reportName");
     }
 }

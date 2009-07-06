@@ -137,7 +137,6 @@ class MenuController extends SecurityController
 
             if (Fisma_Acl::hasPrivilege('user', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Users', '/panel/account/sub/list'));
-                $admin->add(new Fisma_Yui_MenuItem('Account Logs', '/panel/log/sub/list'));
             }
             
             $menubar->add($admin);
@@ -146,7 +145,9 @@ class MenuController extends SecurityController
         $preferences = new Fisma_Yui_Menu('User Preferences');
         
         $preferences->add(new Fisma_Yui_MenuItem('Profile', '/panel/user/sub/profile'));
-        $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/panel/user/sub/password'));
+        if ('database' == Configuration::getConfig('auth_type')) {
+            $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/panel/user/sub/password'));
+        }
         $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/panel/user/sub/notification'));
         
         $menubar->add($preferences);

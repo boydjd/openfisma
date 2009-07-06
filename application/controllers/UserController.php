@@ -208,6 +208,11 @@ class UserController extends BaseController
      */
     public function passwordAction()
     {
+        // This action isn't allowed unless the system's authorization is based on the database
+        if ('database' != Configuration::getConfig('auth_type')) {
+            throw new Fisma_Exception('Password action is not allowed when the authentication type is not "database"');
+        }
+        
         // Load the change password file
         $form = Fisma_Form_Manager::loadForm('change_password');
         $form = Fisma_Form_Manager::prepareForm($form);

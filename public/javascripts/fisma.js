@@ -4,18 +4,6 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
-    //Data Table Row Highlighting and Selection
-    var trs = YAHOO.util.Selector.query('.tbframe tr');
-    YAHOO.util.Event.on(trs, 'mouseover', 
-    function() {
-        YAHOO.util.Dom.addClass(this, 'over');
-    });
-    YAHOO.util.Event.on(trs, 'mouseout', 
-    function() {
-        YAHOO.util.Dom.removeClass(this, 'over');
-    });
-    YAHOO.util.Dom.addClass(YAHOO.util.Selector.filter(trs, ':nth-child(even)'), 'alt');
-
     var calendars = YAHOO.util.Selector.query('.date');
     for(var i = 0; i < calendars.length; i ++) {
         YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));
@@ -602,12 +590,11 @@ function panel(title, parent, src, html, callback) {
 var e = YAHOO.util.Event;
 e.onDOMReady(readyFunc);
 
-function callCalendar(evt, ele){
-    alert('ele is ' + ele);
+function callCalendar(evt, ele) {
     showCalendar(ele, ele+'_show');
 }
 
-function showCalendar(block, trigger){
+function showCalendar(block, trigger) {
     var Event = YAHOO.util.Event, Dom = YAHOO.util.Dom, dialog, calendar;
 
     var showBtn = Dom.get(trigger);

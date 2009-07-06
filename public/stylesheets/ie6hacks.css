@@ -38,7 +38,7 @@
  *******************************************************************************
  */
 
-/* Fix the shield height. IE6 doesn't extend it down far enough. */
-.shield {
-    height: 300px;
-}
+/* 
+ * The styles that used to exist in this document were deprecated. This document is still maintained in case
+ * new CSS hacks are needed for IE6.
+ */
