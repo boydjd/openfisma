@@ -32,7 +32,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class MetainfoController extends PoamBaseController
+class MetainfoController extends SecurityController
 {
     /**
      * Initialize 
