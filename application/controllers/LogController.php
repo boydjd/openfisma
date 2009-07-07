@@ -50,4 +50,60 @@ class LogController extends BaseController
         }
         return $array;
     }
+    
+    /** 
+     * Search the subject 
+     *
+     * This outputs a json object. Allowing fulltext search from each record enpowered by lucene
+     */
+    public function searchAction()
+    {
+        Fisma_Acl::requirePrivilege($this->_modelName, 'read');
+        $sortBy = $this->_request->getParam('sortby', 'id');
+        $order  = $this->_request->getParam('order');
+
+        //filter the sortby to prevent sqlinjection
+        $subjectTable = Doctrine::getTable($this->_modelName);
+        if (!in_array(strtolower($sortBy), $subjectTable->getColumnNames()) 
+            && strtolower($sortBy) != 'username') {
+            /** @todo english */
+            return $this->_helper->json('invalid parameters');
+        } elseif (strtolower($sortBy) == 'username') {
+            $sortBy = 'u.username';
+        } else {
+            $sortBy = 'al.' . $sortBy;
+        }
+
+        $order = strtoupper($order);
+        if ($order != 'DESC') {
+            $order = 'ASC'; //ignore other values
+        }
+        
+        $query  = Doctrine_Query::create()
+                    ->select('*')
+                    ->from('AccountLog al')
+                    ->leftJoin('al.User u')
+                    ->orderBy("$sortBy $order")
+                    ->limit($this->_paging['count'])
+                    ->offset($this->_paging['startIndex']);
+
+        //initialize the data rows
+        $tableData    = array('table' => array(
+                            'recordsReturned' => 0,
+                            'totalRecords'    => 0,
+                            'startIndex'      => $this->_paging['startIndex'],
+                            'sort'            => $sortBy,
+                            'dir'             => $order,
+                            'pageSize'        => $this->_paging['count'],
+                            'records'         => array()
+                        ));
+        
+        $totalRecords = $query->count();
+        $rows         = $query->execute();
+        $rows         = $this->handleCollection($rows);
+        $tableData['table']['recordsReturned'] = count($rows);
+        $tableData['table']['totalRecords'] = $totalRecords;
+        $tableData['table']['records'] = $rows;
+        return $this->_helper->json($tableData);
+    }
 }
