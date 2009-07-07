@@ -107,13 +107,13 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
             /** @todo english */
             $authResult = new Zend_Auth_Result(
                 Zend_Auth_Result::SUCCESS, 
-                $this->_identity->username,
+                $this->_identity,
                 array('Authentication successful.')
             );
         } else {
             $authResult = new Zend_Auth_Result(
                 Zend_Auth_Result::FAILURE,
-                $this->_identity->username,
+                $this->_identity,
                 array('Supplied credential is invalid.')
             );
         }
@@ -143,12 +143,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
             throw new Zend_Auth_Adapter_Exception($exception);
         }
         
-        $this->_authenticateResultInfo = array(
-            'code'     => Zend_Auth_Result::FAILURE,
-            'identity' => $this->_identity,
-            'messages' => array()
-            );
-            
         return true;
     }
 

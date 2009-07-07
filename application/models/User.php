@@ -77,43 +77,18 @@ class User extends BaseUser
      * Returns an object which represents the current, authenticated user
      * If the $user is current User, then return this object instead of create a new one.
      * 
-     * @param Doctrine_Record $user 
      * @return User
      */
-    public static function currentUser($user = null) {
-        static $_cacheUser = null;
-        if ($_cacheUser) {
-            return $_cacheUser;
-        }
+    public static function currentUser() {
         if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
             $auth = Zend_Auth::getInstance();
             $auth->setStorage(new Fisma_Auth_Storage_Session());
-            $identity = $auth->getIdentity();
-            if ($user instanceof Doctrine_Record && $user->username == $identity) {
-                $identity = $user;
-            } elseif ($identity ) {
-                $identity = Doctrine::getTable('User')->findonebyUsername($identity);
-            }
-            $_cacheUser = $identity;
-            return $_cacheUser;
+            return $auth->getIdentity();
         } else {
             return new User();
         }
     }
     
-    public function isOperator() {
-        if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
-            $auth = Zend_Auth::getInstance();
-            $auth->setStorage(new Fisma_Auth_Storage_Session());
-            $identity = $auth->getIdentity();
-            if ($identity) {
-                $identity = Doctrine::getTable('User')->findonebyUsername($identity);
-            }
-            return $identity;
-        } else {
-            return true;
-        }
-    }
     /**
      * Lock an account, which will prevent a user from logging in.
      * 

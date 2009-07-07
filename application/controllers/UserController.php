@@ -167,8 +167,8 @@ class UserController extends BaseController
     public function profileAction()
     {
         $form = $this->_getProfileForm();
-        $user = Doctrine::getTable('User')->find($this->_me->id);
-
+        //$user = Doctrine::getTable('User')->find($this->_me->id);
+        $user = $this->_me;
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
@@ -180,7 +180,7 @@ class UserController extends BaseController
                     Doctrine_Manager::connection()->commit();
                     /** @todo english */
                     $message = "Your profile modified successfully."; 
-                    if ($modified['email']) {
+                    if (isset($modified['email'])) {
                         $mail = new Fisma_Mail();
                         if ($mail->validateEmail($user, $modified['email'])) {
                             /** @todo english */

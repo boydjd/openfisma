@@ -155,7 +155,7 @@ class RemediationController extends SecurityController
         
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
-        if ('root' == Zend_Auth::getInstance()->getIdentity()) {
+        if ('root' == Zend_Auth::getInstance()->getIdentity()->username) {
             $userOrgQuery = Doctrine_Query::create()
                             ->select('o.name, o.nickname, o.orgType, s.type')
                             ->from('Organization o')
