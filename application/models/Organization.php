@@ -291,4 +291,200 @@ class Organization extends BaseOrganization
     {
         return "organization_$this->id";
     }
+    
+    /**
+     * Return the agency for this organization tree
+     *
+     * @return Doctrine_Node
+     */
+    public static function getAgency()
+    {
+        $agency = Doctrine::getTable('Organization')->getTree()->findRoot();
+
+        return $agency;
+    }
+    
+    /**
+     * Return a collection of bureaus for this agency
+     *
+     * @return Doctrine_Collection
+     */
+    public static function getBureaus()
+    {
+        $bureaus = Doctrine::getTable('Organization')->findByOrgType('bureau');
+
+        return $bureaus;
+    }
+
+    /**
+     * Return a matrix of statistics that corresponds to the FISMA report
+     *
+     * Only applies to bureaus. Other organization types cannot use this method since there is no business logic to
+     * follow.
+     *
+     * @todo refactor... this turned into a huge method really quickly, but no time to fix it now
+     * 
+     * @return array
+     */
+    public function getFismaStatistics()
+    {
+        // Reject any organization which is not a bureau
+        if ('bureau' != $this->orgType) {
+            throw new Fisma_Exception('getFismaStatistics() is only valid for Bureaus, but was called on a '
+                                    . "'$this->orgType' instead.");
+        }
+        
+        // Setup structure of the returned array
+        $securityCategories = array('AGENCY' => 0, 
+                                    'CONTRACTOR' => 0, 
+                                    'TOTAL_CERTIFIED' => 0, 
+                                    'TOTAL_SELF_ASSESSMENT' => 0, 
+                                    'TOTAL_CONTINGENCY_PLAN_TESTED' => 0,
+                                    'CERTIFIED_THIS_QUARTER' => 0,
+                                    'POAM_90_TO_120' => 0,
+                                    'POAM_120_PLUS' => 0);
+        $securityStats = array('HIGH' => $securityCategories, 
+                               'MODERATE' => $securityCategories, 
+                               'LOW' => $securityCategories, 
+                               'NC' => $securityCategories);
+                               
+        $privacyCategories = array('AGENCY' => 0, 
+                                   'CONTRACTOR' => 0);
+        $privacyStats = array('FEDERAL_INFORMATION' => $privacyCategories,
+                              'PIA_REQUIRED' => $privacyCategories,
+                              'PIA_COVERED' => $privacyCategories,
+                              'PIA_URL' => array(),
+                              'SORN_REQUIRED' => $privacyCategories,
+                              'SORN_PUBLISHED' => $privacyCategories,
+                              'SORN_URL' => array());
+                              
+        $today = new Zend_Date();
+                       
+        // Calculate the inventory statistics, such as agency/contractor, C&A, etc.
+        $children = $this->getNode()->getDescendants();
+        $children->loadRelated();
+        foreach ($children as $child) {
+            if ('system' != $child->orgType) {
+                continue;
+            }
+            
+            $system = $child->System;
+            $fipsCategory = empty($system->fipsCategory) ? 'NC' : $system->fipsCategory;
+            
+            // Controlled by the agency or a contractor?
+            if (!empty($system->controlledBy)) {
+                $securityStats[$fipsCategory][$system->controlledBy]++;
+                
+                // Has federal information in identifiable form?
+                if ('YES' == $system->hasFiif) {
+                    $privacyStats['FEDERAL_INFORMATION'][$system->controlledBy]++;
+                }
+
+                // Requires a PIA?
+                if ('YES' == $system->piaRequired) {
+                    $privacyStats['PIA_REQUIRED'][$system->controlledBy]++;
+
+                    // Has a PIA?
+                    if ('YES' == $system->piaRequired) {
+                        $privacyStats['PIA_COVERED'][$system->controlledBy]++;
+                        $privacyStats['PIA_URL'][] = $system->piaUrl;
+                    }
+                }
+
+                // Requires a SORN?
+                if ('YES' == $system->piaRequired) {
+                    $privacyStats['SORN_REQUIRED'][$system->controlledBy]++;
+                 
+                    // Is the SORN published?
+                    if ('YES' == $system->piaRequired) {
+                        $privacyStats['SORN_PUBLISHED'][$system->controlledBy]++;
+                        $privacyStats['SORN_URL'][] = $system->sornUrl;
+                    }
+                }
+            }
+            
+            if (!empty($system->securityAuthorizationDt)) {
+                // Was the system C&A'ed in the last 3 years? 
+                $currentCaDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
+                $nextCaDate = $currentCaDate->addYear(3);
+                /** @todo should have used isEarlier and isLater() instead of compare() -- compare is not very readable */
+                if (1 == $nextCaDate->compare($today)) {
+                    $securityStats[$fipsCategory]['TOTAL_CERTIFIED']++;
+                }
+                
+                // Was the system C&A'ed in the last quarter?
+                $lastQuarter = $today->subMonth(3);
+                if (1 == $currentCaDate->compare($lastQuarter)) {
+                    $securityStats[$fipsCategory]['CERTIFIED_THIS_QUARTER']++;
+                }
+            }
+
+            // Controls self-assessed in the last year?
+            if (!empty($system->controlAssessmentDt)) {
+                $currentSelfAssessmentDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
+                $nextSelfAssessmentDate = $currentSelfAssessmentDate->addYear(1);
+                if (1 == $nextSelfAssessmentDate->compare($today)) {
+                    $securityStats[$fipsCategory]['TOTAL_SELF_ASSESSMENT']++;
+                }
+            }
+            
+            // Contingency plan has been tested in the last year?
+            if (!empty($system->contingencyPlanTestDt)) {
+                $currentContingencyPlanTestDate = new Zend_Date($system->contingencyPlanTestDt, 'Y-m-d');
+                $nextContingencyPlanTestDate = $currentContingencyPlanTestDate->addYear(1);
+                if (1 == $nextContingencyPlanTestDate->compare($today)) {
+                    $securityStats[$fipsCategory]['TOTAL_CONTINGENCY_PLAN_TESTED']++;
+                }
+            }
+        }
+
+        // Get the number of HIGH, MODERATE, and NC systems which have overdue POAM items between 90 and 120 days, or 
+        // greater than 120 days
+        $poamQuery = Doctrine_Query::create()
+                     ->select('s.fipsCategory')
+                     ->from('System s INDEXBY s.fipsCategory')
+                     ->innerJoin('s.Organization o')
+                     ->innerJoin('o.Findings f')
+                     ->where('f.expectedCompletionDate <= ?')
+                     ->andWhere('o.lft > ?', $this->lft)
+                     ->andWhere('o.rgt < ?', $this->rgt)
+                     ->andWhere('s.fipsCategory <> ?', 'LOW')
+                     ->groupBy('s.id')
+                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+        // Count the 120+ first.
+        $today = new Zend_Date();
+        $overdueDate121 = $today->subDay(121)->toString('Y-m-d');
+        $result121 = $poamQuery->execute(array($overdueDate121));
+        foreach ($result121 as $level => $system) {
+            if (empty($level)) {
+                $level = 'NC';
+            }
+            $securityStats[$level]['POAM_120_PLUS']++;
+        }
+        
+        // Now count the 90+
+        $today = new Zend_Date();        
+        $overdueDate90 = $today->subDay(90)->toString('Y-m-d');
+        $result90 = $poamQuery->execute(array($overdueDate90));
+        foreach ($result90 as $level => $system) {
+            if (empty($level)) {
+                $level = 'NC';
+            }
+            $securityStats[$level]['POAM_90_TO_120']++;
+        }
+        
+        // Now subtract the 120+ from the 90+ to get only the 90-120 day range
+        foreach (array('HIGH', 'MODERATE', 'NC') as $level) {
+            $securityStats[$level]['POAM_90_TO_120'] -= $securityStats[$level]['POAM_120_PLUS'];
+        }
+        
+        // Now assemble all statistics
+        $stats = array();
+        $stats['name'] = $this->name;
+        $stats['security'] = $securityStats;
+        $stats['privacy'] = $privacyStats;
+
+        return $stats;
+    }
 }

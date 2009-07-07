@@ -56,7 +56,11 @@ class ReportController extends SecurityController
         }
         if (!$swCtx->hasContext('xls')) {
             $swCtx->addContext('xls', array(
-                'suffix' => 'xls'
+                'suffix' => 'xls',
+                'headers' => array(
+                    'Content-type' => 'application/vnd.ms-excel',
+                    'Content-Disposition' => 'filename=Fisma_Report.xls'
+                )
             ));
         }
     }
@@ -78,6 +82,8 @@ class ReportController extends SecurityController
               ->addActionContext('total', array('pdf', 'xls'))
               ->addActionContext('overdue', array('pdf', 'xls'))
               ->addActionContext('plugin-report', array('pdf', 'xls'))
+              ->addActionContext('fisma-quarterly', 'xls')
+              ->addActionContext('fisma-annual', 'xls')
               ->initContext();
     }
 
@@ -90,12 +96,13 @@ class ReportController extends SecurityController
     {
         // The quarterly reports are due on 3/1, 6/1, 9/1 and 12/1
         $reportDate = new Zend_Date();
-        if (1 == $reportDate->getDay()) {
+        if (1 == (int)$reportDate->getDay()->toString('d')) {
             $reportDate->subMonth(1);
         }
         $reportDate->setDay(1);
         switch ((int)$reportDate->getMonth()->toString('m')) {
             case 12:
+                $reportDate->addYear(1);
             case 1:
             case 2:
                 $reportDate->setMonth(3);
@@ -145,6 +152,39 @@ class ReportController extends SecurityController
         
         $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('Y-m-d');
         $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('Y-m-d');
+    }
+    
+    /**
+     * Generate the quarterly FISMA report
+     * 
+     * The data in this action is calculated in roughly the same order as it is laid out in the report itself.
+     */
+    public function fismaQuarterlyAction()
+    {
+        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
+
+        // Agency Name
+        $agency = Organization::getAgency();
+        $this->view->agencyName = $agency->name;
+        
+        // Submission Date
+        $this->view->submissionDate = date('Y-m-d');
+        
+        // Bureau Statistics
+        $bureaus = Organization::getBureaus();
+        $stats = array();
+        foreach ($bureaus as $bureau) {
+            $stats[] = $bureau->getFismaStatistics();
+        }
+        $this->view->stats = $stats;
+    }
+    
+    /**
+     * Generate the annual FISMA report
+     */
+    public function fismaAnnualAction()
+    {
+        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
     }
     
     /**
