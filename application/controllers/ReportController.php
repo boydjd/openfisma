@@ -313,7 +313,7 @@ class ReportController extends SecurityController
                     ->select('f.*')
                     ->addSelect('DATEDIFF(NOW(), f.nextDueDate) diffDay')
                     ->from('Finding f')
-                    ->where('DATEDIFF(NOW(), f.nextDueDate) > 0');
+                    ->where('DATEDIFF(NOW(), f.nextDueDate) >= 0');
             if (!empty($params['orgSystemId'])) {
                 $q->andWhere('f.responsibleOrganizationId = ?', $params['orgSystemId']);
             }
