@@ -176,7 +176,6 @@ class UserController extends BaseController
                 try {
                     Doctrine_Manager::connection()->beginTransaction();
                     $modified = $user->getModified();
-
                     $user->save();
                     Doctrine_Manager::connection()->commit();
                     /** @todo english */
@@ -393,7 +392,7 @@ class UserController extends BaseController
             }
         }
         echo $password;
-        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->layout->disableLayout(true);
         $this->_helper->viewRenderer->setNoRender();
     }
     

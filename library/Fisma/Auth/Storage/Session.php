@@ -55,7 +55,7 @@ class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session
         $this->_member    = $member;
         $this->_session   = new Zend_Session_Namespace($this->_namespace);
         // Set up the session timeout for the authentication token
-        $refreshSeconds = Configuration::getConfig('session_inactivity_period') * 60;
+        $refreshSeconds = Configuration::getConfig('session_inactivity_period');
         $this->_session->setExpirationSeconds($refreshSeconds);
     }
 

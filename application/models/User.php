@@ -336,7 +336,6 @@ class User extends BaseUser
         }
         
         $this->log(self::LOGOUT, 'Log out');
-        Zend_Auth::getInstance()->clearIdentity();
     }
 
     /** 

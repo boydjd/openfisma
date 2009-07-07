@@ -79,7 +79,7 @@ class SecurityController extends MessageController
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their
             // original destination after they have authenticated.
-            $redirectInfo = new Zend_Session_Namespace('redirect_page');
+            $redirectInfo = new Zend_Session_Namespace('OpenFISMA');
             $redirectInfo->page = $_SERVER['REQUEST_URI'];
         }
     }
