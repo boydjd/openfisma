@@ -42,3 +42,7 @@
 div#menu ul ul {
     position: relative;
 }
+
+#searchContainer {
+    position: relative;
+}
