@@ -149,22 +149,21 @@ class OrganizationController extends SecurityController
         Fisma_Acl::requirePrivilege('organization', 'read');
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
-        
         $sortBy = $this->_request->getParam('sortby', 'name');
+        $order = $this->_request->getParam('order');
+        
         $organization = Doctrine::getTable('Organization');
-        if (!$organization->getColumnDefinition($sortBy)) {
+        if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
             /** 
              * @todo english 
              */
             throw new Fisma_Exception('invalid page');
         }
         
-        $order = $this->_request->getParam('order', 'ASC');
-        if (!in_array(strtolower($order), array('asc', 'desc'))) {
-            /** 
-             * @todo english 
-             */
-            throw new Fisma_Exception('invalid page');
+        
+        $order = strtoupper($order);
+        if ($order != 'DESC') {
+            $order = 'ASC'; //ignore other values
         }
         
         $q = Doctrine_Query::create()
