@@ -1,139 +1,93 @@
-<?php Fisma_Format_Section::startSection("Mitigation Strategy"); ?>
+<?php
+    Fisma_Format_Section::startSection("Mitigation Strategy"); 
+    $finding = $this->finding;
+?>
 <p>
-    <b>
-        Type:
-    </b>
-    <span name="poam[type]" id="type" type="select" href="/metainfo/list/o/type/format/html/"
-        <?php
-            if(('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status'])&& $this->acl->isAllowed('remediation','update_finding_course_of_action')){
+    <b>Type:</b>
+
+    <span type="select" name="finding[type]" href="/metainfo/list/o/type/format/html/" id="type"
+        <?php 
+            if (('NEW' == $finding->status || 'DRAFT' == $finding->status) 
+                && Fisma_Acl::hasPrivilege('finding','update_course_of_action')) {
                 echo 'class="editable" target="type"';
             }
         ?>>
-        <?php echo $this->poam['type']; ?>
+        <?php echo $finding->type;?>&nbsp;&nbsp;
     </span>
 </p>
             
 <p>
-    <b
+    <b target="mitigation_strategy"
         <?php 
-            if(in_array($this->poam['status'],array('NEW','DRAFT'))
-                && $this->acl->isAllowed('remediation','update_finding_course_of_action')){
-               echo 'class="editable" target="action_planned"';
+            if (in_array($finding->status, array('NEW', 'DRAFT'))
+                && Fisma_Acl::hasPrivilege('finding','update_course_of_action')) {
+               echo 'class="editable"';
             }
         ?>>
         Description:
     </b>
 </p>
-<div name="poam[action_planned]" id="action_planned" type="textarea">
-    <?php echo $this->poam['action_planned']; ?> 
+<div name="finding[mitigationStrategy]" id="mitigation_strategy" type="textarea">
+    <?php echo $finding->mitigationStrategy; ?> 
 </div>
 
 <p>
     <b
         <?php
-            if(in_array($this->poam['status'], array('NEW', 'DRAFT'))
-                && $this->acl->isAllowed('remediation', 'update_finding_resources')) {
-                echo 'class="editable" target="action_resources"';
+            if(in_array($finding->status, array('NEW', 'DRAFT'))
+                && Fisma_Acl::hasPrivilege('finding', 'update_resources')) {
+                echo 'class="editable" target="resources_required"';
             } 
         ?>>
         Resources Required:
     </b>
 </p>
-<div name="poam[action_resources]" id="action_resources" type="textarea"> 
-    <?php echo $this->poam['action_resources']; ?> 
+<div name="finding[resourcesRequired]" id="resources_required" type="textarea"> 
+    <?php echo $finding->resourcesRequired; ?> 
 </div>
 
-<?php
-    if(!empty($this->poam['action_est_date'])
-        && $this->poam['action_est_date'] != $this->poam['action_current_date']) {
-?>
-
-    <p>
-        The "Original ECD" is used for FISMA reporting to OMB and may not be changed.<br>
-        The "Current ECD" is used for agency purposes and may be modified.
-    </p>
-            
-    <p>
-        <b target="est_date">Original Expected Completion Date:</b>
-        <?php echo $this->poam['action_est_date']; ?>
-    </p>
-<?php } ?>
 <p>
-    <b>Current Expected Completion Date:</b>
-    <span name="poam[action_current_date]" id="action_est_date" type="text"
+    <b>Expected Completion Date:</b>
+    <span name="finding[expectedCompletionDate]" id="expectedCompletionDate" type="text"
         <?php 
-            if ($this->acl->isAllowed('remediation', 'update_finding_course_of_action')
-                && in_array($this->poam['status'], array('NEW', 'DRAFT'))) {
-                echo ' class="date editable" target="action_est_date">';
+            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action')
+                && in_array($finding->status, array('NEW', 'DRAFT'))) {
+                echo ' class="date editable" target="expectedCompletionDate">';
             } else {
                 echo '>';
             }
-            
-            if (!isset($this->poam['action_current_date'])) {
-                $this->poam['action_current_date'] = '0000-00-00';
-            }
-            echo $this->poam['action_current_date'] ;
+            echo $finding->expectedCompletionDate ? $finding->expectedCompletionDate : '0000-00-00';
          ?>
     </span>
-    <?php 
-    if (!empty($this->poam['ecd_justification'])) {
-        echo '<b>Justification:</b> "'
-           . $this->poam['ecd_justification']
-           . '" ('
-           . $this->justification['account']
-           . ' on '
-           . $this->justification['time']
-           . ')';
-    }
-    
-    if (!empty($this->poam['action_est_date'])) { 
-    ?>
-        <div id="ecd_justification" style="display:none">
-            <i>Input ECD change justification here:</i>
-            <input type="text" 
-                   name="poam[ecd_justification]" 
-                   value="<?php echo $this->poam['ecd_justification'];?>" 
-                   size="100px">
-        </div>
-        <span name="poam[ecd_justification]" id="ecd_justification" type="text" size="100px"></span>
-    <?php } ?>
-</p>
-<p>
-    <b>Actual Completion Date:</b>
-    <?php 
-    if (!isset($this->poam['action_actual_date'])) {
-        echo '<i>(not completed)</i>';
-    }
-    echo $this->poam['action_actual_date'] ;
-     ?>
-</p>
+   </p>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php 
 Fisma_Format_Section::startSection("Mitigation Strategy Approval");
-$postAction = "/remediation/msa/id/" . $this->poam['id'];
-$array = array('type'          => $this->poam['type'],
-               'description'   => $this->poam['finding_data'],
-               'recommendation'=> $this->poam['action_suggested'],
-               'description'   => $this->poam['action_planned'],
-               'resources'     => $this->poam['action_resources'],
-               'ECD'           => $this->poam['action_current_date'],
-               'blscr'         => $this->poam['blscr_id'],
-               'threat_level'  => $this->poam['threat_level'],
-               'threat_source' => $this->poam['threat_source'],
-               'cmeasure_effectiveness' => $this->poam['cmeasure_effectiveness'],
-               'cmeasure' => $this->poam['cmeasure']);
-$complete = 0;
+$postAction = "/panel/remediation/sub/msa/id/" . $finding->id;
+
+$array = array('type'                   => $finding->type,
+               'description'            => $finding->description,
+               'recommendation'         => $finding->recommendation,
+               'resources'              => $finding->resourcesRequired,
+               'ECD'                    => $finding->expectedCompletionDate,
+               'blscr'                  => $finding->securityControlId,
+               'threat_level'           => $finding->threatLevel,
+               'threat_source'          => $finding->threat,
+               'cmeasure_effectiveness' => $finding->countermeasuresEffectiveness,
+               'cmeasure'               => $finding->countermeasures);
+$complete = true;
 foreach ($array as $row) {
     if ($row == '' || $row == 'NONE' || $row == '0000-00-00') {
-        $complete++;
+        $complete = false;
+        continue;
     }
 }
-if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']) {
+if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
     echo "<script type=\"text/javascript\">
                 function submitMitigationStrategy(event, obj) {
                     if (form_confirm(document.finding_detail, \"Submit Mitigation Strategy\")) {
-                        document.location = \"$postAction/is_msa/1\";
+                        document.location = \"$postAction/do/submitmitigation\";
                     }
                 }
           </script>";
@@ -142,72 +96,83 @@ if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']) {
           be fully completed before this can be submitted for approval.</i></p>';
 
     $submitMitigationButton = new Fisma_Yui_Form_Button('submitMitigation', 
-                                                  array('value' => 'Submit Mitigation Strategy', 
-                                                        'onClickFunction' => 'submitMitigationStrategy'));
-    if (0 != $complete || !$this->acl->isAllowed('remediation', 'mitigation_strategy_submit')) {
+                                                  array('label' => 'Submit Mitigation Strategy', 
+                                                        'onClickFunction' => 'submitMitigationStrategy')    );
+    if (false == $complete
+        || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')
+        || 'NONE' == $finding->type) {
         $submitMitigationButton->readOnly = true;
     }
     echo "<div class='toolbar'>$submitMitigationButton</div>";
 }
 
-if ('EN' == $this->poam['status'] && $this->acl->isAllowed('remediation', 'mitigation_strategy_revise')) {
+if ('EN' == $finding->status && Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_revise')) {
     echo "<script language=\"javascript\">
             function reviseMitigationStrategy()
             {
                 var str = \"The revised mitigation strategy must be fully approved before evidence can be re-submitted. Are you sure that you want to continue?\";
                 if(confirm(str) == true){
-                    location.href = \"$postAction/is_msa/0\";
+                    location.href = \"$postAction/do/revisemitigation\";
                 }
                 return false;
             }
           </script>";
     $reviseMitigationButton = new Fisma_Yui_Form_Button('reviseMitigationButton',
-                                                  array('value' => 'Revise Mitigation Strategy', 
+                                                  array('label' => 'Revise Mitigation Strategy', 
                                                         'onClickFunction' => 'reviseMitigationStrategy'));
     echo "<div class='toolbar'>$reviseMitigationButton</div>";
 }  
 
-if ($this->poam['status'] != 'NEW' && ($this->poam['status'] != 'DRAFT' || !empty($this->ms_evaluation))) {
-    $i = 0;
-    foreach ($this->ms_evals as $v) {
-        $k = $i++;
-        echo "<div class=\"approval\">";
-        $editable = true;
-        $comment = new Comments();
-        foreach ($v as $precedenceId=>$row) {
-            $value = 'NONE';
-            if (isset($row['decision'])) {
-                $value = $row['decision'];
-            }
-            echo "<p><b>" . $row['name'] . ":</b>";
-            if ('NONE' == $value && $editable) {
-                if ($this->acl->isAllowed('remediation', $row['function'])) {
-                    echo '<input type="hidden" name="eval_id" value="' . $row['id'] . '"/>';
-                    echo '<input type="hidden" name="comment" value="" />';
-                    echo '<input type="hidden" name="decision" value="APPROVED" />';
-                    echo '<input name="submit_msa" type="submit" value="APPROVE" 
-                        onclick="return form_confirm(document.finding_detail, \'approve ' . $row['name'] . '\');"/>&nbsp;';
-                    echo '<input type="button" value="DENY" onclick="ms_comment(document.finding_detail);" />';
-                } else {
-                    echo 'PENDING...';
-                }
-                $editable = false;
-            } else {
-                if ($value == 'APPROVED') {
-                    echo "<span class=\"approved\">$value ({$row['username']} on {$row['date']})</span>";
-                } else if ($value == 'DENIED') {
-                    $ret = $comment->fetchRow('poam_evaluation_id = ' . $row['pev_id']);
-                    echo "<span class=\"denied\">$value";
-                    if (!empty($ret)) {
-                        echo " &mdash; \"{$ret->content}\" ";
-                    }
-                    echo "({$row['username']} on {$row['date']})</span>";
-                }
-            }
-            echo "</p>";
+if ($finding->status != 'NEW' 
+    && ($finding->status != 'DRAFT' || $finding->FindingEvaluations->count() > 0)) {
+    echo '<div class="approval">';
+    foreach ($finding->getFindingEvaluations('action') as $findingEvaluation) {
+        $userName = $findingEvaluation->User->nameFirst . $findingEvaluation->User->nameLast;
+        $decision = $findingEvaluation->decision;
+        echo "<p><b>{$findingEvaluation->Evaluation->name}</b>";
+        if ('APPROVED' == $decision) {
+            echo "<span class=\"approved\">$decision ($userName on {$findingEvaluation->createdTs})</span>";
         }
-        echo "</div>";
-    } 
+        if ('DENIED' == $decision) {
+            echo "<span class=\"denied\">$decision";
+            echo " &mdash; \"{$findingEvaluation->comment}\" ";
+            echo "($userName on $findingEvaluation->createdTs)</span>";
+        }
+        echo "</p>";
+        $temp = $findingEvaluation->Evaluation->NextEvaluation->id;
+        if (empty($temp) || 'DENIED' == $decision) {
+            echo '</div><div class="approval">';
+        }
+    }
+
+    $activeEvaluation = $finding->CurrentEvaluation;
+    if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'action') {
+        echo "<p><b>{$activeEvaluation->name}</b>";
+        if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action)) {
+            echo '<input type="hidden" name="comment" value="" />';
+            echo '<input type="hidden" name="decision" value="APPROVED" />';
+            echo '<input name="submit_msa" type="submit" value="APPROVED"
+                onclick="return form_confirm(document.finding_detail, \'approve ' . $evaluation->name . '\');"/>&nbsp;';
+            echo '<input type="button" value="DENIED" onclick="ms_comment(document.finding_detail);" />';
+        } else {
+            echo "EXCLUDED";
+        }
+    }
+
+    $disableEvaluations = array();
+    $currentEvaluation  = $finding->CurrentEvaluation;
+    if ($currentEvaluation->approvalGroup == 'action') {
+        while ($currentEvaluation->nextId != null)  {
+            $currentEvaluation    = $currentEvaluation->NextEvaluation;
+            $disableEvaluations[] = $currentEvaluation;
+        }
+    }
+
+    foreach ($disableEvaluations as $evaluation) {
+        echo "<p><b>{$evaluation->name}</b>";
+        echo "EXCLUDED";
+    }
+    echo "</div>";
 }
 Fisma_Format_Section::stopSection(); 
 ?>

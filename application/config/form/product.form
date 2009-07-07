@@ -3,7 +3,7 @@
 ; This form should be loaded through FormManager::loadForm() in order to recieve
 ; the proper decorators, filters, etc.
 ;
-; Author    Ryan yang <ryan.yang@reyosoft.com
+; Author    Ryan Yang <ryan@users.sourceforge.net>
 ; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
 ; Version   $Id$
@@ -31,14 +31,12 @@ elements.version.options.validators.alnum.validator = "NotEmpty"
 elements.version.options.required = true
 displayGroups.product.elements.version = "version"
 
-elements.desc.type = "textarea"
-elements.desc.options.label = "Description"
-elements.desc.options.cols = "70%"
-elements.desc.options.rows = "7"
-displayGroups.product.elements.desc = "desc"
+elements.cpeName.type = "text"
+elements.cpeName.options.label = "Cpename"
+displayGroups.product.elements.cpeName = "cpeName"
 
 elements.save.type = "Form_Button_Submit"
-elements.save.options.value = "Save"
+elements.save.options.label = "Save"
 displayGroups.product.elements.save = "save"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

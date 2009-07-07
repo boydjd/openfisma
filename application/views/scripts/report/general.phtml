@@ -16,7 +16,7 @@ $action_list = array(1=>'blscr',2=>'fips',3=>'prods',4=>'swdisc',5=>'total');
             <?php echo $this->formSelect('type',$this->type,null,$type_list);?>
         </td>
         <td>
-            <?php echo new Fisma_Yui_Form_Button_Submit('generateGeneralReport', array('value' => 'Generate Report')); ?>
+            <?php echo new Fisma_Yui_Form_Button_Submit('generateGeneralReport', array('label' => 'Generate Report')); ?>
         </td>
     </tr>
 </table>

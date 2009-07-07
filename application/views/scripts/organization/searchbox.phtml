@@ -1,39 +1,49 @@
-<table class="searchFilters">
-    <tbody>
-        <tr>
-            <th>[<a href="/panel/organization/sub/list">Organization List</a>] (total: <?php echo 
-$this->total;?>)</th>
-            <?php if($this->acl->isAllowed('admin_organizations', 'create')) { ?>
-            <th>[<a href="/panel/organization/sub/create" title="add new Organizations">Add 
-Organization</a>]</th>
-            <?php } ?>
-            <th>
-                <table align="center">
-                    <tbody>
-                        <tr>
-                            <td><b>Page:&nbsp;</b></td>
-                            <td><?php echo $this->links['all'];?></td>
-                            <td>|</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </th>
-            <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/organization')) { ?>
-            <th>
-                <table align="center">
-                <form name="query" method="post" action="/panel/organization/sub/list">
-                    <tbody>
-                        <tr>
-                            <td><b>Query:&nbsp;</b></td>
-                            <td><input name="qv" value="<?php echo $this->qv;?>" title="Input your query value" size="20" maxlength="40" type="text"></td>
+<div class="searchFilters">
+    <div class="left">
+        <?php 
+        $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
+                                               array('value' => 'Organization List', 
+                                                     'imageSrc' => '/images/view_list.png',                                            
+                                                     'href' => '/panel/organization/sub/list'));
+        echo $listButton;
+        ?>
+    
+        <?php 
+        $listButton = new Fisma_Yui_Form_Button_Link('treetButton', 
+                                               array('value' => 'Organization Tree',
+                                                     'imageSrc' => '/images/view_tree.png', 
+                                                     'href' => '/panel/organization/sub/tree'));
+        echo $listButton;
+        ?>
 
-                             <td><input value="Search" title="submit your request" type="submit"></td>
-                        </tr>
-                    </tbody>
-                </form>
-                </table>
-            </th>
-            <?php } ?>
-        </tr>
-    </tbody>
-</table>
+        <?php if(Fisma_Acl::hasPrivilege('organization', 'create')) {
+        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                               array('value' => 'Add Organization', 
+                                                     'imageSrc' => '/images/add.png',
+                                                     'href' => '/panel/organization/sub/create'));
+        echo $createButton;
+        } 
+        ?>
+    </div>
+    <div class="right">    
+        <?php if (is_dir(Fisma::getPath('index') . '/organization')) { ?>
+        <form name="query" method="post" action="/panel/organization/sub/list" style="display:inline">
+        <span class="searchField">
+            <b>Search:&nbsp;</b>
+            <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
+        </span>
+        <span id="searchContainer"></span>
+        <script type='text/javascript'>
+           var save = new YAHOO.widget.Button({
+               type: "submit",
+               label: "Search",
+               value: "Search",
+               container: "searchContainer",
+               disabled: false
+           });
+        </script>
+        </form>
+        <?php } ?>
+    </div>
+    <div class="clear"></div>
+</div>

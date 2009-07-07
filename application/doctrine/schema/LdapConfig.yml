@@ -1,0 +1,33 @@
+LdapConfig:
+    listeners: [XssListener]
+
+    columns:
+        host:
+            type: string
+            extra:
+                purify: plaintext
+        port: integer(2)
+        domainName:
+            type: string
+            extra:
+                purify: plaintext
+        domainShort:
+            type: string
+            extra:
+                purify: plaintext
+        username: 
+            type: string
+            extra:
+                purify: plaintext
+        # Password field is not purified by the XssListener, since it might contain valid special characters
+        password: 
+            type: string
+        basedn: 
+            type: string
+            extra:
+                purify: plaintext 
+        # Account filter is not purified either           
+        accountFilter: string
+        accountCanonical: string
+        bindRequiresDn: boolean
+        useSsl: boolean

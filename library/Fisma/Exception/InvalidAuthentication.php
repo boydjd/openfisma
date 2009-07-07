@@ -31,6 +31,6 @@
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @package   Fisma_Exception
  */
-class Fisma_Exception_InvalidAuthentication extends Fisma_Exception_General
+class Fisma_Exception_InvalidAuthentication extends Fisma_Exception
 {
 }

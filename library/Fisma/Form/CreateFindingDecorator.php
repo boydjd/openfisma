@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Ryan.yang <ryan.yang@reyosoft.com>
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
@@ -59,17 +59,17 @@ class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
     
         // Render the HTML 4.01 strict markup for the form and form elements.
         if ($element instanceof Zend_Form_Element) {
-            if (in_array($element->getName(), array('name', 'ip', 'port', 'search_asset'))) {
+            if (in_array($element->getName(), array('name', 'ip', 'port', 'searchAsset'))) {
                 $render = '<td>'
                 . $this->buildLabel()
                 . '</td><td>'
                 . $this->buildInput()
                 . '</td>';
-            } elseif ('asset_id' == $element->getName()) {
+            } elseif ('assetId' == $element->getName()) {
                 $render = '<tr><td>'
                 . $this->buildLabel()
                 . '</td><td>'
-                . $this->buildInput()
+                . $this->buildInput() 
                 . '</td>'
                 . $this->buildProduct()
                 . '</tr>';
@@ -77,7 +77,7 @@ class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
                 $render = '<tr><td>'
                 . $this->buildLabel()
                 . '</td><td>'
-                . $this->buildInput()
+                . $this->buildInput(). $content
                 . '</td></tr>';
             }
         } elseif ($element instanceof Zend_Form_DisplayGroup) {

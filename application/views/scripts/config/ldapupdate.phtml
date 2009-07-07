@@ -1,6 +1,9 @@
-<script LANGUAGE="JavaScript" type="text/javascript" src="/javascripts/jquery/jquery.form.js"></script>
-<?php Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>
-                                   <button id="validateLDAP">Test Configuration</button>'); ?>
+<?php 
+$validateLDAP = new Fisma_Yui_Form_Button('columnOptions',
+                                           array('label' => 'Test Configuration', 
+                                                 'onClickFunction' => 'validateLDAP'));
+
+Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>' . $validateLDAP); ?>
 
 <div class="block">
 <?php
@@ -9,13 +12,13 @@
 ?>
 </div>
 <script>
-    YAHOO.util.Event.onDOMReady(function () {
-        YAHOO.util.Event.on('validateLDAP', 'click', function(){
-            YAHOO.util.Connect.asyncRequest('POST', '/config/ldapvalid/format/html', {
-                success:function (o){ldapResult(o.responseText, o.statusText)},
-                failure: handleFailure});
-        });
-    });
+    var validateLDAP = function(){
+        var form = document.getElementById('ldapUpdate');
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/config/ldapvalid/format/html', {
+            success:function (o){ldapResult(o.responseText, o.statusText)},
+            failure: handleFailure});
+    }
     function ldapResult(responseText, statusText)
     {
         message(responseText);

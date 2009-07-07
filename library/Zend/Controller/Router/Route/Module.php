@@ -168,7 +168,7 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
                 for ($i = 0; $i < $numSegs; $i = $i + 2) {
                     $key = urldecode($path[$i]);
                     $val = isset($path[$i + 1]) ? urldecode($path[$i + 1]) : null;
-                    $params[$key] = $val;
+                    $params[$key] = (isset($params[$key]) ? (array_merge((array) $params[$key],array($val))): $val);
                 }
             }
         }

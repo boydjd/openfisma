@@ -1,0 +1,157 @@
+Finding:
+    listeners: [XssListener, FindingListener]
+    
+    columns:
+        createdTs: timestamp
+        modifiedTs: timestamp
+    
+        discoveredDate:
+            type: date
+            comment: The when the finding was discovered. This is self-reported by users
+        closedTs:
+            type: timestamp
+            comment: The timestamp when this finding was closed
+        nextDueDate:
+            type: date
+            comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
+            
+        legacyFindingKey:
+            type: string(255)
+            unique: true
+            extra: 
+                purify: plaintext
+            comment: This field can be used by end clients to track findings under a legacy tracking system
+        
+        type:
+            type: enum
+            values: [NONE, CAP, AR, FP]
+            default: NONE
+            notnull: true
+            comment: The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)
+        status:
+            type: enum
+            values: [PEND, NEW, DRAFT, MSA, EN, EA, CLOSED]
+            comment: The current status. MSA and EA are physical status codes that need to be translated into logical status codes before displaying to the user
+        currentEvaluationId:
+            type: integer
+            comment: Points to the current evaluation level when the status is MSA or EA. Null otherwise.
+            
+        description:
+            type: string
+            extra: 
+                purify: html
+            comment: Description of the finding
+        recommendation:
+            type: string
+            extra: 
+                purify: html
+            comment: The auditors recommendation to remediate this finding
+        mitigationStrategy:
+            type: string
+            extra: 
+                purify: html
+            comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
+        resourcesRequired:
+            type: string
+            extra: 
+                purify: html
+            comment: Any additional resources (financial) required to complete this course of action
+        expectedCompletionDate:
+            type: date
+            comment: The date when the course of action or business case is planned to be completed
+        ecdLocked:
+            type: boolean
+            comment: If false, then no user is allowed to modify the ECD.
+        threat:
+            type: string
+            extra: 
+                purify: html
+            comment: Description of the threat source which affects this finding
+        threatLevel:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            comment: A subjective assessment of the probability and impact of exploiting this finding
+        countermeasures:
+            type: string
+            extra: 
+                purify: html
+            comment: The countermeasures in place against the threat source
+        countermeasuresEffectiveness:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
+
+        duplicateFindingId:
+            type: integer
+            comment: If this finding is a duplicate of an existing finding, then this is a foreign key to that finding; otherwise its null
+        responsibleOrganizationId:
+            type: integer
+            comment: Foreign key to the organization which is responsible for addressing this finding
+        assetId:
+            type: integer
+            comment: Foreign key to the asset which this finding is against
+        sourceId:
+            type: integer
+            comment: Foreign key to the source of this finding. For example, was it certification and accreditation? Continous monitoring?
+        securityControlId:
+            type: integer
+            comment: Foreign key to the security control associated with this finding
+        createdByUserId:
+            type: integer
+            comment: Foreign key to the user who created this finding
+        assignedToUserId:
+            type: integer
+            comment: Foreign key to the user who is assigned to this finding
+        uploadId:
+            type: integer
+            comment: Foreign key to the upload log
+            
+    relations:
+        DuplicateFinding:
+            class: Finding
+            local: duplicateFindingId
+            foreign: id
+        Asset:
+            local: assetId
+            foreign: id
+            foreignAlias: Findings
+        ResponsibleOrganization:
+            class: Organization
+            local: responsibleOrganizationId
+            foreign: id
+            foreignAlias: Findings
+        Source:
+            local: sourceId
+            foreign: id
+            foreignAlias: Findings
+        SecurityControl:
+            local: securityControlId
+            foreign: id
+            foreignAlias: Findings
+        CreatedBy:
+            class: User
+            local: createdByUserId
+            foreign: id
+            foreignAlias: Findings
+        AssignedTo:
+            class: User
+            local: assignedToUserId
+            foreign: id
+            foreignAlias: Findings
+        CurrentEvaluation:
+            class: Evaluation
+            local: currentEvaluationId
+            foreign: id
+        Upload:
+            local: uploadId
+            foreign: id
+            foreignAlias: Findings
+            
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

@@ -1,39 +1,16 @@
-<?php Fisma_Format_Section::startSection("Asset Detail"); ?>
+<?php
+echo $this->partial('asset/navibar.phtml');
+$operation = '';
+if (Fisma_Acl::hasPrivilege('asset','update')) {
+    $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
+}
+if (Fisma_Acl::hasPrivilege('asset','delete')) {
+    $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
+}
+Fisma_Format_Section::startSection("Product Information $operation"); ?>
 
-<table cellpadding="5" class='tipframe' style="width:90%">
-    <th align='left' colspan="2">Asset Information</th>
-    <tr>
-        <td valign='center' align='right'><b>Name: </b></td>
-        <td><?php echo $this->asset['name'];?></td>
-    </tr>
-    <tr>
-        <td valign='center' align='right'><b>Created: </b></td>
-        <td><?php echo $this->asset['created_date'];?></td>
-    </tr>
-    <tr>
-        <td valign='center' align='right'><b>Source: </b></td>
-        <td><?php echo $this->asset['source'];?></td>
-    </tr>
-    <tr>
-        <td valign='center' align='right'><b>System: </b></td>
-        <td>(<?php echo $this->asset['sys_nickname'];?>) <?php echo $this->asset['sys_name'];?></td>
-    </tr>
-    <tr>
-        <td valign='center' align='right'><b>Network: </b></td>
-        <td>(<?php echo $this->asset['net_nickname']; ?>) <?php echo $this->asset['net_name']; ?></td>
-    </tr>
-    <tr>
-        <td valign='center' align='right'><b>IP Address: </b></td>
-        <td><?php echo $this->asset['ip'];?>:<?php echo $this->asset['port'];?></td>
-    </tr>
-    <tr>
-        <td valign='center' align='right'><b>Product: </b></td>
-        <td>
-            <?php echo $this->asset['prod_vendor'];?>,&nbsp;
-            <?php echo $this->asset['prod_name'];?>,&nbsp;
-            <?php echo $this->asset['prod_version'];?>
-        </td>
-    </tr>
-</table>
+<div>
+    <?php echo $this->form ?>
+</div>
 
 <?php Fisma_Format_Section::stopSection(); ?>

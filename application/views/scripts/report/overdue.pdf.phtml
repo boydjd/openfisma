@@ -7,7 +7,7 @@ define('ORIENTATION', 'orient');
 define('PAPERTYPE', 'pagesz');
 define('PGWIDTH', 'pgwidth');
 define('PGHEIGHT', 'pgheight');
-define('FONTS', Fisma_Controller_Front::getPath('library') . '/pdf/fonts');
+define('FONTS', Fisma::getPath('library') . '/pdf/fonts');
 
 $poam_config = array( ORIENTATION => 'landscape', PAPERTYPE => 'LEGAL', PGWIDTH => 1000);
 
@@ -58,14 +58,14 @@ $pdf->ezSetMargins($top_margin,$bottom_margin,$horiz_margin,$horiz_margin);
 
 //Add title
 $title = '[System] : ';
-if( isset($this->criteria['system_id']) ) {
-    $title .= $this->system_list[$this->criteria['system_id']];
+if( isset($this->criteria['orgSystemId']) ) {
+    $title .= $this->system_list[$this->criteria['orgSystemId']];
 }else{
     $title .= 'All systems';
 }
 
-if( isset($this->criteria['source_id']) ) {
-    $title .= " [Source] : {$this->source_list[$this->criteria['source_id']]}";
+if( isset($this->criteria['sourceId']) ) {
+    $title .= " [Source] : {$this->source_list[$this->criteria['sourceId']]}";
 }
 
 $pdf->ezText('Plans of Actions And Milestones Report Administration',16,array('justification'=>'center'));

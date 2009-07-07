@@ -4,43 +4,11 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
-    //Data Table Row Highlighting and Selection
-    var trs = YAHOO.util.Selector.query('.tbframe tr');
-    YAHOO.util.Event.on(trs, 'mouseover', 
-    function() {
-        YAHOO.util.Dom.addClass(this, 'over');
-    });
-    YAHOO.util.Event.on(trs, 'mouseout', 
-    function() {
-        YAHOO.util.Dom.removeClass(this, 'over');
-    });
-    YAHOO.util.Dom.addClass(YAHOO.util.Selector.filter(trs, ':nth-child(even)'), 'alt');
-
     var calendars = YAHOO.util.Selector.query('.date');
     for(var i = 0; i < calendars.length; i ++) {
         YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));
     }
     
-    // enable or disable 'on time' type by finding status
-    var filterStatus = function () {
-        if (document.getElementById('poamSearchStatus')) {
-            var value = document.getElementById('poamSearchStatus').value.trim();
-        } else {
-            return ;
-        }
-        if (!(value == '0' 
-            || value == 'CLOSED'
-            || value == 'NOT-CLOSED'
-            || value == 'NOUP-30'
-            || value == 'NOUP-60'
-            || value == 'NOUP-90')) {
-            document.getElementById('poamSearchOnTime').disabled = false;
-        } else {
-            document.getElementById('poamSearchOnTime').disabled = true;
-        }
-    }
-    YAHOO.util.Event.on('poamSearchStatus', 'change', filterStatus);
-    filterStatus();
     // switch Aging Totals or Date Opened and End 
     var searchAging = function (){
         if (document.getElementById('remediationSearchAging')) {
@@ -129,19 +97,27 @@ var readyFunc = function () {
         var options = YAHOO.util.Selector.query('#availableEvents option');
         for (var i = 0; i < options.length; i ++) {
             if (options[i].selected == true) {
-                document.getElementById('enableEvents').appendChild(options[i]);
+                document.getElementById('existEvents').appendChild(options[i]);
             }
         }
     });
     //
     YAHOO.util.Event.on('removeNotificationEvents', 'click', function (){
-        var options = YAHOO.util.Selector.query('#enableEvents option');
+        var options = YAHOO.util.Selector.query('#existEvents option');
         for (var i = 0; i < options.length; i ++) {
             if (options[i].selected == true) {
                 document.getElementById('availableEvents').appendChild(options[i]);
             }
         }
     });
+
+    YAHOO.util.Event.on('event_form', 'submit', function (){
+        var options = YAHOO.util.Selector.query('#existEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            options[i].selected = true;
+        }
+    });
+
     //
     YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=assign_right]'), 'submit', 
     function (){
@@ -159,15 +135,7 @@ var readyFunc = function () {
         }
     });
     //
-    YAHOO.util.Event.on('checkaccount', 'click', function () {
-        var account = document.getElementsByName('account')[0].value;
-        account = encodeURIComponent(account);
-        var url = "/account/checkaccount/format/html/account/"+account;
-        
-    });
-    //
-    YAHOO.util.Event.on('search_asset', 'click', searchAsset);
-    searchAsset();
+    YAHOO.util.Event.on('searchAsset', 'click', searchAsset);
     //
     YAHOO.util.Event.on('search_product' ,'click', searchProduct);
     //
@@ -218,7 +186,7 @@ function search_function() {
 var handleFailure = function(o){alert('error');}
 
 function upload_evidence() {
-    if (!form_confirm(document.poam_detail, 'Upload Evidence')) {
+    if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
         return false;
     }
     // set the encoding for a file upload
@@ -228,7 +196,7 @@ function upload_evidence() {
 }
 
 function ev_deny(formname){
-    if (!form_confirm(document.poam_detail, 'deny the evidence')) {
+    if (!form_confirm(document.finding_detail, 'deny the evidence')) {
         return false;
     }
 
@@ -260,11 +228,11 @@ function ev_deny(formname){
             var comment = document.getElementById('dialog_comment').value;
         }
         form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'DENY';
+        form2.elements['decision'].value = 'DENIED';
         var submitMsa = document.createElement('input');
         submitMsa.type = 'hidden';
         submitMsa.name = 'submit_ea';
-        submitMsa.value = 'DENY';
+        submitMsa.value = 'DENIED';
         form2.appendChild(submitMsa);
         form2.submit();
     }
@@ -308,16 +276,16 @@ function ms_comment(formname){
         var submitMsa = document.createElement('input');
         submitMsa.type = 'hidden';
         submitMsa.name = 'submit_msa';
-        submitMsa.value = 'DENY';
+        submitMsa.value = 'DENIED';
         form2.appendChild(submitMsa);
         form2.submit();
     }
 }
 
 function getProdId(){
-    var trigger= document.getElementsByName('prod_list')[0];
+    var trigger= document.getElementById('productId');
     YAHOO.util.Event.on(trigger, 'change', function (){
-        document.getElementsByName('prod_id')[0].value = trigger.value;
+        document.getElementById('productId').value = trigger.value;
     });
 }
 
@@ -333,21 +301,22 @@ var searchProduct = function (){
     }
     YAHOO.util.Connect.asyncRequest('GET', url, 
     {success: function(o){
-                document.getElementsByName('prod_list')[0].innerHTML = o.responseText;
+                document.getElementById('productId').parentNode.innerHTML = o.responseText;
+                document.getElementById('productId').style.width = "400px";
                 getProdId();
               },
     failure: handleFailure});
 }
 
-function searchAsset(){
-    var trigger = new YAHOO.util.Element('poam-system_id');
+var searchAsset = function() {
+    var trigger = new YAHOO.util.Element('orgSystemId');
     if(trigger.get('id') == undefined){
         return ;
     }
     var sys = trigger.get('value');
     var param =  '';
     if(0 != parseInt(sys)){
-        param +=  '/sid/' + sys;
+        param +=  '/system_id/' + sys;
     }
     var assetInput = YAHOO.util.Selector.query('input.assets');
     for(var i = 0;i < assetInput.length; i++) {
@@ -355,20 +324,26 @@ function searchAsset(){
             param += '/' + assetInput[i].name + '/' + assetInput[i].value;
         }
     }
-    var url = document.getElementById('poam-system_id').getAttribute("url") + param;
+    var url = document.getElementById('orgSystemId').getAttribute("url") + param;
     YAHOO.util.Connect.asyncRequest('GET', url, 
     {success:function (o){
-        document.getElementById('poam-asset_id').parentNode.innerHTML = o.responseText;
-        asset_detail();
+        document.getElementById('assetId').options.length = 0;
+        var records = YAHOO.lang.JSON.parse(o.responseText);
+        records = records.table.records;
+        for(var i=0;i < records.length;i++){
+            document.getElementById('assetId').options.add(new Option(records[i].name, records[i].id));
+        }
     },
     failure: handleFailure});
 }
 
 function asset_detail() {
-    YAHOO.util.Event.on('poam-asset_id', 'change', function (){
+    YAHOO.util.Event.on('assetId', 'change', function (){
         var url = this.getAttribute("url") + this.value;
         YAHOO.util.Connect.asyncRequest('GET', url, {
-            success:function (o){document.getElementById('asset_info').innerHTML = o.responseText},
+            success:function (o){
+                document.getElementById('asset_info').innerHTML = o.responseText
+            },
             failure: handleFailure});
     });
 }
@@ -530,7 +505,7 @@ function switchYear(step){
 function form_confirm (check_form, action) {
     var changed = false;
     
-    elements = YAHOO.util.Selector.query("[name*='poam']");
+    elements = YAHOO.util.Selector.query("[name*='finding']");
     for (var i = 0;i < elements.length; i ++) {
         var tag_name = elements[i].tagName.toUpperCase();
         if (tag_name == 'INPUT') {
@@ -579,7 +554,7 @@ function dump(arr) {
 } 
 
 /* temporary helper function to fix a bug in evidence upload for IE6/IE7 */
-function panel(title, parent, src, html) {
+function panel(title, parent, src, html, callback) {
     var newPanel = new YAHOO.widget.Panel('panel', {width:"540px", modal:true} );
     newPanel.setHeader(title);
     newPanel.setBody("Loading...");
@@ -597,6 +572,8 @@ function panel(title, parent, src, html) {
                                                 o.argument.setBody(o.responseText);
                                                 // Re-center the panel (because the content has changed)
                                                 o.argument.center();
+                                                
+                                                callback();
                                             },
                                             failure: function(o) {alert('Failed to load the specified panel.');},
                                             argument: newPanel
@@ -613,40 +590,23 @@ function panel(title, parent, src, html) {
 var e = YAHOO.util.Event;
 e.onDOMReady(readyFunc);
 
-function callCalendar(evt, ele){
+function callCalendar(evt, ele) {
     showCalendar(ele, ele+'_show');
 }
 
-function showCalendar(block, trigger){
+function showCalendar(block, trigger) {
     var Event = YAHOO.util.Event, Dom = YAHOO.util.Dom, dialog, calendar;
 
     var showBtn = Dom.get(trigger);
     
+    var dialog;
+    var calendar;
+    
     // Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, until the first time the button is clicked.
     if (!dialog) {
-        // Hide Calendar if we click anywhere in the document other than the calendar
-        Event.on(document, "click", function(e) {
-            var el = Event.getTarget(e);
-            var dialogEl = dialog.element;
-            if (el != dialogEl && !Dom.isAncestor(dialogEl, el) && el != showBtn && !Dom.isAncestor(showBtn, el)) {
-                dialog.hide();
-            }
-        });
-        
         function resetHandler() {
-            // Reset the current calendar page to the select date, or 
-            // to today if nothing is selected.
-            var selDates = calendar.getSelectedDates();
-            var resetDate;
-
-            if (selDates.length > 0) {
-                resetDate = selDates[0];
-            } else {
-                resetDate = calendar.today;
-            }
-
-            calendar.cfg.setProperty("pagedate", resetDate);
-            calendar.render();
+            Dom.get(block).value = '';
+            closeHandler();
         }
 
         function closeHandler() {
@@ -655,14 +615,17 @@ function showCalendar(block, trigger){
 
         dialog = new YAHOO.widget.Dialog("container", {
             visible:false,
-            context:["show", "tl", "bl"],
-            buttons:[ {text:"Reset", handler: resetHandler, isDefault:true}, {text:"Close", handler: closeHandler}],
-            draggable:false,
+            context:[block, "tl", "bl"],
+            draggable:true,
             close:true
         });
+        
         dialog.setHeader('Pick A Date');
-        dialog.setBody('<div id="cal"></div>');
+        dialog.setBody('<div id="cal"></div><div class="clear"></div>');
         dialog.render(document.body);
+
+        dialogEl = document.getElementById('container');
+        dialogEl.style.padding = "0px"; // doesn't format itself correctly in safari, for some reason
 
         dialog.showEvent.subscribe(function() {
             if (YAHOO.env.ua.ie) {
@@ -692,12 +655,12 @@ function showCalendar(block, trigger){
                 var mStr = (selDate.getMonth()+1 < 10) ? '0'+(selDate.getMonth()+1) : (selDate.getMonth()+1);
                 var yStr = selDate.getFullYear();
 
-                Dom.get(block).value = yStr + '' + mStr + '' + dStr;
+                Dom.get(block).value = yStr + '-' + mStr + '-' + dStr;
             } else {
                 Dom.get(block).value = "";
             }
             dialog.hide();
-            if ('poam[action_current_date]' == Dom.get(block).name) {
+            if ('finding[expectedCompletionDate]' == Dom.get(block).name) {
                 validateEcd();
             }
         });

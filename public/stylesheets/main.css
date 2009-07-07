@@ -1,6 +1,37 @@
 /* @override http://localhost/stylesheets/main.css */
-
-@import url('layout.css');
+/*******************************************************************************
+ *
+ * main.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *******************************************************************************
+ *
+ * The main style sheet for OpenFISMA. This includes all of the non-YUI,
+ * foundational styles.
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/mw/index.php?title=License
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
 
 /* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
  * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
@@ -161,20 +192,20 @@ div#footerLinks {
 }
 
 /* Used to display search criteria & filters at the top of various pages */
-table.searchFilters {
+.searchFilters {
+	text-align: center;
     background-color: #ebebeb;
     margin: 10px auto;
     border: 1px solid #cecece;
-    padding: 10px 10px;
+    padding: 5px 10px;
 }
 
-table.searchFilters td {
-    padding: 3px 8px;
-    font-weight: bold;
+.searchField {
+    position: relative;
+    top: 3px;
 }
-
-table.searchFilters td a {
-    font-weight: normal;
+.searchFilters select {
+    margin-right: 10px;
 }
 
 /* This table is used to display key-value pairs, such as on the remediation
@@ -266,29 +297,61 @@ div.formValue {
 
 div.subform {
     margin: 15px 0px;
+    float: left;
 }
 
 table.fisma_crud {
     margin: 0px 15px;
-    background-color: #e3e3e3;
-    border: 1px solid #bebebe;
+    background-color: #f0f0f0;
+    border: 1px dotted #c0c0c0;
 }
 
-table.fisma_crud tr td {
+table.fisma_crud tr td, table.fisma_crud tr td input {
     font-family: 'Verdana', 'Arial', 'Helvetica';
-    color: #44637a;
+    color: #404040;
     font-weight: bold;
     font-size: 12px;
     padding: 3px 5px;
 }
 
+/* 
+This class indicates that the item should have a tooltip associated with it.
+The tooltip itself is added with YUI.
+*/
+span.tooltip {
+	padding: 0px 2px 2px 22px;
+	background: url(/images/tooltip.png) no-repeat;
+	cursor: help;
+}
+
+/* This is the style for the tooltip itself. The style must be marked !important
+   so that YUI won't override it.
+*/
+.yui-tt .bd {
+    border: none ! important;
+    background-color: #f0f0f0 ! important;
+    opacity: .9 ! important;
+}
+
+.yui-tt-shadow-visible {
+	top: -5px ! important;
+	left: -5px ! important;
+	bottom: -5px ! important;
+	right: -5px ! important;
+    background-color: orange ! important;
+    opacity: 0.5 ! important;
+}
+
 table.fisma_crud tr td:first-child {
     text-align: right;
+    background-repeat: no-repeat;
 }
 
 
-table.fisma_crud tr.fisma_checkboxes td {
+table.fisma_crud ul li {
     text-align: left;
+    list-style: none;
+    padding-top:2px;
 }
 
 /* This is used for Rules of Behavior, Privacy Policy, etc. */
@@ -361,3 +424,74 @@ div#msgbar {
     background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;
     height:8em; /* hold some space while loading */
 }
+
+/* The following styles are for the organization tree view icons */
+.agency {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/agency-small.png) no-repeat;
+}
+
+.bureau {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/bureau-small.png) no-repeat;
+}
+
+.organization {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/organization-small.png) no-repeat;
+}
+
+.gss {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/gss-small.png) no-repeat;
+}
+
+.major {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/major-small.png) no-repeat;
+}
+
+.minor {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/minor-small.png) no-repeat;
+}
+
+/* 
+Styles for displaying system documentation
+*/
+table.systemDocuments {
+    border: 1px solid lightgrey;
+}
+
+table.systemDocuments th {
+    font-weight: bold;
+    padding: 10px;
+    background: lightgrey;
+}
+
+table.systemDocuments td {
+    padding: 10px;
+    margin-top: 10px;
+}
+
+table.systemDocuments td:first-child:hover {
+    border: 1px solid orange;
+    background-color: #fff0c5;
+    margin-top: 10px;
+}
+
+table.systemDocuments td a {
+    color: black;
+}
+
+table.systemDocuments td img {
+	float: left;
+	margin-right: 10px;
+}
+

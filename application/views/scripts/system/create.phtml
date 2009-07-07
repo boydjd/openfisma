@@ -1,4 +1,6 @@
-<?php Fisma_Format_Section::startSection("{$this->title} System Information"); ?>
+<?php 
+echo $this->partial('system/searchbox.phtml');
+Fisma_Format_Section::startSection("{$this->title} System Information"); ?>
 
 <div class="form_box">
     <font color="blue">*</font> = Required Field 

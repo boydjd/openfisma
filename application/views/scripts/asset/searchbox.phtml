@@ -1,67 +1,24 @@
-<?php
-    // Prepending an element with array_merge or array_unshift has the side-effect of renumbering the indices. Using the
-    // + operator does not have this limitation, however.
-    if (is_array($this->system_list)) {
-        $this->system_list = array('--Any--') + $this->system_list;
-    } else {
-        $this->system_list = array('--Any--');
-    }
-    /* perserve the searching criteria in links */
-    $url = '/panel/asset/sub/searchbox/s/search';
-    if(!empty($this->criteria['system_id'])){
-        $url .='/system_id/'.$this->criteria['system_id'];
-    }else{
-        $this->criteria['system_id'] = 0;
-    }
-    if(!empty($this->criteria['vendor'])){
-        $url .='/vendor/'.$this->criteria['vendor'];
-    }
-    if(!empty($this->criteria['product'])){
-        $url .='/product/'.$this->criteria['product'];
-    }
-    if(!empty($this->criteria['version'])){
-        $url .='/version/'.$this->criteria['version'];
-    }
-    if(!empty($this->criteria['ip'])){
-        $url .='/ip/'.$this->criteria['ip'];
-    }
-    if(!empty($this->criteria['port'])){
-        $url .='/port/'.$this->criteria['port'];
-    }
-    if(!empty($this->criteria['p'])){
-        $url .='/p/'.$this->criteria['p'];
-    }
-?>
-<form action="/panel/asset/sub/searchbox/s/search" method="post">
-    <table class="searchFilters">
+<form action="/panel/asset/sub/list" method="post">
+    <div class="searchFilters" >
+        <table width="100%" style="text-align:left">
         <tr>
             <td><b>System:</b></td>
-            <td><?php echo $this->formSelect('system_id',$this->criteria['system_id'],null, $this->system_list);?></td>
+            <td><?php echo $this->formSelect('system_id', $this->criteria['system_id'], null, $this->systemList); ?></td>
             <td><b>Vendor:</b></td>
             <td><input name="vendor" type="text" id="vendor" value="<?php echo $this->criteria['vendor'];?>"></td>
             <td><b>Product Name:</b></td>
             <td><input type="text" name="product" value="<?php echo $this->criteria['product'];?>"></td>
             <td>&nbsp;</td>
-            <td><?php echo new Fisma_Yui_Form_Button_Submit('assetSearchSubmit', array('value' => 'Search')); ?></td>
         </tr>
         <tr>
             <td><b>IP Address:</b></td>
             <td><input type="text" name="ip" value="<?php echo $this->criteria['ip'];?>" maxlength="23"></td>
-            <td><b>Port</b></td>
+            <td><b>Port:</b></td>
             <td><input type="text" name="port" value="<?php echo $this->criteria['port'];?>" size="10"></td>
             <td><b>Version:</b></td>
-            <td><input name="version" type="text" id="version" value="<?php echo $this->criteria['version'];?>"></td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
+            <td><input type="text" value="" id="version" name="version" value="<?php echo $this->criteria['version'];?>"/></td>
+            <td><?php echo new Fisma_Yui_Form_Button_Submit('assetSearchSubmit', array('label' => 'Search')); ?></td>
         </tr>
-    </table>
+        </table>
+    </div>
 </form>
-
-<?php 
-    echo $this->partial('asset/sublist.phtml',array('asset_list'=>$this->asset_list,
-                                                    'url'=>$url,
-                                                    'links'=>$this->links,
-                                                    'acl'=>$this->acl,
-                                                    'columns' => $this->assetColumns
-                                                    ));
-?>

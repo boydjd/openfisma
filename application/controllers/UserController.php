@@ -17,622 +17,423 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
  * @package   Controller
  */
-
+ 
 /**
- * Handles CRUD for "user" objects.
+ * CRUD for Account manipulation
  *
  * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class UserController extends MessageController
+class UserController extends BaseController
 {
-    /**
-     * The current user for this session.
-     *
-     * @var User
-     */
-    private $_user = null;
+    protected $_modelName = 'User';
+
 
     /**
-     * The Zend_Auth identity corresponding to the current user.
-     *
-     * @var Zend_Auth
+     * init() - Initialize internal members.
      */
-    private $_me = null;
-
-    /**
-     * The message displayed to the user when their e-mail address needs validation.
-     */
-    const VALIDATION_MESSAGE = "<br />Because you changed your e-mail address, we have sent you a confirmation message.
-                                <br />You will need to confirm the validity of your new e-mail address before you will
-                                receive any e-mail notifications.";
-
-    /**
-     * A session cookie that stores a bitmap of which columns the user wants to view on the search page. 
-     */
-    const COOKIE_NAME = 'search_columns_pref';
-    
-    /**
-     * init() - Initialize internal data structures.
-     */         
     public function init()
     {
+        parent::init();
         $this->_user = new User();
-        $this->_me = Zend_Auth::getInstance()->getIdentity();
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('checkaccount', 'html')
+                    ->initContext();
     }
-
+    
     /**
-     * Handling user login
-     * 
-     * The login process basically verifies the credential provided by the user. The authentication can also
-     * be performed against the database as well as it is delegated to third partypassword, such as LDAP, 
-     * according to the application's configuration. Besides, it enforeces the security policies set by the
-     * application. Relative behaviors are logged and the user's preference are initialized by cookie after the
-     * user successfully login.
+     * Get the specific form of the subject model
      */
-    public function loginAction()
+    public function getForm() 
     {
-        $req = $this->getRequest();
-        $username = $req->getPost('username');
-        $password = $req->getPost('userpass');
-
-        // If the username isn't passed in the post variables, then just display
-        // the login screen without any further processing.
-        $this->_helper->layout->setLayout('login');
-        if ( empty($username) ) {
-            return $this->render();
+        $form = Fisma_Form_Manager::loadForm('account');
+        if (in_array($this->_request->getActionName(), array('create', 'edit'))) {
+            if ('create' == $this->_request->getActionName()) {
+                $form->getElement('password')->setRequired(true);
+            }
+            $this->view->requirements =  $this->_getPasswordRequirements();
+        }
+        $roles  = Doctrine_Query::create()
+                    ->select('*')
+                    ->from('Role')
+                    ->execute();
+        foreach ($roles as $role) {
+            $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
+        }
+        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
+        $q = Doctrine_Query::create()
+                ->select('o.id, o.name, o.level')
+                ->from('Organization o');
+        $organizationTreeObject->setBaseQuery($q);
+        $organizationTree = $organizationTreeObject->fetchTree();
+        $orgs = $form->getElement('organizations');
+        foreach ($organizationTree as $organization) {
+            $orgs->addCheckbox($organization['id'], 
+                                         $organization['name'],
+                                         $organization['level']);
+        }
+        if (Configuration::getConfig('auth_type') == 'database') {
+            $form->removeElement('checkAccount');
         } else {
-            $this->view->username = $username;
-            $this->view->password = $password;
+            $form->removeElement('generate_password');
         }
-        try {
-            /**
-             * @todo Fix this SQL injection
-             */
-            $where = $this->_user->getAdapter()->quoteInto('account = ?', $username);
-            $whologin = $this->_user->fetchRow($where);
-            $now = new Zend_Date();
-
-            // If the username isn't found, throw an exception
-            if (empty($whologin)) {
-                $this->_user->log('LOGINFAILURE', '', 'Failure');
-                throw new Zend_Auth_Exception("Incorrect username or password");
-            }
-
-            $threshold['failure'] = Fisma_Controller_Front::readSysConfig("failure_threshold");
-            $searchColumnsPref = $whologin->searchColumnsPref;
-            $whologin = $whologin->toArray();
-
-            $failureCount = $whologin['failure_count'];
-            $isQualified = $whologin['is_active'];
-            // If the account is locked...
-            // (due to manual lock, expired account, password errors, etc.)
-            if ('database' == Fisma_Controller_Front::readSysConfig('auth_type')) {
-                if (!$isQualified) {
-                    if ($failureCount >= $threshold['failure']) {
-                        if (Fisma_Controller_Front::readSysConfig('unlock_enabled')) {
-                            $unlockDuration = Fisma_Controller_Front::readSysConfig('unlock_duration');
-                            // If the system administrator has elected to have accounts
-                            // unlock automatically, then calculate how much time is
-                            // left on the lock.
-                            $terminationTs = new Zend_Date($whologin['termination_ts'], Zend_Date::ISO_8601);
-                            $terminationTs->add($unlockDuration, Zend_Date::SECOND);
-                            //beyond the time limited, unlock automatically
-                            if ($terminationTs->isLater($now)) {
-                                $reincarnation = clone $now;
-                                $terminationTs->sub($now);
-                                throw new Zend_Auth_Exception('Your user account has been locked due to '
-                                . $threshold['failure']
-                                . " or more unsuccessful login attempts. Your account will be"
-                                . " unlocked in ".ceil($terminationTs->getTimestamp()/60)
-                                . " minutes. Please try again at that time.<br>"
-                                . " You may also contact the Administrator for further assistance.");
-                            } else {
-                                $array = array('is_active'=>1, 'failure_count'=>0);
-                                $this->_user->update($array, 'id = '.$whologin['id']);
-                            }
-                            $isQualified = true;
-                        } else {
-                            throw new Zend_Auth_Exception('Your user account has been locked due to '
-                            . $threshold['failure']
-                            . ' or more unsuccessful login attempts. Please contact the'
-                            . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
-                            . '">Administrator</a>.');
-                        }
-                    } else { //administrator manually lock it
-                        throw new Zend_Auth_Exception('Your account has been locked by the Administrator. '
-                        . 'Please contact the'
-                        . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
-                        . '">Administrator</a>.');
-                    }
-                }//deactive policy
-            } // database password policy
-
-            // Proceed through authorization based on the configured mechanism
-            // (LDAP, Database, etc.)
-            $authType = Fisma_Controller_Front::readSysConfig('auth_type');
-            $auth = Zend_Auth::getInstance();
-            $result = $this->authenticate($authType, $username, $password);
-
-            if (!$result->isValid()) {
-                $this->_user->log('LOGINFAILURE',
-                $whologin['id'],
-                'Failure');
-                throw new Zend_Auth_Exception("Incorrect username or password");
-            }
-
-            // At this point, the user is authenticated.
-            // Now check if the account has expired.
-            $_me = (object)$whologin;
-            $period = Fisma_Controller_Front::readSysConfig('max_absent_time');
-            $deactiveTime = new Zend_Date();
-            $deactiveTime->sub($period, Zend_Date::DAY);
-            $lastLogin = new Zend_Date($whologin['last_login_ts'],
-            'YYYY-MM-DD HH-MI-SS');
-
-            if ( !$lastLogin->equals(new Zend_Date('0000-00-00 00:00:00')) && $lastLogin->isEarlier($deactiveTime) ) {
-                $this->_user->log('ACCOUNT_LOCKOUT', $_me->id, "User Account $_me->account Successfully Locked");
-                throw new Zend_Auth_Exception("Your account has been locked because you have not logged in for $period"
-                . "or more days. Please contact the <a href=\"mailto:"
-                . Fisma_Controller_Front::readSysConfig('contact_email')
-                . '">Administrator</a>.');
-            }
-
-            // If we get this far, then the login is totally successful.
-            $this->_user->log('LOGIN', $_me->id, "Success");
-            // get the default preference value from database
-            $value = empty($searchColumnsPref) ? $this->_user->setColumnPreference($_me->id) : $searchColumnsPref;
-            // set cookie for 'column manager' to control the columns whether visible
-            // Persistent cookies are prohibited on U.S. government web servers by federal law. 
-            // This cookie will expire at the end of the session."
-            setcookie(self::COOKIE_NAME, $value, false, '/');
-            // Initialize the Access Control
-            $nickname = $this->_user->getRoles($_me->id);
-            foreach ($nickname as $n) {
-                $_me->roleArray[] = $n['nickname'];
-            }
-            if (empty( $_me->roleArray )) {
-                $_me->roleArray[] = $_me->account . '_r';
-            }
-
-            // Set up the session timeout
-            $store = $auth->getStorage();
-            $exps = new Zend_Session_Namespace($store->getNamespace());
-            $exps->setExpirationSeconds(Fisma_Controller_Front::readSysConfig('expiring_seconds'));
-            $store->write($_me);
-
-            //check password expire
-            $passExpirePeriod = Fisma_Controller_Front::readSysConfig('pass_expire');
-            $passWarningDays  = Fisma_Controller_Front::readSysConfig('pass_warningdays');
-            $passwordTs = new Zend_Date($whologin['password_ts'], 'Y-m-d');
-            //show warning ahead of time
-            $passwordTs->add($passExpirePeriod-$passWarningDays, Zend_Date::DAY); 
-            if ($now->isLater($passwordTs)) {
-                $passwordTs->add($passWarningDays, Zend_Date::DAY);
-                $passwordTs->sub($now);
-                $leaveDays = intval($passwordTs->get('DAY'));
-                if ($leaveDays <= $passWarningDays) {
-                    $message = "Your password will expire in $leaveDays days, ".
-                    " you may change it here.";
-                    $model = self::M_WARNING;
-                    $this->message($message, $model);
-                    // redirect back to password change action
-                    $this->_helper->_actionStack('header', 'Panel');
-                    $this->_forward('password');
-                } else {
-                    $this->_user->log('ACCOUNT_LOCKOUT',
-                    $_me->id,
-                    "User Account $_me->account Successfully Locked");
-                    throw new Zend_Auth_Exception('Your user account has been locked because you have not'
-                    . " changed your password for $passExpirePeriod or more days."
-                    . ' Please contact the'
-                    . ' <a href="mailto:'. Fisma_Controller_Front::readSysConfig('contact_email')
-                    . '">Administrator</a>.');
-                }
-            } else if ('md5' == $whologin['hash']) {
-                $message = 'This version of the application uses an improved password storage scheme.'
-                . ' You will need to change your password in order to upgrade your account.';
-                $this->message($message, self::M_WARNING);
-                $this->_helper->_actionStack('header', 'Panel');
-                $this->_forward('password');
-            } else {
-                // Check to see if the user needs to review the rules of behavior.
-                // If they do, then send them to that page. Otherwise, send them to
-                // the dashboard.
-                $nextRobReview = new Zend_Date($whologin['last_rob'], 'Y-m-d');
-                $nextRobReview->add(Fisma_Controller_Front::readSysConfig('rob_duration'), Zend_Date::DAY);
-                if ($now->isEarlier($nextRobReview)) {
-                    $redirectInfo = new Zend_Session_Namespace('redirect_page');
-                    if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
-                        $path = $redirectInfo->page;
-                        unset($redirectInfo->page);
-                        $this->_response->setRedirect($path);
-                    }
-                    $this->_forward('index', 'Panel');
-                } else {
-                    $this->_helper->layout->setLayout('notice');
-                    return $this->render('rule');
-                }
-            }
-        } catch(Zend_Auth_Exception $e) {
-            $this->view->assign('error', $e->getMessage());
-        }
+        
+        $form = Fisma_Form_Manager::prepareForm($form);
+        return $form;
     }
 
     /**
-     * store user last accept rob
-     * create a audit event
-     */
-    public function acceptrobAction() {
-        $now = new Zend_Date();
-        $nowSqlString = $now->toString('Y-m-d H:i:s');
-        $this->_user->update(array('last_rob'=>$nowSqlString), 'id = '.$this->_me->id);
-        $this->_user->log('ROB_ACCEPT', $this->_me->id, 'Digitally accepted the Rules of Behavior');
-        $this->_forward('index', 'Panel');
-    }
-
-    /**
-     * logoutAction() - Close out the current user's session.
-     */
-    public function logoutAction() {
-        if (!empty($this->_me)) {
-            $this->_user->log('LOGOUT', $this->_me->id, 'Success');
-            $notification = new Notification();
-            $notification->add(Notification::ACCOUNT_LOGOUT, null, "User: {$this->_me->account}");
-            Zend_Auth::getInstance()->clearIdentity();
-        }
-        $this->_forward('login');
-    }
-
-    /**
-     * getProfileForm() - Returns the standard form for reading, and updating
+     * Returns the standard form for reading, and updating
      * the current user's profile.
      *
      * @return Zend_Form
      *
      * @todo This function is not named correctly
      */
-    public function getProfileForm()
+    private function _getProfileForm()
     {
         $form = Fisma_Form_Manager::loadForm('account');
-        $form->removeElement('account');
+        $form->removeElement('username');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
-        $form->removeElement('checkaccount');
+        $form->removeElement('checkAccount');
         $form->removeElement('generate_password');
         $form->removeElement('role');
-        $form->removeElement('is_active');
+        $form->removeElement('locked');
+        $form->removeElement('organizations');
+        return $form;
+    }
+
+
+    /** 
+     * Set the Roles, organization relation before save the model
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     * @return Doctrine_Record
+     */
+    protected function saveValue($form, $subject=null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } elseif (!($subject instanceof Doctrine_Record)) {
+            /** @todo english */
+            throw new Fisma_Exception('Invalid parameter expecting a Record model');
+        }
+        $values = $form->getValues();
+        if (empty($values['password'])) {
+            unset($values['password']);
+        }
+        $subject->merge($values);
+        $subject->unlink('Roles');
+        $subject->link('Roles', $values['role']);
+
+        $subject->unlink('Organizations');
+        $subject->link('Organizations', $values['organizations']);
+        $subject->save();
+    }
+
+    /**
+     * Get the Roles and the organization from the model and assign them to the form
+     *
+     * @param Doctrine_Record|null $subject
+     * @param Zend_Form $form
+     * @return Doctrine_Record
+     */
+    protected function setForm($subject, $form)
+    {
+        $roleId = $subject->Roles[0]->id;
+        $form->setDefaults($subject->toArray());
+        $form->getElement('role')->setValue($roleId);
+        $orgs = $subject->Organizations;
+        $orgIds = array();
+        foreach ($orgs as $o) {
+            $orgIds[] = $o->id;
+        }
+        $form->getElement('organizations')->setValue($orgIds);
         return $form;
     }
 
     /**
-     * profileAction() - Display the user's "Edit Profile" page.
-     *
-     * @todo Cleanup this method: comments and formatting
+     * Display the user's "Edit Profile" page and handle its updating
      */
     public function profileAction()
     {
-        // Profile Form
-        $form = $this->getProfileForm();
-        $query = $this->_user
-        ->select()->setIntegrityCheck(false)
-        ->from('users',
-        array('name_last',
-        'name_first',
-        'phone_office',
-        'phone_mobile',
-        'email',
-        'title'))
-        ->where('id = ?', $this->_me->id);
-        $userProfile = $this->_user->fetchRow($query)->toArray();
-        $form->setAction("/panel/user/sub/updateprofile");
-        $form->setDefaults($userProfile);
-        $this->view->assign('form', Fisma_Form_Manager::prepareForm($form));
-
+        $form = $this->_getProfileForm();
+        //$user = Doctrine::getTable('User')->find($this->_me->id);
+        $user = $this->_me;
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            if ($form->isValid($post)) {
+                $user->merge($form->getValues());
+                try {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $modified = $user->getModified();
+                    $user->save();
+                    Doctrine_Manager::connection()->commit();
+                    /** @todo english */
+                    $message = "Your profile modified successfully."; 
+                    if (isset($modified['email'])) {
+                        $mail = new Fisma_Mail();
+                        if ($mail->validateEmail($user, $modified['email'])) {
+                            /** @todo english */
+                            $message .= "<br>And a validation email has sent to your new email, " . 
+                                "you will not receive the system notices until you validate it.";
+                        } 
+                    }
+                    $model   = self::M_NOTICE;
+                } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
+                    $message = $e->getMessage();
+                    $model   = self::M_WARNING;
+                }
+            } else {
+                $errorString = Fisma_Form_Manager::getErrors($form);
+                $message     = "Unable to update profile:<br>" . $errorString;
+                $model       = self::M_WARNING;
+            }
+            $this->message($message, $model);
+        } else {
+            $form->setDefaults($user->toArray());
+        }
+        $this->view->form    = Fisma_Form_Manager::prepareForm($form);
     }
 
     /**
-     * passwordAction() - Display the change password page
+     * Change user's password
      */
     public function passwordAction()
     {
+        // This action isn't allowed unless the system's authorization is based on the database
+        if ('database' != Configuration::getConfig('auth_type')) {
+            throw new Fisma_Exception('Password action is not allowed when the authentication type is not "database"');
+        }
+        
         // Load the change password file
-        $passwordForm = Fisma_Form_Manager::loadForm('change_password');
-        $passwordForm = Fisma_Form_Manager::prepareForm($passwordForm);
+        $form = Fisma_Form_Manager::loadForm('change_password');
+        $form = Fisma_Form_Manager::prepareForm($form);
 
-        // Prepare the password requirements explanation:
-        $requirements[] = "Length must be between "
-        . Fisma_Controller_Front::readSysConfig('pass_min')
-        . " and "
-        . Fisma_Controller_Front::readSysConfig('pass_max')
-        . " characters long.";
-        if (Fisma_Controller_Front::readSysConfig('pass_uppercase') == 1) {
-            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
-        }
-        if (Fisma_Controller_Front::readSysConfig('pass_lowercase') == 1) {
-            $requirements[] = "Must contain at least 1 lower case character (a-z)";
-        }
-        if (Fisma_Controller_Front::readSysConfig('pass_numerical') == 1) {
-            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
-        }
-        if (Fisma_Controller_Front::readSysConfig('pass_special') == 1) {
-            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
-        }
+        $this->view->requirements =  $this->_getPasswordRequirements();
+        $post   = $this->_request->getPost();
 
-        $this->view->assign('requirements', $requirements);
-        $this->view->assign('form', $passwordForm);
+        if ($post['oldPassword']) {
+
+            if ($form->isValid($post)) {
+                $user = Doctrine::getTable('User')->find($this->_me->id);
+                $user->password = $post['newPassword'];
+                try {
+                    $user->save();
+                    /** @todo english */
+                    $message = "Your password modified successfully."; 
+                    $model   = self::M_NOTICE;
+                } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
+                    $message = $e->getMessage();
+                    $model   = self::M_WARNING;
+                }
+            } else {
+                $errorString = Fisma_Form_Manager::getErrors($form);
+                $message     = "Unable to change password:<br>" . $errorString;
+                $model       = self::M_WARNING;
+            }
+            $this->message($message, $model);
+        }
+        $this->view->form    =  $form;
     }
 
     /**
-     * notificationsAction() - Display the user's "Edit Profile" page.
-     *
-     * @todo Cleanup this method: comments and formatting
+     *  Set user's notification policy
      */
-    public function notificationsAction()
+    public function notificationAction()
     {
-        // assign notification events
-        $event = new Event();
+        $user = Doctrine::getTable('User')->find($this->_me->id);
 
-        $ret = $this->_user->find($this->_me->id);
-        $this->view->notify_frequency = $ret->current()->notify_frequency;
-        $this->view->notify_email = $ret->current()->notify_email;
-        $allEvent = $event->getUserAllEvents($this->_me->id);
-        $enabledEvent = $event->getEnabledEvents($this->_me->id);
+        if ($this->_request->isPost()) {
+            //@todo check injection
+            $user->notifyFrequency = $this->_request->getParam('notify_frequency');
+            $user->notifyEmail     = $this->_request->getParam('notify_email');
 
-        $this->view->availableList = array_diff($allEvent, $enabledEvent);
-        $this->view->enableList = array_intersect($allEvent, $enabledEvent);
-    }
+            $postEvents = $this->_request->getPost('existEvents');
+            try {
+                Doctrine_Manager::connection()->beginTransaction();
+                $modified = $user->getModified();
 
-    /**
-     * updateprofileAction() - Handle any edits to a user's profile settings.
-     *
-     * @todo Cleanup this method: comments and formatting
-     * @todo This method is named incorrectly
-     */
-    public function updateprofileAction()
-    {
-        // Load the account form in order to perform validations.
-        $form = $this->getProfileForm();
-        $formValid = $form->isValid($_POST);
-        $profileData = $form->getValues();
-        unset($profileData['save']);
+                $user->unlink('Events');
+                $user->link('Events', $postEvents);
+                $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
+                $user->save();
+                Doctrine_Manager::connection()->commit();
 
-        if ($formValid) {
-            $result = $this->_user->find($this->_me->id);
-            $originalEmail = $result->current()->email;
-            $notifyEmail = $result->current()->notify_email;
-            $ret = $this->_user->update($profileData, 'id = '.$this->_me->id);
-            if ($ret == 1) {
-                $this->_user
-                ->log('ACCOUNT_MODIFICATION',
-                $this->_me->id,
-                "User Account {$this->_me->account} Successfully Modified");
-                $msg = "Profile modified successfully.";
-
-                if ($originalEmail != $profileData['email']
-                && empty($notifyEmail)) {
-                    $this->_user->update(array('email_validate'=>0), 'id = '.$this->_me->id);
-                    $result = $this->emailvalidate($this->_me->id, $profileData['email'], 'update');
-                    if (true == $result) {
-                        $msg .= self::VALIDATION_MESSAGE;
+                /** @todo english, also see the follow */
+                $message = "Notification events modified successfully.";
+                $model   = self::M_NOTICE;
+                if ($modified['notifyEmail']) {
+                    $mail = new Fisma_Mail();
+                    if ($mail->validateEmail($user, $modified['notifyEmail'])) {
+                        /** @todo english, also see the follow */
+                        $message .= "<br>And a validation email has sent to your new notify email, " . 
+                         "you will not receive the follow events notifications until you validate it.";
+                    } else {
+                        $message .= "<br>But the validation email is unable to sent to your new " .
+                        "notify email, and you will not receive the follow events notifications." .
+                        "Please check your email";
+                        $model = self::M_WARNING;
                     }
                 }
-                $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
-                $this->message($msg, self::M_NOTICE);
-            } else {
-                $this->message("Unable to update account. ($ret)",
-                self::M_WARNING);
+            } catch (Doctrine_Exception $e) {
+                Doctrine_Manager::connection()->rollback();
+                $message = $e->getMessage();
+                $model   = self::M_WARNING;
             }
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            $this->message("Unable to update account:<br>" . $errorString, self::M_WARNING);
+            $this->message($message, $model);
         }
-        $this->_forward('profile');
+
+        $this->view->me = $user;
     }
 
+
     /**
-     * savenotifyAction() - Handle any edits to a user's notification settings.
+     * Get the password complex requirements
      *
-     * @todo Cleanup this method: comments and formatting
-     * @todo This method is named incorrectly
+     * @return array 
      */
-    public function savenotifyAction()
+    private function _getPasswordRequirements()
     {
-        $event = new Event();
-        $data = $this->_request->getPost();
-        $row = $this->_user->find($this->_me->id);
-        $originalEmail = $row->current()->notify_email;
-
-        if (!isset($data['enableEvents'])) {
-            $data['enableEvents'] = array();
+        $requirements[] = "Length must be between "
+        . Configuration::getConfig('pass_min_length')
+        . " and "
+        . Configuration::getConfig('pass_max_length')
+        . " characters long.";
+        if (Configuration::getConfig('pass_uppercase') == 1) {
+            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
         }
-        $event->saveEnabledEvents($this->_me->id, $data['enableEvents']);
-        $notifyData = array('notify_frequency' => $data['notify_frequency'],
-        'notify_email' => $data['notify_email']);
-        $ret = $this->_user->update($notifyData, "id = " . $this->_me->id);
-        if ($ret > 0 || 0 == $ret) {
-            $msg = "Notification events modified successfully.";
-            $model = self::M_NOTICE;
-        } else {
-            $msg = "Failed to update the notification events.";
-            $model = self::M_WARNING;
+        if (Configuration::getConfig('pass_lowercase') == 1) {
+            $requirements[] = "Must contain at least 1 lower case character (a-z)";
         }
-
-
-        if ($originalEmail != $data['notify_email'] && $data['notify_email'] != '') {
-            $this->_user
-            ->update(array('email_validate'=>0), 'id = ' . $this->_me->id);
-            $result = $this->emailvalidate($this->_me->id, $data['notify_email'], 'update');
-            if (true == $result) {
-                $msg .= self::VALIDATION_MESSAGE;
-            }
+        if (Configuration::getConfig('pass_numerical') == 1) {
+            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
-
-        $this->view->setScriptPath(Fisma_Controller_Front::getPath('application') . '/views/scripts');
-        $this->message($msg, $model);
-        $this->_forward('notifications');
+        if (Configuration::getConfig('pass_special') == 1) {
+            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
+        }
+        return $requirements;
     }
 
-
-    /**
-     * pwdchangeAction() - Handle any edits to a user's profile settings.
-     *
-     * @todo Cleanup this method: comments and formatting
-     * @todo This method is named incorrectly
-     */
-    public function pwdchangeAction()
-    {
-        $req = $this->getRequest();
-        $userRow = $this->_user->find($this->_me->id)->current();
-        if ('save' == $req->getParam('s')) {
-            $post = $req->getPost();
-            $passwordForm = Fisma_Form_Manager::loadForm('change_password');
-            $passwordForm = Fisma_Form_Manager::prepareForm($passwordForm);
-            $oldPassword = $passwordForm->getElement('oldPassword');
-            $oldPassword->addValidator(new Fisma_Form_Validator_PasswdMatch($userRow));
-            $password = $passwordForm->getElement('newPassword');
-            $password->addValidator(new Fisma_Form_Validator_Password($userRow));
-            $formValid = $passwordForm->isValid($post);
-            if (!$formValid) {
-                $errorString = Fisma_Form_Manager::getErrors($passwordForm);
-                // Error message
-                $msg = "Unable to change password:<br>".$errorString;
-                $model = self::M_WARNING;
-            } else {
-                $newPass = $this->_user->digest($req->newPassword);
-                $historyPass = $userRow->historyPassword;
-                $count = substr_count($historyPass, ':');
-                if (3 == $count) {
-                    $historyPass = substr($historyPass, 0, -strlen(strrchr($historyPass, ':')));
-                }
-                $historyPass = ':' . $userRow->password . $historyPass;
-                $now = date('Y-m-d H:i:s');
-                $data = array(
-                'password' => $newPass,
-                'hash'     => Fisma_Controller_Front::readSysConfig('encrypt'),
-                'history_password' => $historyPass,
-                'password_ts' => $now
-                );
-                $result = $this->_user->update($data,
-                'id = ' . $this->_me->id);
-                if (!$result) {
-                    $msg = 'Failed to change the password';
-                    $model = self::M_WARNING;
-                } else {
-                    $msg = 'Password changed successfully';
-                    $model = self::M_NOTICE;
-                }
-            }
-            $this->message($msg, $model);
-        }
-        $this->_forward('password');
-    }
-
-    /**
-     * authenticate() - Authenticate the user against LDAP or backend database.
-     *
-     * @param string $type The type of authorization ('ldap' or 'database')
-     * @param string $username Username for login
-     * @param string $password Password for login
-     * @return Zend_Auth_Result
-     */
-    protected function authenticate($type, $username, $password) {
-        $db = Zend_Registry::get('db');
-
-        // The root user is always authenticated against the database.
-        if ($username == 'root') {
-            $type = 'database';
-        }
-
-        // Handle LDAP or database authentication for non-root users.
-        if ($type == 'ldap') {
-            $config = new Config();
-            $data = $config->getLdap();
-            $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
-        } else if ($type == 'database') {
-            $authAdapter = new Zend_Auth_Adapter_DbTable($db, 'users', 'account', 'password');
-            $digestPass = $this->_user->digest($password, $username);
-            $authAdapter->setIdentity($username)->setCredential($digestPass);
-        }
-
-        $auth = Zend_Auth::getInstance();
-        return $auth->authenticate($authAdapter);
-    }
-
-    /**
-     * privacyAction() - Display the system's privacy policy.
-     *
-     * @todo the business logic is stored in the view instead of the controller
-     */
-    public function privacyAction()
-    {
-    }
-
-    /**
-     * robAction() - Display the system's Rules Of Behavior.
-     *
-     * @todo the business logic is stored in the view instead of the controller
-     * @todo rename this function to rulesOfBehaviorAction -- that name is
-     * easier to understand
-     */
-    public function robAction()
-    {
-    }
-
-    /**
-     * emailvalidateAction() - Validate the user's e-mail change.
-     *
-     * @todo Cleanup this method: comments and formatting
-     */
-    public function emailvalidateAction()
-    {
-        $userId = $this->_request->getParam('id');
-        $ret = $this->_user->find($userId);
-        $userEmail = $ret->current()->email;
-        $notifyEmail = $ret->current()->notify_email;
-        $email = !empty($notifyEmail)?$notifyEmail:$userEmail;
-        $query = $this->_user
-        ->getAdapter()
-        ->select()
-        ->from('validate_emails', 'validate_code')
-        ->where('user_id = ?', $userId)
-        ->where('email = ?', $email)
-        ->order('id DESC');
-        $ret = $this->_user->getAdapter()->fetchRow($query);
-        if ($this->_request->getParam('code') == $ret['validate_code']) {
-            $this->_user->getAdapter()->delete('validate_emails', 'user_id = '.$userId);
-            $this->_user->update(array('email_validate'=>1), 'id = '.$userId);
-            $msg = "Your e-mail address has been validated. You may close this window or click <a href='http://"
-            . $_SERVER['HTTP_HOST']
-            . "'>here</a> to enter "
-            . Fisma_Controller_Front::readSysConfig('system_name')
-            . '.';
-        } else {
-            $msg = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
-        }
-        $this->view->msg = $msg;
-    }
-    
-    
-    /**
-     * This function is callback function.
-     * When you selected a option, 
-     * the values of options is not only saved in cookie
-     * but also saved in database.
-     * This part deals saving in database.
-     * 
-     */
     public function setColumnPreferenceAction()
     {
-        $user = new User();
-        $user->setColumnPreference($this->_me->id, $_COOKIE[self::COOKIE_NAME]);
+        $me = Doctrine::getTable('User')->find($this->_me->id);
+        $me->searchColumnsPref = $_COOKIE['search_columns_pref'];
+        $me->getTable()->getRecordListener()->setOption('disabled', true);
+        $me->save();
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+    }
+    
+    /**
+     * store user last accept rob
+     * create a audit event
+     */
+    public function acceptRobAction() {
+        $user = User::currentUser();
+        $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
+        $user->lastRob = Fisma::now();
+        $user->save();
+        $this->_forward('index', 'Panel');
+    }
+    
+    /**
+     * generate a password that meet the application's password complexity requirements.
+     */
+    public function generatePasswordAction()
+    {
+        $passLengthMin = Configuration::getConfig('pass_min_length');
+        $passLengthMax = Configuration::getConfig('pass_max_length');
+        $passNum = Configuration::getConfig('pass_numerical');
+        $passUpper = Configuration::getConfig('pass_uppercase');
+        $passLower = Configuration::getConfig('pass_lowercase');
+        $passSpecial = Configuration::getConfig('pass_special');
+        
+        $flag = 0;
+        $password = "";
+        $length = rand($passLengthMin ? $passLengthMin : 1, $passLengthMax);
+        if (true == $passUpper) {
+            $possibleCharactors[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            $flag++;
+        }
+        if (true == $passLower) {
+            $possibleCharactors[] = "abcdefghijklmnopqrstuvwxyz";
+            $flag++;
+        }
+        if (true == $passNum) {
+            $possibleCharactors[] = "0123456789";
+            $flag++;
+        }
+        if (true == $passSpecial) {
+            $possibleCharactors[] = "!@#$%^&*()_+=-`~\|':;?><,.[]{}/";
+            $flag++;
+        }
+
+        while (strlen($password) < $length) {
+            if (0 == $flag) {
+                $password .= rand(0, 9);
+            } else {
+                foreach ($possibleCharactors as $row) {
+                    if (strlen($password) < $length) {
+                        $password .= substr($row, (rand()%(strlen($row))), 1);
+                    }
+                }
+            }
+        }
+        echo $password;
+        $this->_helper->layout->disableLayout(true);
+        $this->_helper->viewRenderer->setNoRender();
+    }
+    
+    /**
+     * checkaccountAction() - Check to see if the specified LDAP
+     * distinguished name (Account) exists in the system's specified LDAP directory.
+     * @todo code finish this function later
+     */
+    public function checkAccountAction()
+    {
+        Fisma_Acl::requirePrivilege('user', 'read');
+        $ldapConfig = new LdapConfig();
+        $data = $ldapConfig->getLdaps();
+        $account = $this->_request->getParam('account');
+        $msg = '';
+        if (count($data) == 0) {
+            $type = 'warning';
+            // to do Engilish
+            $msg .= "Ldap doesn't exist or no data";
+        }
+        foreach ($data as $opt) {
+            $srv = new Zend_Ldap($opt);
+            try {
+                $type = 'message';
+                $dn = $srv->getCanonicalAccountName($account,
+                            Zend_Ldap::ACCTNAME_FORM_DN); 
+                $msg = "$account exists, the dn is: $dn";
+            } catch (Zend_Ldap_Exception $e) {
+                $type = 'warning';
+                // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
+                // DN does not exist.
+                if ($e->getErrorCode() ==
+                    Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
+                    $msg = "$account does NOT exist";
+                } else {
+                    $msg .= 'Unknown error while checking Account: '
+                          . $e->getMessage();
+                }
+            }
+        }
+        echo json_encode(array('msg' => $msg, 'type' => $type));
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
     }

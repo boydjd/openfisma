@@ -1,26 +1,66 @@
 <?php Fisma_Format_Section::startSection($this->title); ?>
-    <p>
-        <a href="<?php echo $_SERVER['REQUEST_URI']; ?>/format/pdf"><img src="/images/pdf.gif" border="0"></a>
-        <a href="<?php echo $_SERVER['REQUEST_URI']; ?>/format/xls"><img src="/images/xls.gif" border="0"></a>
-    </p>
 
-<table class="tbframe">
-    <tr>
-<?php  
-    foreach ($this->columns as $column) {
-        print "<th class=\"tdc\">$column</td>";
-    }
-?>
-    </tr>
-<?php
-    foreach ($this->rows as $row) {
-        print '<tr>';
-        foreach ($row as $cell) {
-            print "<td>$cell</td>";
+<div class="toolbar">
+    <?php
+    echo new Fisma_Yui_Form_Button_Link('exportPdf',
+                                  array('value' => 'Export PDF',
+                                        'href' => "$this->url/format/pdf",
+                                        'imageSrc' => '/images/pdf.gif'));
+    echo new Fisma_Yui_Form_Button_Link('exportExcel',
+                                  array('value' => 'Export Excel',
+                                        'href' => "$this->url/format/xls",
+                                        'imageSrc' => '/images/xls.gif'));
+    ?>
+</div>
+
+<div id="container">
+    <table id="reportTable">
+        <thead>
+            <tr>
+                <?php  
+                    foreach ($this->columns as $column) {
+                        print "<th class=\"tdc\">$column</th>";
+                    }
+                ?>
+            </tr>
+        </thead>
+    <?php
+        foreach ($this->rows as $row) {
+            print '<tr>';
+            foreach ($row as $cell) {
+                print "<td>$cell</td>";
+            }
+            print '</tr>';
         }
-        print '</tr>';
-    }
-?>
-</table>
+    ?>
+    </table>
+</div>
 
 <?php Fisma_Format_Section::stopSection(); ?>
+
+<script type="text/javascript">
+// Convert the HTML table above into a YUI table
+YAHOO.util.Event.onContentReady('container', function() {
+    var myColumnDefs = [
+        <?php
+        foreach ($this->columns as $column) {
+            print "{key:'$column', label:'$column', sortable:true},";
+        }
+        ?>
+    ];
+
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("reportTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            <?php
+            foreach ($this->columns as $column) {
+                print "{key:'$column'},";
+            }
+            ?>
+        ]
+    };
+
+    this.myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, this.myDataSource, {});
+});
+</script>

@@ -1,0 +1,8 @@
+UserRole:
+    columns:
+        userId:
+            type: integer
+            primary: true
+        roleId:
+            type: integer
+            primary: true

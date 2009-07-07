@@ -26,7 +26,8 @@
  
 /**
  * The dashboard controller displays the user dashboard when the user first logs
- * in.
+ * in. This controller also produces graphical charts in conjunction with the SWF Charts
+ * package.
  *
  * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
@@ -34,19 +35,24 @@
  */
 class DashboardController extends SecurityController
 {
-    protected $_poam = null;
-    protected $_allSystems = null;
-
     /**
-     * init() - Initialize internal members.
+     * my OrgSystem ids
+     *
+     * @var array
      */
-    function init()
+    private $_myOrgSystemIds = null;
+    
+    public function init()
     {
         parent::init();
-        $sys = new System();
-        $this->_allSystems = $this->_me->systems;
+        $orgSystems = $this->_me->Organizations->toArray();
+        $orgSystemIds = array(0);
+        foreach ($orgSystems as $orgSystem) {
+            $orgSystemIds[] = $orgSystem['id'];
+        }
+        $this->_myOrgSystemIds = $orgSystemIds;
     }
-
+    
     /**
      * preDispatch() - invoked before each Actions
      */
@@ -54,91 +60,90 @@ class DashboardController extends SecurityController
     {
         parent::preDispatch();
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
-        $contextSwitch->addActionContext('totalstatus', 'xml')
+        // Headers Required for IE+SSL (see bug #2039290) to stream XML
+        $contextSwitch->addHeader('xml', 'Pragma', 'private')
+                      ->addHeader('xml', 'Cache-Control', 'private')
+                      ->addActionContext('totalstatus', 'xml')
                       ->addActionContext('totaltype', 'xml')
                       ->initContext();
-        if (!isset($this->_poam)) {
-            $this->_poam = new Poam();
-        }
     }
 
     /**
-     * The integrated dashboard which has three charts in total
-     *
-     * @todo fix the SQL injection at the beginning of this function
+     * The user dashboard displays important system-wide metrics, charts, and graphs
      */
     public function indexAction()
     {
-        $this->_acl->requirePrivilege('dashboard', 'read');
-        
-        // Check to see if we got passed a "dismiss" parameter to dismiss
-        // notifications
-        $request = $this->getRequest();
-        $notificationsToDismiss = $request->getParam('dismiss');
-        if (isset($notificationsToDismiss)) {
-            $notification = new Notification();
-            // Remove the notifications
-            $deleteQuery = "DELETE FROM notifications
-                                  WHERE id IN ($notificationsToDismiss)
-                                    AND user_id = {$this->_me->id}";
-                                  //  var_dump($this); die;
-            $statement = $notification->getAdapter()->query($deleteQuery);
-
-            // The most_recent_notify_ts is not updated here because no e-mails
-            // are sent.
+        Fisma_Acl::requirePrivilege('area', 'dashboard');
+        $user = new User();
+        $user = $user->getTable()->find($this->_me->id);
+        // Check to see if we got passed a "dismiss" parameter to dismiss notifications
+        $dismiss = $this->_request->getParam('dismiss');
+        if (isset($dismiss) && 'notifications' == $dismiss) {
+            $user->Notifications->delete();
+            $user->mostRecentNotifyTs = Zend_Date::now()->toString('Y-m-d H:i:s');
+            $user->save();
         }
+
+        // Calculate the dashboard statistics
+        $totalFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding f')
+                            ->whereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
+        $result = $totalFindingsQuery->fetchOne();
+        $alert['TOTAL']  = $result['count'];
         
-        $newCount  = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'), array('status' => 'NEW'));
-        $draftCount = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'), array('status' => 'DRAFT'));
-        $enCount = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'
-        ), array(
-            'status' => 'EN',
-            'estDateBegin' => parent::$now
-        ));
-        $eoCount = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'
-        ), array(
-            'status' => 'EN',
-            'ontime' => 'overdue'
-        ));
-        $total = $this->_poam->search($this->_allSystems, array(
-            'count' => 'count(*)'), array('notStatus' => 'PEND'));
-        $alert = array();
-        $alert['TOTAL'] = $total;
-        $alert['NEW']  = $newCount;
-        $alert['DRAFT'] = $draftCount;
-        $alert['EN'] = $enCount;
-        $alert['EO'] = $eoCount;
-        $url = '/panel/remediation/sub/searchbox/s/search/status/';
+        $newFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding f')
+                            ->where('f.status = ?', 'NEW')
+                            ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
+        $result = $newFindingsQuery->fetchOne();
+        $alert['NEW']  = $result['count'];
+        
+        $draftFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding f')
+                            ->where('f.status = ?', 'DRAFT')
+                            ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
+        $result = $draftFindingsQuery->fetchOne();
+        $alert['DRAFT']  = $result['count'];
+
+        $enFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding f')
+                            ->where('f.status = ? and nextDueDate >= NOW()', 'EN')
+                            ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
+        $result = $enFindingsQuery->fetchOne();
+        $alert['EN']  = $result['count'];
+
+        $eoFindingsQuery = Doctrine_Query::create()
+                            ->select('COUNT(*) as count')
+                            ->from('Finding f')
+                            ->where('f.status = ? AND nextDueDate < NOW()', 'EN')
+                            ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
+        $result = $eoFindingsQuery->fetchOne();
+        $alert['EO']  = $result['count'];
+        
+        $url = '/panel/remediation/sub/searchbox/status/';
 
         $this->view->url = $url;
         $this->view->alert = $alert;
         
-        if (false !== strtotime($this->_me->last_login_ts)) {
-            $lastLoginDate = new Zend_Date($this->_me->last_login_ts, Zend_Date::ISO_8601);
-            $lastLogin = $lastLoginDate->toString('l, M j, g:i a');
-            $this->view->lastLogin = $lastLogin;
-            $this->view->lastLoginIp = $this->_me->last_login_ip;
-            $this->view->failureCount = $this->_me->failure_count;
+        // Look up the user's last login information. If it's their first time logging in, then the view
+        // script will show a different message.
+        if (isset($user->lastLoginTs)) {
+            $lastLoginDate = new Zend_Date($this->_me->lastLoginTs, Zend_Date::ISO_8601);
+            $this->view->lastLoginTs = $lastLoginDate->toString('l, M j, g:i a');
+            $this->view->lastLoginIp = $this->_me->lastLoginIp;
+            $this->view->oldFailureCount = $this->_me->oldFailureCount;
         } else {
-            $this->view->applicationName = Fisma_Controller_Front::readSysConfig('system_name');
+            $this->view->applicationName = Configuration::getConfig('system_name');
         }
         
-        $notification = new Notification();
-        $notifications = $notification->getNotifications($this->_me->id);
-        if (count($notifications) > 0) {
-            $this->view->notifications = $notifications;
+        if ($user->Notifications->count() > 0) {
+            $this->view->notifications = $user->Notifications;
+            $this->view->dismissUrl = "/panel/dashboard/dismiss/notifications";
         }
-        $ids = array();
-        foreach ($notifications as $notification) {
-            $ids[] = $notification['id'];
-        }
-        $idString = urlencode(implode(',', $ids));
-        $this->view->dismissUrl = "/panel/dashboard/dismiss/$idString";
-
     }
     
     /**
@@ -146,76 +151,42 @@ class DashboardController extends SecurityController
      */
     public function totalstatusAction()
     {
-        $this->_acl->requirePrivilege('dashboard', 'read');
+        Fisma_Acl::requirePrivilege('dashboard', 'read');
         
-        $poam = $this->_poam;
-        $req = $this->getRequest();
-        $type = $req->getParam('type', 'pie');
-        if (!in_array($type, array(
-            '3d column',
-            'pie'
-        ))) {
-            $type = 'pie';
-        }
-        $this->view->chart_type = $type;
+        $q = Doctrine_Query::create()
+             ->select('f.status, e.nickname')
+             ->addSelect('COUNT(f.status) AS statusCount, COUNT(e.nickname) AS subStatusCount')
+             ->from('Finding f')
+             ->leftJoin('f.CurrentEvaluation e')
+             ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
+             ->groupBy('f.status, e.nickname');
+        $results = $q->execute();
         
-        //count normal status ( NEW, DRAFT, EN )
-        $arrPoamInfo = $this->_poam->search($this->_me->systems, array(
-            'count' => array(
-                'status'
-            ) ,
-            'status',
-            'type',
-            'system_id'
-        ));
-
-        $arrTotal = array('NEW'=>0, 'DRAFT'=>0, 'EN'=>0);
-        foreach ($arrPoamInfo as $arrPoam) {
-            if (in_array($arrPoam['status'], array_keys($arrTotal))) {
-                $arrTotal[$arrPoam['status']] = $arrPoam['count'];
+        // initialize 3 basic status
+        $arrTotal = array('NEW' => 0, 'DRAFT' => 0);
+        // initialize current evaluation status
+        $q = Doctrine_Query::create()
+             ->select()
+             ->from('Evaluation e')
+             // keep the the 'action' approvalGroup is first fetched
+             ->orderBy('e.approvalGroup ASC');
+        $evaluations = $q->execute()->toArray();
+        foreach ($evaluations as $evaluation) {
+            if ($evaluation['approvalGroup'] == 'evidence') {
+                $arrTotal['EN'] = 0;
+            }
+            $arrTotal[$evaluation['nickname']] = 0;
+        }
+        
+        foreach ($results as $result) {
+            if (in_array($result->status, array_keys($arrTotal))) {
+                $arrTotal[$result->status] = $result->statusCount;
+            } elseif (in_array($result->CurrentEvaluation->nickname, array_keys($arrTotal))) {
+                $arrTotal[$result->CurrentEvaluation->nickname] = $result->subStatusCount;
             }
         }
-        $arrTmpTotal = array('NEW'=>$arrTotal['NEW'], 'DRAFT'=>$arrTotal['DRAFT']);
-        $objEval = new Evaluation();
-        //count mitigation strategy status 
-        $arrMsaEvalList = $objEval->getEvalList('ACTION');
-        foreach ($arrMsaEvalList as $arrMsaEvalRow) {
-            $arrMsaPoam = $this->_poam->search($this->_me->systems,
-                array('count' => 'count(*)'),
-                array('mp' => $arrMsaEvalRow['precedence_id'], 'name'));
-
-            $description[$arrMsaEvalRow['nickname']] = $arrMsaEvalRow['name'];
-            if (!empty($arrMsaPoam)) {
-                $arrTmpTotal = array_merge($arrTmpTotal,
-                               array($arrMsaEvalRow['nickname']=>$arrMsaPoam));
-            } else {
-                $arrTmpTotal = array_merge($arrTmpTotal, array($arrMsaEvalRow['nickname']=>0));
-            }
-        }
-        $arrTmpTotal = array_merge($arrTmpTotal, array('EN'=>$arrTotal['EN']));
-        //count evidence status
-        $arrEpEvalList = $objEval->getEvalList('EVIDENCE');
-        foreach ($arrEpEvalList as $arrEpEvalRow) {
-            $arrEpPoam = $this->_poam->search($this->_me->systems,
-                array('count' => 'count(*)'),
-                array('ep' => $arrEpEvalRow['precedence_id'], 'name'));
-
-            $description[$arrEpEvalRow['nickname']] = $arrEpEvalRow['name'];
-            if (!empty($arrEpPoam)) {
-                $arrTmpTotal = array_merge($arrTmpTotal,
-                               array($arrEpEvalRow['nickname']=>$arrEpPoam));
-            } else {
-                $arrTmpTotal = array_merge($arrTmpTotal, array($arrEpEvalRow['nickname']=>0));
-            }
-        }
-        $this->view->summary = $arrTmpTotal;
-
-        $description['EN'] = 'Evidence Needed';
-        $this->view->description = $description;
-        // Headers Required for IE+SSL (see bug #2039290) to stream XML
-        header('Pragma:private');
-        header('Cache-Control:private');
-        $this->render($type);
+        
+        $this->view->summary = $arrTotal;
     }
 
     /**
@@ -223,23 +194,26 @@ class DashboardController extends SecurityController
      */
     public function totaltypeAction()
     {
-        $this->_acl->requirePrivilege('dashboard', 'read');
-        
-        $ret = $this->_poam->search($this->_allSystems, array(
-            'count' => 'type',
-            'type'
-        ));
+        Fisma_Acl::requirePrivilege('dashboard', 'read');
         $this->view->summary = array(
             'NONE' => 0,
             'CAP' => 0,
             'FP' => 0,
             'AR' => 0
         );
-        foreach ($ret as $s) {
-            $this->view->summary["{$s['type']}"] = $s['count'];
+        
+        $q = Doctrine_Query::create()
+            ->select('f.type')
+            ->addSelect('COUNT(f.type) as typeCount')
+            ->from('Finding f')
+            ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
+            ->groupBy('f.type');
+        $results =$q->execute()->toArray();
+        $types = array_keys($this->view->summary);
+        foreach ($results as $result) {
+            if (in_array($result['type'], $types)) {
+                $this->view->summary["{$result['type']}"] = $result['typeCount'];
+            }
         }
-        // Headers Required for IE+SSL (see bug #2039290) to stream XML
-        header('Pragma:private');
-        header('Cache-Control:private');
     }
 }

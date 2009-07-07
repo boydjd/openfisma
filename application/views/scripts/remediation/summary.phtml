@@ -1,129 +1,192 @@
 <script type="text/javascript">
-    YAHOO.util.Event.onDOMReady(function(){
-        var Event = YAHOO.util.Event;
-        Event.on('show1', "click", function() {
-            showCalendar('created_date_begin', 'show1');
-        });
-        Event.on('show2', "click", function() {
-            showCalendar('created_date_end', 'show2');
-        });
-    });
+
+YAHOO.util.Event.onDOMReady(function () {
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/remediation/summary-data/format/json', 
+                                    {
+                                        success: function(o) {
+                                            var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            hideLoadingRow();
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);
+                                            document.getElementById('types').disabled = false;
+                                            document.getElementById('sources').disabled = false;
+                                        },
+                                        failure: function(o) {
+                                            alert('Unable to load finding summary: ' + o.statusText);
+                                            hideLoadingRow();
+                                        }
+                                    }, 
+                                    null);
+});
+
+function reloadTable(url) {
+    var loadingRow = document.getElementById('loadingRow');
+    loadingRow.style.display = ''; // reset to table-row, work around an IE6 bug
+    var orgTable = document.getElementById('findingSummaryTable');
+
+    // Remove existing summary data
+    while (orgTable.rows.length > 4) {
+        orgTable.deleteRow(orgTable.rows.length - 1);
+    }
+
+    document.getElementById('types').disabled = true;
+    document.getElementById('sources').disabled = true;
+    
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    url, 
+                                    {
+                                        success: function(o) {
+                                            var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            hideLoadingRow();
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);
+                                            document.getElementById('types').disabled = false;
+                                            document.getElementById('sources').disabled = false;
+                                        },
+                                        failure: function(o) {
+                                            alert('Unable to load finding summary: ' + o.statusText);
+                                            hideLoadingRow();
+                                        }
+                                    }, 
+                                    null);
+}
+
+function hideLoadingRow() {
+    var loadingRow = document.getElementById('loadingRow');
+    loadingRow.style.display = 'none';
+}
+
+function menuHandler(source) {
+    var typeFilterEl = document.getElementById('types');
+    var sourceFilterEl = document.getElementById('sources');
+    
+    var selectedType = typeFilterEl.options[typeFilterEl.selectedIndex];
+    var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
+    
+    var url = '/remediation/summary-data'
+            + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
+            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/source/' + selectedSource.value)
+            + '/format/json';
+    reloadTable(url);
+}
 </script>
 
-<?php
-    $this->sources[0] = '--Any--';
-    $this->systems[0] = '--Any--';
-    $typeList = array('0' =>'--Any--', 'NONE' => 'NONE', 'CAP'=>'CAP', 'AR'=>'AR', 'FP'=>'FP');
-    $aging   = array('0' => '--Any--',
-                      '30'=>'30+ Days Old',
-                      '60'=>'60+ Days Old',
-                      '90'=>'90+ Days Old',
-                      '120'=>'120+ Days Old');
-    $statusArray = array_merge($this->statusArray, array('CLOSED'));
-?>
-<form name="filters" method="post" action="/panel/remediation/sub/summary">
-<!-- Begin Filter Table -->
-<table class="searchFilters">
-    <tr>
-        <td><b>Finding Source: </b>
-        </td><td>   <?php echo $this->formSelect('source_id', $this->criteria['sourceId'], null, $this->sources);?>
-        </td>
-        <td><b>Mitigation Strategy: </b>
-        </td><td>    <?php echo $this->formSelect('type', $this->criteria['type'], null, $typeList);?>
-        </td>
-        <td><b>Aging Totals: </b>
-        </td><td>    <?php echo $this->formSelect('aging', $this->criteria['aging'], array('id'=>'remediationSearchAging'), $aging); ?>
-        </td>
-    </tr>
-    <tr>
-        <td><b>Date Opened From: </b></td><td><input type="text" id="created_date_begin" name="created_date_begin" value="<?php
-            echo $this->criteria['created_date_begin']; ?>"
-            size="12" maxlength="20" onfocus="this.blur()"><button type="button" id="show1" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
-        <td><b>Date Opened To: </b></td><td><input type="text" id="created_date_end" name="created_date_end" value="<?php
-            echo $this->criteria['created_date_end']; ?>"
-            size="12" maxlength="20" onfocus="this.blur()"><button type="button" id="show2" title="Show Calendar"><img src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></button></td>
-        <td colspan="2"><?php echo new Fisma_Yui_Form_Button_Submit('filterRemediationSummarySubmit', array('value' => 'Apply Filter')); ?></td>
-    </tr>
-</table>
-</form>
-
-<?php Fisma_Format_Section::startSection("Remediation Summary"); ?>
-
-<table align="center" class="tipframe" width="90%" cellpadding="0" cellspacing="0">
-    <tr align="center" bgcolor="#f3f3f3">
-        <td class="tdc"></td>
-        <td colspan="<?php echo $this->mpCount+2;?>" class="tdc">Mitigation Strategy</td>
-        <td colspan="<?php echo $this->epCount+1;?>" class="tdc">Remediation</td>
-        <td colspan="2" class="tdc"></td>
-    </tr>
-    <tr align="center" bgcolor="#f3f3f3">
-        <td class="tdc">Action Owner</td>
+<div class="searchFilters">
+    <b>Filter by Mitigation Type:&nbsp;</b>
+    <select id='types' onchange='menuHandler(this);' disabled="true">
+        <option value="ALL">All Types</option>
+        <option value="CAP">CAP - Corrective Action Plan</option>
+        <option value="AR">AR - Accepted Risk</option>
+        <option value="FP">FP - False Positive</option>
+    </select>
+    <b>Filter by Finding Source:&nbsp;</b>
+    <select id='sources' onchange='menuHandler(this);' disabled="true">
+        <option value="ALL_SOURCES">All Sources</option>
         <?php
-            foreach ($statusArray as $v) {
-                echo '<td class="tdc">'.$v.'</td>';
+            foreach ($this->findingSources as $source) {
+               print "<option value='$source->nickname'>$source->nickname - $source->name</option>";
             }
         ?>
-        <td class="tdc">Total</td>
-    </tr>
+    </select>
+</div>
 
-<!-- SUMMARY LOOP -->
+<div class="toolbar">
 <?php
-    define('BASE', "/panel/remediation/sub/searchbox/s/search");
+$expandAll = new Fisma_Yui_Form_Button('expandAll', 
+                                       array('label' => 'Expand All', 
+                                             'imageSrc' => '/images/expand.png',
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.expandAll'));
+print $expandAll;
 
-    foreach($this->summary as $sid=>$row){
+$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
+                                         array('label' => 'Collapse All', 
+                                             'imageSrc' => '/images/collapse.png',
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
+print $collapseAll;
 
-	if (isset($this->systems[$sid])) {
+$exportExcel = new Fisma_Yui_Form_Button('exportExcel', 
+                                         array('label' => 'Export to Excel', 
+                                             'imageSrc' => '/images/xls.gif',
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.exportExcel'));
+print $exportExcel;
 
-        $base_url = BASE . '/system_id/' . $sid . $this->criteriaUrl;
-        $flag = false;
-        echo '<tr>';
-        echo '<td width="20%" align="left" class="tdc" bgcolor="#f3f3f3">'.$this->systems[$sid].'</td>';
-
-        foreach ($statusArray as $status) {
-            if (isset($row[$status."overdue"])) {
-                $flag = true;
-            }
-        }
-    
-        foreach ($statusArray as $status) {
-            $normalHref = $base_url.'/status/'.$status.'/ontime/ontime';
-            $overdueHref = $base_url.'/status/'.$status.'/ontime/overdue';
-            echo '<td align="center" class="tdc" bgcolor="#d9ead3">';
-            if ($flag) {
-                echo '<table width="100%" cellspacing="0" cellpadding="0"><tr bgcolor="#d9ead3" align="center"><td>';
-                if (isset($row[$status.'overdue'])) {
-                    $normalCount = $row[$status] - $row[$status.'overdue'];
-                    echo $normalCount == ''?'-':'<a href="'.$normalHref.'">'.$normalCount.'</a>';
-                    echo '</td></tr>';
-                    echo '<tr bgcolor="#f4cccc" align="center"><td><em><a href="'.$overdueHref.'">'.$row[$status."overdue"].'</a></em>';
-                } else {
-                    echo $row[$status] == ''?'-':'<a href="'.$base_url.'/status/'.$status.'">'.$row[$status].'</a>';
-                    echo '</td></tr><tr bgcolor="#f4cccc" align="center"><td>-';
-                }
-                echo '</td></tr></table>';
-            } else {
-                echo $row[$status] == ''?'-':'<a href="'.$base_url.'/status/'.$status.'">'.$row[$status].'</a>';
-            }
-            echo '</td>';
-        }
-        echo '<td align="center" class="tdc" bgcolor="#d9ead3">';
-        echo $row['TOTAL'] == ''?'-':'<a href="'.$base_url.'">'.$row['TOTAL'].'</a>';
-        echo '</td></tr>';
-	}
-    }
-    echo '<tr bgcolor="#f3f3f3">';
-    echo '<td width="20%" align="center" class="tdc"><b>TOTALS</b></td>';
-    $total_url = BASE . $this->criteriaUrl;
-    foreach ($statusArray as $status) {
-        echo '<td align="center" class="tdc">';
-        echo $this->total[$status] == '0'?'<b>0</b>':'<a href="'.$total_url.'/status/'.$status.'"><b>'.$this->total[$status].'</b></a></b>';
-        echo '</td>';
-    }
-    echo '<td align="center" class="tdc">';
-    echo $this->total['TOTAL'] == '0'?'<b>0</b>':'<a href="'.$total_url.'"><b>'.$this->total['TOTAL'].'</b></a>';
-    echo '</td></tr>';
+$exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
+                                       array('label' => 'Export to PDF', 
+                                             'imageSrc' => '/images/pdf.gif',
+                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.exportPdf'));
+print $exportPdf;
 ?>
-<!-- END SUMMARY LOOP -->
-</table>
+</div>
 
-<?php Fisma_Format_Section::stopSection(); ?>
+<div class="clear">
+
+<table id='findingSummaryTable' class="treeTable">
+    <tr>
+        <th rowspan="3">
+            <?php 
+                $agencyTooltip = "<p>Click on any item with a plus (+) to expand it and reveal the items "
+                               . "contained in it. Click any item with a minus (-) to collapse it and hide "
+                               . "the items inside.</p>"
+                               . "<p>When an item is collapsed, the summary numbers displayed "
+                               . "will roll up findings for all suborganizations and information systems "
+                               . "underneath it. When an item is expanded, the summary numbers displayed "
+                               . "only include findings against that specific organization.</p>"
+                               . "<p>Green rows represent findings which are not overdue. If any overdue "
+                               . "items exist, then a red row containing the overdue items will be displayed "
+                               . "directly under the green row.</p>";
+                echo new Fisma_Yui_Tooltip('agencyTip', 
+                                           'Agency Organizations &amp; Information Systems', 
+                                           $agencyTooltip);
+            ?>
+        </th>
+        <th style="border-bottom: none;" colspan="<?php echo 2 + count($this->mitigationEvaluations); ?>">
+            <?php 
+                $msaTooltip = "<p><b>NEW:</b> Findings which have just been entered into the system "
+                            . "are in NEW status.</p><p><b>DRAFT:</b> Once the mitigation strategy type is set, "
+                            . "the finding enters DRAFT status to reflect the fact that a user has reviewed "
+                            . "the finding and assigned an initial remediation strategy, but has not yet "
+                            . "submitted the mitigation strategy for approval.</p>";
+                foreach ($this->mitigationEvaluations as $evaluation) {
+                    $msaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
+                }
+                echo new Fisma_Yui_Tooltip('msa', 'Mitigation Strategy', $msaTooltip); 
+            ?>
+        </th>
+        <th style="border-bottom: none;" colspan="<?php echo 1 + count($this->evidenceEvaluations); ?>">
+            <?php 
+                $eaTooltip = "<p><b>EN:</b> Evidence needed. Findings in this status are waiting for "
+                           . "uploaded documentation that the course of action has been completed.</p>";
+                foreach ($this->evidenceEvaluations as $evaluation) {
+                    $eaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
+                }
+                echo new Fisma_Yui_Tooltip('ea', 'Remediation', $eaTooltip); 
+            ?>
+        </th>
+        <th colspan="2" rowspan="2">&nbsp;</th>
+    </tr>
+    <tr>
+        <th style="border-top: none;" colspan="2">&nbsp;</th>
+        <th colspan="<?php echo count($this->mitigationEvaluations); ?>">Approval</th>
+        <th style="border-top: none;">&nbsp;</th>
+        <th colspan="<?php echo count($this->evidenceEvaluations); ?>">Approval</th>
+    </tr>
+    <tr>
+        <th>NEW</th>
+        <th>DRAFT</th>
+        <?php 
+            foreach ($this->mitigationEvaluations as $evaluation) {
+                print "<th>$evaluation->nickname</th>";
+            }
+        ?>
+        <th>EN</th>
+        <?php 
+            foreach ($this->evidenceEvaluations as $evaluation) {
+                print "<th>$evaluation->nickname</th>";
+            }
+        ?>        
+        <th>CLOSED</th>
+        <th>TOTAL</th>
+    </tr>
+    <tr id='loadingRow'>
+        <th colspan="10"><p>Loading&hellip;</p><img src="/images/loading_bar.gif"></th>
+    </tr>
+</table>

@@ -1,0 +1,25 @@
+Upload:
+    listeners: [XssListener]
+    
+    columns:
+        createdTs: timestamp
+        fileName:
+            type: string(255)
+            extra:
+                purify: plaintext
+            comment: Name of the uploaded file
+        userId:
+            type: integer
+            comment: Foreign key to the user who uploaded this file
+    
+    relations:
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: Uploads
+        
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp                

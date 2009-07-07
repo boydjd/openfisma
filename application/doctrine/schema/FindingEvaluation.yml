@@ -1,0 +1,52 @@
+FindingEvaluation:
+    listeners: [XssListener]
+    
+    columns:
+        createdTs: timestamp
+        findingId:
+            type: integer
+            comment: Foreign key to the finding which this evaluation is against (optional, this is mutually exclusive with evidenceId)
+        evidenceId:
+            type: integer
+            comment: Foreign key to the evidence which this evaluation is against (optional, this is mutually exclusive with findingId)
+        evaluationId:
+            type: integer
+            comment: Foreign key to the type of evaluation which this represents against the finding
+        decision:
+            type: enum
+            values: [APPROVED, DENIED]
+            comment: The approve result
+        userId:
+            type: integer
+            comment: Foreign key to the user who completed this evaluation
+        comment: 
+            type: string
+            extra:
+                purify: plaintext
+            comment: The deny comment
+    
+    relations:
+        Finding:
+            local: findingId
+            foreign: id
+            foreignAlias: FindingEvaluations
+        Evidence:
+            local: evidenceId
+            foreign: id
+            foreignAlias: FindingEvaluations
+        Evaluation:
+            local: evaluationId
+            foreign: id
+            foreignAlias: FindingEvaluations
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: FindingEvaluations        
+        
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                disabled: true

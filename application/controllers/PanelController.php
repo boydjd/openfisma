@@ -102,7 +102,7 @@ class PanelController extends SecurityController
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Account');
+        $this->_helper->actionStack($sub, 'User');
         $this->_helper->actionStack('header');
     }
 
@@ -224,6 +224,28 @@ class PanelController extends SecurityController
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
         $this->_helper->actionStack($sub, 'User');
+        $this->_helper->actionStack('header');
+    }
+
+    /** 
+     * @todo english
+     * Forward to user Controller
+     */
+    public function systemDocumentAction()
+    {
+        $req = $this->getRequest();
+        $sub = $req->getParam('sub');
+        $this->_helper->actionStack($sub, 'SystemDocument');
+        $this->_helper->actionStack('header');
+    }
+
+    /**
+     * Forward to auth Controller
+     */
+    public function authAction()
+    {
+        $sub = $this->_request->getParam('sub');
+        $this->_helper->actionStack($sub, 'Auth');
         $this->_helper->actionStack('header');
     }
 

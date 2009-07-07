@@ -1,0 +1,63 @@
+System:
+    WDC_SYS:
+        type: gss
+        confidentiality: MODERATE
+        integrity: HIGH
+        availability: HIGH
+        fipsCategory: HIGH
+        
+    OF_SYS:
+        type: major
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: LOW
+        fipsCategory: MODERATE
+
+    OSC_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
+
+    FMS_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: HIGH
+        availability: LOW
+        fipsCategory: HIGH
+
+    TETS_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
+
+    IAD_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
+
+    CIT_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
+
+    SCMS_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW
+
+    CRMS_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        fipsCategory: LOW

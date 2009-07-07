@@ -2,15 +2,13 @@
     <tr>
         <th>Timestamp</th>
         <th>User</th>
-        <th>Event</th>
         <th>Description</th>
     </tr>
-    <?php foreach ($this->logs as $logItem) { ?>
+    <?php foreach ($this->finding->AuditLogs as $log) { ?>
         <tr>
-            <td><?php echo $logItem['timestamp']; ?></td>
-            <td><?php echo $logItem['username']; ?></td>
-            <td><?php echo $logItem['event']; ?></td>
-            <td><?php echo str_replace("\n","<br>",$logItem['description']); ?></td>
+            <td><?php echo $log->createdTs; ?></td>
+            <td><?php echo $log->User->username; ?></td>
+            <td><?php echo str_replace("\n","<br>",$log->description); ?></td>
         </tr>
     <?php } ?>
 </table>

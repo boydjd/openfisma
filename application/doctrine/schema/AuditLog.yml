@@ -1,0 +1,34 @@
+AuditLog:
+    listeners: [XssListener]
+            
+    columns:
+        createdTs: timestamp
+        description:
+            type: string
+            extra:
+                purify: plaintext
+            comment: Description of the audit log event
+        userId:
+            type: integer
+            comment: Foreign key to user table
+        findingId:
+            type: integer
+            comment: Foreign key to finding table
+        
+    relations:
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: AuditLogs
+        Finding:
+            local: findingId
+            foreign: id
+            foreignAlias: AuditLogs
+            
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                disabled: true

@@ -60,10 +60,10 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
                    <script type='text/javascript'>
                        var {$this->getName()} = new YAHOO.widget.Button({
                            type: \"submit\",
-                           label: \"{$this->getValue()}\",
+                           label: \"{$this->getLabel()}\",
                            id: \"{$this->getName()}\",
                            name: \"{$this->getName()}\",
-                           value: \"{$this->getValue()}\",
+                           value: \"{$this->getLabel()}\",
                            container: \"{$this->getName()}Container\",
                            disabled: $disabled
                            $onClickRender

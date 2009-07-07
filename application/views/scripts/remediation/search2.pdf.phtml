@@ -25,7 +25,7 @@ define('ORIENTATION', 'orient');
 define('PAPERTYPE', 'pagesz');
 define('PGWIDTH', 'pgwidth');
 define('PGHEIGHT', 'pgheight');
-define('FONTS', Fisma_Controller_Front::getPath('library') . '/pdf/fonts');
+define('FONTS', Fisma::getPath('library') . '/pdf/fonts');
 
 $poam_config = array( ORIENTATION => 'landscape', PAPERTYPE => 'LEGAL', PGWIDTH => 1000);
 
@@ -87,11 +87,11 @@ if( isset($this->criteria['source_id']) ) {
 }
 
 $pdf->ezText('Plans of Actions And Milestones Report Administration',16,array('justification'=>'center'));
+$cols = array();
 $i = 0;
-$columnPreference = $_COOKIE['search_columns_pref'];
-foreach ($cols as $key=>$row) {
-    if (!($columnPreference & (1 << $i))) {
-        unset($cols[$key]);
+foreach ($this->columns as $k => $v) {
+    if ($this->columnPreference & (1 << $i)) {
+        $cols[$k] = $v['label'];
     }
     $i++;
 }

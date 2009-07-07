@@ -1,0 +1,46 @@
+Organization:    
+    listeners: [XssListener, BaseListener]
+
+    columns:
+        createdTs: timestamp
+        modifiedTs: timestamp
+        name: 
+            type: string
+            extra:
+                purify: plaintext
+        nickname:
+            type: string(255)
+            unique: true
+            extra:
+                purify: plaintext
+        orgType:
+            type: enum
+            values: [agency, bureau, organization, system]
+        systemId:
+            type: integer
+        description: 
+            type: string
+            extra:
+                purify: html
+
+    relations:
+        System:
+            local: systemId
+            foreign: id
+        # Users is a many-to-many relation
+        Users:
+            class: User
+            local: organizationId
+            foreign: userId
+            refClass: UserOrganization
+
+    actAs:
+        NestedSet:
+        SoftDelete:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

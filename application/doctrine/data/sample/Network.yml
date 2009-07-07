@@ -1,0 +1,5 @@
+Network:
+    DN:
+        name: Default Network
+        nickname: DN
+        description: This network is included in the default installation. It should be replaced with the agency's own data centers and other private networks

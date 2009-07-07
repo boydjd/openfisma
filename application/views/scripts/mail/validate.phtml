@@ -1,16 +1,13 @@
-<?php if ('update' == $this->actionType) {?>
+Hi <?php echo $this->user->nameLast; ?>,
+
+
 This is an automatically generated message, please do not reply to this address.
 
-You recently changed your e-mail address for <?php echo Fisma_Controller_Front::readSysConfig('system_name');?>.
-<?php } if ('create' == $this->actionType) {?>
-This is an automatically generated message, please do not reply to this address.
+You recently changed your e-mail address for <?php echo Configuration::getConfig('system_name');?>.
 
-Your <?php echo Fisma_Controller_Front::readSysConfig('system_name');?> account has been created.
+Please click here to confirm this e-mail address: http://<?php echo $this->host;?>/auth/emailvalidate/id/<?php echo $this->user->id;?>/code/<?php echo $this->validateCode;?>
 
-Login: <?php echo "{$this->account}\n";?>
-Temporary Password: <?php echo "{$this->password}\n";?>
 
-Before using your new account, you will need to validate that this is your correct e-mail address.
-<?php } ?>
+Cheers,
 
-Please click here to confirm this e-mail address: <?php echo $this->hostUrl;?>/user/emailvalidate/id/<?php echo $this->userId;?>/code/<?php echo $this->validateCode;?>
+http://<?php echo $this->host;?>

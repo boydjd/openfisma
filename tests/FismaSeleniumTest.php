@@ -26,33 +26,43 @@
  * @version   $Id$
  * @package   Test
  */
+require_once 'PHPUnit/Extensions/SeleniumTestCase.php';
+// Bootstrap the application's CLI mode if it has not already been done
+require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
 
-/**
- * @ignore
- * Run the application bootstrap in command line mode
- */
-require_once('../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
-if (!$plSetting->installed()) {
-    die('Please install!');
+if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
+    try {
+        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+        Fisma::connectDb();
+        Fisma::setNotificationEnabled(false);
+    } catch (Zend_Config_Exception $zce) {
+        print "The application is not installed correctly." .
+            " If you have not run the installer, you should do that now.";
+    } catch (Exception $e) {
+        print get_class($e) 
+            . "\n" 
+            . $e->getMessage() 
+            . "\n"
+            . $e->getTraceAsString()
+            . "\n";
+    }
 }
 
-// Load the base class
-require_once 'PHPUnit/Extensions/SeleniumTestCase.php';
-
 /**
- * The selenium config file contains the server address (or name), user name, and password for connecting to the
+ * The selenium config file contains the server address (or name),
+ * user name, and password for connecting to the
  * selenium server.
- */ 
-define('SELENIUM_CONFIG_FILE', $plSetting->getPath('config') . '/selenium.conf');
-
+ */
+define('SELENIUM_CONFIG_FILE', Fisma::getPath('config') . '/selenium.conf');
 /**
- * This is the base class for all selenium tests in OpenFISMA. This base class
- * sets up the server information for accessing Selenium RC.
+ * This is the base class for all selenium tests in OpenFISMA. This base
+ * class sets up the server information for accessing Selenium RC.
  *
  * @package Test
  */
-abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCase
+
+abstract class Test_FismaSeleniumTest extends
+    PHPUnit_Extensions_SeleniumTestCase
 {
     /**
      * Handle for the database connection.
@@ -69,8 +79,8 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
      */
     protected $_remoteScreenshotSequence = 0;
     
-    const USER_NAME = 'test_user';
-    const PASSWORD = 'test_password';
+    const USER_NAME = 'root';
+    const PASSWORD = '0p3nfism@';
 
     /**
      * setUp() - Set up access to the Selenium server based on the contents of
@@ -79,23 +89,24 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
     protected function setUp()
     {
         // Initialize our DB connection
-        $this->_db = Zend_Db::factory(Zend_Registry::get('datasource'));
-        Zend_Db_Table::setDefaultAdapter($this->_db);
+    //    $this->_db = Zend_Db::factory(Zend_Registry::get('datasource'));
+     //   Zend_Db_Table::setDefaultAdapter($this->_db);
         
         // Load the selenium configuration and connect to the server
         $seleniumConfig = new Zend_Config_Ini(SELENIUM_CONFIG_FILE, 'selenium');
 
         $this->_remoteScreenshotDir = $seleniumConfig->screenshotDir;
 
-        $this->setHost($seleniumConfig->host);
-        $this->setPort(intval($seleniumConfig->port));
+      //  $this->setHost($seleniumConfig->host);
+     //   $this->setPort(intval($seleniumConfig->port));
         $this->setBrowser($seleniumConfig->browser);
         $this->setBrowserUrl($seleniumConfig->browserBaseUrl);
+        $this->start();
     }
 
     /**
-     * tearDown() - When a test fails, take a screenshot of the failure during tear down. This greatly helps to diagnose
-     * errors in Selenium test cases.
+     * When a test fails, take a screenshot of the failure during tear down.
+     * This greatly helps to diagnose errors in Selenium test cases.
      */
     protected function tearDown()
     {
@@ -169,26 +180,34 @@ abstract class Test_FismaSeleniumTest extends PHPUnit_Extensions_SeleniumTestCas
     /**
      * login() - Login to OpenFISMA
      */
-    protected function login()
+    protected function login($username = '', $password = '')
     {
-        $this->open('/user/logout');
-        $this->type('username', self::USER_NAME);
-        $this->type('userpass', self::PASSWORD);
-        $this->click("//input[@value='Login']");
+        $this->open('/');
+        $username = empty($username) ? self::USER_NAME : $username;
+        $password = empty($password) ? self::PASSWORD : $password;
+        $this->type('username', $username);
+        $this->type('userpass', $password);
+        $this->click("loginButton-button");
         $this->waitForPageToLoad();
-        $this->assertTextPresent(self::USER_NAME . ' is currently logged in');
+        $this->open('/panel/dashboard');
+        $this->waitForPageToLoad();
+        sleep(5);
+        $this->assertTextPresent(' is currently logged in');
+        sleep(5);
     }
     
     /**
-     * screenshot() - Take a Selenium RC screenshot.
+     * Take a Selenium RC screenshot.
      *
      * This assumes that the Selenium RC server is running on Windows
      *
-     * @param string $name A name for the screenshot (use lower_case_underscore naming format, without file extension)
+     * @param string $name A name for the screenshot
+     * (use lower_case_underscore naming format, without file extension)
      */
     public function screenshot($name) {
         $sequenceNumber = sprintf('%03d', $this->_remoteScreenshotSequence++);
-        $screenshotPath = $this->_remoteScreenshotDir . "\\{$sequenceNumber}_{$name}.png";
+        $screenshotPath = $this->_remoteScreenshotDir .
+            "\\{$sequenceNumber}_{$name}.png";
         $this->captureEntirePageScreenshot($screenshotPath);
     }
 }

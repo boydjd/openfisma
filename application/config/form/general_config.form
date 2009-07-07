@@ -9,7 +9,12 @@
 ; Version   $Id:$
 
 [general_config]
+elementPrefixPath.prefix = Fisma_Form
+elementPrefixPath.path = Fisma/Form
+elementPrefixPath.type = Validate
+
 method = "post"
+action = "/panel/config/type/genernal"
 elementFilters.trim = "StringTrim"
 elementFilters.tags = "StripTags"
 
@@ -19,17 +24,17 @@ elements.system_name.options.validators.strlen.validator = "StringLength"
 elements.system_name.options.required = true
 displayGroups.general.elements.system_name = "system_name"
 
-elements.max_absent_time.type = "text"
-elements.max_absent_time.options.label = "Inactive Account Expiration (days)"
-elements.max_absent_time.options.validators.alnum.validator = "Digits"
-elements.max_absent_time.options.required = true
-displayGroups.general.elements.max_absent_time = "max_absent_time"
+elements.account_inactivity_period.type = "text"
+elements.account_inactivity_period.options.label = "Inactive Account Expiration (days)"
+elements.account_inactivity_period.options.validators.alnum.validator = "Digits"
+elements.account_inactivity_period.options.required = true
+displayGroups.general.elements.account_inactivity_period = "account_inactivity_period"
 
-elements.expiring_seconds.type = "text"
-elements.expiring_seconds.options.label = "Session Timeout (minutes)"
-elements.expiring_seconds.options.validators.alnum.validator = "Digits"
-elements.expiring_seconds.options.required = true
-displayGroups.general.elements.expiring_seconds = "expiring_seconds"
+elements.session_inactivity_period.type = "text"
+elements.session_inactivity_period.options.label = "Session Timeout (minutes)"
+elements.session_inactivity_period.options.validators.alnum.validator = "Digits"
+elements.session_inactivity_period.options.required = true
+displayGroups.general.elements.session_inactivity_period = "session_inactivity_period"
 
 elements.auth_type.type = "select"
 elements.auth_type.options.label = "Authentication Method"
@@ -47,8 +52,7 @@ displayGroups.general.elements.rob_duration = "rob_duration"
 
 elements.use_notification.type = "textarea"
 elements.use_notification.options.label = "Warning Banner"
-elements.use_notification.options.validators.strlen.validator = "StringLength"
-elements.use_notification.options.validators.strlen.options.min = "1"
+elements.use_notification.options.validators.mce.validator = "MceNotEmpty"
 elements.use_notification.options.cols = "70%"
 elements.use_notification.options.rows = "7"
 elements.use_notification.options.required = true
@@ -56,15 +60,14 @@ displayGroups.general.elements.use_notification = "use_notification"
 
 elements.behavior_rule.type = "textarea"
 elements.behavior_rule.options.label = "Rules Of Behavior"
-elements.behavior_rule.options.validators.strlen.validator = "StringLength"
-elements.behavior_rule.options.validators.strlen.options.min = "1"
+elements.behavior_rule.options.validators.strlen.validator = "MceNotEmpty"
 elements.behavior_rule.options.cols = "70%"
 elements.behavior_rule.options.rows = "7"
 elements.behavior_rule.options.required = true
 displayGroups.general.elements.behavior_rule = "behavior_rule"
 
 elements.saveGeneral.type = "Form_Button_Submit"
-elements.saveGeneral.options.value = "Save Changes"
+elements.saveGeneral.options.label = "Save Changes"
 displayGroups.general.elements.saveGeneral = "saveGeneral"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

@@ -63,18 +63,16 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
      */
     public function searchQuery($keywords, $indexName)
     {
-        if (!is_dir(Fisma_Controller_Front::getPath('data') . '/index/' . $indexName)) {
-            /** 
-             * @todo english 
-             */
-            throw new Fisma_Exception_General('The path of creating indexes is not existed');
+        if (!is_dir(Fisma::getPath('data') . '/index/' . $indexName)) {
+            /** @todo english */
+            throw new Fisma_Exception('The path of creating indexes is not existed');
         }
         // get the variable of cache
-        $cache = $this->getCacheInstance();
+        $cache = $this->_getCacheInstance();
         // get the identity of the user
-        $userId = Zend_Auth::getInstance()->getIdentity()->id;
+        $userId = User::currentUser()->id;
         // build the object of LUCENE
-        $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/' . $indexName);
+        $index = new Zend_Search_Lucene(Fisma::getPath('data') . '/index/' . $indexName);
         // if the keywords didn't in cache or current keywords is different from the keywords in cache,
         // then do the LUCENE searching
         if (!$cache->load($userId . '_keywords') || $keywords != $cache->load($userId . '_keywords')) {
@@ -102,17 +100,17 @@ class Fisma_Controller_Action_Helper_SearchQuery extends Zend_Controller_Action_
      *
      * @return Zend_Cache
      */
-    public function getCacheInstance()
+    private function _getCacheInstance()
     {
         if (null == $this->_cache) {
             $frontendOptions = array(
                 'caching'  => true,
                 // cache life same as system expiring period
-                'lifetime' => Fisma_Controller_Front::readSysConfig('expiring_seconds'), 
+                'lifetime' => Configuration::getConfig('session_inactivity_period'), 
                 'automatic_serialization' => true);
 
             $backendOptions = array(
-                'cache_dir' => Fisma_Controller_Front::getPath('data') . '/cache'
+                'cache_dir' => Fisma::getPath('data') . '/cache'
             );
             $this->_cache = Zend_Cache::factory('Core',
                                                 'File',

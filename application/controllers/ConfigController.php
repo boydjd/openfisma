@@ -45,7 +45,6 @@ class ConfigController extends SecurityController
     public function init()
     {
         parent::init();
-        $this->_config = new Config();
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('ldapvalid', 'html')
                     ->initContext();
@@ -71,7 +70,7 @@ class ConfigController extends SecurityController
      */
     public function indexAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         $this->_helper->viewRenderer->setNoRender();
         $this->_helper->actionStack('password');
         $this->_helper->actionStack('notification');
@@ -84,45 +83,40 @@ class ConfigController extends SecurityController
      */
     public function viewAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
-        
+        Fisma_Acl::requirePrivilege('area', 'configuration');
+
         $form = $this->getConfigForm('general_config');
         if ($this->_request->isPost()) {
             $configPost = $this->_request->getPost();
-            if (isset($configPost[Config::MAX_ABSENT])) {
+            if ('genernal' == $this->_request->getParam('type')) {
                 if ($form->isValid($configPost)) {
                     $values = $form->getValues();
                     //array_intersect_key requires PHP > 5.1.0
                     $validVals = array(
-                        Config::SYSTEM_NAME =>0,
-                        Config::MAX_ABSENT  =>0,
-                        Config::AUTH_TYPE   =>0,
-                        Config::EXPIRING_TS =>0,
-                        Config::USE_NOTIFICATION =>0,
-                        Config::BEHAVIOR_RULE =>0,
-                        Config::ROB_DURATION  =>0
-                     );
+                        Configuration::SYSTEM_NAME =>0,
+                        Configuration::MAX_ABSENT  =>0,
+                        Configuration::AUTH_TYPE   =>0,
+                        Configuration::EXPIRING_TS =>0,
+                        Configuration::USE_NOTIFICATION =>0,
+                        Configuration::BEHAVIOR_RULE =>0,
+                        Configuration::ROB_DURATION  =>0
+                    );
+
                     $values = array_intersect_key($values, $validVals);
+                    // to store modified key
+                    $records = array();
                     foreach ($values as $k => $v) {
-                        //@todo check $values whether is modified
-                        $records[] = $k;
-                        $where = $this->_config->getAdapter()
-                            ->quoteInto('`key` = ?', $k);
-                        if (in_array($k, array(Config::EXPIRING_TS, Config::UNLOCK_DURATION))) {
+                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
+                        if (in_array($k, array(Configuration::EXPIRING_TS, Configuration::UNLOCK_DURATION))) {
                             $v *= 60; //convert to second
                         }
-                        if (in_array($k, array(Config::USE_NOTIFICATION,Config::BEHAVIOR_RULE))) {
-                            $this->_config->update(array('description' => $v), $where);
-                        } else {
-                            $this->_config
-                                 ->update(array('value' => $v), $where);
+                        $config->value = $v;
+                        if ($config->isModified()) {
+                            $config->save();
+                            array_push($records, $k);
                         }
                     }
-                    $this->_notification
-                         ->add(Notification::CONFIGURATION_MODIFIED,
-                            $this->_me->account, $records);
-
-                    $msg = 'Configuration updated successfully';
+                    $msg = 'Configuration updated successfully, ' . implode(',', $records) . ' was(were) changed';
                     $this->message($msg, self::M_NOTICE);
                 } else {
                     $errorString = Fisma_Form_Manager::getErrors($form);
@@ -131,23 +125,20 @@ class ConfigController extends SecurityController
                 }
             }
         }
-        $ret = $this->_config->getList(array('key', 'value', 'description'));
-        $configs = NULL;
-        foreach ($ret as $item) {
-            if (in_array($item['key'], array(Config::EXPIRING_TS, Config::UNLOCK_DURATION))) {
-                $item['value'] /= 60; //convert to minute from second
-            }
-            if (in_array($item['key'], array(Config::USE_NOTIFICATION,
-                Config::BEHAVIOR_RULE))) {
-                $item['value'] = $item['description'];
-            }
+        
+        $configs = Doctrine::getTable('Configuration')->findAll();
 
-            $configs[$item['key']] = $item['value'];
+        $configArray = array();
+        foreach ($configs as $config) {
+            if (in_array($config->name, array(Configuration::EXPIRING_TS, Configuration::UNLOCK_DURATION))) {
+                $config->value /= 60; //convert to minute from second
+            }
+            $configArray[$config->name] = $config->value;
         }
-        $form->setDefaults($configs);
+        $form->setDefaults($configArray);
         $this->view->generalConfig = $form;
 
-        if ('ldap' == Fisma_Controller_Front::readSysConfig('auth_type', true)) {
+        if ('ldap' == Configuration::getConfig('auth_type', true)) {
             $this->_helper->actionStack('ldaplist');
         }
 
@@ -159,8 +150,8 @@ class ConfigController extends SecurityController
      */
     public function ldaplistAction()
     {
-        $ldaps = $this->_config->getLdap();
-        $this->view->assign('ldaps', $ldaps);
+        $ldaps = Doctrine::getTable('LdapConfig')->findAll();
+        $this->view->assign('ldaps', $ldaps->toArray());
         $this->render();
     }
 
@@ -169,21 +160,20 @@ class ConfigController extends SecurityController
      */
     public function contactAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
-        $config = new Config();
         $form = $this->getConfigForm('contact_config');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
-            if (isset($data[Config::CONTACT_NAME])) {
+            if ('contact' == $this->_request->getParam('type')) {
                 if ($form->isValid($data)) {
                     $data = $form->getValues();
                     unset($data['saveContactConfig']);
                     unset($data['reset']);
                     foreach ($data as $k => $v) {
-                        $where = $config->getAdapter()
-                            ->quoteInto('`key` = ?', $k);
-                        $config->update(array('value' => $v), $where);
+                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
+                        $config->value =  $v;
+                        $config->save();
                     }
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
@@ -195,10 +185,9 @@ class ConfigController extends SecurityController
                 }
             }
         }
-        $items = $config->getList(array('key', 'value'));
-        $configs = array();
-        foreach ($items as $item) {
-            $configs[$item['key']] = $item['value'];
+        $columns = array('contact_name', 'contact_phone', 'contact_email', 'contact_subject');
+        foreach ($columns as $column) {
+            $configs[$column] = Configuration::getConfig($column);
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
@@ -211,19 +200,24 @@ class ConfigController extends SecurityController
      */
     public function ldapupdateAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('ldap');
         $id = $this->_request->getParam('id');
+        
+        $ldap = new LdapConfig();
+        if (!empty($id)) {
+            $ldap = $ldap->getTable('LdapConfig')->find($id);
+        }
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
             if ($form->isValid($data)) {
                 $values = $form->getValues();
-                unset($values['SaveLdap']);
-                unset($values['Reset']);
-                $this->_config->saveLdap($values, $id);
-                //$msg = 'Configuration updated successfully';
-                //$this->message($msg, self::M_NOTICE);
+                $ldap->merge($values);
+                $ldap->save();
+                
+                $msg = 'Configuration updated successfully';
+                $this->message($msg, self::M_NOTICE);
                 $this->_redirect('/panel/config/');
                 return;
             } else {
@@ -233,10 +227,7 @@ class ConfigController extends SecurityController
             }
         } else {
             //only represent the view
-            if (!empty($id)) {
-                $ldaps = $this->_config->getLdap($id);
-                $form->setDefaults($ldaps[$id]);
-            }
+            $form->setDefaults($ldap->toArray());
         }
         $this->view->form = $form;
         $this->render();
@@ -247,11 +238,10 @@ class ConfigController extends SecurityController
      */
     public function ldapdelAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $id = $this->_request->getParam('id');
-        $this->_config->delLdap($id);
-        // @REVIEW
+        Doctrine::getTable('LdapConfig')->find($id)->delete();
         $msg = "Ldap Server deleted successfully.";
         $this->message($msg, self::M_NOTICE);
         $this->_forward('index');
@@ -264,7 +254,7 @@ class ConfigController extends SecurityController
      */
     public function ldapvalidAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('ldap');
         if ($this->_request->isPost()) {
@@ -299,21 +289,21 @@ class ConfigController extends SecurityController
      */
     public function notificationAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
-        $config = new Config();
         $form = $this->getConfigForm('notification_config');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
-            if (isset($data[Config::SENDER])) {
+            if ('notification' == $this->_request->getParam('type')) {
                 if ($form->isValid($data)) {
                     $data = $form->getValues();
-                    unset($data['save']);
+                    unset($data['saveNotificationConfig']);
                     unset($data['reset']);
+                    unset($data['submit']);
                     foreach ($data as $k => $v) {
-                        $where = $config->getAdapter()
-                            ->quoteInto('`key` = ?', $k);
-                        $config->update(array('value' => $v), $where);
+                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
+                        $config->value = $v;
+                        $config->save();
                     }
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
@@ -323,11 +313,11 @@ class ConfigController extends SecurityController
                     $this->message("Unable to save Notifciation Policies:<br>$errorString", self::M_WARNING);
                 }
             }
-        } 
-        $items = $config->getList(array('key', 'value'));
-        $configs = array();
-        foreach ($items as $item) {
-            $configs[$item['key']] = $item['value'];
+        }
+        
+        $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password');
+        foreach ($columns as $column) {
+            $configs[$column] = Configuration::getConfig($column);
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
@@ -339,19 +329,17 @@ class ConfigController extends SecurityController
      */
     public function privacyAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
-        $config = new Config();
         $form = $this->getConfigForm('privacy_policy_config');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
-            if (isset($data[Config::PRIVACY_POLICY])) {
+            if ('privacy' == $this->_request->getParam('type')) {
                 if ($form->isValid($data)) {
                     $data = $form->getValues();
-                    $where = $config->getAdapter()
-                        ->quoteInto('`key` = ?', 'privacy_policy');
-                    $config->update(array('description' =>
-                        $data['privacy_policy']), $where);
+                    $config = Doctrine::getTable('Configuration')->findOneByName('privacy_policy');
+                    $config->value = $data['privacy_policy'];
+                    $config->save();
                     $msg = 'Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
                 } else {
@@ -361,12 +349,8 @@ class ConfigController extends SecurityController
                 }
             }
         }
-        $items = $config->getList(array('key', 'description'));
-        $configs = array();
-        foreach ($items as $item) {
-            $configs[$item['key']] = $item['description'];
-        }
-        $form->setDefaults($configs);
+        
+        $form->setDefaults(array('privacy_policy' => Configuration::getConfig('privacy_policy')));
         $this->view->form = $form;
         $this->render();
     }
@@ -376,24 +360,24 @@ class ConfigController extends SecurityController
      */
     public function passwordAction()
     {
-        $this->_acl->requirePrivilege('app_configuration', 'update');
+        Fisma_Acl::requirePrivilege('area', 'configuration');
         
-        $config = new Config();
         $form = $this->getConfigForm('password_config');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
-            if (isset($data[Config::PASS_UPPERCASE])) {
+            if ('password' == $this->_request->getParam('type')) {
                 if ($form->isValid($data)) {
                     $values = $form->getValues();
                     unset($values['savePassword']);
                     unset($values['reset']);
+                    unset($values['submit']);
                     foreach ($values as $k => $v) {
-                        if ($k == Config::UNLOCK_DURATION) {
+                        if ($k == Configuration::UNLOCK_DURATION) {
                             $v *=  60;//Convert to sencond
                         }
-                        $where = $config->getAdapter()
-                            ->quoteInto('`key` = ?', $k);
-                        $config->update(array('value' => $v), $where);
+                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
+                        $config->value = $v;
+                        $config->save();
                     }
                     $msg = 'Password Complexity Configuration updated successfully';
                     $this->message($msg, self::M_NOTICE);
@@ -404,14 +388,14 @@ class ConfigController extends SecurityController
                 }
             }
         }
-        $items = $config->getList(array('key', 'value'));
-        $configs = array();
-        foreach ($items as $item) {
-            if ($item['key'] == Config::UNLOCK_DURATION) {
-                $item['value'] /= 60; //convert to minute from second
-            }
-            $configs[$item['key']] = $item['value'];
+        
+        $columns = array('failure_threshold' ,'unlock_enabled', 'unlock_duration', 'pass_expire',
+                         'pass_warning', 'pass_uppercase', 'pass_lowercase',
+                         'pass_numerical', 'pass_special', 'pass_min_length', 'pass_max_length');
+        foreach ($columns as $column) {
+            $configs[$column] = Configuration::getConfig($column);
         }
+        $configs[Configuration::UNLOCK_DURATION] /= 60 ;//Convert to minutes
         $form->setDefaults($configs);
         $this->view->form = $form;
         $this->render();

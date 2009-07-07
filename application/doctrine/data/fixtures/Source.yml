@@ -1,0 +1,13 @@
+Source:
+    automatedScanner:
+        name: Automated Scanner
+        nickname: SCAN
+        description: <p>The following scanners are used by the organization:</p><ul><li>App Detective Pro</li></p>
+    continuousMonitoring:
+        name: Continuous Monitoring
+        nickname: CM
+        description: <p>In compliance with CA-7, a subset of security controls are assessed on an annual basis.</p>
+    certificationAndAccreditation:
+        name: Certification & Accreditation
+        nickname: C&amp;A
+        description: <p>All information systems are certified and accredited following the guidelines laid out in NIST SP 800-37.</p>

@@ -23,15 +23,15 @@
 </div>
 <div class="panel">
     <p><em>Last Login</em></p>
-    <?php if(!empty($this->lastLogin)) { ?>
+    <?php if(!empty($this->lastLoginIp)) { ?>
         <ul>
-            <li>Last Logged in at <b><?php echo $this->lastLogin; ?></b></li>
-            <li>From IP address <b><?php echo $this->lastLoginIp;?></b></li>
-            <li>There were <b><?php echo $this->failureCount;?></b> bad login attempts since your last login.</li>
+            <li>Last Logged in at <b><?php echo $this->lastLoginTs; ?></b></li>
+            <li>From IP address <b><?php echo $this->lastLoginIp; ?></b></li>
+            <li>There were <b><?php echo $this->oldFailureCount; ?></b> bad login attempts since your last login.</li>
         </ul>
     <?php } else { ?>
         <p>
-            This is the first time you have logged into <?php echo $this->applicationName ?>. 
+            This is the first time you have logged into <?php echo Configuration::getConfig('system_name') ?>. 
             We will begin tracking your login attempts moving forward.
         </p>
     <?php } ?>
@@ -50,7 +50,7 @@ if (isset($this->notifications)) {
             <?php
             foreach($this->notifications as $notification) {
             ?>
-                <li><b><?php echo $notification['event_text']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['timestamp']; ?></b></li>
+                <li><b><?php echo $notification['eventText']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['createdTs']; ?></b></li>
             <?php
             }
             ?>
@@ -62,13 +62,13 @@ if (isset($this->notifications)) {
 
 <script type="text/javascript">
     function barChartClick(status) {
-        document.location = "/panel/remediation/sub/searchbox/s/search/status/" + status;
+        document.location = "/panel/remediation/sub/searchbox/status/" + status;
     }
     function pieChartClick(columnNumber) {
         // Lookup table for converting the column number to the remediation type code
-        var columns = ['NONE', 'CAP', 'FP', 'AR'];
+        var columns = ['CAP', 'FP', 'AR'];
         var type = columns[columnNumber-1];
-        document.location = "/panel/remediation/sub/searchbox/s/search/type/" + type;
+        document.location = "/panel/remediation/sub/searchbox/type/" + type;
     }
 </script>
 <?php if ( !empty( $this->alert['TOTAL'] ) ) { ?>
@@ -79,7 +79,7 @@ if (isset($this->notifications)) {
               <td align="center">
                 <?php echo $this->partial('/dashboard/chart.phtml', array(
                             'source_url'=> urlencode(
-                                '/dashboard/totalstatus/format/xml/type/3d column'),
+                                '/dashboard/totalstatus/format/xml'),
                             'width'=>380,
                             'height'=>275) );
                 ?>

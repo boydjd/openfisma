@@ -10,6 +10,7 @@
 
 [contact_config]
 method = "post"
+action = "/panel/config/type/contact"
 
 elements.contact_name.type = "text"
 elements.contact_name.options.label = "Technical Support Name"
@@ -34,7 +35,7 @@ elements.contact_subject.options.required = true
 displayGroups.general.elements.contact_subject = "contact_subject"
 
 elements.saveContactConfig.type = "Form_Button_Submit"
-elements.saveContactConfig.options.value = "Save Changes"
+elements.saveContactConfig.options.label = "Save Changes"
 displayGroups.general.elements.saveContactConfig = "saveContactConfig"
 
 ; Disabling this because I don't know how to make this work. see the comments

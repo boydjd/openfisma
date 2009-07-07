@@ -1,8 +1,37 @@
 /* @override http://localhost/stylesheets/print.css */
-
-/* The print.css file creates a layout which is more suitable for printing than the 
+/*******************************************************************************
+ *
+ * print.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *******************************************************************************
+ *
+ * The print.css file creates a layout which is more suitable for printing than the 
  * normal, on-screen layout. For example, tab views are re-styled to display all of 
  * their content, and non-essential elements are hidden.
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/mw/index.php?title=License
+ * Version:   $Id$
+ *
+ *******************************************************************************
  */
 
 span#logoutButton {

@@ -1,0 +1,26 @@
+# Fixture data for Finding model test
+#
+# Finding_1 for all finding model test
+
+Finding:
+    Finding_1:
+        id: 1
+        createdTs: '2009-06-08 13:19:09'
+        modifiedTs: '2009-06-08 13:19:13'
+        discoveredDate: null
+        closedTs: null
+        nextDueDate: null
+        legacyFindingKey: null
+        type: null
+        status: NEW
+        currentEvaluationId: null
+        description: null
+        recommendation: null
+        mitigationStrategy: null
+        resourcesRequired: null
+        expectedCompletionDate: null
+        ecdLocked: null
+        threat: null
+        threatLevel: null
+        countermeasures: null
+        countermeasuresEffectiveness: null

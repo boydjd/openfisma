@@ -1,0 +1,33 @@
+<div class="hd">
+    <?php echo Configuration::getConfig('system_name');?>
+</div>
+
+<div class="bd">
+    <?php echo Configuration::getConfig('use_notification');?>
+    
+    <p class="message">
+        <?php 
+            if(isset($this->error) ) {
+                $dateString = date('H:i:s');
+                echo "$dateString $this->error"; 
+            }
+        ?>
+    </p>
+
+    <form id='loginForm' method="post" action="/auth/login">
+        <table>
+            <tr><td>Username:</td><td><input type="text" name="username" 
+            <?php if (!Fisma::debug()) {echo ' autocomplete="off" ';} ?>
+            value="<?php echo isset($this->username)?$this->username:'';?>" ></td></tr>
+            <tr><td>Password:</td><td><input type="password" name="userpass" autocomplete="off"
+            <?php if (!Fisma::debug()) {echo ' autocomplete="off" ';} ?>
+            value="<?php echo isset($this->password)?$this->password:'';?>" ></td></tr>
+            <tr><td>&nbsp;</td><td><?php echo new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); ?></td>
+        </table>
+    </form>
+</div>
+
+
+
+
+

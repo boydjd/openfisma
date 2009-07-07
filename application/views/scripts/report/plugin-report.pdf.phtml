@@ -8,7 +8,7 @@ define('REPORT_FOOTER_WARNING', 'WARNING: This report is for internal, official 
      . ' disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.');
 define('PAPER_SIZE', 'LETTER');
 define('ORIENTATION', 'landscape');
-define('FONTS', Fisma_Controller_Front::getPath('library') . '/pdf/fonts');
+define('FONTS', Fisma::getPath('library') . '/pdf/fonts');
 
 require_once('pdf/class.ezpdf.php');
 
@@ -80,7 +80,7 @@ foreach ($this->rows as &$row) {
 
 $pdf->ezTable($this->rows,
               $this->columns,
-              $this->title,
+              ' ',
               array('fontSize'=>8,
                     'maxWidth'=>690,
                     'titleFontSize'=>'12'));

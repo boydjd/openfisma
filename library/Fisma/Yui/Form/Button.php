@@ -51,7 +51,7 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
     function renderSelf() 
     {
         $disabled = $this->readOnly ? 'disabled' : '';
-        $render = "<input type=\"button\" id=\"{$this->getName()}\" value=\"{$this->getValue()}\" $disabled>
+        $render = "<input type=\"button\" id=\"{$this->getName()}\" value=\"{$this->getLabel()}\" $disabled>
                    <script type='text/javascript'>
                        YAHOO.util.Event.onDOMReady(function() {
                            var button = new YAHOO.widget.Button('{$this->getName()}', 

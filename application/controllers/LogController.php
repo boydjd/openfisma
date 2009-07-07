@@ -17,110 +17,93 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Woody Lee <woody712@users.sourceforge.net>
+ * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package    Controller
+ * @package   Controller
  */
-
+ 
 /**
- * The log controller deals with managing user logs on the system.
+ * displaying account logs.
  *
- * @package    Controller
+ * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class LogController extends PoamBaseController
+class LogController extends BaseController
 {
-    protected $_log = null;
-
-    /**
-     * @todo english
-     * init() - Initialize 
-     */
-    function init()
-    {
-        parent::init();
-        $this->_log = new Log();
-    }
-
-    /**
-     * Render the form for searching the logs.
-     */
-    public function searchbox()
-    {
-        $this->_acl->requirePrivilege('admin_users', 'read');
-        
-        $user = new User();
-        $userCount = $user->count();
-        // These are the fields which can be searched, the key is the physical
-        // name and the value is the logical name which is displayed in the
-        // interface.
-        $criteria = array(
-            'event'=>'Event Name',
-            'account'=>'Account Name');
-        
-        $accountLog = $this->_log->select();
-        $query = $accountLog
-                      ->from(array('al'=>'account_logs'), array('count'=>'COUNT(al.user_id)'));
-
-        $fid = $this->_request->getParam('fid');
-        $qv = $this->_request->getParam('qv');
-        $urlLink = '';
-        if (!empty($qv) && in_array($fid, array('event', 'account'))) {
-            $query->setIntegrityCheck(false)
-                  ->joinLeft(array('u'=>'users'), 'al.user_id = u.id', array())
-                  ->where("$fid like ?", "%$qv%");
-            $urlLink = "/fid/$fid/qv/$qv";
-        }
-        $ret = $this->_log->fetchRow($query);
-        $logCount = $ret->count;
-        $this->_paging['totalItems'] = $logCount;
-        $this->_paging['fileName'] = "/panel/log/sub/view/p/%d".$urlLink;
-        $pager = &Pager::factory($this->_paging);
-        $temp = $pager->getLinks();
-
-        // Assign view outputs
-        $this->view->assign('criteria', $criteria);
-        $this->view->assign('fid', $fid);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $userCount);
-        $this->view->assign('postAction', '/panel/log/sub/view/');
-        $this->view->assign('links', $pager->getLinks());
-        $this->render('searchbox');
-    }
+    protected $_modelName = 'AccountLog';
     
     /**
-     * List all the logs.
+     * handle the records from searchAction if necessary
+     *
+     * @param Doctrine_Collections $logs
+     * @return array $array
      */
-    public function viewAction()
+    public function handleCollection($logs)
     {
-        $this->_acl->requirePrivilege('admin_users', 'read');
-        //Display searchbox template
-        $this->searchbox();
-        
-        // Set up the query to get the full list of user logs
-        $qry = $this->_log->select()
-                  ->from(array('al' => 'account_logs'),
-                         array('timestamp', 'ip', 'event', 'user_id', 'message'))
-                  ->setIntegrityCheck(false)
-                  ->joinLeft(array('u'=>'users'),
-                             'al.user_id = u.id',
-                             'account');
-
-        $qv = $this->_request->getParam('qv');
-        $fid = $this->_request->getParam('fid');
-        if (!empty($qv) && in_array($fid, array('event', 'account'))) {
-            $qry->where("$fid like ?", "%$qv%");
+        $array = array();
+        foreach ($logs as $key=>$log) {
+            $array[$key] = $log->toArray();
+            $array[$key]['username'] = $log->User->nameFirst . ' ' . $log->User->nameLast;
         }
-        $qry->order("timestamp DESC");
-        $qry->limitPage($this->_paging['currentPage'], 
-                        $this->_paging['perPage']);
-        $logList = $this->_log->fetchAll($qry);
-        // Assign view outputs
-        $this->view->assign('logList', $logList);
-        $this->render('view');
+        return $array;
     }
+    
+    /** 
+     * Search the subject 
+     *
+     * This outputs a json object. Allowing fulltext search from each record enpowered by lucene
+     */
+    public function searchAction()
+    {
+        Fisma_Acl::requirePrivilege($this->_modelName, 'read');
+        $sortBy = $this->_request->getParam('sortby', 'id');
+        $order  = $this->_request->getParam('order');
 
+        //filter the sortby to prevent sqlinjection
+        $subjectTable = Doctrine::getTable($this->_modelName);
+        if (!in_array(strtolower($sortBy), $subjectTable->getColumnNames()) 
+            && strtolower($sortBy) != 'username') {
+            /** @todo english */
+            return $this->_helper->json('invalid parameters');
+        } elseif (strtolower($sortBy) == 'username') {
+            $sortBy = 'u.username';
+        } else {
+            $sortBy = 'al.' . $sortBy;
+        }
+
+        $order = strtoupper($order);
+        if ($order != 'DESC') {
+            $order = 'ASC'; //ignore other values
+        }
+        
+        $query  = Doctrine_Query::create()
+                    ->select('*')
+                    ->from('AccountLog al')
+                    ->leftJoin('al.User u')
+                    ->orderBy("$sortBy $order")
+                    ->limit($this->_paging['count'])
+                    ->offset($this->_paging['startIndex']);
+
+        //initialize the data rows
+        $tableData    = array('table' => array(
+                            'recordsReturned' => 0,
+                            'totalRecords'    => 0,
+                            'startIndex'      => $this->_paging['startIndex'],
+                            'sort'            => $sortBy,
+                            'dir'             => $order,
+                            'pageSize'        => $this->_paging['count'],
+                            'records'         => array()
+                        ));
+        
+        $totalRecords = $query->count();
+        $rows         = $query->execute();
+        $rows         = $this->handleCollection($rows);
+        $tableData['table']['recordsReturned'] = count($rows);
+        $tableData['table']['totalRecords'] = $totalRecords;
+        $tableData['table']['records'] = $rows;
+        return $this->_helper->json($tableData);
+    }
 }

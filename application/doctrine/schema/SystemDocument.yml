@@ -1,0 +1,66 @@
+SystemDocument:
+    listeners: [XssListener]
+    
+    indexes: 
+        uniqueTypePerSystem:
+            fields:
+                 systemId: []
+                 documentTypeId: []
+            type: unique
+            
+    
+    columns:
+        createdTs: timestamp
+        mimeType:
+            type: string(255)
+            extra:
+                purify: plaintext
+            comment: Store the MIME type of this uploaded file
+        fileName:
+            type: string(255)
+            extra:
+                purify: plaintext
+            comment: Name of the uploaded file
+        size:
+            type: integer
+            comment: Size of the file in bytes
+        description:
+            type: string
+            extra:
+                purify: plaintext
+            comment: A place for the user to enter version comments
+
+        documentTypeId:
+            type: integer
+            comment: Foreign key to a table which describes what type of document this is, e.g. system security plan, etc.
+        userId:
+            type: integer
+            comment: Foreign key to the user who uploaded this file
+        systemId:
+            type: integer
+            comment: Foreign key to the system which this file belongs to
+
+    relations:
+        DocumentType:
+            local: documentTypeId
+            foreign: id
+            foreignAlias: Uploads
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: Uploads
+        System:
+            local: systemId
+            foreign: id
+            foreignAlias: Documents
+
+    actAs:
+        Versionable:
+            versionColumn: version
+            className: %CLASS%Version
+            auditLog: true
+            deleteVersions: true
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp

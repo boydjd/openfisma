@@ -44,6 +44,9 @@ class ErrorController extends Zend_Controller_Action
     {
         // If an error occurs in any context other than the default, then the view suffix will have changed; therefore,
         // we should always reset the view suffix before rendering an error message.
+        $auth = Zend_Auth::getInstance();
+        $auth->setStorage(new Fisma_Auth_Storage_Session());
+
         $this->_helper->viewRenderer->setViewSuffix('phtml');
         $content = null;
         $errors = $this->_getParam('error_handler');
@@ -52,20 +55,22 @@ class ErrorController extends Zend_Controller_Action
         if ($errors->exception instanceof Fisma_Exception_InvalidAuthentication) {
             $this->view->assign('error', $errors->exception->getMessage());
             //remind the user to login
-            $this->_forward('logout', 'User');
+            $this->_forward('logout', 'Auth');
         // if the user want to access an empty path.  
-        } elseif (!Zend_Auth::getInstance()->hasIdentity()) {
+        } elseif (!$auth->hasIdentity()) {
             ///@todo English
             $this->view->assign('error', 'Access denied! Please login first.');
-            $this->_forward('logout', 'User');
+            $this->_forward('logout', 'Auth');
         // if the user has login and meeted an exception.
         } else {
             $this->getResponse()->clearBody();
-            $content = $errors->exception->getMessage()
+            $content = get_class($errors->exception)
+                     . ": "
+                     . $errors->exception->getMessage()
                      . '<br>'
                      . $errors->exception->getTraceAsString()
                      . '<br>';
-            $logger = Fisma_Controller_Front::getLogInstance();
+            $logger = Fisma::getLogInstance();
             $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;
 
@@ -83,7 +88,7 @@ class ErrorController extends Zend_Controller_Action
                 //clear the action stack to prevent additional exceptions would be throwed
                 while($stack->popStack());
             }
-    	    $this->_helper->actionStack('header', 'panel');
+            $this->_helper->actionStack('header', 'panel');
         }
     }
 

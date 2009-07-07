@@ -1,0 +1,32 @@
+    <form id="form1" name="form1" method="post" action="" >
+        <div class="form">
+            <div class="subform">
+                <table class="fisma_crud">
+                    <tr>
+                        <th align="left">Product Search</th>
+                        <th align="right">
+                        <?php if(Fisma_Acl::hasPrivilege('product','create')){ ?>
+                        [<a id="add_product" href="/panel/product/sub/create" title="Create New Product">Create New Product</a>]
+                        <?php } ?>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td><b> Product:</b></td>
+                        <td><input type="text" class="product" name="prod_name" value="<?php echo $this->prod_name?>" size="20" /></td>
+                    </tr>
+                    <tr>
+                        <td><b>Vendor:</b></td>
+                        <td><input type="text" class="product" name="prod_vendor" value="<?php echo $this->prod_vendor?>" size="20" /></td>
+                    </tr>
+                    <tr>
+                        <td><b>Version:</b></td>
+                        <td><input type="text" class="product" name="prod_version" value="<?php echo $this->prod_version?>" size="20" /></td>
+                    </tr>
+                    <tr>
+                        <td><input id="search_product" type="button" value="Search Product" url="/product/advancesearch/format/html" /></td>
+                        <td><input type="reset" name="button2" id="button" value="Reset" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>

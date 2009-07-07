@@ -1,9 +1,10 @@
 <?php
+echo $this->partial('source/searchbox.phtml');
 $operation = '';
-if ($this->acl->isAllowed('admin_sources','update')) {
+if (Fisma_Acl::hasPrivilege('source','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if ($this->acl->isAllowed('admin_sources','delete')) {
+if (Fisma_Acl::hasPrivilege('source','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Finding Source Information $operation"); ?>

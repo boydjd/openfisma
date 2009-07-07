@@ -1,0 +1,29 @@
+Notification:
+    columns:
+        createdTs: timestamp
+        eventText:
+            type: string
+            comment: The event text which is sent to the user
+        eventId:
+            type: integer
+            comment: Foreign key to the event which caused this notification
+        userId:
+            type: integer
+            comment: Foreign key to the user who caused this notification
+    relations:
+        Event:
+            local: eventId
+            foreign: id
+            foreignAlias: Notifications
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: Notifications
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                disabled: true

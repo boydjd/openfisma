@@ -44,7 +44,7 @@ class IndexController extends Zend_Controller_Action
             $this->_forward('index', 'Panel');
         //if the user hasn't login, redirect the page to login page.
         } else {
-            $this->_forward('login', 'User');
+            $this->_forward('login', 'Auth');
         }
     }
 }

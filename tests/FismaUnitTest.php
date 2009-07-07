@@ -27,20 +27,25 @@
  * @package   Test
  */
 
-/**
- * @ignore
- * Run the application bootstrap in command line mode
- */
-require_once('../application/init.php');
-$plSetting = new Fisma_Controller_Plugin_Setting();
-
-if (!$plSetting->installed()) {
-    die('Please install!');
+// Bootstrap the application's CLI mode if it has not already been done
+require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
+if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
+    try {
+        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+        Fisma::connectDb();
+        Fisma::setNotificationEnabled(false);
+    } catch (Zend_Config_Exception $zce) {
+        print "The application is not installed correctly. If you have not run the installer, you should do that now.";
+    } catch (Exception $e) {
+        print get_class($e) 
+            . "\n" 
+            . $e->getMessage() 
+            . "\n"
+            . $e->getTraceAsString()
+            . "\n";
+    }
 }
-
-// Load the base class
-require_once 'PHPUnit/Framework/TestCase.php';
-
+ 
 /**
  * This is the base class for all unit tests in OpenFISMA. Currently this class is just a stub. The real reason for
  * including it is to execute the application bootstrap logic contained in this same file.
@@ -49,15 +54,5 @@ require_once 'PHPUnit/Framework/TestCase.php';
  */
 abstract class Test_FismaUnitTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * Set up access to the database.
-     *
-     * @todo why isn't this done in the bootstrap?
-     */
-    protected function setUp()
-    {
-        // Initialize our DB connection
-        $this->_db = Zend_Db::factory(Zend_Registry::get('datasource'));
-        Zend_Db_Table::setDefaultAdapter($this->_db);
-    }
+
 }

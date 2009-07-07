@@ -31,388 +31,407 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class SystemController extends SecurityController
+class SystemController extends BaseController
 {
-    private $_paging = array(
-        'mode' => 'Sliding',
-        'append' => false,
-        'urlVar' => 'p',
-        'path' => '',
-        'currentPage' => 1,
-        'perPage' => 20
-    );
-    private $_user = null;
-    protected $_sanity = array(
-        'data' => 'system',
-        'filter' => array(
-            '*' => array(
-                'StringTrim',
-                'StripTags'
-            )
-        ) ,
-        'validator' => array(
-            'name' => array('Alnum' => true),
-            'nickname' => array('Alnum' => true),
-            'primary_office' => 'Digits',
-            'confidentiality' => 'NotEmpty',
-            'integrity' => 'NotEmpty',
-            'availability' => 'NotEmpty',
-            'type' => 'NotEmpty',
-            'desc' => array(
-                'allowEmpty' => TRUE
-            ) ,
-            'criticality_justification' => array(
-                'allowEmpty' => TRUE
-            ) ,
-            'sensitivity_justification' => array(
-                'allowEmpty' => TRUE
-            )
-        ) ,
-        'flag' => TRUE
-    );
-
-    /**
-     * @todo english
-     * Initialize this Class
-     */
-    public function init()
-    {
-        parent::init();
-        $this->_system = new System();
-    }
-
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
-    public function preDispatch()
-    {
-
-        $req = $this->getRequest();
-        $this->_pagingBasePath = $req->getBaseUrl() .
-            '/panel/system/sub/list';
-        $this->_paging['currentPage'] = $req->getParam('p', 1);
-    }
+    protected $_modelName = 'System';
 
     /**
      * Returns the standard form for creating, reading, and updating systems.
      *
      * @return Zend_Form
      */
-    public function getSystemForm()
+    public function getForm()
     {
         $form = Fisma_Form_Manager::loadForm('system');
-        
-        $db = $this->_system->getAdapter();
-        $query = $db->select()->from(array('o'=>'organizations'), '*');
-        $ret =  $db->fetchAll($query);
-        if (!empty($ret)) {
-            foreach ($ret as $row) {
-                $form->getElement('organization_id')->addMultiOptions(array($row['id'] => $row['name']));
+        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
+        $q = Doctrine_Query::create()
+                ->select('o.*')
+                ->from('Organization o')
+                ->where('o.orgType != ?', 'system');
+        $organizationTreeObject->setBaseQuery($q);
+        $organizationTree = $organizationTreeObject->fetchTree();
+        if (!empty($organizationTree)) {
+            foreach ($organizationTree as $organization) {
+                $value = $organization['id'];
+                $text = str_repeat('--', $organization['level']) . $organization['name'];
+                $form->getElement('organizationId')->addMultiOptions(array($value => $text));
             }
+        } else {
+            $form->getElement('organizationId')->addMultiOptions(array(0 => 'NONE'));
         }
         
-	$visibility_array = array("visible"=>"Visible", "hidden"=>"Hidden");
-        $form->getElement('visibility')->addMultiOptions($visibility_array);
+        $systemTable = Doctrine::getTable('System');
         
-        $array = $this->_system->getEnumColumns('confidentiality');
+        $array = $systemTable->getEnumValues('confidentiality');
         $form->getElement('confidentiality')->addMultiOptions(array_combine($array, $array));
         
-        $array = $this->_system->getEnumColumns('integrity');
+        $array = $systemTable->getEnumValues('integrity');
         $form->getElement('integrity')->addMultiOptions(array_combine($array, $array));
         
-        $array = $this->_system->getEnumColumns('availability');
+        $array = $systemTable->getEnumValues('availability');
         $form->getElement('availability')->addMultiOptions(array_combine($array, $array));
         
-        $type = $this->_system->getEnumColumns('type');
+        $type = $systemTable->getEnumValues('type');
         $form->getElement('type')->addMultiOptions(array_combine($type, $type));
         
         return Fisma_Form_Manager::prepareForm($form);
     }
-
+    
     /**
-     * list the systems from the search, if search none, it list all systems
-     */     
-    public function listAction()
+     * list the systems from the search, 
+     * if search none, it list all systems
+     *
+     */
+    public function searchAction()
     {
-        $this->_acl->requirePrivilege('admin_systems', 'read');
-        //Display searchbox template
-        $this->searchbox();
+        Fisma_Acl::requirePrivilege('Organization', 'read');
         
-        $value = trim($this->_request->getParam('qv'));
-        $show_hidden = trim($this->_request->getParam('sh'));
-        $db = $this->_system->getAdapter();
-        $query = $db->select()->from(array('s'=>'systems'), 's.*')
-                               ->join(array('o'=>'organizations'), 's.organization_id = o.id',
-                                   array('organization'=>'o.name'))
-                               ->order('s.name ASC')
-                               ->limitPage($this->_paging['currentPage'], $this->_paging['perPage']);
+        $value = trim($this->_request->getParam('keywords'));
+        
+        $sortBy = $this->_request->getParam('sortby', 'name');
+        // Replace the HYDRATE_SCALAR alias syntax with the regular Doctrine alias syntax
+        $sortBy = str_replace('_', '.', $sortBy);
+        $order = $this->_request->getParam('order', 'ASC');
+        
+        if (!in_array(strtolower($order), array('asc', 'desc'))) {
+            /** 
+             * @todo english 
+             */
+            throw new Fisma_Exception('invalid page');
+        }
+        
+        $q = Doctrine_Query::create()
+             ->select('o.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
+             ->from('Organization o')
+             ->leftJoin('o.System s')
+             ->where('o.orgType = ?', 'system')
+             ->orderBy("$sortBy $order")
+             ->limit($this->_paging['count'])
+             ->offset($this->_paging['startIndex'])
+             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
         if (!empty($value)) {
+            $this->_helper->searchQuery($value, 'system');
             $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            //@todo english  get search results in ids
+            // get search results in ids
             $systemIds = $cache->load($this->_me->id . '_system');
-            if (!empty($systemIds)) {
-                $ids = implode(',', $systemIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
+            if (empty($systemIds)) {
+                // set ids as a not exist value in database if search results is none.
+                $systemIds = array(-1);
             }
-            $query->where('s.id IN (' . $ids . ')');
+            $q->whereIn('u.id', $systemIds);
         }
 
-	if (empty($show_hidden)) {
-            $query->where('s.visibility="visible"');
-	}
-	else {
-            $query->where('s.visibility="hidden"');
-	}
+        $totalRecords = $q->count();
+        $organizations = $q->execute();
 
-        $systemList = $db->fetchAll($query);
-        $this->view->assign('system_list', $systemList);
-        $this->render('list');
+        $tableData = array('table' => array(
+            'recordsReturned' => count($organizations),
+            'totalRecords' => $totalRecords,
+            'startIndex' => $this->_paging['startIndex'],
+            'sort' => $sortBy,
+            'dir' => $order,
+            'pageSize' => $this->_paging['count'],
+            'records' => $organizations
+        ));
+
+        $this->_helper->json($tableData);
     }
-
-    /**
-     *  Render the form for searching the systems.
-     */
-    public function searchbox()
+    
+    public function viewAction() 
     {
-        $this->_acl->requirePrivilege('admin_systems', 'read');
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
+        $id = $this->getRequest()->getParam('id');        
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
         
-        $qv = trim($this->_request->getParam('qv'));
-        if (!empty($qv)) {
-            $ret = $this->_helper->searchQuery($qv, 'system');
-            $count = count($ret);
-            $this->_paging['fileName'] .= '/qv/'.$qv;
-        } else {
-            $count = $this->_system->count();
-        }
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->organization = $organization;
+        $this->view->system = $organization->System;
 
-        $this->_paging['totalItems'] = $count;
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $count);
-        $this->view->assign('links', $pager->getLinks());
-        $this->render('searchbox');
-    }
-
-    /**
-     * Display the form for creating a new system.
-     */
-    public function createAction()
-    {
-        $this->_acl->requirePrivilege('admin_systems', 'create');
-        
-        $form = $this->getSystemForm('system');
-        $system = $this->_request->getPost();
-        if ($system) {
-            if ($form->isValid($system)) {
-                $system = $form->getValues();
-                unset($system['save']);
-                unset($system['reset']);
-
-                $systemId = $this->_system->insert($system);
-                if (! $systemId) {
-                    //@REVIEW 3 lines
-                    $msg = "Failure in creation";
-                    $model = self::M_WARNING;
-                } else {
-                    $this->_notification
-                         ->add(Notification::SYSTEM_CREATED,
-                             $this->_me->account, $systemId);
-
-                    //Create a system index
-                    if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
-                        $organization = new Organization();
-                        $ret = $organization->find($system['organization_id'])->current();
-                        if (!empty($ret)) {
-                            $system['organization'] = $ret->name . ' ' . $ret->nickname;
-                            unset($system['organization_id']);
-                            $this->_helper->updateIndex('system', $systemId, $system);
-                        }
-                    }
-
-                    $msg = "The system is created";
-                    $model = self::M_NOTICE;
-                }
-                $this->message($msg, $model);
-                $this->_forward('view', null, null, array('id' => $systemId));
-                return;
-            } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
-                // Error message
-                $this->message("Unable to create system:<br>$errorString", self::M_WARNING);
-            }
-        }
-        //Display searchbox template
-        $this->searchbox();
-
-        $this->view->title = "Create ";
-        $this->view->form = $form;
-        $this->render('create');
-    }
-
-    /**
-     *  Delete a specified system.
-     */
-    public function deleteAction()
-    {
-        $this->_acl->requirePrivilege('admin_systems', 'delete');
-        
-        $errno = 0;
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $db = $this->_system->getAdapter();
-        $qry = $db->select()->from('poams')
-             ->where('system_id = ' . $id);
-        $resultA = $db->fetchAll($qry);
-        $qry->reset();
-        $qry = $db->select()->from('assets')
-            ->where('system_id = ' . $id);
-        $resultB = $db->fetchAll($qry);
-        if (!empty($resultA) || !empty($resultB)) {
-            $msg = "This system cannot be deleted because it is already".
-                   " associated with one or more POAMS or assets";
-            $model = self::M_WARNING;
-        } else {
-            $res = $this->_system->delete('id = ' . $id);
-            if (!$res) {
-                $errno++;
-            }
-            if ($errno > 0) {
-                $msg = "Failed to delete the system";
-                $model = self::M_WARNING;
-            } else {
-                $this->_notification
-                     ->add(Notification::SYSTEM_DELETED,
-                        $this->_me->account, $id);
-
-                //Delete this system index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
-                    $this->_helper->deleteIndex('system', $id);
-                }
-
-                $msg = "System deleted successfully";
-                $model = self::M_NOTICE;
-            }
-        }
-        $this->message($msg, $model);
-        $this->_forward('list');
+        $this->render();
     }
     
     /**
-     * Display a single system record with all details.
+     * Display basic system properties such as name, creation date, etc.
      */
-    public function viewAction()
+    public function systemAction() 
     {
-        $this->_acl->requirePrivilege('admin_systems', 'read');
-        //Display searchbox template
-        $this->searchbox();
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
         
-        $form = $this->getSystemForm();
-        $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v', 'view');
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
 
-        $res = $this->_system->find($id)->toArray();
-        $system = $res[0];
-
-        $organization = new Organization();
-        $res = $organization->find($system['organization_id'])->toArray();
-        if (!empty($res)) {
-            $organizationName = $res[0]['name'];
+        // Assign the parent organization link
+        $parentOrganization = $this->view->organization->getNode()->getParent();
+        if (isset($parentOrganization)) {
+            if (Fisma_Acl::hasPrivilege('Organization', 'read', $parentOrganization->id)) {
+                if ('system' == $parentOrganization->orgType) {
+                    $this->view->parentOrganization = "<a href='/panel/system/sub/view/id/"
+                                                    . $parentOrganization->id
+                                                    . "'>"
+                                                    . "$parentOrganization->nickname - $parentOrganization->name"
+                                                    . "</a>";
+                } else {
+                    $this->view->parentOrganization = "<a href='/panel/organization/sub/view/id/"
+                                                    . $parentOrganization->id
+                                                    . "'>"
+                                                    . "$parentOrganization->nickname - $parentOrganization->name"
+                                                    . "</a>";
+                
+                }
+            } else {
+                $this->view->parentOrganization = "$parentOrganization->nickname - $parentOrganization->name";
+            }
         } else {
-            $organizationName = 'NONE';
+            $this->view->parentOrganization = "<i>None</i>";
         }
-        $system['organization'] = $organizationName;
+        
+        $this->render();
+    }
+    
+    /**
+     * Display CIA criteria and FIPS-199 categorization
+     */
+    public function fipsAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
 
-        if ($v == 'edit') {
-            $this->view->assign('viewLink',
-                                "/panel/system/sub/view/id/$id");
-            $form->setAction("/panel/system/sub/update/id/$id");
-        } else {
-            // In view mode, disable all of the form controls
-            $this->view->assign('editLink',
-                                "/panel/system/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);            
-        }
-        $this->view->assign('deleteLink', "/panel/system/sub/delete/id/$id");
-        $form->setDefaults($system);
-        $this->view->form = $form;
-        $this->view->assign('id', $id);
-        $this->render($v);
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
+        
+        $this->render();
+    }
+    
+    /**
+     * Display FISMA attributes for the system
+     */
+    public function fismaAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
+        
+        $this->render();        
     }
 
     /**
-     * Updates system information after submitting an edit form.
-     *
-     * @todo cleanup this function
+     * Display FISMA attributes for the system
      */
-    public function updateAction ()
+    public function artifactsAction() 
     {
-        $this->_acl->requirePrivilege('admin_systems', 'update');
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $system = $organization->System;
+        $documents = $system->Documents;
         
-        $form = $this->getSystemForm();
-        $formValid = $form->isValid($_POST);
-        $system = $form->getValues();
+        $this->view->organization = $organization;
+        $this->view->system = $system;
+        
+        // Get all documents for current system, sorted alphabetically on the document type name
+        $documentQuery = Doctrine_Query::create()
+                         ->from('SystemDocument d INNER JOIN d.DocumentType t')
+                         ->where('d.systemId = ?', $system->id)
+                         ->orderBy('t.name');
+        $this->view->documents = $documentQuery->execute();
+        
+        $this->render();        
+    }
 
-        $id = $this->_request->getParam('id');
-        $ret = $this->_system->find($id)->current();
-        if (!empty($ret)) {
-            $query = $ret->name . ' ' . $ret->nickname;
-        } else {
-            throw new Exception_General("The system posted is not a valid system");
+    /**
+     * Edit the system data
+     */
+    public function editAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        $this->_helper->layout()->disableLayout();
+
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $system = $organization->System;
+
+        $post = $this->_request->getPost();
+        if ($post) {
+            $organization->merge($post);
+            $organization->save();
+
+            $system->merge($post);
+            $system->save();
         }
-        $data['system'] = $system['name'] . ' ' . $system['nickname'];
+        
+        $this->_redirect("/panel/system/sub/view/id/$id");
+    }
 
-        if ($formValid) {
-            unset($system['save']);
-            unset($system['reset']);
+    /**
+     * Upload file artifacts for a system
+     */
+    public function attachFileAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        $this->_helper->layout()->disableLayout();
 
-            $res = $this->_system->update($system, 'id = ' . $id);
-            if ($res) {
-                //@REVIEW 3 lines
-                $this->_notification
-                     ->add(Notification::SYSTEM_MODIFIED,
-                         $this->_me->account, $id);
+        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->system = $this->view->organization->System;
+    }
+    
+    /**
+     * Display a form inside a panel for uploading a document
+     * 
+     * Notice that IE has its own method, since it does not support the flash uploader
+     */
+    public function uploadDocumentFormAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        $this->_helper->layout()->disableLayout();
 
-                //Update findings index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/finding') && $query != $data['system']) {
-                    $index = new Zend_Search_Lucene(Fisma_Controller_Front::getPath('data') . '/index/finding');
-                    $hits = $index->find('system:'.$query);
-                    $ids = array();
-                    foreach ($hits as $hit) {
-                        $ids[] = $hit->id;
-                        $x[] = $hit->rowId;
-                    }
-                    $this->_helper->updateIndex('finding', $ids, $data);
-                }
+        $this->view->organizationId = $id;        
+        $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();
+    }
+  
+    /**
+     * Display a form inside a panel for uploading a document
+     */
+    public function uploadDocumentAction()
+    {
+        $id = $this->getRequest()->getParam('id');
 
-                //Update this system index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/system/')) {
-                    $organization = new Organization();
-                    $ret = $organization->find($system['organization_id'])->current();
-                    if (!empty($ret)) {
-                        $system['organization'] = $ret->name . ' ' . $ret->nickname;
-                        unset($system['organization_id']);
-                        $this->_helper->updateIndex('system', $id, $system);
-                    }
-                }
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+                
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $documentTypeId = $this->getRequest()->getParam('documentTypeId');
+        $description = $this->getRequest()->getParam('description');
 
-                $msg = "The system is saved";
-                $model = self::M_NOTICE;
+        try {
+            // Get the existing document
+            $documentQuery = Doctrine_Query::create()
+                             ->from('SystemDocument sd')
+                             ->where('sd.systemId = ? AND sd.documentTypeId = ?',
+                                     array($organization->System->id, $documentTypeId))
+                             ->limit(1);
+            $documents = $documentQuery->execute();
+    
+            // If no existing document, then create a new one
+            if (count($documents) == 0) {
+                $document = new SystemDocument();
+                $document->documentTypeId = $documentTypeId;
+                $document->System = $organization->System;
+                $document->User = User::currentUser();
             } else {
-                $msg = "Nothing changes";
-                $model = self::M_WARNING;
+                $document = $documents[0];
             }
-            $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $id));
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            // Error message
-            $this->message("Unable to update system:<br>$errorString", self::M_WARNING);
-            // On error, redirect back to the edit action.
-            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+
+            // Move file into its correct place
+            $error = '';
+            if (empty($_FILES['systemdoc']['name'])) {
+                throw new Fisma_Exception("You did not specify a file to upload.");
+            }
+            $file = $_FILES['systemdoc'];
+            $destinationPath = Fisma::getPath('systemDocument') . "/$id";
+            if (!is_dir($destinationPath)) {
+                mkdir($destinationPath);
+            }
+            $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . date('Ymd-His') . '.$2', $file['name'], 2, $count);
+            $filePath = "$destinationPath/$fileName";
+
+            if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+                throw new Fisma_Exception("The file could not be stored due to the server's permissions settings.");
+            }
+    
+            // Update the document object and save
+            if (empty($description)) {
+                throw new Fisma_Exception("You did not enter the version notes.");
+            }
+            $document->description = $description;
+            $document->fileName = $fileName;
+            $document->mimeType = $file['type'];
+            $document->size = $file['size'];
+            $document->save();
+        } catch (Fisma_Exception $e) {
+            $error = "Upload failed: " . $e->getMessage();
         }
+        
+        if ('ie' == $this->getRequest()->getParam('browser')) {
+            // Special handling for IE
+            if (!empty($error)) {
+                $this->message($error, self::M_WARNING);
+                $this->_forward('system', 'Panel', null, array('sub' => 'upload-for-ie', 'error' => $error));
+            } else {
+                $this->_redirect("/panel/system/sub/view/id/$id");
+            }
+        } else {
+            // For all other browsers, send back a JSON status
+            $this->_helper->layout()->disableLayout();
+            $this->_helper->viewRenderer->setNoRender(true);
+            
+            $success = empty($error) ? true : false;
+            echo(json_encode(array('success' => $success, 'error' => $error)));
+        }
+    }  
+    
+    /**
+     * Download the specified system document
+     */
+    public function downloadDocumentAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $version = $this->getRequest()->getParam('version');
+
+        Fisma_Acl::requirePrivilege('Organization', 'update', $document->System->Organization->id);
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $document = Doctrine::getTable('SystemDocument')->find($id);
+        if (isset($version)) {
+            $versionInfo = $document->getAuditLog()->getVersion($document, $version);
+            // This is awkward. Doctrine's Versionable returns versions as arrays, not objects.
+            // So we have to create a temporary object in order to execute the required logic.
+            $document = new SystemDocument();
+            $document->merge($versionInfo[0]);
+        }
+
+        if (is_null($document)) {
+            throw new Fisma_Exception("Requested file does not exist.");
+        }
+
+        /** @todo better error checking */
+        $this->getResponse()
+             ->setHeader('Content-Type', $document->mimeType)
+             ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
+         $path = $document->getPath();
+         readfile($path);
+    }
+    
+    /**
+     * A special upload page just for IE.
+     * 
+     * IE doesn't work with the flash uploader, so it uses a static upload page.
+     */
+    public function uploadForIeAction() 
+    {
+        $id = $this->getRequest()->getParam('id');
+        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+
+        $error = $this->getRequest()->getParam('error');
+
+        // Give the user some notice that IE is limiting the features they can use
+        if (!isset($error)) {
+            $error = 'Uploading files has better support in standards-compliant browsers, '
+                   . 'such as Firefox, Safari, and Chrome.';
+        }
+
+        $this->message($error, self::M_WARNING);
+
+        $this->view->organizationId = $id;        
+        $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();        
     }
 }

@@ -1,0 +1,48 @@
+; This is the form for creating, updating, and reading user account information.
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Woody Lee <woody712@users.sourceforge.net>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id:$
+
+
+[asset]
+elements.name.type = "text"
+elements.name.options.label = "Name"
+elements.name.options.required = true
+displayGroups.assetInfo.elements.name = "name"
+
+elements.addressIp.type = "text"
+elements.addressIp.options.label = "Address IP"
+elements.addressIp.options.validators.addressIp.validator = "ip"
+displayGroups.assetInfo.elements.addressIp = "addressIp"
+
+elements.addressPort.type = "text"
+elements.addressPort.options.label = "Address Port"
+elements.addressPort.options.validators.alnum.validator = "Digits"
+displayGroups.assetInfo.elements.addressPort = "addressPort"
+
+elements.productId.type = "select"
+elements.productId.options.label = "Product"
+elements.productId.options.size = "10"
+elements.productId.options.style = "width:400px;"
+elements.productId.options.required = true
+displayGroups.assetInfo.elements.productId = "productId"
+
+elements.orgSystemId.type = "select"
+elements.orgSystemId.options.label = "System"
+elements.orgSystemId.options.style = "width:250px"
+elements.orgSystemId.options.required = true
+displayGroups.assetInfo.elements.orgSystemId = "orgSystemId"
+
+elements.networkId.type = "select"
+elements.networkId.options.label = "Network"
+elements.networkId.options.required = true
+elements.networkId.options.style = "width:250px"
+displayGroups.assetInfo.elements.networkId = "networkId"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save"
+displayGroups.assetInfo.elements.save = "save"

@@ -43,7 +43,6 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
     public function buildLabel() 
     {
         $element = $this->getElement();
-        $render = '';
         if (!$element instanceof Zend_Form_Element_Submit) {
             $label = '';
             if ($element->isRequired()) {
@@ -54,8 +53,21 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                 $label = $translator->translate($label);
             }
             $label .= ':';
+            
+            $attrib = array();
             $render = $element->getView()
                               ->formLabel($element->getName(), $label);
+            if (isset($element->tooltip)) {
+                $render = "<span id='{$element->getName()}Tooltip' class='tooltip'>$render</span>"
+                        . '<script type="text/javascript">'
+                        . "{$element->getName()}Tooltip = new YAHOO.widget.Tooltip("
+                        . "\"{$element->getName()}TooltipObj\", { context:\"{$element->getName()}Tooltip\", "
+                        . "showdelay: 150, hidedelay: 150, autodismissdelay: 25000, "
+                        . "text:\"{$element->tooltip}\", "
+                        . 'effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, '
+                        . 'width: "50%"});'
+                        . '</script>';
+            }
         } else {
             $render = '&nbsp;';
         }
@@ -71,7 +83,20 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
     {
         $element = $this->getElement();
         $helper  = $element->helper;
+
+        $_buttonTypes = array(
+            'Zend_Form_Element_Button',
+            'Zend_Form_Element_Reset',
+            'Zend_Form_Element_Submit'
+        );
+
         $value = $element->getValue();
+        foreach ($_buttonTypes as $type) {
+            if ($element instanceof $type) {
+                $value = $element->getLabel();
+            }
+        }
+
         $render = '';
         
         if ($element->readOnly) {
@@ -143,7 +168,7 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             if ($element->isReadOnly()) {
                 $render = '<div class=\'form\'>'
                         . $content
-                        . '</div>';            
+                        . '</div><div class="clear"></div>';            
             } else {
                 $render = "<form method='{$element->getMethod()}'"
                         . " action='{$element->getAction()}'"
@@ -152,11 +177,11 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                         . '>'
                         . '<div class=\'form\'>'
                         . $content
-                        . '</div>'
+                        . '</div><div class="clear"></div>'
                         . '</form>';
             }
         } else {
-            throw new Fisma_Exception_General("The element to be rendered is an unknown"
+            throw new Fisma_Exception("The element to be rendered is an unknown"
                                     . " class: "
                                     . get_class($element));
         }

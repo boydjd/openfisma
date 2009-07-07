@@ -20,58 +20,280 @@
  * @author    Ryan Yang <ryan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
+ * @version   $Id:$
  * @package   Model
  */
 
 /**
- * A business object which represents a security vulnerability reported against
- * an information system.
+ * A business object which represents a plan of action and milestones related
+ * to a particular finding.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Finding extends Poam
+class Finding extends BaseFinding
 {
+    //Threshold of overdue for various status
+    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
+
     /**
-        count the summary of findings according to certain criteria
-
-        @param $dateRange discovery time range
-        @param $systems system id those findings belongs to
-        @return array of counts
+     * Returns an ordered list of all business possible statuses
+     * 
+     * @return array
      */
-    public function getStatusCount ($systems, $dateRange = array(), $status = null)
-    {
-        assert(! empty($systems) && is_array($systems));
-        $criteria = array();
-        if (isset($dateRange)) {
-            // range follows [from, to)
-            if (! empty($dateRange['from'])) {
-                $criteria['created_date_begin'] = $dateRange['from'];
-            }
-            if (! empty($dateRange['to'])) {
-                $criteria['created_date_end'] = $dateRange['to'];
-            }
+    public static function getAllStatuses() {
+        $allStatuses = array('NEW', 'DRAFT');
+        
+        $mitigationStatuses = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = ?', array('action'));
+        foreach ($mitigationStatuses as $status) {
+            $allStatuses[] = $status->nickname;
         }
-        if (isset($status)) {
-            $criteria = array_merge($criteria, array('status' => $status));
-            if (is_string($status)) {
-                $status = array($status);
-            }
-            foreach ($status as $s) {
-                $ret[$s] = 0;
-            }
-        } else {
-            $ret = array('NEW' => 0, 'DRAFT' => 0, 'MSA'=>0, 'EN' => 0,
-                         'EA' => 0, 'CLOSED' => 0 , 'DELETED' => 0);
-        }
-        $raw = $this->search($systems, array('status' => 'status',
-                                'count' => 'status'), $criteria);
-        foreach ($raw as $s) {
-            $ret[$s['status']] = $s['count'];
-        }
-        return $ret;
-    }
-}
+        
+        $allStatuses[] = 'EN';
 
+        $evidenceStatus = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = ?', array('evidence'));
+        foreach ($evidenceStatus as $status) {
+            $allStatuses[] = $status->nickname;
+        }
+        
+        $allStatuses[] = 'CLOSED';
+
+        return $allStatuses;
+    }
+
+    /**
+     * get the detailed status of a Finding
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        if (!in_array($this->status, array('MSA', 'EA'))) {
+            return $this->status;
+        } else {
+            return $this->CurrentEvaluation->nickname;
+        }
+    }
+
+    /**
+     * Submit Mitigation Strategy
+     * Set the status as "MSA" and the currentEvaluationId as the first mitigation evaluation id
+     */
+    public function submitMitigation(User $user)
+    {
+        if ('DRAFT' != $this->status) {
+            //@todo english
+            throw new Fisma_Exception("The finding can't be submited mitigation strategy");
+        }
+        $this->status = 'MSA';
+        $this->updateNextDueDate();
+        $evaluation = Doctrine::getTable('Evaluation')
+                                        ->findByDql('approvalGroup = "action" AND precedence = 0');
+        $this->CurrentEvaluation = $evaluation[0];
+        $this->log('Submit mitigation strategy');
+
+        $this->save();
+    }
+
+    /**
+     * Revise the Mitigation Strategy
+     * Set the status as "DRAFT" and the currentEvaluationId as null
+     */
+    public function reviseMitigation(User $user)
+    {
+        if ('EN' != $this->status) {
+            //@todo english
+            throw new Fisma_Exception("The finding can't be revised mitigation strategy");
+        }
+        $this->status = 'DRAFT';
+        $this->updateNextDueDate();
+        $this->CurrentEvaluation = null;
+        $this->log('Revise mitigation strategy');
+
+        $this->save();
+    }
+
+    /**
+     * Approve the current evaluation,
+     * then update the status to either point to
+     * a new Evaluation or else to change the status to DRAFT, EN,
+     * or CLOSED as appropriate
+     * 
+     * @param Object $user a specific user object
+     */
+    public function approve(User $user)
+    {
+        if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
+            //@todo english
+            throw new Fisma_Exception("The finding can't be approved");
+        }
+        
+        $findingEvaluation = new FindingEvaluation();
+        if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
+            $findingEvaluation->Evidence   = $this->Evidence->getLast();
+        }
+        $findingEvaluation->Finding    = $this;
+        $findingEvaluation->Evaluation = $this->CurrentEvaluation;
+        $findingEvaluation->decision   = 'APPROVED';
+        $findingEvaluation->User       = $user;
+        $this->FindingEvaluations[]    = $findingEvaluation;
+
+        $this->log('Approve ' . $this->getStatus());
+
+        switch ($this->status) {
+            case 'MSA':
+                //@todo is there any way to judge the NextEvaluation is empty unless use toArray()
+                if ($this->CurrentEvaluation->nextId == null) {
+                    $this->status = 'EN';
+                }
+                break;
+            case 'EA':
+                if ($this->CurrentEvaluation->nextId == null) {
+                    $this->status   = 'CLOSED';
+                    $this->closedTs = date('Y-m-d');
+                }
+                break;
+        }
+        $this->currentEvaluationId = $this->CurrentEvaluation->nextId;
+        $this->updateNextDueDate();
+        $this->save();
+    }
+
+    /**
+     * Deny the current evaluation
+     *
+     * @param $user a specific user
+     * @param string $comment deny comment
+     */
+    public function deny(User $user, $comment)
+    {
+        if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
+            //@todo english
+            throw new Fisma_Exception("The finding can't be denied");
+        }
+
+        $findingEvaluation = new FindingEvaluation();
+        if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
+            $findingEvaluation->Evidence   = $this->Evidence->getLast();
+        }
+        $findingEvaluation->Finding      = $this;
+        $findingEvaluation->Evaluation   = $this->CurrentEvaluation;
+        $findingEvaluation->decision     = 'DENIED';
+        $findingEvaluation->User         = $user;
+        $findingEvaluation->comment      = $comment;
+        $this->FindingEvaluations[]      = $findingEvaluation;
+
+        $this->log('Deny ' . $this->getStatus() . ' : ' . $comment);
+
+        switch ($this->status) {
+            case 'MSA':
+                $this->status              = 'DRAFT';
+                $this->CurrentEvaluation   = null;
+                break;
+            case 'EA':
+                $this->status              = 'EN';
+                $this->CurrentEvaluation   = null;
+                break;
+        }
+        $this->updateNextDueDate();
+        $this->save();
+    }
+
+    /**
+     * Upload Evidence
+     * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
+     *
+     * @param string $fileName evidence file name
+     * @param $user
+     */
+    public function uploadEvidence($fileName, User $user)
+    {
+        if ('EN' != $this->status) {
+            //@todo english
+            throw new Fisma_Exception("The finding can't be uploaded evidence");
+        }
+        $this->status    = 'EA';
+        $this->ecdLocked = true;
+        $this->updateNextDueDate();
+        $evaluation = Doctrine::getTable('Evaluation')
+                                        ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
+        $this->CurrentEvaluation = $evaluation[0];
+        $evidence = new Evidence();
+        $evidence->filename = $fileName;
+        $evidence->Finding  = $this;
+        $evidence->User     = $user;
+        $this->Evidence[]   = $evidence;
+
+        $this->log('Upload evidence: ' . $fileName);
+        $this->save();
+    }
+
+    /**
+     * Set the nextduedate when the status has changed except 'CLOSED'
+     * @todo why the 'Y-m-d' is a wrong date
+     */
+    public function updateNextDueDate()
+    {
+        if (in_array($this->status, array('PEND', 'CLOSED'))) {
+            $this->nextDueDate = null;
+            return;
+        }
+        switch ($this->status) {
+            case 'NEW':
+                $startDate = $this->createdTs;
+                break;
+            case 'DRAFT':
+                $startDate = $this->createdTs;
+                break;
+            case 'MSA':
+                $startDate = Fisma::now();
+                break;
+            case 'EN':
+                $startDate = $this->expectedCompletionDate;
+                break;
+            case 'EA':
+                $startDate = Fisma::now();
+                break;
+        }
+        $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
+        $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
+        $this->nextDueDate = $nextDueDate->toString('Y-m-d');
+    }
+
+    /**
+     * Get the finding evaluations by approval group
+     *
+     * @param string $approvalGroup evaluation approval group
+     * @return array
+     */
+    public function getFindingEvaluations($approvalGroup)
+    {
+        if (!in_array($approvalGroup, array('action', 'evidence'))) {
+            /** @todo english */
+            throw new Fisma_Exception("Invalid approval group");
+        }
+        $findingEvaluations = array();
+        foreach ($this->FindingEvaluations as $findingEvaluation) {
+            if ($approvalGroup == $findingEvaluation->Evaluation->approvalGroup) {
+                $findingEvaluations[] = $findingEvaluation;
+            }
+        }
+        return $findingEvaluations;
+    }
+
+    /**
+     * write the audit log
+     * 
+     * @param string $description log message
+     * @return this
+     */
+    public function log($description)
+    {
+        $auditLog = new AuditLog();
+        $auditLog->User        = User::currentUser();
+        $auditLog->description = $description;
+        $this->AuditLogs[]     = $auditLog;
+    }
+
+}

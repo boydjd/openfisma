@@ -44,11 +44,13 @@ class Fisma_Yui
      */
     function __construct() 
     {
-        throw new Fisma_Exception_General('This is a static class; do not create instances of it.');
+        throw new Fisma_Exception('This is a static class; do not create instances of it.');
     }
 
     /**
-     * Adds the specified YUI library into the include list. The include list is a set, meaning that
+     * Adds the specified YUI library into the include list. 
+     * 
+     * The include list is a set, meaning that
      * each item can only occur in the list once. To achieve this, the array key holds the name of the
      * library, and the value is just a placeholder.
      * 
@@ -56,7 +58,7 @@ class Fisma_Yui
      */
     static function includeLibrary($library) 
     {
-        if ('yahoo-dom-event' != $library || !Fisma_Controller_Front::debug()) {
+        if ('yahoo-dom-event' != $library || !Fisma::debug()) {
             self::$_includes[$library] = true;
         } else {
             // Special case: in debug mode, convert the "yahoo-dom-event" library request into
@@ -76,15 +78,14 @@ class Fisma_Yui
     static function printIncludes() 
     {
         $render = '';
-        $cf = Fisma_Controller_Front::getInstance();
-        $yuiPath = $cf->getPath('yui');
+        $yuiPath = Fisma::getPath('yui');
        
         foreach (array_keys(self::$_includes) as $include) {
             // Use the debug version of the file when in debugging mode, if possible. In production
             // mode, use the compressed ("-min") version if available.
-            if (!Fisma_Controller_Front::debug() && file_exists("$yuiPath/$include/$include-min.js")) {
+            if (!Fisma::debug() && file_exists("$yuiPath/$include/$include-min.js")) {
                 $source = "/yui/$include/$include-min.js";
-            } elseif (Fisma_Controller_Front::debug() && file_exists("$yuiPath/$include/$include-debug.js")) {
+            } elseif (Fisma::debug() && file_exists("$yuiPath/$include/$include-debug.js")) {
                 $source = "/yui/$include/$include-debug.js";
             } elseif (file_exists("$yuiPath/$include/$include.js")) {
                 $source = "/yui/$include/$include.js";

@@ -12,24 +12,24 @@ function discardChanges(event) {
     window.location.reload();
 }
 </script>
-<form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?php echo $this->poam['id'];?>" 
+<form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?php echo $this->finding->id;?>" 
       method="post" 
       id="finding_detail"
       name="finding_detail">
     <div class="toolbar">
         <?php
             $backToSearchButton = new Fisma_Yui_Form_Button('backToSearch',
-                                                      array('value' => 'Back To Search Results', 
+                                                      array('label' => 'Back To Search Results', 
                                                             'onClickFunction' => 'backToSearch'));
             echo $backToSearchButton;
             
             $discardButton = new Fisma_Yui_Form_Button('discardChanges',
-                                                 array('value' => 'Discard Changes', 
+                                                 array('label' => 'Discard Changes', 
                                                        'onClickFunction' => 'discardChanges'));
             echo $discardButton;
             
             echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
-                                            array('value' => 'Save Changes'));
+                                            array('label' => 'Save Changes'));
         ?>
     </div>
     <div id="tabContainer">
@@ -59,7 +59,7 @@ function discardChanges(event) {
                             eval(scriptNodes[i].text);
                         } catch (e) {
                             alert('Not able to execute one of the scripts embedded in this page: '
-                                  + err.description);
+                                  + e.message);
                         } 
                         // Set a flag that prevents this script from being executed more than once
                         scriptNodes[i].setAttribute('executeFlag', 'true');
@@ -75,8 +75,8 @@ function discardChanges(event) {
             
             // Finding tab
             var findingTab = new YAHOO.widget.Tab({
-                label: 'Finding #<?php echo $this->poam['id']; ?>',
-                dataSrc: '/remediation/finding/id/<?php echo $this->poam['id']; ?>',
+                label: 'Finding #<?php echo $this->finding->id; ?>',
+                dataSrc: '/remediation/finding/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             findingTab.subscribe("dataLoadedChange", prepareTab);
@@ -84,7 +84,7 @@ function discardChanges(event) {
         
             var mitigationTab = new YAHOO.widget.Tab({
                 label: 'Mitigation Strategy',
-                dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/mitigation-strategy/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             mitigationTab.subscribe("dataLoadedChange", prepareTab);        
@@ -92,7 +92,7 @@ function discardChanges(event) {
         
             var riskTab = new YAHOO.widget.Tab({
                 label: 'Risk Analysis',
-                dataSrc: '/remediation/risk-analysis/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/risk-analysis/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             riskTab.subscribe("dataLoadedChange", prepareTab);                
@@ -100,15 +100,15 @@ function discardChanges(event) {
 
             var securityControlTab = new YAHOO.widget.Tab({
                 label: 'Security Control',
-                dataSrc: '/remediation/security-control/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/security-control/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             securityControlTab.subscribe("dataLoadedChange", prepareTab);                
             tabView.addTab(securityControlTab);
 
             var artifactsTab = new YAHOO.widget.Tab({
-                label: 'Artifacts (<?php echo count($this->ev_evals); ?>)',
-                dataSrc: '/remediation/artifacts/id/<?php echo $this->poam['id']; ?>',
+                label: 'Artifacts (<?php echo $this->finding->Evidence->count(); ?>)',
+                dataSrc: '/remediation/artifacts/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             artifactsTab.subscribe("dataLoadedChange", prepareTab);                
@@ -116,7 +116,7 @@ function discardChanges(event) {
             
             var auditTab = new YAHOO.widget.Tab({
                 label: 'Audit Log',
-                dataSrc: '/remediation/audit-log/id/<?php echo $this->poam['id']; ?>',
+                dataSrc: '/remediation/audit-log/id/<?php echo $this->finding->id; ?>',
                 cacheData: true
             });
             auditTab.subscribe("dataLoadedChange", prepareTab);        
@@ -129,10 +129,10 @@ function discardChanges(event) {
             // then by the cookie.
             var tab = location.hash.substring(1);
             if (!tab || tab < 0 || tab > 4) {
-                if (YAHOO.util.Cookie.get("currentFindingId") == <?php echo $this->poam['id']; ?>) {
+                if (YAHOO.util.Cookie.get("currentFindingId") == <?php echo $this->finding->id; ?>) {
                     tab = YAHOO.util.Cookie.get("activeTab");
                 } else {
-                    YAHOO.util.Cookie.set("currentFindingId", <?php echo $this->poam['id']; ?>, {path: '/'});
+                    YAHOO.util.Cookie.set("currentFindingId", <?php echo $this->finding->id; ?>, {path: '/'});
                     YAHOO.util.Cookie.set("activeTab", 0, {path: '/'}); 
                     tab = 0;
                 }

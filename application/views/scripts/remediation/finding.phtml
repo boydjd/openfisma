@@ -1,52 +1,68 @@
+<?php
+    $finding = $this->finding;
+    $status  = $finding->getStatus();
+?>
 <div class="column left">
     <?php Fisma_Format_Section::startSection("Details"); ?>
     <table class="keyValues">
         <tr>
-            <td>POAM ID:</td>
-            <td><?php echo $this->poam['id'];?></td>
+            <td>Finding ID:</td>
+            <td><?php echo $finding->id;?></td>
         </tr>
         <tr>
             <td>Date Discovered:</td>
-            <td><?php echo $this->poam['discover_ts'];?></td>
+            <td><?php echo $finding->discoveredDate;?></td>
         </tr>
         <tr>
             <td>Date Opened:</td>
-            <td><?php echo $this->poam['create_ts'];?></td>
+            <td><?php echo $finding->createdTs;?></td>
         </tr>
         <tr>
             <td>Source:</td>
-            <td>(<?php echo $this->poam['source_nickname'];?>) <?php echo $this->poam['source_name'];?>
-            <?php if (!empty($this->poam['upload_id'])) { ?><br><?php echo $this->poam['upload_filename']; } ?>
+            <td>(<?php echo $finding->Source->nickname;?>) <?php echo $finding->Source->name;?>
+            <?php 
+                if ($finding->uploadId) {
+                    echo '<br>' . $finding->Upload->fileName;
+                }
+            ?>
             </td>
         </tr>
         <tr>
             <td>Status:</td>
-            <td><?php echo $this->poam['status'];?></td>
+            <td><?php echo $status;?></td>
         </tr>
-        <?php if ($this->poam['status'] != 'CLOSED') { ?>
+        <?php if ($status != 'CLOSED') { ?>
         <tr>
             <td>On Time:</td>
-            <td><?php echo $this->isOnTime($this->poam['duetime']);?></td>
+            <td>
+            <?php
+                if (is_null($finding->nextDueDate)) {
+                    echo 'N/A';
+                } else {
+                    echo time() < strtotime($finding->nextDueDate) ? 'On Time' : 'Overdue';
+                }
+            ?>
+            </td>
         </tr>
         <?php } ?>
         <tr>
             <td>
                 <div>
-                    Responsible System:
+                    Responsible Organization:
                 </div>
             </td>
             <td>
-                <div name="poam[system_id]" 
-                     id="action_owner" 
+                <div name="finding[responsibleOrganizationId]" 
+                     id="organization" 
                      type="select" 
-                     href="/metainfo/list/o/system/format/html/"
+                     href="/metainfo/list/o/organization/format/html/"
                      <?php
-                     if('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
-                         && $this->acl->isAllowed('remediation', 'update_finding_assignment')) {
-                         echo 'class="editable" target="action_owner"'; 
+                     if('NEW' == $status || 'DRAFT' == $status
+                         && Fisma_Acl::hasPrivilege('finding', 'update_assignment')) {
+                         echo 'class="editable" target="organization"'; 
                      }
                      ?>>
-                    <?php echo $this->system_list[$this->poam['system_id']]; ?>
+                    <?php echo $finding->ResponsibleOrganization->nickname;?> - <?php echo $finding->ResponsibleOrganization->name;?>
                 </div>
             </td>
         </tr>
@@ -62,10 +78,7 @@
                 Asset Owner:
             </td>
             <td>
-                <?php
-                    echo isset($this->system_list[$this->poam['asset_owner']]) ? 
-                        $this->system_list[$this->poam['asset_owner']] : "n/a";
-                ?>
+                <?php echo isset($finding->Asset->Organization->name) ? $finding->Asset->Organization->name : 'n/a';?>
             </td>
         </tr>
         <tr>
@@ -73,9 +86,7 @@
                 Asset Name:
             </td>
             <td>
-                <?php 
-                    echo isset($this->poam['asset_name']) ? $this->poam['asset_name'] : 'n/a';
-                ?>
+                <?php echo isset($finding->Asset->name) ? $finding->Asset->name : 'n/a';?>
             </td>
         </tr>
         <tr>
@@ -83,10 +94,7 @@
                 Network:
             </td>
             <td>
-                <?php 
-                    echo isset($this->network_list[$this->poam['network_id']]) ?
-                         $this->network_list[$this->poam['network_id']] : 'n/a';
-                ?>
+                <?php echo isset($finding->Asset->Network->name) ? $finding->Asset->Network->name : 'n/a';?>
             </td>
         </tr>
         <tr>
@@ -94,10 +102,7 @@
                 IP Address:
             </td>
             <td>
-                <?php 
-                    echo isset($this->network_list[$this->poam['network_id']]) ?
-                         ($this->poam['ip'] . ':' . $this->poam['port']) : 'n/a';
-                ?>
+                <?php echo isset($finding->Asset->Network->name) ? ($finding->Asset->addressIp . ':' . $finding->Asset->addressPort) : 'n/a'; ?>
             </td>
         </tr>
         <tr>
@@ -106,10 +111,10 @@
             </td>
             <td>
                 <?php  
-                    if(!empty($this->poam['product'])) {
-                        echo $this->poam['product']['prod_vendor'] . ' ' .
-                             $this->poam['product']['prod_name'] . ' ' .
-                             $this->poam['product']['prod_version'];
+                    if(!empty($finding->Asset->Product->name)) {
+                        echo $finding->Asset->Product->vendor . ' ' .
+                             $finding->Asset->Product->name . ' ' .
+                             $finding->Asset->Product->version;
                     } else {
                         echo 'n/a';
                     }
@@ -123,26 +128,26 @@
 <div class="clear"></div>
 
 <?php 
-if ($this->acl->isAllowed('remediation','update_finding_description')) {
+if (Fisma_Acl::hasPrivilege('finding','update_finding_description')) {
     Fisma_Format_Section::startSection('Description', 'finding_description');
 } else {
     Fisma_Format_Section::startSection('Description');
 }
 ?>
-<div name="poam[finding_data]" id="finding_description" type="textarea" rows="3" cols="160"> 
-    <?php echo $this->poam['finding_data']; ?>
+<div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160"> 
+    <?php echo $finding->description; ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php
-if ('NEW' == $this->poam['status'] || 'DRAFT' == $this->poam['status']
-    && $this->acl->isAllowed('remediation', 'update_finding_recommendation')) {
+if ('NEW' == $status || 'DRAFT' == $status
+    && Fisma_Acl::hasPrivilege('finding', 'update_recommendation')) {
     Fisma_Format_Section::startSection('Recommendation', 'recommendation');
 } else {
     Fisma_Format_Section::startSection('Recommendation');
 }
 ?>
-<div name="poam[action_suggested]" id="recommendation" type="textarea" rows="3" cols="160">
-    <?php echo $this->poam['action_suggested']; ?>
+<div name="finding[recommendation]" id="recommendation" type="textarea" rows="3" cols="160">
+    <?php echo $finding->recommendation; ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>

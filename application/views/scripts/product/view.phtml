@@ -1,12 +1,14 @@
 <?php
+echo $this->partial('product/searchbox.phtml');
+
 $operation = '';
-if ($this->acl->isAllowed('admin_products','update')) {
+if (Fisma_Acl::hasPrivilege('product','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if ($this->acl->isAllowed('admin_products','delete')) {
+if (Fisma_Acl::hasPrivilege('product','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
-Fisma_Format_Section::startSection("Product Information</b> $operation"); ?>
+Fisma_Format_Section::startSection("Product Information $operation"); ?>
 
 <div>
     <?php echo $this->form ?>

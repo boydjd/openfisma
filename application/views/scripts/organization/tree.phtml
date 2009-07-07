@@ -1,0 +1,128 @@
+<?php Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); ?>
+
+<div class="toolbar">
+<?php
+$expandAll = new Fisma_Yui_Form_Button('expandAll', 
+                                       array('label' => 'Expand All', 
+                                             'imageSrc' => '/images/expand.png',
+                                             'onClickFunction' => 'expandAll'));
+print $expandAll;
+
+$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
+                                         array('label' => 'Collapse All', 
+                                             'imageSrc' => '/images/collapse.png',
+                                             'onClickFunction' => 'collapseAll'));
+print $collapseAll;
+?>
+</div>
+
+<p>Right click on an organization or system to view or edit it</p>
+
+<div id="orgTree"></div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/organization/tree-data/format/json', 
+                                    {
+                                        success: function(o) {
+                                            var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            showTree(json.treeData);
+                                        },
+                                        failure: function(o) {
+                                            alert('Unable to load the organization tree: ' + o.statusText);
+                                        }
+                                    }, 
+                                    null);
+});
+
+// Global reference to the tree view
+var tree;
+
+// Global map from HTML element Ids back to tree node Ids
+// This is necessary due to a limitation in YUI (see below)
+var treeMap = {};
+
+function showTree(treeNodes) {
+    tree = new YAHOO.widget.TreeView("orgTree");
+
+    renderTreeNodes(treeNodes, tree.getRoot(), 0);
+    
+    tree.draw();
+    
+    treeEl = document.getElementById("orgTree");
+
+    var contextMenuItems = ["View", "Edit"];    
+    var contextMenu = new YAHOO.widget.ContextMenu( 
+        "contextMenu",  
+        { 
+            trigger: treeEl, 
+            itemdata: contextMenuItems, 
+            lazyload: true                                     
+        }  
+    );
+    contextMenu.subscribe("click", contextMenuHandler);
+}
+
+function contextMenuHandler(event, eventArgs) {
+    var target = this.contextEventTarget;
+    
+    // To get the ID of the organization related to this event, we have to do some circuitous logic:
+    // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
+    parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvitem");
+
+    // Now the organization or system Id & type can be looked up in the treemap
+    var type = treeMap[parent.id]['type'];
+
+    // Set to 'system' if the object is a system; set to 'organization' otherwise
+    var model = (type == 'agency' || type == 'bureau' || type == 'organization') 
+              ? 'organization'
+              : 'system';
+
+    var organizationId = (type == 'agency' || type == 'bureau' || type == 'organization') 
+              ? treeMap[parent.id]['id']
+              : treeMap[parent.id]['systemId'];   
+
+    // Now check which menu item was selected and redirect
+    var menuItem = eventArgs[1];
+    var action = (menuItem.index == 0) ? 'view' : 'edit';
+    var url = '/panel/' + model + '/sub/view/v/' + action + '/id/' + organizationId;
+    window.location = url;
+}
+
+function renderTreeNodes(treeNodes, parentNode, depth) {
+    for (var i in treeNodes) {
+        treeNode = treeNodes[i];
+        nodeText = "<b>" + treeNode.label + "</b> - <i>" + treeNode.orgTypeLabel + "</i>";
+        var yuiNode = new YAHOO.widget.TextNode(nodeText, parentNode, false);
+        yuiNode.labelStyle = treeNode.orgType;
+        
+        // Save the org ID into the tree map so it can be looked up later
+        // This is a limitation of the YUI treeview... you can't find a treenode automatically
+        // from an element Id
+        treeMap[yuiNode.getElId()] = {
+            id: treeNode.id,
+            type: treeNode.orgType,
+            systemId: treeNode.systemId
+        };
+
+        // Automatically expand the first 2 levels
+        if (depth < 2) {
+            yuiNode.expand();
+        }
+        if (treeNode.children.length > 0) {
+            renderTreeNodes(treeNode.children, yuiNode, depth + 1);
+        }
+    }
+}
+
+function expandAll() {
+    tree.getRoot().expandAll();
+}
+
+function collapseAll() {
+    tree.getRoot().collapseAll();
+}
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>

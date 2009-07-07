@@ -37,20 +37,25 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class AssetController extends PoamBaseController
+class AssetController extends BaseController
 {
-    protected $_asset = null;
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     */
+    protected $_modelName = 'Asset';
 
     /**
      * asset columns which need to displayed on the list page, PDF and Excel
      */
-    protected $_assetColumns = array('asset_name'  => 'Asset Name',
-                                     'system_name' => 'System',
-                                     'address_ip'  => 'IP Address',
-                                     'address_port'=> 'Port',
-                                     'prod_name'   => 'Product Name',
-                                     'prod_vendor' => 'Vendor',
-                                     'prod_version'=> 'Version');
+    protected $_assetColumns = array('name'  => 'Asset Name',
+                                     'orgsys_name' => 'System',
+                                     'addressIp'  => 'IP Address',
+                                     'addressPort'=> 'Port',
+                                     'pro_name'   => 'Product Name',
+                                     'pro_vendor' => 'Vendor',
+                                     'pro_version'=> 'Version');
 
     /**
      * init() - Initialize internal members.
@@ -58,7 +63,6 @@ class AssetController extends PoamBaseController
     function init()
     {
         parent::init();
-        $this->_asset = new Asset();
         $swCtx = $this->_helper->contextSwitch();
         if (!$swCtx->hasContext('pdf')) {
             $swCtx->addContext('pdf', array(
@@ -84,10 +88,140 @@ class AssetController extends PoamBaseController
         parent::preDispatch();
         $this->req = $this->getRequest();
         $swCtx = $this->_helper->contextSwitch();
-        $swCtx->addActionContext('searchbox', array(
+        $swCtx->addActionContext('search', array(
             'pdf',
             'xls'
         ))->initContext();
+    }
+    
+    /**
+     * Get the specific form of the subject model
+     */
+    public function getForm()
+    {
+        $form = Fisma_Form_Manager::loadForm($this->_modelName);
+        
+        $systems = $this->_me->getOrganizations();
+        $selectArray = $this->view->treeToSelect($systems, 'nickname');
+        $form->getElement('orgSystemId')->addMultiOptions($selectArray);
+        
+        $networks = Doctrine::getTable('Network')->findAll()->toArray();
+        $networkList = array();
+        foreach ($networks as $network) {
+            $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
+        }
+        $form->getElement('networkId')->addMultiOptions($networkList);
+        $form->getElement('productId')->setRegisterInArrayValidator(false);
+        $form = Fisma_Form_Manager::prepareForm($form);
+        return $form;
+    }
+    
+    /** 
+     * Hooks for manipulating the values before setting to a form
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     * @return Zend_Form
+     */
+    protected function setForm($subject, $form)
+    {
+        $product = $subject->Product;
+        $form->getElement('productId')->addMultiOptions(array($product->id => $product->id 
+                                        . ' | ' . $product->name . ' | ' . $product->vendor
+                                        . ' | ' . $product->version));
+        $form->setDefaults($subject->toArray());
+        return $form;
+    }
+    
+    /** 
+     * Hooks for manipulating and saveing the values retrieved by Forms
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record|null $subject
+     */
+    protected function saveValue($form, $subject=null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } elseif (!$subject instanceof Doctrine_Record) {
+            /** @todo english */
+            throw new Fisma_Exception('Invalid parameter expecting a Record model');
+        }
+        $values = $form->getValues();
+        $product = Doctrine::getTable('Product')->find($values['productId']);
+        $form->getElement('productId')->addMultiOptions(array($product->id => $product->id 
+                                        . ' | ' . $product->name . ' | ' . $product->vendor
+                                        . ' | ' . $product->version));
+        $subject->merge($values);
+        $subject->save();
+    }
+    
+    /**
+     * Enter description here...
+     *
+     */
+    private function parseCriteria(){
+        static $params;
+        if ($params == null) {
+            $req = $this->getRequest();
+            $params['system_id'] = $req->get('system_id');
+            $params['product'] = $req->get('product');
+            $params['vendor'] = $req->get('vendor');
+            $params['version'] = $req->get('version');
+            $params['ip'] = $req->get('ip');
+            $params['port'] = $req->get('port');
+            $params['p'] = $req->get('p');
+        }
+        return $params;
+    }
+    
+    /**
+     *  Searching the asset and list them.
+     *
+     *  it is the ajax version of searchbox action
+     *  @todo merge the two actions into one
+     */
+    public function listAction()
+    {
+        $this->searchboxAction();
+        $this->view->columns = $this->_assetColumns;
+
+        $params = $this->parseCriteria();
+        $this->view->url = '';
+        foreach ($params as $k => $v) {
+            if (!empty($v)) {
+                $this->view->url .= '/'.$k.'/'.$v;
+            }
+        }
+        parent::listAction();
+    }
+    
+    /**
+     *  Create an asset
+     */
+    public function createAction()
+    {
+        Fisma_Acl::requirePrivilege('asset', 'create');
+        $this->_request->setParam('source', 'MANUAL');
+        parent::createAction();
+    }
+    
+    /**
+     * Search assets and list them
+     */
+    public function searchboxAction()
+    {
+        Fisma_Acl::requirePrivilege('asset', 'read');
+        
+        $params = $this->parseCriteria();
+        $systems = $this->_me->Organizations;
+        $systemList[0] = "--select--";
+        foreach ($systems as $system) {
+            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
+        }
+        $this->view->systemList = $systemList;
+        $this->view->assign('criteria', $params);
+        $this->render('searchbox');
     }
     
     /**
@@ -98,307 +232,156 @@ class AssetController extends PoamBaseController
      */
     public function searchAction()
     {
-        $this->_acl->requirePrivilege('asset', 'read');
-        
-        $req = $this->getRequest();
-        $systemId = $req->getParam('sid');
-        $assetName = $req->getParam('name');
-        $ip = $req->getParam('ip');
-        $port = $req->getParam('port');
-        $qry = $this->_asset->select()->from($this->_asset, array(
-            'id' => 'id',
-            'name' => 'name'
-        ))->order('name ASC');
-        if (!empty($systemId) && $systemId > 0) {
-            $qry->where('system_id = ?', $systemId);
-        }
-        if (!empty($assetName)) {
-            $qry->where('name=?', $assetName);
-        }
-        if (!empty($ip)) {
-            $qry->where('address_ip = ?', $ip);
-        }
-        if (!empty($port)) {
-            $qry->where('address_port = ?', $port);
-        }
-        
-        $user = new User();
-        if ($user->getMySystems($this->_me->id)) {
-            $qry->where('system_id IN (?)', $user->getMySystems($this->_me->id));
-        } else {
-            $qry->where('system_id = 0');
-        }
-        
-        $this->view->assets = $this->_asset->fetchAll($qry)->toArray();
-        $this->_helper->layout->setLayout('ajax');
-        $this->render('list');
-    }
-    
-    /**
-     *  Create an asset
-     */
-    public function createAction()
-    {
-        $this->_acl->requirePrivilege('asset', 'create');
-        
-        $systems = new System();
-        $user = new User();
-        $product = new Product();
-        $systems = $user->getMySystems($this->_me->id);
-        $sysIdSet = implode(',', $systems);
-        $db = Zend_Registry::get('db');
-        $qry = $db->select();
-        $systemList = $this->_systemList;
-        $systemList['select'] = "--select--";
-        $qry->reset();
-        $networkList = $this->_networkList;
-        $networkList['select'] = "--select--";
-        $qry->reset();
-        $req = $this->getRequest();
-        $assetName = $req->getParam('assetname', '');
-        $systemId = $req->getParam('system_list', '');
-        $networkId = $req->getParam('network_list', '');
-        $assetIp = $req->getParam('ip', '');
-        $assetPort = $req->getParam('port', '');
-        $prodId = $req->getParam('prod_id', '');
-        $assetSource = "MANUAL";
-        if (!empty($assetName)) {
-            $assetRow = array(
-                'prod_id' => $prodId,
-                'name' => $assetName,
-                'source' => $assetSource,
-                'system_id' => $systemId,
-                'network_id' => $networkId,
-                'address_ip' => $assetIp,
-                'address_port' => $assetPort
-            );
-            $assetId = $this->_asset->insert($assetRow);
+        Fisma_Acl::requirePrivilege('asset', 'read');
 
-            $this->_notification->add(Notification::ASSET_CREATED,
-                $this->_me->account, array($assetId));
-
-            $this->message("Asset created successfully", self::M_NOTICE);
+        $params = $this->parseCriteria();
+        $q = Doctrine_Query::create()
+             ->select()
+             ->from('Asset a')
+             ->leftJoin('a.Product p')
+             ->orderBy('a.name ASC');
+        if (!empty($params['system_id'])) {
+            $q->andWhere('a.orgSystemId = ?', $params['system_id']);
         }
-        $this->view->system_list = $systemList;
-        $this->view->network_list = $networkList;
-        $this->_helper->actionStack('header', 'Panel');
-        $this->render();
-        $this->_forward('search', 'product');
-    }
-    
-    /**
-     * View detail information of an asset
-     */
-    public function detailAction()
-    {
-        $this->_acl->requirePrivilege('asset', 'read');
+        if (!empty($params['product'])) {
+            $q->andWhere('p.name LIKE ?', $params['product'] . '%');
+        }
+        if (!empty($params['ip'])) {
+            $q->andWhere('a.addressIp LIKE ?', $params['ip'] . '%');
+        }
+        if (!empty($params['port'])) {
+            $q->andWhere('a.addressport LIKE ?', $params['port'] . '%');
+        }
+        if (!empty($params['vendor'])) {
+            $q->andWhere('p.vendor LIKE ?', $params['vendor'] . '%');
+        }
+        if (!empty($params['version'])) {
+            $q->andWhere('p.version LIKE ?', $params['version'] . '%');
+        }
+        // get the assets whitch are belongs to current user's systems
+        $orgSystems = $this->_me->Organizations->toArray();
+        $orgSystemIds = array();
+        foreach ($orgSystems as $orgSystem) {
+            $orgSystemIds[] = $orgSystem['id'];
+        }
+        $q->andWhereIn('a.orgSystemId', $orgSystemIds);
         
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        if (!empty($id)) {
-            $qry = $this->_asset->select()->setIntegrityCheck(false)
-                ->from(array(
-                'a' => 'assets'
-            ), array(
-                'ip' => 'address_ip'
-            ))->joinleft(array(
-                's' => 'systems'
-            ), 'a.system_id=s.id', array(
-                'sname' => 's.name'
-            ))->joinleft(array(
-                'p' => 'products'
-            ), 'p.id = a.prod_id', array(
-                'pname' => 'p.name',
-                'pvendor' => 'p.vendor',
-                'pversion' => 'p.version'
-            ));
-            $qry->where("a.id = $id");
-            $result = $this->_asset->fetchRow($qry);
-            if (!$result) {
-                $result = NULL;
-            } else {
-                $result = $result->toArray();
-            }
-            $this->view->asset = $result;
+        if ($this->_request->getParam('format') == null) {
+            $q->limit($this->_paging['count'])
+            ->offset($this->_paging['startIndex']);
+            $totalRecords = $q->count();
         }
-        $this->_helper->layout->setLayout('ajax');
-        $this->render('detail');
-    }
-    
-    /**
-     * Search assets and list them
-     */
-    public function searchboxAction()
-    {
-        $this->_acl->requirePrivilege('asset', 'read');
-        $req = $this->getRequest();
-        $params['system_id'] = $req->get('system_id');
-        $params['product'] = $req->get('product');
-        $params['vendor'] = $req->get('vendor');
-        $params['version'] = $req->get('version');
-        $params['ip'] = $req->get('ip');
-        $params['port'] = $req->get('port');
-        $params['p'] = $req->get('p');
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('criteria', $params);
-        $this->view->assign('assetColumns', $this->_assetColumns);
-        $isExport = $req->getParam('format');
-        if ('search' == $req->getParam('s') || isset($isExport)) {
-            $this->_pagingBasePath = $req->getBaseUrl() . '/panel/asset/sub/searchbox/s/search';
-            $this->_paging['currentPage'] = $req->getParam('p', 1);
-            $this->makeUrl($params);
-
-            $db = $this->_poam->getAdapter();
-            $query = $db->select()->from(array(
-                'a' => 'assets'
-            ), array(
-                'asset_name' => 'a.name',
-                'address_ip' => 'a.address_ip',
-                'address_port' => 'a.address_port',
-                'aid' => 'a.id'
-            ))->joinleft(array(
-                's' => 'systems'
-            ), 'a.system_id = s.id', array(
-                'system_name' => 's.name'
-            ))->joinleft(array(
-                'p' => 'products'
-            ), 'a.prod_id = p.id', array(
-                'prod_name' => 'p.name',
-                'prod_vendor' => 'p.vendor',
-                'prod_version' => 'p.version'
-            ));
-            if (!empty($params['system_id'])) {
-                $query->where('s.id = ?', $params['system_id']);
-            }
-            if (!empty($params['product'])) {
-                $query->where("p.name like ?", "%$params[product]%");
-            }
-            if (!empty($params['vendor'])) {
-                $query->where("p.vendor like ?", "%$params[vendor]%");
-            }
-            if (!empty($params['version'])) {
-                $query->where("p.version like ?", "%$params[version]%");
-            }
-            if (!empty($params['ip'])) {
-                $query->where('a.address_ip = ?', $params['ip']);
-            }
-            if (!empty($params['port'])) {
-                $query->where('a.address_port = ?', $params['port']);
-            }
-            
-            $user = new User();
-            $systems = $user->getMySystems($this->_me->id);
-            if (!empty($systems)) {
-                $query->where('a.system_id IN (?)', $systems);
-                $res = $db->fetchCol($query);
-                $total = count($res);
-                if (!isset($isExport)) {
-                    $query->limitPage($this->_paging['currentPage'],
-                        $this->_paging['perPage']);
+        $assets = $q->execute();
+        $assetArray = array();
+        $i = 0;
+        foreach ($assets as $asset) {
+            $assetArray[$i] = $asset->toArray();
+            foreach ($asset->Organization as $k => $v) {
+                if ($v instanceof Doctrine_Null) {
+                    $v = '';
                 }
-                $assetList = $db->fetchAll($query);
-                $this->_paging['totalItems'] = $total;
-                $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-                $pager = & Pager::factory($this->_paging);
-                $this->view->assign('asset_list', $assetList);
-                $this->view->assign('links', $pager->getLinks());
+                $assetArray[$i]['orgsys_'.$k] = $v;
             }
+            foreach ($asset->Product as $k => $v) {
+                if ($v instanceof Doctrine_Null) {
+                    $v = '';
+                }
+                $assetArray[$i]['pro_'.$k] = $v;
+            }
+            $i ++;
+        }
+        if ($this->_request->getParam('format') == null) {
+            $tableData = array('table' => array(
+                'recordsReturned' => count($assetArray),
+                'totalRecords' => $totalRecords,
+                'startIndex' => $this->_paging['startIndex'],
+                'pageSize' => $this->_paging['count'],
+                'records' => $assetArray
+            ));
+            $this->_helper->json($tableData);
+        } else {
+            $this->view->assetColumns = $this->_assetColumns;
+            $this->view->asset_list = $assetArray;
         }
     }
     
-    /** 
-     *  View an asset in detail
+
+    /**
+     * View detail information of the subject model
+     *
      */
     public function viewAction()
     {
-        $this->_acl->requirePrivilege('asset', 'read');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        assert($id);
-        $db = $this->_asset->getAdapter();
-        $query = $db->select()
-                    ->from(array('a' => 'assets'),
-                           array('name' => 'a.name',
-                                 'source' => 'a.source',
-                                 'created_date' => 'a.create_ts',
-                                 'ip' => 'a.address_ip',
-                                 'system_id' => 'a.system_id',
-                                 'network_id' => 'a.network_id',
-                                 'port' => 'a.address_port'))
-                    ->joinLeft(array('p' => 'products'),
-                               'a.prod_id = p.id',
-                               array('prod_name' => 'p.name',
-                                     'prod_vendor' => 'p.vendor',
-                                     'prod_version' => 'p.version'))
-                    ->joinLeft(array('n' => 'networks'),
-                               'a.network_id = n.id',
-                               array('net_nickname' => 'n.nickname',
-                                     'net_name' => 'n.name'))
-                    ->joinLeft(array('s' => 'systems'),
-                               'a.system_id = s.id',
-                               array('sys_nickname' => 's.nickname',
-                                     'sys_name' => 's.name'))
-                    ->where('a.id = ?', $id);
-        $asset = $db->fetchRow($query);
-        $this->view->assign('asset', $asset);
-        $this->view->assign('id', $id);
-        if ('edit' == $req->getParam('s')) {
-            $this->view->assign('system_list', $this->_systemList);
-            $this->view->assign('network_list', $this->_networkList);
-            $this->render('edit');
-            $this->_helper->actionStack('search', 'Product');
-        }
-    }
-
-    /**
-     *  update information of an asset
-     */
-    public function updateAction()
-    {
-        $this->_acl->requirePrivilege('asset', 'update');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        assert($id);
-        $post = $req->getPost();
-        foreach ($post as $k => $v) {
-            if (in_array($k, array(
-                'prod_id',
-                'name',
-                'system_id',
-                'network_id',
-                'address_ip',
-                'address_port'
-            ))) {
-                $data[$k] = $v;
+        // supply searching support for create finding page
+        if ($this->_request->getParam('format') == 'ajax') {
+            $this->_helper->layout->setLayout('ajax');
+            $id = $this->_request->getParam('id');
+            $asset = new Asset();
+            $asset = $asset->getTable('Asset')->find($id);
+            if (!$asset) {
+                /**
+                 * @todo english
+                 */
+                throw new Fisma_Exception("Invalid {$this->_modelName}");
             }
-        }
-        $res = $this->_asset->update($data, 'id = ' . $id);
-        if ($res) {
-            $this->_notification->add(Notification::ASSET_MODIFIED,
-                $this->_me->account, $id);
-
-            $msg = 'Asset edited successfully';
-            $this->message($msg, self::M_NOTICE);
+            $assetInfo = $asset->toArray();
+            $assetInfo['systemName'] = $asset->Organization->name;
+            $assetInfo['productName'] = $asset->Product->name;
+            $assetInfo['vendor'] = $asset->Product->vendor;
+            $assetInfo['version'] = $asset->Product->version;
+            $this->view->asset = $assetInfo;
+            $this->render('detail');
         } else {
-            $msg = 'Failed to edit the asset';
-            $this->message($msg, self::M_WARNING);
+            parent::viewAction();
         }
-        $this->_helper->_actionStack('header', 'panel');
-        $this->_forward('view', null, null, array(
-            'id' => $id,
-            's' => 'edit'
-        ));
     }
     
     /**
-     *  Delete an asset
+     * Delete a asset
      */
     public function deleteAction()
     {
-        $this->_acl->requirePrivilege('asset', 'delete');
-        
+        Fisma_Acl::requirePrivilege($this->_modelName, 'delete');
+        $id = $this->_request->getParam('id');
+        $asset = Doctrine::getTable($this->_modelName)->find($id);
+        if (!$asset) {
+            /** @todo english */
+            $msg   = "Invalid {$this->_modelName}";
+            $type = self::M_WARNING;
+        } else {
+            try {
+                if (count($asset->Findings)) {
+                    /** @todo english **/
+                    $msg   = $msg = 'This asset have been used, You could not to delete';
+                    $type = self::M_WARNING;
+                } else {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $asset->delete();
+                    Doctrine_Manager::connection()->commit();
+                    /** @todo english **/
+                    $msg   = "{$this->_modelName} is deleted successfully";
+                    $type = self::M_NOTICE;
+                }
+            } catch (Doctrine_Exception $e) {
+                Doctrine_Manager::connection()->rollback();
+                /** @todo english */
+                if (Fisma::debug()) {
+                    $msg .= $e->getMessage();
+                }
+                $type = self::M_WARNING;
+            } 
+        }
+        $this->message($msg, $type);
+        $this->_forward('list');
+    }
+    
+    /**
+     *  Delete assets
+     */
+    public function multideleteAction()
+    {
+        Fisma_Acl::requirePrivilege('asset', 'delete');
+
         $req = $this->getRequest();
         $post = $req->getPost();
         $errno = 0;
@@ -406,15 +389,20 @@ class AssetController extends PoamBaseController
             $aids = $post['aid'];
             foreach ($aids as $id) {
                 $assetIds[] = $id;
-                $res = $this->_asset->delete("id = $id");
+                $res = Doctrine::getTable('Asset')->find($id);
                 if (!$res) {
                     $errno++;
+                } else {
+                    if (count($res->Findings)) {
+                        $errno++;
+                    } else {
+                        $res->delete();
+                    }
                 }
             }
         } else {
             $errno = -1;
         }
-
         if ($errno < 0) {
             $msg = "You did not select any assets to delete";
             $this->message($msg, self::M_WARNING);
@@ -422,15 +410,9 @@ class AssetController extends PoamBaseController
             $msg = "Failed to delete the asset[s]";
             $this->message($msg, self::M_WARNING);
         } else {
-            $this->_notification->add(Notification::ASSET_DELETED,
-               $this->_me->account, $assetIds);
-
             $msg = "Asset[s] deleted successfully";
             $this->message($msg, self::M_NOTICE);
         }
-        $this->_forward('asset', 'Panel', null, array(
-            'sub' => 'searchbox',
-            's' => 'search'
-        ));
+        $this->_forward('list');
     }
 }

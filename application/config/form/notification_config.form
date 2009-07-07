@@ -11,6 +11,7 @@
 
 [notification_config]
 method = "post"
+action = "/panel/config/type/notification"
 
 elements.sender.type = "text"
 elements.sender.options.label = "Send Email Address"
@@ -54,9 +55,9 @@ elements.smtp_password.options.label = "Password for smtp Authenticate"
 elements.smtp_password.options.size = 30
 displayGroups.general.elements.smtp_password = "smtp_password"
 
-elements.submit.type = "Form_Button_Submit"
-elements.submit.options.value = "Save Changes"
-displayGroups.general.elements.submit = "submit"
+elements.saveNotificationConfig.type = "Form_Button_Submit"
+elements.saveNotificationConfig.options.label = "Save Changes"
+displayGroups.general.elements.saveNotificationConfig = "saveNotificationConfig"
 
 ; Disabling this because I don't know how to make this work. see the comments
 ; at the bottom of general_config.form

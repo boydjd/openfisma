@@ -23,323 +23,80 @@
  * @version   $Id$
  * @package   Controller
  */
-
+ 
 /**
- * The product controller handles CRUD for product objects.
+ * Handles CRUD for product objects.
  *
  * @package   Controller
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class ProductController extends SecurityController
+class ProductController extends BaseController
 {
-    private $_paging = array(
-        'mode' => 'Sliding',
-        'append' => false,
-        'urlVar' => 'p',
-        'path' => '',
-        'currentPage' => 1,
-        'perPage' => 20
-    );
-
+    protected $_modelName = 'Product';
+    
     /**
-     * @todo english
-     * Initilize Class
+     * Delete a product
      */
-    public function init()
+    public function deleteAction()
     {
-        parent::init();
-        $this->_product = new Product();
+        Fisma_Acl::requirePrivilege('product', 'delete');
+        
+        $id = $this->_request->getParam('id');
+        $product = Doctrine::getTable('Product')->find($id);
+        if (!$product) {
+            /** @todo english */
+            $msg   = "Invalid Product";
+            $type = self::M_WARNING;
+        } else {
+            $assets = $product->Assets->toArray();
+            if (!empty($assets)) {
+                /** 
+                 * @todo english
+                 */
+                $msg = 'This product can not be deleted because it is already associated with one or more ASSETS';
+                $type = self::M_WARNING;
+            } else {
+                parent::deleteAction();
+                // parent method will take care 
+                // of the message and forword the page
+                return;
+            }
+        }
+        $this->message($msg, $type);
+        $this->_forward('list');
     }
-
-    /**
-     * @todo english
-     * Invoked before each Action
-     */
-    public function preDispatch()
-    {
-        $req = $this->getRequest();
-        $this->_pagingBasePath = $req->getBaseUrl() . '/panel/product/sub/list';
-        $this->_paging['currentPage'] = $req->getParam('p', 1);
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('search', 'html')
-                    ->initContext();
-    }
-
-    /**
-     * Returns the standard form for creating, reading, and updating products.
-     *
-     * @return Zend_Form
-     */
-    public function getProductForm()
-    {
-        $form = Fisma_Form_Manager::loadForm('product');
-        return Fisma_Form_Manager::prepareForm($form);
-    }
-
+    
     /**
      * Render the form for searching the products
      */
-    public function searchAction()
+    public function advancesearchAction()
     {
-        $this->_acl->requirePrivilege('admin_products', 'read');
-        
+        Fisma_Acl::requirePrivilege('product', 'read');
+        $this->_helper->layout->setLayout('ajax');
         $product = new Product();
         $req = $this->getRequest();
         $prodId = $req->getParam('prod_list', '');
         $prodName = $req->getParam('prod_name', '');
         $prodVendor = $req->getParam('prod_vendor', '');
         $prodVersion = $req->getParam('prod_version', '');
-        $qry = $product->select()->setIntegrityCheck(false)->from(array(),
-            array());
+        $qry = Doctrine_Query::create()
+               ->select()
+               ->from('Product');
         if (!empty($prodName)) {
-            $qry->where("name like ?", "%$prodName%");
+            $qry->andWhere("name like ?", "%$prodName%");
             $this->view->prodName = $prodName;
         }
         if (!empty($prodVendor)) {
-            $qry->where("vendor like ?", "%$prodVendor%");
+            $qry->andWhere("vendor like ?", "%$prodVendor%");
             $this->view->prodVendor = $prodVendor;
         }
         if (!empty($prodVersion)) {
-            $qry->where("version like ?", "%$prodVersion%");
+            $qry->andWhere("version like ?", "%$prodVersion%");
             $this->view->prodVersion = $prodVersion;
         }
-        $qry->limit(100, 0);
-        $this->view->prod_list = $product->fetchAll($qry)->toArray();
-    }
-
-    /**
-     * List the products from the search, if search none, it list all products
-     */
-    public function searchbox()
-    {
-        $this->_acl->requirePrivilege('admin_products', 'read');
-        $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-        
-        $qv = trim($this->_request->getParam('qv'));
-        if (!empty($qv)) {
-            $ret = $this->_helper->searchQuery($qv, 'product');
-            $count = count($ret);
-            $this->_paging['fileName'] .= '/qv/'.$qv;
-        } else {
-            $count = $this->_product->count();
-        }
-
-        $this->_paging['totalItems'] = $count;
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('qv', $qv);
-        $this->view->assign('total', $count);
-        $this->view->assign('links', $pager->getLinks());
-        $this->render('searchbox');
-    }
-    
-    /**
-     * List the products according to search criterias.
-     */
-    public function listAction()
-    {
-        $this->_acl->requirePrivilege('admin_products', 'read');
-        //Display searchbox template
-        $this->searchbox();
-        
-        $value = trim($this->_request->getParam('qv'));
-
-        $query = $this->_product->select()->from('products', '*')
-                                         ->order('name ASC')
-                                         ->limitPage($this->_paging['currentPage'],
-                                                     $this->_paging['perPage']);
-
-        if (!empty($value)) {
-            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            //@todo english  get search results in ids
-            $productIds = $cache->load($this->_me->id . '_product');
-            if (!empty($productIds)) {
-                $ids = implode(',', $productIds);
-            } else {
-                //@todo english  set ids as a not exist value in database if search results is none.
-                $ids = -1;
-            }
-            $query->where('id IN (' . $ids . ')');
-        }
-        $productList = $this->_product->fetchAll($query)->toArray();
-        $this->view->assign('product_list', $productList);
-        $this->render('sublist');
-    }
-
-    /**
-     * Display a single product record with all details.
-     */
-    public function viewAction()
-    {
-        $this->_acl->requirePrivilege('admin_products', 'read');
-
-        //Display searchbox template
-        $this->searchbox();
-        
-        $form = $this->getProductForm();
-        $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v', 'view');
-
-        $res = $this->_product->find($id)->toArray();
-        $product = $res[0];
-        if ($v == 'edit') {
-            $this->view->assign('viewLink', "/panel/product/sub/view/id/$id");
-            $form->setAction("/panel/product/sub/update/id/$id");
-        } else {
-            // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/panel/product/sub/view/id/$id/v/edit");
-            $form->setReadOnly(true);            
-        }
-        $this->view->assign('deleteLink', "/panel/product/sub/delete/id/$id");
-        $form->setDefaults($product);
-        $this->view->form = $form;
-        $this->view->assign('id', $id);
-        $this->render($v);
-    }
-
-     /**
-     * Display the form for creating a new product.
-     */
-    public function createAction()
-    {   
-        $this->_acl->requirePrivilege('admin_products', 'create');
-
-        //Display searchbox template
-        $this->searchbox();
-
-        // Get the product form
-        $form = $this->getProductForm();
-        $form->setAction('/panel/product/sub/save');
-
-        // If there is data in the _POST variable, then use that to
-        // pre-populate the form.
-        $post = $this->_request->getPost();
-        $form->setDefaults($post);
-
-        // Assign view outputs.
-        $this->view->form = Fisma_Form_Manager::prepareForm($form);
-        $this->render('create');
-    }
-
-
-    /**
-     * Saves information for a newly created product.
-     */
-    public function saveAction()
-    {
-        $this->_acl->requirePrivilege('admin_products', 'update');
-        
-        $form = $this->getProductForm();
-        $post = $this->_request->getPost();
-        $formValid = $form->isValid($post);
-        if ($form->isValid($post)) {
-            $product = $form->getValues();
-            unset($product['save']);
-            unset($product['reset']);
-            $productId = $this->_product->insert($product);
-            if (! $productId) {
-                $msg = "Failure in creation";
-                $model = self::M_WARNING;
-            } else {
-                $this->_notification
-                     ->add(Notification::PRODUCT_CREATED, $this->_me->account, $productId);
-
-                //Create a product index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    $this->_helper->updateIndex('product', $productId, $product);
-                }
-
-                $msg = "The product is created";
-                $model = self::M_NOTICE;
-            }
-            $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $productId));
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            // Error message
-            $this->message("Unable to create product:<br>$errorString", self::M_WARNING);
-            $this->_forward('create');
-        }
-    }
-
-    /**
-     *  Delete a specified product.
-     */
-    public function deleteAction()
-    {
-        $this->_acl->requirePrivilege('admin_products', 'delete');
-        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $db = $this->_product->getAdapter();
-        $qry = $db->select()->from('vuln_products')->where('prod_id = ' . $id);
-        $result = $db->fetchCol($qry);
-        if (!empty($result)) {
-            $msg = 'This product cannot be deleted because it is already'
-                   .' associated with one or more vulnerabilities.';
-        } else {
-            $res = $this->_product->delete('id = ' . $id);
-            if (!$res) {
-                $msg = "Failed to delete the product";
-                $model = self::M_WARNING;
-            } else {
-                $this->_notification
-                     ->add(Notification::PRODUCT_DELETED,
-                         $this->_me->account, $id);
-
-                //Delete this product index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    $this->_helper->deleteIndex('product', $id);
-                }
-
-                $msg = "Product deleted successfully";
-                $model = self::M_NOTICE;
-            }
-        }
-        $this->message($msg, $model);
-        $this->_forward('list');
-    }
-
-    /**
-     * Updates product information after submitting an edit form.
-     */
-    public function updateAction ()
-    {
-        $this->_acl->requirePrivilege('admin_products', 'update');
-        
-        $form = $this->getProductForm();
-        $post = $this->_request->getPost();
-        $formValid = $form->isValid($post);
-        $product = $form->getValues();
-
-        $id = $this->_request->getParam('id');
-        if ($formValid) {
-            unset($product['save']);
-            unset($product['reset']);
-            $res = $this->_product->update($product, 'id = ' . $id);
-            if ($res) {
-                $this->_notification
-                     ->add(Notification::PRODUCT_MODIFIED, $this->_me->account, $id);
-
-                //Update this product index
-                if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/product/')) {
-                    $this->_helper->updateIndex('product', $id, $product);
-                }
-
-                $msg = "The product is saved";
-                $model = self::M_NOTICE;
-            } else {
-                $msg = "Nothing changes";
-                $model = self::M_WARNING;
-            }
-            $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $id));
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            // Error message
-            $this->message("Unable to update product<br>$errorString", self::M_WARNING);
-            // On error, redirect back to the edit action.
-            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
-        }
+        $qry->limit(100)
+            ->offset(0);
+        $this->view->prod_list = $qry->execute()->toArray();
     }
 }

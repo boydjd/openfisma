@@ -1,0 +1,80 @@
+System:
+    listeners: [XssListener, BaseListener, SystemListener]
+    
+    columns:    
+        type:
+            type: enum
+            values: [gss, major, minor]
+            comment: General Support System, Major Application, or Minor Application
+
+        confidentiality:
+            type: enum
+            values: [na, LOW, MODERATE, HIGH]
+            comment: The FIPS-199 confidentiality impact
+        confidentialityDescription:
+            type: string
+        integrity:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            comment: The FIPS-199 integrity impact
+        integrityDescription:
+            type: string
+        availability:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            comment: The FIPS-199 availability impact
+        availabilityDescription:
+            type: string
+        fipsCategory:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
+        
+        # FISMA Report Criteria:
+        controlledBy:
+            type: enum
+            values: [AGENCY, CONTRACTOR]
+            comment: Is this system principally controlled by the agency or by a contractor?
+        securityAuthorizationDt:
+            type: date
+            comment: The last date on which this system underwent a security authorization (formerly known as C&A)
+        contingencyPlanTestDt:
+            type: date
+            comment: The last date on which the contingency plan for this system was tested
+        controlAssessmentDt:
+            type: date
+            comment: The last time the security controls were tested for this system
+        #continuousMonitoringPolicy:
+        #    type: string
+        #    comment: An HTML field to store the system\'s CM policy
+        hasFiif:
+            type: enum
+            values: ["YES", "NO"] # YAML converts YES to a boolean unless its quoted
+            comment: Whether the system contains any Federal Information in Identifiable Form
+        hasPii:
+            type: enum
+            values: ["YES", "NO"]
+            comment: Whether the system contains any Personally Identifiable Information
+        piaRequired:
+            type: enum
+            values: ["YES", "NO"]
+            comment: Whether this system requires a Privacy Impact Analysis
+        piaUrl:
+            type: string
+            extra:
+                purify: plaintext
+            comment: A URL pointing to the Privacy Impact Analysis
+        sornRequired:
+            type: enum
+            values: ["YES", "NO"]
+            comment: Whether a System Of Record Notice is required
+        sornUrl:
+            type: string
+            extra:
+                purify: plaintext
+            comment: A URL pointing to the System Of Record Notice
+        uniqueProjectId:
+            type: string
+            extra:
+                purify: plaintext
+            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the folLOWing format: "xxx-xx-xx-xx-xx-xxxx-xx"        

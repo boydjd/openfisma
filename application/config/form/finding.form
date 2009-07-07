@@ -3,56 +3,65 @@
 ; This form should be loaded through FormManager::loadForm() in order to recieve
 ; the proper decorators, filters, etc.
 ;
-; Author    Ryan yang <ryan.yang@reyosoft.com
+; Author    Ryan Yang <ryan@users.sourceforge.net>
 ; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
 ; Version   $Id$
 
 [finding]
+elementPrefixPath.prefix = Fisma_Form
+elementPrefixPath.path = Fisma/Form
+elementPrefixPath.type = Validate
 method = "post"
 elementFilters.trim = "StringTrim"
 elementFilters.tags = "StripTags"
 
-elements.discover_ts.type = "text"
-elements.discover_ts.options.label = "Discovered Date"
-elements.discover_ts.options.class = "date"
-elements.discover_ts.options.required = true
-displayGroups.finding.elements.discover_ts = "discover_ts"
+elements.discoveredDate.type = "text"
+elements.discoveredDate.options.label = "Discovered Date"
+elements.discoveredDate.options.class = "date"
+elements.discoveredDate.options.required = true
+elements.discoveredDate.options.tooltip = "<p>If this finding was not discovered today, then enter the actual date of discovery here.</p><p>The date format is YYYY-MM-DD.</p>"
+elements.discoveredDate.options.validators.discoveredDate.validator = "date"
+displayGroups.finding.elements.discoveredDate = "discoveredDate"
 
-elements.source_id.type = "select"
-elements.source_id.options.label = "Finding Source"
-elements.source_id.options.required = true
-displayGroups.finding.elements.source_id = "source_id"
+elements.sourceId.type = "select"
+elements.sourceId.options.label = "Finding Source"
+elements.sourceId.options.required = true
+displayGroups.finding.elements.sourceId = "sourceId"
 
-elements.finding_data.type = "textarea"
-elements.finding_data.options.label = "Enter Description of Finding"
-elements.finding_data.options.cols = "70%"
-elements.finding_data.options.rows = "7"
-elements.finding_data.options.required = true
-displayGroups.finding.elements.finding_data = "finding_data"
+elements.description.type = "textarea"
+elements.description.options.validators.mce.validator = "MceNotEmpty"
+elements.description.options.label = "Enter Description of Finding"
+elements.description.options.cols = "70%"
+elements.description.options.rows = "7"
+elements.description.options.required = true
+displayGroups.finding.elements.description = "description"
 
-elements.action_suggested.type = "textarea"
-elements.action_suggested.options.label = "Recommendation"
-elements.action_suggested.options.cols = "70%"
-elements.action_suggested.options.rows = "7"
-elements.action_suggested.options.required = true
-displayGroups.finding.elements.action_suggested = "action_suggested"
+elements.recommendation.type = "textarea"
+elements.recommendation.options.validators.mce.validator = "MceNotEmpty"
+elements.recommendation.options.label = "Recommendation"
+elements.recommendation.options.cols = "70%"
+elements.recommendation.options.rows = "7"
+elements.recommendation.options.required = true
+displayGroups.finding.elements.recommendation = "recommendation"
 
-elements.blscr_id.type = "select"
-elements.blscr_id.options.label = "Security Control"
-displayGroups.finding.elements.blscr_id = "blscr_id"
+elements.securityControlId.type = "select"
+elements.securityControlId.options.label = "Security Control"
+displayGroups.finding.elements.securityControlId = "securityControlId"
 
-elements.threat_level.type = "select"
-elements.threat_level.options.label = "Risk Level"
-elements.threat_level.options.MultiOptions.NONE = "NONE"
-elements.threat_level.options.MultiOptions.LOW = "LOW"
-elements.threat_level.options.MultiOptions.MODERATE = "MODERATE"
-elements.threat_level.options.MultiOptions.HIGH = "HIGH"
-displayGroups.finding.elements.threat_level = "threat_level"
+elements.threatLevel.type = "select"
+elements.threatLevel.options.label = "Risk Level"
+elements.threatLevel.options.MultiOptions.NONE = "NONE"
+elements.threatLevel.options.MultiOptions.LOW = "LOW"
+elements.threatLevel.options.MultiOptions.MODERATE = "MODERATE"
+elements.threatLevel.options.MultiOptions.HIGH = "HIGH"
+displayGroups.finding.elements.threatLevel = "threatLevel"
 
-elements.system_id.type = "select"
-elements.system_id.options.label = "System"
-displayGroups.searchasset.elements.system_id = "system_id"
+elements.orgSystemId.type = "select"
+elements.orgSystemId.options.style = "width:172px"
+elements.orgSystemId.options.label = "System"
+elements.orgSystemId.options.url = "/asset/search"
+displayGroups.searchasset.elements.orgSystemId = "orgSystemId"
 
 elements.name.type = "text"
 elements.name.options.label = "Asset Name"
@@ -70,16 +79,17 @@ elements.port.options.class = "assets"
 elements.port.options.style = "width:60px"
 displayGroups.searchasset.elements.port = "port"
 
-elements.search_asset.type = "button"
-elements.search_asset.options.value = "Search Assets"
-displayGroups.searchasset.elements.search_asset = "search_asset"
+elements.searchAsset.type = "button"
+elements.searchAsset.options.label = "Search Assets"
+displayGroups.searchasset.elements.searchAsset = "searchAsset"
 
-elements.asset_id.type = "select"
-elements.asset_id.options.size = 8
-elements.asset_id.options.style = "width:130px"
-elements.asset_id.options.label = "Asset Name"
-elements.asset_id.options.required = true
-displayGroups.searchasset.elements.asset_id = "asset_id"
+elements.assetId.type = "select"
+elements.assetId.options.size = 8
+elements.assetId.options.style = "width:130px"
+elements.assetId.options.label = "Asset"
+elements.assetId.options.required = true
+elements.assetId.options.url = "/asset/view/format/ajax/id/"
+displayGroups.searchasset.elements.assetId = "assetId"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Create Finding"

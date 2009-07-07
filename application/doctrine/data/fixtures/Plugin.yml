@@ -1,0 +1,5 @@
+Plugin:
+    AppDetective:
+        name: AppDetective Security Scanner
+        class: Fisma_Inject_AppDetective
+        description: AppDetective application security assessment tool plugin

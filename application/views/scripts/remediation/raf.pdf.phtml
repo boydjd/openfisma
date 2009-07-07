@@ -1,11 +1,12 @@
 <?php
 require_once ( 'pdf/class.ezpdf.php');
+$finding = $this->finding;
 
 // These constants define the font size for various parts of the document.
 !defined('TITLE_TEXT_SIZE') ? define('TITLE_TEXT_SIZE', 18) : true;
 !defined('BODY_TEXT_SIZE') ? define('BODY_TEXT_SIZE', 10) : true;
 !defined('FOOTER_TEXT_SIZE') ? define('FOOTER_TEXT_SIZE', 8) : true;
-!defined('FONTS') ? define('FONTS', Fisma_Controller_Front::getPath('library') . '/pdf/fonts') : true;
+!defined('FONTS') ? define('FONTS', Fisma::getPath('library') . '/pdf/fonts') : true;
 
 // These options are used repeatedly throughout the document for consistent formatting.
 $headerOptions = array('showHeadings'=>0,
@@ -26,16 +27,9 @@ $tableOptions = array('showHeadings'=>0,
 $bodyTextOptions = array('left' => 25, // The left and right margin will align the body text with the headers
                          'right' => 25);
 
-$p = &$this->poam ; //alias
-$sys = new System();
-$rows = $sys->find($p['system_id']);
-$act_owner = $rows->current()->toArray();
+$system = $finding->ResponsibleOrganization->System;
 
-$organization = new Organization();
-$ret = $organization->find($act_owner['organization_id']);
-$organization = $ret->current()->toArray();
-
-$columns = $sys->getEnumColumns('availability');
+$columns = $system->getTable()->getEnumValues('availability');
 $columnsCols = array_reverse($columns);
 $i = 0;
 foreach ($columnsCols as $col) {
@@ -44,9 +38,9 @@ foreach ($columnsCols as $col) {
     }
 }
 
-$threat_likelihood = $sys->calculateThreatLikelihood($this->poam['threat_level'], $this->poam['cmeasure_effectiveness']);
+$threat_likelihood = $system->calculateThreatLikelihood($finding->threatLevel, $finding->countermeasuresEffectiveness);
 
-$threat_index = $cellidx_lookup[$p['threat_level']][$p['cmeasure_effectiveness']];
+$threat_index = $cellidx_lookup[$finding->threatLevel][$finding->countermeasuresEffectiveness];
 $risk_index = $cellidx_lookup[$threat_likelihood][$this->securityCategorization];
 
 // This is the "letter" page size
@@ -74,21 +68,20 @@ $data = array(array('<b>Finding Information</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
-$data = array(array("<b>Finding Number:</b>", $p['id'],
-                    "<b>Finding Source:</b>", $this->plainText($p['source_name'])),
-              array("<b>Date Opened:</b>", $p['create_ts'],
-                    "<b>Date Discovered:</b>", $p['discover_ts']),
-              array("<b>Organization:</b>", $organization['name'],
-                    "<b>Infomation System:</b>", $this->system_list[$p['system_id']]),
-              array("<b>Asset(s) Affected:</b>", $p['asset_name'],"",""));
+$data = array(array("<b>Finding Number:</b>",    $finding->id,
+                    "<b>Finding Source:</b>",    $this->plainText($finding->Source->name)),
+              array("<b>Date Opened:</b>",       $finding->createdTs,
+                    "<b>Date Discovered:</b>",   $finding->discoveredDate),
+              array("<b>Organization:</b>",      $system->Organization[0]->name,"",""),
+              array("<b>Asset(s) Affected:</b>", $finding->Asset->name,"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
-$data = array(array("<b>Finding Description:</b>", $this->plainText($p['finding_data']),"",""),
-              array("<b>Recommendation:</b>",  $this->plainText($p['action_suggested']),"",""));
+$data = array(array("<b>Finding Description:</b>", $this->plainText($finding->description),"",""),
+              array("<b>Recommendation:</b>",  $this->plainText($finding->recommendation),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 // Risk analysis section
-$pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
+$pdf->ezText('', 10, array('justification'=>'center'));
 $data = array(array('<b>Risk Analysis</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
@@ -102,9 +95,9 @@ if ($this->securityCategorization == $columns['2']) {
     $effect = '';
 }
 $pdf->ezText('<b><i>FIPS 199 System Security Categorization</i></b>', BODY_TEXT_SIZE, array('justification'=>'center'));
-$data = array(array('<b>Confidentiality:</b>', $act_owner['confidentiality']),
-              array('<b>Integrity:</b>', $act_owner['integrity']),
-              array('<b>Availability:</b>', $act_owner['availability']),
+$data = array(array('<b>Confidentiality:</b>', $system->confidentiality),
+              array('<b>Integrity:</b>',       $system->integrity),
+              array('<b>Availability:</b>',    $system->availability),
               array('<b>Security Categorization:</b>', $this->securityCategorization),
               array('<b>Security Categorization Description:</b>',
                     !empty($effect)
@@ -136,21 +129,22 @@ foreach (array_reverse($columns) as $threat) {
     $i++;
     $data[$i][] = "<b>$threat</b>";
     foreach ($columns as $countermeasures) {
-        $value = $sys->calculateThreatLikelihood($threat, $countermeasures);
+        $value = $system->calculateThreatLikelihood($threat, $countermeasures);
         $data[$i][] = $threat_index == $k++?'<b><i>'.$value.'</i></b>':$value;
     }
 }
 
 $pdf->ezTable($data, null, null, $tableOptions);
-$overall_threat = $sys->calculateThreatLikelihood($p['threat_level'], $p['cmeasure_effectiveness']);
+$overall_threat = $system->calculateThreatLikelihood($finding->threatLevel, $finding->countermeasuresEffectiveness);
+
 $data = array(array("Based on the threat level and countermeasures currently in place (see below), the threat likelihood is <b>".$overall_threat."</b>".'.'));
 $pdf->ezTable($data, null, null, $labelOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
-$data = array(array("<b>Threat Description:</b>", $this->plainText($p['threat_source']), "", ""),
-              array("<b>Threat Level:</b>", $p['threat_level'], "", ""),
-              array("<b>Description of Countermeasures:</b>", $this->plainText($p['cmeasure']), "", ""),
-              array("<b>Countermeasures Effectiveness:</b>", $this->plainText($p['cmeasure_effectiveness']), "", ""));
+$data = array(array("<b>Threat Description:</b>", $this->plainText($finding->threat), "", ""),
+              array("<b>Threat Level:</b>", $finding->threatLevel, "", ""),
+              array("<b>Description of Countermeasures:</b>", $this->plainText($finding->countermeasures), "", ""),
+              array("<b>Countermeasures Effectiveness:</b>", $this->plainText($finding->countermeasuresEffectiveness), "", ""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center')); //vertical blank
@@ -159,7 +153,7 @@ $pdf->ezText('<b><i>Risk Level</i></b>', BODY_TEXT_SIZE, array('justification'=>
 
 $data = array(array("<b>Threat Likelihood                   Security Categorization of Information System</b>"));
 $pdf->ezTable($data, null, null, $tableOptions);
-$overall_risk = $sys->calcMin($threat_likelihood, $this->securityCategorization);
+$overall_risk = $system->calcMin($threat_likelihood, $this->securityCategorization);
 
 $data = array();
 $i = 0;
@@ -175,7 +169,7 @@ foreach (array_reverse($columns) as $threat_likelihood) {
     $i++;
     $data[$i][] = "<b>$threat_likelihood</b>";
     foreach ($columns as $security_categorization) {
-        $value = $sys->calcMin($threat_likelihood, $security_categorization);
+        $value = $system->calcMin($threat_likelihood, $security_categorization);
         $data[$i][] = $risk_index == $k++?'<b><i>'.$value.'</i></b>':$value;
     }
 }
@@ -200,14 +194,14 @@ $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 $data = array(array('<b>Mitigation Strategy</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
-$data = array(array("<b>Type:</b>", $this->plainText($p['type']), "", ""),
-              array("<b>Description:</b>", $this->plainText($p['action_planned']), "", ""),
-              array("<b>Estimated Completion Date:</b>", $p['action_current_date'], "", ""));
+$data = array(array("<b>Type:</b>", $this->plainText($finding->type), "", ""),
+              array("<b>Description:</b>", $this->plainText($finding->mitigationStrategy), "", ""),
+              array("<b>Estimated Completion Date:</b>", $finding->expectedCompletionDate, "", ""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 // Endorsement of Risk Level Analysis section
 // only displayed for AR findings
-if ('AR' == $this->plainText($p['type'])) {
+if ('AR' == $this->plainText($finding->type)) {
     // a small separator between the previous section and this one
     $pdf->ezText('___________', BODY_TEXT_SIZE, array('justification'=>'center'));
     $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));

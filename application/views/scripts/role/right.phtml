@@ -1,4 +1,6 @@
-<?php Fisma_Format_Section::startSection("Rights Assignment"); ?>
+<?php 
+echo $this->partial('role/searchbox.phtml');
+Fisma_Format_Section::startSection("Rights Assignment"); ?>
 
 <form method="post" action="/role/right/id/<?php echo $this->role['id'];?>/do/update" 
     name="assign_right">
@@ -15,8 +17,8 @@
             <td width="254">
                 <select size="20" id="function_screen" name="function_screen" style="width:200px" url="/role/right/id/<?php echo $this->role['id'];?>">
                 <?php foreach($this->screen_list as $row){ ?>
-                    <option value="<?php echo $row['screen_name'];?>" title="<?php echo $row['screen_name'];?>">
-                        <?php echo $row['screen_name'];?>
+                    <option value="<?php echo $row['resource'];?>" title="<?php echo $row['resource'];?>">
+                        <?php echo $row['resource'];?>
                     </option>
                 <?php } ?>
                 </select>
@@ -30,8 +32,8 @@
             </td>
             <td><select multiple size="20" id="exist_functions" name="exist_functions[]" style="width:250px">
                 <?php foreach($this->exist_functions as $row){ ?>
-                    <option value="<?php echo $row['function_id'];?>" title="<?php echo $row['function_name'];?>">
-                        <?php echo $row['function_name'];?>
+                    <option value="<?php echo $row['id'];?>" title="<?php echo $row['action'];?>">
+                        <?php echo $row['description'];?>
                     </option>
                 <?php } ?>
             </select></td>

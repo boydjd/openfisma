@@ -1,5 +1,6 @@
+<?php $finding = $this->finding; ?>
 <?php
-if ($this->acl->isAllowed('report','generate_system_rafs')) {
+if (Fisma_Acl::hasPrivilege('report','generate_system_rafs')) {
     Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
 ?>
     <p>
@@ -12,14 +13,12 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
         <?php 
         // Check to see if the threat level/description and countermeasure level/description are 
         // set. If so, allow the user to generate a RAF.
-        if( $this->poam['threat_source'] != '' &&
-            $this->poam['threat_level'] != 'NONE' &&
-            $this->poam['cmeasure'] != '' &&
-            $this->poam['cmeasure_effectiveness'] != 'NONE') {
+        if( $finding->threat != '' && $finding->threatLevel != 'NONE' 
+            && $finding->countermeasures != '' && $finding->countermeasuresEffectiveness != 'NONE') {
             print new Fisma_Yui_Form_Button_Link('viewRaf',
-                                           array('value' => 'View Risk Analysis Form', 
-                                                 'href' => "/remediation/raf/format/pdf/id/{$this->poam['id']}", 
-                                                 'imageSrc' => '/images/pdf.gif'));
+                                   array('value' => 'View Risk Analysis Form', 
+                                   'href' => "/panel/remediation/sub/raf/format/pdf/id/{$finding->id}", 
+                                   'imageSrc' => '/images/pdf.gif'));
         } else {
             print '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>';
         } 
@@ -46,27 +45,27 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
 <p>
     <b>Threat Level:</b>
 
-    <span id ="threat" type="select" name="poam[threat_level]" href="/metainfo/list/o/threat_level/format/html/"
+    <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
         <?php 
-        if($this->acl->isAllowed('remediation','update_threat')) { 
-            echo ' class="editable" target="threat"';
+        if (Fisma_Acl::hasPrivilege('finding', 'update_threat')) {
+            echo ' class="editable" target="threat_level"';
         }
         ?>>
-        <?php echo $this->poam['threat_level']; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <?php echo $finding->threatLevel; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span>
 </p>
 
 <p>
-    <b target="threat_source" 
-        <?php 
-        if($this->acl->isAllowed('remediation','update_threat')) { 
+    <b target="threat" 
+        <?php
+        if(Fisma_Acl::hasPrivilege('finding','update_threat')) { 
             echo 'class="editable"';
         } 
         ?>>Threat Description:</b>
 </p>
 
-<div type="textarea" id="threat_source" name="poam[threat_source]" rows="5" cols="160">
-    <?php echo $this->poam['threat_source']; ?>
+<div type="textarea" id="threat" name="finding[threat]" rows="5" cols="160">
+    <?php echo $finding->threat; ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -87,30 +86,28 @@ if ($this->acl->isAllowed('report','generate_system_rafs')) {
 
 <p>
     <b>Countermeasures Effectiveness:</b>
-</p>
 
-<p>
-    <span type="select" name="poam[cmeasure_effectiveness]" id="effectiveness" href="/metainfo/list/o/cmeasure_effectiveness/format/html/"
-        <?php 
-        if($this->acl->isAllowed('remediation','update_countermeasures')) {
+    <span type="select" name="finding[countermeasuresEffectiveness]" id="effectiveness" href="/metainfo/list/o/countermeasures-effectiveness/format/html/"
+        <?php
+        if(Fisma_Acl::hasPrivilege('finding', 'update_countermeasures')) {
             echo 'class="editable" target="effectiveness"';
         }
         ?>>
-        <?php echo $this->poam['cmeasure_effectiveness']; ?>
+        <?php echo $finding->countermeasuresEffectiveness; ?>&nbsp;&nbsp;
     </span>
 </p>
 
 <p>
-    <b target="cmeasure" 
+    <b target="countermeasures" 
         <?php 
-            if($this->acl->isAllowed('remediation','update_countermeasures')) {
+            if(Fisma_Acl::hasPrivilege('finding', 'update_countermeasures')) {
                 echo 'class="editable"';
             } 
         ?>>
         Description of Countermeasures:</b>
 </p>
 
-<div type="textarea" id="cmeasure" name="poam[cmeasure]" rows="5" cols="160">
-    <?php echo $this->poam['cmeasure']; ?>
+<div type="textarea" id="countermeasures" name="finding[countermeasures]" rows="5" cols="160">
+    <?php echo $finding->countermeasures; ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>

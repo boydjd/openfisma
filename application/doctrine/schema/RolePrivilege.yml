@@ -1,0 +1,8 @@
+RolePrivilege:
+    columns:
+        roleId:
+            type: integer
+            primary: true
+        privilegeId:
+            type: integer
+            primary: true

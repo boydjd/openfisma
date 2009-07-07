@@ -1,38 +1,46 @@
-<?php
-$fid_array = array('name'=>'Source Name','nickname'=>'Nickname');
-$this->declareVars(array('fid'=>'name'));
-?>
-<form name="query" method="post" action="/panel/source/sub/list">
-    <table class="searchFilters">
-            <tr>
-                <th>[<a id="finding_source_list" href="/panel/source/sub/list">Finding Source List</a>] (total: <?php echo 
-    $this->total;?>)</th>
-                <?php if($this->acl->isAllowed('admin_sources', 'create')) { ?>
-                <th>[<a id="add_finding_source" href="/panel/source/sub/create" title="Add Finding Source">Add 
-    Finding Source</a>]</th>
-                <?php } ?>
-                <th>
-                    <table align="center">
-                            <tr height="22">
-                                <td><b>Page:&nbsp;</b></td>
-                                <td><?php echo $this->links['all'];?></td>
-                                <td>|</td>
-                            </tr>
-                    </table>
-                </th>
-                <?php if (is_dir(Fisma_Controller_Front::getPath('data') . '/index/source')) { ?>
-                <th>
-                    <table align="center">
-                            <tr>
-                                <td><b>Query:&nbsp;</b></td>
-                                <td><input name="qv" value="<?php echo $this->qv;?>" title="Input your query value" size="20" maxlength="40" type="text"></td>
+<div class="searchFilters">
+    <div class="left">
+        <?php
+        $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
+                                               array('value' => 'Source List', 
+                                                     'href' => '/panel/source/sub/list'));
+        echo $listButton;
+        ?>
 
-                                 <td><input value="Search" title="submit your request" type="submit"></td>
-                            </tr>
-                    </form>
-                    </table>
-                </th>
-                <?php } ?>
-            </tr>
-    </table>
-</form>
+        <?php if(Fisma_Acl::hasPrivilege('source', 'create')) {
+        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                               array('value' => 'Add Source', 
+                                                     'href' => '/panel/source/sub/create'));
+        echo $createButton;
+        } ?>
+    </div>
+    <?php if (is_dir(Fisma::getPath('index') . '/source')) { ?>
+        <div class="right">
+            <form name="query" method="post" action="/panel/source/sub/list" style="display:inline">
+                <span class="searchField">
+                    <b>Search:&nbsp;</b>
+                    <input id="keywords" 
+                           name="keywords" 
+                           value="<?php echo $this->keywords;?>" 
+                           title="Input your query value" 
+                           size="20" 
+                           maxlength="40" 
+                           type="text">
+                </span>
+                <span id="searchContainer"></span>
+                <script type='text/javascript'>
+                   var save = new YAHOO.widget.Button({
+                       type: "submit",
+                       label: "Search",
+                       value: "Search",
+                       container: "searchContainer",
+                       disabled: false
+                   });
+                </script>
+            </form>
+        </div>
+    <?php } else {
+        echo '<b>The search index needs to be built.</b>';
+    } ?>
+    <div class="clear"></div>
+</div>

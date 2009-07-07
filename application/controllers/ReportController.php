@@ -32,7 +32,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class ReportController extends PoamBaseController
+class ReportController extends SecurityController
 {
     /**
      * init() - Create the additional pdf and xls contexts for this class.
@@ -56,7 +56,11 @@ class ReportController extends PoamBaseController
         }
         if (!$swCtx->hasContext('xls')) {
             $swCtx->addContext('xls', array(
-                'suffix' => 'xls'
+                'suffix' => 'xls',
+                'headers' => array(
+                    'Content-type' => 'application/vnd.ms-excel',
+                    'Content-Disposition' => 'filename=Fisma_Report.xls'
+                )
             ));
         }
     }
@@ -78,7 +82,65 @@ class ReportController extends PoamBaseController
               ->addActionContext('total', array('pdf', 'xls'))
               ->addActionContext('overdue', array('pdf', 'xls'))
               ->addActionContext('plugin-report', array('pdf', 'xls'))
+              ->addActionContext('fisma-quarterly', 'xls')
+              ->addActionContext('fisma-annual', 'xls')
               ->initContext();
+    }
+
+    /**
+     * Returns the due date for the next quarterly FISMA report
+     * 
+     * @return Zend_Date
+     */
+    public function getNextQuarterlyFismaReportDate()
+    {
+        // The quarterly reports are due on 3/1, 6/1, 9/1 and 12/1
+        $reportDate = new Zend_Date();
+        if (1 == (int)$reportDate->getDay()->toString('d')) {
+            $reportDate->subMonth(1);
+        }
+        $reportDate->setDay(1);
+        switch ((int)$reportDate->getMonth()->toString('m')) {
+            case 12:
+                $reportDate->addYear(1);
+            case 1:
+            case 2:
+                $reportDate->setMonth(3);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                $reportDate->setMonth(6);
+                break;
+            case 6:
+            case 7:
+            case 8:
+                $reportDate->setMonth(9);
+                break;
+            case 9:
+            case 10:
+            case 11:
+                $reportDate->setMonth(12);
+                break;
+        }
+        return $reportDate;
+    }
+
+    /**
+     * Returns the due date for the next annual FISMA report
+     * 
+     * @return Zend_Date
+     */
+    public function getNextAnnualFismaReportDate()
+    {
+        // The annual report is due Oct 1 of each year
+        $reportDate = new Zend_Date();
+        $reportDate->setMonth(10);
+        $reportDate->setDay(1);
+        if (-1 == $reportDate->compare(new Zend_Date())) {
+            $reportDate->addYear(1);
+        }
+        return $reportDate;
     }
 
     /**
@@ -86,128 +148,58 @@ class ReportController extends PoamBaseController
      */
     public function fismaAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_fisma_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
+        
+        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('Y-m-d');
+        $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('Y-m-d');
+    }
+    
+    /**
+     * Generate the quarterly FISMA report
+     * 
+     * The data in this action is calculated in roughly the same order as it is laid out in the report itself.
+     */
+    public function fismaQuarterlyAction()
+    {
+        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
 
-        $req = $this->getRequest();
-        $criteria['year'] = $req->getParam('y');
-        $criteria['quarter'] = $req->getParam('q');
-        $criteria['systemId'] = $systemId = $req->getParam('system');
-        $criteria['startdate'] = $req->getParam('startdate');
-        $criteria['enddate'] = $req->getParam('enddate');
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('criteria', $criteria);
-        $this->view->assign('year', empty($criteria['year'])?date('Y'):$criteria['year']);
-        $dateBegin = '';
-        $dateEnd = '';
-        if ('search' == $req->getParam('s') || 
-            'pdf' == $req->getParam('format') || 
-            'xls' == $req->getParam('format')) {
-            if (!empty($criteria['startdate']) && 
-                !empty($criteria['enddate'])) {
-                $dateBegin = new 
-                    Zend_Date($criteria['startdate'], 'Y-m-d');
-                $dateEnd = new 
-                    Zend_Date($criteria['enddate'], 'Y-m-d');
-            }
-            if (!empty($criteria['year'])) {
-                if (!empty($criteria['quarter'])) {
-                    switch ($criteria['quarter']) {
-                    case 1:
-                        $startdate = $criteria['year'] . '-01-01';
-                        $enddate = $criteria['year'] . '-03-31';
-                        break;
-
-                    case 2:
-                        $startdate = $criteria['year'] . '-04-01';
-                        $enddate = $criteria['year'] . '-06-30';
-                        break;
-
-                    case 3:
-                        $startdate = $criteria['year'] . '-07-01';
-                        $enddate = $criteria['year'] . '-09-30';
-                        break;
-
-                    case 4:
-                        $startdate = $criteria['year'] . '-10-01';
-                        $enddate = $criteria['year'] . '-12-31';
-                        break;
-                    }
-                } else {
-                    $startdate = $criteria['year'] . '-01-01';
-                    $enddate = $criteria['year'] . '-12-31';
-                }
-                $dateBegin = new Zend_Date($startdate, 'Y-m-d');
-                $dateEnd = new Zend_Date($enddate, 'Y-m-d');
-            }
-            $systemArray = array(
-                'systemId' => $systemId
-            );
-            $aawArray = array(
-                'createdDateEnd' => $dateBegin,
-                'closedDateBegin' => $dateEnd
-            ); //or close_ts is null
-            $bawArray = array(
-                'createdDateEnd' => $dateEnd,
-                'estDateEnd' => $dateEnd,
-                'actualDateBegin' => $dateBegin,
-                'actionDateEnd' => $dateEnd
-            );
-            $cawArray = array(
-                'createdDateEnd' => $dateEnd,
-                'estDateBegin' => $dateEnd
-            ); // and actual_date_begin is null
-            $dawArray = array(
-                'estDateEnd' => $dateEnd,
-                'actualDateBegin' => $dateEnd
-            ); //or action_actual_date is null
-            $eawArray = array(
-                'createdDateBegin' => $dateBegin,
-                'createdDateEnd' => $dateEnd
-            );
-            $fawArray = array(
-                'createdDateEnd' => $dateEnd,
-                'closedDateBegin' => $dateEnd
-            ); //or close_ts is null
-            $criteriaAaw = array_merge($systemArray, $aawArray);
-            $criteriaBaw = array_merge($systemArray, $bawArray);
-            $criteriaCaw = array_merge($systemArray, $cawArray);
-            $criteriaDaw = array_merge($systemArray, $dawArray);
-            $criteriaEaw = array_merge($systemArray, $eawArray);
-            $criteriaFaw = array_merge($systemArray, $fawArray);
-            $summary = array(
-                'AAW' => 0,
-                'AS' => 0,
-                'BAW' => 0,
-                'BS' => 0,
-                'CAW' => 0,
-                'CS' => 0,
-                'DAW' => 0,
-                'DS' => 0,
-                'EAW' => 0,
-                'ES' => 0,
-                'FAW' => 0,
-                'FS' => 0
-            );
-            $summary['AAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaAaw);
-            $summary['BAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaBaw);
-            $summary['CAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaCaw);
-            $summary['DAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaDaw);
-            $summary['EAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaEaw);
-            $summary['FAW'] = $this->_poam->search($this->_me->systems, array(
-                'count' => 'count(*)'
-            ), $criteriaFaw);
-            $this->view->assign('summary', $summary);
+        // Agency Name
+        $agency = Organization::getAgency();
+        $this->view->agencyName = $agency->name;
+        
+        // Submission Date
+        $this->view->submissionDate = date('Y-m-d');
+        
+        // Bureau Statistics
+        $bureaus = Organization::getBureaus();
+        $stats = array();
+        foreach ($bureaus as $bureau) {
+            $stats[] = $bureau->getFismaStatistics();
         }
+        $this->view->stats = $stats;
+    }
+    
+    /**
+     * Generate the annual FISMA report
+     */
+    public function fismaAnnualAction()
+    {
+        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
+
+        // Agency Name
+        $agency = Organization::getAgency();
+        $this->view->agencyName = $agency->name;
+        
+        // Submission Date
+        $this->view->submissionDate = date('Y-m-d');
+        
+        // Bureau Statistics
+        $bureaus = Organization::getBureaus();
+        $stats = array();
+        foreach ($bureaus as $bureau) {
+            $stats[] = $bureau->getFismaStatistics();
+        }
+        $this->view->stats = $stats;
     }
     
     /**
@@ -215,7 +207,7 @@ class ReportController extends PoamBaseController
      */
     public function poamAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_poam_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_poam_report');
         
         $req = $this->getRequest();
         $params['system_id'] = $req->getParam('system_id');
@@ -313,93 +305,48 @@ class ReportController extends PoamBaseController
      */
     public function overdueAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_overdue_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_overdue_report');
         
         // Get request variables
         $req = $this->getRequest();
-        $params['system_id'] = $req->getParam('system_id');
-        $params['source_id'] = $req->getParam('source_id');
-        $params['overdue_type'] = $req->getParam('overdue_type');
-        $params['overdue_day'] = $req->getParam('overdue_day');
+        $params['orgSystemId'] = $req->getParam('orgSystemId');
+        $params['sourceId'] = $req->getParam('sourceId');
+        $params['overdueType'] = $req->getParam('overdueType');
+        $params['overdueDay'] = $req->getParam('overdueDay');
         $params['year'] = $req->getParam('year');
 
-        $this->view->assign('source_list', $this->_sourceList);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
+        $this->view->assign('source_list', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
+        $this->view->assign('system_list', $this->_me->getOrganizations()->toKeyValueArray('id', 'name'));
+        $this->view->assign('network_list', Doctrine::getTable('Network')->findAll()->toKeyValueArray('id', 'name'));
         $this->view->assign('params', $params);
+        $this->view->assign('url', '/report/overdue' . $this->_helper->makeUrlParams($params));
         $isExport = $req->getParam('format');
         
         if ('search' == $req->getParam('s') || isset($isExport)) {
-            $criteria = array();
-            if (!empty($params['system_id'])) {
-                $criteria['systemId'] = $params['system_id'];
-            }
-            if (!empty($params['source_id'])) {
-                $criteria['sourceId'] = $params['source_id'];
-            }
-            // Setup the paging if necessary
-            $this->_pagingBasePath.= '/panel/report/sub/overdue/s/search';
-            if (isset($isExport)) {
-                $this->_paging['currentPage'] = null;
-                $this->_paging['perPage'] = null;
-            }
-            $this->makeUrl($params);
-            $this->view->assign('url', $this->_pagingBasePath);
-            
-            // Interpret the search criteria
-            if (!empty($params['year'])) {
-                $criteria['createdDateBegin'] = new Zend_Date($params['year'], Zend_Date::YEAR);
-                $criteria['createdDateEnd']   = clone $criteria['createdDateBegin'];
-                $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
-            }
-
-            if ($params['overdue_type'] == 'sso') {
-                $criteria['status'] = array('NEW', 'DRAFT', 'MSA');
-            } elseif ($params['overdue_type'] == 'action') {
-                $criteria['status'] = array('EN', 'EA');
-            } else {
-                $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
-            }
-
             // Search for overdue items according to the criteria
-            $list = $this->_poam->search($this->_me->systems,
-                array(
-                    'id',
-                    'finding_data',
-                    'system_id',
-                    'system_nickname',
-                    'network_id',
-                    'source_id',
-                    'asset_id',
-                    'type',
-                    'ip',
-                    'port',
-                    'status',
-                    'action_suggested',
-                    'action_planned',
-                    'threat_level',
-                    'action_current_date',
-                    'action_est_date',
-                    'duetime',
-                    'system_name',
-                    'count' => 'count(*)'
-                ), $criteria, null, null, false);
-            // Last result is the total
-            array_pop($list);
-            $result = array();
-            foreach ($list as $k => $v) {
-                if ('Overdue' == $this->view->isOnTime($v['duetime'])) {
-                    $now = clone $date;
-                    $duetime = new Zend_Date($v['duetime'], Zend_Date::ISO_8601);
-                    $differDay = floor($now->sub($duetime)/(3600*24));
-                    $v['diffDay'] = $differDay + 1;
-                    $result[] = $v;
-                }
+            $q = Doctrine_Query::create()
+                    ->select('f.*')
+                    ->addSelect('DATEDIFF(NOW(), f.nextDueDate) diffDay')
+                    ->from('Finding f')
+                    ->where('DATEDIFF(NOW(), f.nextDueDate) >= 0');
+            if (!empty($params['orgSystemId'])) {
+                $q->andWhere('f.responsibleOrganizationId = ?', $params['orgSystemId']);
             }
+            if (!empty($params['sourceId'])) {
+                $q->andWhere('f.sourceId = ?', $params['sourceId']);
+            }
+            if ($params['overdueType'] == 'sso') {
+                $q->whereIn('f.status', array('NEW', 'DRAFT', 'MSA'));
+            } elseif ($params['overdueType'] == 'action') {
+                $q->whereIn('f.status', array('EN', 'EA'));
+            } else {
+                $q->whereIn('f.status', array('NEW', 'DRAFT', 'MSA', 'EN', 'EA'));
+            }
+            $list = $q->execute();
             // Assign view outputs
-            $this->view->assign('poam_list', $this->_helper->overdueStatistic($result));
-            $this->view->criteria = $criteria;
-            $this->view->columns = array('systemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '<30 Days',
+            $this->view->assign('poam_list', $this->_helper->overdueStatistic($list));
+            $this->view->criteria = $params;
+            $this->view->columns = array('orgSystemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '<30 Days',
                                          'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
                                          'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
                                          'max' => 'Maximum (days)');
@@ -411,7 +358,7 @@ class ReportController extends PoamBaseController
      */
     public function generalAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_general_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
         
         $req = $this->getRequest();
         $type = $req->getParam('type', '');
@@ -446,7 +393,7 @@ class ReportController extends PoamBaseController
      * blscrAction() - Generate BLSCR report
      */
     public function blscrAction() {
-        $this->_acl->requirePrivilege('report', 'generate_general_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $system = new system();
@@ -491,7 +438,7 @@ class ReportController extends PoamBaseController
      */
     public function fipsAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_general_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
         
         $sysObj = new System();
         $systems = $sysObj->getList(array(
@@ -535,7 +482,7 @@ class ReportController extends PoamBaseController
      */
     public function prodsAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_general_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
@@ -560,7 +507,7 @@ class ReportController extends PoamBaseController
      */
     public function swdiscAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_general_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $query = $db->select()->from(array(
@@ -581,7 +528,7 @@ class ReportController extends PoamBaseController
      */
     public function totalAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_general_report');
+        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
         
         $db = $this->_poam->getAdapter();
         $system = new system();
@@ -629,7 +576,7 @@ class ReportController extends PoamBaseController
      */
     public function rafsAction()
     {
-        $this->_acl->requirePrivilege('report', 'generate_system_rafs');
+        Fisma_Acl::requirePrivilege('report', 'generate_system_rafs');
         $sid = $this->_req->getParam('system_id', 0);
         $this->view->assign('system_list', $this->_systemList);
         if (!empty($sid)) {
@@ -660,7 +607,7 @@ class ReportController extends PoamBaseController
                                                                                 $actOwner['integrity'],
                                                                                 $actOwner['availability']);
                         if (NULL == $securityCategorization) {
-                            throw new Fisma_Exception_General('The security categorization for ('.$actOwner['id'].')'.
+                            throw new Fisma_Exception('The security categorization for ('.$actOwner['id'].')'.
                                 $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
                                 'unless these values are defined.');
                         }
@@ -679,8 +626,8 @@ class ReportController extends PoamBaseController
                     header("Pragma: public");
                     echo file_get_contents($fname);
                     @unlink($fname);
-                } catch (Fisma_Exception_General $e) {
-                    if ($e instanceof Fisma_Exception_General) {
+                } catch (Fisma_Exception $e) {
+                    if ($e instanceof Fisma_Exception) {
                         $message = $e->getMessage();
                     }
                     $this->message($message, self::M_WARNING);
@@ -701,10 +648,10 @@ class ReportController extends PoamBaseController
      */         
     public function pluginAction() 
     {
-        $this->_acl->requirePrivilege('report', 'read');
+        Fisma_Acl::requirePrivilege('report', 'read');
         
         // Build up report menu
-        $reportsConfig = new Zend_Config_Ini(Fisma_Controller_Front::getPath('application') . '/config/reports.conf');
+        $reportsConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf');
         $reports = $reportsConfig->toArray();
         $this->view->assign('reports', $reports);
     }
@@ -714,47 +661,51 @@ class ReportController extends PoamBaseController
      */         
     public function pluginReportAction()
     {
-        $this->_acl->requirePrivilege('report', 'read');
+        Fisma_Acl::requirePrivilege('report', 'read');
         
         // Verify a plugin report name was passed to this action
-        $reportName = $this->_req->getParam('name');
+        $reportName = $this->getRequest()->getParam('name');
         if (!isset($reportName)) {
             $this->_forward('plugin');
             return;
         }
         
         // Verify that the user has permission to run this report
-        $reportConfig = new Zend_Config_Ini(Fisma_Controller_Front::getPath('application') . '/config/reports.conf', $reportName);
-        if ($this->_me->account != 'root') {
+        $reportConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf', $reportName);
+        if ($this->_me->username != 'root') {
             $reportRoles = $reportConfig->roles;
             $report = $reportConfig->toArray();
             $reportRoles = $report['roles'];
             if (!is_array($reportRoles)) {
                 $reportRoles = array($reportRoles);
             }
-            $user = new User();
-            $role = $user->getRoles($this->_me->id);
-            $role = $role[0]['nickname'];
-            if (!in_array($role, $reportRoles)) {
-                throw new Fisma_Exception_General("User \"{$this->_me->account}\" does not have permission to view"
+            if (!in_array($this->_me->Roles, $reportRoles)) {
+                throw new Fisma_Exception("User \"{$this->_me->account}\" does not have permission to view"
                                           . " the \"$reportName\" plug-in report.");
             }
         }
         
         // Execute the report script
-        $reportScriptFile = Fisma_Controller_Front::getPath('application') . "/config/reports/$reportName.sql";
+        $reportScriptFile = Fisma::getPath('application') . "/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         if (!$reportScriptFileHandle) {
-            throw new Fisma_Exception_General("Unable to load plug-in report SQL file: $reportScriptFile");
+            throw new Fisma_Exception("Unable to load plug-in report SQL file: $reportScriptFile");
         }
         $reportScript = '';
         while (!feof($reportScriptFileHandle)) {
             $reportScript .= fgets($reportScriptFileHandle);
         }
-        $userSystems = implode(',', $this->_me->systems);
-        $reportScript = str_replace('##SYSTEMS##', $userSystems, $reportScript);
-        $db = Zend_Db::factory(Zend_Registry::get('datasource'));
-        $reportData = $db->fetchAll($reportScript);
+        $myOrganizations = array();
+        foreach ($this->_me->getOrganizations() as $organization) {
+            $myOrganizations[] = $organization->id;
+        }
+        $reportScript = str_replace('##ORGANIZATIONS##', implode(',', $myOrganizations), $reportScript);
+        $dbh = Doctrine_Manager::connection()->getDbh(); 
+        $rawResults = $dbh->query($reportScript, PDO::FETCH_ASSOC);
+        $reportData = array();
+        foreach ($rawResults as $rawResult) {
+            $reportData[] = $rawResult;
+        }
         
         // Render the report results
         if (isset($reportData[0])) {
@@ -765,110 +716,10 @@ class ReportController extends PoamBaseController
             $this->_forward('plugin');
             return;
         }
+        
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
+        $this->view->assign('url', "/panel/report/sub/plugin-report/name/$reportName");
     }
-<<<<<<< .working
-
-=======
-    
-    /**
-     * sort overdue records by overdue days and status
-     *
-     * @param array $list all overdue records
-     * @return array $result
-     */  
-    public function _overdueSort($list)
-    {
-        $mitigationStrategyStatus = array('NEW', 'DRAFT', 'MSA');
-        $correctiveAction = array('EN', 'EA');
-        $result = array();
-        foreach($list as  $row) {
-            if (in_array($row['oStatus'], $mitigationStrategyStatus)) {
-                $overdueType = 'MS';
-            }
-            if (in_array($row['oStatus'], $correctiveAction)) {
-                $overdueType = 'CA';
-            }
-            $key = $row['system_nickname'] . $row['system_id'].'_'.$overdueType;
-            if (!isset($result[$key])) {
-                $result[$row['system_nickname'] . $row['system_id'].'_'.$overdueType] = array();
-            }
-            if (!isset($result[$key]['systemName'])) {
-                $result[$key]['systemName'] = $row['system_name'];
-            }
-            if (!isset($result[$key]['systemNickname'])) {
-                $result[$key]['systemNickname'] = $row['system_nickname'];
-            }
-            if (!isset($result[$key]['type'])) {
-                if ($overdueType == 'MS') {
-                    $result[$key]['type'] = 'Mitigation Strategy';
-                }
-                if ($overdueType == 'CA') {
-                    $result[$key]['type'] = 'Corrective Action';
-                }
-            }
-            if (!isset($result[$key]['lessThan30'])) {
-                $result[$key]['lessThan30'] = 0;
-            }
-            if ($row['diffDay'] < 30) {
-                $result[$key]['lessThan30'] ++;
-            }
-            if (!isset($result[$key]['moreThan30'])) {
-                $result[$key]['moreThan30'] = 0;
-            }
-            if ($row['diffDay'] >= 30 && $row['diffDay'] < 60) {
-                $result[$key]['moreThan30'] ++;
-            }
-            if (!isset($result[$key]['moreThan60'])) {
-                $result[$key]['moreThan60'] = 0;
-            }
-            if ($row['diffDay'] >= 60 && $row['diffDay'] < 90) {
-                $result[$key]['moreThan60'] ++;
-            }
-            if (!isset($result[$key]['moreThan90'])) {
-                $result[$key]['moreThan90'] = 0;
-            }
-            if ($row['diffDay'] >= 90 && $row['diffDay'] < 120) {
-                $result[$key]['moreThan90'] ++;
-            }
-            if (!isset($result[$key]['moreThan120'])) {
-                $result[$key]['moreThan120'] = 0;
-            }
-            if ($row['diffDay'] >= 120) {
-                $result[$key]['moreThan120'] ++;
-            }
-            if (!isset($result[$key]['diffDay'])) {
-                $result[$key]['diffDay'] = array($row['diffDay']);
-            } else {
-                $result[$key]['diffDay'][] = $row['diffDay'];
-            }
-        }
-        return $result;
-    }
-    
-    /**
-     * make a statistics for overdue records
-     * 
-     * @param array $list all overdue records
-     * @return array $result
-     */
-    public function _overdueStatistic($list)
-    {
-        $result = $this->_overdueSort($list);
-        foreach ($result as &$v) {
-            $v['systemName'] = $v['systemNickname'] . ' - ' . $v['systemName'];
-            unset($v['systemNickname']);
-            $totalOverdue = $v['lessThan30'] + $v['moreThan30'] + $v['moreThan60'] 
-                            + $v['moreThan90'] + $v['moreThan120'];
-            $v['total'] = $totalOverdue;
-            $v['average'] = round(array_sum($v['diffDay'])/$totalOverdue);
-            $v['max'] = max($v['diffDay']);
-            unset($v['diffDay']);
-        }
-        ksort($result);
-        return $result;
-    }
->>>>>>> .merge-right.r1659
 }

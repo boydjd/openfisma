@@ -1,0 +1,215 @@
+Event:
+    Finding Created:
+        name: Finding Created
+        Privilege: notification_finding
+
+    Finding Import:
+        name: Finding Import
+        Privilege: notification_finding
+
+    Finding Inject:
+        name: Finding Inject
+        Privilege: notification_finding
+
+    Asset Modified:
+        name: Asset Modified
+        Privilege: notification_asset
+
+    Asset Created:
+        name: Asset Created
+        Privilege: notification_asset
+
+    Asset Deleted:
+        name: Asset Deleted
+        Privilege: notification_asset
+
+    Update Course of Action:
+        name: Update Course of Action
+        Privilege: notification_finding
+
+    Update Finding Assignment:
+        name: Update Finding Assignment
+        Privilege: notification_finding
+
+    Update Control Assignment:
+        name: Update Control Assignment
+        Privilege: notification_finding
+
+    Update Countermeasures:
+        name: Update Countermeasures
+        Privilege: notification_finding
+
+    Update Threat:
+        name: Update Threat
+        Privilege: notification_finding
+
+    Update Finding Recommendation:
+        name: Update Finding Recommendation
+        Privilege: notification_finding
+
+    Update Finding Resources:
+        name: Update Finding Resources
+        Privilege: notification_finding
+
+    Update Est Completion Date:
+        name: Update Est Completion Date
+        Privilege: notification_finding
+
+    Mitigation Strategy Approved TO SSO:
+        name: Mitigation Strategy Approved TO SSO
+        Privilege: notification_finding
+
+    Finding Closed:
+        name: Finding Closed
+        Privilege: notification_finding
+
+    Evidence Upload:
+        name: Evidence Upload
+        Privilege: notification_finding
+
+    Evidence Submitted for 1st Approval:
+        name: Evidence Submitted for 1st Approval
+        Privilege: notification_finding
+
+    Evidence Submitted for 2nd Approval:
+        name: Evidence Submitted for 2nd Approval
+        Privilege: notification_finding
+
+    Evidence Submitted for 3rd Approval:
+        name: Evidence Submitted for 3rd Approval
+        Privilege: notification_finding
+
+    Account Modified:
+        name: Account Modified
+        Privilege: notification_admin
+
+    Account Deleted:
+        name: Account Deleted
+        Privilege: notification_admin
+
+    Account Created:
+        name: Account Created
+        Privilege: notification_admin
+
+    Organization Deleted:
+        name: Organization Deleted
+        Privilege: notification_admin
+
+    Organization Modified :
+        name: Organization Modified 
+        Privilege: notification_admin
+
+    Organization Created:
+        name: Organization Created
+        Privilege: notification_admin
+
+    System Deleted:
+        name: System Deleted
+        Privilege: notification_admin
+
+    System Modified:
+        name: System Modified
+        Privilege: notification_admin
+
+    System Created:
+        name: System Created
+        Privilege: notification_admin
+
+    Product Created:
+        name: Product Created
+        Privilege: notification_admin
+
+    Product Modified:
+        name: Product Modified
+        Privilege: notification_admin
+
+    Product Deleted:
+        name: Product Deleted
+        Privilege: notification_admin
+
+    Role Created:
+        name: Role Created
+        Privilege: notification_admin
+
+    Role Deleted:
+        name: Role Deleted
+        Privilege: notification_admin
+
+    Role Modified:
+        name: Role Modified
+        Privilege: notification_admin
+
+    Finding Source Created:
+        name: Finding Source Created
+        Privilege: notification_admin
+
+    Finding Source Modified:
+        name: Finding Source Modified
+        Privilege: notification_admin
+
+    Finding Source Deleted:
+        name: Finding Source Deleted
+        Privilege: notification_admin
+
+    Network Modified:
+        name: Network Modified
+        Privilege: notification_admin
+
+    Network Created:
+        name: Network Created
+        Privilege: notification_admin
+
+    Network Deleted:
+        name: Network Deleted
+        Privilege: notification_admin
+
+    System Configuration Modified:
+        name: System Configuration Modified
+        Privilege: notification_admin
+
+    Account Login Success:
+        name: Account Login Success
+        Privilege: notification_admin
+
+    Account Login Failure:
+        name: Account Login Failure
+        Privilege: notification_admin
+
+    Account Logout:
+        name: Account Logout
+        Privilege: notification_admin
+
+    ECD Expires Today:
+        name: ECD Expires Today
+        Privilege: notification_finding
+
+    ECD Expires in 7 Days:
+        name: ECD Expires in 7 Days
+        Privilege: notification_finding
+
+    ECD Expires in 14 days:
+        name: ECD Expires in 14 days
+        Privilege: notification_finding
+
+    ECD Expires in 21 days:
+        name: ECD Expires in 21 days
+        Privilege: notification_finding
+
+    Evidence Denied:
+        name: Evidence Denied
+        Privilege: notification_finding
+
+    Account Locked:
+        name: Account Locked
+        Privilege: notification_admin
+
+    Mitigation Strategy Approved to IVV:
+        name: Mitigation Strategy Approved to IVV
+        Privilege: notification_finding
+
+    Mitigation Strategy Submit:
+        name: Mitigation Strategy Submit
+        Privilege: notification_finding
+    Mitigation strategy Revise:
+        name: Mitiation Strategy Revise
+        Privilege: notification_finding

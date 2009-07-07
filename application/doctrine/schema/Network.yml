@@ -1,0 +1,16 @@
+Network:
+    listeners: [XssListener, BaseListener]
+    
+    columns:
+        name: 
+            type: string
+            extra:
+                purify: plaintext
+        nickname:
+            type: string
+            extra:
+                purify: plaintext
+        description: 
+            type: string
+            extra:
+                purify: html

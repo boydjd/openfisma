@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
@@ -25,36 +25,13 @@
  */
 
 /**
- * A business object which represents a reviewer's evaluation of a piece of
- * evidence supporting a particular remediation.
+ * An evaluation is either an approval or denial of a particular item, such as a mitigation 
+ * strategy or evidence artifact.
  *
  * @package   Model
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Evaluation extends FismaModel
+class Evaluation extends BaseEvaluation
 {
-    protected $_name = 'evaluations';
-    protected $_primary = 'id';
-
-    /**
-     * @todo english
-     * Get evaluation List
-     * @param string $group Evaluation group
-     * @return array $ret 
-     */
-    public function getEvalList ($group) {
-        if (!in_array($group, array('EVIDENCE', 'ACTION'))) {
-            throw new Fisma_Exception_General('Make sure a valid GROUP is inputed');
-        }
-        $query = $this->_db->select()
-                      ->from(array('ev'=>'evaluations'), array('ev.*'))
-                      ->join(array('f'=>'functions'), 'ev.function_id = f.id',
-                          array('function'=>'action'))
-                      ->where('ev.group = ?', $group)
-                      ->order('ev.precedence_id');
-        $ret = $this->_db->fetchAll($query);
-        return $ret;
-    }
 }
-

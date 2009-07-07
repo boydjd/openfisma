@@ -1,11 +1,11 @@
 <?php
     $currentYear = date('Y');
     $year_list[0] = 'All Fiscal Year';
-    for ($year=2005;$year<=$currentYear;$year++) {
+    for ($year=2005; $year<=$currentYear; $year++) {
         $year_list[$year] = $year;
     }
     $overdue['type'] = array('0' => '--Any--',
-                         'sso' =>'Mitigation Strategy',
+                         'sso' => 'Mitigation Strategy',
                          'action'   =>'Corrective Action');
     $overdue['day'] = array('1' => '<30 days',
                             '2' => '30-59 days',
@@ -16,63 +16,41 @@
     if (!empty($this->source_list)) {$this->source_list[0] = '--Any--'; ksort($this->source_list);}
     $url = "/panel/report/sub/overdue/s/search";
 ?>
-<?php //Fisma_Format_Section::startSection("Overdue Reports"); ?>
-<form name="overdue_report" method="post" action="/panel/report/sub/overdue/s/search">
-<table class="searchFilters">
-    <tr>
-        <td><b>System </b></td>
-        <td>
-        <?php echo $this->formSelect('system_id',
-                                     isset($this->params['system_id'])?$this->params['system_id']:0, 
-                                     null,$this->system_list);
-              if( !empty($this->params['system_id']) ) {
-                  $url .= '/system_id/'.$this->params['system_id'];
-              }
-        ?>
-        </td>
-        <td>
-            <?php echo new Fisma_Yui_Form_Button_Submit('generateOverdueReport', array('value' => 'Generate Report')); ?>
-        </td>
-        <td>
-            <?php echo new Fisma_Yui_Form_Button('advanced_search',
-                                            array('value' => 'Toggle Advanced Search Options',
-                                                  'onClickFunction' => 'toggleSearchOptions')); ?>
-        </td>
-        <!--
-        <td><b>Fiscal Year</b></td>
-        <td>
-        <?php echo $this->formSelect('year',
-                                     isset($this->params['year'])?$this->params['year']:0, 
-                                     null,$year_list);
-              if( !empty($this->params['year']) ) {
-                  $url .= '/year/'.$this->params['year'];
-              }
-        ?>
-        </td>-->
-    </tr>
-    <tr id="advanced_searchbox" style="<?php if (empty($this->params['overdue_type']) && empty($this->params['source_id'])) { ?>display:none<?php } ?>">
-        <td><b>Overdue type</b></td>
-        <td >
-        <?php echo $this->formSelect('overdue_type',
-                                    isset($this->params['overdue_type'])?$this->params['overdue_type']:0,
-                                    null,$overdue['type']);
-        ?>
-        </td>
-        <td><b>Source</b></td>
-        <td>
-        <?php echo $this->formSelect('source_id',
-                                     isset($this->params['source_id'])?$this->params['source_id']:0, 
-                                     null,$this->source_list);
-              if( !empty($this->params['source_id']) ) {
-                  $url .= '/source_id/'.$this->params['source_id'];
-              }
-        ?>
-        </td>
-    </tr>
-</table>
-</form>
 
-<?php Fisma_Format_Section::stopSection(); ?>
+<form name="overdue_report" method="post" action="/panel/report/sub/overdue/s/search">
+    <div class="searchFilters">
+        <p>
+            <b>System</b>
+            <?php 
+                echo $this->formSelect('orgSystemId',
+                                     isset($this->params['orgSystemId'])?$this->params['orgSystemId']:0, 
+                                     null,$this->system_list);
+                if( !empty($this->params['orgSystemId']) ) {
+                    $url .= '/system_id/'.$this->params['orgSystemId'];
+                }
+                echo new Fisma_Yui_Form_Button_Submit('generateOverdueReport', array('label' => 'Generate Report'));
+                echo new Fisma_Yui_Form_Button('advanced_search',
+                                                array('label' => 'Toggle Advanced Search Options',
+                                                      'onClickFunction' => 'toggleSearchOptions'));
+            ?>
+        </p>
+        <p id="advanced_searchbox" style="<?php if (empty($this->params['overdueType']) && empty($this->params['sourceId'])) { ?>display:none<?php } ?>">
+            <b>Overdue type</b>
+            <?php echo $this->formSelect('overdueType',
+                                        isset($this->params['overdueType'])?$this->params['overdueType']:0,
+                                        null, $overdue['type']);
+            ?>
+            <b>Source</b>
+            <?php echo $this->formSelect('sourceId',
+                                         isset($this->params['sourceId'])?$this->params['sourceId']:0, 
+                                         null,$this->source_list);
+                  if( !empty($this->params['sourceId']) ) {
+                      $url .= '/sourceId/'.$this->params['sourceId'];
+                  }
+            ?>
+        </p>
+    </div>
+</form>
 
 <?php if( !empty($this->poam_list) ) { ?>
 <?php Fisma_Format_Section::startSection("Poam Search Results"); ?>
@@ -101,7 +79,7 @@ var myColumnDefs = [
           if (!isset($i)) { $i = true; } else { echo ','; } ?>
           {<?php  foreach ($this->columns as $key => $val) { 
                     if (!isset($n)) { $n = true; } else { echo ','; }
-                    if ($key != 'systemName' && $key != 'type') {
+                    if ($key != 'orgSystemName' && $key != 'type') {
                         echo $key . ':' . $row[$key];
                     } else {
                         echo $key . ":'" . $row[$key] . "'";
@@ -115,7 +93,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         dynamicData: false,
-        sortedBy : {key:"systemName", dir:YAHOO.widget.DataTable.CLASS_ASC}
+        sortedBy : {key:"orgSystemName", dir:YAHOO.widget.DataTable.CLASS_ASC}
     };
     var myDataTable = new YAHOO.widget.DataTable("overdue_report", myColumnDefs, myDataSource, myConfigs);
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 

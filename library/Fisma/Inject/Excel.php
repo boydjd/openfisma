@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @author    Mark E. Haase <mhaaseendeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Excel.php 1523 2009-03-26 17:01:44Z mehaase $
@@ -56,27 +56,27 @@ class Fisma_Inject_Excel
      * controller
      */
     private $_excelTemplateColumns = array(
-        1 => 'system_nickname',
-        'date_discovered',
+        1 => 'systemNickname',
+        'discoveredDate',
         'network',
-        'asset_name',
-        'asset_ip',
-        'asset_port',
-        'product_name',
-        'product_vendor',
-        'product_version',
-        'finding_source',
-        'finding_description',
-        'finding_recommendation',
-        'course_of_action_type',
-        'course_of_action_description',
-        'expected_completion_date',
-        'security_control',
-        'threat_level',
-        'threat_description',
-        'countermeasure_effectiveness',
-        'countermeasure_description',
-        'contact_info'
+        'assetName',
+        'assetIp',
+        'assetPort',
+        'productName',
+        'productVendor',
+        'productVersion',
+        'findingSource',
+        'findingDescription',
+        'findingRecommendation',
+        'findingType',
+        'findingMitigationStrategy',
+        'ecdDate',
+        'securityControl',
+        'threatLevel',
+        'threatDescription',
+        'countermeasuresEffectiveness',
+        'countermeasureDescription',
+        'contactInfo'
     );
 
     /**
@@ -84,22 +84,17 @@ class Fisma_Inject_Excel
      * error messages can be provided for missing columns.
      */
     private $_requiredExcelTemplateColumns = array (
-        'system_nickname' => 'System',
-        'date_discovered' => 'Date Discovered',
-        'finding_source' => 'Finding Source',
-        'finding_description' => 'Finding Description',
-        'finding_recommendation' => 'Finding Recommendation'
+        'systemNickname' => 'System',
+        'discoveredDate' => 'Date Discovered',
+        'findingSource' => 'Finding Source',
+        'findingDescription' => 'Finding Description',
+        'findingRecommendation' => 'Finding Recommendation'
     );
 
     /**
      * The row to start on in the excel template. The template has 3 header rows, so start at the 4th row.
      */
     private $_excelTemplateStartRow = 4;
-
-	/**
-	 * insert finding ids
-	 */
-	public $_findingIds = array();
     
     /**
      * Parses and loads the findings in the specified excel file. Expects XML spreadsheet format from Excel 2007.
@@ -112,7 +107,7 @@ class Fisma_Inject_Excel
         // Parse the file using SimpleXML. The finding data is located on the first worksheet.
         $spreadsheet = @simplexml_load_file($filePath);
         if ($spreadsheet === false) {
-            throw new Exception_InvalidFileFormat(
+            throw new Fisma_Exception_InvalidFileFormat(
                 "The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML spreadsheet."
             );
         }
@@ -120,7 +115,7 @@ class Fisma_Inject_Excel
         // Check that the template version matches the version of OpenFISMA which is running.
         $templateVersion = (int)$spreadsheet->CustomDocumentProperties->FismaTemplateVersion;
         if ($templateVersion != self::TEMPLATE_VERSION) {
-            throw new Exception_InvalidFileFormat(
+            throw new Fisma_Exception_InvalidFileFormat(
                 "This template was created by a previous version of OpenFISMA and is not compatible with the current"
                 . " version. Download a new copy of the template and transfer your data into it."
             );
@@ -131,7 +126,7 @@ class Fisma_Inject_Excel
         $spreadsheet->registerXPathNamespace('s', $namespaces['']);
         $findingData = $spreadsheet->xpath('/s:Workbook/s:Worksheet[1]/s:Table/s:Row');
         if ($findingData === false) {
-            throw new Exception_InvalidFileFormat(
+            throw new Fisma_Exception_InvalidFileFormat(
                 "The file format is not recognized. Your version of Excel might be incompatible."
             );
         }
@@ -154,7 +149,7 @@ class Fisma_Inject_Excel
             foreach ($row as $cell) {
                 // If Excel skips a cell that has no data, then the next cell that has data will contain an
                 // 'ss:Index' attribute to indicate which column it is in.
-                $cellAttributes = $cell->attributes('ss',true);
+                $cellAttributes = $cell->attributes('ss', true);
                 if (isset($cellAttributes['Index'])) {
                     $column = (int)$cellAttributes['Index'];
                 }
@@ -184,106 +179,134 @@ class Fisma_Inject_Excel
             // from turning into spaghetti. When debugging this code, it will probably be helpful to remove these
             // suppressions.
             $poam = array();
-            $systemTable = new System();
-            $poam['upload_id'] = $uploadId;
-            $poam['system_id'] = @$systemTable->fetchRow("nickname = '{$finding['system_nickname']}'")->id;
-            if (empty($poam['system_id'])) {
+            $poam['uploadId'] = $uploadId;
+            $organization = Doctrine::getTable('Organization')->findOneByNickname($finding['systemNickname']);
+            if (!$organization) {
                 throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid system selected. Your template may
                                                       be out of date. Please try downloading it again.");
             }
-            $poam['discover_ts'] = $finding['date_discovered'];
-            $sourceTable = new Source();
-            $poam['source_id'] = @$sourceTable->fetchRow("nickname = '{$finding['finding_source']}'")->id;
-            if (empty($poam['source_id'])) {
+            $poam['responsibleOrganizationId'] = $organization->id;
+
+            $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
+            if (!$sourceTable) {
                 throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
                                                       template may
                                                       be out of date. Please try downloading it again.");
             }
-            $poam['finding_data'] = $finding['finding_description'];
-            if (!empty($finding['contact_info'])) {
-                $poam['finding_data'] .= "<br>Point of Contact: {$finding['contact_info']}";
+            $poam['sourceId'] = $sourceTable->id;
+            if (!empty($finding['securityControl'])) {
+                $securityControlTable = Doctrine::getTable('SecurityControl')->findOneByCode($finding['securityControl']);
+                if (!$securityControlTable) {
+                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
+                                                          template may
+                                                          be out of date. Please try downloading it again.");
+                }
+                $poam['securityControlId'] = $securityControlTable->id;
+            } else {
+                $poam['securityControlId'] = null;
             }
-            $poam['action_suggested'] = $finding['finding_recommendation'];
-            $poam['type'] = @$finding['course_of_action_type'];
+            $poam['description'] = $finding['findingDescription'];
+            if (!empty($finding['contactInfo'])) {
+                $poam['description'] .= "<br>Point of Contact: {$finding['contactInfo']}";
+            }
+            $poam['recommendation'] = $finding['findingRecommendation'];
+            $poam['type'] = $finding['findingType'];
             if (empty($poam['type'])) {
                 $poam['type'] = 'NONE';
             } else {
                 $poam['status'] = 'DRAFT';
             }
-            $poam['action_planned'] = @$finding['course_of_action_description'];
-            $poam['action_current_date'] = @$finding['expected_completion_date'];
-            $poam['blscr_id'] = @$finding['security_control'];
-            $poam['threat_level'] = @$finding['threat_level'];
-            if (empty($poam['threat_level'])) {
-                $poam['threat_level'] = 'NONE';
+            $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
+            $poam['expectedCompletionDate'] = $finding['ecdDate'];
+            $poam['discoveredDate'] = $finding['discoveredDate'];
+            $poam['threatLevel'] = $finding['threatLevel'];
+            if (empty($poam['threatLevel'])) {
+                $poam['threatLevel'] = 'NONE';
             }
-            $poam['threat_source'] = @$finding['threat_description'];
-            $poam['cmeasure_effectiveness'] = @$finding['countermeasure_effectiveness'];
-            if (empty($poam['cmeasure_effectiveness'])) {
-                $poam['cmeasure_effectiveness'] = 'NONE';
+            $poam['threat'] = $finding['threatDescription'];
+            $poam['countermeasuresEffectiveness'] = $finding['countermeasuresEffectiveness'];
+            if (empty($poam['countermeasuresEffectiveness'])) {
+                $poam['countermeasuresEffectiveness'] = 'NONE';
             }
-            $poam['cmeasure'] = @$finding['countermeasure_description'];
-            $poam['create_ts'] = new Zend_Db_Expr('NOW()');
-            $poam['action_resources'] = 'None';
+            $poam['countermeasures'] = $finding['countermeasureDescription'];
+            $poam['resourcesRequired'] = 'None';
 
-            $asset = array();
-            $networkTable = new Network();
-            $asset['network_id'] = @$networkTable->fetchRow("nickname = '{$finding['network']}'")->id;
-            $asset['address_ip'] = @$finding['asset_ip'];
-            $asset['address_port'] = @$finding['asset_port'];
-            if (!empty($asset['address_port']) && !is_numeric($asset['address_port'])) {
-                throw new Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
+            $asset = array();  
+            $networkTable = Doctrine::getTable('Network')->findOneByNickname($finding['network']);
+            if (!$networkTable) {
+                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
+                                                      template may
+                                                      be out of date. Please try downloading it again.");
+            }
+            $asset['networkId'] = $networkTable->id;
+            
+            $asset['addressIp'] = $finding['assetIp'];
+            $asset['addressPort'] = $finding['assetPort'];
+            if (!empty($asset['addressPort']) && !is_numeric($asset['addressPort'])) {
+                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
             }
 
-            $asset['name'] = @$finding['asset_name'];
+            $asset['name'] = $finding['assetName'];
             if (empty($asset['name'])) {
-                $asset['name'] = "{$asset['address_ip']}:{$asset['address_port']}";
+                $asset['name'] = "{$asset['addressIp']}:{$asset['addressPort']}";
             }
-            $asset['create_ts'] = new Zend_Db_Expr('NOW()');
-            $asset['system_id'] = $poam['system_id'];
+            $asset['orgSystemId'] = $poam['responsibleOrganizationId'];
 
             $product = array();
-            $product['name'] = @$finding['product_name'];
-            $product['vendor'] = @$finding['product_vendor'];
-            $product['version'] = @$finding['product_version'];
+            $product['name'] = $finding['productName'];
+            $product['vendor'] = $finding['productVendor'];
+            $product['version'] = $finding['productVersion'];
             
             // Now persist these objects. Check assets and products to see whether they exist before creating new
             // ones.
             if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
                 /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
-                $productTable = new Product();
-                $query = $productTable->select()->from($productTable, 'id')
-                                      ->where("name like ?", "%$product[name]%")
-                                      ->where("vendor like ?", "%$product[vendor]%")
-                                      ->where("version like ?", "%$product[version]%");
-                $productId = @$productTable->fetchRow($query)->id;
-                if (empty($productId) && !empty($product['name'])) {
-                    $productId = @$productTable->insert($product);
+                $query = Doctrine_Query::create()
+                         ->select()
+                         ->from('Product p')
+                         ->where('p.name = ?', $product['name'])
+                         ->andWhere('p.vendor = ?', $product['vendor'])
+                         ->andWhere('p.version = ?', $product['version']);
+                $productRecord = $query->execute()->toArray();
+                if (empty($productRecord)) {
+                    $productRecord = new Product();
+                    $productRecord->merge($product);
+                    $productRecord->save();
+                    $productId = $productRecord->id;
+                } else {
+                    $productId = $productRecord[0]['id'];
                 }
             }
 
             // Persist the asset, if necessary
-            if (!empty($asset['network_id']) && !empty($asset['address_ip']) && !empty($asset['address_port'])) {
-                $asset['prod_id'] = @$productId;
-                $assetTable = new Asset();
-                $query = $assetTable->select()->from($assetTable, 'id')
-                                    ->where("network_id = ?", $asset['network_id'])
-                                    ->where("address_port = ?", $asset['address_port'])
-                                    ->where("address_ip like ?", "%$asset[address_ip]%");
-                $assetId = @$assetTable->fetchRow($query)->id;
-                if (empty($assetId)) {
-                    $assetId = $assetTable->insert($asset);
+            if (!empty($asset['networkId']) && !empty($asset['addressIp']) && !empty($asset['addressPort'])) {
+                $asset['productId'] = $productId;
+                // Verify whether asset exists or not
+                $q = Doctrine_Query::create()
+                     ->select()
+                     ->from('Asset a')
+                     ->where('a.networkId = ?', $asset['networkId'])
+                     ->andWhere('a.addressIp = ?', $asset['addressIp'])
+                     ->andWhere('a.addressPort = ?', $asset['addressPort']);
+                $assetRecord = $q->execute()->toArray();
+                
+                if (empty($assetRecord)) {
+                    $assetRecord = new Asset();
+                    $assetRecord->merge($asset);
+                    $assetRecord->save();
+                    $assetId = $assetRecord->id;
+                } else {
+                    $assetId = $assetRecord[0]['id'];
                 }
             }
-
             // Finally, create the finding
-            $poam['asset_id'] = @$assetId;
-            $poamTable = new Poam();
-            $this->_findingIds[] = $poamTable->insert($poam);
-
+            $poam['assetId'] = $assetId;
+            
+            $findingRecord = new Finding();
+            $findingRecord->merge($poam);
+            $findingRecord->save();
             $rowNumber++;
         }
-        
         return $rowNumber - $this->_excelTemplateStartRow;
     }
 }

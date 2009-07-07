@@ -1,0 +1,32 @@
+Comment:
+    listeners: [XssListener]
+        
+    columns:
+        createdTs: timestamp
+        
+        content:
+            type: string
+            extra:
+                purify: plaintext
+            comment: The text of the comment
+        
+        findingEvaluationId: integer
+        userId: integer
+
+    relations:
+        FindingEvaluation:
+            local: findingEvaluationId
+            foreign: id
+            foreignAlias: Comments
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: Comments
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                disabled: true
