@@ -46,20 +46,20 @@ class UserListener extends Doctrine_Record_Listener
                 $emailValidation->User           = $user;
                 $user->EmailValidation[]         = $emailValidation;
             }
-        }
 
-        if (!empty($modified['password'])) {
-            $user->generateSalt();
-            $user->password        = $user->hash($modified['password']);
-            $user->passwordTs      = Fisma::now();
-            // Generate user's password history
-            $pwdHistory = $user->passwordHistory;
-            if (3 == substr_count($pwdHistory, ':')) {
-                $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
+            if (!empty($modified['password'])) {
+                $user->generateSalt();
+                $user->password        = $user->hash($modified['password']);
+                $user->passwordTs      = Fisma::now();
+                // Generate user's password history
+                $pwdHistory = $user->passwordHistory;
+                if (3 == substr_count($pwdHistory, ':')) {
+                    $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
+                }
+                $user->passwordHistory = ':' . $user->password . $pwdHistory;
+
+                $user->log("Password changed");
             }
-            $user->passwordHistory = ':' . $user->password . $pwdHistory;
-
-            $user->log("Password changed");
         }
         
         if (isset($modified['lastRob'])) {
