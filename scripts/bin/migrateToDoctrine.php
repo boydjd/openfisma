@@ -258,6 +258,24 @@ class Migrate
         $configurations = self::$_db->fetchAll('SELECT * FROM configurations');
         foreach ($configurations as $row) {
             $data = $this->_migrateData($row);
+            switch ($row['key']) {
+                case 'max_absent_time':
+                    $row['key'] = 'account_inactivity_period';
+                    break;
+                case 'expiring_seconds':
+                    $row['key'] = 'session_inactivity_period';
+                    break;
+                case 'pass_min':
+                    $row['key'] = 'pass_min_length';
+                    break;
+                case 'pass_max':
+                    $row['key'] = 'pass_max_length';
+                    break;
+                case 'pass_warningdays':
+                    $row['key'] = 'pass_warning';
+                    break;
+                default;
+            }
             $data['name'] = $row['key'];
             $this->migrate('Configuration', $data);
         }
