@@ -10,16 +10,11 @@
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <Title>FY 2007 FISMA and Privacy Annual Reporting Guidance</Title>
   <Subject>FISMA and Privacy Annual Report</Subject>
-  <Author>Haggerty, Susan Jennifer</Author>
-  <LastAuthor>Authorised User</LastAuthor>
-  <LastPrinted>2008-07-09T20:58:47Z</LastPrinted>
-  <Created>2004-04-08T21:23:24Z</Created>
-  <LastSaved>2009-07-06T19:12:29Z</LastSaved>
-  <Company>Office of Management and Budget</Company>
+  <Author>OpenFISMA</Author>
+  <Company>OpenFISMA Developed By Endeavor Systems</Company>
   <Version>12.00</Version>
  </DocumentProperties>
  <CustomDocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
-  <_NewReviewCycle dt:dt="string"></_NewReviewCycle>
  </CustomDocumentProperties>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
   <WindowHeight>10545</WindowHeight>
@@ -2516,12 +2511,12 @@
    <Row ss:AutoFitHeight="0" ss:Height="18" ss:StyleID="s66">
     <Cell ss:StyleID="s74"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="3" ss:StyleID="s76"><Data ss:Type="String">{agencyName}</Data><NamedCell
+    <Cell ss:MergeAcross="3" ss:StyleID="s76"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">Submission date:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s79"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="4" ss:StyleID="m54232648"><Data ss:Type="String">{submissionDate}</Data><NamedCell
+    <Cell ss:MergeAcross="4" ss:StyleID="m54232648"><Data ss:Type="String"><?php echo $this->submissionDate; ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="18" ss:StyleID="s84">
@@ -2615,677 +2610,165 @@
     <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Titles"/><NamedCell
       ss:Name="Print_Area"/></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s137"><Data ss:Type="String">{bureau1}</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s138"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s139"><Data ss:Type="Number">1</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s140"><Data ss:Type="Number">5</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s141" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">6</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s142"><Data ss:Type="Number">9</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s143" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">1.5</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s144"><Data ss:Type="Number">13</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s143" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">2.1666666666666665</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s144"><Data ss:Type="Number">17</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s145" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">2.8333333333333335</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Moderate</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><Data ss:Type="Number">2</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><Data ss:Type="Number">6</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">8</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="Number">10</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">1.25</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">14</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">1.75</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">18</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">2.25</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Low</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><Data ss:Type="Number">3</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><Data ss:Type="Number">7</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">10</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="Number">11</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">1.1000000000000001</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">15</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">1.5</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">19</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">1.9</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Not Categorized</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><Data ss:Type="Number">4</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><Data ss:Type="Number">8</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">12</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="Number">12</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">1</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">16</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">1.3333333333333333</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">20</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">1.6666666666666667</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s155"><Data ss:Type="String">Sub-total</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s156" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">10</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s157" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">26</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s158" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">36</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s159" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">42</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">1.1666666666666667</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">58</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">1.6111111111111112</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">74</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">2.0555555555555554</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s161"><Data ss:Type="String">{bureau2}</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><Data ss:Type="Number">21</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><Data ss:Type="Number">25</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">46</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="Number">29</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">0.63043478260869568</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">33</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.71739130434782605</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">37</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.80434782608695654</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Moderate</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><Data ss:Type="Number">22</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><Data ss:Type="Number">26</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">48</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="Number">30</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">0.625</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">34</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.70833333333333337</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">38</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.79166666666666663</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Low</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><Data ss:Type="Number">23</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><Data ss:Type="Number">27</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">50</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="Number">31</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">0.62</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">35</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.7</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">39</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.78</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Not Categorized</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><Data ss:Type="Number">24</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><Data ss:Type="Number">28</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">52</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="Number">32</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">0.61538461538461542</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">36</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.69230769230769229</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><Data ss:Type="Number">40</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.76923076923076927</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s155"><Data ss:Type="String">Sub-total</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s156" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">90</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s157" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">106</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s158" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">196</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s159" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">122</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="Number">0.62244897959183676</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">138</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.70408163265306123</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">154</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="Number">0.7857142857142857</Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s161"><Data ss:Type="String">Component/Bureau</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Moderate</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Low</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Not Categorized</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s155"><Data ss:Type="String">Sub-total</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s156" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s157" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s158" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s159" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s161"><Data ss:Type="String">Component/Bureau</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Moderate</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Low</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Not Categorized</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s155"><Data ss:Type="String">Sub-total</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s156" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s157" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s158" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s159" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s161"><Data ss:Type="String">Component/Bureau</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Moderate</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Low</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Not Categorized</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s155"><Data ss:Type="String">Sub-total</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s156" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s157" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s158" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s159" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s161"><Data ss:Type="String">Component/Bureau</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Moderate</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Low</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s147"><Data ss:Type="String">Not Categorized</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s148"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s149"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s151"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s153"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s155"><Data ss:Type="String">Sub-total</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s156" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s157" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s158" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s159" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
-      ss:Type="String"></Data><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s162"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
+   <?php foreach ($this->stats as $bureau): ?>
+       <Row ss:AutoFitHeight="0">
+        <Cell ss:StyleID="s137"><Data ss:Type="String"><?php echo $bureau['name']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s138"><Data ss:Type="String">High</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s139"><Data ss:Type="Number"><?php echo $bureau['security']['HIGH']['AGENCY']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s140"><Data ss:Type="Number"><?php echo $bureau['security']['HIGH']['CONTRACTOR']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s141" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">6</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s142"><Data ss:Type="Number"><?php echo $bureau['security']['HIGH']['TOTAL_CERTIFIED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s143" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
+          ss:Type="Number">1.5</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s144"><Data ss:Type="Number"><?php echo $bureau['security']['HIGH']['TOTAL_SELF_ASSESSMENT']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s143" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">2.1666666666666665</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s144"><Data ss:Type="Number"><?php echo $bureau['security']['HIGH']['TOTAL_CONTINGENCY_PLAN_TESTED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s145" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">2.8333333333333335</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
+       </Row>
+       <Row ss:AutoFitHeight="0">
+        <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s147"><Data ss:Type="String">Moderate</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s148"><Data ss:Type="Number"><?php echo $bureau['security']['MODERATE']['AGENCY']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s149"><Data ss:Type="Number"><?php echo $bureau['security']['MODERATE']['CONTRACTOR']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">8</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s151"><Data ss:Type="Number"><?php echo $bureau['security']['MODERATE']['TOTAL_CERTIFIED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
+          ss:Type="Number">1.25</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s153"><Data ss:Type="Number"><?php echo $bureau['security']['MODERATE']['TOTAL_SELF_ASSESSMENT']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">1.75</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s153"><Data ss:Type="Number"><?php echo $bureau['security']['MODERATE']['TOTAL_CONTINGENCY_PLAN_TESTED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">2.25</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
+       </Row>
+       <Row ss:AutoFitHeight="0">
+        <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s147"><Data ss:Type="String">Low</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s148"><Data ss:Type="Number"><?php echo $bureau['security']['LOW']['AGENCY']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s149"><Data ss:Type="Number"><?php echo $bureau['security']['LOW']['CONTRACTOR']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">10</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s151"><Data ss:Type="Number"><?php echo $bureau['security']['LOW']['TOTAL_CERTIFIED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
+          ss:Type="Number">1.1000000000000001</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s153"><Data ss:Type="Number"><?php echo $bureau['security']['LOW']['TOTAL_SELF_ASSESSMENT']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">1.5</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s153"><Data ss:Type="Number"><?php echo $bureau['security']['LOW']['TOTAL_CONTINGENCY_PLAN_TESTED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">1.9</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
+       </Row>
+       <Row ss:AutoFitHeight="0">
+        <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s147"><Data ss:Type="String">Not Categorized</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s148"><Data ss:Type="Number"><?php echo $bureau['security']['NC']['AGENCY']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s149"><Data ss:Type="Number"><?php echo $bureau['security']['NC']['CONTRACTOR']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s150" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">12</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s151"><Data ss:Type="Number"><?php echo $bureau['security']['NC']['TOTAL_CERTIFIED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
+          ss:Type="Number">1</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s153"><Data ss:Type="Number"><?php echo $bureau['security']['NC']['TOTAL_SELF_ASSESSMENT']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">1.3333333333333333</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s153"><Data ss:Type="Number"><?php echo $bureau['security']['NC']['TOTAL_CONTINGENCY_PLAN_TESTED']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">1.6666666666666667</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
+       </Row>
+       <Row ss:AutoFitHeight="0">
+        <Cell ss:StyleID="s146"><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s155"><Data ss:Type="String">Sub-total</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s156" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">10</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s157" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">26</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s158" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">36</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s159" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">42</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
+          ss:Type="Number">1.1666666666666667</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">58</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s152" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">1.6111111111111112</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s160" ss:Formula="=SUM(R[-4]C:R[-1]C)"><Data ss:Type="Number">74</Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s154" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
+          ss:Type="Number">2.0555555555555554</Data><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s130"><NamedCell ss:Name="Print_Area"/></Cell>
+       </Row>
+   <?php endforeach; ?>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s163"><Data ss:Type="String">Agency Totals</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s164"><Data ss:Type="String">High</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
+    <?php 
+        // Create formulas so that the agency totals can be calculated by Excel. A reference needs to be created
+        // for each bureau.
+        $references = array();
+        $offset = -5;
+        foreach ($this->stats as $bureau) {
+            $references[] = "R[$offset]C";
+            $offset -= 5;
+        }
+        $formula = '=' . implode('+', $references);
+    ?>
     <Cell ss:StyleID="s165"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">22</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s166"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">30</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s167" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">52</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s168"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">38</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s169" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
       ss:Type="Number">0.73076923076923073</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s166"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">46</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s169" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">0.88461538461538458</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s166"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">54</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s170" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">1.0384615384615385</Data><NamedCell ss:Name="Print_Area"/></Cell>
@@ -3296,25 +2779,25 @@
     <Cell ss:StyleID="s172"><Data ss:Type="String">Moderate</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s156"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">24</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">32</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s174" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">56</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s159"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">40</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s175" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
       ss:Type="Number">0.7142857142857143</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">48</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s175" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">0.8571428571428571</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">56</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s176" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">1</Data><NamedCell ss:Name="Print_Area"/></Cell>
@@ -3325,25 +2808,25 @@
     <Cell ss:StyleID="s172"><Data ss:Type="String">Low</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s156"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">26</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">34</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s174" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">60</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s159"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">42</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s175" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
       ss:Type="Number">0.7</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">50</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s175" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">0.83333333333333337</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">58</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s176" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">0.96666666666666667</Data><NamedCell ss:Name="Print_Area"/></Cell>
@@ -3354,25 +2837,25 @@
     <Cell ss:StyleID="s172"><Data ss:Type="String">Not Categorized</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s156"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">28</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">36</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s174" ss:Formula="=RC[-2]+RC[-1]"><Data ss:Type="Number">64</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s159"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">44</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s175" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC[-2])"><Data
       ss:Type="Number">0.6875</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">52</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s175" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">0.8125</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s173"
-     ss:Formula="=R[-30]C+R[-25]C+R[-20]C+R[-15]C+R[-10]C+R[-5]C"><Data
+     ss:Formula="<?php echo $formula; ?>"><Data
       ss:Type="Number">60</Data><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s176" ss:Formula="=IF(RC5=0,&quot;&quot;,RC[-1]/RC5)"><Data
       ss:Type="Number">0.9375</Data><NamedCell ss:Name="Print_Area"/></Cell>
@@ -3591,7 +3074,7 @@
    <Row ss:AutoFitHeight="0" ss:Height="18" ss:StyleID="s66">
     <Cell ss:StyleID="s74"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Titles"/><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="3" ss:StyleID="s199"><Data ss:Type="String">{agencyName}</Data><NamedCell
+    <Cell ss:MergeAcross="3" ss:StyleID="s199"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
       ss:Name="Print_Titles"/><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s200"><NamedCell ss:Name="Print_Titles"/><NamedCell
       ss:Name="Print_Area"/></Cell>
@@ -3607,8 +3090,7 @@
     <Cell ss:StyleID="s216"><NamedCell ss:Name="Print_Area"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="54" ss:StyleID="s217">
-    <Cell ss:Index="2" ss:MergeAcross="3" ss:StyleID="m81571940"><Data
-      ss:Type="String">{systemCategorizationDescription}</Data><NamedCell
+    <Cell ss:Index="2" ss:MergeAcross="3" ss:StyleID="m81571940"><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s225"><NamedCell ss:Name="Print_Area"/></Cell>
    </Row>
@@ -3651,254 +3133,28 @@
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><Data ss:Type="String">{bureau1}</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><Data ss:Type="String">{system1}</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><Data ss:Type="String">123-45-67-89-10-1234-56</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><Data ss:Type="String">{bureau2}</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><Data ss:Type="String">{system2}</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><Data ss:Type="String">High</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><Data ss:Type="String">223-45-67-89-10-1234-56</Data><NamedCell
-      ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
-    <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s239"><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
-   </Row>
+   <?php 
+       $nonCaSystemsCount = 0;
+       foreach ($this->stats as $bureau): 
+           foreach ($bureau['systems'] as $system):
+               $nonCaSystemsCount++;
+   ?>
+       <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
+        <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s238"><Data ss:Type="String"><?php echo $bureau['name']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s238"><Data ss:Type="String"><?php echo $system['name']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s239"><Data ss:Type="String"><?php echo $system['fipsCategory']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s239"><Data ss:Type="String"><?php echo $system['uniqueProjectId']; ?></Data><NamedCell
+          ss:Name="Print_Area"/></Cell>
+        <Cell ss:StyleID="s237"><NamedCell ss:Name="Print_Area"/></Cell>
+       </Row>
+   <?php 
+           endforeach;
+       endforeach; 
+   ?>
    <Row ss:AutoFitHeight="0" ss:StyleID="s240">
     <Cell ss:StyleID="s241"><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s242"><NamedCell ss:Name="Print_Area"/></Cell>
@@ -3911,7 +3167,7 @@
     <Cell ss:StyleID="s104"><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s244"><Data ss:Type="String">Total Number of Systems without a C&amp;A:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:StyleID="s238"><Data ss:Type="String">{totalNonCaSystems}</Data><NamedCell
+    <Cell ss:StyleID="s238"><Data ss:Type="String"><?php echo $nonCaSystemsCount; ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s187"><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s188"><NamedCell ss:Name="Print_Area"/></Cell>
@@ -4053,7 +3309,7 @@
     <Cell ss:MergeAcross="1" ss:StyleID="s255"
      ss:Formula="='Section B -CIO  #1-2'!RC"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="1" ss:StyleID="m81573672"><Data ss:Type="String">{agencyName}</Data><NamedCell
+    <Cell ss:MergeAcross="1" ss:StyleID="m81573672"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s252"/>
     <Cell ss:StyleID="s252"/>
@@ -4341,7 +3597,7 @@
     <Cell ss:MergeAcross="1" ss:StyleID="s255"
      ss:Formula="='Section B -CIO  #1-2'!RC"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="6" ss:StyleID="m81995336"><Data ss:Type="String">{agencyName}</Data><NamedCell
+    <Cell ss:MergeAcross="6" ss:StyleID="m81995336"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="18" ss:StyleID="s327">
@@ -4773,7 +4029,7 @@
     <Cell ss:MergeAcross="1" ss:StyleID="s398"
      ss:Formula="='Section B -CIO  #1-2'!RC"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="1" ss:StyleID="m81993768"><NamedCell ss:Name="Print_Area"/></Cell>
+    <Cell ss:MergeAcross="1" ss:StyleID="m81993768"><NamedCell ss:Name="Print_Area"/><Data ss:Type="String"><?php echo $this->agencyName; ?></Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="18">
     <Cell ss:MergeAcross="3" ss:StyleID="m81993788"><Data ss:Type="String">Question 8:  Incident Reporting</Data><NamedCell

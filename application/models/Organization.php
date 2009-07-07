@@ -322,6 +322,10 @@ class Organization extends BaseOrganization
      * Only applies to bureaus. Other organization types cannot use this method since there is no business logic to
      * follow.
      *
+     * This calculates data for both the quarterly and annual reports. I think this is a simpler design than having
+     * separate methods for each report since most of the data is the same; but it is less efficient because some data
+     * will be generated and thrown away.
+     *
      * @todo refactor... this turned into a huge method really quickly, but no time to fix it now
      * 
      * @return array
@@ -358,6 +362,8 @@ class Organization extends BaseOrganization
                               'SORN_PUBLISHED' => $privacyCategories,
                               'SORN_URL' => array());
                               
+        $systems = array();
+                              
         $today = new Zend_Date();
                        
         // Calculate the inventory statistics, such as agency/contractor, C&A, etc.
@@ -370,6 +376,16 @@ class Organization extends BaseOrganization
             
             $system = $child->System;
             $fipsCategory = empty($system->fipsCategory) ? 'NC' : $system->fipsCategory;
+            
+            // Create the systems matrix for section 2.e. of the annual report. This only includes systems that have not
+            // been C&A'ed.
+            if (empty($system->securityAuthorizationDt)) {
+                $systems[] = array(
+                    'name' => $child->name,
+                    'fipsCategory' => $fipsCategory,
+                    'uniqueProjectId' => $system->uniqueProjectId
+                );
+            }
             
             // Controlled by the agency or a contractor?
             if (!empty($system->controlledBy)) {
@@ -482,6 +498,7 @@ class Organization extends BaseOrganization
         // Now assemble all statistics
         $stats = array();
         $stats['name'] = $this->name;
+        $stats['systems'] = $systems;
         $stats['security'] = $securityStats;
         $stats['privacy'] = $privacyStats;
 

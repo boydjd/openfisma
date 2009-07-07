@@ -185,6 +185,21 @@ class ReportController extends SecurityController
     public function fismaAnnualAction()
     {
         Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
+
+        // Agency Name
+        $agency = Organization::getAgency();
+        $this->view->agencyName = $agency->name;
+        
+        // Submission Date
+        $this->view->submissionDate = date('Y-m-d');
+        
+        // Bureau Statistics
+        $bureaus = Organization::getBureaus();
+        $stats = array();
+        foreach ($bureaus as $bureau) {
+            $stats[] = $bureau->getFismaStatistics();
+        }
+        $this->view->stats = $stats;
     }
     
     /**
