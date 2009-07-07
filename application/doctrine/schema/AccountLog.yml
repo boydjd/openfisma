@@ -12,6 +12,11 @@ AccountLog:
             type: string(15)
             notnull: true
             comment: The IP address where this event originated from
+        event:
+            type: enum
+            values: [create user, modify user, delete user, lock user, unlock user, login failure, login, logout, accept rob, change password, validate email]
+            notnull: true
+            comment: The account log event type
         message:
             type: string
             comment: A description of the event

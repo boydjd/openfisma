@@ -58,7 +58,21 @@ class User extends BaseUser
      * Account was locked due to an expired password
      */
     const LOCK_TYPE_EXPIRED = 'expired';
-    
+
+    /** 
+     * Account logs event type
+     */
+    const CREATE_USER = 'create user';
+    const MODIFY_USER = 'modify user';
+    const DELETE_USER = 'delete user';
+    const LOCK_USER   = 'lock user';
+    const UNLOCK_USER   = 'unlock user';
+    const LOGIN_FAILURE = 'login failure';
+    const LOGIN         = 'login';
+    const LOGOUT        = 'logout';
+    const ACCEPT_ROB    = 'accept rob';
+    const CHANGE_PASSWORD = 'change password';
+    const VALIDTAE_EMAIL  = 'validate email';
     /**
      * Returns an object which represents the current, authenticated user
      * If the $user is current User, then return this object instead of create a new one.
@@ -115,7 +129,7 @@ class User extends BaseUser
         $this->lockType = $lockType;
         $this->save();
         /** @todo english */
-        $this->log("Account unlocked by $lockType");
+        $this->log(self::LOCK_USER, "Account unlocked by $lockType");
         Notification::notify(Notification::USER_LOCKED, $this, self::currentUser());
     }
     
@@ -130,7 +144,7 @@ class User extends BaseUser
         $this->failureCount = 0;
         $this->save();
         /** @todo english */
-        $this->log("Account unlocked");
+        $this->log(self::UNLOCK_USER, "Account unlocked");
 
     }
 
@@ -268,10 +282,10 @@ class User extends BaseUser
             $emailValidation->delete();
             $this->save();
             //@todo english,aslo see the follow
-            $this->log('Email validate successfully');
+            $this->log(self::VALIDATE_EMAIL, 'Email validate successfully');
             return true;
         } else {
-            $this->log('Email validate faild');
+            $this->log(self::VALIDTAE_EMAIL, 'Email validate faild');
             return false;
         }
     }
@@ -297,7 +311,7 @@ class User extends BaseUser
             $this->oldFailureCount = $this->failureCount;
             $this->failureCount = 0;
             //@todo english, also see the follow
-            $this->log("Login successfully");
+            $this->log(self::LOGIN, "Login successfully");
             Notification::notify(Notification::USER_LOGIN_SUCCESS, $this, self::currentUser());
             $loginRet = true;
         } else {
@@ -305,7 +319,7 @@ class User extends BaseUser
             if ($this->failureCount > Configuration::getConfig('failure_threshold')) {
                 $this->lockAccount(User::LOCK_TYPE_PASSWORD);
             }
-            $this->log("Login failure");
+            $this->log(self::LOGIN_FAILURE, "Login failure");
             Notification::notify(Notification::USER_LOGIN_FAILURE, $this, self::currentUser());
         }
         $this->save();
@@ -321,23 +335,29 @@ class User extends BaseUser
             throw new Fisma_Exception("Logout is not allowed in command line mode");
         }
         
-        $this->log('Log out');
+        $this->log(self::LOGOUT, 'Log out');
         Zend_Auth::getInstance()->clearIdentity();
     }
 
     /** 
      * Log any creation, modification, disabling and termination of account.
      *
+     * @param string $event log event type
      * @param string $message log message
      */
-    public function log($message)
+    public function log($event, $message)
     {
         $accountLog = new AccountLog();
+        if (!in_array($event, $accountLog->getTable()->getEnumValues('event'))) {
+            /** @todo english */
+            throw new Fisma_Exception("Invalid account log event type");
+        }
         $accountLog->ip = $_SERVER["REMOTE_ADDR"];
+        $accountLog->event   = $event;
         $accountLog->message = $message;
         // Assigning the ID instead of the user object prevents doctrine from calling the preSave hook on the 
         // User object
-        $accountLog->userId = $this->id;
+        $accountLog->userId = self::currentUser()->id;
         $accountLog->save();
     }
 

@@ -30,7 +30,6 @@
  */
 class UserListener extends Doctrine_Record_Listener
 {
-
     public function preSave(Doctrine_Event $event)
     {
         $user = $event->getInvoker();
@@ -58,12 +57,12 @@ class UserListener extends Doctrine_Record_Listener
                 }
                 $user->passwordHistory = ':' . $user->password . $pwdHistory;
 
-                $user->log("Password changed");
+                $user->log(User::CHANGE_PASSWORD, "Password changed");
             }
         }
         
         if (isset($modified['lastRob'])) {
-            $user->log("Accepted Rules of Behavior");
+            $user->log(User::ACCEPT_ROB, "Accepted Rules of Behavior");
         }
     }
 
@@ -72,6 +71,7 @@ class UserListener extends Doctrine_Record_Listener
         
         $user->passwordTs = Fisma::now();
         $user->hashType = Configuration::getConfig('hash_type');
+        $user->log(User::CREATE_USER, "create user: $user->nameFirst $user->nameLast");
     }
 
     /**
@@ -100,5 +100,11 @@ class UserListener extends Doctrine_Record_Listener
             $mail = new Fisma_Mail();
             $mail->sendPassword($user);
         }
+    }
+
+    public function preDelete(Doctrine_Event $event)
+    {
+        $user    = $event->getInvoker();
+        $user->log(User::DELETE_USER, "delete user: $user->nameFirst $user->nameLast");
     }
 }
