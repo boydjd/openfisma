@@ -37,7 +37,7 @@ class UserListener extends Doctrine_Record_Listener
         $modified = $user->getModified();
 
         if ($user == User::currentUser($user)) {
-            if ($modified['email'] || $modified['notifyEmail']) {
+            if (isset($modified['email']) && isset($modified['notifyEmail'])) {
                 $user->emailValidate = false;
                 $emailValidation  = new EmailValidation();
                 $emailValidation->email          = $modified['email'] ? $modified['email'] : $modified['notifyEmail'];
@@ -46,7 +46,7 @@ class UserListener extends Doctrine_Record_Listener
                 $user->EmailValidation[]         = $emailValidation;
             }
 
-            if (!empty($modified['password'])) {
+            if (isset($modified['password']) && $modified['password']) {
                 $user->generateSalt();
                 $user->password        = $user->hash($modified['password']);
                 $user->passwordTs      = Fisma::now();
@@ -95,7 +95,7 @@ class UserListener extends Doctrine_Record_Listener
     {
         $user     = $event->getInvoker();
         $modified = $user->getModified($old=true, $last=true);
-        if ($modified['password']) {
+        if (isset($modified['password']) && $modified['password']) {
             $user->password = $modified['password'];
             $mail = new Fisma_Mail();
             $mail->sendPassword($user);
