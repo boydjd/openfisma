@@ -35,28 +35,28 @@ class UserListener extends Doctrine_Record_Listener
         $user = $event->getInvoker();
         
         $modified = $user->getModified();
-
-        if ($user == User::currentUser($user)) {
-            if (isset($modified['email']) && isset($modified['notifyEmail'])) {
-                $user->emailValidate = false;
-                $emailValidation  = new EmailValidation();
-                $emailValidation->email          = $modified['email'] ? $modified['email'] : $modified['notifyEmail'];
-                $emailValidation->validationCode = md5(rand());
-                $emailValidation->User           = $user;
-                $user->EmailValidation[]         = $emailValidation;
+        
+        if (isset($modified['email']) && isset($modified['notifyEmail'])) {
+            $user->emailValidate = false;
+            $emailValidation  = new EmailValidation();
+            $emailValidation->email          = $modified['email'] ? $modified['email'] : $modified['notifyEmail'];
+            $emailValidation->validationCode = md5(rand());
+            $emailValidation->User           = $user;
+            $user->EmailValidation[]         = $emailValidation;
+        }
+        
+        if (isset($modified['password']) && $modified['password']) {
+            $user->generateSalt();
+            $user->password        = $user->hash($modified['password']);
+            $user->passwordTs      = Fisma::now();
+            // Generate user's password history
+            $pwdHistory = $user->passwordHistory;
+            if (3 == substr_count($pwdHistory, ':')) {
+                $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
             }
-
-            if (isset($modified['password']) && $modified['password']) {
-                $user->generateSalt();
-                $user->password        = $user->hash($modified['password']);
-                $user->passwordTs      = Fisma::now();
-                // Generate user's password history
-                $pwdHistory = $user->passwordHistory;
-                if (3 == substr_count($pwdHistory, ':')) {
-                    $pwdHistory = substr($pwdHistory, 0, -strlen(strrchr($pwdHistory, ':')));
-                }
-                $user->passwordHistory = ':' . $user->password . $pwdHistory;
-
+            $user->passwordHistory = ':' . $user->password . $pwdHistory;
+            // if the user only changed the password, then we think this is a change pwd event
+            if ($user == User::currentUser($user) && count($modified) == 1) {
                 $user->log(User::CHANGE_PASSWORD, "Password changed");
             }
         }
