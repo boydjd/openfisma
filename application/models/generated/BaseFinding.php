@@ -71,6 +71,7 @@ abstract class BaseFinding extends Doctrine_Record
         $this->hasColumn('resourcesRequired', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'Any additional resources (financial) required to complete this course of action'));
         $this->hasColumn('expectedCompletionDate', 'date', null, array('type' => 'date', 'comment' => 'The date when the course of action or business case is planned to be completed'));
         $this->hasColumn('currentEcd', 'date', null, array('type' => 'date', 'comment' => ''));
+        $this->hasColumn('actualCompletionDate', 'date', null, array('type' => 'date', 'comment' => ''));
         $this->hasColumn('ecdLocked', 'boolean', null, array('type' => 'boolean', 'comment' => 'If false, then no user is allowed to modify the ECD.'));
         $this->hasColumn('threat', 'string', null, array('type' => 'string', 'extra' => array('purify' => 'html'), 'comment' => 'Description of the threat source which affects this finding'));
         $this->hasColumn('threatLevel', 'enum', null, array('type' => 'enum', 'values' => array(0 => 'LOW', 1 => 'MODERATE', 2 => 'HIGH'), 'comment' => 'A subjective assessment of the probability and impact of exploiting this finding'));

@@ -61,6 +61,8 @@ Finding:
             comment: The date when the course of action or business case is planned to be completed
         currentEcd:
             type: date
+        actualCompletionDate:
+            type: date
         ecdLocked:
             type: boolean
             comment: If false, then no user is allowed to modify the ECD.

@@ -121,6 +121,7 @@ class FindingListener extends Doctrine_Record_Listener
                         }
                         if ('EA' == $newValue) {
                             $type = Notification::EVIDENCE_UPLOAD;
+                            $finding->actualCompletionDate = date('Y-m-d');
                         }
                         if ('EA' == $value && 'EN' == $newValue) {
                             $type = Notification::EVIDENCE_DENIED;
