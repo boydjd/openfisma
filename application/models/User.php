@@ -287,7 +287,7 @@ class User extends BaseUser
             $this->failureCount = 0;
             //@todo english, also see the follow
             $this->log(self::LOGIN, "Login successfully");
-            Notification::notify(Notification::USER_LOGIN_SUCCESS, $this, self::currentUser());
+            Notification::notify(Notification::USER_LOGIN_SUCCESS, $this, $this);
             $loginRet = true;
         } else {
             $this->failureCount++;
@@ -295,7 +295,7 @@ class User extends BaseUser
                 $this->lockAccount(User::LOCK_TYPE_PASSWORD);
             }
             $this->log(self::LOGIN_FAILURE, "Login failure");
-            Notification::notify(Notification::USER_LOGIN_FAILURE, $this, self::currentUser());
+            Notification::notify(Notification::USER_LOGIN_FAILURE, $this, $this);
         }
         $this->save();
         return $loginRet;
@@ -331,7 +331,9 @@ class User extends BaseUser
         $accountLog->message = $message;
         // Assigning the ID instead of the user object prevents doctrine from calling the preSave hook on the 
         // User object
-        $accountLog->userId = self::currentUser()->id;
+        $operator = self::currentUser()->id;
+        $operator = $operator ? $operator : $this->id; //If the currentUser has not been set yet during login
+        $accountLog->userId = $operator;
         $accountLog->save();
     }
 
