@@ -92,6 +92,7 @@ class FindingListener extends Doctrine_Record_Listener
     {
         $finding = $event->getInvoker();
         $modifyValues = $finding->getModified(true);
+        
         if (!empty($modifyValues)) {
             foreach ($modifyValues as $key=>$value) {
                 $newValue = $finding->$key;
@@ -127,6 +128,9 @@ class FindingListener extends Doctrine_Record_Listener
                         if ('EA' == $value && 'CLOSED' == $newValue) {
                             $type = Notification::FINDING_CLOSED;
                         }
+                        if ('EN' == $newValue) {
+                            $finding->expectedCompletionDate = $finding->currentEcd;
+                        }
                         break;
                     case 'currentEvaluationId':
                         $evaluation = Doctrine::getTable('Evaluation')->find($value);
@@ -145,6 +149,12 @@ class FindingListener extends Doctrine_Record_Listener
                             if ('1' == $evaluation->precedence) {
                                 $type = Notification::EVIDENCE_APPROVED_2ND;
                             }
+                        }
+                        break;
+                    case 'expectedCompletionDate':
+                        if ('DRAFT' == $finding->status) {
+                            $finding->currentEcd = $finding->expectedCompletionDate;
+                            $finding->expectedCompletionDate = null;
                         }
                         break;
                     default:
