@@ -38,7 +38,7 @@
             echo '<input type="hidden" name="comment" value="" />';
             echo '<input type="hidden" name="decision" value="APPROVED" />';
             echo '<input name="submit_ea" type="submit" value="APPROVED"
-                onclick="return form_confirm(document.finding_detail, \'approve ' . $evaluation->name . '\');"/>&nbsp;';
+                onclick="return form_confirm(document.finding_detail, \'approve ' . $activeEvaluation->name . '\');"/>&nbsp;';
             echo '<input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />';
         } else {
             echo "EXCLUDED";

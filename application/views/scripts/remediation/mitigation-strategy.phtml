@@ -173,7 +173,7 @@ if ($finding->status != 'NEW'
             echo '<input type="hidden" name="comment" value="" />';
             echo '<input type="hidden" name="decision" value="APPROVED" />';
             echo '<input name="submit_msa" type="submit" value="APPROVED"
-                onclick="return form_confirm(document.finding_detail, \'approve ' . $evaluation->name . '\');"/>&nbsp;';
+                onclick="return form_confirm(document.finding_detail, \'approve ' . $activeEvaluation->name . '\');"/>&nbsp;';
             echo '<input type="button" value="DENIED" onclick="ms_comment(document.finding_detail);" />';
         } else {
             echo "EXCLUDED";
