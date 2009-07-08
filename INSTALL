@@ -2,6 +2,14 @@
     OpenFISMA INSTALLATION INSTRUCTIONS
 ============================================================================
 
+This quickstart guide is intended to help you set up your own instance of 
+OpenFISMA. The guide assumes that you are familiar with basic server concepts 
+such as installing packages and setting permissions.
+
+Note: This guide does not cover any security best-practices recommended when 
+setting up OpenFISMA. If you are setting up a production server, please 
+contact us for recommendations on setting up a secure site.
+
 1.0 Software Pre-Requisites
 ----------------------------------------------------------------------------
 You must have the following software installed before proceeding with
@@ -11,6 +19,9 @@ the installation of OpenFISMA.
 * PHP 5.2.0 or greator
 * MySQL 5 or greator
 * MySQL module for php5
+
+You will need to install these dependencies before installing OpenFISMA. 
+Installing these programs is beyond the scope of this quick start guide.
 
 2.0 OpenFISMA Setup
 ----------------------------------------------------------------------------
@@ -31,6 +42,7 @@ You should now have a directory structure which looks like the following
   > public      - public folder or document root for webserver
   > library     - third party modules used by OpenFISMA
   > data        - holds log files and other data created by OpenFISMA
+  > scripts		- holds command line tools related to OpenFISMA
 
 Next you will need to tell Apache where the public directory of OpenFISMA
 resides. Apache configuration is different on almost all flavors of unix
@@ -39,7 +51,7 @@ get you up and running. You will need to customize the server name to
 the appropriate name and validate that the path for the error logs is 
 correct. 
 
-# Virtual Host for serving SSL access to OpenFISMA
+# Virtual Host for serving access to OpenFISMA
 NameVirtualHost *:80
 
 <VirtualHost *:80>
@@ -93,28 +105,20 @@ NameVirtualHost *:80
     
 </VirtualHost>
   
-
 The following files and directories need to be writeable for the 
 installation script to run. 
 
-    /application/config/install.conf
-    /public/evidence
-    /public/temp
+    /application/config/app.conf
     /data
 
 To accomplish this we will run the following commands.
 
-   $ chmod 777 /opt/openfisma/application/config/install.conf
-   $ chmod 777 /opt/openfisma/public/evidence
-   $ chmod 777 /opt/openfisma/public/temp
+   $ chmod 777 /opt/openfisma/application/config/app.conf
    $ chmod 777 -R /opt/openfisma/data
   
 If all has gone well, you will be able to run the installation script
 from your browser at http://<server_name>/. Follow the wizard through
-the installation steps. During the installation the wizard creates
-the /opt/openfisma/apps/config/install.conf file. If the install.conf
-contents are deleted, the wizard will run through the installation process
-again.  
+the installation steps.
 
 Once the wizard has completed you may log in with the username
 "root" and password "0p3nfism@", please note the 0 is a zero. This
@@ -122,27 +126,12 @@ password should be changed immediately after logging in.
 
 2.1 Email Notification Setting
 ----------------------------------------------------------------------------
-
 To enable the capability of automated email notification, it's necessary to 
-create a cronjob to the cronjob/FismaNotify.php. For example:
-# run the bell every 5 minutes
-5 0 * * *  /where/openfisma/installed/cronjob/FismaNotify.php >> /tmp/out 2>&1
+create a cronjob to the /scripts/cronjobs/FismaNotify.php and ECDNotifier.php. 
 
-or the cronjob should be 
-5 0 * * *  php /where/cronjob/FismaNotify.php >> /tmp/out 2>&1
-
-Note: the frequency of the cronjob determind the possible shortest interval 
-between every consequent notifying action. It's not effective if any user 
-set the customized notification interval shorter than it.
-
-3.0 Security Hardening
-----------------------------------------------------------------------------
-
-After the installation you will want to remove the ability to run the
-installation wizard and protect the install.conf file. This can be done
-by deleting the InstallController.php file and changing the permissions
-for the install.conf file.
-
-  $ rm /opt/openfisma/apps/controller/InstallController.php
-  $ chmod 755 /opt/openfisma/apps/config/install.conf
+For example:
+# Enable OpenFISMA Email alerts and run the script every 5 minutes
+* * * * *  /opt/openfisma/scripts/cronjobs/FismaNotify.php >> /tmp/out 2>&1
+# Enable OpenFISMA Overdue alerts and run the script every 5 minutes
+* * * * *  /opt/openfisma/scripts/cronjobs/ECDNotifier.php >> /tmp/out 2>&1
   
