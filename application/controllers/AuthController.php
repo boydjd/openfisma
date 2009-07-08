@@ -84,7 +84,7 @@ class AuthController extends MessageController
                 // Handle LDAP authentication 
                 $config = new LdapConfig();
                 $data = $config->getLdaps();
-                $authAdapter = new Zend_Auth_Adapter_Ldap($data, $username, $password);
+                $authAdapter = new Fisma_Auth_Adapter_Ldap($data, $user, $password);
             } else if ($authType == 'database') {
                 // Handle database authentication 
                 $authAdapter = new Fisma_Auth_Adapter_Doctrine($user);
@@ -96,7 +96,11 @@ class AuthController extends MessageController
             $authResult = $auth->authenticate($authAdapter); 
             
             if (!$authResult->isValid()) {
+                $user->log(User::LOGIN_FAILURE, "Login failure");
                 throw new Zend_Auth_Exception("Incorrect username or password");
+            } else {
+                //@todo english, also see the follow
+                $user->log(User::LOGIN, "Login successfully");
             }
             
             // Set cookie for 'column manager' to control the columns visible on the search page

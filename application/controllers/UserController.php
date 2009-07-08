@@ -73,11 +73,13 @@ class UserController extends BaseController
                 ->from('Organization o');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
-        $orgs = $form->getElement('organizations');
-        foreach ($organizationTree as $organization) {
-            $orgs->addCheckbox($organization['id'], 
-                                         $organization['name'],
-                                         $organization['level']);
+        if ($organizationTree) {
+            $orgs = $form->getElement('organizations');
+            foreach ($organizationTree as $organization) {
+                $orgs->addCheckbox($organization['id'], 
+                                             $organization['name'],
+                                             $organization['level']);
+            }
         }
         if (Configuration::getConfig('auth_type') == 'database') {
             $form->removeElement('checkAccount');

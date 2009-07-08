@@ -285,8 +285,6 @@ class User extends BaseUser
             $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
             $this->oldFailureCount = $this->failureCount;
             $this->failureCount = 0;
-            //@todo english, also see the follow
-            $this->log(self::LOGIN, "Login successfully");
             Notification::notify(Notification::USER_LOGIN_SUCCESS, $this, $this);
             $loginRet = true;
         } else {
@@ -294,7 +292,6 @@ class User extends BaseUser
             if ($this->failureCount > Configuration::getConfig('failure_threshold')) {
                 $this->lockAccount(User::LOCK_TYPE_PASSWORD);
             }
-            $this->log(self::LOGIN_FAILURE, "Login failure");
             Notification::notify(Notification::USER_LOGIN_FAILURE, $this, $this);
         }
         $this->save();
