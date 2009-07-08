@@ -170,7 +170,6 @@ class AssetController extends BaseController
             $params['version'] = $req->get('version');
             $params['ip'] = $req->get('ip');
             $params['port'] = $req->get('port');
-            $params['p'] = $req->get('p');
         }
         return $params;
     }
