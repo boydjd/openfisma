@@ -1,6 +1,6 @@
 Source:
-    automatedScanner:
-        name: Automated Scanner
+    appDetectiveDatabaseScan:
+        name: AppDetective Database Scan
         nickname: SCAN
         description: <p>The following scanners are used by the organization:</p><ul><li>App Detective Pro</li></p>
     continuousMonitoring:
