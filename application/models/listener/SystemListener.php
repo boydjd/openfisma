@@ -70,9 +70,15 @@ Class SystemListener extends Doctrine_Record_Listener
         $org->nickname = $system->nickname;
         $org->description = $system->description;
         $org->orgType = 'system';
-        $org->getNode()->insertAsLastChildOf($org->getTable()->find($system->organizationId));
     }
 
+    public function postInsert(Doctrine_Event $event)
+    {
+        $system = $event->getInvoker();
+        $org = $system->Organization[0];
+        $org->getNode()->insertAsLastChildOf($org->getTable()->find($system->organizationId));
+    }
+    
     /**
      * Delete the Organization which is related with the system.
      *
