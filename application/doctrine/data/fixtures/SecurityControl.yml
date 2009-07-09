@@ -8,7 +8,7 @@ SecurityControl:
         guidance: The access control policy and procedures are consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance. The access control policy can be included as part of the general information security policy for the organization. Access control procedures can be developed for the security program in general, and for a particular information system, when required. NIST Special Publication 800-12 provides guidance on security policies and procedures.
         controlLevel: LOW
         enhancements: None
-        supplement: None None
+        supplement: None
 
     AC-02:
         code: AC-02
@@ -16,10 +16,10 @@ SecurityControl:
         subclass: Account Management 
         family: Access Control
         control: The organization manages information system accounts, including establishing, activating, modifying, reviewing, disabling, and removing accounts. The organization reviews information system accounts [Assignment: organization-defined frequency, at least annually].
-        guidance: Account management includes the identification of account types (i.e., individual, group, and system), establishment of conditions for group membership, and assignment of associated authorizations. The organization identifies authorized  of the information system and specifies access rights/privileges. The organization grants access to the information system based on: (i) a valid need-to-know/need-to-share that is determined by assigned official duties and satisfying all personnel security criteria; and (ii) intended system usage. The organization requires proper identification for requests to establish information system accounts and approves all such requests. The organization specifically authorizes and monitors the use of guest/anonymous accounts and removes, disables, or otherwise secures unnecessary accounts. Account managers are notified when information system users are terminated or transferred and associated accounts are removed, disabled, or otherwise secured. Account managers are also notified when users\' information system usage or need-to-know/need-to-share changes.
+        guidance: Account management includes the identification of account types (i.e., individual, group, and system), establishment of conditions for group membership, and assignment of associated authorizations. The organization identifies authorized  of the information system and specifies access rights/privileges. The organization grants access to the information system based on: (i) a valid need-to-know/need-to-share that is determined by assigned official duties and satisfying all personnel security criteria; and (ii) intended system usage. The organization requires proper identification for requests to establish information system accounts and approves all such requests. The organization specifically authorizes and monitors the use of guest/anonymous accounts and removes, disables, or otherwise secures unnecessary accounts. Account managers are notified when information system users are terminated or transferred and associated accounts are removed, disabled, or otherwise secured. Account managers are also notified when users' information system usage or need-to-know/need-to-share changes.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to support the management of information system accounts.\n(2)\nThe information system automatically terminates temporary and emergency accounts after [Assignment: organization-defined time period for each type of account].\n(3)\nThe information system automatically disables inactive accounts after [Assignment: organization-defined time period].\n(4)\nThe organization employs automated mechanisms to audit account creation, modification, disabling, and termination actions and to notify, as required, appropriate individuals.','Medium: (1) (2) (3) (4)High: (1) (2) (3) (4)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to support the management of information system accounts.\n(2)\nThe information system automatically terminates temporary and emergency accounts after [Assignment: organization-defined time period for each type of account].\n(3)\nThe information system automatically disables inactive accounts after [Assignment: organization-defined time period].\n(4)\nThe organization employs automated mechanisms to audit account creation, modification, disabling, and termination actions and to notify, as required, appropriate individuals.
+        supplement: Medium: (1) (2) (3) (4)High: (1) (2) (3) (4)
 
     AC-03:
         code: AC-03
@@ -29,8 +29,8 @@ SecurityControl:
         control: The information system enforces assigned authorizations for controlling access to the system in accordance with applicable policy.
         guidance: Access control policies (e.g., identity-based policies, role-based policies, rule-based policies) and associated access enforcement mechanisms (e.g., access control lists, access control matrices, cryptography) are employed by organizations to control access between users (or processes acting on behalf of users) and objects (e.g., devices, files, records, processes, programs, domains) in the information system. In addition to controlling access at the information system level, access enforcement mechanisms are employed at the application level, when necessary, to provide increased information security for the organization. Consideration is given to the implementation of a controlled, audited, and manual override of automated mechanisms in the event of emergencies or other serious events. If encryption of stored information is employed as an access enforcement mechanism, the cryptography used is FIPS 140-2 (as amended) compliant. Related security control: SC-13.
         controlLevel: LOW
-        enhancements: (1)\nThe information system restricts access to privileged functions (deployed in hardware, software, and firmware) and security-relevant information to explicitly authorized personnel.\nEnhancement Supplemental Guidance: Explicitly authorized personnel include, for example, security administrators, system and network administrators, and other privileged users. Privileged users are individuals who have access to system control, monitoring, or administration functions (e.g., system administrators, information system security officers, maintainers, system programmers).','Medium: (1) High: (1) 
-        supplement: None 
+        enhancements: (1)\nThe information system restricts access to privileged functions (deployed in hardware, software, and firmware) and security-relevant information to explicitly authorized personnel.\nEnhancement Supplemental Guidance: Explicitly authorized personnel include, for example, security administrators, system and network administrators, and other privileged users. Privileged users are individuals who have access to system control, monitoring, or administration functions (e.g., system administrators, information system security officers, maintainers, system programmers). 
+        supplement: Medium: (1) High: (1) 
 
     AC-04:
         code: AC-04
@@ -40,7 +40,7 @@ SecurityControl:
         control: The information system enforces assigned authorizations for controlling the flow of information within the system and between interconnected systems in accordance with applicable policy.
         guidance: Information flow control regulates where information is allowed to travel within an information system and between information systems (as opposed to who is allowed to access the information) and without explicit regard to subsequent accesses to that information. A few, of many, generalized examples of possible restrictions that are better expressed as flow control than access control are: keeping export controlled information from being transmitted in the clear to the Internet, blocking outside traffic that claims to be from within the organization, and not passing any web requests to the Internet that are not from the internal web proxy. Information flow control policies and enforcement mechanisms are commonly employed by organizations to control the flow of information between designated sources and destinations (e.g., networks, individuals, devices) within information systems and between interconnected systems. Flow control is based on the characteristics of the information and/or the information path. Specific examples of flow control enforcement can be found in boundary protection devices (e.g., proxies, gateways, guards, encrypted tunnels, firewalls, and routers) that employ rule sets or establish configuration settings that restrict information system services or provide a packet filtering capability. Related security control: SC-7.
         controlLevel: MODERATE
-        enhancements: (1)\nThe information system implements information flow control enforcement using explicit labels on information, source, and destination objects as a basis for flow control decisions.\nEnhancement Supplemental Guidance: Information flow control enforcement using explicit labels is used, for example, to control the release of certain types of information.\n(2)\nThe information system implements information flow control enforcement using protected processing domains (e.g., domain type-enforcement) as a basis for flow control decisions.\n(3)\nThe information system implements information flow control enforcement using dynamic security policy mechanisms as a basis for flow control decisions.','None
+        enhancements: (1)\nThe information system implements information flow control enforcement using explicit labels on information, source, and destination objects as a basis for flow control decisions.\nEnhancement Supplemental Guidance: Information flow control enforcement using explicit labels is used, for example, to control the release of certain types of information.\n(2)\nThe information system implements information flow control enforcement using protected processing domains (e.g., domain type-enforcement) as a basis for flow control decisions.\n(3)\nThe information system implements information flow control enforcement using dynamic security policy mechanisms as a basis for flow control decisions.
         supplement: None 
 
     AC-05:
@@ -73,7 +73,7 @@ SecurityControl:
         control: The information system enforces a limit of [Assignment: organization-defined number] consecutive invalid access attempts by a user during a [Assignment: organization-defined time period] time period. The information system automatically [Selection: locks the account/node for an [Assignment: organization-defined time period], delays next login prompt according to [Assignment: organization-defined delay algorithm.]] when the maximum number of unsuccessful attempts is exceeded.
         guidance: Due to the potential for denial of service, automatic lockouts initiated by the information system are usually temporary and automatically release after a predetermined time period established by the organization.
         controlLevel: LOW
-        enhancements: (1)\nThe information system automatically locks the account/node until released by an administrator when the maximum number of unsuccessful attempts is exceeded.','None
+        enhancements: (1)\nThe information system automatically locks the account/node until released by an administrator when the maximum number of unsuccessful attempts is exceeded.
         supplement: None 
 
     AC-08:
@@ -128,8 +128,8 @@ SecurityControl:
         control: The information system automatically terminates a remote session after [Assignment: organization-defined time period] of inactivity.
         guidance: A remote session is initiated whenever an organizational information system is accessed by a user (or an information system) communicating through an external, non-organization-controlled network (e.g., the Internet).
         controlLevel: MODERATE
-        enhancements: (1)\nAutomatic session termination applies to local and remote sessions.','High: (1)
-        supplement: None 
+        enhancements: (1)\nAutomatic session termination applies to local and remote sessions.
+        supplement: High: (1) 
 
     AC-13:
         code: AC-13
@@ -139,8 +139,8 @@ SecurityControl:
         control: The organization supervises and reviews the activities of users with respect to the enforcement and usage of information system access controls.
         guidance: The organization reviews audit records (e.g., user activity logs) for inappropriate activities in accordance with organizational procedures. The organization investigates any unusual information system-related activities and periodically reviews changes to access authorizations. The organization reviews more frequently the activities of users with significant information system roles and responsibilities. The extent of the audit record reviews is based on the FIPS 199 impact level of the information system. For example, for low-impact systems, it is not intended that security logs be reviewed frequently for every workstation, but rather at central points such as a web proxy or email servers and when specific circumstances warrant review of other audit records. NIST Special Publication 800-92 provides guidance on computer security log management.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to facilitate the review of user activities.','Medium: (1) High: (1) 
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to facilitate the review of user activities. 
+        supplement: Medium: (1) High: (1) 
 
     AC-14:
         code: AC-14
@@ -150,8 +150,8 @@ SecurityControl:
         control: The organization identifies and documents specific user actions that can be performed on the information system without identification or authentication.
         guidance: The organization allows limited user activity without identification and authentication for public websites or other publicly available information systems (e.g., individuals accessing a federal information system at http://www.firstgov.gov). Related security control: IA-2.
         controlLevel: LOW
-        enhancements: (1)\nThe organization permits actions to be performed without identification and authentication only to the extent necessary to accomplish mission objectives.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization permits actions to be performed without identification and authentication only to the extent necessary to accomplish mission objectives.
+        supplement: Medium: (1) High: (1) 
 
     AC-15:
         code: AC-15
@@ -183,8 +183,8 @@ SecurityControl:
         control: The organization authorizes, monitors, and controls all methods of remote access to the information system.
         guidance: Remote access is any access to an organizational information system by a user (or an information system) communicating through an external, non-organization-controlled network (e.g., the Internet). Examples of remote access methods include dial-up, broadband, and wireless. Remote access controls are applicable to information systems other than public web servers or systems specifically designed for public access. The organization restricts access achieved through dial-up connections (e.g., limiting dial-up access based upon source of request) or protects against unauthorized connections or subversion of authorized connections (e.g., using virtual private network technology). NIST Special Publication 800-63 provides guidance on remote electronic authentication. If the federal Personal Identity Verification (PIV) credential is used as an identification token where cryptographic token-based access control is employed, the access control system conforms to the requirements of FIPS 201 and NIST Special Publications 800-73 and 800-78. NIST Special Publication 800-77 provides guidance on IPsec-based virtual private networks. Related security control: IA-2.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to facilitate the monitoring and control of remote access methods.\n(2)\nThe organization uses cryptography to protect the confidentiality and integrity of remote access sessions.\n(3)\nThe organization controls all remote accesses through a limited number of managed access control points.\n(4)\nThe organization permits remote access for privileged functions only for compelling operational needs and documents the rationale for such access in the security plan for the information system.','Medium: (1) (2) (3) (4)High: (1) (2) (3) (4)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to facilitate the monitoring and control of remote access methods.\n(2)\nThe organization uses cryptography to protect the confidentiality and integrity of remote access sessions.\n(3)\nThe organization controls all remote accesses through a limited number of managed access control points.\n(4)\nThe organization permits remote access for privileged functions only for compelling operational needs and documents the rationale for such access in the security plan for the information system.
+        supplement: Medium: (1) (2) (3) (4)High: (1) (2) (3) (4) 
 
     AC-18:
         code: AC-18
@@ -194,8 +194,8 @@ SecurityControl:
         control: The organization: (i) establishes usage restrictions and implementation guidance for wireless technologies; and (ii) authorizes, monitors, controls wireless access to the information system.
         guidance: NIST Special Publications 800-48 and 800-97 provide guidance on wireless network security. NIST Special Publication 800-94 provides guidance on wireless intrusion detection and prevention.
         controlLevel: LOW
-        enhancements: (1)\nThe organization uses authentication and encryption to protect wireless access to the information system.\n(2)\nThe organization scans for unauthorized wireless access points [Assignment: organization-defined frequency] and takes appropriate action if such an access points are discovered.\nEnhancement Supplemental Guidance: Organizations conduct a thorough scan for unauthorized wireless access points in facilities containing high-impact information systems. The scan is not limited to only those areas within the facility containing the high-impact information systems.','Medium: (1) High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe organization uses authentication and encryption to protect wireless access to the information system.\n(2)\nThe organization scans for unauthorized wireless access points [Assignment: organization-defined frequency] and takes appropriate action if such an access points are discovered.\nEnhancement Supplemental Guidance: Organizations conduct a thorough scan for unauthorized wireless access points in facilities containing high-impact information systems. The scan is not limited to only those areas within the facility containing the high-impact information systems.
+        supplement: Medium: (1) High: (1) (2) 
 
     AC-19:
         code: AC-19
@@ -216,8 +216,8 @@ SecurityControl:
         control: The organization establishes terms and conditions for authorized individuals to: (i) access the information system from an external information system; and (ii) process, store, and/or transmit organization-controlled information using an external information system.
         guidance: External information systems are information systems or components of information systems that are outside of the accreditation boundary established by the organization and for which the organization typically has no direct control over the application of required security controls or the assessment of security control effectiveness. External information systems include, but are not limited to, personally owned information systems (e.g., computers, cellular telephones, or personal digital assistants); privately owned computing and communications devices resident in commercial or public facilities (e.g., hotels, convention centers, or airports); information systems owned or controlled by nonfederal governmental organizations; and federal information systems that are not owned by, operated by, or under the direct control of the organization.\nAuthorized individuals include organizational personnel, contractors, or any other individuals with authorized access to the organizational information system. This control does not apply to the use of external information systems to access organizational information systems and information that are intended for public access (e.g., individuals accessing federal information through public interfaces to organizational information systems). The organization establishes terms and conditions for the use of external information systems in accordance with organizational security policies and procedures. The terms and conditions address as a minimum; (i) the types of applications that can be accessed on the organizational information system from the external information system; and (ii) the maximum FIPS 199 security category of information that can be processed, stored, and transmitted on the external information system.
         controlLevel: LOW
-        enhancements: (1)\nThe organization prohibits authorized individuals from using an external information system to access the information system or to process, store, or transmit organization-controlled information except in situations where the organization: (i) can verify the employment of required security controls on the external system as specified in the organization\'s information security policy and system security plan; or (ii) has approved information system connection or processing agreements with the organizational entity hosting the external information system.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization prohibits authorized individuals from using an external information system to access the information system or to process, store, or transmit organization-controlled information except in situations where the organization: (i) can verify the employment of required security controls on the external system as specified in the organization's information security policy and system security plan; or (ii) has approved information system connection or processing agreements with the organizational entity hosting the external information system.
+        supplement: Medium: (1) High: (1) 
 
     AT-01:
         code: AT-01
@@ -236,7 +236,7 @@ SecurityControl:
         subclass: Security Awareness 
         family: Awareness and Training
         control: The organization provides basic security awareness training to all information system users (including managers and senior executives) before authorizing access to the system, when required by system changes, and [Assignment: organization-defined frequency, at least annually] thereafter.
-        guidance: The organization determines the appropriate content of security awareness training based on the specific requirements of the organization and the information systems to which personnel have authorized access. The organization\'s security awareness program is consistent with the requirements contained in C.F.R. Part 5 Subpart C (5 C.F.R 930.301) and with the guidance in NIST Special Publication 800-50.
+        guidance: The organization determines the appropriate content of security awareness training based on the specific requirements of the organization and the information systems to which personnel have authorized access. The organization's security awareness program is consistent with the requirements contained in C.F.R. Part 5 Subpart C (5 C.F.R 930.301) and with the guidance in NIST Special Publication 800-50.
         controlLevel: LOW
         enhancements: None
         supplement: None 
@@ -247,7 +247,7 @@ SecurityControl:
         subclass: Security Training 
         family: Awareness and Training
         control: The organization identifies personnel that have significant information system security roles and responsibilities during the system development life cycle, documents those roles and responsibilities, and provides appropriate information system security training: (i) before authorizing access to the system or performing assigned duties; (ii) when required by system changes; and (iii) [Assignment: organization-defined frequency] thereafter.
-        guidance: The organization determines the appropriate content of security training based on the specific requirements of the organization and the information systems to which personnel have authorized access. In addition, the organization provides system managers, system and network administrators, and other personnel having access to system-level software, adequate technical training to perform their assigned duties. The organization\'s security training program is consistent with the requirements contained in C.F.R. Part 5 Subpart C (5 C.F.R 930.301) and with the guidance in NIST Special Publication 800-50.
+        guidance: The organization determines the appropriate content of security training based on the specific requirements of the organization and the information systems to which personnel have authorized access. In addition, the organization provides system managers, system and network administrators, and other personnel having access to system-level software, adequate technical training to perform their assigned duties. The organization's security training program is consistent with the requirements contained in C.F.R. Part 5 Subpart C (5 C.F.R 930.301) and with the guidance in NIST Special Publication 800-50.
         controlLevel: LOW
         enhancements: None
         supplement: None 
@@ -269,7 +269,7 @@ SecurityControl:
         subclass: Contacts with Security Groups and Associations 
         family: Awareness and Training
         control: The organization establishes and maintains contacts with special interest groups, specialized forums, professional associations, news groups, and/or peer groups of security professionals in similar organizations to stay up to date with the latest recommended security practices, techniques, and technologies and to share the latest security-related information including threats, vulnerabilities, and incidents.
-        guidance: To facilitate ongoing security education and training for organizational personnel in an environment of rapid technology changes and dynamic threats, the organization establishes and institutionalizes contacts with selected groups and associations within the security community. The groups and associations selected are in keeping with the organization\'s mission requirements. Information sharing activities regarding threats, vulnerabilities, and incidents related to information systems are consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance.
+        guidance: To facilitate ongoing security education and training for organizational personnel in an environment of rapid technology changes and dynamic threats, the organization establishes and institutionalizes contacts with selected groups and associations within the security community. The groups and associations selected are in keeping with the organization's mission requirements. Information sharing activities regarding threats, vulnerabilities, and incidents related to information systems are consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance.
         controlLevel: NONE
         enhancements: None
         supplement: None 
@@ -293,8 +293,8 @@ SecurityControl:
         control: The information system generates audit records for the following events: [Assignment: organization-defined auditable events].
         guidance: The purpose of this control is to identify important events which need to be audited as significant and relevant to the security of the information system. The organization specifies which information system components carry out auditing activities. Auditing activity can affect information system performance. Therefore, the organization decides, based upon a risk assessment, which events require auditing on a continuous basis and which events require auditing in response to specific situations. Audit records can be generated at various levels of abstraction, including at the packet level as information traverses the network. Selecting the right level of abstraction for audit record generation is a critical aspect of an audit capability and can facilitate the identification of root causes to problems. Additionally, the security audit function is coordinated with the network health and status monitoring function to enhance the mutual support between the two functions by the selection of information to be recorded by each function. The checklists and configuration guides at http://csrc.nist.gov/pcig/cig.html provide recommended lists of auditable events. The organization defines auditable events that are adequate to support after-the-fact investigations of security incidents. NIST Special Publication 800-92 provides guidance on computer security log management.
         controlLevel: LOW
-        enhancements: (1)\nThe information system provides the capability to compile audit records from multiple components throughout the system into a systemwide (logical or physical), time-correlated audit trail.\n(2)\nThe information system provides the capability to manage the selection of events to be audited by individual components of the system.\n(3)\nThe organization periodically reviews and updates the list of organization-defined auditable events.','Medium: (3) High: (1) (2) (3)
-        supplement: None 
+        enhancements: (1)\nThe information system provides the capability to compile audit records from multiple components throughout the system into a systemwide (logical or physical), time-correlated audit trail.\n(2)\nThe information system provides the capability to manage the selection of events to be audited by individual components of the system.\n(3)\nThe organization periodically reviews and updates the list of organization-defined auditable events.
+        supplement: Medium: (3) High: (1) (2) (3) 
 
     AU-03:
         code: AU-03
@@ -304,8 +304,8 @@ SecurityControl:
         control: The information system produces audit records that contain sufficient information to establish what events occurred, the sources of the events, and the outcomes of the events.
         guidance: Audit record content includes, for most audit records: (i) date and time of the event; (ii) the component of the information system (e.g., software component, hardware component) where the event occurred; (iii) type of event; (iv) user/subject identity; and (v) the outcome (success or failure) of the event. NIST Special Publication 800-92 provides guidance on computer security log management.
         controlLevel: LOW
-        enhancements: (1)\nThe information system provides the capability to include additional, more detailed information in the audit records for audit events identified by type, location, or subject.\n(2)\nThe information system provides the capability to centrally manage the content of audit records generated by individual components throughout the system.','Medium: (1) High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe information system provides the capability to include additional, more detailed information in the audit records for audit events identified by type, location, or subject.\n(2)\nThe information system provides the capability to centrally manage the content of audit records generated by individual components throughout the system.
+        supplement: Medium: (1) High: (1) (2) 
 
     AU-04:
         code: AU-04
@@ -326,8 +326,8 @@ SecurityControl:
         control: The information system alerts appropriate organizational officials in the event of an audit processing failure and takes the following additional actions: [Assignment: organization-defined actions to be taken (e.g., shut down information system, overwrite oldest audit records, stop generating audit records)].
         guidance: Supplemental Guidance: Audit processing failures include, for example, software/hardware errors, failures in the audit capturing mechanisms, and audit storage capacity being reached or exceeded. Related security control: AU-4.
         controlLevel: LOW
-        enhancements: (1)\nThe information system provides a warning when allocated audit record storage volume reaches [Assignment: organization-defined percentage of maximum audit record storage capacity].\n(2)\nThe information system provides a real-time alert when the following audit failure events occur: [Assignment: organization-defined audit failure events requiring real-time alerts].','High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe information system provides a warning when allocated audit record storage volume reaches [Assignment: organization-defined percentage of maximum audit record storage capacity].\n(2)\nThe information system provides a real-time alert when the following audit failure events occur: [Assignment: organization-defined audit failure events requiring real-time alerts].
+        supplement: High: (1) (2) 
 
     AU-06:
         code: AU-06
@@ -337,8 +337,8 @@ SecurityControl:
         control: The organization regularly reviews/analyzes information system audit records for indications of inappropriate or unusual activity, investigates suspicious activity or suspected violations, reports findings to appropriate officials, and takes necessary actions.
         guidance: Organizations increase the level of audit monitoring and analysis activity within the information system whenever there is an indication of increased risk to organizational operations, organizational assets, or individuals based on law enforcement information, intelligence information, or other credible sources of information.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs automated mechanisms to integrate audit monitoring, analysis, and reporting into an overall process for investigation and response to suspicious activities.\n(2)\nThe organization employs automated mechanisms to alert security personnel of the following inappropriate or unusual activities with security implications: [Assignment: organization-defined list of inappropriate or unusual activities that are to result in alerts].','Medium: (2) High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to integrate audit monitoring, analysis, and reporting into an overall process for investigation and response to suspicious activities.\n(2)\nThe organization employs automated mechanisms to alert security personnel of the following inappropriate or unusual activities with security implications: [Assignment: organization-defined list of inappropriate or unusual activities that are to result in alerts].
+        supplement: Medium: (2) High: (1) (2) 
 
     AU-07:
         code: AU-07
@@ -348,8 +348,8 @@ SecurityControl:
         control: The information system provides an audit reduction and report generation capability.
         guidance: Audit reduction, review, and reporting tools support after-the-fact investigations of security incidents without altering original audit records.
         controlLevel: MODERATE
-        enhancements: (1)\nThe information system provides the capability to automatically process audit records for events of interest based upon selectable, event criteria.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe information system provides the capability to automatically process audit records for events of interest based upon selectable, event criteria.
+        supplement: Medium: (1) High: (1) 
 
     AU-08:
         code: AU-08
@@ -359,8 +359,8 @@ SecurityControl:
         control: The information system provides time stamps for use in audit record generation.
         guidance: Time stamps (including date and time) of audit records are generated using internal system clocks.
         controlLevel: LOW
-        enhancements: (1)\nThe organization synchronizes internal information system clocks [Assignment: organization-defined frequency].','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization synchronizes internal information system clocks [Assignment: organization-defined frequency].
+        supplement: Medium: (1) High: (1) 
 
     AU-09:
         code: AU-09
@@ -370,7 +370,7 @@ SecurityControl:
         control: The information system protects audit information and audit tools from unauthorized access, modification, and deletion.
         guidance: Audit information includes all information (e.g., audit records, audit settings, and audit reports) needed to successfully audit information system activity.
         controlLevel: LOW
-        enhancements: (1)\nThe information system produces audit records on hardware-enforced, write-once media.','None
+        enhancements: (1)\nThe information system produces audit records on hardware-enforced, write-once media.
         supplement: None 
 
     AU-10:
@@ -412,7 +412,7 @@ SecurityControl:
         subclass: Security Assessments 
         family: Certification, Accreditation, and Security Assessments
         control: The organization conducts an assessment of the security controls in the information system [Assignment: organization-defined frequency, at least annually] to determine the extent to which the controls are implemented correctly, operating as intended, and producing the desired outcome with respect to meeting the security requirements for the system.
-        guidance: This control is intended to support the FISMA requirement that the management, operational, and technical controls in each information system contained in the inventory of major information systems be assessed with a frequency depending on risk, but no less than annually. The FISMA requirement for (at least) annual security control assessments should not be interpreted by organizations as adding additional assessment requirements to those requirements already in place in the security certification and accreditation process. To satisfy the annual FISMA assessment requirement, organizations can draw upon the security control assessment results from any of the following sources, including but not limited to: (i) security certifications conducted as part of an information system accreditation or reaccreditation process (see CA-4); (ii) continuous monitoring activities (see CA-7); or (iii) testing and evaluation of the information system as part of the ongoing system development life cycle process (provided that the testing and evaluation results are current and relevant to the determination of security control effectiveness). Existing security assessment results are reused to the extent that they are still valid and are supplemented with additional assessments as needed. Reuse of assessment information is critical in achieving a broad-based, cost-effective, and fully integrated security program capable of producing the needed evidence to determine the actual security status of the information system.   OMB does not require an annual assessment of all security controls employed in an organizational information system. In accordance with OMB policy, organizations must annually assess a subset of the security controls based on: (i) the FIPS 199 security categorization of the information system; (ii) the specific security controls selected and employed by the organization to protect the information system; and (iii) the level of assurance (or confidence) that the organization must have in determining the effectiveness of the security controls in the information system. It is expected that the organization will assess all of the security controls in the information system during the three-year accreditation cycle. The organization can use the current year\'s assessment results obtained during security certification to meet the annual FISMA assessment requirement (see CA-4). NIST Special Publication 800-53A provides guidance on security control assessments to include reuse of existing assessment results. Related security controls: CA-4, CA-6, CA-7, SA-11.
+        guidance: This control is intended to support the FISMA requirement that the management, operational, and technical controls in each information system contained in the inventory of major information systems be assessed with a frequency depending on risk, but no less than annually. The FISMA requirement for (at least) annual security control assessments should not be interpreted by organizations as adding additional assessment requirements to those requirements already in place in the security certification and accreditation process. To satisfy the annual FISMA assessment requirement, organizations can draw upon the security control assessment results from any of the following sources, including but not limited to: (i) security certifications conducted as part of an information system accreditation or reaccreditation process (see CA-4); (ii) continuous monitoring activities (see CA-7); or (iii) testing and evaluation of the information system as part of the ongoing system development life cycle process (provided that the testing and evaluation results are current and relevant to the determination of security control effectiveness). Existing security assessment results are reused to the extent that they are still valid and are supplemented with additional assessments as needed. Reuse of assessment information is critical in achieving a broad-based, cost-effective, and fully integrated security program capable of producing the needed evidence to determine the actual security status of the information system.   OMB does not require an annual assessment of all security controls employed in an organizational information system. In accordance with OMB policy, organizations must annually assess a subset of the security controls based on: (i) the FIPS 199 security categorization of the information system; (ii) the specific security controls selected and employed by the organization to protect the information system; and (iii) the level of assurance (or confidence) that the organization must have in determining the effectiveness of the security controls in the information system. It is expected that the organization will assess all of the security controls in the information system during the three-year accreditation cycle. The organization can use the current year's assessment results obtained during security certification to meet the annual FISMA assessment requirement (see CA-4). NIST Special Publication 800-53A provides guidance on security control assessments to include reuse of existing assessment results. Related security controls: CA-4, CA-6, CA-7, SA-11.
         controlLevel: LOW
         enhancements: None
         supplement: None 
@@ -434,17 +434,17 @@ SecurityControl:
         subclass: Security Certification 
         family: Certification, Accreditation, and Security Assessments
         control: The organization conducts an assessment of the security controls in the information system to determine the extent to which the controls are implemented correctly, operating as intended, and producing the desired outcome with respect to meeting the security requirements for the system.
-        guidance: A security certification is conducted by the organization in support of the OMB Circular A-130, Appendix III requirement for accrediting the information system. The security certification is a key factor in all security accreditation (i.e., authorization) decisions and is integrated into and spans the system development life cycle. The organization assesses all security controls in an information system during the initial security accreditation. Subsequent to the initial accreditation and in accordance with OMB policy, the organization assesses a subset of the controls annually during continuous monitoring (see CA-7). The organization can use the current year\'s assessment results obtained during security certification to meet the annual FISMA assessment requirement (see CA-2). NIST Special Publication 800-53A provides guidance on security control assessments. NIST Special Publication 800-37 provides guidance on security certification and accreditation. Related security controls: CA-2, CA-6, SA-11.
+        guidance: A security certification is conducted by the organization in support of the OMB Circular A-130, Appendix III requirement for accrediting the information system. The security certification is a key factor in all security accreditation (i.e., authorization) decisions and is integrated into and spans the system development life cycle. The organization assesses all security controls in an information system during the initial security accreditation. Subsequent to the initial accreditation and in accordance with OMB policy, the organization assesses a subset of the controls annually during continuous monitoring (see CA-7). The organization can use the current year's assessment results obtained during security certification to meet the annual FISMA assessment requirement (see CA-2). NIST Special Publication 800-53A provides guidance on security control assessments. NIST Special Publication 800-37 provides guidance on security certification and accreditation. Related security controls: CA-2, CA-6, SA-11.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs an independent certification agent or certification team to conduct an assessment of the security controls in the information system.\nEnhancement Supplemental Guidance: An independent certification agent or certification team is any individual or group capable of conducting an impartial assessment of an organizational information system. Impartiality implies that the assessors are free from any perceived or actual conflicts of interest with respect to the developmental, operational, and/or management chain of command associated with the information system or to the determination of security control effectiveness. Independent security certification services can be obtained from other elements within the organization or can be contracted to a public or private sector entity outside of the organization. Contracted certification services are considered independent if the information system owner is not directly involved in the contracting process or cannot unduly influence the independence of the certification agent or certification team conducting the assessment of the security controls in the information system. The authorizing official decides on the required level of certifier independence based on the criticality and sensitivity of the information system and the ultimate risk to organizational operations and organizational assets, and to individuals. The authorizing official determines if the level of certifier independence is sufficient to provide confidence that the assessment results produced are sound and can be used to make a credible, risk-based decision. In special situations, for example when the organization that owns the information system is small or the organizational structure requires that the assessment of the security controls be accomplished by individuals that are in the developmental, operational, and/or management chain of the system owner or authorizing official, independence in the certification process can be achieved by ensuring the assessment results are carefully reviewed and analyzed by an independent team of experts to validate the completeness, consistency, and veracity of the results. The authorizing official should consult with the Office of the Inspector General, the senior agency information security officer, and the chief information officer to fully discuss the implications of any decisions on certifier independence in the types of special circumstances described above.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs an independent certification agent or certification team to conduct an assessment of the security controls in the information system.\nEnhancement Supplemental Guidance: An independent certification agent or certification team is any individual or group capable of conducting an impartial assessment of an organizational information system. Impartiality implies that the assessors are free from any perceived or actual conflicts of interest with respect to the developmental, operational, and/or management chain of command associated with the information system or to the determination of security control effectiveness. Independent security certification services can be obtained from other elements within the organization or can be contracted to a public or private sector entity outside of the organization. Contracted certification services are considered independent if the information system owner is not directly involved in the contracting process or cannot unduly influence the independence of the certification agent or certification team conducting the assessment of the security controls in the information system. The authorizing official decides on the required level of certifier independence based on the criticality and sensitivity of the information system and the ultimate risk to organizational operations and organizational assets, and to individuals. The authorizing official determines if the level of certifier independence is sufficient to provide confidence that the assessment results produced are sound and can be used to make a credible, risk-based decision. In special situations, for example when the organization that owns the information system is small or the organizational structure requires that the assessment of the security controls be accomplished by individuals that are in the developmental, operational, and/or management chain of the system owner or authorizing official, independence in the certification process can be achieved by ensuring the assessment results are carefully reviewed and analyzed by an independent team of experts to validate the completeness, consistency, and veracity of the results. The authorizing official should consult with the Office of the Inspector General, the senior agency information security officer, and the chief information officer to fully discuss the implications of any decisions on certifier independence in the types of special circumstances described above.
+        supplement: Medium: (1) High: (1) 
 
     CA-05:
         code: CA-05
         class: MANAGEMENT
         subclass: Plan of Action and Milestones 
         family: Certification, Accreditation, and Security Assessments
-        control: The organization develops and updates [Assignment: organization-defined frequency], a plan of action and milestones for the information system that documents the organization\'s planned, implemented, and evaluated remedial actions to correct deficiencies noted during the assessment of the security controls and to reduce or eliminate known vulnerabilities in the system.
+        control: The organization develops and updates [Assignment: organization-defined frequency], a plan of action and milestones for the information system that documents the organization's planned, implemented, and evaluated remedial actions to correct deficiencies noted during the assessment of the security controls and to reduce or eliminate known vulnerabilities in the system.
         guidance: The plan of action and milestones is a key document in the security accreditation package developed for the authorizing official and is subject to federal reporting requirements established by OMB. The plan of action and milestones updates are based on the findings from security control assessments, security impact analyses, and continuous monitoring activities. OMB FISMA reporting guidance contains instructions regarding organizational plans of action and milestones. NIST Special Publication 800-37 provides guidance on the security certification and accreditation of information systems. NIST Special Publication 800-30 provides guidance on risk mitigation.
         controlLevel: LOW
         enhancements: None
@@ -467,9 +467,9 @@ SecurityControl:
         subclass: Continuous Monitoring 
         family: Certification, Accreditation, and Security Assessments
         control: The organization monitors the security controls in the information system on an ongoing basis.
-        guidance: Continuous monitoring activities include configuration management and control of information system components, security impact analyses of changes to the system, ongoing assessment of security controls, and status reporting. The organization assesses all security controls in an information system during the initial security accreditation. Subsequent to the initial accreditation and in accordance with OMB policy, the organization assesses a subset of the controls annually during continuous monitoring. The selection of an appropriate subset of security controls is based on: (i) the FIPS 199 security categorization of the information system; (ii) the specific security controls selected and employed by the organization to protect the information system; and (iii) the level of assurance (or grounds for confidence) that the organization must have in determining the effectiveness of the security controls in the information system. The organization establishes the selection criteria and subsequently selects a subset of the security controls employed within the information system for assessment. The organization also establishes the schedule for control monitoring to ensure adequate coverage is achieved. Those security controls that are volatile or critical to protecting the information system are assessed at least annually. All other controls are assessed at least once during the information system\'s three-year accreditation cycle. The organization can use the current year\'s assessment results obtained during continuous monitoring to meet the annual FISMA assessment requirement (see CA-2).\nThis control is closely related to and mutually supportive of the activities required in monitoring configuration changes to the information system. An effective continuous monitoring program results in ongoing updates to the information system security plan, the security assessment report, and the plan of action and milestones\'the three principle documents in the security accreditation package. A rigorous and well executed continuous monitoring process significantly reduces the level of effort required for the reaccreditation of the information system. NIST Special Publication 800-37 provides guidance on the continuous monitoring process. NIST Special Publication 800-53A provides guidance on the assessment of security controls. Related security controls: CA-2, CA-4, CA-5, CA-6, CM-4.
+        guidance: Continuous monitoring activities include configuration management and control of information system components, security impact analyses of changes to the system, ongoing assessment of security controls, and status reporting. The organization assesses all security controls in an information system during the initial security accreditation. Subsequent to the initial accreditation and in accordance with OMB policy, the organization assesses a subset of the controls annually during continuous monitoring. The selection of an appropriate subset of security controls is based on: (i) the FIPS 199 security categorization of the information system; (ii) the specific security controls selected and employed by the organization to protect the information system; and (iii) the level of assurance (or grounds for confidence) that the organization must have in determining the effectiveness of the security controls in the information system. The organization establishes the selection criteria and subsequently selects a subset of the security controls employed within the information system for assessment. The organization also establishes the schedule for control monitoring to ensure adequate coverage is achieved. Those security controls that are volatile or critical to protecting the information system are assessed at least annually. All other controls are assessed at least once during the information system's three-year accreditation cycle. The organization can use the current year's assessment results obtained during continuous monitoring to meet the annual FISMA assessment requirement (see CA-2).\nThis control is closely related to and mutually supportive of the activities required in monitoring configuration changes to the information system. An effective continuous monitoring program results in ongoing updates to the information system security plan, the security assessment report, and the plan of action and milestones'the three principle documents in the security accreditation package. A rigorous and well executed continuous monitoring process significantly reduces the level of effort required for the reaccreditation of the information system. NIST Special Publication 800-37 provides guidance on the continuous monitoring process. NIST Special Publication 800-53A provides guidance on the assessment of security controls. Related security controls: CA-2, CA-4, CA-5, CA-6, CM-4.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs an independent certification agent or certification team to monitor the security controls in the information system on an ongoing basis.\nEnhancement Supplemental Guidance: The organization can extend and maximize the value of the ongoing assessment of security controls during the continuous monitoring process by requiring an independent certification agent or team to assess all of the security controls during the information system\'s three-year accreditation cycle. Related security controls: CA-2, CA-4, CA-5, CA-6, CM-4.','None
+        enhancements: (1)\nThe organization employs an independent certification agent or certification team to monitor the security controls in the information system on an ongoing basis.\nEnhancement Supplemental Guidance: The organization can extend and maximize the value of the ongoing assessment of security controls during the continuous monitoring process by requiring an independent certification agent or team to assess all of the security controls during the information system's three-year accreditation cycle. Related security controls: CA-2, CA-4, CA-5, CA-6, CM-4.','None
         supplement: None 
 
     CM-01:
@@ -489,10 +489,10 @@ SecurityControl:
         subclass: Baseline Configuration 
         family: Configuration Management
         control: The organization develops, documents, and maintains a current baseline configuration of the information system.
-        guidance: This control establishes a baseline configuration for the information system. The baseline configuration provides information about a particular component\'s makeup (e.g., the standard software load for a workstation or notebook computer including updated patch information) and the component\'s logical placement within the information system architecture. The baseline configuration also provides the organization with a well-defined and documented specification to which the information system is built and deviations, if required, are documented in support of mission needs/objectives. The baseline configuration of the information system is consistent with the Federal Enterprise Architecture. Related security controls: CM-6, CM-8.
+        guidance: This control establishes a baseline configuration for the information system. The baseline configuration provides information about a particular component's makeup (e.g., the standard software load for a workstation or notebook computer including updated patch information) and the component's logical placement within the information system architecture. The baseline configuration also provides the organization with a well-defined and documented specification to which the information system is built and deviations, if required, are documented in support of mission needs/objectives. The baseline configuration of the information system is consistent with the Federal Enterprise Architecture. Related security controls: CM-6, CM-8.
         controlLevel: LOW
-        enhancements: (1)\nThe organization updates the baseline configuration of the information system as an integral part of information system component installations.\n(2)\nThe organization employs automated mechanisms to maintain an up-to-date, complete, accurate, and readily available baseline configuration of the information system.','Medium: (1) High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe organization updates the baseline configuration of the information system as an integral part of information system component installations.\n(2)\nThe organization employs automated mechanisms to maintain an up-to-date, complete, accurate, and readily available baseline configuration of the information system.
+        supplement: Medium: (1) High: (1) (2) 
 
     CM-03:
         code: CM-03
@@ -502,8 +502,8 @@ SecurityControl:
         control: The organization authorizes, documents, and controls changes to the information system.
         guidance: The organization manages configuration changes to the information system using an organizationally approved process (e.g., a chartered Configuration Control Board). Configuration change control involves the systematic proposal, justification, implementation, test/evaluation, review, and disposition of changes to the information system, including upgrades and modifications. Configuration change control includes changes to the configuration settings for information technology products (e.g., operating systems, firewalls, routers). The organization includes emergency changes in the configuration change control process, including changes resulting from the remediation of flaws. The approvals to implement a change to the information system include successful results from the security analysis of the change. The organization audits activities associated with configuration changes to the information system. Related security controls: CM-4, CM-6, SI-2.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs automated mechanisms to: (i) document proposed changes to the information system; (ii) notify appropriate approval authorities; (iii) highlight approvals that have not been received in a timely manner; (iv) inhibit change until necessary approvals are received; and (v) document completed changes to the information system.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to: (i) document proposed changes to the information system; (ii) notify appropriate approval authorities; (iii) highlight approvals that have not been received in a timely manner; (iv) inhibit change until necessary approvals are received; and (v) document completed changes to the information system.
+        supplement: High: (1) 
 
     CM-04:
         code: CM-04
@@ -524,8 +524,8 @@ SecurityControl:
         control: The organization: (i) approves individual access privileges and enforces physical and logical access restrictions associated with changes to the information system; and (ii) generates, retains, and reviews records reflecting all such changes.
         guidance: Planned or unplanned changes to the hardware, software, and/or firmware components of the information system can have significant effects on the overall security of the system. Accordingly, only qualified and authorized individuals obtain access to information system components for purposes of initiating changes, including upgrades, and modifications.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs automated mechanisms to enforce access restrictions and support auditing of the enforcement actions.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to enforce access restrictions and support auditing of the enforcement actions.
+        supplement: High: (1) 
 
     CM-06:
         code: CM-06
@@ -535,8 +535,8 @@ SecurityControl:
         control: The organization: (i) establishes mandatory configuration settings for information technology products employed within the information system; (ii) configures the security settings of information technology products to the most restrictive mode consistent with operational requirements; (iii) documents the configuration settings; and (iv) enforces the configuration settings in all components of the information system.
         guidance: Configuration settings are the configurable parameters of the information technology products that compose the information system. Organizations monitor and control changes to the configuration settings in accordance with organizational policies and procedures. OMB FISMA reporting instructions provide guidance on configuration requirements for federal information systems. NIST Special Publication 800-70 provides guidance on producing and using configuration settings for information technology products employed in organizational information systems. Related security controls: CM-2, CM-3, SI-4.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to centrally manage, apply, and verify configuration settings.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to centrally manage, apply, and verify configuration settings.
+        supplement: High: (1) 
 
     CM-07:
         code: CM-07
@@ -546,8 +546,8 @@ SecurityControl:
         control: The organization configures the information system to provide only essential capabilities and specifically prohibits and/or restricts the use of the following functions, ports, protocols, and/or services: [Assignment: organization-defined list of prohibited and/or restricted functions, ports, protocols, and/or services].
         guidance: Information systems are capable of providing a wide variety of functions and services. Some of the functions and services, provided by default, may not be necessary to support essential organizational operations (e.g., key missions, functions). Additionally, it is sometimes convenient to provide multiple services from a single component of an information system, but doing so increases risk over limiting the services provided by any one component. Where feasible, the organization limits component functionality to a single function per device (e.g., email server or web server, not both). The functions and services provided by information systems, or individual components of information systems, are carefully reviewed to determine which functions and services are candidates for elimination (e.g., Voice Over Internet Protocol, Instant Messaging, File Transfer Protocol, Hyper Text Transfer Protocol, file sharing).
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization reviews the information system [Assignment: organization-defined frequency], to identify and eliminate unnecessary functions, ports, protocols, and/or services.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization reviews the information system [Assignment: organization-defined frequency], to identify and eliminate unnecessary functions, ports, protocols, and/or services.
+        supplement: High: (1) 
 
     CM-08:
         code: CM-08
@@ -557,8 +557,8 @@ SecurityControl:
         control: The organization develops, documents, and maintains a current inventory of the components of the information system and relevant ownership information.
         guidance: The organization determines the appropriate level of granularity for the information system components included in the inventory that are subject to management control (i.e., tracking, and reporting). The inventory of information system components includes any information determined to be necessary by the organization to achieve effective property accountability (e.g., manufacturer, model number, serial number, software license information, system/component owner). The component inventory is consistent with the accreditation boundary of the information system. Related security controls: CM-2, CM-6.
         controlLevel: LOW
-        enhancements: (1)\nThe organization updates the inventory of information system components as an integral part of component installations.\n(2)\nThe organization employs automated mechanisms to help maintain an up-to-date, complete, accurate, and readily available inventory of information system components.','Medium: (1) High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe organization updates the inventory of information system components as an integral part of component installations.\n(2)\nThe organization employs automated mechanisms to help maintain an up-to-date, complete, accurate, and readily available inventory of information system components.
+        supplement: Medium: (1) High: (1) (2) 
 
     CP-01:
         code: CP-01
@@ -579,8 +579,8 @@ SecurityControl:
         control: The organization develops and implements a contingency plan for the information system addressing contingency roles, responsibilities, assigned individuals with contact information, and activities associated with restoring the system after a disruption or failure. Designated officials within the organization review and approve the contingency plan and distribute copies of the plan to key contingency personnel.
         guidance: None
         controlLevel: LOW
-        enhancements: (1)\nThe organization coordinates contingency plan development with organizational elements responsible for related plans.\nEnhancement Supplemental Guidance: Examples of related plans include Business Continuity Plan, Disaster Recovery Plan, Continuity of Operations Plan, Business Recovery Plan, Incident Response Plan, and Emergency Action Plan.\n(2)\nThe organization conducts capacity planning so that necessary capacity for information processing, telecommunications, and environmental support exists during crisis situations.','Medium: (1) High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe organization coordinates contingency plan development with organizational elements responsible for related plans.\nEnhancement Supplemental Guidance: Examples of related plans include Business Continuity Plan, Disaster Recovery Plan, Continuity of Operations Plan, Business Recovery Plan, Incident Response Plan, and Emergency Action Plan.\n(2)\nThe organization conducts capacity planning so that necessary capacity for information processing, telecommunications, and environmental support exists during crisis situations.
+        supplement: Medium: (1) High: (1) (2) 
 
     CP-03:
         code: CP-03
@@ -590,19 +590,19 @@ SecurityControl:
         control: The organization trains personnel in their contingency roles and responsibilities with respect to the information system and provides refresher training [Assignment: organization-defined frequency, at least annually].
         guidance: None
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization incorporates simulated events into contingency training to facilitate effective response by personnel in crisis situations.\n(2)\nThe organization employs automated mechanisms to provide a more thorough and realistic training environment.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization incorporates simulated events into contingency training to facilitate effective response by personnel in crisis situations.\n(2)\nThe organization employs automated mechanisms to provide a more thorough and realistic training environment.
+        supplement: High: (1) 
 
     CP-04:
         code: CP-04
         class: OPERATIONAL
         subclass: Contingency Plan Testing and Exercises 
         family: Contingency Planning
-        control: The organization: (i) tests and/or exercises the contingency plan for the information system [Assignment: organization-defined frequency, at least annually] using [Assignment: organization-defined tests and/or exercises] to determine the plan\'s effectiveness and the organization\'s readiness to execute the plan; and (ii) reviews the contingency plan test/exercise results and initiates corrective actions.
+        control: The organization: (i) tests and/or exercises the contingency plan for the information system [Assignment: organization-defined frequency, at least annually] using [Assignment: organization-defined tests and/or exercises] to determine the plan's effectiveness and the organization's readiness to execute the plan; and (ii) reviews the contingency plan test/exercise results and initiates corrective actions.
         guidance: There are several methods for testing and/or exercising contingency plans to identify potential weaknesses (e.g., full-scale contingency plan testing, functional/tabletop exercises). The depth and rigor of contingency plan testing and/or exercises increases with the FIPS 199 impact level of the information system. Contingency plan testing and/or exercises also include a determination of the effects on organizational operations and assets (e.g., reduction in mission capability) and individuals arising due to contingency operations in accordance with the plan. NIST Special Publication 800-84 provides guidance on test, training, and exercise programs for information technology plans and capabilities.
         controlLevel: LOW
-        enhancements: (1)\nThe organization coordinates contingency plan testing and/or exercises with organizational elements responsible for related plans.\nEnhancement Supplemental Guidance: Examples of related plans include Business Continuity Plan, Disaster Recovery Plan, Continuity of Operations Plan, Business Recovery Plan, Incident Response Plan, and Emergency Action Plan.\n(2)\nThe organization tests/exercises the contingency plan at the alternate processing site to familiarize contingency personnel with the facility and available resources and to evaluate the site\'s capabilities to support contingency operations.\n(3)\nThe organization employs automated mechanisms to more thoroughly and effectively test/exercise the contingency plan by providing more complete coverage of contingency issues, selecting more realistic test/exercise scenarios and environments, and more effectively stressing the information system and supported missions.','Medium: (1) High: (1) (2)
-        supplement: None 
+        enhancements: (1)\nThe organization coordinates contingency plan testing and/or exercises with organizational elements responsible for related plans.\nEnhancement Supplemental Guidance: Examples of related plans include Business Continuity Plan, Disaster Recovery Plan, Continuity of Operations Plan, Business Recovery Plan, Incident Response Plan, and Emergency Action Plan.\n(2)\nThe organization tests/exercises the contingency plan at the alternate processing site to familiarize contingency personnel with the facility and available resources and to evaluate the site's capabilities to support contingency operations.\n(3)\nThe organization employs automated mechanisms to more thoroughly and effectively test/exercise the contingency plan by providing more complete coverage of contingency issues, selecting more realistic test/exercise scenarios and environments, and more effectively stressing the information system and supported missions.
+        supplement: Medium: (1) High: (1) (2) 
 
     CP-05:
         code: CP-05
@@ -621,10 +621,10 @@ SecurityControl:
         subclass: Alternate Storage Site 
         family: Contingency Planning
         control: The organization identifies an alternate storage site and initiates necessary agreements to permit the storage of information system backup information.
-        guidance: The frequency of information system backups and the transfer rate of backup information to the alternate storage site (if so designated) are consistent with the organization\'s recovery time objectives and recovery point objectives.
+        guidance: The frequency of information system backups and the transfer rate of backup information to the alternate storage site (if so designated) are consistent with the organization's recovery time objectives and recovery point objectives.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization identifies an alternate storage site that is geographically separated from the primary storage site so as not to be susceptible to the same hazards.\n(2)\nThe organization configures the alternate storage site to facilitate timely and effective recovery operations.\n(3)\nThe organization identifies potential accessibility problems to the alternate storage site in the event of an area-wide disruption or disaster and outlines explicit mitigation actions.','Medium: (1)(3) High: (1)(2)(3)
-        supplement: None 
+        enhancements: (1)\nThe organization identifies an alternate storage site that is geographically separated from the primary storage site so as not to be susceptible to the same hazards.\n(2)\nThe organization configures the alternate storage site to facilitate timely and effective recovery operations.\n(3)\nThe organization identifies potential accessibility problems to the alternate storage site in the event of an area-wide disruption or disaster and outlines explicit mitigation actions.
+        supplement: Medium: (1)(3) High: (1)(2)(3) 
 
     CP-07:
         code: CP-07
@@ -634,8 +634,8 @@ SecurityControl:
         control: The organization identifies an alternate processing site and initiates necessary agreements to permit the resumption of information system operations for critical mission/business functions within [Assignment: organization-defined time period] when the primary processing capabilities are unavailable.
         guidance: Equipment and supplies required to resume operations within the organization-defined time period are either available at the alternate site or contracts are in place to support delivery to the site. Timeframes to resume information system operations are consistent with organization-established recovery time objectives.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization identifies an alternate processing site that is geographically separated from the primary processing site so as not to be susceptible to the same hazards.\n(2)\nThe organization identifies potential accessibility problems to the alternate processing site in the event of an area-wide disruption or disaster and outlines explicit mitigation actions.\n(3)\nThe organization develops alternate processing site agreements that contain priority-of-service provisions in accordance with the organization\'s availability requirements.\n(4)\nThe organization fully configures the alternate processing site so that it is ready to be used as the operational site supporting a minimum required operational capability.','Medium: (1)(2)(3) High: (1)(2)(3)(4)
-        supplement: None 
+        enhancements: (1)\nThe organization identifies an alternate processing site that is geographically separated from the primary processing site so as not to be susceptible to the same hazards.\n(2)\nThe organization identifies potential accessibility problems to the alternate processing site in the event of an area-wide disruption or disaster and outlines explicit mitigation actions.\n(3)\nThe organization develops alternate processing site agreements that contain priority-of-service provisions in accordance with the organization's availability requirements.\n(4)\nThe organization fully configures the alternate processing site so that it is ready to be used as the operational site supporting a minimum required operational capability.
+        supplement: Medium: (1)(2)(3) High: (1)(2)(3)(4) 
 
     CP-08:
         code: CP-08
@@ -645,8 +645,8 @@ SecurityControl:
         control: The organization identifies primary and alternate telecommunications services to support the information system and initiates necessary agreements to permit the resumption of system operations for critical mission/business functions within [Assignment: organization-defined time period] when the primary telecommunications capabilities are unavailable.
         guidance: In the event that the primary and/or alternate telecommunications services are provided by a common carrier, the organization requests Telecommunications Service Priority (TSP) for all telecommunications services used for national security emergency preparedness (see http://tsp.ncs.gov for a full explanation of the TSP program).
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization develops primary and alternate telecommunications service agreements that contain priority-of-service provisions in accordance with the organization\'s availability requirements.\n(2)\nThe organization obtains alternate telecommunications services that do not share a single point of failure with primary telecommunications services.\n(3)\nThe organization obtains alternate telecommunications service providers that are sufficiently separated from primary service providers so as not to be susceptible to the same hazards.\n(4)\nThe organization requires primary and alternate telecommunications service providers to have adequate contingency plans.','Medium: (1)(2) High: (1)(2)(3)(4)
-        supplement: None 
+        enhancements: (1)\nThe organization develops primary and alternate telecommunications service agreements that contain priority-of-service provisions in accordance with the organization's availability requirements.\n(2)\nThe organization obtains alternate telecommunications services that do not share a single point of failure with primary telecommunications services.\n(3)\nThe organization obtains alternate telecommunications service providers that are sufficiently separated from primary service providers so as not to be susceptible to the same hazards.\n(4)\nThe organization requires primary and alternate telecommunications service providers to have adequate contingency plans.
+        supplement: Medium: (1)(2) High: (1)(2)(3)(4) 
 
     CP-09:
         code: CP-09
@@ -654,10 +654,10 @@ SecurityControl:
         subclass: Information System Backup 
         family: Contingency Planning
         control: The organization conducts backups of user-level and system-level information (including system state information) contained in the information system [Assignment: organization-defined frequency] and protects backup information at the storage location.
-        guidance: The frequency of information system backups and the transfer rate of backup information to alternate storage sites (if so designated) are consistent with the organization\'s recovery time objectives and recovery point objectives. While integrity and availability are the primary concerns for system backup information, protecting backup information from unauthorized disclosure is also an important consideration depending on the type of information residing on the backup media and the FIPS 199 impact level. An organizational assessment of risk guides the use of encryption for backup information. The protection of system backup information while in transit is beyond the scope of this control. Related security controls: MP-4, MP-5.
+        guidance: The frequency of information system backups and the transfer rate of backup information to alternate storage sites (if so designated) are consistent with the organization's recovery time objectives and recovery point objectives. While integrity and availability are the primary concerns for system backup information, protecting backup information from unauthorized disclosure is also an important consideration depending on the type of information residing on the backup media and the FIPS 199 impact level. An organizational assessment of risk guides the use of encryption for backup information. The protection of system backup information while in transit is beyond the scope of this control. Related security controls: MP-4, MP-5.
         controlLevel: LOW
-        enhancements: (1)\nThe organization tests backup information [Assignment: organization-defined frequency] to verify media reliability and information integrity.\n(2)\nThe organization selectively uses backup information in the restoration of information system functions as part of contingency plan testing.\n(3)\nThe organization stores backup copies of the operating system and other critical information system software in a separate facility or in a fire-rated container that is not collocated with the operational software.\n(4)\nThe organization protects system backup information from unauthorized modification.\nEnhancement Supplemental Guidance: The organization employs appropriate mechanisms (e.g., digital signatures, cryptographic hashes) to protect the integrity of information system backups. Protecting the confidentiality of system backup information is beyond the scope of this control. Related security controls: MP-4, MP-5.','Medium: (1)(4) High: (1)(2)(3)(4)
-        supplement: None 
+        enhancements: (1)\nThe organization tests backup information [Assignment: organization-defined frequency] to verify media reliability and information integrity.\n(2)\nThe organization selectively uses backup information in the restoration of information system functions as part of contingency plan testing.\n(3)\nThe organization stores backup copies of the operating system and other critical information system software in a separate facility or in a fire-rated container that is not collocated with the operational software.\n(4)\nThe organization protects system backup information from unauthorized modification.\nEnhancement Supplemental Guidance: The organization employs appropriate mechanisms (e.g., digital signatures, cryptographic hashes) to protect the integrity of information system backups. Protecting the confidentiality of system backup information is beyond the scope of this control. Related security controls: MP-4, MP-5.
+        supplement: Medium: (1)(4) High: (1)(2)(3)(4) 
 
     CP-10:
         code: CP-10
@@ -667,8 +667,8 @@ SecurityControl:
         control: The organization employs mechanisms with supporting procedures to allow the information system to be recovered and reconstituted to a known secure state after a disruption or failure.
         guidance: Information system recovery and reconstitution to a known secure state means that all system parameters (either default or organization-established) are set to secure values, security-critical patches are reinstalled, security-related configuration settings are reestablished, system documentation and operating procedures are available, application and system software is reinstalled and configured with secure settings, information from the most recent, known secure backups is loaded, and the system is fully tested.
         controlLevel: LOW
-        enhancements: (1)\nThe organization includes a full recovery and reconstitution of the information system as part of contingency plan testing.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization includes a full recovery and reconstitution of the information system as part of contingency plan testing.
+        supplement: High: (1) 
 
     IA-01:
         code: IA-01
@@ -689,8 +689,8 @@ SecurityControl:
         control: The information system uniquely identifies and authenticates users (or processes acting on behalf of users).
         guidance: Users are uniquely identified and authenticated for all accesses other than those accesses explicitly identified and documented by the organization in accordance security control AC-14. Authentication of user identities is accomplished through the use of passwords, tokens, biometrics, or in the case of multifactor authentication, some combination thereof. NIST Special Publication 800-63 provides guidance on remote electronic authentication including strength of authentication mechanisms. For purposes of this control, the guidance provided in Special Publication 800-63 is applied to both local and remote access to information systems. Remote access is any access to an organizational information system by a user (or an information system) communicating through an external, non-organization-controlled network (e.g., the Internet). Local access is any access to an organizational information system by a user (or an information system) communicating through an internal organization-controlled network (e.g., local area network) or directly to a device without the use of a network. Unless a more stringent control enhancement is specified, authentication for both local and remote information system access is NIST Special Publication 800-63 level 1 compliant. FIPS 201 and Special Publications 800-73, 800-76, and 800-78 specify a personal identity verification (PIV) credential for use in the unique identification and authentication of federal employees and contractors. In addition to identifying and authenticating users at the information system level (i.e., at system logon), identification and authentication mechanisms are employed at the application level, when necessary, to provide increased information security for the organization.\nIn accordance with OMB policy and E-Authentication E-Government initiative, authentication of public users accessing federal information systems may also be required to protect nonpublic or privacy-related information. The e-authentication risk assessment conducted in accordance with OMB Memorandum 04-04 is used in determining the NIST Special Publication 800-63 compliance requirements for such accesses with regard to the IA-2 control and its enhancements. Scalability, practicality, and security issues are simultaneously considered in balancing the need to ensure ease of use for public access to such information and information systems with the need to protect organizational operations, organizational assets, and individuals. Related security controls: AC-14, AC-17.
         controlLevel: LOW
-        enhancements: (1)\nThe information system employs multifactor authentication for remote system access that is NIST Special Publication 800-63 [Selection: organization-defined level 3, level 3 using a hardware authentication device, or level 4] compliant.\n(2)\nThe information system employs multifactor authentication for local system access that is NIST Special Publication 800-63 [Selection: organization-defined level 3 or level 4] compliant.\n(3)\nThe information system employs multifactor authentication for remote system access that is NIST Special Publication 800-63 level 4 compliant.','Medium: (1) High: (2)(3)
-        supplement: None 
+        enhancements: (1)\nThe information system employs multifactor authentication for remote system access that is NIST Special Publication 800-63 [Selection: organization-defined level 3, level 3 using a hardware authentication device, or level 4] compliant.\n(2)\nThe information system employs multifactor authentication for local system access that is NIST Special Publication 800-63 [Selection: organization-defined level 3 or level 4] compliant.\n(3)\nThe information system employs multifactor authentication for remote system access that is NIST Special Publication 800-63 level 4 compliant.
+        supplement: Medium: (1) High: (2)(3) 
 
     IA-03:
         code: IA-03
@@ -766,8 +766,8 @@ SecurityControl:
         control: The organization trains personnel in their incident response roles and responsibilities with respect to the information system and provides refresher training [Assignment: organization-defined frequency, at least annually].
         guidance: None
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization incorporates simulated events into incident response training to facilitate effective response by personnel in crisis situations.\n(2)\nThe organization employs automated mechanisms to provide a more thorough and realistic training environment.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization incorporates simulated events into incident response training to facilitate effective response by personnel in crisis situations.\n(2)\nThe organization employs automated mechanisms to provide a more thorough and realistic training environment.
+        supplement: High: (1) 
 
     IR-03:
         code: IR-03
@@ -777,8 +777,8 @@ SecurityControl:
         control: The organization tests and/or exercises the incident response capability for the information system [Assignment: organization-defined frequency, at least annually] using [Assignment: organization-defined tests and/or exercises] to determine the incident response effectiveness and documents the results.
         guidance: NIST Special Publication 800-84 provides guidance on test, training, and exercise programs for information technology plans and capabilities.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs automated mechanisms to more thoroughly and effectively test/exercise the incident response capability.\nEnhancement Supplemental Guidance: Automated mechanisms can provide the ability to more thoroughly and effectively test or exercise the capability by providing more complete coverage of incident response issues, selecting more realistic test/exercise scenarios and environments, and more effectively stressing the response capability.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to more thoroughly and effectively test/exercise the incident response capability.\nEnhancement Supplemental Guidance: Automated mechanisms can provide the ability to more thoroughly and effectively test or exercise the capability by providing more complete coverage of incident response issues, selecting more realistic test/exercise scenarios and environments, and more effectively stressing the response capability.
+        supplement: High: (1) 
 
     IR-04:
         code: IR-04
@@ -788,8 +788,8 @@ SecurityControl:
         control: The organization implements an incident handling capability for security incidents that includes preparation, detection and analysis, containment, eradication, and recovery.
         guidance: Incident-related information can be obtained from a variety of sources including, but not limited to, audit monitoring, network monitoring, physical access monitoring, and user/administrator reports. The organization incorporates the lessons learned from ongoing incident handling activities into the incident response procedures and implements the procedures accordingly. Related security controls: AU-6, PE-6.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to support the incident handling process.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to support the incident handling process.
+        supplement: Medium: (1) High: (1) 
 
     IR-05:
         code: IR-05
@@ -799,8 +799,8 @@ SecurityControl:
         control: The organization tracks and documents information system security incidents on an ongoing basis.
         guidance: None
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs automated mechanisms to assist in the tracking of security incidents and in the collection and analysis of incident information.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to assist in the tracking of security incidents and in the collection and analysis of incident information.
+        supplement: High: (1) 
 
     IR-06:
         code: IR-06
@@ -810,19 +810,19 @@ SecurityControl:
         control: The organization promptly reports incident information to appropriate authorities.
         guidance: The types of incident information reported, the content and timeliness of the reports, and the list of designated reporting authorities or organizations are consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance. Organizational officials report cyber security incidents to the United States Computer Emergency Readiness Team (US-CERT) at http://www.us-cert.gov within the specified timeframe designated in the US-CERT Concept of Operations for Federal Cyber Security Incident Handling. In addition to incident information, weaknesses and vulnerabilities in the information system are reported to appropriate organizational officials in a timely manner to prevent security incidents. NIST Special Publication 800-61 provides guidance on incident reporting.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to assist in the reporting of security incidents.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to assist in the reporting of security incidents.
+        supplement: Medium: (1) High: (1) 
 
     IR-07:
         code: IR-07
         class: OPERATIONAL
         subclass: Incident Response Assistance 
         family: Incident Response
-        control: The organization provides an incident response support resource that offers advice and assistance to users of the information system for the handling and reporting of security incidents. The support resource is an integral part of the organization\'s incident response capability.
+        control: The organization provides an incident response support resource that offers advice and assistance to users of the information system for the handling and reporting of security incidents. The support resource is an integral part of the organization's incident response capability.
         guidance: Possible implementations of incident response support resources in an organization include a help desk or an assistance group and access to forensics services, when required.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to increase the availability of incident response-related information and support.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to increase the availability of incident response-related information and support.
+        supplement: Medium: (1) High: (1) 
 
     MA-01:
         code: MA-01
@@ -843,8 +843,8 @@ SecurityControl:
         control: The organization schedules, performs, documents, and reviews records of routine preventative and regular maintenance (including repairs) on the components of the information system in accordance with manufacturer or vendor specifications and/or organizational requirements.
         guidance: All maintenance activities to include routine, scheduled maintenance and repairs are controlled; whether performed on site or remotely and whether the equipment is serviced on site or removed to another location. Organizational officials approve the removal of the information system or information system components from the facility when repairs are necessary. If the information system or component of the system requires off-site repair, the organization removes all information from associated media using approved procedures. After maintenance is performed on the information system, the organization checks all potentially impacted security controls to verify that the controls are still functioning properly.
         controlLevel: LOW
-        enhancements: (1)\nThe organization maintains maintenance records for the information system that include: (i) the date and time of maintenance; (ii) name of the individual performing the maintenance; (iii) name of escort, if necessary; (iv) a description of the maintenance performed; and (v) a list of equipment removed or replaced (including identification numbers, if applicable).\n(2)\nThe organization employs automated mechanisms to schedule and conduct maintenance as required, and to create up-to date, accurate, complete, and available records of all maintenance actions, both needed and completed.','Medium: (1) High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization maintains maintenance records for the information system that include: (i) the date and time of maintenance; (ii) name of the individual performing the maintenance; (iii) name of escort, if necessary; (iv) a description of the maintenance performed; and (v) a list of equipment removed or replaced (including identification numbers, if applicable).\n(2)\nThe organization employs automated mechanisms to schedule and conduct maintenance as required, and to create up-to date, accurate, complete, and available records of all maintenance actions, both needed and completed.
+        supplement: Medium: (1) High: (1)(2) 
 
     MA-03:
         code: MA-03
@@ -854,8 +854,8 @@ SecurityControl:
         control: The organization approves, controls, and monitors the use of information system maintenance tools and maintains the tools on an ongoing basis.
         guidance: The intent of this control is to address hardware and software brought into the information system specifically for diagnostic/repair actions (e.g., a hardware or software packet sniffer that is introduced for the purpose of a particular maintenance activity). Hardware and/or software components that may support information system maintenance, yet are a part of the system (e.g., the software implementing \"ping,\" \"ls,\" \"ipconfig,\" or the hardware and software implementing the monitoring port of an Ethernet switch) are not covered by this control.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization inspects all maintenance tools carried into a facility by maintenance personnel for obvious improper modifications.\nEnhancement Supplemental Guidance: Maintenance tools include, for example, diagnostic and test equipment used to conduct maintenance on the information system.\n(2)\nThe organization checks all media containing diagnostic and test programs for malicious code before the media are used in the information system.\n(3)\nThe organization checks all maintenance equipment with the capability of retaining information so that no organizational information is written on the equipment or the equipment is appropriately sanitized before release; if the equipment cannot be sanitized, the equipment remains within the facility or is destroyed, unless an appropriate organization official explicitly authorizes an exception.\n(4)\nThe organization employs automated mechanisms to restrict the use of maintenance tools to authorized personnel only.','High: (1)(2)(3)
-        supplement: None 
+        enhancements: (1)\nThe organization inspects all maintenance tools carried into a facility by maintenance personnel for obvious improper modifications.\nEnhancement Supplemental Guidance: Maintenance tools include, for example, diagnostic and test equipment used to conduct maintenance on the information system.\n(2)\nThe organization checks all media containing diagnostic and test programs for malicious code before the media are used in the information system.\n(3)\nThe organization checks all maintenance equipment with the capability of retaining information so that no organizational information is written on the equipment or the equipment is appropriately sanitized before release; if the equipment cannot be sanitized, the equipment remains within the facility or is destroyed, unless an appropriate organization official explicitly authorizes an exception.\n(4)\nThe organization employs automated mechanisms to restrict the use of maintenance tools to authorized personnel only.
+        supplement: High: (1)(2)(3) 
 
     MA-04:
         code: MA-04
@@ -865,8 +865,8 @@ SecurityControl:
         control: The organization authorizes, monitors, and controls any remotely executed maintenance and diagnostic activities, if employed.
         guidance: Remote maintenance and diagnostic activities are conducted by individuals communicating through an external, non-organization-controlled network (e.g., the Internet). The use of remote maintenance and diagnostic tools is consistent with organizational policy and documented in the security plan for the information system. The organization maintains records for all remote maintenance and diagnostic activities. Other techniques and/or controls to consider for improving the security of remote maintenance include: (i) encryption and decryption of communications; (ii) strong identification and authentication techniques, such as Level 3 or 4 tokens as described in NIST Special Publication 800-63; and (iii) remote disconnect verification. When remote maintenance is completed, the organization (or information system in certain cases) terminates all sessions and remote connections invoked in the performance of that activity. If password-based authentication is used to accomplish remote maintenance, the organization changes the passwords following each remote maintenance service. NIST Special Publication 800-88 provides guidance on media sanitization. The National Security Agency provides a listing of approved media sanitization products at http://www.nsa.gov/ia/government/mdg.cfm. Related security controls: IA-2, MP-6.
         controlLevel: LOW
-        enhancements: (1)\nThe organization audits all remote maintenance and diagnostic sessions and appropriate organizational personnel review the maintenance records of the remote sessions.\n(2)\nThe organization addresses the installation and use of remote maintenance and diagnostic links in the security plan for the information system.\n(3)\nThe organization does not allow remote maintenance or diagnostic services to be performed by a provider that does not implement for its own information system, a level of security at least as high as that implemented on the system being serviced, unless the component being serviced is removed from the information system and sanitized (with regard to organizational information) before the service begins and also sanitized (with regard to potentially malicious software) after the service is performed and before being reconnected to the information system.','Medium: (1)(2) High: (1)(2)(3)
-        supplement: None 
+        enhancements: (1)\nThe organization audits all remote maintenance and diagnostic sessions and appropriate organizational personnel review the maintenance records of the remote sessions.\n(2)\nThe organization addresses the installation and use of remote maintenance and diagnostic links in the security plan for the information system.\n(3)\nThe organization does not allow remote maintenance or diagnostic services to be performed by a provider that does not implement for its own information system, a level of security at least as high as that implemented on the system being serviced, unless the component being serviced is removed from the information system and sanitized (with regard to organizational information) before the service begins and also sanitized (with regard to potentially malicious software) after the service is performed and before being reconnected to the information system.
+        supplement: Medium: (1)(2) High: (1)(2)(3) 
 
     MA-05:
         code: MA-05
@@ -909,8 +909,8 @@ SecurityControl:
         control: The organization restricts access to information system media to authorized individuals.
         guidance: Information system media includes both digital media (e.g., diskettes, magnetic tapes, external/removable hard drives, flash/thumb drives, compact disks, digital video disks) and non-digital media (e.g., paper, microfilm). This control also applies to portable and mobile computing and communications devices with information storage capability (e.g., notebook computers, personal digital assistants, cellular telephones).  An organizational assessment of risk guides the selection of media and associated information contained on that media requiring restricted access. Organizations document in policy and procedures, the media requiring restricted access, individuals authorized to access the media, and the specific measures taken to restrict access. The rigor with which this control is applied is commensurate with the FIPS 199 security categorization of the information contained on the media. For example, fewer protection measures are needed for media containing information determined by the organization to be in the public domain, to be publicly releasable, or to have limited or no adverse impact on the organization or individuals if accessed by other than authorized personnel. In these situations, it is assumed that the physical access controls where the media resides provide adequate protection.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to restrict access to media storage areas and to audit access attempts and access granted.\nEnhancement Supplemental Guidance: This control enhancement is primarily applicable to designated media storage areas within an organization where a significant volume of media is stored and is not intended to apply to every location where some media is stored (e.g., in individual offices).','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to restrict access to media storage areas and to audit access attempts and access granted.\nEnhancement Supplemental Guidance: This control enhancement is primarily applicable to designated media storage areas within an organization where a significant volume of media is stored and is not intended to apply to every location where some media is stored (e.g., in individual offices).
+        supplement: Medium: (1) High: (1) 
 
     MP-03:
         code: MP-03
@@ -942,8 +942,8 @@ SecurityControl:
         control: The organization protects and controls information system media during transport outside of controlled areas and restricts the activities associated with transport of such media to authorized personnel.
         guidance: Information system media includes both digital media (e.g., diskettes, tapes, removable hard drives, flash/thumb drives, compact disks, digital video disks) and non-digital media (e.g., paper, microfilm). A controlled area is any area or space for which the organization has confidence that the physical and procedural protections provided are sufficient to meet the requirements established for protecting the information and/or information system. This control also applies to portable and mobile computing and communications devices with information storage capability (e.g., notebook computers, personal digital assistants, cellular telephones) that are transported outside of controlled areas. Telephone systems are also considered information systems and may have the capability to store information on internal media (e.g., on voicemail systems). Since telephone systems do not have, in most cases, the identification, authentication, and access control mechanisms typically employed in other information systems, organizational personnel exercise extreme caution in the types of information stored on telephone voicemail systems that are transported outside of controlled areas. An organizational assessment of risk guides the selection of media and associated information contained on that media requiring protection during transport. Organizations document in policy and procedures, the media requiring protection during transport and the specific measures taken to protect such transported media. The rigor with which this control is applied is commensurate with the FIPS 199 security categorization of the information contained on the media. An organizational assessment of risk also guides the selection and use of appropriate storage containers for transporting non-digital media. Authorized transport and courier personnel may include individuals from outside the organization (e.g., U.S. Postal Service or a commercial transport or delivery service).
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization protects digital and non-digital media during transport outside of controlled areas using [Assignment: organization-defined security measures, e.g., locked container, cryptography].\nEnhancement Supplemental Guidance: Physical and technical security measures for the protection of digital and non-digital media are approved by the organization, commensurate with the FIPS 199 security categorization of the information residing on the media, and consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance. Cryptographic mechanisms can provide confidentiality and/or integrity protections depending upon the mechanisms used.\n(2)\nThe organization documents, where appropriate, activities associated with the transport of information system media using [Assignment: organization-defined system of records].\nEnhancement Supplemental Guidance: Organizations establish documentation requirements for activities associated with the transport of information system media in accordance with the organizational assessment of risk.\n(3)\nThe organization employs an identified custodian at all times to transport information system media.\nEnhancement Supplemental Guidance: Organizations establish documentation requirements for activities associated with the transport of information system media in accordance with the organizational assessment of risk.','Medium: (1)(2) High: (1)(2)(3)
-        supplement: None 
+        enhancements: (1)\nThe organization protects digital and non-digital media during transport outside of controlled areas using [Assignment: organization-defined security measures, e.g., locked container, cryptography].\nEnhancement Supplemental Guidance: Physical and technical security measures for the protection of digital and non-digital media are approved by the organization, commensurate with the FIPS 199 security categorization of the information residing on the media, and consistent with applicable laws, Executive Orders, directives, policies, regulations, standards, and guidance. Cryptographic mechanisms can provide confidentiality and/or integrity protections depending upon the mechanisms used.\n(2)\nThe organization documents, where appropriate, activities associated with the transport of information system media using [Assignment: organization-defined system of records].\nEnhancement Supplemental Guidance: Organizations establish documentation requirements for activities associated with the transport of information system media in accordance with the organizational assessment of risk.\n(3)\nThe organization employs an identified custodian at all times to transport information system media.\nEnhancement Supplemental Guidance: Organizations establish documentation requirements for activities associated with the transport of information system media in accordance with the organizational assessment of risk.
+        supplement: Medium: (1)(2) High: (1)(2)(3) 
 
     MP-06:
         code: MP-06
@@ -953,8 +953,8 @@ SecurityControl:
         control: The organization sanitizes information system media, both digital and non-digital, prior to disposal or release for reuse.
         guidance: Sanitization is the process used to remove information from information system media such that there is reasonable assurance, in proportion to the confidentiality of the information, that the information cannot be retrieved or reconstructed. Sanitization techniques, including clearing, purging, and destroying media information, prevent the disclosure of organizational information to unauthorized individuals when such media is reused or disposed. The organization uses its discretion on sanitization techniques and procedures for media containing information deemed to be in the public domain or publicly releasable, or deemed to have no adverse impact on the organization or individuals if released for reuse or disposed. NIST Special Publication 800-88 provides guidance on media sanitization. The National Security Agency also provides media sanitization guidance and maintains a listing of approved sanitization products at http://www.nsa.gov/ia/government/mdg.cfm.
         controlLevel: LOW
-        enhancements: (1)\nThe organization tracks, documents, and verifies media sanitization and disposal actions.\n(2)\nThe organization periodically tests sanitization equipment and procedures to verify correct performance.','High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization tracks, documents, and verifies media sanitization and disposal actions.\n(2)\nThe organization periodically tests sanitization equipment and procedures to verify correct performance.
+        supplement: High: (1)(2) 
 
     PE-01:
         code: PE-01
@@ -983,11 +983,11 @@ SecurityControl:
         class: OPERATIONAL
         subclass: Physical Access Control 
         family: Physical and Environmental Protection
-        control: The organization controls all physical access points (including designated entry/exit points) to the facility where the information system resides (except for those areas within the facility officially designated as publicly accessible) and verifies individual access authorizations before granting access to the facility. The organization controls access to areas officially designated as publicly accessible, as appropriate, in accordance with the organization\'s assessment of risk.
+        control: The organization controls all physical access points (including designated entry/exit points) to the facility where the information system resides (except for those areas within the facility officially designated as publicly accessible) and verifies individual access authorizations before granting access to the facility. The organization controls access to areas officially designated as publicly accessible, as appropriate, in accordance with the organization's assessment of risk.
         guidance: The organization uses physical access devices (e.g., keys, locks, combinations, card readers) and/or guards to control entry to facilities containing information systems. The organization secures keys, combinations, and other access devices and inventories those devices regularly. The organization changes combinations and keys: (i) periodically; and (ii) when keys are lost, combinations are compromised, or individuals are transferred or terminated. Workstations and associated peripherals connected to (and part of) an organizational information system may be located in areas designated as publicly accessible with access to such devices being appropriately controlled. Where federal Personal Identity Verification (PIV) credential is used as an identification token and token-based access control is employed, the access control system conforms to the requirements of FIPS 201 and NIST Special Publication 800-73. If the token-based access control function employs cryptographic verification, the access control system conforms to the requirements of NIST Special Publication 800-78. If the token-based access control function employs biometric verification, the access control system conforms to the requirements of NIST Special Publication 800-76.
         controlLevel: LOW
-        enhancements: (1)\nThe organization controls physical access to the information system independent of the physical access controls for the facility.\nEnhancement Supplemental Guidance: This control enhancement, in general, applies to server rooms, communications centers, or any other areas within a facility containing large concentrations of information system components or components with a higher impact level than that of the majority of the facility. The intent is to provide an additional layer of physical security for those areas where the organization may be more vulnerable due to the concentration of information system components or the impact level of the components. The control enhancement is not intended to apply to workstations or peripheral devices that are typically dispersed throughout the facility and used routinely by organizational personnel.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization controls physical access to the information system independent of the physical access controls for the facility.\nEnhancement Supplemental Guidance: This control enhancement, in general, applies to server rooms, communications centers, or any other areas within a facility containing large concentrations of information system components or components with a higher impact level than that of the majority of the facility. The intent is to provide an additional layer of physical security for those areas where the organization may be more vulnerable due to the concentration of information system components or the impact level of the components. The control enhancement is not intended to apply to workstations or peripheral devices that are typically dispersed throughout the facility and used routinely by organizational personnel.
+        supplement: High: (1) 
 
     PE-04:
         code: PE-04
@@ -1017,10 +1017,10 @@ SecurityControl:
         subclass: Monitoring Physical Access 
         family: Physical and Environmental Protection
         control: The organization monitors physical access to the information system to detect and respond to physical security incidents.
-        guidance: The organization reviews physical access logs periodically and investigates apparent security violations or suspicious physical access activities. Response to detected physical security incidents is part of the organization\'s incident response capability.
+        guidance: The organization reviews physical access logs periodically and investigates apparent security violations or suspicious physical access activities. Response to detected physical security incidents is part of the organization's incident response capability.
         controlLevel: LOW
-        enhancements: (1)\nThe organization monitors real-time physical intrusion alarms and surveillance equipment.\n(2)\nThe organization employs automated mechanisms to recognize potential intrusions and initiate appropriate response actions.','Medium: (1) High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization monitors real-time physical intrusion alarms and surveillance equipment.\n(2)\nThe organization employs automated mechanisms to recognize potential intrusions and initiate appropriate response actions.
+        supplement: Medium: (1) High: (1)(2) 
 
     PE-07:
         code: PE-07
@@ -1030,8 +1030,8 @@ SecurityControl:
         control: The organization controls physical access to the information system by authenticating visitors before authorizing access to the facility where the information system resides other than areas designated as publicly accessible.
         guidance: Government contractors and others with permanent authorization credentials are not considered visitors. Personal Identity Verification (PIV) credentials for federal employees and contractors conform to FIPS 201, and the issuing organizations for the PIV credentials are accredited in accordance with the provisions of NIST Special Publication 800-79.
         controlLevel: LOW
-        enhancements: (1)\nThe organization escorts visitors and monitors visitor activity, when required.','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization escorts visitors and monitors visitor activity, when required.
+        supplement: Medium: (1) High: (1) 
 
     PE-08:
         code: PE-08
@@ -1041,8 +1041,8 @@ SecurityControl:
         control: The organization maintains visitor access records to the facility where the information system resides (except for those areas within the facility officially designated as publicly accessible) that includes: (i) name and organization of the person visiting; (ii) signature of the visitor; (iii) form of identification; (iv) date of access; (v) time of entry and departure; (vi) purpose of visit; and (vii) name and organization of person visited. Designated officials within the organization review the visitor access records [Assignment: organization-defined frequency].
         guidance: None
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to facilitate the maintenance and review of access records.\n(2)\nThe organization maintains a record of all physical access, both visitor and authorized individuals.','High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to facilitate the maintenance and review of access records.\n(2)\nThe organization maintains a record of all physical access, both visitor and authorized individuals.
+        supplement: High: (1)(2) 
 
     PE-09:
         code: PE-09
@@ -1052,7 +1052,7 @@ SecurityControl:
         control: The organization protects power equipment and power cabling for the information system from damage and destruction.
         guidance: None
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs redundant and parallel power cabling paths.','None
+        enhancements: (1)\nThe organization employs redundant and parallel power cabling paths.
         supplement: None 
 
     PE-10:
@@ -1063,8 +1063,8 @@ SecurityControl:
         control: The organization provides, for specific locations within a facility containing concentrations of information system resources, the capability of shutting off power to any information system component that may be malfunctioning or threatened without endangering personnel by requiring them to approach the equipment.
         guidance: Facilities containing concentrations of information system resources may include, for example, data centers, server rooms, and mainframe rooms.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization protects the emergency power-off capability from accidental or unauthorized activation.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization protects the emergency power-off capability from accidental or unauthorized activation.
+        supplement: High: (1) 
 
     PE-11:
         code: PE-11
@@ -1074,8 +1074,8 @@ SecurityControl:
         control: The organization provides a short-term uninterruptible power supply to facilitate an orderly shutdown of the information system in the event of a primary power source loss.
         guidance: None
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization provides a long-term alternate power supply for the information system that is capable of maintaining minimally required operational capability in the event of an extended loss of the primary power source.\n(2)\nThe organization provides a long-term alternate power supply for the information system that is self-contained and not reliant on external power generation.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization provides a long-term alternate power supply for the information system that is capable of maintaining minimally required operational capability in the event of an extended loss of the primary power source.\n(2)\nThe organization provides a long-term alternate power supply for the information system that is self-contained and not reliant on external power generation.
+        supplement: High: (1)
 
     PE-12:
         code: PE-12
@@ -1096,8 +1096,8 @@ SecurityControl:
         control: The organization employs and maintains fire suppression and detection devices/systems that can be activated in the event of a fire.
         guidance: Fire suppression and detection devices/systems include, but are not limited to, sprinkler systems, handheld fire extinguishers, fixed fire hoses, and smoke detectors.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs fire detection devices/systems that activate automatically and notify the organization and emergency responders in the event of a fire.\n(2)\nThe organization employs fire suppression devices/systems that provide automatic notification of any activation to the organization and emergency responders.\n(3)\nThe organization employs an automatic fire suppression capability in facilities that are not staffed on a continuous basis.','Medium: (1)(2)(3) High: (1)(2)(3)
-        supplement: None 
+        enhancements: (1)\nThe organization employs fire detection devices/systems that activate automatically and notify the organization and emergency responders in the event of a fire.\n(2)\nThe organization employs fire suppression devices/systems that provide automatic notification of any activation to the organization and emergency responders.\n(3)\nThe organization employs an automatic fire suppression capability in facilities that are not staffed on a continuous basis.
+        supplement: Medium: (1)(2)(3) High: (1)(2)(3) 
 
     PE-14:
         code: PE-14
@@ -1118,8 +1118,8 @@ SecurityControl:
         control: The organization protects the information system from water damage resulting from broken plumbing lines or other sources of water leakage by providing master shutoff valves that are accessible, working properly, and known to key personnel.
         guidance: None
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs mechanisms that, without the need for manual intervention, protect the information system from water damage in the event of a significant water leak.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs mechanisms that, without the need for manual intervention, protect the information system from water damage in the event of a significant water leak.
+        supplement: High: (1)
 
     PE-16:
         code: PE-16
@@ -1151,8 +1151,8 @@ SecurityControl:
         control: The organization positions information system components within the facility to minimize potential damage from physical and environmental hazards and to minimize the opportunity for unauthorized access.
         guidance: Physical and environmental hazards include, for example, flooding, fire, tornados, earthquakes, hurricanes, acts of terrorism, vandalism, electrical interference, and electromagnetic radiation. Whenever possible, the organization also considers the location or site of the facility with regard to physical and environmental hazards.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization plans the location or site of the facility where the information system resides with regard to physical and environmental hazards and for existing facilities, considers the physical and environmental hazards in its risk mitigation strategy.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization plans the location or site of the facility where the information system resides with regard to physical and environmental hazards and for existing facilities, considers the physical and environmental hazards in its risk mitigation strategy.
+        supplement: High: (1)
 
     PE-19:
         code: PE-19
@@ -1182,7 +1182,7 @@ SecurityControl:
         subclass: System Security Plan 
         family: Planning
         control: The organization develops and implements a security plan for the information system that provides an overview of the security requirements for the system and a description of the security controls in place or planned for meeting those requirements. Designated officials within the organization review and approve the plan.
-        guidance: The security plan is aligned with the organization\'s information system architecture and information security architecture. NIST Special Publication 800-18 provides guidance on security planning.
+        guidance: The security plan is aligned with the organization's information system architecture and information security architecture. NIST Special Publication 800-18 provides guidance on security planning.
         controlLevel: LOW
         enhancements: None
         supplement: None 
@@ -1371,8 +1371,8 @@ SecurityControl:
         control: The organization scans for vulnerabilities in the information system [Assignment: organization-defined frequency] or when significant new vulnerabilities potentially affecting the system are identified and reported.
         guidance: Vulnerability scanning is conducted using appropriate scanning tools and techniques. The organization trains selected personnel in the use and maintenance of vulnerability scanning tools and techniques. Vulnerability scans are scheduled and/or random in accordance with organizational policy and assessment of risk. The information obtained from the vulnerability scanning process is freely shared with appropriate personnel throughout the organization to help eliminate similar vulnerabilities in other information systems. Vulnerability analysis for custom software and applications may require additional, more specialized approaches (e.g., vulnerability scanning tools for applications, source code reviews, static analysis of source code). NIST Special Publication 800-42 provides guidance on network security testing. NIST Special Publication 800-40 (Version 2) provides guidance on patch and vulnerability management.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs vulnerability scanning tools that include the capability to readily update the list of information system vulnerabilities scanned.\n(2)\nThe organization updates the list of information system vulnerabilities scanned [Assignment: organization-defined frequency] or when significant new vulnerabilities are identified and reported.\n(3)\nThe organization employs vulnerability scanning procedures that can demonstrate the breadth and depth of scan coverage, including vulnerabilities checked and information system components scanned.','High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization employs vulnerability scanning tools that include the capability to readily update the list of information system vulnerabilities scanned.\n(2)\nThe organization updates the list of information system vulnerabilities scanned [Assignment: organization-defined frequency] or when significant new vulnerabilities are identified and reported.\n(3)\nThe organization employs vulnerability scanning procedures that can demonstrate the breadth and depth of scan coverage, including vulnerabilities checked and information system components scanned.
+        supplement: High: (1)(2)
 
     SA-01:
         code: SA-01
@@ -1391,7 +1391,7 @@ SecurityControl:
         subclass: Allocation of Resources 
         family: System and Services Acquisition
         control: The organization determines, documents, and allocates as part of its capital planning and investment control process, the resources required to adequately protect the information system.
-        guidance: The organization includes the determination of security requirements for the information system in mission/business case planning and establishes a discrete line item for information system security in the organization\'s programming and budgeting documentation. NIST Special Publication 800-65 provides guidance on integrating security into the capital planning and investment control process.
+        guidance: The organization includes the determination of security requirements for the information system in mission/business case planning and establishes a discrete line item for information system security in the organization's programming and budgeting documentation. NIST Special Publication 800-65 provides guidance on integrating security into the capital planning and investment control process.
         controlLevel: LOW
         enhancements: None
         supplement: None 
@@ -1415,8 +1415,8 @@ SecurityControl:
         control: The organization includes security requirements and/or security specifications, either explicitly or by reference, in information system acquisition contracts based on an assessment of risk and in accordance with applicable laws, Executive Orders, directives, policies, regulations, and standards.
         guidance: Solicitation Documents\nThe solicitation documents (e.g., Requests for Proposals) for information systems and services include, either explicitly or by reference, security requirements that describe: (i) required security capabilities (security needs and, as necessary, specific security controls and other specific FISMA requirements); (ii) required design and development processes; (iii) required test and evaluation procedures; and (iv) required documentation. The requirements in the solicitation documents permit updating security controls as new threats/vulnerabilities are identified and as new technologies are implemented. NIST Special Publication 800-36 provides guidance on the selection of information security products. NIST Special Publication 800-35 provides guidance on information technology security services. NIST Special Publication 800-64 provides guidance on security considerations in the system development life cycle.\nInformation System Documentation\nThe solicitation documents include requirements for appropriate information system documentation. The documentation addresses user and systems administrator guidance and information regarding the implementation of the security controls in the information system. The level of detail required in the documentation is based on the FIPS 199 security category for the information system.\nUse of Tested, Evaluated, and Validated Products\nNIST Special Publication 800-23 provides guidance on the acquisition and use of tested/evaluated information technology products.\nConfiguration Settings and Implementation Guidance\nThe information system required documentation includes security configuration settings and security implementation guidance. OMB FISMA reporting instructions provide guidance on configuration requirements for federal information systems. NIST Special Publication 800-70 provides guidance on configuration settings for information technology products.
         controlLevel: LOW
-        enhancements: (1)\nThe organization requires in solicitation documents that appropriate documentation be provided describing the functional properties of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls.\n(2)\nThe organization requires in solicitation documents that appropriate documentation be provided describing the design and implementation details of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls (including functional interfaces among control components).','Medium: (1) High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization requires in solicitation documents that appropriate documentation be provided describing the functional properties of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls.\n(2)\nThe organization requires in solicitation documents that appropriate documentation be provided describing the design and implementation details of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls (including functional interfaces among control components).
+        supplement: Medium: (1) High: (1)
 
     SA-05:
         code: SA-05
@@ -1424,10 +1424,10 @@ SecurityControl:
         subclass: Information System Documentation 
         family: System and Services Acquisition
         control: The organization obtains, protects as required, and makes available to authorized personnel, adequate documentation for the information system.
-        guidance: Documentation includes administrator and user guides with information on: (i) configuring, installing, and operating the information system; and (ii) effectively using the system\'s security features. When adequate information system documentation is either unavailable or non existent (e.g., due to the age of the system or lack of support from the vendor/manufacturer), the organization documents attempts to obtain such documentation and provides compensating security controls, if needed.
+        guidance: Documentation includes administrator and user guides with information on: (i) configuring, installing, and operating the information system; and (ii) effectively using the system's security features. When adequate information system documentation is either unavailable or non existent (e.g., due to the age of the system or lack of support from the vendor/manufacturer), the organization documents attempts to obtain such documentation and provides compensating security controls, if needed.
         controlLevel: LOW
-        enhancements: (1)\nThe organization includes, in addition to administrator and user guides, documentation, if available from the vendor/manufacturer, describing the functional properties of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls.\n(2)\nThe organization includes, in addition to administrator and user guides, documentation, if available from the vendor/manufacturer, describing the design and implementation details of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls (including functional interfaces among control components).','Medium: (1) High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization includes, in addition to administrator and user guides, documentation, if available from the vendor/manufacturer, describing the functional properties of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls.\n(2)\nThe organization includes, in addition to administrator and user guides, documentation, if available from the vendor/manufacturer, describing the design and implementation details of the security controls employed within the information system with sufficient detail to permit analysis and testing of the controls (including functional interfaces among control components).
+        supplement: Medium: (1) High: (1)(2)
 
     SA-06:
         code: SA-06
@@ -1468,7 +1468,7 @@ SecurityControl:
         subclass: External Information System Services 
         family: System and Services Acquisition
         control: The organization: (i) requires that providers of external information system services employ adequate security controls in accordance with applicable laws, Executive Orders, directives, policies, regulations, standards, guidance, and established service-level agreements; and (ii) monitors security control compliance.
-        guidance: An external information system service is a service that is implemented outside of the accreditation boundary of the organizational information system (i.e., a service that is used by, but not a part of, the organizational information system). Relationships with external service providers are established in a variety of ways, for example, through joint ventures, business partnerships, outsourcing arrangements (i.e., through contracts, interagency agreements, lines of business arrangements), licensing agreements, and/or supply chain exchanges. Ultimately, the responsibility for adequately mitigating risks to the organization\'s operations and assets, and to individuals, arising from the use of external information system services remains with the authorizing official. Authorizing officials must require that an appropriate chain of trust be established with external service providers when dealing with the many issues associated with information system security. For services external to the organization, a chain of trust requires that the organization establish and retain a level of confidence that each participating service provider in the potentially complex consumer-provider relationship provides adequate protection for the services rendered to the organization. Where a sufficient level of trust cannot be established in the external services and/or service providers, the organization employs compensating security controls or accepts the greater degree of risk to its operations and assets, or to individuals. The external information system services documentation includes government, service provider, and end user security roles and responsibilities, and any service-level agreements. Service-level agreements define the expectations of performance for each required security control, describe measurable outcomes, and identify remedies and response requirements for any identified instance of non-compliance. NIST Special Publication 800-35 provides guidance on information technology security services. NIST Special Publication 800-64 provides guidance on the security considerations in the system development life cycle.
+        guidance: An external information system service is a service that is implemented outside of the accreditation boundary of the organizational information system (i.e., a service that is used by, but not a part of, the organizational information system). Relationships with external service providers are established in a variety of ways, for example, through joint ventures, business partnerships, outsourcing arrangements (i.e., through contracts, interagency agreements, lines of business arrangements), licensing agreements, and/or supply chain exchanges. Ultimately, the responsibility for adequately mitigating risks to the organization's operations and assets, and to individuals, arising from the use of external information system services remains with the authorizing official. Authorizing officials must require that an appropriate chain of trust be established with external service providers when dealing with the many issues associated with information system security. For services external to the organization, a chain of trust requires that the organization establish and retain a level of confidence that each participating service provider in the potentially complex consumer-provider relationship provides adequate protection for the services rendered to the organization. Where a sufficient level of trust cannot be established in the external services and/or service providers, the organization employs compensating security controls or accepts the greater degree of risk to its operations and assets, or to individuals. The external information system services documentation includes government, service provider, and end user security roles and responsibilities, and any service-level agreements. Service-level agreements define the expectations of performance for each required security control, describe measurable outcomes, and identify remedies and response requirements for any identified instance of non-compliance. NIST Special Publication 800-35 provides guidance on information technology security services. NIST Special Publication 800-64 provides guidance on the security considerations in the system development life cycle.
         controlLevel: LOW
         enhancements: None
         supplement: None 
@@ -1525,7 +1525,7 @@ SecurityControl:
         control: The information system isolates security functions from nonsecurity functions.
         guidance: The information system isolates security functions from nonsecurity functions by means of partitions, domains, etc., including control of access to and integrity of, the hardware, software, and firmware that perform those security functions. The information system maintains a separate execution domain (e.g., address space) for each executing process.
         controlLevel: HIGH
-        enhancements: (1)\nThe information system employs underlying hardware separation mechanisms to facilitate security function isolation.\n(2)\nThe information system isolates critical security functions (i.e., functions enforcing access and information flow control) from both nonsecurity functions and from other security functions.\n(3)\nThe information system minimizes the number of nonsecurity functions included within the isolation boundary containing security functions.\n(4)\nThe information system security functions are implemented as largely independent modules that avoid unnecessary interactions between modules.\n(5)\nThe information system security functions are implemented as a layered structure minimizing interactions between layers of the design and avoiding any dependence by lower layers on the functionality or correctness of higher layers.','None
+        enhancements: (1)\nThe information system employs underlying hardware separation mechanisms to facilitate security function isolation.\n(2)\nThe information system isolates critical security functions (i.e., functions enforcing access and information flow control) from both nonsecurity functions and from other security functions.\n(3)\nThe information system minimizes the number of nonsecurity functions included within the isolation boundary containing security functions.\n(4)\nThe information system security functions are implemented as largely independent modules that avoid unnecessary interactions between modules.\n(5)\nThe information system security functions are implemented as a layered structure minimizing interactions between layers of the design and avoiding any dependence by lower layers on the functionality or correctness of higher layers.
         supplement: None 
 
     SC-04:
@@ -1545,9 +1545,9 @@ SecurityControl:
         subclass: Denial of Service Protection 
         family: System and Communications Protection
         control: The information system protects against or limits the effects of the following types of denial of service attacks: [Assignment: organization-defined list of types of denial of service attacks or reference to source for current list].
-        guidance: A variety of technologies exist to limit, or in some cases, eliminate the effects of denial of service attacks. For example, boundary protection devices can filter certain types of packets to protect devices on an organization\'s internal network from being directly affected by denial of service attacks. Information systems that are publicly accessible can be protected by employing increased capacity and bandwidth combined with service redundancy.
+        guidance: A variety of technologies exist to limit, or in some cases, eliminate the effects of denial of service attacks. For example, boundary protection devices can filter certain types of packets to protect devices on an organization's internal network from being directly affected by denial of service attacks. Information systems that are publicly accessible can be protected by employing increased capacity and bandwidth combined with service redundancy.
         controlLevel: LOW
-        enhancements: (1)\nThe information system restricts the ability of users to launch denial of service attacks against other information systems or networks.\n(2)\nThe information system manages excess capacity, bandwidth, or other redundancy to limit the effects of information flooding types of denial of service attacks.','None
+        enhancements: (1)\nThe information system restricts the ability of users to launch denial of service attacks against other information systems or networks.\n(2)\nThe information system manages excess capacity, bandwidth, or other redundancy to limit the effects of information flooding types of denial of service attacks.
         supplement: None 
 
     SC-06:
@@ -1569,8 +1569,8 @@ SecurityControl:
         control: The information system monitors and controls communications at the external boundary of the information system and at key internal boundaries within the system.
         guidance: Any connections to the Internet, or other external networks or information systems, occur through managed interfaces consisting of appropriate boundary protection devices (e.g., proxies, gateways, routers, firewalls, guards, encrypted tunnels) arranged in an effective architecture (e.g., routers protecting firewalls and application gateways residing on a protected subnetwork commonly referred to as a demilitarized zone or DMZ). Information system boundary protections at any designated alternate processing sites provide the same levels of protection as that of the primary site.        As part of a defense-in-depth protection strategy, the organization considers partitioning higher-impact information systems into separate physical domains (or environments) and applying the concepts of managed interfaces described above to restrict or prohibit network access in accordance with an organizational assessment of risk. FIPS 199 security categorization guides the selection of appropriate candidates for domain partitioning.        The organization carefully considers the intrinsically shared nature of commercial telecommunications services in the implementation of security controls associated with the use of such services. Commercial telecommunications services are commonly based on network components and consolidated management systems shared by all attached commercial customers, and may include third party provided access lines and other service elements. Consequently, such interconnecting transmission services may represent sources of increased risk despite contract security provisions. Therefore, when this situation occurs, the organization either implements appropriate compensating security controls or explicitly accepts the additional risk. NIST Special Publication 800-77 provides guidance on virtual private networks. Related security controls: MP-4, RA-2.
         controlLevel: LOW
-        enhancements: (1)\nThe organization physically allocates publicly accessible information system components to separate subnetworks with separate, physical network interfaces.\nEnhancement Supplemental Guidance: Publicly accessible information system components include, for example, public web servers.\n(2)\nThe organization prevents public access into the organization\'s internal networks except as appropriately mediated.\n(3)\nThe organization limits the number of access points to the information system to allow for better monitoring of inbound and outbound network traffic.\n(4)\nThe organization implements a managed interface (boundary protection devices in an effective security architecture) with any external telecommunication service, implementing controls appropriate to the required protection of the confidentiality and integrity of the information being transmitted.\n(5)\nThe information system denies network traffic by default and allows network traffic by exception (i.e., deny all, permit by exception).\n(6)\nThe organization prevents the unauthorized release of information outside of the information system boundary or any unauthorized communication through the information system boundary when there is an operational failure of the boundary protection mechanisms.','Medium: (1)(2)(3)(4)(5) High: (1)(2)(3)(4)(5)(6)
-        supplement: None 
+        enhancements: (1)\nThe organization physically allocates publicly accessible information system components to separate subnetworks with separate, physical network interfaces.\nEnhancement Supplemental Guidance: Publicly accessible information system components include, for example, public web servers.\n(2)\nThe organization prevents public access into the organization's internal networks except as appropriately mediated.\n(3)\nThe organization limits the number of access points to the information system to allow for better monitoring of inbound and outbound network traffic.\n(4)\nThe organization implements a managed interface (boundary protection devices in an effective security architecture) with any external telecommunication service, implementing controls appropriate to the required protection of the confidentiality and integrity of the information being transmitted.\n(5)\nThe information system denies network traffic by default and allows network traffic by exception (i.e., deny all, permit by exception).\n(6)\nThe organization prevents the unauthorized release of information outside of the information system boundary or any unauthorized communication through the information system boundary when there is an operational failure of the boundary protection mechanisms.
+        supplement: Medium: (1)(2)(3)(4)(5) High: (1)(2)(3)(4)(5)(6) 
 
     SC-08:
         code: SC-08
@@ -1580,8 +1580,8 @@ SecurityControl:
         control: The information system protects the integrity of transmitted information.
         guidance: If the organization is relying on a commercial service provider for transmission services as a commodity item rather than a fully dedicated service, it may be more difficult to obtain the necessary assurances regarding the implementation of needed security controls for transmission integrity. When it is infeasible or impractical to obtain the necessary security controls and assurances of control effectiveness through appropriate contracting vehicles, the organization either implements appropriate compensating security controls or explicitly accepts the additional risk. NIST Special Publication 800-52 provides guidance on protecting transmission integrity using Transport Layer Security (TLS). NIST Special Publication 800-77 provides guidance on protecting transmission integrity using IPsec. NIST Special Publication 800-81 provides guidance on Domain Name System (DNS) message authentication and integrity verification. NSTISSI No. 7003 contains guidance on the use of Protective Distribution Systems.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs cryptographic mechanisms to recognize changes to information during transmission unless otherwise protected by alternative physical measures.\nEnhancement Supplemental Guidance: Alternative physical protection measures include, for example, protected distribution systems.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs cryptographic mechanisms to recognize changes to information during transmission unless otherwise protected by alternative physical measures.\nEnhancement Supplemental Guidance: Alternative physical protection measures include, for example, protected distribution systems.
+        supplement: High: (1) 
 
     SC-09:
         code: SC-09
@@ -1591,8 +1591,8 @@ SecurityControl:
         control: The information system protects the confidentiality of transmitted information.
         guidance: If the organization is relying on a commercial service provider for transmission services as a commodity item rather than a fully dedicated service, it may be more difficult to obtain the necessary assurances regarding the implementation of needed security controls for transmission confidentiality. When it is infeasible or impractical to obtain the necessary security controls and assurances of control effectiveness through appropriate contracting vehicles, the organization either implements appropriate compensating security controls or explicitly accepts the additional risk. NIST Special Publication 800-52 provides guidance on protecting transmission confidentiality using Transport Layer Security (TLS). NIST Special Publication 800-77 provides guidance on protecting transmission confidentiality using IPsec. NSTISSI No. 7003 contains guidance on the use of Protective Distribution Systems. Related security control: AC-17.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization employs cryptographic mechanisms to prevent unauthorized disclosure of information during transmission unless otherwise protected by alternative physical measures.\nEnhancement Supplemental Guidance: Alternative physical protection measures include, for example, protected distribution systems.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs cryptographic mechanisms to prevent unauthorized disclosure of information during transmission unless otherwise protected by alternative physical measures.\nEnhancement Supplemental Guidance: Alternative physical protection measures include, for example, protected distribution systems.
+        supplement: High: (1) 
 
     SC-10:
         code: SC-10
@@ -1657,7 +1657,7 @@ SecurityControl:
         control: The information system prohibits remote activation of collaborative computing mechanisms and provides an explicit indication of use to the local users.
         guidance: Collaborative computing mechanisms include, for example, video and audio conferencing capabilities. Explicit indication of use includes, for example, signals to local users when cameras and/or microphones are activated.
         controlLevel: MODERATE
-        enhancements: (1)\nThe information system provides physical disconnect of camera and microphone in a manner that supports ease of use.','None
+        enhancements: (1)\nThe information system provides physical disconnect of camera and microphone in a manner that supports ease of use.
         supplement: None 
 
     SC-16:
@@ -1712,7 +1712,7 @@ SecurityControl:
         control: The information system that provides name/address resolution service provides additional data origin and integrity artifacts along with the authoritative data it returns in response to resolution queries.
         guidance: This control enables remote clients to obtain origin authentication and integrity verification assurances for the name/address resolution information obtained through the service. A domain name system (DNS) server is an example of an information system that provides name/address resolution service; digital signatures and cryptographic keys are examples of additional artifacts; and DNS resource records are examples of authoritative data. NIST Special Publication 800-81 provides guidance on secure domain name system deployment.
         controlLevel: MODERATE
-        enhancements: (1)\nThe information system, when operating as part of a distributed, hierarchical namespace, provides the means to indicate the security status of child subspaces and (if the child supports secure resolution services) enable verification of a chain of trust among parent and child domains.\nEnhancement Supplemental Guidance: An example means to indicate the security status of child subspaces is through the use of delegation signer resource records.','None
+        enhancements: (1)\nThe information system, when operating as part of a distributed, hierarchical namespace, provides the means to indicate the security status of child subspaces and (if the child supports secure resolution services) enable verification of a chain of trust among parent and child domains.\nEnhancement Supplemental Guidance: An example means to indicate the security status of child subspaces is through the use of delegation signer resource records.
         supplement: None 
 
     SC-21:
@@ -1723,7 +1723,7 @@ SecurityControl:
         control: The information system that provides name/address resolution service for local clients performs data origin authentication and data integrity verification on the resolution responses it receives from authoritative sources when requested by client systems.
         guidance: A resolving or caching domain name system (DNS) server is an example of an information system that provides name/address resolution service for local clients and authoritative DNS servers are examples of authoritative sources. NIST Special Publication 800-81 provides guidance on secure domain name system deployment.
         controlLevel: HIGH
-        enhancements: (1)\nThe information system performs data origin authentication and data integrity verification on all resolution responses whether or not local clients explicitly request this service.\nEnhancement Supplemental Guidance: Local clients include, for example, DNS stub resolvers.','None
+        enhancements: (1)\nThe information system performs data origin authentication and data integrity verification on all resolution responses whether or not local clients explicitly request this service.\nEnhancement Supplemental Guidance: Local clients include, for example, DNS stub resolvers.
         supplement: None 
 
     SC-22:
@@ -1765,10 +1765,10 @@ SecurityControl:
         subclass: Flaw Remediation 
         family: System and Information Integrity
         control: The organization identifies, reports, and corrects information system flaws.
-        guidance: The organization identifies information systems containing software affected by recently announced software flaws (and potential vulnerabilities resulting from those flaws). The organization (or the software developer/vendor in the case of software developed and maintained by a vendor/contractor) promptly installs newly released security relevant patches, service packs, and hot fixes, and tests patches, service packs, and hot fixes for effectiveness and potential side effects on the organization\'s information systems before installation. Flaws discovered during security assessments, continuous monitoring, incident response activities, or information system error handling are also addressed expeditiously. Flaw remediation is incorporated into configuration management as an emergency change. NIST Special Publication 800-40, provides guidance on security patch installation and patch management. Related security controls: CA-2, CA-4, CA-7, CM-3, IR-4, SI-11.
+        guidance: The organization identifies information systems containing software affected by recently announced software flaws (and potential vulnerabilities resulting from those flaws). The organization (or the software developer/vendor in the case of software developed and maintained by a vendor/contractor) promptly installs newly released security relevant patches, service packs, and hot fixes, and tests patches, service packs, and hot fixes for effectiveness and potential side effects on the organization's information systems before installation. Flaws discovered during security assessments, continuous monitoring, incident response activities, or information system error handling are also addressed expeditiously. Flaw remediation is incorporated into configuration management as an emergency change. NIST Special Publication 800-40, provides guidance on security patch installation and patch management. Related security controls: CA-2, CA-4, CA-7, CM-3, IR-4, SI-11.
         controlLevel: LOW
-        enhancements: (1)\nThe organization centrally manages the flaw remediation process and installs updates automatically.\n(2)\nThe organization employs automated mechanisms to periodically and upon demand determine the state of information system components with regard to flaw remediation.','Medium: (2) High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization centrally manages the flaw remediation process and installs updates automatically.\n(2)\nThe organization employs automated mechanisms to periodically and upon demand determine the state of information system components with regard to flaw remediation.
+        supplement: Medium: (2) High: (1)(2)
 
     SI-03:
         code: SI-03
@@ -1778,8 +1778,8 @@ SecurityControl:
         control: The information system implements malicious code protection.
         guidance: The organization employs malicious code protection mechanisms at critical information system entry and exit points (e.g., firewalls, electronic mail servers, web servers, proxy servers, remote-access servers) and at workstations, servers, or mobile computing devices on the network. The organization uses the malicious code protection mechanisms to detect and eradicate malicious code (e.g., viruses, worms, Trojan horses, spyware) transported: (i) by electronic mail, electronic mail attachments, Internet accesses, removable media (e.g., USB devices, diskettes or compact disks), or other common means; or (ii) by exploiting information system vulnerabilities. The organization updates malicious code protection mechanisms (including the latest virus definitions) whenever new releases are available in accordance with organizational configuration management policy and procedures. The organization considers using malicious code protection software products from multiple vendors (e.g., using one vendor for boundary devices and servers and another vendor for workstations). The organization also considers the receipt of false positives during malicious code detection and eradication and the resulting potential impact on the availability of the information system. NIST Special Publication 800-83 provides guidance on implementing malicious code protection.
         controlLevel: LOW
-        enhancements: (1)\nThe organization centrally manages malicious code protection mechanisms.\n(2)\nThe information system automatically updates malicious code protection mechanisms.','Medium: (1)(2) High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization centrally manages malicious code protection mechanisms.\n(2)\nThe information system automatically updates malicious code protection mechanisms.
+        supplement: Medium: (1)(2) High: (1)(2)
 
     SI-04:
         code: SI-04
@@ -1789,8 +1789,8 @@ SecurityControl:
         control: The organization employs tools and techniques to monitor events on the information system, detect attacks, and provide identification of unauthorized use of the system.
         guidance: Information system monitoring capability is achieved through a variety of tools and techniques (e.g., intrusion detection systems, intrusion prevention systems, malicious code protection software, audit record monitoring software, network monitoring software). Monitoring devices are strategically deployed within the information system (e.g., at selected perimeter locations, near server farms supporting critical applications) to collect essential information. Monitoring devices are also deployed at ad hoc locations within the system to track specific transactions. Additionally, these devices are used to track the impact of security changes to the information system. The granularity of the information collected is determined by the organization based upon its monitoring objectives and the capability of the information system to support such activities. Organizations consult appropriate legal counsel with regard to all information system monitoring activities. Organizations heighten the level of information system monitoring activity whenever there is an indication of increased risk to organizational operations, organizational assets, or individuals based on law enforcement information, intelligence information, or other credible sources of information. NIST Special Publication 800-61 provides guidance on detecting attacks through various types of security technologies. NIST Special Publication 800-83 provides guidance on detecting malware-based attacks through malicious code protection software. NIST Special Publication 800-92 provides guidance on monitoring and analyzing computer security event logs. NIST Special Publication 800-94 provides guidance on intrusion detection and prevention. Related security control: AC-8.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization interconnects and configures individual intrusion detection tools into a systemwide intrusion detection system using common protocols.\n(2)\nThe organization employs automated tools to support near-real-time analysis of events.\n(3)\nThe organization employs automated tools to integrate intrusion detection tools into access control and flow control mechanisms for rapid response to attacks by enabling reconfiguration of these mechanisms in support of attack isolation and elimination.\n(4)\nThe information system monitors inbound and outbound communications for unusual or unauthorized activities or conditions.\nEnhancement Supplemental Guidance: Unusual/unauthorized activities or conditions include, for example, the presence of malicious code, the unauthorized export of information, or signaling to an external information system.\n(5)\nThe information system provides a real-time alert when the following indications of compromise or potential compromise occur: [Assignment: organization-defined list of compromise indicators].','Medium: (4) High: (2)(4)(5)
-        supplement: None 
+        enhancements: (1)\nThe organization interconnects and configures individual intrusion detection tools into a systemwide intrusion detection system using common protocols.\n(2)\nThe organization employs automated tools to support near-real-time analysis of events.\n(3)\nThe organization employs automated tools to integrate intrusion detection tools into access control and flow control mechanisms for rapid response to attacks by enabling reconfiguration of these mechanisms in support of attack isolation and elimination.\n(4)\nThe information system monitors inbound and outbound communications for unusual or unauthorized activities or conditions.\nEnhancement Supplemental Guidance: Unusual/unauthorized activities or conditions include, for example, the presence of malicious code, the unauthorized export of information, or signaling to an external information system.\n(5)\nThe information system provides a real-time alert when the following indications of compromise or potential compromise occur: [Assignment: organization-defined list of compromise indicators].
+        supplement: Medium: (4) High: (2)(4)(5)
 
     SI-05:
         code: SI-05
@@ -1800,8 +1800,8 @@ SecurityControl:
         control: The organization receives information system security alerts/advisories on a regular basis, issues alerts/advisories to appropriate personnel, and takes appropriate actions in response.
         guidance: The organization documents the types of actions to be taken in response to security alerts/advisories. The organization also maintains contact with special interest groups (e.g., information security forums) that: (i) facilitate sharing of security-related information (e.g., threats, vulnerabilities, and latest security technologies); (ii) provide access to advice from security professionals; and (iii) improve knowledge of security best practices. NIST Special Publication 800-40 provides guidance on monitoring and distributing security alerts and advisories.
         controlLevel: LOW
-        enhancements: (1)\nThe organization employs automated mechanisms to make security alert and advisory information available throughout the organization as needed.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization employs automated mechanisms to make security alert and advisory information available throughout the organization as needed.
+        supplement: High: (1) 
 
     SI-06:
         code: SI-06
@@ -1811,7 +1811,7 @@ SecurityControl:
         control: The information system verifies the correct operation of security functions [Selection (one or more): upon system startup and restart, upon command by user with appropriate privilege, periodically every [Assignment: organization-defined time-period]] and [Selection (one or more): notifies system administrator, shuts the system down, restarts the system] when anomalies are
         guidance: The need to verify security functionality applies to all security functions. For those security functions that are not able to execute automated self-tests, the organization either implements compensating security controls or explicitly accepts the risk of not performing the verification as required.
         controlLevel: HIGH
-        enhancements: (1)\nThe organization employs automated mechanisms to provide notification of failed automated security tests.\n(2)\nThe organization employs automated mechanisms to support management of distributed security testing.','None
+        enhancements: (1)\nThe organization employs automated mechanisms to provide notification of failed automated security tests.\n(2)\nThe organization employs automated mechanisms to support management of distributed security testing.
         supplement: None 
 
     SI-07:
@@ -1822,8 +1822,8 @@ SecurityControl:
         control: The information system detects and protects against unauthorized changes to software and information.
         guidance: The organization employs integrity verification applications on the information system to look for evidence of information tampering, errors, and omissions. The organization employs good software engineering practices with regard to commercial off-the-shelf integrity mechanisms (e.g., parity checks, cyclical redundancy checks, cryptographic hashes) and uses tools to automatically monitor the integrity of the information system and the applications it hosts.
         controlLevel: HIGH
-        enhancements: (1)\nThe organization reassesses the integrity of software and information by performing [Assignment: organization-defined frequency] integrity scans of the system.\n(2)\nThe organization employs automated tools that provide notification to appropriate individuals upon discovering discrepancies during integrity verification.\n(3)\nThe organization employs centrally managed integrity verification tools.','High: (1)(2)
-        supplement: None 
+        enhancements: (1)\nThe organization reassesses the integrity of software and information by performing [Assignment: organization-defined frequency] integrity scans of the system.\n(2)\nThe organization employs automated tools that provide notification to appropriate individuals upon discovering discrepancies during integrity verification.\n(3)\nThe organization employs centrally managed integrity verification tools.
+        supplement: High: (1)(2) 
 
     SI-08:
         code: SI-08
@@ -1833,8 +1833,8 @@ SecurityControl:
         control: The information system implements spam protection.
         guidance: The organization employs spam protection mechanisms at critical information system entry points (e.g., firewalls, electronic mail servers, remote-access servers) and at workstations, servers, or mobile computing devices on the network. The organization uses the spam protection mechanisms to detect and take appropriate action on unsolicited messages transported by electronic mail, electronic mail attachments, Internet accesses, or other common means. Consideration is given to using spam protection software products from multiple vendors (e.g., using one vendor for boundary devices and servers and another vendor for workstations). NIST Special Publication 800-45 provides guidance on electronic mail security.
         controlLevel: MODERATE
-        enhancements: (1)\nThe organization centrally manages spam protection mechanisms.\n(2)\nThe information system automatically updates spam protection mechanisms.','High: (1)
-        supplement: None 
+        enhancements: (1)\nThe organization centrally manages spam protection mechanisms.\n(2)\nThe information system automatically updates spam protection mechanisms.
+        supplement: High: (1)
 
     SI-09:
         code: SI-09
