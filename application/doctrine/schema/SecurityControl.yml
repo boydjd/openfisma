@@ -6,13 +6,13 @@ SecurityControl:
             comment: The control number, e.g. AC-05
         class:
             type: enum
-            values: [management, operational, technical]
+            values: [MANAGEMENT, OPERATIONAL, TECHNICAL]
         subclass: string(255)
         family: string(255)
         control: string
         guidance: string
         controlLevel:
             type: enum
-            values: [none, low, moderate, high]
+            values: [NONE, LOW, MODERATE, HIGH]
         enhancements: string
         supplement: string
