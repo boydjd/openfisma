@@ -121,7 +121,7 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
                                                         'onClickFunction' => 'submitMitigationStrategy')    );
     if (false == $complete
         || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')
-        || 'NONE' == $finding->type) {
+        || in_array($finding->type, array('NONE', 'AR', 'FP'))) {
         $submitMitigationButton->readOnly = true;
     }
     echo "<div class='toolbar'>$submitMitigationButton</div>";
