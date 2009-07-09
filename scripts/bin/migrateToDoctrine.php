@@ -189,17 +189,20 @@ class Migrate
 
     public function copyOrganization()
     {
-        $organization = new Organization();
         $organizations = self::$_db->fetchAll('SELECT * FROM organizations');
         foreach ($organizations as $row) {
             $data = $this->_migrateData($row);
             $data['orgType']    = 'organization';
             $data['createdTs']  = $data['modifiedTs'] = date('Y-m-d H:i:s');
-            $this->migrate('Organization', $data);
             if ((int)$row['father'] == 0) {
+                $this->migrate('Organization', $data);
+                $organization = new Organization();
                 $treeObject = $organization->getTable()->getTree();
                 $treeObject->createRoot($organization->getTable()->find($row['id']));
             } else {
+                $organization = new Organization();
+                $organization->merge($data);
+                $organization->save();
                 $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($row['father']));
             }
         }
@@ -210,7 +213,9 @@ class Migrate
             $data['orgType']    = 'system';
             $data['systemId']   = $row['id'];
             $data['createdTs']  = $data['modifiedTs'] = date('Y-m-d H:i:s');
-            $this->migrate('Organization', $data);
+            $organization = new Organization();
+            $organization->merge($data);
+            $organization->save();
             $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($row['oid']));
         }
         $this->_printResult('Organization');
