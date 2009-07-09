@@ -210,7 +210,7 @@ Event:
     Mitigation Strategy Submit:
         name: Mitigation Strategy Submit
         Privilege: notification_finding
-		
+
     Mitigation strategy Revise:
         name: Mitiation Strategy Revise
         Privilege: notification_finding
