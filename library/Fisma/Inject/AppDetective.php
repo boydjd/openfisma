@@ -246,7 +246,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 
                 // The finding's asset ID is set during the commit, since the asset may not exist yet.
                 $finding['uploadId'] = $uploadId;
-                $finding['discoverTs'] = $discoveredDate->toString('Y-m-d H:i:s');
+                $finding['discoveredDate'] = $discoveredDate->toString('Y-m-d H:i:s');
                 $finding['sourceId'] = $this->_findingSourceId;
                 $finding['responsibleOrganizationId'] = $this->_orgSystemId;
                 $finding['recommendation'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);

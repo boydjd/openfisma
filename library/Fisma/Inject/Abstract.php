@@ -104,7 +104,7 @@ abstract class Fisma_Inject_Abstract
                     $this->_totalFindings['reviewed']++;
                     Doctrine_Manager::connection()->commit();
                 }
-            } elseif ($result->type == 'AR') {
+            } elseif ($duplicate->type == 'AR') {
                 if ($duplicate->responsibleOrganizationId == $findingTable->responsibleOrganizationId) {
                     $this->_totalFindings['deleted']++;
                     Doctrine_Manager::connection()->rollback();
