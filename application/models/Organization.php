@@ -36,11 +36,6 @@
 class Organization extends BaseOrganization
 {
     /**
-     * Private cache for the organizations' finding summaries
-     */
-    private static $_findingSummaryCache;
-    
-    /**
      * Implements the interface for Zend_Acl_Role_Interface
      */
     public function getRoleId()
@@ -57,26 +52,6 @@ class Organization extends BaseOrganization
         'bureau' => 'Bureau',
         'organization' => 'Organization'
     );
-
-    private static function _getCache() 
-    {
-        if (!isset(self::$_findingSummaryCache)) {
-            $frontendOptions = array(
-                'cache_id_prefix' => 'finding_summary',
-                'automatic_serialization' => true,
-            );
-            $backendOptions = array(
-                'cache_dir' => Fisma::getPath('cache'),
-                'file_name_prefix' => 'finding_summary'
-            );
-            self::$_findingSummaryCache = Zend_Cache::factory('Core',
-                                                              'File',
-                                                               $frontendOptions,
-                                                               $backendOptions);
-        }
-        
-        return self::$_findingSummaryCache;
-    }
 
     /**
      * Return the the type of this organization.  Unlike $this->type, this resolves
@@ -132,7 +107,7 @@ class Organization extends BaseOrganization
      * @return array 
      */
     public function getSummaryCounts($type, $source) {
-        $cache = self::_getCache();
+        $cache = Fisma::getCacheInstance($identify = 'finding_summary');
         $cacheId = $this->getCacheId(array('type' => $type, 'source' => $source));
                      
         if (!$cache->test($cacheId)) {
@@ -247,7 +222,7 @@ class Organization extends BaseOrganization
      */
     public function invalidateCache() 
     {
-        $cache = self::_getCache();
+        $cache = Fisma::getCacheInstance($identify = 'finding_summary');
         
         $cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG,
                       array($this->getCacheTag()));

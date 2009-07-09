@@ -33,6 +33,56 @@
 class Fisma_Lucene
 {
     /**
+     * Fuzzy Search by Zend_Search_Lucene
+     *
+     * @param string $keywords the search conditions
+     *      The keywords should be as following format:
+     *              a.   keyword (search keyword in all fields)
+     *              b.   field:keyword (search keyword in field)
+     *              c.   keyword1 field:keyword2 -keyword3 (required keyword1 in all fields,
+     *                   required keyword2 in field, not required keyword3 in all fields)
+     *              d.   keywor*  (to search for keywor, keyword, keywords, etc.)
+     *              e.   keywo?d  (to search for keyword, keywoaed ,etc.)
+     *              f.   mod_date:[20080101 TO 20080130] (search mod_date fields between 20080101 and 20080130)
+     *              g.   title:{Aida To Carmen} (search whose titles would be sorted between Aida and Carmen)
+     *              h.   keywor~  (fuzzy search, search like keyword, leyword, etc.)
+     *              i.   keyword1 AND keyword2 (search documents that contain keyword1 and keyword2)
+     *              j.   keyword1 OR keyword2 (search docuements that contain keyword1 or keyword2)
+     *              k.   keyword1 AND NOT keyword2 (search documents that contain keyword1 but not keywords2)
+     *              ... see Zend_Search_Lucene for more format
+     * @param string $indexName index name
+     * @return array table row ids
+     */
+    public static function search($keywords, $indexName)
+    {
+        if (!is_dir(Fisma::getPath('index') . '/' . $indexName)) {
+            /** @todo english */
+            throw new Fisma_Exception('The path of creating indexes is not existed');
+        }
+        $cache = Fisma::getCacheInstance('LuceneSearch');
+        $userId = User::currentUser()->id;
+        $index = new Zend_Search_Lucene(Fisma::getPath('index') . '/' . $indexName);
+        // if the keywords didn't in cache or current keywords is different from the keywords in cache,
+        // then do the LUCENE searching
+        if (!$cache->load($userId . '_keywords') || $keywords != $cache->load($userId . '_keywords')) {
+            $hits = $index->find($keywords);
+            $ids = array();
+            foreach ($hits as $row) {
+                $id = $row->rowId;
+                if (!empty($id)) {
+                    $ids[] = $id;
+                }
+            }
+            // Cache current searching result, and identify it from user id.
+            $cache->save($ids, $userId . '_' . $indexName);
+            // Cache current keywords, and identify it from user id.
+            $cache->save($keywords, $userId . '_keywords');
+        }
+        //get the last result
+        return $cache->load($userId . '_' . $indexName);
+    }
+
+    /**
      * Update Zend_Search_Lucene index
      *
      * This function can create one, update one Zend_Lucene index.

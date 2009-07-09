@@ -317,10 +317,9 @@ abstract class BaseController extends SecurityController
                         ));
         if (!empty($keywords)) {
             // lucene search 
-            $ids = $this->_helper->searchQuery($keywords, strtolower($this->_modelName));
+            $ids = Fisma_Lucene::search($keywords, strtolower($this->_modelName));
             if (!empty($ids)) {
-                $ids = implode(',', $ids);
-                $query->where('id IN (' . $ids . ')');
+                $query->whereIn('id', $ids);
             } else {
                 //no data
                 return $this->_helper->json($tableData);

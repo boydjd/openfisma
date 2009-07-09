@@ -102,7 +102,8 @@ class CreateIndex
                 $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $value));
             } else {
                 //index the string type fields
-                if ('string' == Fisma_Lucene::getColumnType($indexName, $field)) {
+                if ('string' == Fisma_Lucene::getColumnType($indexName, $field)
+                    || ('name' == $field && 'system' == $indexName)) {
                     $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
                 }
             }
@@ -246,7 +247,11 @@ class CreateIndex
         }
 
         $systems = Doctrine::getTable('System')->findAll();
-        $this->_createIndex('system', $systems);
+        foreach ($systems as $system) {
+            $system->setName($system->Organization[0]->name);
+            $newSystems[] = $system->toArray();
+        }
+        $this->_createIndex('system', $newSystems);
     }
 
     private function _createAccount()

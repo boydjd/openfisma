@@ -147,6 +147,8 @@ class OrganizationController extends SecurityController
     public function searchAction()
     {
         Fisma_Acl::requirePrivilege('organization', 'read');
+        $value = trim($this->_request->getParam('keywords'));
+
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
         $sortBy = $this->_request->getParam('sortby', 'name');
@@ -176,10 +178,7 @@ class OrganizationController extends SecurityController
              ->offset($this->_paging['startIndex']);
 
         if (!empty($value)) {
-            $this->_helper->searchQuery($value, 'organization');
-            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            //@todo english  get search results in ids
-            $organizationIds = $cache->load($this->_me->id . '_organization');
+            $organizationIds = Fisma_Lucene::search($value, 'organization');
             if (empty($organizationIds)) {
                 //@todo english  set ids as a not exist value in database if search results is none.
                 $organizationIds = array(-1);

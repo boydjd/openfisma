@@ -109,15 +109,12 @@ class SystemController extends BaseController
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         if (!empty($value)) {
-            $this->_helper->searchQuery($value, 'system');
-            $cache = $this->getHelper('SearchQuery')->getCacheInstance();
-            // get search results in ids
-            $systemIds = $cache->load($this->_me->id . '_system');
+            $systemIds = Fisma_Lucene::search($value, 'system');
             if (empty($systemIds)) {
                 // set ids as a not exist value in database if search results is none.
                 $systemIds = array(-1);
             }
-            $q->whereIn('u.id', $systemIds);
+            $q->whereIn('s.id', $systemIds);
         }
 
         $totalRecords = $q->count();

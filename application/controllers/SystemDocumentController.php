@@ -122,7 +122,7 @@ class SystemDocumentController extends SecurityController
                         ));
         if (!empty($keywords)) {
             // lucene search 
-            $ids = $this->_helper->searchQuery($keywords, strtolower('SystemDocument'));
+            $ids = Fisma_Lucene::search($keywords, strtolower('SystemDocument'));
             if (!empty($ids)) {
                 $ids = implode(',', $ids);
                 $query->where('id IN (' . $ids . ')');

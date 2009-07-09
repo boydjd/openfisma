@@ -119,6 +119,11 @@ class Fisma
      * A single instance of Zend_Log which the application components share
      */
     private static $_log;
+
+    /**
+     * A single instance of Zend_Cache which the application components share
+     */
+    private static $_cache;
     
     /**
      * Initialize the FISMA object
@@ -384,7 +389,37 @@ class Fisma
         }
         return self::$_log;
     }
-    
+
+    /**
+     * Initialize the cache instance
+     *
+     * make the directory "/path/to/data/cache" writable
+     * 
+     * @param string $identify
+     * @return Zend_Cache
+     */
+    public static function getCacheInstance($identify = null)
+    {
+        if (null === self::$_cache) {
+            $frontendOptions = array(
+                'caching'                 => true,
+                // cache life same as system expiring period
+                'lifetime'                => Configuration::getConfig('session_inactivity_period'), 
+                'automatic_serialization' => true
+            );
+
+            $backendOptions = array(
+                'cache_dir' => Fisma::getPath('cache'),
+                'file_name_prefix' => $identify
+            );
+            self::$_cache = Zend_Cache::factory('Core',
+                                                'File',
+                                                $frontendOptions,
+                                                $backendOptions);
+        }
+        return self::$_cache;
+    }
+
     /**
      * Returns the current timestamp in DB friendly format
      * 
