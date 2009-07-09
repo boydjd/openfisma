@@ -221,9 +221,8 @@ abstract class BaseController extends SecurityController
                 $errorString = Fisma_Form_Manager::getErrors($form);
                 $this->message("Unable to update the {$this->_modelName}:<br>$errorString", self::M_WARNING);
             }
-        } else {
-            $form = $this->setForm($subject, $form);
         }
+        $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
         $this->render();
