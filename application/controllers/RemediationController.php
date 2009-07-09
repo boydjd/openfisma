@@ -1029,7 +1029,7 @@ class RemediationController extends SecurityController
 
             if (is_null($result->nextDueDate)) {
                 $row['duetime'] = 'N/A';
-            } elseif(strtotime($result->nextDueDate) >= time()) {
+            } elseif(date('Ymd', strtotime($result->nextDueDate)) >= date('Ymd', time())) {
                 $row['duetime'] = 'On time';
             } else {
                 $row['duetime'] = 'Due time';

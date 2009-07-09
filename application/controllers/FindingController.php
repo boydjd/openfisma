@@ -149,42 +149,6 @@ class FindingController extends BaseController
         $subject->save();
     }
     
-    
-    /**
-     * Provide searching capability of findings
-     * Data is limited in legal systems.
-     */
-    protected function _search($criteria)
-    {
-        $fields = array(
-            'id',
-            'legacy_finding_id',
-            'ip',
-            'port',
-            'status',
-            'source_id',
-            'system_id',
-            'discover_ts',
-            'count' => 'count(*)'
-        );
-        if ($criteria['status'] == 'REMEDIATION') {
-            $criteria['status'] = array(
-                'DRAFT',
-                'MSA',
-                'EN',
-                'EA'
-            );
-        }
-        $result = $this->_poam->search($this->_me->systems, $fields, $criteria,
-                     $this->_paging['currentPage'], $this->_paging['perPage']);
-        $total = array_pop($result);
-        $this->_paging['totalItems'] = $total;
-        $pager = & Pager::factory($this->_paging);
-        $this->view->assign('findings', $result);
-        $this->view->assign('links', $pager->getLinks());
-        $this->render('search');
-    }
-
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
      */

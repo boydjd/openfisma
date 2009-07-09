@@ -39,7 +39,7 @@
                 if (is_null($finding->nextDueDate)) {
                     echo 'N/A';
                 } else {
-                    echo time() < strtotime($finding->nextDueDate) ? 'On Time' : 'Overdue';
+                    echo date('Ymd', time()) <= date('Ymd', strtotime($finding->nextDueDate)) ? 'On Time' : 'Overdue';
                 }
             ?>
             </td>
