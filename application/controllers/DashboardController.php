@@ -111,7 +111,7 @@ class DashboardController extends SecurityController
         $enFindingsQuery = Doctrine_Query::create()
                             ->select('COUNT(*) as count')
                             ->from('Finding f')
-                            ->where('f.status = ? and nextDueDate >= NOW()', 'EN')
+                            ->where('f.status = ? AND DATEDIFF(NOW(), f.nextDueDate) <= 0', 'EN')
                             ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
         $result = $enFindingsQuery->fetchOne();
         $alert['EN']  = $result['count'];
@@ -119,7 +119,7 @@ class DashboardController extends SecurityController
         $eoFindingsQuery = Doctrine_Query::create()
                             ->select('COUNT(*) as count')
                             ->from('Finding f')
-                            ->where('f.status = ? AND nextDueDate < NOW()', 'EN')
+                            ->where('f.status = ? AND DATEDIFF(NOW(), f.nextDueDate) > 0', 'EN')
                             ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
         $result = $eoFindingsQuery->fetchOne();
         $alert['EO']  = $result['count'];
