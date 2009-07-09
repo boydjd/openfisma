@@ -166,6 +166,7 @@ class AssetController extends BaseController
             $req = $this->getRequest();
             $params['system_id'] = $req->get('system_id');
             $params['product'] = $req->get('product');
+            $params['name'] = $req->get('name');
             $params['vendor'] = $req->get('vendor');
             $params['version'] = $req->get('version');
             $params['ip'] = $req->get('ip');
@@ -241,6 +242,9 @@ class AssetController extends BaseController
              ->orderBy('a.name ASC');
         if (!empty($params['system_id'])) {
             $q->andWhere('a.orgSystemId = ?', $params['system_id']);
+        }
+        if (!empty($params['name'])) {
+            $q->andWhere('a.name LIKE ?', $params['name'] . '%');
         }
         if (!empty($params['product'])) {
             $q->andWhere('p.name LIKE ?', $params['product'] . '%');
