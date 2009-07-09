@@ -1005,7 +1005,15 @@ class RemediationController extends SecurityController
                 $row['status'] = $result->status;
             }
             $row['threatLevel'] = $result->threatLevel;
-            $row['expectedCompletionDate'] = $result->expectedCompletionDate;
+            if (empty($result->expectedCompletionDate) || $result->expectedCompletionDate == '0000-00-00') {
+                if ($result->currentEcd != '0000-00-00') {
+                    $row['expectedCompletionDate'] = $result->currentEcd;
+                } else {
+                    $row['expectedCompletionDate'] = '';
+                }
+            } else {
+                $row['expectedCompletionDate'] = $result->expectedCompletionDate;
+            }
             $row['countermeasuresEffectiveness'] = $result->countermeasuresEffectiveness;
             
             $source = $result->Source;
