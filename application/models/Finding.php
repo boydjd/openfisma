@@ -155,7 +155,7 @@ class Finding extends BaseFinding
                 }
                 break;
         }
-        $this->currentEvaluationId = $this->CurrentEvaluation->nextId;
+        $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
         $this->updateNextDueDate();
         $this->save();
     }
