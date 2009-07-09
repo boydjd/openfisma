@@ -52,7 +52,7 @@ class CreateIndex
     }
         
     /**
-     * Create index directory
+     * Create index directory, if the index directory is exists, then read the index
      *
      * @param string $name the index name
      * @return Zend_Search_Lucene
@@ -60,7 +60,11 @@ class CreateIndex
     private function _newIndex($name)
     {
         $indexPath = $this->_indexDir . "/$name";
-        $index = new Zend_Search_Lucene($indexPath, true);
+        if (file_exists($indexPath)) {
+            $index = new Zend_Search_Lucene($indexPath);
+        } else {
+            $index = new Zend_Search_Lucene($indexPath, true);
+        }
         return $index;
     }
     
