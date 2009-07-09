@@ -131,7 +131,7 @@ class Fisma_Form_Manager
                 }
             }
         }
-        return addslashes($errorString);
+        return $errorString;
     }
 
 }
