@@ -56,8 +56,6 @@ class SystemController extends BaseController
                 $text = str_repeat('--', $organization['level']) . $organization['name'];
                 $form->getElement('organizationId')->addMultiOptions(array($value => $text));
             }
-        } else {
-            $form->getElement('organizationId')->addMultiOptions(array(0 => 'NONE'));
         }
         
         $systemTable = Doctrine::getTable('System');
