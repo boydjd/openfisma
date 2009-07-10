@@ -13,16 +13,41 @@
 }
 .block #actionButton { padding:10px 20px; clear:left}
 .block select {
-	width:300px;
+	width:250px;
 }
 </style>
+<script type="text/javascript">
+    function addNotificationEvents(event, obj) {
+        var options = YAHOO.util.Selector.query('#availableEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            if (options[i].selected == true) {
+                document.getElementById('existEvents').appendChild(options[i]);
+            }
+        }
+    }
+    function removeNotificationEvents(event, obj) {
+        var options = YAHOO.util.Selector.query('#existEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            if (options[i].selected == true) {
+                document.getElementById('availableEvents').appendChild(options[i]);
+            }
+        }
+    }
+    function saveEvents(event, obj) {
+        var options = YAHOO.util.Selector.query('#existEvents option');
+        for (var i = 0; i < options.length; i ++) {
+            options[i].selected = true;
+        }
+        document.event_form.submit();
+    }
+</script>
 <?php Fisma_Format_Section::startSection("Notification Events"); ?>
 
 <div class='block'>
     <form name="event_form" id="event_form" enctype="application/x-www-form-urlencoded" method="post">
     <table>
         <tr>
-            <td colspan="2"><i>You can limit how often the system sends you e-mails:</i></td>
+            <td colspan="2" width="700px"><i>You can limit how often the system sends you e-mails:</i></td>
         </tr>
         <tr>
             <td><b>Notify Frequency (hours):</b></td>
@@ -41,20 +66,27 @@
             <?php echo $this->formSelect('availableEvents',null, array('multiple'=>"multiple", 'size' => '20'), $this->me->getAvailableEvents())?>        </div>
         <div class="inline" id="move">
             <p>
-                <input type="button" name="add" id="addNotificationEvents" value="->">
+                <?php echo new Fisma_Yui_Form_Button('addNotificationEvents',
+                                              array('label'           => '-->',
+                                                    'onClickFunction' => 'addNotificationEvents'));
+                ?>
             </p>
             <p>
-                <input type="button" name="remove" id="removeNotificationEvents" value="<-">
+                <?php echo new Fisma_Yui_Form_Button('removeNotificationEvents',
+                                              array('label'           => '<--',
+                                                    'onClickFunction' => 'removeNotificationEvents'));
+                ?>
             </p>
         </div>
         <div class="inline" id="enable"><b>Selected events:</b><br />
         <?php echo $this->formSelect('existEvents',null, array('multiple' => 'multiple', 'size' => '20'), $this->me->getExistEvents())?></div>
         </td></tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" align="center">
             <div id="actionButton">
-                <input name="save" id="save" value="save" type="submit">
-                <input name="reset" id="reset" value="reset" type="reset">
+                <?php echo new Fisma_Yui_Form_Button('submit',
+                                                array('label' => 'Save',
+                                                      'onClickFunction' => 'saveEvents'));?>
             </div>
             </td>
         </tr>

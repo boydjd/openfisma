@@ -93,43 +93,9 @@ var readyFunc = function () {
         return false;
     });
     //
-    YAHOO.util.Event.on('addNotificationEvents', 'click', function (){
-        var options = YAHOO.util.Selector.query('#availableEvents option');
-        for (var i = 0; i < options.length; i ++) {
-            if (options[i].selected == true) {
-                document.getElementById('existEvents').appendChild(options[i]);
-            }
-        }
-    });
-    //
-    YAHOO.util.Event.on('removeNotificationEvents', 'click', function (){
-        var options = YAHOO.util.Selector.query('#existEvents option');
-        for (var i = 0; i < options.length; i ++) {
-            if (options[i].selected == true) {
-                document.getElementById('availableEvents').appendChild(options[i]);
-            }
-        }
-    });
-
-    YAHOO.util.Event.on('event_form', 'submit', function (){
-        var options = YAHOO.util.Selector.query('#existEvents option');
-        for (var i = 0; i < options.length; i ++) {
-            options[i].selected = true;
-        }
-    });
-
-    //
     YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=assign_right]'), 'submit', 
     function (){
         var options = YAHOO.util.Selector.query('#exist_functions option');
-        for (var i = 0; i < options.length; i ++) {
-            options[i].selected = true;
-        }
-    });
-    //
-    YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=event_form]'), 'submit', 
-    function (){
-        var options = YAHOO.util.Selector.query('#enableEvents option');
         for (var i = 0; i < options.length; i ++) {
             options[i].selected = true;
         }
