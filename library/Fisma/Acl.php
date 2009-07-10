@@ -56,14 +56,18 @@ class Fisma_Acl extends Zend_Acl
         if ('root' == $identity) {
             return true;
         }
-        
+
         // Otherwise, check the ACL
         try {
             $resource = strtolower($resource);
             $acl = Zend_Registry::get('acl');
             if (isset($organization)) {
+                $organization = Doctrine::getTable('Organization')->find($organization);
+                if (!empty($organization)) {
+                    $orgNick = $organization->nickname;
+                }
                 // See User::acl() for explanation of how $organization is used
-                return $acl->isAllowed($identity, "$organization/$resource", $privilege);
+                return $acl->isAllowed($identity, "$orgNick/$resource", $privilege);
             } else {
                 return $acl->isAllowed($identity, $resource, $privilege);
             }
@@ -97,8 +101,9 @@ class Fisma_Acl extends Zend_Acl
 
         if (!self::hasPrivilege($resource, $privilege, $organization)) {
             if (isset($organization)) {
+                $orgNick = Doctrine::getTable('Organization')->find($organization)->nickname;
                 throw new Fisma_Exception_InvalidPrivilege("User does not have the privilege for "
-                    . "($organization/$resource, $privilege)");
+                    . "($orgNick/$resource, $privilege)");
             } else {
                 throw new Fisma_Exception_InvalidPrivilege("User does not have the privilege for "
                     . "($resource, $privilege)");

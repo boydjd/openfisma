@@ -136,7 +136,7 @@ class SystemController extends BaseController
     public function viewAction() 
     {
         $id = $this->getRequest()->getParam('id');        
-        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'read');
         
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->view->organization = $organization;
@@ -151,7 +151,7 @@ class SystemController extends BaseController
     public function systemAction() 
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'read');
         $this->_helper->layout()->disableLayout();
         
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -191,7 +191,7 @@ class SystemController extends BaseController
     public function fipsAction() 
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'read');
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -206,7 +206,7 @@ class SystemController extends BaseController
     public function fismaAction() 
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'read');
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -221,7 +221,7 @@ class SystemController extends BaseController
     public function artifactsAction() 
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'read', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'read');
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -247,7 +247,7 @@ class SystemController extends BaseController
     public function editAction()
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'update');
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -271,7 +271,7 @@ class SystemController extends BaseController
     public function attachFileAction() 
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'update');
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -286,7 +286,7 @@ class SystemController extends BaseController
     public function uploadDocumentFormAction()
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'update');
         $this->_helper->layout()->disableLayout();
 
         $this->view->organizationId = $id;        
@@ -300,7 +300,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
 
-        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'update');
                 
         $organization = Doctrine::getTable('Organization')->find($id);
         $documentTypeId = $this->getRequest()->getParam('documentTypeId');
@@ -381,7 +381,7 @@ class SystemController extends BaseController
         $id = $this->getRequest()->getParam('id');
         $version = $this->getRequest()->getParam('version');
 
-        Fisma_Acl::requirePrivilege('Organization', 'update', $document->System->Organization->id);
+        Fisma_Acl::requirePrivilege('Organization', 'update');
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
@@ -414,7 +414,7 @@ class SystemController extends BaseController
     public function uploadForIeAction() 
     {
         $id = $this->getRequest()->getParam('id');
-        Fisma_Acl::requirePrivilege('Organization', 'update', $id);
+        Fisma_Acl::requirePrivilege('Organization', 'update');
 
         $error = $this->getRequest()->getParam('error');
 

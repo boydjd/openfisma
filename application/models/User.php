@@ -185,26 +185,15 @@ class User extends BaseUser
                                 $acl->add(new Zend_Acl_Resource($systemResource));
                             }
                             $acl->allow($newRole, $systemResource, $privilege->action);
-                            
-                            // The wildcard resources indicates whether a user has this privilege on *any* 
-                            // system. This is useful for knowing when to show certain user interface elements
-                            // like menu items. The resource is named "*/finding"
-                            $wildcardResource = "*/$privilege->resource";
-                            if (!$acl->has($wildcardResource)) {
-                                $acl->add(new Zend_Acl_Resource($wildcardResource));
-                            }
-                            $acl->allow($newRole, $wildcardResource, $privilege->action);                            
                         }
-                    } else {
-                        // Create a resource and grant it to the current role
-                        if (!$acl->has($privilege->resource)) {
-                            $acl->add(new Zend_Acl_Resource($privilege->resource));
-                        }
-                        $acl->allow($newRole, $privilege->resource, $privilege->action);
                     }
+                    // Create a resource and grant it to the current role
+                    if (!$acl->has($privilege->resource)) {
+                        $acl->add(new Zend_Acl_Resource($privilege->resource));
+                    }
+                    $acl->allow($newRole, $privilege->resource, $privilege->action);
                 }
             }
-
             // Create a role for this user that inherits all of the roles created above
             $userRole = new Zend_Acl_Role($this->username);
             $acl->addRole($userRole, $roleArray);
