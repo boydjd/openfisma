@@ -1074,8 +1074,6 @@ class RemediationController extends SecurityController
      */
     private function _viewFinding()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read');
-
         $id = $this->_request->getParam('id');
         $this->view->finding = $this->_getFinding($id);
     }
@@ -1094,6 +1092,7 @@ class RemediationController extends SecurityController
         if (false == $finding) {
              throw new Fisma_Exception("FINDING($findingId) is not found, Make sure a valid ID is specified");
         }
+        Fisma_Acl::requirePrivilege('finding', 'read', $finding->ResponsibleOrganization->nickname);
         return $finding;
     }
 }
