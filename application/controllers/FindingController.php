@@ -372,7 +372,6 @@ class FindingController extends BaseController
                 
                 // Execute the plugin with the received file
                 try {
-                    Doctrine_Manager::connection()->beginTransaction();
                     // get original file name
                     $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
                     // get current time and set to a format like '_2009-05-04_11_22_02'
@@ -402,11 +401,12 @@ class FindingController extends BaseController
                                    . "{$plugin->reviewed} findings need review.<br>"
                                    . "{$plugin->deleted} findings were suppressed.",
                                    self::M_NOTICE);
-                    Doctrine_Manager::connection()->commit();
+                    if (($plugin->created + $plugin->reviewed) == 0) {
+                        $upload->delete();
+                    }
                 } catch (Fisma_Exception_InvalidFileFormat $e) {
                     $this->message("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
                                    self::M_WARNING);
-                    Doctrine_Manager::connection()->rollback();
                 }
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($uploadForm);
