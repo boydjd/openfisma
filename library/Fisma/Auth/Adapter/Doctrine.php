@@ -186,7 +186,7 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
             // If this system is configured to let accounts unlock automatically,
             // then check whether it can be unlocked now
                 if (Configuration::getConfig('unlock_enabled') == 1) {
-                    $unlockTs = new Zend_Date($user->lockTs);
+                    $unlockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
                     $unlockTs->add(Configuration::getConfig('unlock_duration'), 
                                     Zend_Date::SECOND);
                     $now = new Zend_Date();

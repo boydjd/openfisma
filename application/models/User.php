@@ -289,7 +289,7 @@ class User extends BaseUser
             $loginRet = true;
         } else {
             $this->failureCount++;
-            if ($this->failureCount > Configuration::getConfig('failure_threshold')) {
+            if ($this->failureCount >= Configuration::getConfig('failure_threshold')) {
                 $this->lockAccount(User::LOCK_TYPE_PASSWORD);
             }
             Notification::notify(Notification::USER_LOGIN_FAILURE, $this, $this);
