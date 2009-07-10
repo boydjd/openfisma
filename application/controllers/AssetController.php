@@ -214,7 +214,7 @@ class AssetController extends BaseController
         Fisma_Acl::requirePrivilege('asset', 'read');
         
         $params = $this->parseCriteria();
-        $systems = $this->_me->Organizations;
+        $systems = $this->_me->getOrganizations();
         $systemList[0] = "--select--";
         foreach ($systems as $system) {
             $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
@@ -262,7 +262,7 @@ class AssetController extends BaseController
             $q->andWhere('p.version LIKE ?', $params['version'] . '%');
         }
         // get the assets whitch are belongs to current user's systems
-        $orgSystems = $this->_me->Organizations->toArray();
+        $orgSystems = $this->_me->getOrganizations()->toArray();
         $orgSystemIds = array();
         foreach ($orgSystems as $orgSystem) {
             $orgSystemIds[] = $orgSystem['id'];

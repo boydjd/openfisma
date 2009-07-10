@@ -107,7 +107,7 @@ class RemediationController extends SecurityController
                       ->addActionContext('summary-data', 'xls')
                       ->addActionContext('summary-data', 'pdf')                                            
                       ->initContext();
-        $this->_organizations = $this->_me->Organizations;
+        $this->_organizations = $this->_me->getOrganizations();
     }
     
     /**
@@ -618,7 +618,7 @@ class RemediationController extends SecurityController
             throw new Fisma_Exception('Wrong link');
         }
 
-        if (!in_array($evidence->Finding->ResponsibleOrganization, $this->_me->Organizations)
+        if (!in_array($evidence->Finding->ResponsibleOrganization, $this->_me->getOrganizations()->toArray())
             && 'root' != $this->_me->username)
         {
             /** @todo english */
@@ -929,6 +929,7 @@ class RemediationController extends SecurityController
      */
     private function _getResults($params, $format, &$total)
     {
+        $list = array();
         $q = Doctrine_Query::create()
              ->select()
              ->from('Finding f')
@@ -937,7 +938,7 @@ class RemediationController extends SecurityController
              ->leftJoin('f.Asset a')
              ->leftJoin('f.SecurityControl sc')
              ->leftJoin('f.CurrentEvaluation ce')
-             ->whereIn('f.responsibleOrganizationId', $this->_organizations->toKeyValueArray('id', 'id'))
+             ->whereIn('f.responsibleOrganizationId', $this->_me->getOrganizations()->toKeyValueArray('id', 'id'))
              ->orderBy($params['sortby'] . ' ' . $params['dir']);
 
         foreach ($params as $k => $v) {
@@ -994,7 +995,7 @@ class RemediationController extends SecurityController
         // The total number of found rows is appended to the list of finding. 
         $total = $q->count();
         $results = $q->execute();
-        $list = array();
+        
         foreach ($results as $result) {
             $row = array();
             $row['id'] = $result->id;

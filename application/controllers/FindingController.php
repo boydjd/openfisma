@@ -62,7 +62,7 @@ class FindingController extends BaseController
     public function init()
     {
         parent::init();
-        $orgSystems = $this->_me->Organizations->toArray();
+        $orgSystems = $this->_me->getOrganizations()->toArray();
         $this->_myOrgSystems = $orgSystems;
         
         $orgSystemIds = array(0);
