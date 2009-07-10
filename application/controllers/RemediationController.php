@@ -480,11 +480,6 @@ class RemediationController extends SecurityController
 
         try {
             Doctrine_Manager::connection()->beginTransaction();
-            foreach ($findingData as &$value) {
-                if (is_string($value)) {
-                    $value = addslashes($value);
-                }
-            } 
             $finding->merge($findingData);
             $finding->save();
             Doctrine_Manager::connection()->commit();
