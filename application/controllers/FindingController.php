@@ -191,12 +191,6 @@ class FindingController extends BaseController
                 $upload->save();
 
                 $injectExcel = new Fisma_Inject_Excel();
-                if (!empty($injectExcel->_findingIds)
-                            && is_dir(Fisma::getPath('data') . '/index/finding/')) {
-                    foreach ($injectExcel->_findingIds as $id) {
-                        $this->createIndex($id);
-                    }
-                }
 
                 $rowsProcessed = $injectExcel->inject($file['tmp_name'], $upload->id);
                 // upload file after the file parsed
@@ -390,12 +384,6 @@ class FindingController extends BaseController
                     // rename the file by ts
                     rename($filePath, dirname($filePath) . '/' . $newName);
 
-                    if (!empty($plugin->_findingIds)
-                        && is_dir(Fisma::getPath('data') . '/index/finding/')) {
-                        foreach ($plugin->_findingIds as $id) {
-                            $this->createIndex($id);
-                        }
-                    }
                     $this->message("Your scan report was successfully uploaded.<br>"
                                    . "{$plugin->created} findings were created.<br>"
                                    . "{$plugin->reviewed} findings need review.<br>"
