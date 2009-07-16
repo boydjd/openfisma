@@ -1,5 +1,5 @@
 <?php 
-echo $this->partial('systemdocument/searchbox.phtml', array('keywords' => $this->keywords));
+echo $this->partial('system-document/searchbox.phtml', array('keywords' => $this->keywords));
 Fisma_Format_Section::startSection("Documentation <span id='searchResultsTotalFound'></span>"); ?>
 <div id="list"></div>
 <script type="text/javascript">
@@ -32,7 +32,7 @@ var myColumnDefs = [
         return request;
     };
 
-    var myDataSource = new YAHOO.util.DataSource('/systemdocument/search');
+    var myDataSource = new YAHOO.util.DataSource('/system-document/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",

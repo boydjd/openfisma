@@ -235,7 +235,7 @@ class PanelController extends SecurityController
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'SystemDocument');
+        $this->_helper->actionStack($sub, 'system-document');
         $this->_helper->actionStack('header');
     }
 
