@@ -5,12 +5,19 @@ Source:
         name: 
             type: string
             extra:
+                logicalName: Source Name
+                template: true
                 purify: plaintext
         nickname: 
             type: string
             extra:
+                logicalName: Source Acronym
+                template: true
                 purify: plaintext
         description: 
             type: string
             extra:
+                logicalName: Description
+                template: true
                 purify: html
+            comment: Any extra information about this finding source

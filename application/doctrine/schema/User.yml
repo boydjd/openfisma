@@ -9,9 +9,15 @@ User:
             type: string(255)
             unique: true
             extra:
+                logicalName: User Name
                 purify: plaintext
+                template: true
             comment: This users unique authentication credential
-        password: string(255)
+        password: 
+            type: string(255)
+            extra: 
+                logicalName: Password
+                template: "true"
         passwordSalt:
             type: string(10)
             fixed: true
@@ -53,21 +59,29 @@ User:
         title: 
             type: string(255)
             extra:
+                logicalName: Title
                 purify: plaintext
+                template: true
             comment: The users position or title within the agency
         nameFirst: 
             type: string(255)
             extra:
+                logicalName: First Name
+                template: true
                 purify: plaintext
             comment: The users first name
         nameLast: 
             type: string(255)
             extra:
+                logicalName: Last Name
+                template: true
                 purify: plaintext
             comment: The users last name
         email: 
             type: string(255)
             extra:
+                logicalName: E-mail Address
+                template: true
                 purify: plaintext
             email: true
             comment: The users primary e-mail address
@@ -79,14 +93,18 @@ User:
             type: string(10)
             fixed: true
             extra:
+                logicalName: Office Phone
+                template: true
                 purify: plaintext
             comment: U.S. 10 digit phone number; stored without punctuation
         phoneMobile:
             type: string(10)
             fixed: true
             extra:
+                logicalName: Mobile Phone
+                template: true
                 purify: plaintext
-            comment: U.S. 10 digit phone number; stored without punctuation
+            comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
         searchColumnsPref:
             type: integer
             comment: A bitmask corresponding to visible columns on the search page

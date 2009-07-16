@@ -8,6 +8,8 @@ Asset:
         name:
             type: string
             extra:
+                logicalName: Asset Name
+                template: true
                 purify: plaintext
             comment: The name of this asset
         source:
@@ -18,9 +20,15 @@ Asset:
         addressIp:
             type: string(15)
             ip: true
+            extra:
+                logicalName: IP Address
+                template: true
             comment: The IP address for this asset
         addressPort:
             type: integer(2)
+            extra:
+                logicalName: Port Number
+                template: true
             comment: The IP port for this asset
         
         productId:

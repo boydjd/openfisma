@@ -8,16 +8,23 @@ Role:
         name: 
             type: string
             extra:
+                logicalName: Role Name
+                template: true
                 purify: plaintext
         nickname: 
             type: string(255)
             extra:
+                logicalName: Role Acronym
+                template: true
                 purify: plaintext                
             unique: true;
         description: 
             type: string
             extra:
+                logicalName: Description
+                template: true
                 purify: html
+            comment: Any extra information about this role, such as security clearances required to hold it, etc.
 
     relations:
         # Users is a many-to-many relation
