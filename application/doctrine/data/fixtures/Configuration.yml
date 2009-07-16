@@ -11,8 +11,8 @@ Configuration:
 
     session_inactivity_period:
         name: session_inactivity_period
-        value: 90
-        description: Session Timeout (minutes)
+        value: 5400
+        description: Session Timeout (seconds)
 
     auth_type:
         name: auth_type
@@ -154,3 +154,7 @@ Configuration:
         value: sha1
         description: The hash algorithm to use for password storage
         
+    host_url:
+        name: host_url
+        value: "https://openfisma.agency.gov"
+        description: The URL which OpenFISMA uses to refer to itself

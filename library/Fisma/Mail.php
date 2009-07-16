@@ -112,7 +112,7 @@ class Fisma_Mail extends Zend_Mail
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
         $this->setSubject("Your new account for $systemName has been created");
         $this->_contentTpl->user = $user;
-        $this->_contentTpl->host = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->host = Configuration::getConfig('host_url');
         $content = $this->_contentTpl->render('sendaccountinfo.phtml');
         $this->setBodyText($content);
 

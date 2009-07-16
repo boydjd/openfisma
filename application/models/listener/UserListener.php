@@ -49,10 +49,13 @@ class UserListener extends Doctrine_Record_Listener
             $user->EmailValidation[]         = $emailValidation;
         }
         
-        if (isset($modified['password']) && $modified['password']) {
+        if (isset($modified['password'])) {
             $user->generateSalt();
             $user->password        = $user->hash($modified['password']);
             $user->passwordTs      = Fisma::now();
+
+            /** @todo where is the password policy enforcement ? */
+            
             // Generate user's password history
             $pwdHistory = $user->passwordHistory;
             if (3 == substr_count($pwdHistory, ':')) {

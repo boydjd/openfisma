@@ -34,7 +34,6 @@ try {
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
     Fisma::connectDb();
     Fisma::setNotificationEnabled(false);
-    Fisma::setListenerEnabled(false);    
 
     /** @todo temporary hack to load large datasets */
     ini_set('memory_limit', '512M');
