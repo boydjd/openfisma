@@ -94,7 +94,7 @@ class FindingListener extends Doctrine_Record_Listener
         $modifyValues = $finding->getModified(true);
         
         if (!empty($modifyValues)) {
-            foreach ($modifyValues as $key=>$value) {
+            foreach ($modifyValues as $key => $value) {
                 $newValue = $finding->$key;
                 $type     = null;
                 switch ($key) {
@@ -170,9 +170,17 @@ class FindingListener extends Doctrine_Record_Listener
                 if (in_array($key, self::$unLogKeys)) {
                     continue;
                 }
+
+                // See if you can look up a logical name for this column in the schema definition. If its not defined,
+                // then use the physical name instead
+                $column = $finding->getTable()->getColumnDefinition($key);
+                $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
+                             ? $column['extra']['logicalName']
+                             : $key;
+                
                 $value    = $value ? strip_tags($value) : 'NULL';
                 $newValue = strip_tags($newValue);
-                $message = "Update: $key\n Original: $value  NEW: $newValue";
+                $message = "UPDATE: $logicalName\n ORIGINAL: $value\nNEW: $newValue";
                 $finding->log($message);
             }
         }

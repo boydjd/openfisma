@@ -3,23 +3,29 @@ Finding:
     
     columns:
         createdTs: timestamp
-        modifiedTs: timestamp
     
         discoveredDate:
             type: date
             comment: The when the finding was discovered. This is self-reported by users
+            extra:
+                logicalName: Date Discovered
         closedTs:
             type: timestamp
             comment: The timestamp when this finding was closed
+            extra:
+                logicalName: Closed Date
         nextDueDate:
             type: date
             comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
+            extra:
+                logicalName: Next Action Due Date
             
         legacyFindingKey:
             type: string(255)
             unique: true
             extra: 
                 purify: plaintext
+                logicalName: Legacy Finding ID
             comment: This field can be used by end clients to track findings under a legacy tracking system
         
         type:
@@ -27,6 +33,8 @@ Finding:
             values: [NONE, CAP, AR, FP]
             default: NONE
             notnull: true
+            extra:
+                logicalName: Mitigation Type            
             comment: The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)
         status:
             type: enum
@@ -40,29 +48,35 @@ Finding:
             type: string
             extra: 
                 purify: html
+                logicalName: Finding Description
             comment: Description of the finding
         recommendation:
             type: string
             extra: 
                 purify: html
+                logicalName: Recommendation
             comment: The auditors recommendation to remediate this finding
         mitigationStrategy:
             type: string
             extra: 
                 purify: html
+                logicalName: Mitigation Strategy
             comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
         resourcesRequired:
             type: string
             extra: 
                 purify: html
+                logicalName: Resources Required
             comment: Any additional resources (financial) required to complete this course of action
         expectedCompletionDate:
             type: date
+            extra:
+                logicalName: Original ECD            
             comment: The date when the course of action or business case is planned to be completed
         currentEcd:
             type: date
-        actualCompletionDate:
-            type: date
+            extra:
+                logicalName: Current ECD                  
         ecdLocked:
             type: boolean
             comment: If false, then no user is allowed to modify the ECD.
@@ -70,19 +84,25 @@ Finding:
             type: string
             extra: 
                 purify: html
+                logicalName: Description of Threat Source
             comment: Description of the threat source which affects this finding
         threatLevel:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Threat Level            
             comment: A subjective assessment of the probability and impact of exploiting this finding
         countermeasures:
             type: string
             extra: 
                 purify: html
+                logicalName: Description of Countermeasures
             comment: The countermeasures in place against the threat source
         countermeasuresEffectiveness:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Effectiveness of Countermeasures            
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
 
         duplicateFindingId:
@@ -157,5 +177,4 @@ Finding:
                 name: createdTs
                 type: timestamp
             updated:
-                name: modifiedTs
-                type: timestamp
+                disabled: true

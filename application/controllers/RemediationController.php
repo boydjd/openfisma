@@ -800,9 +800,18 @@ class RemediationController extends SecurityController
     function auditLogAction() {
         $this->_viewFinding();
         $this->_helper->layout->setLayout('ajax');
+        
+        $auditQuery = Doctrine_Query::create()
+                      ->select('a.createdTs, u.username, a.description')
+                      ->from('AuditLog a')
+                      ->innerJoin('a.User u')
+                      ->where('a.findingId = ?', $this->getRequest()->getParam('id'))
+                      ->orderBy('a.createdTs DESC')
+                      ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $auditLogs = $auditQuery->execute();
+        $this->view->auditLogs = $auditLogs;
     }
     
-
     /**
      * Real searching worker, to return searching results for page, PDF, Excel
      *
