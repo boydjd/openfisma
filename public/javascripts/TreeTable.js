@@ -33,7 +33,7 @@ YAHOO.fisma.TreeTable.render = function (tableId, tree) {
         var overdue = node.expanded ? node.single_overdue : node.all_overdue;
         node.hasOverdue = YAHOO.fisma.TreeTable.arraySum(overdue) > 0;
 
-        // @doctrine convert to YUI and remove innerHTML if possible
+        // @todo convert to YUI and remove innerHTML if possible
         // general cleanup is needed too
         needsLink = node.children.length > 0;
         linkOpen = (needsLink ? "<a href='#' onclick='YAHOO.fisma.TreeTable.toggleNode(\"" + node.nickname + "\")'>" : "");
