@@ -107,9 +107,9 @@ class Notification extends BaseNotification
         }
         $eventText = $event->name;
         if (!is_null($user)) {
-            $eventText .= " by $user->nameLast . $user->nameFirst";
+            $eventText .= " by $user->nameFirst . $user->nameLast";
         }
-        $eventText .= "(Id. $record->id)";
+        $eventText .= "(Affected Id. $record->id)";
 
         if ($organizationId == null) {
             $userEvents = Doctrine::getTable('UserEvent')->findByEventId($eventId);

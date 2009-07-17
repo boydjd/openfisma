@@ -80,7 +80,6 @@ class FindingListener extends Doctrine_Record_Listener
         $finding->CreatedBy       = User::currentUser();
         $finding->updateNextDueDate();
         $finding->log('New Finding Created');
-        Notification::notify(Notification::FINDING_CREATED, $finding, User::currentUser(), $finding->responsibleOrganizationId);
     }
 
     /**
@@ -184,6 +183,24 @@ class FindingListener extends Doctrine_Record_Listener
                 $finding->log($message);
             }
         }
+    }
+
+    /**
+     * Notify the finding creation, the finding id exists now.
+     */
+    public function postInsert(Doctrine_Event $event)
+    {
+        $finding = $event->getInvoker();
+        if ('scan' == $finding->Asset->source) {
+            $notifyType = Notification::FINDING_INJECT;
+        } else {
+            if ($finding->uploadId) {
+                $notifyType = Notification::FINDING_IMPORT;
+            } else {
+                $notifyType = Notification::FINDING_CREATED;
+            }
+        }
+        Notification::notify($notifyType, $finding, User::currentUser(), $finding->responsibleOrganizationId);
     }
 
     /**

@@ -30,24 +30,17 @@
  */
 class BaseListener extends Doctrine_Record_Listener 
 {
-    public function preInsert(Doctrine_Event $event)
+    public function postInsert(Doctrine_Event $event)
     {
         $invoker = $event->getInvoker();
         $type    = $this->_getNotifyType($invoker, 'CREATED');
         Notification::notify($type, $invoker, User::currentUser());
     }
 
-    public function preUpdate(Doctrine_Event $event)
+    public function postUpdate(Doctrine_Event $event)
     {
         $invoker = $event->getInvoker();
         $type    = $this->_getNotifyType($invoker, 'MODIFIED');
-        Notification::notify($type, $invoker, User::currentUser());
-    }
-
-    public function preDelete(Doctrine_Event $event)
-    {
-        $invoker = $event->getInvoker();
-        $type    = $this->_getNotifyType($invoker, 'DELETED');
         Notification::notify($type, $invoker, User::currentUser());
     }
 
@@ -61,6 +54,9 @@ class BaseListener extends Doctrine_Record_Listener
     public function postDelete(Doctrine_Event $event)
     {
         $invoker  = $event->getInvoker();
+        $type    = $this->_getNotifyType($invoker, 'DELETED');
+        Notification::notify($type, $invoker, User::currentUser());
+
         $modified = $invoker->getModified($old=false, $last=true);
         Fisma_Lucene::deleteIndex($invoker->getTable()->getTableName(), $invoker->id);
     }
