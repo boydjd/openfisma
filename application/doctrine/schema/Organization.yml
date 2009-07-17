@@ -5,7 +5,7 @@ Organization:
         createdTs: timestamp
         modifiedTs: timestamp
         name: 
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         nickname:

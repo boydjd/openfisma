@@ -2,7 +2,7 @@ Notification:
     columns:
         createdTs: timestamp
         eventText:
-            type: string
+            type: string(255)
             comment: The event text which is sent to the user
         eventId:
             type: integer

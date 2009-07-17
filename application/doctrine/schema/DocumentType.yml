@@ -3,7 +3,7 @@ DocumentType:
     
     columns:
         name: 
-            type: string
+            type: string(255)
             extra:
                 logicalName: Document Name
                 template: true

@@ -4,7 +4,7 @@ AuditLog:
     columns:
         createdTs: timestamp
         description:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
             comment: Description of the audit log event

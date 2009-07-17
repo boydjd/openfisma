@@ -1,4 +1,6 @@
 DocumentType:
+    ato:
+        name: Authority To Operate
     bia: 
         name: Business Impact Assessment
     cmp:
@@ -7,6 +9,10 @@ DocumentType:
         name: Contingency Plan
     cpt:
         name: Contingency Test Plan
+    cr:
+        name: Certification Recommendation
+    dsw:
+        name: Data Sensitivity Worksheet
     drp:
         name: Disaster Recovery Plan
     pia:

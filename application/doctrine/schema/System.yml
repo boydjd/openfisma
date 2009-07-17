@@ -60,7 +60,7 @@ System:
             values: ["YES", "NO"]
             comment: Whether this system requires a Privacy Impact Analysis
         piaUrl:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
             comment: A URL pointing to the Privacy Impact Analysis
@@ -69,12 +69,12 @@ System:
             values: ["YES", "NO"]
             comment: Whether a System Of Record Notice is required
         sornUrl:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
             comment: A URL pointing to the System Of Record Notice
         uniqueProjectId:
-            type: string
+            type: string(23)
             extra:
                 purify: plaintext
             comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the folLOWing format: "xxx-xx-xx-xx-xx-xxxx-xx"        

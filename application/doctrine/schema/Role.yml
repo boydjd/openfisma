@@ -6,7 +6,7 @@ Role:
         modifiedTs: timestamp
         
         name: 
-            type: string
+            type: string(255)
             extra:
                 logicalName: Role Name
                 template: true

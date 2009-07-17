@@ -3,11 +3,11 @@ Evaluation:
         
     columns:
         name: 
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         nickname:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         nextId: 

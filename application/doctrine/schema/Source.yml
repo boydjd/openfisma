@@ -3,13 +3,13 @@ Source:
         
     columns:
         name: 
-            type: string
+            type: string(255)
             extra:
                 logicalName: Source Name
                 template: true
                 purify: plaintext
         nickname: 
-            type: string
+            type: string(255)
             extra:
                 logicalName: Source Acronym
                 template: true

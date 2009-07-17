@@ -6,7 +6,7 @@ Asset:
         modifiedTs: timestamp
 
         name:
-            type: string
+            type: string(255)
             extra:
                 logicalName: Asset Name
                 template: true

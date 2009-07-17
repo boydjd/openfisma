@@ -3,31 +3,37 @@ LdapConfig:
 
     columns:
         host:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         port: integer(2)
         domainName:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         domainShort:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         username: 
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
-        # Password field is not purified by the XssListener, since it might contain valid special characters
+        # Password field is purified for HTML, even though it shouldn't contain HTML. The reason is that the plaintext
+        # purifier might obscure valid characters in the password
         password: 
-            type: string
+            type: string(255)
+            extra: 
+                purify: html
         basedn: 
             type: string
             extra:
                 purify: plaintext 
-        # Account filter is not purified either           
-        accountFilter: string
-        accountCanonical: string
+        # Account filter is not plaintext purified either, for the reason as the password field      
+        accountFilter: 
+            type: string(255)
+            extra:
+                purify: html
+        accountCanonical: string(255)
         bindRequiresDn: boolean
         useSsl: boolean

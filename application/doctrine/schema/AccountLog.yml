@@ -18,7 +18,7 @@ AccountLog:
             notnull: true
             comment: The account log event type
         message:
-            type: string
+            type: string(255)
             comment: A description of the event
             extra: 
                 purify: plaintext

@@ -20,10 +20,10 @@ FindingEvaluation:
             type: integer
             comment: Foreign key to the user who completed this evaluation
         comment: 
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
-            comment: The deny comment
+            comment: A comment explaining the reason for denial (its not required when approving)
     
     relations:
         Finding:

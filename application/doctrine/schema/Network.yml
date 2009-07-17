@@ -3,13 +3,13 @@ Network:
     
     columns:
         name: 
-            type: string
+            type: string(255)
             extra:
                 logicalName: Network Name
                 template: true
                 purify: plaintext
         nickname:
-            type: string
+            type: string(255)
             extra:
                 logicalName: Network Acronym
                 template: true

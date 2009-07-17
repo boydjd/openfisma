@@ -2,13 +2,14 @@ Evidence:
     columns:
         createdTs: timestamp
         filename:
-            type: string
+            type: string(255)
         findingId:
             type: integer
             comment: Foreign key to the finding which this evidence is attached to
         userId:
             type: integer
             comment: Foreign key to the use who uploaded this evidence
+            
     relations:
         Finding:
             local: findingId

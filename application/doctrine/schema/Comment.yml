@@ -5,7 +5,7 @@ Comment:
         createdTs: timestamp
         
         content:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
             comment: The text of the comment

@@ -3,11 +3,11 @@ Plugin:
 
     columns:
         name: 
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         class:
-            type: string
+            type: string(255)
             extra:
                 purify: plaintext
         description: 
