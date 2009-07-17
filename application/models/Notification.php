@@ -99,10 +99,11 @@ class Notification extends BaseNotification
         
         $event = Doctrine::getTable('Event')->find($eventId);
         if (empty($event)) {
-            //@todo english
-            try{
-                throw new Fisma_Exception("The event of this operation dose not exist");
-                } catch (Fisma_Exception $ex) {print $ex->getTraceAsString();}
+            try {
+                throw new Fisma_Exception("Could not find a notification which matches this event");
+            } catch (Fisma_Exception $ex) {
+                print $ex->getTraceAsString();
+            }
         }
         $eventText = $event->name;
         if (!is_null($user)) {

@@ -131,7 +131,6 @@ class FindingController extends BaseController
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } else {
-            /** @todo English */
             throw new Fisma_Exception('Invalid parameter expecting a Record model');
         }
         $values = $form->getValues();
@@ -238,10 +237,8 @@ class FindingController extends BaseController
                 $this->view->systems[$orgSystem['id']] = $orgSystem['nickname'];
             }
             if (count($this->view->systems) == 0) {
-                /** @todo english **/
-                throw new Fisma_Exception(
-                    "The spreadsheet template can not be " .
-                    "prepared because there are no systems defined.");
+                throw new Fisma_Exception("The spreadsheet template can not be
+                    prepared because there are no systems defined.");
             }
             
             $networks = Doctrine::getTable('Network')->findAll()->toArray();
@@ -250,7 +247,6 @@ class FindingController extends BaseController
                 $this->view->networks[$network['id']] = $network['nickname'];
             }
             if (count($this->view->networks) == 0) {
-                /** @todo english **/
                 throw new Fisma_Exception("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
@@ -261,7 +257,6 @@ class FindingController extends BaseController
                 $this->view->sources[$source['id']] = $source['nickname'];
             }
             if (count($this->view->sources) == 0) {
-                /** @todo english **/
                 throw new Fisma_Exception("The spreadsheet template can
                     not be prepared because there are no finding sources
                     defined.");

@@ -36,7 +36,6 @@
 class PanelController extends SecurityController
 {
     /**
-     * @todo english
      * Invoked before each Action
      */
     public function preDispatch()
@@ -54,7 +53,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * The header of the page
      */
     public function headerAction()
@@ -65,7 +63,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * The footer of the page
      */
     public function footerAction()
@@ -74,7 +71,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to dashboard Controller
      */
     public function dashboardAction()
@@ -83,7 +79,6 @@ class PanelController extends SecurityController
         $this->_helper->actionStack('header');
     }
     /** 
-     * @todo english
      * Forward to finding Controller
      */
     public function findingAction()
@@ -95,7 +90,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to account Controller
      */
     public function accountAction()
@@ -107,7 +101,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to search Controller
      */
     public function searchAction()
@@ -122,7 +115,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to remediation Controller
      */
     public function remediationAction()
@@ -134,7 +126,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to report Controller
      */
     public function reportAction()
@@ -146,7 +137,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to system Controller
      */
     public function systemAction()
@@ -158,7 +148,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to product Controller
      */
     public function productAction()
@@ -170,7 +159,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to organiztion Controller
      */
     public function organizationAction()
@@ -182,7 +170,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to source Controller
      */
     public function sourceAction()
@@ -194,7 +181,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to network Controller
      */
     public function networkAction()
@@ -205,7 +191,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to config Controller
      */
     public function configAction()
@@ -216,7 +201,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to user Controller
      */
     public function userAction()
@@ -228,7 +212,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to user Controller
      */
     public function systemDocumentAction()
@@ -250,7 +233,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to asset Controller
      */
     public function assetAction()
@@ -262,7 +244,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to role Controller
      */
     public function roleAction()
@@ -274,7 +255,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * @todo english
      * Forward to log Controller
      */
     public function logAction()

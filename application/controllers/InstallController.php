@@ -35,7 +35,6 @@ class InstallController extends Zend_Controller_Action
 {
 
     /**
-     * @todo english
      * Invoked before each Action
      */
     public function preDispatch()
@@ -46,7 +45,6 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
      * Default Action
      */
     public function indexAction()
@@ -56,7 +54,6 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
      * Check the current environment for installing system
      */
     public function envcheckAction()
@@ -77,7 +74,6 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
      * Check the the dir whether is writable
      */
     public function checkingAction()
@@ -112,8 +108,7 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
-     * Configurate the database
+     * Configure the database
      */
     public function dbsettingAction()
     {
@@ -128,7 +123,6 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
      * Review the database's configuration
      */
     public function dbreviewAction()
@@ -190,7 +184,6 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
      * Initilize the system
      */
     public function initialAction()
@@ -308,7 +301,6 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
      * Completing the installation
      */
     public function completeAction()
@@ -318,7 +310,6 @@ class InstallController extends Zend_Controller_Action
     }
 
     /**
-     * @todo english
      * Handling the error
      */
     public function errorAction()

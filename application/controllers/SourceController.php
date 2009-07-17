@@ -44,26 +44,23 @@ class SourceController extends BaseController
         $id = $this->_request->getParam('id');
         $source = Doctrine::getTable($this->_modelName)->find($id);
         if (!$source) {
-            /** @todo english */
-            $msg   = "Invalid {$this->_modelName}";
+            $msg   = "Invalid {$this->_modelName} ID";
             $type = self::M_WARNING;
         } else {
             try {
                 if (count($source->Findings) > 0) {
-                    /** @todo english **/
-                    $msg   = $msg = 'This source have been used, You could not to delete';
+                    $msg = 'This source cannot be deleted because it is already associated with one or
+                            findings';
                     $type = self::M_WARNING;
                 } else {
                     Doctrine_Manager::connection()->beginTransaction();
                     $source->delete();
                     Doctrine_Manager::connection()->commit();
-                    /** @todo english **/
-                    $msg   = "{$this->_modelName} is deleted successfully";
+                    $msg   = "{$this->_modelName} deleted successfully";
                     $type = self::M_NOTICE;
                 }
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
-                /** @todo english */
                 if (Fisma::debug()) {
                     $msg .= $e->getMessage();
                 }

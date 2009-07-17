@@ -82,16 +82,15 @@ class Finding extends BaseFinding
      */
     public function submitMitigation(User $user)
     {
-        if ('DRAFT' != $this->status) {
-            //@todo english
-            throw new Fisma_Exception("The finding can't be submited mitigation strategy");
+        if (!('NEW' == $this->status || 'DRAFT' == $this->status)) {
+            throw new Fisma_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
         }
         $this->status = 'MSA';
         $this->updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
-                                        ->findByDql('approvalGroup = "action" AND precedence = 0');
+                      ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
-        $this->log('Submit mitigation strategy');
+        $this->log('Submitted mitigation strategy');
 
         $this->save();
     }
@@ -103,8 +102,7 @@ class Finding extends BaseFinding
     public function reviseMitigation(User $user)
     {
         if ('EN' != $this->status) {
-            //@todo english
-            throw new Fisma_Exception("The finding can't be revised mitigation strategy");
+            throw new Fisma_Exception("The mitigation strategy can only be revised in EN status");
         }
         $this->status = 'DRAFT';
         $this->updateNextDueDate();
@@ -125,8 +123,7 @@ class Finding extends BaseFinding
     public function approve(User $user)
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
-            //@todo english
-            throw new Fisma_Exception("The finding can't be approved");
+            throw new Fisma_Exception("Findings can only be approved when in MSA or EA status");
         }
         
         $findingEvaluation = new FindingEvaluation();
@@ -169,8 +166,7 @@ class Finding extends BaseFinding
     public function deny(User $user, $comment)
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
-            //@todo english
-            throw new Fisma_Exception("The finding can't be denied");
+            throw new Fisma_Exception("Findings can only be denined when in MSA or EA status");
         }
 
         $findingEvaluation = new FindingEvaluation();
@@ -210,8 +206,7 @@ class Finding extends BaseFinding
     public function uploadEvidence($fileName, User $user)
     {
         if ('EN' != $this->status) {
-            //@todo english
-            throw new Fisma_Exception("The finding can't be uploaded evidence");
+            throw new Fisma_Exception("Evidence can only be updated when the finding is in EN status");
         }
         $this->status    = 'EA';
         $this->ecdLocked = true;
@@ -270,8 +265,8 @@ class Finding extends BaseFinding
     public function getFindingEvaluations($approvalGroup)
     {
         if (!in_array($approvalGroup, array('action', 'evidence'))) {
-            /** @todo english */
-            throw new Fisma_Exception("Invalid approval group");
+            throw new Fisma_Exception("The approval group for evaluations must either be 'action' or 'evidence', 
+                but was actually '$approvalGroup'");
         }
         $findingEvaluations = array();
         foreach ($this->FindingEvaluations as $findingEvaluation) {

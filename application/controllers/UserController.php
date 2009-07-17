@@ -126,8 +126,7 @@ class UserController extends BaseController
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } elseif (!($subject instanceof Doctrine_Record)) {
-            /** @todo english */
-            throw new Fisma_Exception('Invalid parameter expecting a Record model');
+            throw new Fisma_Exception('Invalid parameter, expected a Doctrine_Model');
         }
         $values = $form->getValues();
         if (empty($values['password'])) {
@@ -180,14 +179,11 @@ class UserController extends BaseController
                     $modified = $user->getModified();
                     $user->save();
                     Doctrine_Manager::connection()->commit();
-                    /** @todo english */
-                    $message = "Your profile modified successfully."; 
+                    $message = "Profile updated successfully"; 
                     if (isset($modified['email'])) {
                         $mail = new Fisma_Mail();
                         if ($mail->validateEmail($user, $modified['email'])) {
-                            /** @todo english */
-                            $message .= "<br>And a validation email has sent to your new email, " . 
-                                "you will not receive the system notices until you validate it.";
+                            $message .= ", and a validation email has been sent to your new e-mail address.";
                         } 
                     }
                     $model   = self::M_NOTICE;
@@ -232,8 +228,7 @@ class UserController extends BaseController
                 $user->password = $post['newPassword'];
                 try {
                     $user->save();
-                    /** @todo english */
-                    $message = "Your password modified successfully."; 
+                    $message = "Password updated successfully."; 
                     $model   = self::M_NOTICE;
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
@@ -273,19 +268,14 @@ class UserController extends BaseController
                 $user->save();
                 Doctrine_Manager::connection()->commit();
 
-                /** @todo english, also see the follow */
-                $message = "Notification events modified successfully.";
+                $message = "Notification events modified successfully";
                 $model   = self::M_NOTICE;
                 if ($modified['notifyEmail']) {
                     $mail = new Fisma_Mail();
                     if ($mail->validateEmail($user, $modified['notifyEmail'])) {
-                        /** @todo english, also see the follow */
-                        $message .= "<br>And a validation email has sent to your new notify email, " . 
-                         "you will not receive the follow events notifications until you validate it.";
+                        $message .= ", and a validation email has sent to your new notify email";
                     } else {
-                        $message .= "<br>But the validation email is unable to sent to your new " .
-                        "notify email, and you will not receive the follow events notifications." .
-                        "Please check your email";
+                        $message .= ", but the validation e-mail could not be sent to your new address.";
                         $model = self::M_WARNING;
                     }
                 }

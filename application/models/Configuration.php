@@ -81,7 +81,6 @@ class Configuration extends BaseConfiguration
         if (Zend_Registry::isRegistered($name)) {
             return Zend_Registry::get($name);
         }
-        /** @todo english */
         throw new Fisma_Exception_Config("Invalid configuration name: $name");
     }
     

@@ -1,6 +1,3 @@
-Hi <?php echo $this->user->nameLast; ?>,
-
-
 This is an automatically generated message, please do not reply to this address.
 
 Your <?php echo Configuration::getConfig('system_name');?> account has been created.
@@ -10,6 +7,4 @@ Temporary Password: <?php echo "{$this->user->password}\n";?>
 
 Please click here to login:  http://<?php echo $this->host;?>/auth/login
 
-Cheers,
-
-http://<?php echo $this->host;?>
+<?php echo $this->host;?>

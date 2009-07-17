@@ -45,16 +45,12 @@ class ProductController extends BaseController
         $id = $this->_request->getParam('id');
         $product = Doctrine::getTable('Product')->find($id);
         if (!$product) {
-            /** @todo english */
-            $msg   = "Invalid Product";
+            $msg   = "Invalid Product ID";
             $type = self::M_WARNING;
         } else {
             $assets = $product->Assets->toArray();
             if (!empty($assets)) {
-                /** 
-                 * @todo english
-                 */
-                $msg = 'This product can not be deleted because it is already associated with one or more ASSETS';
+                $msg = 'This product can not be deleted because it is already associated with one or more assets';
                 $type = self::M_WARNING;
             } else {
                 parent::deleteAction();

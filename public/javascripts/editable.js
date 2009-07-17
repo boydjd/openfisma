@@ -62,8 +62,7 @@ function validateEcd() {
     var Day = oDate.getDate();
     if (Day < 10) {Day = '0' + Day;}
     if (inputDate.replace(/\-/g, "") <= parseInt(""+Year+""+Month+""+Day)) {
-        //@todo english
-        alert("The ECD date can'be in the past!");
+        alert("Warning: You entered an ECD date in the past.");
     }
 }
 

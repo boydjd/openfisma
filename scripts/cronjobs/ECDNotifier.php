@@ -31,8 +31,7 @@
 try {
     $ecdNotifier = new ECDNotifier();
     $ecdNotifier->run();
-    /** @todo english */
-    print ("Finding expiring notification sent successfully\n");
+    print ("ECDNotifier finished at " . Fisma::now() . "\n");
 } catch (Exception $e) {
     print $e->getMessage();
 }

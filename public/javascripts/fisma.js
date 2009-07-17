@@ -462,7 +462,6 @@ function switchYear(step){
 }
 
 /**
- * @todo english
  * Check the form if has something changed but not saved
  * if nothing changes, then give a confirmation
  * @param dom check_form checking form

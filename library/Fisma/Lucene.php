@@ -56,8 +56,7 @@ class Fisma_Lucene
     public static function search($keywords, $indexName)
     {
         if (!is_dir(Fisma::getPath('index') . '/' . $indexName)) {
-            /** @todo english */
-            throw new Fisma_Exception('The path of creating indexes is not existed');
+            throw new Fisma_Exception("Cannot search '$indexName' because the index does not exist.");
         }
         $cache = Fisma::getCacheInstance('LuceneSearch');
         $userId = User::currentUser()->id;

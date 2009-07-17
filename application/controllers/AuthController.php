@@ -99,8 +99,7 @@ class AuthController extends MessageController
                 $user->log(User::LOGIN_FAILURE, "Login failure");
                 throw new Zend_Auth_Exception("Incorrect username or password");
             } else {
-                //@todo english, also see the follow
-                $user->log(User::LOGIN, "Login successfully");
+                $user->log(User::LOGIN, "Successful Login");
             }
             
             // Set cookie for 'column manager' to control the columns visible on the search page
@@ -118,7 +117,7 @@ class AuthController extends MessageController
                 if ($now->isLater($passWarningTs)) {
                     $leaveDays = $passWarningPeriod - $now->sub($passWarningTs, Zend_Date::DAY);
                     $message = "Your password will expire in $leaveDays days,"
-                               . " you should change it now.";
+                             . " you should change it now.";
                     $this->message($message, self::M_WARNING);
                     // redirect back to password change action
                     $this->_forward('user', 'Panel', null, array('sub'=>'password'));
@@ -212,7 +211,6 @@ class AuthController extends MessageController
         $user   = Doctrine::getTable('User')->find($userId);
         if (!empty($user)) {
             if ($user->validateEmail($code)) {
-                /** @todo english, also see the follow */
                 $message =  'Your e-mail address has been validated. You may close this window ' .
                   'or click <a href="/">here</a> to enter ' . Configuration::getConfig('system_name');
                 $error = false;

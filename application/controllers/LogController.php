@@ -66,8 +66,7 @@ class LogController extends BaseController
         $subjectTable = Doctrine::getTable($this->_modelName);
         if (!in_array(strtolower($sortBy), $subjectTable->getColumnNames()) 
             && strtolower($sortBy) != 'username') {
-            /** @todo english */
-            return $this->_helper->json('invalid parameters');
+            return $this->_helper->json('Invalid "sortBy" parameter');
         } elseif (strtolower($sortBy) == 'username') {
             $sortBy = 'u.username';
         } else {

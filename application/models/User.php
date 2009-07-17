@@ -103,8 +103,7 @@ class User extends BaseUser
         $this->lockTs = date('Y-m-d H:i:s');
         $this->lockType = $lockType;
         $this->save();
-        /** @todo english */
-        $this->log(self::LOCK_USER, "Account unlocked by $lockType");
+        $this->log(self::LOCK_USER, "Account locked: $lockType");
         Notification::notify(Notification::USER_LOCKED, $this, self::currentUser());
     }
     
@@ -118,7 +117,6 @@ class User extends BaseUser
         $this->lockType = null;
         $this->failureCount = 0;
         $this->save();
-        /** @todo english */
         $this->log(self::UNLOCK_USER, "Account unlocked");
 
     }
@@ -245,11 +243,10 @@ class User extends BaseUser
             $this->emailValidate = true;
             $emailValidation->delete();
             $this->save();
-            //@todo english,aslo see the follow
-            $this->log(self::VALIDATE_EMAIL, 'Email validate successfully');
+            $this->log(self::VALIDATE_EMAIL, 'Email validation successful');
             return true;
         } else {
-            $this->log(self::VALIDTAE_EMAIL, 'Email validate faild');
+            $this->log(self::VALIDTAE_EMAIL, 'Email validation failed');
             return false;
         }
     }
@@ -309,7 +306,6 @@ class User extends BaseUser
     {
         $accountLog = new AccountLog();
         if (!in_array($event, $accountLog->getTable()->getEnumValues('event'))) {
-            /** @todo english */
             throw new Fisma_Exception("Invalid account log event type");
         }
         $accountLog->ip = $_SERVER["REMOTE_ADDR"];

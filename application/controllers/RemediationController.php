@@ -563,8 +563,7 @@ class RemediationController extends SecurityController
 
             $extension = end(explode(".",$file['name']));
             if (!in_array(strtolower($extension), array('zip', 'rar', 'gz', 'tar'))) {
-                /** @todo english */
-                $message = 'Not allowed file type. Please Make sure your evidence is a single package';
+                $message = 'This file type is not allowed.';
                 throw new Fisma_Exception($message);
             }
 
@@ -609,15 +608,12 @@ class RemediationController extends SecurityController
         $evidence = new Evidence();
         $evidence = $evidence->getTable()->find($id);
         if (empty($evidence)) {
-            /** @todo english */
-            throw new Fisma_Exception('Wrong link');
+            throw new Fisma_Exception('Invalid evidence ID');
         }
 
         if (!in_array($evidence->Finding->ResponsibleOrganization, $this->_me->getOrganizations()->toArray())
-            && 'root' != $this->_me->username)
-        {
-            /** @todo english */
-            throw new Fisma_Exception('You have no rights to access this file');
+            && 'root' != $this->_me->username) {
+            throw new Fisma_Exception_InvalidPrivilege('You do not have permission to view this file');
         }
 
         $fileName = $evidence->filename;
@@ -638,8 +634,7 @@ class RemediationController extends SecurityController
             }
             fclose($fp);
         } else {
-            /** @todo english */
-            throw new Fisma_Exception('No such file or path.');
+            throw new Fisma_Exception('The requested file could not be found');
         }
     }
 
@@ -704,7 +699,6 @@ class RemediationController extends SecurityController
             
             $system = $finding->ResponsibleOrganization->System;
             if (NULL == $system->fipsCategory) {
-                /** @todo english */
                 throw new Fisma_Exception('The security categorization for ' .
                      '(' . $finding->responsibleOrganizationId . ')' . 
                      $finding->ResponsibleOrganization->name . ' is not defined. An analysis of ' .
@@ -727,7 +721,6 @@ class RemediationController extends SecurityController
     }
 
     /**
-     * @todo english
      * Get keywords from basic search query for highlight
      *
      * Basic search query is a complicated format string, system should pick-up available keywords to highlight

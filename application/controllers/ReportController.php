@@ -634,8 +634,7 @@ class ReportController extends SecurityController
                 }
             } else {
                 $this->view->sid = $sid;
-                /** @todo english */
-                $this->message('No finding', self::M_WARNING);
+                $this->message('There are no findings to generate RAFs for', self::M_WARNING);
                 $this->_forward('report', 'panel', null, array('sub' => 'rafs', 'system_id' => ''));
             }
         }

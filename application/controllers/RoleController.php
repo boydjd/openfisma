@@ -54,16 +54,12 @@ class RoleController extends BaseController
         $id = $req->getParam('id');
         $role = Doctrine::getTable('Role')->find($id);
         if (!$role) {
-            /** @todo english */
-            $msg   = "Invalid Product";
+            $msg   = "Invalid Role ID";
             $type = self::M_WARNING;
         } else {
             $users = $role->Users->toArray();
             if (!empty($users)) {
-                /**
-                 * @todo english
-                 */
-                $msg = 'This role have been used, You could not to delete';
+                $msg = 'This role cannot be deleted because it is in use by one or more users';
                 $type = self::M_WARNING;
             } else {
                 Doctrine::getTable('RolePrivilege')

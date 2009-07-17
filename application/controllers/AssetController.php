@@ -144,8 +144,7 @@ class AssetController extends BaseController
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } elseif (!$subject instanceof Doctrine_Record) {
-            /** @todo english */
-            throw new Fisma_Exception('Invalid parameter expecting a Record model');
+            throw new Fisma_Exception('Invalid parameter: Expected a Doctrine_Record');
         }
         $values = $form->getValues();
         $product = Doctrine::getTable('Product')->find($values['productId']);
@@ -322,10 +321,7 @@ class AssetController extends BaseController
             $asset = new Asset();
             $asset = $asset->getTable('Asset')->find($id);
             if (!$asset) {
-                /**
-                 * @todo english
-                 */
-                throw new Fisma_Exception("Invalid {$this->_modelName}");
+                throw new Fisma_Exception("Invalid asset ID");
             }
             $assetInfo = $asset->toArray();
             $assetInfo['systemName'] = $asset->Organization->name;
@@ -348,26 +344,22 @@ class AssetController extends BaseController
         $id = $this->_request->getParam('id');
         $asset = Doctrine::getTable($this->_modelName)->find($id);
         if (!$asset) {
-            /** @todo english */
-            $msg   = "Invalid {$this->_modelName}";
+            $msg   = "Invalid {$this->_modelName} ID";
             $type = self::M_WARNING;
         } else {
             try {
                 if (count($asset->Findings)) {
-                    /** @todo english **/
-                    $msg   = $msg = 'This asset have been used, You could not to delete';
+                    $msg   = $msg = 'This asset cannot be deleted because it has findings against it';
                     $type = self::M_WARNING;
                 } else {
                     Doctrine_Manager::connection()->beginTransaction();
                     $asset->delete();
                     Doctrine_Manager::connection()->commit();
-                    /** @todo english **/
-                    $msg   = "{$this->_modelName} is deleted successfully";
+                    $msg   = "Asset deleted successfully";
                     $type = self::M_NOTICE;
                 }
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
-                /** @todo english */
                 if (Fisma::debug()) {
                     $msg .= $e->getMessage();
                 }

@@ -104,7 +104,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         $this->_authenticateSetup();
         $this->_authenticatePolicyCheck();
         if ($this->_identity->login($this->_credential)) {
-            /** @todo english */
             $authResult = new Zend_Auth_Result(
                 Zend_Auth_Result::SUCCESS, 
                 $this->_identity,

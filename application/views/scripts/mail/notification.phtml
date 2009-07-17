@@ -1,10 +1,7 @@
-Hi <?php echo $this->user->nameFirst; ?>,
-
-
-
-This is an automatically generated message. You have chosen to receive event notifications
-at this e-mail address. If you want to modify your notification preferences, please
-log in to the system and select "User Preferences".
+This is an automatically generated message. Please do not reply to this address.
+You have chosen to receive event notifications at this e-mail address. If you want
+to modify your notification preferences, please log in to the system and select 
+"User Preferences".
 
 <?php
 foreach( $this->notifyData as $row ){ ?>
@@ -13,6 +10,3 @@ Event: <?php echo "{$row->eventText}\n"; ?>
 Time:  <?php echo "{$row->createdTs}\n"; ?>
 <?php } ?>
 ---------------------------------------
-
-
-Cheers,

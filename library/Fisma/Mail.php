@@ -21,7 +21,6 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @todo english  Please check the email subject, content.
  */
 
 /**
@@ -53,7 +52,6 @@ class Fisma_Mail extends Zend_Mail
     public function validateEmail($user, $email)
     {
         $this->addTo($email);
-        /** @todo english */
         $this->setSubject("Confirm Your E-mail Address");
 
         $this->_contentTpl->host  = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();

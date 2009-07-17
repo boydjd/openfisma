@@ -65,7 +65,6 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * @todo english
      * The default Action
      */
     public function indexAction()

@@ -92,10 +92,7 @@ class SystemController extends BaseController
         $order = $this->_request->getParam('order', 'ASC');
         
         if (!in_array(strtolower($order), array('asc', 'desc'))) {
-            /** 
-             * @todo english 
-             */
-            throw new Fisma_Exception('invalid page');
+            throw new Fisma_Exception('Invalid "order" parameter');
         }
         
         $q = Doctrine_Query::create()

@@ -156,10 +156,7 @@ class OrganizationController extends SecurityController
         
         $organization = Doctrine::getTable('Organization');
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
-            /** 
-             * @todo english 
-             */
-            throw new Fisma_Exception('invalid page');
+            throw new Fisma_Exception('Invalid "sortBy" parameter');
         }
         
         
@@ -180,7 +177,6 @@ class OrganizationController extends SecurityController
         if (!empty($value)) {
             $organizationIds = Fisma_Lucene::search($value, 'organization');
             if (empty($organizationIds)) {
-                //@todo english  set ids as a not exist value in database if search results is none.
                 $organizationIds = array(-1);
             }
             $q->whereIn('o.id', $organizationIds);
@@ -216,10 +212,7 @@ class OrganizationController extends SecurityController
         $form = $this->_getOrganizationForm($organization);
         
         if (!$organization) {
-            /**
-             * @todo english 
-             */
-            throw new Fisma_Exception('The organization is not existed.');
+            throw new Fisma_Exception('Invalid organization ID');
         } else {
             $organization = $organization->toArray();
         }
@@ -303,15 +296,9 @@ class OrganizationController extends SecurityController
         $organization = Doctrine::getTable('Organization')->find($id);
         if ($organization) {
             if ($organization->delete()) {
-                /**
-                 * @todo english
-                 */
                 $msg = "Organization deleted successfully";
                 $model = self::M_NOTICE;
             } else {
-                /**
-                 * @todo english
-                 */
                 $msg = "Failed to delete the Organization";
                 $model = self::M_WARNING;
             }
@@ -333,10 +320,7 @@ class OrganizationController extends SecurityController
         $organization = $organization->getTable()->find($id);
         
         if (!$organization) {
-            /**
-             * @todo english 
-             */
-            throw new Exception_General("The organization posted is not a valid organization");
+            throw new Exception_General("Invalid organization ID");
         }
         
         $form = $this->_getOrganizationForm($organization);

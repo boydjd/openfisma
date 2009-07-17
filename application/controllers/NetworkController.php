@@ -47,17 +47,13 @@ class NetworkController extends BaseController
         $id = $this->_request->getParam('id');
         $network = Doctrine::getTable('Network')->find($id);
         if (!$network) {
-            /** @todo english */
-            $msg   = "Invalid Network";
+            $msg   = "Invalid Network ID";
             $type = self::M_WARNING;
         } else {
             $assets = $network->Assets->toArray();
             if (!empty($assets)) {
-                /**
-                 * @todo english
-                 */
-                $msg = 'This network can not be deleted because it is'.
-                       ' already associated with one or more ASSETS';
+                $msg = 'This network can not be deleted because it is'
+                     . ' already associated with one or more assets';
                 $type = self::M_WARNING;
             } else {
                 parent::deleteAction();

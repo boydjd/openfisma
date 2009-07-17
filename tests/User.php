@@ -277,12 +277,10 @@ class User extends BaseUser
         if ($validateCode == $validation[0]->validationCode) {
             $this->emailValidate = true;
             $validation->delete();
-            //@todo english
-            $this->_log('Email validate successfully');
+            $this->_log('Email validation successful');
             return true;
         } else {
-            //@todo english
-            $this->_log('Email validate faild');
+            $this->_log('Email validation failed');
             return false;
         }
     }
@@ -292,8 +290,7 @@ class User extends BaseUser
      */
     public function logout()
     {
-        //@todo english
-        $this->_log('Log out');
+        $this->_log('Logout');
         Zend_Auth::getInstance()->clearIdentity();
     }
 
