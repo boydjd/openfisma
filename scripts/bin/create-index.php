@@ -96,15 +96,21 @@ class CreateIndex
     private function _createDocument($indexName, $record)
     {
         $doc = new Zend_Search_Lucene_Document();
-        foreach ($record as $field=>$value) {
-            if ('id' == $field) {
-                $doc->addField(Zend_Search_Lucene_Field::UnStored('key', md5($value)));
+        
+        $columnTypes = array();
+        
+        foreach ($record as $name => $value) {
+            if (substr($name, -3) == '_id') {
                 $doc->addField(Zend_Search_Lucene_Field::UnIndexed('rowId', $value));
             } else {
                 //index the string type fields
-                if ('string' == Fisma_Lucene::getColumnType($indexName, $field)
-                    || ('name' == $field && 'system' == $indexName)) {
-                    $doc->addField(Zend_Search_Lucene_Field::UnStored($field, $value));
+                if (!isset($columnTypes[$name])) {
+                    $columnTypes[$name] = Fisma_Lucene::getColumnType($indexName, $name);;
+                }
+                $type = $columnTypes[$name];
+                if ('string' ==  $type || 'enum' == $type) {
+                    $storedValue = html_entity_decode(strip_tags($value));
+                    $doc->addField(Zend_Search_Lucene_Field::UnStored($name, $storedValue));
                 }
             }
         }
@@ -135,15 +141,17 @@ class CreateIndex
             $index->addDocument($doc);
             $count++;
             if (0 == $count % 100) {
-                $index->optimize();
                 fwrite(STDOUT, str_repeat(chr(0x8), $statusLength));
                 $status = "$name: $count rows";
                 fwrite(STDOUT, "$status");
                 $statusLength = strlen($status);
             }
+            if (0 == $count % 1000) {
+                $index->optimize();
+            }
         }
         $index->optimize();
-        chmod($indexPath, 0777);
+        chmod($indexPath, 0770);
         fwrite(STDOUT, str_repeat(chr(0x8), $statusLength));
         fwrite(STDOUT, "$name index created successfully ($count rows). \n");
     }
@@ -153,6 +161,9 @@ class CreateIndex
      */
     public function process()
     {
+        print "This may take several minutes...\n";
+        $start = time();
+        
         $this->_createFinding();
         $this->_createSource();
         $this->_createNetwork();
@@ -162,6 +173,13 @@ class CreateIndex
         $this->_createSystem();
         $this->_createAccount();
         $this->_createSystemDocument();
+        
+        $stop = time();
+        $elapsed = $stop - $start;
+        $minutes = floor($elapsed/60);
+        $seconds = $elapsed - ($minutes * 60);
+        
+        print "Finished in $minutes minutes and $seconds seconds\n";
     }
 
     private function _createFinding()
@@ -170,17 +188,13 @@ class CreateIndex
             return false;
         }
 
-        $count = Doctrine::getTable('Finding')->count();
         $query = Doctrine_Query::create()
                         ->select('*')
-                        ->from('Finding');
-        $offset = 100;
-        for ($limit=0;$limit<$count;$limit+=$offset) {
-            $findings = $query->limit($offset)
-                              ->offset($limit)
-                              ->execute();
-            $this->_createIndex('finding', $findings);
-        }
+                        ->from('Finding')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $findings = $query->execute();
+        $this->_createIndex('finding', $findings);
+        $query->free();
     }
 
     private function _createSource()
@@ -188,8 +202,13 @@ class CreateIndex
         if ($this->_optimize('source')) {
             return false;
         }
-        $sources = Doctrine::getTable('Source')->findAll();
+        $query = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('Source')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $sources = $query->execute();
         $this->_createIndex('source', $sources);
+        $query->free();
     }
 
     private function _createNetwork()
@@ -197,8 +216,13 @@ class CreateIndex
         if ($this->_optimize('network')) {
             return false;
         }
-        $networks = Doctrine::getTable('Network')->findAll();
+        $query = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('Network')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $networks = $query->execute();
         $this->_createIndex('network', $networks);
+        $query->free();
     }
 
     private function _createProduct()
@@ -207,19 +231,13 @@ class CreateIndex
             return false;
         }
         
-        $count  = Doctrine::getTable('Product')->count();
-        $offset = 500;
-        $query  = Doctrine_Query::Create()
+        $query  = Doctrine_Query::create()
                     ->select('*')
                     ->from('Product')
-                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-                    
-        for ($limit=0;$limit<$count;$limit+=$offset) {
-            $products = $query->limit($offset)
-                              ->offset($limit)
-                              ->execute();
-            $this->_createIndex('product', $products);
-        }
+                    ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $products = $query->execute();
+        $this->_createIndex('product', $products);
+        $query->free();
     }
 
     private function _createRole()
@@ -227,8 +245,13 @@ class CreateIndex
         if ($this->_optimize('role')) {
             return false;
         }
-        $roles = Doctrine::getTable('Role')->findAll();
+        $query = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('Role')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $roles = $query->execute();
         $this->_createIndex('role', $roles);
+        $query->free();
     }
 
     private function _createOrganization()
@@ -236,8 +259,13 @@ class CreateIndex
         if ($this->_optimize('organization')) {
             return false;
         }
-        $organizations = Doctrine::getTable('Organization')->findAll();
+        $query = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('Organization')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $organizations = $query->execute();
         $this->_createIndex('organization', $organizations);
+        $query->free();
     }
 
     private function _createSystem()
@@ -246,12 +274,14 @@ class CreateIndex
             return false;
         }
 
-        $systems = Doctrine::getTable('System')->findAll();
-        foreach ($systems as $system) {
-            $system->setName($system->Organization[0]->name);
-            $newSystems[] = $system->toArray();
-        }
-        $this->_createIndex('system', $newSystems);
+        $query = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('System')
+                        ->innerJoin('System.Organization')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $systems = $query->execute();
+        $this->_createIndex('system', $systems);
+        $query->free();
     }
 
     private function _createAccount()
@@ -259,8 +289,13 @@ class CreateIndex
         if ($this->_optimize('user')) {
             return false;
         }
-        $users = Doctrine::getTable('User')->findAll();
+        $query = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('User')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $users = $query->execute();
         $this->_createIndex('user', $users);
+        $query->free();
     }
 
     private function _createSystemDocument()
@@ -268,7 +303,12 @@ class CreateIndex
         if ($this->_optimize('systemdocument')) {
             return false;
         }
-        $documents = Doctrine::getTable('SystemDocument')->findAll()->loadRelated();
+        $query = Doctrine_Query::create()
+                        ->select('*')
+                        ->from('SystemDocument')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $documents = $query->execute();
         $this->_createIndex('systemdocument', $documents);
+        $query->free();
     }
 }
