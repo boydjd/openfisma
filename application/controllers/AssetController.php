@@ -126,9 +126,7 @@ class AssetController extends BaseController
     protected function setForm($subject, $form)
     {
         $product = $subject->Product;
-        $form->getElement('productId')->addMultiOptions(array($product->id => $product->id 
-                                        . ' | ' . $product->name . ' | ' . $product->vendor
-                                        . ' | ' . $product->version));
+        $form->getElement('productId')->addMultiOptions(array($product->id => $product->name));
         $form->setDefaults($subject->toArray());
         return $form;
     }
@@ -148,9 +146,7 @@ class AssetController extends BaseController
         }
         $values = $form->getValues();
         $product = Doctrine::getTable('Product')->find($values['productId']);
-        $form->getElement('productId')->addMultiOptions(array($product->id => $product->id 
-                                        . ' | ' . $product->name . ' | ' . $product->vendor
-                                        . ' | ' . $product->version));
+        $form->getElement('productId')->addMultiOptions(array($product->id => $product->name));
         $subject->merge($values);
         $subject->save();
     }
