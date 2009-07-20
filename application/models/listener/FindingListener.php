@@ -172,13 +172,13 @@ class FindingListener extends Doctrine_Record_Listener
 
                 // See if you can look up a logical name for this column in the schema definition. If its not defined,
                 // then use the physical name instead
-                $column = $finding->getTable()->getColumnDefinition($key);
+                $column = $finding->getTable()->getColumnDefinition(strtolower($key));
                 $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
                              ? $column['extra']['logicalName']
                              : $key;
                 
-                $value    = $value ? strip_tags($value) : 'NULL';
-                $newValue = strip_tags($newValue);
+                $value    = $value ? html_entity_decode(strip_tags($value)) : 'NULL';
+                $newValue = html_entity_decode(strip_tags($newValue));
                 $message = "UPDATE: $logicalName\n ORIGINAL: $value\nNEW: $newValue";
                 $finding->log($message);
             }

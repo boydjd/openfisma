@@ -376,7 +376,8 @@ function highlight(node,keywords) {
         return true;
     }
 
-	keywords = keywords.split(',');
+    // Remove special chars
+	keywords = keywords.split(' ');
 	for (var i in keywords) {
 		keyword = keywords[i];
 

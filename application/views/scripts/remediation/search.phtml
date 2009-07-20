@@ -125,7 +125,7 @@ myDataTable.subscribe("rowClickEvent",
 // Enable keyword highlighting when loading data from the data source
 myDataTable.subscribe("renderEvent", 
     function (oArgs) {
-        highlight(document.getElementById('dynamicdata'), "<?php echo $this->keywords; ?>");
+        highlight(document.getElementById('dynamicdata'), "<?php echo addslashes($this->params['keywords']); ?>");        
     }
 );
 

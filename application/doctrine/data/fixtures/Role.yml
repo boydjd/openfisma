@@ -12,7 +12,7 @@ Role:
 
     IVV:
         name: Independent Verification and Validation
-        nickname: IV&amp;V
+        nickname: IV&V
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Independent Verification and Validation group serves as a third party independent of the correction process who validates whether or not the security weakness has been successfully closed. They have the ability to view all agency Plan of Actions and Milestone information and the ability to close an open item.</p>
         Privileges: [areas_dashboard, findings_read, product_read, source_read, notification_finding]
 
@@ -45,4 +45,4 @@ Role:
     OSS:
         name: Operational Support Staff
         nickname: OSS
-        description: <p><strong>[OpenFISMA Definition]</strong></p><p>Operational Support StaffOperational support staff has the ability to view POA&amp;M information and participates in the POA&amp;M process in any or all of the following ways: </p><p><ul><li>Submitting course of action, mitigation strategy and/or expected completion date for the approval of the SSO. <li>Submitting threats and countermeasures information for the approval of the SSO. <li>Submitting evidence packages for the approval of the SSO.</ul></p>
+        description: <p><strong>[OpenFISMA Definition]</strong></p><p>Operational Support StaffOperational support staff has the ability to view POA&M information and participates in the POA&M process in any or all of the following ways: </p><p><ul><li>Submitting course of action, mitigation strategy and/or expected completion date for the approval of the SSO. <li>Submitting threats and countermeasures information for the approval of the SSO. <li>Submitting evidence packages for the approval of the SSO.</ul></p>

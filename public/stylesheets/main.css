@@ -181,8 +181,6 @@ p.stacktrace {
 /* Provide some whitespace at the bottom of the page. */
 div#footer {
     margin: 10px 0px;
-    background-color: #efefef;
-    border: 1px solid #cecece;
     padding: 3px;
 }
 

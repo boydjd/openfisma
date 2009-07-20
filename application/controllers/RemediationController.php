@@ -415,7 +415,6 @@ class RemediationController extends SecurityController
     /**
     * Do the real searching work. It's a thin wrapper
     * of poam model's search method.
-    * @yui clean up this method -- lots of stuff that doesn't apply when using the yui data table
     */
     public function searchAction()
     {
@@ -449,7 +448,6 @@ class RemediationController extends SecurityController
         
         $params = $this->_parseCriteria();
         $this->view->assign('params', $params);
-        
         $this->view->assign('systems', $this->_organizations->toKeyValueArray('id', 'name'));
         $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
         $this->_helper->actionStack('search', 'Remediation');

@@ -148,9 +148,9 @@ if ($finding->status != 'NEW'
     && ($finding->status != 'DRAFT' || $finding->FindingEvaluations->count() > 0)) {
     echo '<div class="approval">';
     foreach ($finding->getFindingEvaluations('action') as $findingEvaluation) {
-        $userName = $findingEvaluation->User->nameFirst . $findingEvaluation->User->nameLast;
+        $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
         $decision = $findingEvaluation->decision;
-        echo "<p><b>{$findingEvaluation->Evaluation->name}</b>";
+        echo '<p><b>' . html_entity_decode($findingEvaluation->Evaluation->name) . '</b>';
         if ('APPROVED' == $decision) {
             echo "<span class=\"approved\">$decision ($userName on {$findingEvaluation->createdTs})</span>";
         }
@@ -168,7 +168,7 @@ if ($finding->status != 'NEW'
 
     $activeEvaluation = $finding->CurrentEvaluation;
     if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'action') {
-        echo "<p><b>{$activeEvaluation->name}</b>";
+        echo '<p><b>' . html_entity_decode($activeEvaluation->name) . '</b>';
         if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action)) {
             echo '<input type="hidden" name="comment" value="" />';
             echo '<input type="hidden" name="decision" value="APPROVED" />';

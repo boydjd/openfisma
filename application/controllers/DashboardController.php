@@ -159,7 +159,8 @@ class DashboardController extends SecurityController
              ->from('Finding f')
              ->leftJoin('f.CurrentEvaluation e')
              ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
-             ->groupBy('f.status, e.nickname');
+             ->groupBy('f.status, e.nickname')
+             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $results = $q->execute();
         
         // initialize 3 basic status
@@ -169,23 +170,25 @@ class DashboardController extends SecurityController
              ->select()
              ->from('Evaluation e')
              // keep the the 'action' approvalGroup is first fetched
-             ->orderBy('e.approvalGroup ASC');
-        $evaluations = $q->execute()->toArray();
+             ->orderBy('e.approvalGroup ASC')
+             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $evaluations = $q->execute();
+
         foreach ($evaluations as $evaluation) {
             if ($evaluation['approvalGroup'] == 'evidence') {
                 $arrTotal['EN'] = 0;
             }
-            $arrTotal[$evaluation['nickname']] = 0;
+            $arrTotal[html_entity_decode($evaluation['nickname'])] = 0;
         }
-        
+
         foreach ($results as $result) {
-            if (in_array($result->status, array_keys($arrTotal))) {
-                $arrTotal[$result->status] = $result->statusCount;
-            } elseif (in_array($result->CurrentEvaluation->nickname, array_keys($arrTotal))) {
-                $arrTotal[$result->CurrentEvaluation->nickname] = $result->subStatusCount;
+            if (in_array($result['status'], array_keys($arrTotal))) {
+                $arrTotal[$result['status']] = $result['statusCount'];
+            } else {
+                $arrTotal[html_entity_decode($result['CurrentEvaluation']['nickname'])] = $result['subStatusCount'];
             }
         }
-        
+
         $this->view->summary = $arrTotal;
     }
 

@@ -52,6 +52,12 @@ class MenuController extends SecurityController
     {
         $menubar = new Fisma_Yui_MenuBar();
         
+        // Tell the browser to cache the menu bar
+        $this->getResponse()->setHeader('Cache-Control', 'max-age=3600', true);
+        $this->getResponse()->setHeader('Last-Modified', 'Thu, 01 Dec 1984 16:00:00 GMT', true);
+        $this->getResponse()->setHeader('Expires', 'Thu, 01 Dec 2100 16:00:00 GMT', true);
+        $this->getResponse()->setHeader('Pragma', null, true);
+        
         if (Fisma_Acl::hasPrivilege('area', 'dashboard')) {
             $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/panel/dashboard');
             $menubar->add($dashboard);

@@ -86,7 +86,7 @@ class FindingController extends BaseController
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
         $form->getElement('sourceId')->addMultiOptions(array('' => '--select--'));
         foreach ($sources as $source) {
-            $form->getElement('sourceId')->addMultiOptions(array($source['id'] => $source['name']));
+            $form->getElement('sourceId')->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
         }
     
         $securityControls = Doctrine::getTable('SecurityControl')->findAll()->toArray();
@@ -316,7 +316,9 @@ class FindingController extends BaseController
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
         $sourceList = array();
         foreach ($sources as $source) {
-            $sourceList[$source['id']] = $source['nickname'] . ' - ' . $source['name'];
+            $sourceList[$source['id']] = html_entity_decode($source['nickname']) 
+                                       . ' - ' 
+                                       . html_entity_decode($source['name']);
         }
         $uploadForm->findingSource->addMultiOption('', '');
         $uploadForm->findingSource->addMultiOptions($sourceList);

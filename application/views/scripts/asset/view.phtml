@@ -7,7 +7,7 @@ if (Fisma_Acl::hasPrivilege('asset','update')) {
 if (Fisma_Acl::hasPrivilege('asset','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
-Fisma_Format_Section::startSection("Product Information $operation"); ?>
+Fisma_Format_Section::startSection("Asset $operation"); ?>
 
 <div>
     <?php echo $this->form ?>
