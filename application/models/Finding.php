@@ -245,7 +245,7 @@ class Finding extends BaseFinding
                 $startDate = Fisma::now();
                 break;
             case 'EN':
-                $startDate = $this->expectedCompletionDate;
+                $startDate = $this->currentEcd;
                 break;
             case 'EA':
                 $startDate = Fisma::now();

@@ -194,11 +194,7 @@ $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 $data = array(array('<b>Mitigation Strategy</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
-if (empty($finding->expectedCompletionDate) || $finding->expectedCompletionDate == '0000-00-00') {
-    $ecdDate = $finding->currentEcd;
-} else {
-    $ecdDate = $finding->expectedCompletionDate;
-}
+$ecdDate = $finding->currentEcd;
 $data = array(array("<b>Type:</b>", $this->plainText($finding->type), "", ""),
               array("<b>Description:</b>", $this->plainText($finding->mitigationStrategy), "", ""),
               array("<b>Estimated Completion Date:</b>", $ecdDate, "", ""));

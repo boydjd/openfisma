@@ -50,14 +50,15 @@ class FindingListener extends Doctrine_Record_Listener
      * Notification type with each keys
      */
     private static $notificationKeys = array(
-                               'mitigationStrategy'        => Notification::UPDATE_COURSE_OF_ACTION,
-                               'securityControlId'         => Notification::UPDATE_CONTROL_ASSIGNMENT,
-                               'responsibleOrganizationId' => Notification::UPDATE_FINDING_ASSIGNMENT,
-                               'countermeasures'           => Notification::UPDATE_COUNTERMEASURES,
-                               'threat'                    => Notification::UPDATE_THREAT,
-                               'resourcesRequired'         => Notification::UPDATE_FINDING_RESOURCES,
-                               'expectedCompletionDate'    => Notification::UPDATE_EST_COMPLETION_DATE,
-                                            );
+        'mitigationStrategy'        => Notification::UPDATE_COURSE_OF_ACTION,
+        'securityControlId'         => Notification::UPDATE_CONTROL_ASSIGNMENT,
+        'responsibleOrganizationId' => Notification::UPDATE_FINDING_ASSIGNMENT,
+        'countermeasures'           => Notification::UPDATE_COUNTERMEASURES,
+        'threat'                    => Notification::UPDATE_THREAT,
+        'resourcesRequired'         => Notification::UPDATE_FINDING_RESOURCES,
+        'currentEcd'                => Notification::UPDATE_EST_COMPLETION_DATE
+    );
+    
     /**
      * Set the status as "NEW"  for a new finding created or as "PEND" when duplicated
      * write the audit log
@@ -120,16 +121,19 @@ class FindingListener extends Doctrine_Record_Listener
                         }
                         if ('EA' == $newValue) {
                             $type = Notification::EVIDENCE_UPLOAD;
-                            $finding->actualCompletionDate = date('Y-m-d');
+                            $finding->actualCompletionDate = Fisma::now();
                         }
                         if ('EA' == $value && 'EN' == $newValue) {
                             $type = Notification::EVIDENCE_DENIED;
                         }
                         if ('EA' == $value && 'CLOSED' == $newValue) {
                             $type = Notification::FINDING_CLOSED;
+                            $finding->closedTs = Fisma::now();
                         }
                         if ('EN' == $newValue) {
-                            $finding->expectedCompletionDate = $finding->currentEcd;
+                            // Once the mitigation strategy is approved, the original ECD becomes locked. Going forward,
+                            // only the current ECD is allowed to be edited.
+                            $finding->ecdLocked = true;
                         }
                         break;
                     case 'currentEvaluationId':
@@ -151,10 +155,16 @@ class FindingListener extends Doctrine_Record_Listener
                             }
                         }
                         break;
-                    case 'expectedCompletionDate':
-                        if ('DRAFT' == $finding->status) {
-                            $finding->currentEcd = $finding->expectedCompletionDate;
-                            $finding->expectedCompletionDate = null;
+                    case 'originalEcd':
+                        throw new Fisma_Exception('The original ECD cannot be set directly.');
+                        break;
+                    case 'currentEcd':
+                        if ($finding->ecdLocked && empty($finding->ecdChangeDescription)) {
+                            throw new Fisma_Exception('When the ECD is locked, the user must provide a change description
+                                                       in order to modify the ECD.');
+                        }
+                        if (!$finding->ecdLocked) {
+                            $finding->originalEcd = $finding->currentEcd;
                         }
                         break;
                     default:

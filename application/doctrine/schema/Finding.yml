@@ -68,18 +68,29 @@ Finding:
                 purify: html
                 logicalName: Resources Required
             comment: Any additional resources (financial) required to complete this course of action
-        expectedCompletionDate:
+        originalEcd:
             type: date
             extra:
                 logicalName: Original ECD            
-            comment: The date when the course of action or business case is planned to be completed
+            comment: The original date when the course of action or business case was planned to be completed
         currentEcd:
             type: date
             extra:
-                logicalName: Current ECD                  
+                logicalName: Current ECD
+            comment: If an ECD needs to be changed, but the original ECD is locked, then the updated ECD is stored here
         ecdLocked:
             type: boolean
-            comment: If false, then no user is allowed to modify the ECD.
+            notnull: true
+            default: false
+            comment: If false, then the original ECD cannot be modified. The current ECD can always be modified.
+        ecdChangeDescription:
+            type: string(255)
+            extra:
+                logicalName: Justification for modifying ECD
+                purify: plaintext
+            comment: If the current ECD needs to be changed, then this field holds the user\'s justification for changing it
+        actualCompletionDate:
+            type: date                              
         threat:
             type: string
             extra: 

@@ -9,7 +9,7 @@ System:
 
         confidentiality:
             type: enum
-            values: [na, LOW, MODERATE, HIGH]
+            values: [NA, LOW, MODERATE, HIGH]
             comment: The FIPS-199 confidentiality impact
         confidentialityDescription:
             type: string
@@ -44,9 +44,6 @@ System:
         controlAssessmentDt:
             type: date
             comment: The last time the security controls were tested for this system
-        #continuousMonitoringPolicy:
-        #    type: string
-        #    comment: An HTML field to store the system\'s CM policy
         hasFiif:
             type: enum
             values: ["YES", "NO"] # YAML converts YES to a boolean unless its quoted

@@ -18,6 +18,18 @@
             <td><?php echo $finding->createdTs;?></td>
         </tr>
         <tr>
+            <td>Date Closed:</td>
+            <td>
+                <?php 
+                if (!is_null($finding->closedTs)) {
+                    echo $finding->closedTs;
+                } else {
+                    echo "<i>Not closed</i>";
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
             <td>Source:</td>
             <td>(<?php echo $finding->Source->nickname;?>) <?php echo $finding->Source->name;?>
             <?php 

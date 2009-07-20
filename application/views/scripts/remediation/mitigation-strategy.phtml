@@ -47,32 +47,87 @@
 </div>
 
 <?php 
-if (empty($finding->expectedCompletionDate) || $finding->expectedCompletionDate == '0000-00-00') {
-    $ecdDate = $finding->currentEcd;
-} else {
-    $ecdDate = $finding->expectedCompletionDate;
-}
+if ($finding->originalEcd == $finding->currentEcd) {
 ?>
 <p>
     <b>Expected Completion Date:</b>
-    <span name="finding[expectedCompletionDate]" id="expectedCompletionDate" type="text"
+    <span name="finding[currentEcd]" id="currentEcd" type="text"
         <?php 
             if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action')
                 && in_array($finding->status, array('NEW', 'DRAFT'))) {
-                echo ' class="date editable" target="expectedCompletionDate">';
+                echo ' class="date editable" target="currentEcd"';
+                if ($finding->ecdLocked) {
+                    echo 'onclick="document.getElementById(\'ecdChangeDescription\').style.display = \'block\';"';
+                }
+                echo '>';
             } else {
                 echo '>';
             }
-            echo $ecdDate ? $ecdDate : '0000-00-00';
+            echo (empty($finding->currentEcd) ? 'NONE' : $finding->currentEcd);
         ?>
     </span>
 </p>
+<p style="display: none;" id='ecdChangeDescription'>
+    <b>Enter a justification for the date change: </b>
+    <input type="text" 
+           style="visibility:none" 
+           name="finding[ecdChangeDescription]"
+           size="80">
+</p>
+<?php
+} else {
+?>
+<p>
+    <i>
+        The original ECD indicates the estimated completion date that was agreed upon when the finding 
+        was first approved, and it cannot be changed.
+        The current ECD can be changed, but you must provide a written justification for the change.
+    </i>
+</p>
+<p>
+    <b>Original ECD:</b>
+    <span><?php echo $finding->originalEcd; ?></span>
+</p>
+<p>
+    <b>Current ECD:</b>
+    <span name="finding[currentEcd]" id="currentEcd" type="text"
+        <?php 
+            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action')
+                && in_array($finding->status, array('NEW', 'DRAFT'))) {
+                echo ' class="date editable" target="currentEcd"';
+                if ($finding->ecdLocked) {
+                    echo 'onclick="document.getElementById(\'currentChangeDescription\').style.display = \'none\';
+                          document.getElementById(\'ecdChangeDescription\').style.display = \'inline\'"';
+                }
+                echo '>';
+            } else {
+                echo '>';
+            }
+            echo (empty($finding->currentEcd) ? 'NONE' : $finding->currentEcd);
+        ?>
+    </span>
+    <input type="text" style="display:none" 
+           name="finding[ecdChangeDescription]"
+           value="<?php echo $finding->ecdChangeDescription; ?>">
+</p>
+<p>
+    <b>Justification for changing the ECD: </b>
+    <span id="currentChangeDescription"><?php echo $finding->ecdChangeDescription; ?></span>
+    <input type="text" style="display:none" 
+           id='ecdChangeDescription'
+           name="finding[ecdChangeDescription]"
+           value="<?php echo $finding->ecdChangeDescription; ?>">
+    
+</p>
+<?php
+}
+?>
 
 <p>
     <b>Actual Completion Date: </b>
     <span>
         <?php 
-            if (empty($finding->actualCompletionDate) || $finding->actualCompletionDate == '0000-00-00') {
+            if (empty($finding->actualCompletionDate)) {
                 echo '(not completed)';
             } else {
                 echo $finding->actualCompletionDate;
@@ -91,7 +146,7 @@ $array = array('type'                   => $finding->type,
                'description'            => $finding->description,
                'recommendation'         => $finding->recommendation,
                'resources'              => $finding->resourcesRequired,
-               'ECD'                    => $ecdDate,
+               'ECD'                    => $finding->currentEcd,
                'blscr'                  => $finding->securityControlId,
                'threat_level'           => $finding->threatLevel,
                'threat_source'          => $finding->threat,

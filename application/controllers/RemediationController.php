@@ -405,7 +405,7 @@ class RemediationController extends SecurityController
             'attachments' => array('label' => 'Attachments', 
                                    'sortable' => false, 
                                    'hidden' => ($visibleColumns & (1 << 15)) == 0),
-            'expectedCompletionDate' => array('label' => 'Expected Completion Date', 
+            'currentEcd' => array('label' => 'Expected Completion Date', 
                                            'sortable' => true, 
                                            'hidden' => ($visibleColumns & (1 << 16)) == 0)
         );
@@ -560,7 +560,8 @@ class RemediationController extends SecurityController
             }
 
             $extension = end(explode(".",$file['name']));
-            if (!in_array(strtolower($extension), array('zip', 'rar', 'gz', 'tar'))) {
+            /** @todo cleanup */
+            if (in_array(strtolower($extension), array('exe', 'php', 'phtml', 'php5', 'php4', 'js', 'css'))) {
                 $message = 'This file type is not allowed.';
                 throw new Fisma_Exception($message);
             }
@@ -575,7 +576,6 @@ class RemediationController extends SecurityController
             $count = 0;
             $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
-            //$absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             if ($count > 0) {
                 if (move_uploaded_file($file['tmp_name'], $absFile)) {
                     chmod($absFile, 0755);
@@ -940,11 +940,11 @@ class RemediationController extends SecurityController
             if ($v) {
                 if ($k == 'estDateBegin') {
                     $v = $v->toString('Y-m-d H:i:s');
-                    $q->andWhere("f.expectedCompletionDate > ?", $v);
+                    $q->andWhere("f.currentEcd > ?", $v);
                 } elseif ($k == 'estDateEnd') {
                     $v = $v->addDay(1);
                     $v = $v->toString('Y-m-d H:i:s');
-                    $q->andWhere("f.expectedCompletionDate < ?", $v);
+                    $q->andWhere("f.currentEcd < ?", $v);
                 } elseif ($k == 'createdDateBegin') {
                     $v = $v->toString('Y-m-d H:i:s');
                     $q->andWhere("f.createdTs > ?", $v);
@@ -1001,14 +1001,14 @@ class RemediationController extends SecurityController
                 $row['status'] = $result->status;
             }
             $row['threatLevel'] = $result->threatLevel;
-            if (empty($result->expectedCompletionDate) || $result->expectedCompletionDate == '0000-00-00') {
+            if (empty($result->currentEcd) || $result->currentEcd == '0000-00-00') {
                 if ($result->currentEcd != '0000-00-00') {
-                    $row['expectedCompletionDate'] = $result->currentEcd;
+                    $row['currentEcd'] = $result->currentEcd;
                 } else {
-                    $row['expectedCompletionDate'] = '';
+                    $row['currentEcd'] = '';
                 }
             } else {
-                $row['expectedCompletionDate'] = $result->expectedCompletionDate;
+                $row['currentEcd'] = $result->currentEcd;
             }
             $row['countermeasuresEffectiveness'] = $result->countermeasuresEffectiveness;
             

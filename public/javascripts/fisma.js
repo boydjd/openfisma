@@ -626,7 +626,7 @@ function showCalendar(block, trigger) {
                 Dom.get(block).value = "";
             }
             dialog.hide();
-            if ('finding[expectedCompletionDate]' == Dom.get(block).name) {
+            if ('finding[currentEcd]' == Dom.get(block).name) {
                 validateEcd();
             }
         });
