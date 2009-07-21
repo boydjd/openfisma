@@ -32,11 +32,8 @@ Privilege:
         action: read
         description: View Findings
         orgSpecific: true
-    findings_update:
-        resource: finding
-        action: update
-        description: Edit Findings
-        orgSpecific: true
+    # findings_update: 
+        # ACL for findings is more fine-grained than for other objects, so there is no "update" action. See below.
     findings_delete:
         resource: finding
         action: delete
@@ -53,6 +50,11 @@ Privilege:
         resource: finding
         action: approve
         description: Approve Pending Findings
+        orgSpecific: true
+    findings_update_description:
+        resource: finding
+        action: update_description
+        description: Update the finding description
         orgSpecific: true
     findings_update_course_of_action:
         resource: finding

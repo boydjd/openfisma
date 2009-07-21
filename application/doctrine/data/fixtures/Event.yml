@@ -55,10 +55,6 @@ Event:
         name: Update Est Completion Date
         Privilege: notification_finding
 
-    Mitigation Strategy Approved TO SSO:
-        name: Mitigation Strategy Approved TO SSO
-        Privilege: notification_finding
-
     Finding Closed:
         name: Finding Closed
         Privilege: notification_finding
@@ -67,16 +63,20 @@ Event:
         name: Evidence Upload
         Privilege: notification_finding
 
-    Evidence Submitted for 1st Approval:
-        name: Evidence Submitted for 1st Approval
+    Mitigation ISSO:
+        name: Mitigation Strategy Submitted for ISSO Approval
         Privilege: notification_finding
 
-    Evidence Submitted for 2nd Approval:
-        name: Evidence Submitted for 2nd Approval
+    Mitigation IVV:
+        name: Mitigation Strategy Submitted for IV&V Approval
         Privilege: notification_finding
 
-    Evidence Submitted for 3rd Approval:
-        name: Evidence Submitted for 3rd Approval
+    Evidence ISSO:
+        name: Evidence Submitted for ISSO Approval
+        Privilege: notification_finding
+
+    Evidence IVV:
+        name: Evidence Submitted for IV&V Approval
         Privilege: notification_finding
 
     Account Modified:
@@ -203,14 +203,10 @@ Event:
         name: Account Locked
         Privilege: notification_admin
 
-    Mitigation Strategy Approved to IVV:
-        name: Mitigation Strategy Approved to IVV
-        Privilege: notification_finding
-
     Mitigation Strategy Submit:
-        name: Mitigation Strategy Submit
+        name: Mitigation Strategy Submitted
         Privilege: notification_finding
 
     Mitigation strategy Revise:
-        name: Mitiation Strategy Revise
+        name: Mitiation Strategy Revised
         Privilege: notification_finding
