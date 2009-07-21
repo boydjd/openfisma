@@ -85,7 +85,7 @@ class User extends BaseUser
 
     public function postInsert()
     {
-        Notification::notify(Notification::ACCOUNT_CREATED, $this, User::currentUser());
+        Notification::notify('USER_CREATED', $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('account', $this);
@@ -93,7 +93,7 @@ class User extends BaseUser
 
     public function postUpdate()
     {
-        Notification::notify(Notification::ACCOUNT_MODIFIED, $this, User::currentUser());
+        Notification::notify('USER_UPDATED', $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::updateIndex('account', $this);
@@ -101,7 +101,7 @@ class User extends BaseUser
 
     public function postDelete()
     {
-        Notification::notify(Notification::ACCOUNT_DELETED, $this, User::currentUser());
+        Notification::notify('USER_DELETED', $this, User::currentUser());
         Doctrine_Manager::connection()->commit();
 
         Fisma_Lucene::deleteIndex('account', $this->id);

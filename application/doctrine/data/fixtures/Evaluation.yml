@@ -7,7 +7,7 @@ Evaluation:
         precedence: 0
         approvalGroup: action
         Privilege: finding_mitigation_isso
-        Event: Mitigation ISSO
+        Event: MITIGATION_ISSO
 
     MITIGATION IVV:
         id: 2
@@ -16,7 +16,7 @@ Evaluation:
         precedence: 1
         approvalGroup: action
         Privilege: finding_mitigation_ivv
-        Event: Mitigation IVV
+        Event: MITIGATION_IVV
 
     EVIDENCE ISSO:
         id: 3
@@ -26,7 +26,7 @@ Evaluation:
         precedence: 0
         approvalGroup: evidence
         Privilege: finding_evidence_isso
-        Event: Evidence ISSO
+        Event: EVIDENCE_ISSO
 
     EVIDENCE IVV:
         id: 4
@@ -35,4 +35,4 @@ Evaluation:
         precedence: 1
         approvalGroup: evidence
         Privilege: finding_evidence_ivv
-        Event: Evidence IVV
+        Event: EVIDENCE_IVV

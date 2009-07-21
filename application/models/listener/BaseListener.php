@@ -63,17 +63,17 @@ class BaseListener extends Doctrine_Record_Listener
     }
 
     /**
-     * Get the notification type
+     * Get the name of the notification
      *
      * @param Doctrine Record $invoker
      * @param string $action
-     * @return int notification type
+     * @return string notification name
      */
     private function _getNotifyType($invoker, $action)
     {
         $table = strtoupper($invoker->getTable()->getTableName());
-        $event = $table . '_' . $action;
-        eval ("\$type = Notification::$event;");
-        return $type;
+        $eventName = $table . '_' . $action;
+        
+        return $eventName;
     }
 }

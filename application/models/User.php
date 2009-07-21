@@ -104,7 +104,7 @@ class User extends BaseUser
         $this->lockType = $lockType;
         $this->save();
         $this->log(self::LOCK_USER, "Account locked: $lockType");
-        Notification::notify(Notification::USER_LOCKED, $this, self::currentUser());
+        Notification::notify('USER_LOCKED', $this, self::currentUser());
     }
     
     /**
@@ -271,14 +271,14 @@ class User extends BaseUser
             $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
             $this->oldFailureCount = $this->failureCount;
             $this->failureCount = 0;
-            Notification::notify(Notification::USER_LOGIN_SUCCESS, $this, $this);
+            Notification::notify('LOGIN_SUCCESS', $this, $this);
             $loginRet = true;
         } else {
             $this->failureCount++;
             if ($this->failureCount >= Configuration::getConfig('failure_threshold')) {
                 $this->lockAccount(User::LOCK_TYPE_PASSWORD);
             }
-            Notification::notify(Notification::USER_LOGIN_FAILURE, $this, $this);
+            Notification::notify('LOGIN_FAILURE', $this, $this);
         }
         $this->save();
         return $loginRet;
@@ -356,7 +356,7 @@ class User extends BaseUser
         }
         
         foreach ($query as $event) {
-            $availableEvents[$event->id] = $event->name;
+            $availableEvents[$event->id] = $event->description;
         }
 
         $existEvents = $this->getExistEvents();

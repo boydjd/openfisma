@@ -40,7 +40,6 @@ class FindingListener extends Doctrine_Record_Listener
                             'currentEvaluationId',
                             'status',
                             'ecdLocked',
-                            'nextDueDate',
                             'legacyFindingKey',
                             'modifiedTs',
                             'closedTs'
@@ -50,13 +49,12 @@ class FindingListener extends Doctrine_Record_Listener
      * Notification type with each keys
      */
     private static $notificationKeys = array(
-        'mitigationStrategy'        => Notification::UPDATE_COURSE_OF_ACTION,
-        'securityControlId'         => Notification::UPDATE_CONTROL_ASSIGNMENT,
-        'responsibleOrganizationId' => Notification::UPDATE_FINDING_ASSIGNMENT,
-        'countermeasures'           => Notification::UPDATE_COUNTERMEASURES,
-        'threat'                    => Notification::UPDATE_THREAT,
-        'resourcesRequired'         => Notification::UPDATE_FINDING_RESOURCES,
-        'currentEcd'                => Notification::UPDATE_EST_COMPLETION_DATE
+        'mitigationStrategy'        => 'UPDATE_COURSE_OF_ACTION',
+        'securityControlId'         => 'UPDATE_SECURITY_CONTROL',
+        'responsibleOrganizationId' => 'UPDATE_RESPONSIBLE_SYSTEM',
+        'countermeasures'           => 'UPDATE_COUNTERMEASURES',
+        'threat'                    => 'UPDATE_THREAT',
+        'resourcesRequired'         => 'UPDATE_FINDING_RESOURCES'
     );
     
     /**
@@ -114,20 +112,20 @@ class FindingListener extends Doctrine_Record_Listener
                         break;
                     case 'status':
                         if ('DRAFT' == $value) {
-                            $type = Notification::MITIGATION_STRATEGY_SUBMIT;
+                            $type = '';//Notification::MITIGATION_STRATEGY_SUBMIT;
                         }
                         if ('EN' == $value && 'DRAFT' == $newValue) {
-                            $type = Notification::MITIGATION_STRATEGY_REVISE;
+                            $type = '';//Notification::MITIGATION_STRATEGY_REVISE;
                         }
                         if ('EA' == $newValue) {
-                            $type = Notification::EVIDENCE_UPLOAD;
+                            $type = '';//Notification::EVIDENCE_UPLOAD;
                             $finding->actualCompletionDate = Fisma::now();
                         }
                         if ('EA' == $value && 'EN' == $newValue) {
-                            $type = Notification::EVIDENCE_DENIED;
+                            $type = '';//Notification::EVIDENCE_DENIED;
                         }
                         if ('EA' == $value && 'CLOSED' == $newValue) {
-                            $type = Notification::FINDING_CLOSED;
+                            $type = '';//Notification::FINDING_CLOSED;
                             $finding->closedTs = Fisma::now();
                         }
                         if ('EN' == $newValue) {
@@ -140,18 +138,18 @@ class FindingListener extends Doctrine_Record_Listener
                         $evaluation = Doctrine::getTable('Evaluation')->find($value);
                         if ('action' == $evaluation->approvalGroup && 'DRAFT' != $finding->status) {
                             if ('0' == $evaluation->precedence) {
-                                $type = Notification::MITIGATION_APPROVED_SSO;
+                                $type = '';//Notification::MITIGATION_APPROVED_SSO;
                             }
                             if ('1' == $evaluation->precedence) {
-                                $type = Notification::MITIGATION_APPROVED_IVV;
+                                $type = '';//Notification::MITIGATION_APPROVED_IVV;
                             }
                         }
                         if ('evidence' == $evaluation->approvalGroup && 'EN' != $finding->status) {
                             if ('0' == $evaluation->precedence) {
-                                $type = Notification::EVIDENCE_APPROVED_1ST;
+                                $type = '';//Notification::EVIDENCE_APPROVED_1ST;
                             }
                             if ('1' == $evaluation->precedence) {
-                                $type = Notification::EVIDENCE_APPROVED_2ND;
+                                $type = '';//Notification::EVIDENCE_APPROVED_2ND;
                             }
                         }
                         break;
@@ -202,13 +200,9 @@ class FindingListener extends Doctrine_Record_Listener
     {
         $finding = $event->getInvoker();
         if ('scan' == $finding->Asset->source) {
-            $notifyType = Notification::FINDING_INJECT;
+            $notifyType = 'FINDING_INJECTED';
         } else {
-            if ($finding->uploadId) {
-                $notifyType = Notification::FINDING_IMPORT;
-            } else {
-                $notifyType = Notification::FINDING_CREATED;
-            }
+            $notifyType = 'FINDING_CREATED';
         }
         Notification::notify($notifyType, $finding, User::currentUser(), $finding->responsibleOrganizationId);
     }

@@ -1,6 +1,11 @@
 Event:
     columns:
-        name: string(255)
+        name:
+            type: string(255)
+            comment: The name used internally by openfisma to keep track of Events. For maximum versatility, the name is defined in ALL_CAPS using underscores as word boundaries. No other characters should be used.
+        description: 
+            type: string(255)
+            comment: A human-readable description of the event; In the log, this will come out as \"<description> by <user> at <time>\", so the description should be written to fit the grammar. Example: \"Roof Was Raised by <user> at <time>\"
         privilegeId: 
             type: integer
             comment: The privilege which is required in order to receive this event notification

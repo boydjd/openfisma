@@ -81,16 +81,16 @@ class ECDNotifier
             $daysRemaining = ceil((strtotime($finding->expectedCompletionDate) - time()) / (3600 * 24));
             switch($daysRemaining) {
                 case 0:
-                    $notificationType = Notification::ECD_EXPIRES_TODAY;
+                    $notificationType = 'ECD_EXPIRES_TODAY';
                     break;
                 case 7:
-                    $notificationType = Notification::ECD_EXPIRES_7_DAYS;
+                    $notificationType = 'ECD_EXPIRES_7_DAYS';
                     break;
                 case 14:
-                    $notificationType = Notification::ECD_EXPIRES_14_DAYS;
+                    $notificationType = 'ECD_EXPIRES_14_DAYS';
                     break;
                 case 21:
-                    $notificationType = Notification::ECD_EXPIRES_21_DAYS;
+                    $notificationType = 'ECD_EXPIRES_21_DAYS';
                     break;
                 default:
                     // This should never happen, because the query is written

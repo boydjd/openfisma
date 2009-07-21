@@ -91,10 +91,15 @@ Privilege:
         action: update_resources
         description: Edit Resources Required
         orgSpecific: true
-    findings_update_est_completion_date:
+    findings_update_ecd:
         resource: finding
-        action: update_est_completion_date
-        description: Edit Expected Completion Date
+        action: update_ecd
+        description: Edit Expected Completion Date (Unless the ECD is Locked)
+        orgSpecific: true
+    findings_update_locked_ecd:
+        resource: finding
+        action: update_locked_ecd
+        description: Override a Locked ECD
         orgSpecific: true
     findings_upload_evidence:
         resource: finding

@@ -1,212 +1,265 @@
 Event:
-    Finding Created:
-        name: Finding Created
+    FINDING_CREATED:
+        name: FINDING_CREATED
+        description: Finding Created
         Privilege: notification_finding
 
-    Finding Import:
-        name: Finding Import
+    FINDING_INJECTED:
+        name: FINDING_INJECTED
+        description: Security Scanner Finding Injected
         Privilege: notification_finding
 
-    Finding Inject:
-        name: Finding Inject
-        Privilege: notification_finding
-
-    Asset Modified:
-        name: Asset Modified
+    ASSET_CREATED:
+        name: ASSET_CREATED
+        description: Asset Created
         Privilege: notification_asset
 
-    Asset Created:
-        name: Asset Created
+    ASSET_UPDATED:
+        name: ASSET_UPDATED
+        description: Asset Modified
         Privilege: notification_asset
 
-    Asset Deleted:
-        name: Asset Deleted
+    ASSET_DELETED:
+        name: ASSET_DELETED
+        description: Asset Deleted
         Privilege: notification_asset
 
-    Update Course of Action:
-        name: Update Course of Action
+    UPDATE_COURSE_OF_ACTION:
+        name: UPDATE_COURSE_OF_ACTION
+        description: Course Of Action For Finding Updated
         Privilege: notification_finding
 
-    Update Finding Assignment:
-        name: Update Finding Assignment
+    UPDATE_RESPONSIBLE_SYSTEM:
+        name: UPDATE_RESPONSIBLE_SYSTEM
+        description: Responsible System For Finding Re-assigned
         Privilege: notification_finding
 
-    Update Control Assignment:
-        name: Update Control Assignment
+    UPDATE_SECURITY_CONTROL:
+        name: UPDATE_SECURITY_CONTROL
+        description: Security Control For Finding Updated
         Privilege: notification_finding
 
-    Update Countermeasures:
-        name: Update Countermeasures
+    UPDATE_COUNTERMEASURES:
+        name: UPDATE_COUNTERMEASURES
+        description: Countermeasures For Finding Updated
         Privilege: notification_finding
 
-    Update Threat:
-        name: Update Threat
+    UPDATE_THREAT:
+        name: UPDATE_THREAT
+        description: Threat Source/Level For Finding Updated
         Privilege: notification_finding
 
-    Update Finding Recommendation:
-        name: Update Finding Recommendation
+    UPDATE_RECOMMENDATION:
+        name: UPDATE_RECOMMENDATION
+        description: Recommendation For Finding Updated
         Privilege: notification_finding
 
-    Update Finding Resources:
-        name: Update Finding Resources
+    UPDATE_RESOURCES_REQUIRED:
+        name: UPDATE_RESOURCES_REQUIRED
+        description: Resources Required For Finding Updated
         Privilege: notification_finding
 
-    Update Est Completion Date:
-        name: Update Est Completion Date
+    UPDATE_ECD:
+        name: UPDATE_ECD
+        description: ECD For Finding Updated
         Privilege: notification_finding
 
-    Finding Closed:
-        name: Finding Closed
+    UPDATE_LOCKED_ECD:
+        name: UPDATE_LOCKED_ECD
+        description: A Locked ECD Was Overridden
         Privilege: notification_finding
 
-    Evidence Upload:
-        name: Evidence Upload
+    FINDING_CLOSED:
+        name: FINDING_CLOSED
+        description: Finding Was Closed
         Privilege: notification_finding
 
-    Mitigation ISSO:
-        name: Mitigation Strategy Submitted for ISSO Approval
+    EVIDENCE_UPLOADED:
+        name: EVIDENCE_UPLOADED
+        description: Evidence Uploaded For Finding
         Privilege: notification_finding
 
-    Mitigation IVV:
-        name: Mitigation Strategy Submitted for IV&V Approval
+    MITIGATION_ISSO:
+        name: MITIGATION_ISSO
+        description: Mitigation Strategy Submitted for ISSO Approval
         Privilege: notification_finding
 
-    Evidence ISSO:
-        name: Evidence Submitted for ISSO Approval
+    MITIGATION_IVV:
+        name: MITIGATION_IVV
+        description: Mitigation Strategy Submitted for IV&V Approval
         Privilege: notification_finding
 
-    Evidence IVV:
-        name: Evidence Submitted for IV&V Approval
+    EVIDENCE_ISSO:
+        name: EVIDENCE_ISSO
+        description: Evidence Submitted for ISSO Approval
         Privilege: notification_finding
 
-    Account Modified:
-        name: Account Modified
-        Privilege: notification_admin
-
-    Account Deleted:
-        name: Account Deleted
-        Privilege: notification_admin
-
-    Account Created:
-        name: Account Created
-        Privilege: notification_admin
-
-    Organization Deleted:
-        name: Organization Deleted
-        Privilege: notification_admin
-
-    Organization Modified :
-        name: Organization Modified 
-        Privilege: notification_admin
-
-    Organization Created:
-        name: Organization Created
-        Privilege: notification_admin
-
-    System Deleted:
-        name: System Deleted
-        Privilege: notification_admin
-
-    System Modified:
-        name: System Modified
-        Privilege: notification_admin
-
-    System Created:
-        name: System Created
-        Privilege: notification_admin
-
-    Product Created:
-        name: Product Created
-        Privilege: notification_admin
-
-    Product Modified:
-        name: Product Modified
-        Privilege: notification_admin
-
-    Product Deleted:
-        name: Product Deleted
-        Privilege: notification_admin
-
-    Role Created:
-        name: Role Created
-        Privilege: notification_admin
-
-    Role Deleted:
-        name: Role Deleted
-        Privilege: notification_admin
-
-    Role Modified:
-        name: Role Modified
-        Privilege: notification_admin
-
-    Finding Source Created:
-        name: Finding Source Created
-        Privilege: notification_admin
-
-    Finding Source Modified:
-        name: Finding Source Modified
-        Privilege: notification_admin
-
-    Finding Source Deleted:
-        name: Finding Source Deleted
-        Privilege: notification_admin
-
-    Network Modified:
-        name: Network Modified
-        Privilege: notification_admin
-
-    Network Created:
-        name: Network Created
-        Privilege: notification_admin
-
-    Network Deleted:
-        name: Network Deleted
-        Privilege: notification_admin
-
-    System Configuration Modified:
-        name: System Configuration Modified
-        Privilege: notification_admin
-
-    Account Login Success:
-        name: Account Login Success
-        Privilege: notification_admin
-
-    Account Login Failure:
-        name: Account Login Failure
-        Privilege: notification_admin
-
-    Account Logout:
-        name: Account Logout
-        Privilege: notification_admin
-
-    ECD Expires Today:
-        name: ECD Expires Today
+    EVIDENCE_IVV:
+        name: EVIDENCE_IVV
+        description: Evidence Submitted for IV&V Approval
         Privilege: notification_finding
 
-    ECD Expires in 7 Days:
-        name: ECD Expires in 7 Days
-        Privilege: notification_finding
-
-    ECD Expires in 14 days:
-        name: ECD Expires in 14 days
-        Privilege: notification_finding
-
-    ECD Expires in 21 days:
-        name: ECD Expires in 21 days
-        Privilege: notification_finding
-
-    Evidence Denied:
-        name: Evidence Denied
-        Privilege: notification_finding
-
-    Account Locked:
-        name: Account Locked
+    USER_CREATED:
+        name: USER_CREATED
+        description: Account Created
+        Privilege: notification_admin
+        
+    USER_UPDATED:
+        name: USER_UPDATED
+        description: Account Modified
         Privilege: notification_admin
 
-    Mitigation Strategy Submit:
-        name: Mitigation Strategy Submitted
+    USER_DELETED:
+        name: USER_DELETED
+        description: Account Deleted
+        Privilege: notification_admin
+
+    ORGANIZATION_CREATED:
+        name: ORGANIZATION_CREATED
+        description: Organization Created
+        Privilege: notification_admin
+
+    ORGANIZATION_UPDATED:
+        name: ORGANIZATION_UPDATED 
+        description: Organization Modified 
+        Privilege: notification_admin
+
+    ORGANIZATION_DELETED:
+        name: ORGANIZATION_DELETED
+        description: Organization Deleted
+        Privilege: notification_admin
+        
+    SYSTEM_DELETED:
+        name: SYSTEM_DELETED
+        description: System Deleted
+        Privilege: notification_admin
+
+    SYSTEM_UPDATED:
+        name: SYSTEM_UPDATED
+        description: System Modified
+        Privilege: notification_admin
+
+    SYSTEM_CREATED:
+        name: SYSTEM_CREATED
+        description: System Created
+        Privilege: notification_admin
+
+    PRODUCT_CREATED:
+        name: PRODUCT_CREATED
+        description: Product Created
+        Privilege: notification_admin
+
+    PRODUCT_UPDATED:
+        name: PRODUCT_UPDATED
+        description: Product Modified
+        Privilege: notification_admin
+
+    PRODUCT_DELETED:
+        name: PRODUCT_DELETED
+        description: Product Deleted
+        Privilege: notification_admin
+
+    ROLE_CREATED:
+        name: ROLE_CREATED
+        description: Role Created
+        Privilege: notification_admin
+
+    ROLE_DELETED:
+        name: ROLE_DELETED
+        description: Role Deleted
+        Privilege: notification_admin
+
+    ROLE_UPDATED:
+        name: ROLE_UPDATED
+        description: Role Modified
+        Privilege: notification_admin
+
+    SOURCE_CREATED:
+        name: SOURCE_CREATED
+        description: Finding Source Created
+        Privilege: notification_admin
+
+    SOURCE_UPDATED:
+        name: SOURCE_UPDATED
+        description: Finding Source Modified
+        Privilege: notification_admin
+
+    SOURCE_DELETED:
+        name: SOURCE_DELETED
+        description: Finding Source Deleted
+        Privilege: notification_admin
+
+    NETWORK_MODIFIED:
+        name: NETWORK_MODIFIED
+        description: Network Modified
+        Privilege: notification_admin
+
+    NETWORK_CREATED:
+        name: NETWORK_CREATED
+        description: Network Created
+        Privilege: notification_admin
+
+    NETWORK_DELETED:
+        name: NETWORK_DELETED
+        description: Network Deleted
+        Privilege: notification_admin
+
+    CONFIGURATION_UPDATED:
+        name: CONFIGURATION_UPDATED
+        description: System Configuration Modified
+        Privilege: notification_admin
+
+    LOGIN_SUCCESS:
+        name: LOGIN_SUCCESS
+        description: Login
+        Privilege: notification_admin
+
+    LOGIN_FAILURE:
+        name: LOGIN_FAILURE
+        description: Login FAILED
+        Privilege: notification_admin
+
+    LOGOUT:
+        name: LOGOUT
+        description: Account Logout
+        Privilege: notification_admin
+
+    ECD_EXPIRES_TODAY:
+        name: ECD_EXPIRES_TODAY
+        description: ECD Expires Today
         Privilege: notification_finding
 
-    Mitigation strategy Revise:
-        name: Mitiation Strategy Revised
+    ECD_EXPIRES_7_DAYS:
+        name: ECD_EXPIRES_7_DAYS
+        description: ECD Expires in 7 Days
+        Privilege: notification_finding
+
+    ECD_EXPIRES_14_DAYS:
+        name: ECD_EXPIRES_14_DAYS
+        description: ECD Expires in 14 days
+        Privilege: notification_finding
+
+    ECD_EXPIRES_21_DAYS:
+        name: ECD_EXPIRES_21_DAYS
+        description: ECD Expires in 21 days
+        Privilege: notification_finding
+
+    APPROVAL_DENIED:
+        name: FINDING_APPROVED
+        description: Approval Denied For Finding
+        Privilege: notification_finding
+
+    USER_LOCKED:
+        name: USER_LOCKED
+        description: User Account Was Locked
+        Privilege: notification_admin
+
+    MITIGATION_SUBMIT:
+        name: MITIGATION_SUBMIT
+        description: Mitigation Strategy Submitted
+        Privilege: notification_finding
+
+    MITIGATION_REVISE:
+        name: MITIGATION_REVISE
+        description: Mitiation Strategy Revised
         Privilege: notification_finding
