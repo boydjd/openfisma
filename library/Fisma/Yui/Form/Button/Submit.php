@@ -21,15 +21,16 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Submit.php -1M 2009-04-15 17:32:22Z (local) $
+ * @package   Fisma_Yui
  */
 
 /**
  * A YUI button for submitting forms
  *
- * @package   Fisma_Yui
  * @subpackage Yui_Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Fisma_Yui
  */
 class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
 {

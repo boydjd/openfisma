@@ -21,16 +21,17 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package Zend_View
+ * @package   View_Helper
  */
 
-/**
- * @see Zend_View_Helper_Abstract
- */
 require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for rendering HTML to plain text.
+ *
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   View_Helper
  */
 class View_Helper_PlainText extends Zend_View_Helper_Abstract
 {

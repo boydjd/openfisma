@@ -20,13 +20,16 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
+ * @version   $Id: $
+ * @package   Fisma
  */
 
 /**
  * An object which represents the application itself, and controls items such as debug mode, include paths,
  * etc.
  *
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  * @package   Fisma
  */
 class Fisma

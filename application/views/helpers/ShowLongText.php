@@ -24,13 +24,13 @@
  * @package   View_Helper
  */
 
-/**
- * @see Zend_Controller_Action_Helper_Abstract
- */
 require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for determining if the content is more than 120 character. 
+ *
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  * @package   View_Helper
  */
 class View_Helper_ShowLongText extends Zend_View_Helper_Abstract

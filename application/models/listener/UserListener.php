@@ -19,14 +19,15 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: index.php 1793 2009-06-19 17:49:33Z mehaase $
+ * @package   Listener
  */
  
 /**
  * A listener for the User model
  *
- * @package   Listener
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/license.php
+ * @package   Listener
  */
 class UserListener extends Doctrine_Record_Listener
 {

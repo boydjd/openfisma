@@ -21,14 +21,15 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Fisma_Form
  */
 
 /**
  * Renders multiple checkboxes in column format.
  *
- * @package   Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Fisma_Form
  */
 class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
 {

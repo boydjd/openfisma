@@ -21,14 +21,14 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Abstract.php 1560 2009-04-13 14:59:12Z mehaase $
- * @package   Inject
+ * @package   Fisma_Inject
  *
  */
 
 /**
  * An abstract class for creating injection plug-ins
  *
- * @package   Inject
+ * @package   Fisma_Inject
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */

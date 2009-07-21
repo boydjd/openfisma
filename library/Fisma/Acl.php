@@ -21,6 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Fismacl.php -1M 2009-04-15 18:40:38Z (local) $
+ * @package   Fisma
  */
 
 /**
@@ -30,10 +31,9 @@
  * 2) Ensure that the system only accesses objects within their assigned systems
  * 3) Add a requirePrivilege method, which is a convenient way to assert that a user is allowed to do something
  * 
- * @category   local
- * @package    Local
  * @copyright  Copyright (c) 2005-2008
  * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @package    Fisma
  */
 class Fisma_Acl extends Zend_Acl
 {

@@ -21,7 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Cpe.php -1M 2009-04-15 18:38:50Z (local) $
- * @package   Local
+ * @package   Fisma
  */
 
 /**
@@ -29,7 +29,7 @@
  * version 2.1
  * @link http://cpe.mitre.org
  *
- * @package   Local
+ * @package   Fisma
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */

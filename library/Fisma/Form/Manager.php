@@ -21,7 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Manager.php -1M 2009-04-15 18:02:56Z (local) $
- * @package   Form
+ * @package   Fisma_Form
  */
 
 /**
@@ -29,7 +29,7 @@
  * common aspects of all forms used in OpenFISMA, such as standard decorators,
  * validators, and filters.
  *
- * @package   Form
+ * @package   Fisma_Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */

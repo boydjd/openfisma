@@ -72,7 +72,7 @@ class User extends BaseUser
     const LOGOUT        = 'logout';
     const ACCEPT_ROB    = 'accept rob';
     const CHANGE_PASSWORD = 'change password';
-    const VALIDTAE_EMAIL  = 'validate email';
+    const VALIDATE_EMAIL  = 'validate email';
     /**
      * Returns an object which represents the current, authenticated user
      * If the $user is current User, then return this object instead of create a new one.
@@ -246,7 +246,7 @@ class User extends BaseUser
             $this->log(self::VALIDATE_EMAIL, 'Email validation successful');
             return true;
         } else {
-            $this->log(self::VALIDTAE_EMAIL, 'Email validation failed');
+            $this->log(self::VALIDATE_EMAIL, 'Email validation failed');
             return false;
         }
     }

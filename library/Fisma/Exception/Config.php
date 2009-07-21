@@ -21,10 +21,17 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Fisma
+ * @package   Fisma_Exception
  *
  */
 
+/**
+ * Thrown when get a none exist configuration element
+ *
+ * @package   Fisma_Exception
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ */
 class Fisma_Exception_Config extends Zend_Exception
 {
 }

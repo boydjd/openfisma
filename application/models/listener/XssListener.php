@@ -19,6 +19,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Listener
  */
  
 /**
@@ -31,9 +32,9 @@
  *
  * This listener should be attached to any class which puts external data (e.g., user-provided) 
  * 
- * @package   Listener
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/license.php
+ * @package   Listener
  */
 class XssListener extends Doctrine_Record_Listener 
 {

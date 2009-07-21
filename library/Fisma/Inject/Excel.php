@@ -21,6 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Excel.php 1523 2009-03-26 17:01:44Z mehaase $
+ * @package   Fisma_Inject
  */
 
 /**
@@ -30,9 +31,9 @@
  * This plug-in makes heavy use of the SimpleXML xpath() function, which makes code easier to maintain, but could also
  * be a performance bottleneck for large spreadsheets. Currently there has not been any load-testing for this plugin.
  *
- * @package   Inject
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License\
+ * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Fisma_Inject
  */
 class Fisma_Inject_Excel
 {

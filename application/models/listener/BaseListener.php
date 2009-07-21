@@ -19,14 +19,15 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Listener
  */
  
 /**
  * A special listener which create notifications or update lucene index for each meta-data
  * 
- * @package   Listener
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/license.php
+ * @package   Listener
  */
 class BaseListener extends Doctrine_Record_Listener 
 {

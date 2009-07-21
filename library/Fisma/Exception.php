@@ -20,7 +20,8 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
+ * @version   $Id: $
+ * @package   Fisma
  */
 
 /**
@@ -28,6 +29,8 @@
  *
  * @package   Fisma
  * @subpackage Fisma_Exception
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class Fisma_Exception extends Zend_Exception
 {

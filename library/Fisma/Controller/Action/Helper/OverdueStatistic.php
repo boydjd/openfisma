@@ -21,14 +21,14 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Controller
+ * @package   Controller_Helper
  */
 
 /**
  * The report controller creates the multitude of reports available in
  * OpenFISMA.
  *
- * @package   Helper
+ * @package   Controller_Helper
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */

@@ -21,6 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Yui.php -1M 2009-04-15 17:32:22Z (local) $
+ * @package   Fisma_Yui
  */
 
 /**
@@ -28,9 +29,9 @@
  * 
  * Implemented as a static class in order to make the calling syntax simple.
  *
- * @package   Fisma_Yui
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Fisma_Yui
  */
 class Fisma_Yui
 {

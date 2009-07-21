@@ -21,7 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: AppDetective.php 1560 2009-04-13 14:59:12Z mehaase $
- * @package   Inject
+ * @package   Fisma_Inject
  */
  
 /**
@@ -30,7 +30,7 @@
  * This plug-in makes heavy use of the SimpleXML xpath() function, which makes code easier to maintain, but could also
  * be a performance bottleneck for large reports. Currently there has not been any load-testing for this plugin.
  *
- * @package   Inject
+ * @package   Fisma_Inject
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License\
  *

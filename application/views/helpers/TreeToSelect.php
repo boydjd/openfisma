@@ -21,13 +21,15 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: IsOnTime.php 1797 2009-06-19 22:27:35Z mehaase $
- * @package Zend_View
+ * @package   View_Helper
  */
  
 /**
  * Turn a Doctrine Collection which represents a tree into an HTML select box
  *  
- * @package Zend_View
+ * @package   View_Helper
+ * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/mw/index.php?title=License
  */
 class View_Helper_TreeToSelect extends Zend_View_Helper_Abstract
 {

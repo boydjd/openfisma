@@ -21,14 +21,15 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: CheckboxMatrix.php -1M 2009-04-15 18:04:56Z (local) $
+ * @package   Fisma_Form
  */
 
 /**
  * Renders multiple checkboxes in column format.
  *
- * @package   Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Fisma_Form
  */
 class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
 {

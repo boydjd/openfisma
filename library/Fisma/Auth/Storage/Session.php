@@ -21,14 +21,15 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Fisma_Auth
  */
 
 
 /**
  * @category   Auth
- * @package    Fisma_Auth
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package    Fisma_Auth
  */
 class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session 
 {

@@ -21,15 +21,16 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: Form.php -1M 2009-04-15 17:44:22Z (local) $
+ * @package   Fisma_Form
  */
 
 /**
  * Extends Zend_Form by adding a property called "readOnly". When a form is marked as read only, the decorator can 
  * render the form differently (i.e. render the form without actual form controls, or with disabled form controls.) 
  *
- * @package   Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package   Fisma_Form
  */
 class Fisma_Form extends Zend_Form
 {

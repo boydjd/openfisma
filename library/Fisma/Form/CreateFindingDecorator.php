@@ -21,13 +21,13 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Form
+ * @package   Fisma_Form
  */
 
 /**
  * A specfic  decorator that can be used for create finding
  *
- * @package   Form
+ * @package   Fisma_Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @todo rename this class to "CrudDecorator"

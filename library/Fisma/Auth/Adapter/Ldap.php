@@ -21,20 +21,16 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Fisma_Auth
  */
-
-
-
-require_once 'Zend/Auth/Adapter/Ldap.php';
-
 
 /**
  * Adapte the authentication to Ldap and return a Doctrine Record object as identity
  * 
  * @category   Fisma
- * @package    Fisma_Auth
  * @copyright  Copyright (c) 2005-2008
  * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @package    Fisma_Auth
  */
 class Fisma_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
 {

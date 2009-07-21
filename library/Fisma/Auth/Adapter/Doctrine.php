@@ -21,33 +21,16 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
+ * @package   Fisma_Auth
  */
-
-
-
-/**
- * @see Zend_Auth_Adapter_Interface
- */
-require_once 'Zend/Auth/Adapter/Interface.php';
-
-/**
- * @see Zend_Db_Adapter_Abstract
- */
-require_once 'Zend/Db/Adapter/Abstract.php';
-
-/**
- * @see Zend_Auth_Result
- */
-require_once 'Zend/Auth/Result.php';
-
 
 /**
  * Adapte the authentication to Doctrine model 
  * 
  * @category   Fisma
- * @package    Fisma_Auth
  * @copyright  Copyright (c) 2005-2008
  * @license    http://www.openfisma.org/mw/index.php?title=License
+ * @package    Fisma_Auth
  */
 class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
 {

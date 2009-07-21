@@ -21,14 +21,14 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: FismaDecorator.php -1M 2009-04-15 17:38:10Z (local) $
- * @package   Form
+ * @package   Fisma_Form
  */
 
 /**
  * A standard decorator that can be used for most forms in OpenFISMA in order
  * to provide a consistent look-and-feel across the application.
  *
- * @package   Form
+ * @package   Fisma_Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @todo rename this class to "CrudDecorator"

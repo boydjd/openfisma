@@ -21,7 +21,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id: InvalidAuthentication.php -1M 2009-04-15 18:37:40Z (local) $
- * @package   Local_Exception
+ * @package   Fisma_Exception
  */
 
 /**
