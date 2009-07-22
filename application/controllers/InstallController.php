@@ -40,8 +40,6 @@ class InstallController extends Zend_Controller_Action
     public function preDispatch()
     {
         $this->_helper->layout->setLayout('install');
-        //Judge if there is necessary to install
-        
     }
 
     /**
@@ -79,16 +77,16 @@ class InstallController extends Zend_Controller_Action
     public function checkingAction()
     {
         $wDirectories = array(
-            Fisma::getPath('pub') . '/temp',
+            Fisma::getPath('data') . '/temp',
             Fisma::getPath('data') . '/logs',
-            Fisma::getPath('pub') . '/evidence',
+            Fisma::getPath('data') . '/uploads/evidence',
             Fisma::getPath('data') . '/cache',
             Fisma::getPath('data') . '/sessions',
             Fisma::getPath('data') . '/temp',
             Fisma::getPath('data') . '/index',
             Fisma::getPath('data') . '/uploads/evidence',
             Fisma::getPath('data') . '/uploads/scanreports',
-            Fisma::getPath('config') . '/'. Fisma_Controller_Plugin_Setting::INSTALL_CONFIG
+            Fisma::getPath('config')
         );
         $notwritables = array();
         foreach ($wDirectories as $k => $wok) {
@@ -196,105 +194,43 @@ class InstallController extends Zend_Controller_Action
             'schema' => 'failure',
             'savingconfig' => 'failure'
         );
-        $method = 'connection / creation';
-        $errMessage = '';
-        $ret = false;
-        if (mysql_connect($dsn['host'] . ':' . $dsn['port'], $dsn['uname'],
-            $dsn['upass'])) {
-            if (mysql_select_db($dsn['dbname'])) {
-                $method = 'connection';
-                $checklist['connection'] = 'ok';
-                $ret = true;
-            } elseif (mysql_query("CREATE DATABASE `{$dsn['dbname']}`;")) {
-                $method = 'creation';
-                $checklist['creation'] = 'ok';
-                $ret = true;
-            } else {
-                $errMessage.= mysql_error();
-            }
-            if ($ret && ($dsn['uname'] != $dsn['name_c'])) {
-                $host = ('localhost' == strtolower($dsn['host'])) ?
-                    'localhost' : '%';
-                $qry = "GRANT ALL PRIVILEGES ON `{$dsn['dbname']}`. * TO
-                       '{$dsn['name_c']}'@'{$host}'
-                       IDENTIFIED BY '{$dsn['pass_c']}' WITH GRANT OPTION";
-                if (TRUE == ($ret = mysql_query($qry))) {
-                    $checklist['grant'] = 'ok';
-                } else {
-                    $errMessage.= mysql_error();
-                }
-            }
-            if ($ret) {
-                $zendDsn = array(
-                    'adapter' => 'mysqli',
-                    'params' => array(
-                        'host' => $dsn['host'],
-                        'port' => $dsn['port'],
-                        'username' => $dsn['name_c'],
-                        'password' => $dsn['pass_c'],
-                        'dbname' => $dsn['dbname'],
-                        'profiler' => false
-                    )
-                );
-                try {
-                    $db = Zend_Db::factory(new Zend_Config($zendDsn));
-                    $initFiles = array(Fisma::getPath('application') . '/config/db/base.sql');
-                    if ($ret = $this->importSql($db, $initFiles)) {
-                        $checklist['schema'] = 'ok';
-                    }
-                }
-                catch(Zend_Exception $e) {
-                    $errMessage.= $e->getMessage();
-                    $ret = false;
-                }
-            }
-        } else {
-            $errMessage.= mysql_error();
+        
+        $method = 'connection';
+        // create config file
+        $configInfo = file_get_contents(Fisma::getPath('config') . '/app.conf.template');
+        $configInfo = str_replace(array('##DB_ADAPTER##', '##DB_HOST##', '##DB_PORT##',
+                                        '##DB_USER##', '##DB_PASS##', '##DB_NAME##'), 
+                                  array('mysqli', $dsn['host'], $dsn['port'], $dsn['uname'],
+                                        $dsn['upass'], $dsn['dbname']), $configInfo);
+        file_put_contents(Fisma::getPath('config') . '/app.conf', $configInfo);
+        
+        // test the connection of database
+        try {
+            $method = 'connection / creation';
+            Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
+            Fisma::connectDb();
+            $checklist['connection'] = 'ok';
+            // create database
+            $method = 'creation';
+            Doctrine::dropDatabases();
+            Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
+            Doctrine::createDatabases();
+            $checklist['creation'] = 'ok';
+            Doctrine::createTablesFromModels(Fisma::getPath('model'));
+            //load sample data
+            Doctrine::loadData(Fisma::getPath('fixture'));
+            $checklist['schema'] = 'ok';
+            $checklist['savingconfig'] = 'ok';
+            $this->view->next = '/install/complete';
+        } catch (Exception $e) {
+            unlink(Fisma::getPath('config') . '/app.conf');
+            $this->view->next = '/install/dbsetting';
+            $this->view->message = $e->getMessage();
         }
+
         $this->view->dsn = $dsn;
-        if ($ret) {
-            if (is_writable(Fisma::getPath('application') . '/config/'. Fisma_Controller_Plugin_Setting::INSTALL_CONFIG)) {
-                $confTpl = $this->_helper->viewRenderer
-                                         ->getViewScript('config');
-
-                // Set the host URL. This value is saved into the install.conf
-                if (isset($_SERVER['HTTPS']) && 'on' == $_SERVER['HTTPS']) {
-                    $hostUrl = 'https://';
-                } else {
-                    $hostUrl = 'http://';
-                }
-                if (isset($_SERVER['HTTP_HOST'])) {
-                    $hostUrl .= $_SERVER['HTTP_HOST'];
-                } else {
-                    $hostUrl .= $_SERVER['SERVER_NAME'];
-                }
-                $this->view->hostUrl = $hostUrl;
-                $this->view->encrypt = $dsn['encrypt'];
-                if (isset($dsn['encryptKey'])) {
-                    $this->view->encryptKey = $dsn['encryptKey'];
-                }
-
-                $dbconfig = $this->view->render($confTpl);
-                if (0 < file_put_contents(Fisma::getPath('application') . '/config/'. Fisma_Controller_Plugin_Setting::INSTALL_CONFIG,
-                    $dbconfig)) {
-                    $checklist['savingconfig'] = 'ok';
-                } else {
-                    $ret = false;
-                    $errMessage.= 'Write no content to the file.';
-                }
-            } else {
-                $errMessage.= 'Write config file error. ';
-                $ret = false;
-            }
-        }
         $this->view->title = 'Initial Database';
         $this->view->method = $method;
-        if ($ret) {
-            $this->view->next = '/install/complete';
-        } else {
-            $this->view->next = '/install/dbsetting';
-            $this->view->message = $errMessage;
-        }
         $this->view->checklist = $checklist;
         $this->view->back = '/install/dbsetting';
         $this->render('initial');

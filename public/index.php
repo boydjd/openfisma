@@ -25,7 +25,9 @@ require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
 
 try {
     Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
-    Fisma::connectDb();
+    if (Fisma::isInstall()) {
+        Fisma::connectDb();
+    }
     Fisma::dispatch();
 } catch (Zend_Config_Exception $zce) {
     // A zend config exception indicates that the application may not be installed properly

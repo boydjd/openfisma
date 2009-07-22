@@ -129,6 +129,11 @@ class Fisma
     private static $_cache;
     
     /**
+     * A flag that indicates whether the Fisma system has been installed yet
+     */
+    private static $_isInstall = false;
+    
+    /**
      * Initialize the FISMA object
      * 
      * This sets up the root path, include paths, application paths, and then loads the application configuration.
@@ -166,6 +171,9 @@ class Fisma
         require_once(self::$_rootPath . '/library/Zend/Loader.php');
         Zend_Loader::registerAutoload();
 
+        // Set the initialized flag
+        self::$_initialized = true;
+        
         // Set up application paths. These are relative to the root path.
         self::$_applicationPath = array(
             'application' => 'application',
@@ -185,42 +193,55 @@ class Fisma
             'schema' => 'application/doctrine/schema',
             'systemDocument' => 'data/uploads/system-document',
             'test' => 'tests',
+            'scripts' => 'scripts',
             'viewHelper' => 'application/views/helpers',
             'yui' => 'public/yui'
         );
 
         // Load the system configuration
         $appConfFile = self::$_rootPath . '/' . self::$_applicationPath['config'] . '/app.conf';
-        $conf = new Zend_Config_Ini($appConfFile);
-        if ('production' == $conf->environment) {
-            self::$_appConf = $conf->production;
-        } elseif ('development' == $conf->environment) {
-            self::$_appConf = $conf->development;
-        } else {
-            throw new Fisma_Exception("The environment parameter in app.conf must be either \"production\" or "
-                                    . "\"development\" but it's actually \"$conf->environment\"");
-        }
-
-        // PHP configuration
-        $phpOptions = self::$_appConf->php->toArray();
-        foreach ($phpOptions as $param => $value) {
-            ini_set($param, $value);
-        }
-
-        // Xdebug configuration
-        if (isset(self::$_appConf->xdebug)) {
-            foreach (self::$_appConf->xdebug as $param => $value) {
-                ini_set("xdebug.$param", $value);
+        if (file_exists($appConfFile)) {
+            $conf = new Zend_Config_Ini($appConfFile);
+            if ('production' == $conf->environment) {
+                self::$_appConf = $conf->production;
+            } elseif ('development' == $conf->environment) {
+                self::$_appConf = $conf->development;
+            } else {
+                throw new Fisma_Exception("The environment parameter in app.conf must be either \"production\" or "
+                                        . "\"development\" but it's actually \"$conf->environment\"");
             }
+    
+            // PHP configuration
+            $phpOptions = self::$_appConf->php->toArray();
+            foreach ($phpOptions as $param => $value) {
+                ini_set($param, $value);
+            }
+    
+            // Xdebug configuration
+            if (isset(self::$_appConf->xdebug)) {
+                foreach (self::$_appConf->xdebug as $param => $value) {
+                    ini_set("xdebug.$param", $value);
+                }
+            }
+            
+            // Session configuration
+            $sessionOptions = self::$_appConf->session->toArray();
+            $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
+            Zend_Session::setOptions($sessionOptions);
+            self::$_isInstall = true;
+        } else {
+            self::$_isInstall = false;
         }
-        
-        // Session configuration
-        $sessionOptions = self::$_appConf->session->toArray();
-        $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
-        Zend_Session::setOptions($sessionOptions);
-
-        // Set the initialized flag
-        self::$_initialized = true;
+    }
+    
+    /**
+     * To determine whether the Openfisma is installed
+     *
+     * @return boolean $isInstall 
+     */
+    public static function isInstall()
+    {
+        return self::$_isInstall;
     }
     
     /**
@@ -257,12 +278,29 @@ class Fisma
         
         $frontController = Zend_Controller_Front::getInstance();
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
-
+        
         Zend_Date::setOptions(array('format_type' => 'php'));
         Zend_Layout::startMvc(self::getPath('layout'));
         
         Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Controller_Action_Helper');
 
+        if (!self::isInstall()) {
+            // set the fixed controller when Openfisma has been installed 
+            $router = $frontController->getRouter();
+            $route['install'] = new Zend_Controller_Router_Route_Regex (
+                                        '([^/]*)/?(.*)$',
+                                        array('controller' => 'install'),
+                                        array('action' => 2),
+                                        'install/%2$s'
+                                    );
+            $router->addRoute('default', $route['install']);
+            // set the error handler when Openfisma has been installed
+            $eHandler = new Zend_Controller_Plugin_ErrorHandler( array(
+                        'model' => null,
+                        'controller' => 'Install',
+                        'action' => 'error'));
+            $frontController->registerPlugin($eHandler);
+        }
         // Configure the views
         $view = Zend_Layout::getMvcInstance()->getView();
         $view->addHelperPath(self::getPath('viewHelper'), 'View_Helper_');
