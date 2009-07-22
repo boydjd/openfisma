@@ -24,9 +24,14 @@ Event:
         description: Asset Deleted
         Privilege: notification_asset
 
+    UPDATE_MITIGATION_TYPE:
+        name: UPDATE_MITIGATION_TYPE
+        description: Mitigation Type For Finding Updated
+        Privilege: notification_finding
+        
     UPDATE_COURSE_OF_ACTION:
         name: UPDATE_COURSE_OF_ACTION
-        description: Course Of Action For Finding Updated
+        description: Finding\'s Mitigation Strategy Description Updated
         Privilege: notification_finding
 
     UPDATE_RESPONSIBLE_SYSTEM:
@@ -34,6 +39,11 @@ Event:
         description: Responsible System For Finding Re-assigned
         Privilege: notification_finding
 
+    UPDATE_DESCRIPTION:
+        name: UPDATE_DESCRIPTION
+        description: Finding Description Updated
+        Privilege: notification_finding
+        
     UPDATE_SECURITY_CONTROL:
         name: UPDATE_SECURITY_CONTROL
         description: Security Control For Finding Updated
@@ -41,12 +51,12 @@ Event:
 
     UPDATE_COUNTERMEASURES:
         name: UPDATE_COUNTERMEASURES
-        description: Countermeasures For Finding Updated
+        description: Countermeasures Assessment For Finding Updated
         Privilege: notification_finding
 
     UPDATE_THREAT:
         name: UPDATE_THREAT
-        description: Threat Source/Level For Finding Updated
+        description: Threat Assessment For Finding Updated
         Privilege: notification_finding
 
     UPDATE_RECOMMENDATION:
@@ -245,7 +255,7 @@ Event:
         Privilege: notification_finding
 
     APPROVAL_DENIED:
-        name: FINDING_APPROVED
+        name: APPROVAL_DENIED
         description: Approval Denied For Finding
         Privilege: notification_finding
 
@@ -254,9 +264,9 @@ Event:
         description: User Account Was Locked
         Privilege: notification_admin
 
-    MITIGATION_SUBMIT:
-        name: MITIGATION_SUBMIT
-        description: Mitigation Strategy Submitted
+    MITIGATION_APPROVED:
+        name: MITIGATION_APPROVED
+        description: Mitigation Strategy Was Approved 
         Privilege: notification_finding
 
     MITIGATION_REVISE:

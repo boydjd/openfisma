@@ -56,16 +56,17 @@ class Notification extends BaseNotification
         }
 
         $eventText = $event->description;
-        if (!is_null($user)) {
-            $eventText .= " by $user->nameFirst $user->nameLast ";
-        }
 
         // If the model has a "nickname" field, then identify the record by the nickname. Otherwise, identify the record
         // by it's ID, which is a field that all models are expected to have (except for join tables).
         if (isset($record->nickname)) {
-            $eventText .= "($record->nickname)";
+            $eventText .= " ($record->nickname)";
         } else {
-            $eventText .= "(ID #$record->id)";            
+            $eventText .= " (ID #$record->id)";            
+        }
+
+        if (!is_null($user)) {
+            $eventText .= " by $user->nameFirst $user->nameLast ";
         }
 
         // Figure out which users are listening for this event

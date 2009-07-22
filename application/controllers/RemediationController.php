@@ -528,9 +528,13 @@ class RemediationController extends SecurityController
                 $finding->deny(User::currentUser(), $comment);
             }
             Doctrine_Manager::connection()->commit();
-        } catch (Doctrine_Exception $e) {
+        } catch (Doctrine_Connection_Exception $e) {
             Doctrine_Manager::connection()->rollback();
-            $message = "Failure in this operation. ";
+            $message = 'Failure in this operation. '
+                     . $e->getPortableMessage() 
+                     . ' ('
+                     . $e->getPortableCode()
+                     . ')';
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
