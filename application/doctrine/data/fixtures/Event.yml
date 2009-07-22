@@ -31,7 +31,7 @@ Event:
         
     UPDATE_COURSE_OF_ACTION:
         name: UPDATE_COURSE_OF_ACTION
-        description: Finding\'s Mitigation Strategy Description Updated
+        description: Mitigation Strategy Description For Finding Updated
         Privilege: notification_finding
 
     UPDATE_RESPONSIBLE_SYSTEM:

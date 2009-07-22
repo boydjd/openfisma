@@ -175,8 +175,7 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
                                                   array('label' => 'Submit Mitigation Strategy', 
                                                         'onClickFunction' => 'submitMitigationStrategy')    );
     if (false == $complete
-        || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')
-        || in_array($finding->type, array('NONE', 'AR', 'FP'))) {
+        || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')) {
         $submitMitigationButton->readOnly = true;
     }
     echo "<div class='toolbar'>$submitMitigationButton</div>";
@@ -208,8 +207,7 @@ if ($finding->status != 'NEW'
         echo '<p><b>' . html_entity_decode($findingEvaluation->Evaluation->name) . '</b>';
         if ('APPROVED' == $decision) {
             echo "<span class=\"approved\">$decision ($userName on {$findingEvaluation->createdTs})</span>";
-        }
-        if ('DENIED' == $decision) {
+        } elseif ('DENIED' == $decision) {
             echo "<span class=\"denied\">$decision";
             echo " &mdash; \"{$findingEvaluation->comment}\" ";
             echo "($userName on $findingEvaluation->createdTs)</span>";
@@ -231,7 +229,7 @@ if ($finding->status != 'NEW'
                 onclick="return form_confirm(document.finding_detail, \'approve ' . $activeEvaluation->name . '\');"/>&nbsp;';
             echo '<input type="button" value="DENIED" onclick="ms_comment(document.finding_detail);" />';
         } else {
-            echo "EXCLUDED";
+            echo "PENDING";
         }
     }
 

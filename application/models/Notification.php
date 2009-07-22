@@ -66,7 +66,7 @@ class Notification extends BaseNotification
         }
 
         if (!is_null($user)) {
-            $eventText .= " by $user->nameFirst $user->nameLast ";
+            $eventText .= " by $user->nameFirst $user->nameLast";
         }
 
         // Figure out which users are listening for this event
