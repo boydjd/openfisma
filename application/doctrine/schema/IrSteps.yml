@@ -1,0 +1,16 @@
+IrSteps:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        workflow_id: 
+            type: integer
+        role_id: 
+            type: integer
+        sortorder: 
+            type: integer
+        name: 
+            type: string(255)
+        description:
+            type: string(1000) 

@@ -1,0 +1,14 @@
+IrComment:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        incident_id: 
+            type: integer
+        user_id: 
+            type: integer
+        createdTs: 
+            type: timestamp
+        comment:
+            type: string(1000) 

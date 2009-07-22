@@ -1,0 +1,10 @@
+IrWorkflowDef:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        name: 
+            type: string(255)
+        description: 
+            type: string(1000) 

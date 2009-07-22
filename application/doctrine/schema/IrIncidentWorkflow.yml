@@ -1,0 +1,26 @@
+IrIncidentWorkflow:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        incident_id: 
+            type: integer
+        name: 
+            type: string(255)
+        description:
+            type: string(1000) 
+        sortorder: 
+            type: integer
+        status:
+            type: enum
+            length: 9
+            values: ['QUEUED','CURRENT','COMPLETED','REOPENED']
+        completeTs: 
+            type: timestamp
+        comments:
+            type: string(1000) 
+        attachment: 
+            type: string(255)
+        user_id: 
+            type: integer

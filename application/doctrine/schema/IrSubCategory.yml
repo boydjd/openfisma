@@ -1,0 +1,14 @@
+IrSubCategory:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        category_id: 
+            type: integer
+        workflow_id: 
+            type: integer
+        name: 
+            type: string(255)
+        description:
+            type: string(1000) 
