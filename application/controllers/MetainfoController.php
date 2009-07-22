@@ -68,16 +68,16 @@ class MetainfoController extends SecurityController
             );
         } elseif ('confidentiality' == $module) {
             $list = array(
-                "na"       => "na",
-                "low"      => "low",
-                "moderate" => "moderate",
-                "high"     => "high"
+                "NA"       => "NA",
+                "LOW"      => "LOW",
+                "MODERATE" => "MODERATE",
+                "HIGH"     => "HIGH"
             );
         } elseif (in_array($module, array('integrity', 'availability'))) {
             $list = array(
-                "low"      => "low",
-                "moderate" => "moderate",
-                "high"     => "high"
+                "LOW"      => "LOW",
+                "MODERATE" => "MODERATE",
+                "HIGH"     => "HIGH"
             );
         } elseif ($module == 'decision') {
             $list = array(
