@@ -329,7 +329,7 @@ class User extends BaseUser
     {
         $existEvents = null;
         foreach ($this->Events as $event) {
-            $existEvents[$event['id']] = $event['name'];
+            $existEvents[$event['id']] = $event['description'];
         }
         return $existEvents;
     }

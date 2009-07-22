@@ -54,7 +54,7 @@ class FindingListener extends Doctrine_Record_Listener
         'responsibleOrganizationId' => 'UPDATE_RESPONSIBLE_SYSTEM',
         'countermeasures'           => 'UPDATE_COUNTERMEASURES',
         'threat'                    => 'UPDATE_THREAT',
-        'resourcesRequired'         => 'UPDATE_FINDING_RESOURCES'
+        'resourcesRequired'         => 'UPDATE_RESOURCES_REQUIRED'
     );
     
     /**
