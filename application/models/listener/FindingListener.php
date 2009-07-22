@@ -152,6 +152,7 @@ class FindingListener extends Doctrine_Record_Listener
                                                  User::currentUser(), 
                                                  $finding->responsibleOrganizationId);
                             $finding->closedTs = Fisma::now();
+                            $finding->log('Finding closed');
                         }
                         
                         // Once the mitigation strategy is approved, the original ECD becomes locked. Going forward,

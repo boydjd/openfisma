@@ -136,11 +136,10 @@ class Finding extends BaseFinding
         $findingEvaluation->User       = $user;
         $this->FindingEvaluations[]    = $findingEvaluation;
 
-        $this->log('Approve ' . $this->getStatus());
+        $this->log('Approved: ' . $this->getStatus());
 
         switch ($this->status) {
             case 'MSA':
-                //@todo is there any way to judge the NextEvaluation is empty unless use toArray()
                 if ($this->CurrentEvaluation->nextId == null) {
                     $this->status = 'EN';
                 }
@@ -152,7 +151,12 @@ class Finding extends BaseFinding
                 }
                 break;
         }
-        $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
+        
+        if ($this->CurrentEvaluation->nextId != null) {
+            $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
+        } else {
+            $this->CurrentEvaluation = null;
+        }
         $this->updateNextDueDate();
         $this->save();
     }
@@ -180,7 +184,7 @@ class Finding extends BaseFinding
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $this->log('Deny ' . $this->getStatus() . ' : ' . $comment);
+        $this->log('Denied: ' . $this->getStatus() . ' &emdash; ' . $comment);
 
         switch ($this->status) {
             case 'MSA':
@@ -287,7 +291,7 @@ class Finding extends BaseFinding
     {
         $auditLog = new AuditLog();
         $auditLog->User        = User::currentUser();
-        $auditLog->description = $description;
+        $auditLog->description = html_entity_decode($description);
         $this->AuditLogs[]     = $auditLog;
     }
 

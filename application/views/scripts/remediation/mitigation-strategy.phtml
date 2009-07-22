@@ -213,8 +213,7 @@ if ($finding->status != 'NEW'
             echo "($userName on $findingEvaluation->createdTs)</span>";
         }
         echo "</p>";
-        $temp = $findingEvaluation->Evaluation->NextEvaluation->id;
-        if (empty($temp) || 'DENIED' == $decision) {
+        if ($findingEvaluation->Evaluation->nextId == null || 'DENIED' == $decision) {
             echo '</div><div class="approval">';
         }
     }
