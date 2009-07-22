@@ -204,6 +204,7 @@ class FindingListener extends Doctrine_Record_Listener
         } else {
             $notifyType = 'FINDING_CREATED';
         }
+
         Notification::notify($notifyType, $finding, User::currentUser(), $finding->responsibleOrganizationId);
     }
 

@@ -41,7 +41,7 @@ class BaseListener extends Doctrine_Record_Listener
     public function postUpdate(Doctrine_Event $event)
     {
         $invoker = $event->getInvoker();
-        $type    = $this->_getNotifyType($invoker, 'MODIFIED');
+        $type    = $this->_getNotifyType($invoker, 'UPDATED');
         Notification::notify($type, $invoker, User::currentUser());
     }
 

@@ -50,7 +50,8 @@ class Notification extends BaseNotification
         }
 
         $event = Doctrine::getTable('Event')->findOneByName($eventName);
-        if (is_null($event)) {
+
+        if (!$event) {
             throw new Fisma_Exception("No event named '$eventName' was found");
         }
 
@@ -58,7 +59,7 @@ class Notification extends BaseNotification
         if (!is_null($user)) {
             $eventText .= " by $user->nameFirst $user->nameLast ";
         }
-        
+
         // If the model has a "nickname" field, then identify the record by the nickname. Otherwise, identify the record
         // by it's ID, which is a field that all models are expected to have (except for join tables).
         if (isset($record->nickname)) {
@@ -67,22 +68,28 @@ class Notification extends BaseNotification
             $eventText .= "(ID #$record->id)";            
         }
 
-        if ($organizationId == null) {
-            $userEvents = Doctrine::getTable('UserEvent')->findByEventId($event->id);
-        } else {
-            $userEvents = Doctrine_Query::create()
-                ->select('ue.eventId, ue.userId')
-                ->from('UserEvent ue, UserOrganization uo')
-                ->where('ue.eventId = ?', $eventId)
-                ->addWhere('uo.organizationId = ?', $organizationId)
-                ->execute();
+        // Figure out which users are listening for this event
+        $eventsQuery = Doctrine_Query::create()
+            ->select('e.id, u.id')
+            ->from('User u')
+            ->innerJoin('u.Events e')
+            ->where('e.id = ?', $event->id)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        
+        // If the event is limited in scope to a specific organization, then filter for users who are allowed
+        // access to that organization
+        if ($organizationId != null) {
+            $eventsQuery->innerJoin('u.Organizations o')
+                        ->andWhere('o.id = ?', $organizationId);
         }
+
+        $userEvents = $eventsQuery->execute();
 
         $notifications = new Doctrine_Collection('Notification');
         foreach ($userEvents as $userEvent) {
             $notification = new Notification();
-            $notification->eventId   = $userEvent->eventId;
-            $notification->userId    = $userEvent->userId;
+            $notification->eventId   = $userEvent['e_id'];
+            $notification->userId    = $userEvent['u_id'];
             $notification->eventText = $eventText;
             $notifications[] = $notification;
         }

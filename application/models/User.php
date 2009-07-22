@@ -293,6 +293,7 @@ class User extends BaseUser
             throw new Fisma_Exception("Logout is not allowed in command line mode");
         }
         
+        Notification::notify('LOGOUT', $this, User::currentUser());
         $this->log(self::LOGOUT, 'Log out');
     }
 
