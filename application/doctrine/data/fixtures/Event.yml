@@ -199,8 +199,8 @@ Event:
         description: Finding Source Deleted
         Privilege: notification_admin
 
-    NETWORK_MODIFIED:
-        name: NETWORK_MODIFIED
+    NETWORK_UPDATED:
+        name: NETWORK_UPDATED
         description: Network Modified
         Privilege: notification_admin
 
