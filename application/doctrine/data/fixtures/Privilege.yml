@@ -51,10 +51,15 @@ Privilege:
         action: approve
         description: Approve Pending Findings
         orgSpecific: true
+    findings_update_type:
+        resource: finding
+        action: update_type
+        description: Update Mitigation Type
+        orgSpecific: true
     findings_update_description:
         resource: finding
         action: update_description
-        description: Update the finding description
+        description: Update Finding Description
         orgSpecific: true
     findings_update_course_of_action:
         resource: finding

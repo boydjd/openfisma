@@ -35,7 +35,13 @@ class BaseListener extends Doctrine_Record_Listener
     {
         $invoker = $event->getInvoker();
         $type    = $this->_getNotifyType($invoker, 'CREATED');
-        Notification::notify($type, $invoker, User::currentUser());
+        
+        /** @todo this is a bit ugly. the organization is only included if it happens to be called "organizationId" */
+        if (isset($invoker->orgSystemId)) {
+            Notification::notify($type, $invoker, User::currentUser(), $invoker->orgSystemId);
+        } else {
+            Notification::notify($type, $invoker, User::currentUser());
+        }
     }
 
     public function postUpdate(Doctrine_Event $event)

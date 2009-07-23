@@ -118,7 +118,7 @@ class RemediationController extends SecurityController
     
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         $this->_helper->actionStack('searchbox', 'Remediation');
         $this->_helper->actionStack('summary', 'Remediation');
@@ -469,7 +469,8 @@ class RemediationController extends SecurityController
      */
     public function modifyAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'update');
+        // ACL for finding objects is handled inside the finding listener, because it has to do some
+        // very fine-grained error checking
         
         $id          = $this->_request->getParam('id');
         $findingData = $this->_request->getPost('finding', array());
@@ -483,7 +484,7 @@ class RemediationController extends SecurityController
             Doctrine_Manager::connection()->commit();
         } catch (Doctrine_Exception $e) {
             Doctrine_Manager::connection()->rollback();
-            $message = "Failure in changing. ";
+            $message = "Error: Unable to update finding. ";
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
@@ -504,6 +505,7 @@ class RemediationController extends SecurityController
 
         $finding  = $this->_getFinding($id);
         if (!empty($decision)) {
+            var_dump($finding->toArray());die;
             Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action);
         }
        
@@ -511,11 +513,11 @@ class RemediationController extends SecurityController
             Doctrine_Manager::connection()->beginTransaction();
 
             if ('submitmitigation' == $do) {
-                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_submit');
+                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_submit', $finding->responsibleOrganizationId);
                 $finding->submitMitigation(User::currentUser());
             }
             if ('revisemitigation' == $do) {
-                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_revise');
+                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_revise', $finding->responsibleOrganizationId);
                 $finding->reviseMitigation(User::currentUser());
             }
 
@@ -549,10 +551,10 @@ class RemediationController extends SecurityController
      */
     public function uploadevidenceAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'upload_evidence');
-
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
+
+        Fisma_Acl::requirePrivilege('finding', 'upload_evidence', $finding->responsibleOrganizationId);
 
         define('EVIDENCE_PATH', Fisma::getPath('data') . '/uploads/evidence');
         $file = $_FILES['evidence'];
@@ -600,18 +602,16 @@ class RemediationController extends SecurityController
     
     /**
      * Download evidence
-     *
      */
     public function downloadevidenceAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read_evidence');
-
         $id = $this->_request->getParam('id');
-        $evidence = new Evidence();
-        $evidence = $evidence->getTable()->find($id);
+        $evidence = Doctrine::getTable('Evidence')->find($id);
         if (empty($evidence)) {
             throw new Fisma_Exception('Invalid evidence ID');
         }
+
+        Fisma_Acl::requirePrivilege('finding', 'read_evidence', $evidence->Finding->responsibleOrganizationId);
 
         if (!in_array($evidence->Finding->ResponsibleOrganization, $this->_me->getOrganizations()->toArray())
             && 'root' != $this->_me->username) {
@@ -652,7 +652,7 @@ class RemediationController extends SecurityController
         $finding  = $this->_getFinding($id);
 
         if (!empty($decision)) {
-            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action);
+            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action, $finding->responsibleOrganizationId);
         }
 
         try {
@@ -689,6 +689,8 @@ class RemediationController extends SecurityController
 
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
+
+        Fisma_Acl::requirePrivilege('finding', 'read', $finding->responsibleOrganizationId);
 
         try {
             if ($finding->threat == '' ||
@@ -1094,9 +1096,8 @@ class RemediationController extends SecurityController
         $finding = new Finding();
         $finding = $finding->getTable()->find($id);
         if (false == $finding) {
-             throw new Fisma_Exception("FINDING($findingId) is not found, Make sure a valid ID is specified");
+             throw new Fisma_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
         }
-        Fisma_Acl::requirePrivilege('finding', 'read', $finding->responsibleOrganizationId);
         return $finding;
     }
 }

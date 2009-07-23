@@ -530,14 +530,18 @@ function form_confirm (check_form, action) {
     }
 
     if(changed) {
-        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these changes will be lost. If you want to save your changes, click "Cancel" now and then click "Save Changes".') == true) {
-            return true;
-        }
-    } else {
-        if (confirm('WARNING: You are about to '+action+'. This action cannot be undone. Please click "Ok" to confirm your action or click "Cancel" to stop.') == true) {
+        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these'
+                  + ' changes will be lost. If you want to save your changes, click "Cancel"' 
+                  + ' now and then click "Save Changes".')) {
             return true;
         }
     }
+    
+    if (confirm('WARNING: You are about to ' + action + '. This action cannot be undone.'
+              + 'Please click "Ok" to confirm your action or click "Cancel" to stop.')) {
+        return true;
+    }
+
     return false;
 }
 

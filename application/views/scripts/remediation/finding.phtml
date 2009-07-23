@@ -140,7 +140,7 @@
 <div class="clear"></div>
 
 <?php 
-if (Fisma_Acl::hasPrivilege('finding','update_finding_description')) {
+if (Fisma_Acl::hasPrivilege('finding','update_description')) {
     Fisma_Format_Section::startSection('Description', 'finding_description');
 } else {
     Fisma_Format_Section::startSection('Description');

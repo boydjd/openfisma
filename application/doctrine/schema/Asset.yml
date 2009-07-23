@@ -36,7 +36,7 @@ Asset:
             comment: Foreign key to product table
         orgSystemId:
             type: integer
-            comment: Foreign key to system table
+            comment: Foreign key to organization table
         networkId:
             type: integer
             comment: Foreign key to network table

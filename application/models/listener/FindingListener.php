@@ -37,13 +37,32 @@ class FindingListener extends Doctrine_Record_Listener
      * these keys don't catch logs
      */
     private static $unLogKeys = array(
-                            'currentEvaluationId',
-                            'status',
-                            'ecdLocked',
-                            'legacyFindingKey',
-                            'modifiedTs',
-                            'closedTs'
-                         );
+        'currentEvaluationId',
+        'status',
+        'ecdLocked',
+        'legacyFindingKey',
+        'modifiedTs',
+        'closedTs'
+    );
+
+    /**
+     * Maps fields to their corresponding privileges. This is kind of ugly. A better solution would be to store this
+     * information in the model itself, and then include it in a global listener.
+     */
+    private static $_requiredPrivileges = array(
+        'type' => 'update_type',
+        'description' => 'update_description',
+        'recommendation' => 'update_recommendation',
+        'mitigationStrategy' => 'update_course_of_action',
+        'responsibleOrganizationId' => 'update_assignment',
+        'securityControl' => 'update_control_assignment',
+        'threatLevel' => 'update_threat',
+        'threat' => 'update_threat',
+        'countermeasures' => 'update_countermeasures',
+        'countermeasuresEffectiveness' => 'update_countermeasures',
+        'recommendation' => 'update_recommendation',
+        'resourcesRequired' => 'update_resources'
+    );
 
     /**
      * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
@@ -100,14 +119,20 @@ class FindingListener extends Doctrine_Record_Listener
                 $newValue = $finding->$key;
                 $type     = null;
 
+                // Check whether the user has the privilege to update this column
+                if (isset(self::$_requiredPrivileges[$key])) {
+                    Fisma_Acl::requirePrivilege('finding', self::$_requiredPrivileges[$key]);
+                }
+
+                // Check whether this field generates any notification events
                 if (array_key_exists($key, self::$notificationKeys)) {
                     $type = self::$notificationKeys[$key];
                 }
-
                 if (!empty($type)) {
                     Notification::notify($type, $finding, User::currentUser(), $finding->responsibleOrganizationId);
                 }
 
+                // Now address business rules for each field individually
                 switch ($key) {
                     case 'type':
                         $finding->status = 'DRAFT';
@@ -181,12 +206,14 @@ class FindingListener extends Doctrine_Record_Listener
                                                        in order to modify the ECD.');
                         }
                         if (!$finding->ecdLocked) {
+                            Fisma_Acl::requirePrivilege('finding', 'update_ecd');
                             $finding->originalEcd = $finding->currentEcd;
                             Notification::notify('UPDATE_ECD', 
                                                  $finding, 
                                                  User::currentUser(), 
                                                  $finding->responsibleOrganizationId);
                         } else {
+                            Fisma_Acl::requirePrivilege('finding', 'update_locked_ecd');
                             Notification::notify('UPDATE_LOCKED_ECD', 
                                                  $finding, 
                                                  User::currentUser(), 
