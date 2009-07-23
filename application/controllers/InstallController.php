@@ -143,6 +143,7 @@ class InstallController extends Zend_Controller_Action
             )
         );
         $validator = array(
+            'encrypt' => 'NotEmpty',
             'type' => 'Alnum',
             'host' => array(
                 'NotEmpty',
@@ -158,6 +159,7 @@ class InstallController extends Zend_Controller_Action
             'uname' => 'NotEmpty',
             'upass' => 'NotEmpty',
             'dbname' => 'NotEmpty',
+            'adminpwd' => 'NotEmpty',
             'name_c' => 'NotEmpty',
             'pass_c' => 'NotEmpty',
             'pass_c_ag' => array(
@@ -194,13 +196,12 @@ class InstallController extends Zend_Controller_Action
             'schema' => 'failure',
             'savingconfig' => 'failure'
         );
-        
         $method = 'connection';
         // create config file
         $configInfo = file_get_contents(Fisma::getPath('config') . '/app.conf.template');
         $configInfo = str_replace(array('##DB_ADAPTER##', '##DB_HOST##', '##DB_PORT##',
                                         '##DB_USER##', '##DB_PASS##', '##DB_NAME##'), 
-                                  array('mysqli', $dsn['host'], $dsn['port'], $dsn['uname'],
+                                  array($dsn['type'], $dsn['host'], $dsn['port'], $dsn['uname'],
                                         $dsn['upass'], $dsn['dbname']), $configInfo);
         file_put_contents(Fisma::getPath('config') . '/app.conf', $configInfo);
         
@@ -209,21 +210,30 @@ class InstallController extends Zend_Controller_Action
             $method = 'connection / creation';
             Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
             Fisma::connectDb();
+            Fisma::getNotificationEnabled(false);
+            Fisma::setListenerEnabled(false);
             $checklist['connection'] = 'ok';
+            Doctrine::dropDatabases();
             // create database
             $method = 'creation';
-            Doctrine::dropDatabases();
-            Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
             Doctrine::createDatabases();
             $checklist['creation'] = 'ok';
-            Doctrine::createTablesFromModels(Fisma::getPath('model'));
+            Doctrine::createTablesFromModels();
+
             //load sample data
+            //Fix: loadData cause timeout (30) in windows. 
+            set_time_limit(50);
             Doctrine::loadData(Fisma::getPath('fixture'));
+            
+            $root = Doctrine::getTable('User')->find(1);
+            $root->password = $root->hash($dsn['adminpwd'], $dsn['encrypt']);
+            $root->save();
+            
             $checklist['schema'] = 'ok';
             $checklist['savingconfig'] = 'ok';
             $this->view->next = '/install/complete';
         } catch (Exception $e) {
-            unlink(Fisma::getPath('config') . '/app.conf');
+            @unlink(Fisma::getPath('config') . '/app.conf');
             $this->view->next = '/install/dbsetting';
             $this->view->message = $e->getMessage();
         }
@@ -242,7 +252,7 @@ class InstallController extends Zend_Controller_Action
     public function completeAction()
     {
         $this->view->title = 'Install complete';
-        $this->view->next = '/user/login';
+        $this->view->next = '/';
     }
 
     /**

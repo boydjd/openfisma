@@ -247,10 +247,13 @@ class Fisma
     /**
      * Connect to the database
      */
-    public static function connectDb() {
+    public static function connectDb()
+    {
         // Connect to the database
         $db = self::$_appConf->db;
-        $connectString = "mysql://{$db->username}:{$db->password}@{$db->host}/{$db->schema}";
+        $connectString = $db->adapter . '://' . $db->username . ':' 
+                         . $db->password . '@' . $db->host 
+                         . ($db->port ? ':' . $db->port : '') . '/' . $db->schema;
         Doctrine_Manager::connection($connectString);
         $manager = Doctrine_Manager::getInstance();
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);

@@ -56,6 +56,13 @@
                             <td class='even'><input type='text' name='dsn[dbname]' id='dbname' size='30' maxlength='100'  value="<?php echo isset($this->dsn['dbname'])?$this->dsn['dbname']:'';?>" />
                                 <?php if(isset($this->message['dbname'])) {echo " <span class='notice'>*</span>";}?>                            </td>
                         </tr>
+                        <tr valign='top' align='left'>
+                            <td class='head'><b>Admin(Root) Pwd</b><br />
+                                <span style='font-size:85%;'> Pwd of administrator</span> </td>
+                            <td class='even'>
+                                <input type='password' name='dsn[adminpwd]' id='adminpwd' size='30' maxlength='100'  value="" />
+                            </td>
+                        </tr>
                     </table>
                 </div>
         </tr>
