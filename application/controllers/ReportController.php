@@ -148,7 +148,7 @@ class ReportController extends SecurityController
      */
     public function fismaAction()
     {
-        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
+        Fisma_Acl::requirePrivilege('area', 'reports');
         
         $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('Y-m-d');
         $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('Y-m-d');
@@ -161,7 +161,7 @@ class ReportController extends SecurityController
      */
     public function fismaQuarterlyAction()
     {
-        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
+        Fisma_Acl::requirePrivilege('area', 'reports');
 
         // Agency Name
         $agency = Organization::getAgency();
@@ -184,7 +184,7 @@ class ReportController extends SecurityController
      */
     public function fismaAnnualAction()
     {
-        Fisma_Acl::requirePrivilege('report', 'generate_fisma_report');
+        Fisma_Acl::requirePrivilege('area', 'reports');
 
         // Agency Name
         $agency = Organization::getAgency();
@@ -201,111 +201,13 @@ class ReportController extends SecurityController
         }
         $this->view->stats = $stats;
     }
-    
-    /**
-     * poamAction() - Generate poam report
-     */
-    public function poamAction()
-    {
-        Fisma_Acl::requirePrivilege('report', 'generate_poam_report');
         
-        $req = $this->getRequest();
-        $params['system_id'] = $req->getParam('system_id');
-        $params['source_id'] = $req->getParam('source_id');
-        $params['type'] = $req->getParam('type');
-        $params['year'] = $req->getParam('year');
-        $params['status'] = $req->getParam('status');
-        $this->view->assign('source_list', $this->_sourceList);
-        $this->view->assign('system_list', $this->_systemList);
-        $this->view->assign('network_list', $this->_networkList);
-        $this->view->assign('params', $params);
-        $isExport = $req->getParam('format');
-
-        if ('search' == $req->getParam('s') || isset($isExport)) {
-            $criteria = array();
-            if (!empty($params['system_id'])) {
-                $criteria['systemId'] = $params['system_id'];
-            }
-            if (!empty($params['source_id'])) {
-                $criteria['sourceId'] = $params['source_id'];
-            }
-            if (!empty($params['type'])) {
-                $criteria['type'] = $params['type'];
-            }
-            if (!empty($params['status'])) {
-                if ('OPEN' == $params['status']) {
-                    $criteria['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
-                } else {
-                    $criteria['status'] = $params['status'];
-                }
-            }
-            $this->_pagingBasePath.= '/panel/report/sub/poam/s/search';
-            if (isset($isExport)) {
-                $this->_paging['currentPage'] = 
-                    $this->_pagging['perPage'] = null;
-            }
-            $this->makeUrl($params);
-            if (!empty($params['year'])) {
-                $criteria['createdDateBegin'] = new 
-                    Zend_Date($params['year'], Zend_Date::YEAR);
-                $criteria['createdDateEnd'] = clone $criteria['createdDateBegin'];
-                $criteria['createdDateEnd']->add(1, Zend_Date::YEAR);
-            }
-            $list = & $this->_poam->search($this->_me->systems, array(
-                'id',
-                'finding_data',
-                'system_id',
-                'network_id',
-                'source_id',
-                'asset_id',
-                'type',
-                'ip',
-                'port',
-                'status',
-                'action_suggested',
-                'action_planned',
-                'action_current_date',
-                'action_est_date',
-                'cmeasure',
-                'threat_source',
-                'threat_level',
-                'threat_source',
-                'threat_justification',
-                'cmeasure',
-                'cmeasure_effectiveness',
-                'cmeasure_justification',
-                'blscr_id',
-                'duetime',
-                'count' => 'count(*)'), 
-                $criteria, $this->_paging['currentPage'], 
-                $this->_paging['perPage'],
-                false);
-            $total = array_pop($list);
-            $this->_paging['totalItems'] = $total;
-            $this->_paging['fileName'] = "{$this->_pagingBasePath}/p/%d";
-            $pager = & Pager::factory($this->_paging);
-            if ($isExport) {
-                foreach ($list as $k => &$v) {
-                    $v['finding_data'] = trim(html_entity_decode($v['finding_data']));
-                    $v['action_suggested'] = trim(html_entity_decode($v['action_suggested']));
-                    $v['action_planned'] = trim(html_entity_decode($v['action_planned']));
-                    $v['threat_justification'] = trim(html_entity_decode($v['threat_justification']));
-                    $v['threat_source'] = trim(html_entity_decode($v['threat_source']));
-                    $v['cmeasure_effectiveness'] = trim(html_entity_decode($v['cmeasure_effectiveness']));
-                }
-            }
-            $this->view->assign('poam', $this->_poam);
-            $this->view->assign('poam_list', $list);
-            $this->view->assign('links', $pager->getLinks());
-        }
-    }
-    
     /**
      * overdueAction() - Overdue report
      */
     public function overdueAction()
     {
-        Fisma_Acl::requirePrivilege('report', 'generate_overdue_report');
+        Fisma_Acl::requirePrivilege('area', 'reports');
         
         // Get request variables
         $req = $this->getRequest();
@@ -354,230 +256,12 @@ class ReportController extends SecurityController
     }
 
     /**
-     * generalAction() - Generate general report
-     */
-    public function generalAction()
-    {
-        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
-        
-        $req = $this->getRequest();
-        $type = $req->getParam('type', '');
-        $this->view->assign('type', $type);
-        $this->render();
-        if (!empty($type) && ('search' == $req->getParam('s'))) {
-            define('REPORT_GEN_BLSCR', 1);
-            define('REPORT_GEN_FIPS', 2);
-            define('REPORT_GEN_PRODS', 3);
-            define('REPORT_GEN_SWDISC', 4);
-            define('REPORT_GEN_TOTAL', 5);
-            
-            if (REPORT_GEN_BLSCR == $type) {
-                $this->_forward('blscr');
-            }
-            if (REPORT_GEN_FIPS == $type) {
-                $this->_forward('fips');
-            }
-            if (REPORT_GEN_PRODS == $type) {
-                $this->_forward('prods');
-            }
-            if (REPORT_GEN_SWDISC == $type) {
-                $this->_forward('swdisc');
-            }
-            if (REPORT_GEN_TOTAL == $type) {
-                $this->_forward('total');
-            }
-        }
-    }
-    
-    /**
-     * blscrAction() - Generate BLSCR report
-     */
-    public function blscrAction() {
-        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
-        
-        $db = $this->_poam->getAdapter();
-        $system = new system();
-        $rpdata = array();
-        $query = $db->select()->from(array(
-            'p' => 'poams'
-        ), array(
-            'num' => 'count(p.id)'
-        ))->join(array(
-            'b' => 'blscrs'
-        ), 'b.code = p.blscr_id', array(
-            'blscr' => 'b.code'
-        ))->where("b.class = 'MANAGEMENT'")->group("b.code");
-        $rpdata[] = $db->fetchAll($query);
-        $query->reset();
-        $query = $db->select()->from(array(
-            'p' => 'poams'
-        ), array(
-            'num' => 'count(p.id)'
-        ))->join(array(
-            'b' => 'blscrs'
-        ), 'b.code = p.blscr_id', array(
-            'blscr' => 'b.code'
-        ))->where("b.class = 'OPERATIONAL'")->group("b.code");
-        $rpdata[] = $db->fetchAll($query);
-        $query->reset();
-        $query = $db->select()->from(array(
-            'p' => 'poams'
-        ), array(
-            'num' => 'count(p.id)'
-        ))->join(array(
-            'b' => 'blscrs'
-        ), 'b.code = p.blscr_id', array(
-            'blscr' => 'b.code'
-        ))->where("b.class = 'TECHNICAL'")->group("b.code");
-        $rpdata[] = $db->fetchAll($query);
-        $this->view->assign('rpdata', $rpdata);
-    }
-    
-    /**
-     * fipsAction() - FIPS report
-     */
-    public function fipsAction()
-    {
-        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
-        
-        $sysObj = new System();
-        $systems = $sysObj->getList(array(
-            'name' => 'name',
-            'type' => 'type',
-            'conf' => 'confidentiality',
-            'avail' => 'availability',
-            'integ' => 'integrity'
-        ));
-        $fipsTotals = array();
-        $fipsTotals['LOW'] = 0;
-        $fipsTotals['MODERATE'] = 0;
-        $fipsTotals['HIGH'] = 0;
-        $fipsTotals['n/a'] = 0;
-        foreach ($systems as $sid => & $system) {
-            if (strtolower($system['conf']) != 'none') {
-                $fips = $sysObj->calcSecurityCategory($system['conf'], $system['integ'], $system['avail']);
-            } else {
-                $fips = 'n/a';
-            }
-            $qry = $this->_poam->select()->from('poams', array(
-                'last_update' => 'MAX(modify_ts)'
-            ))->where('poams.system_id = ?', $sid);
-            $result = $this->_poam->fetchRow($qry);
-            if (!empty($result)) {
-                $ret = $result->toArray();
-                $system['last_update'] = $ret['last_update'];
-            }
-            $system['fips'] = $fips;
-            $fipsTotals[$fips]+= 1;
-            $system['crit'] = $system['avail'];
-        }
-        $rpdata = array();
-        $rpdata[] = $systems;
-        $rpdata[] = $fipsTotals;
-        $this->view->assign('rpdata', $rpdata);
-    }
-    
-    /**
-     * prodsAction() - Generate products report
-     */
-    public function prodsAction()
-    {
-        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
-        
-        $db = $this->_poam->getAdapter();
-        $query = $db->select()->from(array(
-            'prod' => 'products'
-        ), array(
-            'Vendor' => 'prod.vendor',
-            'Product' => 'prod.name',
-            'Version' => 'prod.version',
-            'NumoOV' => 'count(prod.id)'
-        ))->join(array(
-            'p' => 'poams'
-        ), 'p.status IN ("DRAFT","MSA", "EN","EA")', array())->join(array(
-            'a' => 'assets'
-        ), 'a.id = p.asset_id AND a.prod_id = prod.id', array())
-            ->group("prod.vendor")->group("prod.name")->group("prod.version");
-        $rpdata = $db->fetchAll($query);
-        $this->view->assign('rpdata', $rpdata);
-    }
-    
-    /**
-     * swdiscAction() - Software discovered report
-     */
-    public function swdiscAction()
-    {
-        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
-        
-        $db = $this->_poam->getAdapter();
-        $query = $db->select()->from(array(
-            'p' => 'products'
-        ), array(
-            'Vendor' => 'p.vendor',
-            'Product' => 'p.name',
-            'Version' => 'p.version'
-        ))->join(array(
-            'a' => 'assets'
-        ), 'a.source = "SCAN" AND a.prod_id = p.id', array());
-        $rpdata = $db->fetchAll($query);
-        $this->view->assign('rpdata', $rpdata);
-    }
-    
-    /**
-     * totalAction() - ???
-     */
-    public function totalAction()
-    {
-        Fisma_Acl::requirePrivilege('report', 'generate_general_report');
-        
-        $db = $this->_poam->getAdapter();
-        $system = new system();
-        $rpdata = array();
-        $query = $db->select()->from(array(
-            'sys' => 'systems'
-        ), array(
-            'sysnick' => 'sys.nickname',
-            'vulncount' => 'count(sys.id)'
-        ))->join(array(
-            'p' => 'poams'
-        ), 'p.type IN ("CAP","AR","FP") AND
-            p.status IN ("DRAFT", "MSA", "EN", "EA") AND p.system_id = sys.id',
-            array())->join(array(
-            'a' => 'assets'
-        ), 'a.id = p.asset_id', array())->group("p.system_id");
-        $sysVulncounts = $db->fetchAll($query);
-        $sysNicks = $system->getList('nickname');
-        $systemTotals = array();
-
-        foreach ($sysNicks as $nickname) {
-            $systemNick = $nickname['nickname'];
-            $systemTotals[$systemNick] = 0;
-        }
-        $totalOpen = 0;
-        foreach ((array)$sysVulncounts as $svRow) {
-            $systemNick = $svRow['sysnick'];
-            $systemTotals[$systemNick] = $svRow['vulncount'];
-            $totalOpen++;
-        }
-        $systemTotalArray = array();
-        foreach (array_keys($systemTotals) as $key) {
-            $val = $systemTotals[$key];
-            $thisRow = array();
-            $thisRow['nick'] = $key;
-            $thisRow['num'] = $val;
-            array_push($systemTotalArray, $thisRow);
-        }
-        array_push($rpdata, $totalOpen);
-        array_push($rpdata, $systemTotalArray);
-        $this->view->assign('rpdata', $rpdata);
-    }
-    /**
      * rafsAction() - Batch generate RAFs for each system
      */
     public function rafsAction()
     {
-        Fisma_Acl::requirePrivilege('report', 'generate_system_rafs');
-        $sid = $this->_req->getParam('system_id', 0);
+        Fisma_Acl::requirePrivilege('area', 'reports');
+        $sid = $this->getRequest()->getParam('system_id', 0);
         $this->view->assign('system_list', $this->_systemList);
         if (!empty($sid)) {
             $query = $this->_poam->select()->from($this->_poam, array(
@@ -647,7 +331,7 @@ class ReportController extends SecurityController
      */         
     public function pluginAction() 
     {
-        Fisma_Acl::requirePrivilege('report', 'read');
+        Fisma_Acl::requirePrivilege('area', 'reports');
         
         // Build up report menu
         $reportsConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf');
@@ -660,7 +344,7 @@ class ReportController extends SecurityController
      */         
     public function pluginReportAction()
     {
-        Fisma_Acl::requirePrivilege('report', 'read');
+        Fisma_Acl::requirePrivilege('area', 'reports');
         
         // Verify a plugin report name was passed to this action
         $reportName = $this->getRequest()->getParam('name');
@@ -679,7 +363,7 @@ class ReportController extends SecurityController
                 $reportRoles = array($reportRoles);
             }
             if (!in_array($this->_me->Roles, $reportRoles)) {
-                throw new Fisma_Exception("User \"{$this->_me->account}\" does not have permission to view"
+                throw new Fisma_Exception("User \"{$this->_me->username}\" does not have permission to view"
                                           . " the \"$reportName\" plug-in report.");
             }
         }

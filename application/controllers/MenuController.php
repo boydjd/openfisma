@@ -103,8 +103,6 @@ class MenuController extends SecurityController
             $reports = new Fisma_Yui_Menu('Reports');
             
             $reports->add(new Fisma_Yui_MenuItem('FISMA Report', '/panel/report/sub/fisma'));
-            //This section needs a huge overhaul
-            //$reports->add(new Fisma_Yui_MenuItem('General Report', '/panel/report/sub/general'));
             $reports->add(new Fisma_Yui_MenuItem('Generate System RAFs', '/panel/report/sub/rafs'));
             $reports->add(new Fisma_Yui_MenuItem('Overdue Report', '/panel/report/sub/overdue'));
             $reports->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/panel/report/sub/plugin'));

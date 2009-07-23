@@ -17,7 +17,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
                                       array('value' => 'Export Excel', 
                                             'href' => "/asset/search$this->url/format/xls", 
                                             'imageSrc' => '/images/xls.gif'));
-        if(Fisma_Acl::hasPrivilege('asset','delete')) {
+        if(Fisma_Acl::hasPrivilege('asset', 'delete', '*')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('label' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
@@ -33,7 +33,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
                                                       'onClickFunction' => 'deleteSelectedAssets'));
             echo $deleteButton;
         }
-        if(Fisma_Acl::hasPrivilege('asset','create')) {
+        if(Fisma_Acl::hasPrivilege('asset','create', '*')) {
             echo new Fisma_Yui_Form_Button_Link('createAsset', 
                                           array('value' => 'Create Asset', 
                                                 'href' => '/panel/asset/sub/create'));
@@ -49,11 +49,13 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         elCell.innerHTML = "<a href='/panel/asset/sub/view/id/"+oRecord.getData("id")+"'><img src='/images/view.gif' /></a>";
     };
     // Column definitions
-    var myColumnDefs = [{key: 'id', label:'', formatter: checkboxList}<?php
+    var myColumnDefs = [{key: 'id', label:'', formatter: checkboxList}
+    <?php
     foreach ($this->columns as $k => $v) {
         echo ',{key:"' . $k . '", label:"' . $v . '"}';
     }
-    if (Fisma_Acl::hasPrivilege('asset','read')) { ?>,{key: 'id', label:'', formatter: operation}<?php }?>];
+    echo ", {key: 'id', label:'View', formatter: operation}];";
+    ?>
 
     // A function which builds the query string
     var myRequestBuilder = function(oState, oSelf) {

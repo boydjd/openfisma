@@ -395,8 +395,8 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $version = $this->getRequest()->getParam('version');
-        $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
+        $document = Doctrine::getTable('SystemDocument')->find($id);
+        Fisma_Acl::requirePrivilege('system', 'read', $document->System->Organization[0]->nickname);
 
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);

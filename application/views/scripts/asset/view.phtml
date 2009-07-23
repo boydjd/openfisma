@@ -1,10 +1,11 @@
 <?php
 echo $this->partial('asset/navibar.phtml');
 $operation = '';
-if (Fisma_Acl::hasPrivilege('asset','update')) {
+$asset = Doctrine::getTable('Asset')->find($this->id);
+if (Fisma_Acl::hasPrivilege('asset', 'update', $asset->Organization->nickname)) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Acl::hasPrivilege('asset','delete')) {
+if (Fisma_Acl::hasPrivilege('asset', 'delete', $asset->Organization->nickname)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Asset $operation"); ?>

@@ -63,6 +63,8 @@ class AssetController extends BaseController
     function init()
     {
         parent::init();
+        $this->_organizations = '*';
+        
         $swCtx = $this->_helper->contextSwitch();
         if (!$swCtx->hasContext('pdf')) {
             $swCtx->addContext('pdf', array(
@@ -196,7 +198,7 @@ class AssetController extends BaseController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'create');
+        Fisma_Acl::requirePrivilege('asset', 'create', '*');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
@@ -206,7 +208,7 @@ class AssetController extends BaseController
      */
     public function searchboxAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'read');
+        Fisma_Acl::requirePrivilege('asset', 'read', '*');
         
         $params = $this->parseCriteria();
         $systems = $this->_me->getOrganizations();
@@ -227,7 +229,7 @@ class AssetController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'read');
+        Fisma_Acl::requirePrivilege('asset', 'read', '*');
 
         $params = $this->parseCriteria();
         $q = Doctrine_Query::create()
@@ -336,9 +338,10 @@ class AssetController extends BaseController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'delete');
         $id = $this->_request->getParam('id');
         $asset = Doctrine::getTable($this->_modelName)->find($id);
+        Fisma_Acl::requirePrivilege($this->_modelName, 'delete', $asset->Organization->nickname);
+        
         if (!$asset) {
             $msg   = "Invalid {$this->_modelName} ID";
             $type = self::M_WARNING;
@@ -371,7 +374,8 @@ class AssetController extends BaseController
      */
     public function multideleteAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'delete');
+        /** @todo this isn't right... the delete should check each asset individually */
+        Fisma_Acl::requirePrivilege('asset', 'delete', '*');
 
         $req = $this->getRequest();
         $post = $req->getPost();
