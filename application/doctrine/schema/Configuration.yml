@@ -1,5 +1,5 @@
 Configuration:
-    listeners: [XssListener]
+    listeners: [XssListener, ConfigListener]
         
     columns:
         name: 

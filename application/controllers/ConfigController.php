@@ -65,67 +65,43 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * The default Action
+     * The default Action, handle the configuration updating.
      */
     public function indexAction()
     {
         Fisma_Acl::requirePrivilege('area', 'configuration');
-        $this->_helper->viewRenderer->setNoRender();
-        $this->_helper->actionStack('password');
-        $this->_helper->actionStack('notification');
-        $this->_helper->actionStack('contact');
-        $this->_helper->actionStack('privacy');
-        $this->_helper->actionStack('view');
+        if ($this->_request->isPost()) {
+            $type = $this->_request->getParam('type');
+            $form = $this->getConfigForm($type . '_config');
+            $post = $this->_request->getPost();
+            if ($form->isValid($post)) {
+                $values = $form->getValues();
+                foreach ($values as $k => $v) {
+                    $config = Doctrine::getTable('Configuration')->findOneByName($k);
+                    if ($config) {
+                        $config->value = $v;
+                        $config->save();
+                    }
+                }
+                $msg = 'Configuration updated successfully';
+                Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
+                $this->message($msg, self::M_NOTICE);
+            } else {
+                $errorString = Fisma_Form_Manager::getErrors($form);
+                $this->message("Unable to save configurations:<br>$errorString", self::M_WARNING);
+            }
+        }
+        $this->render();
     }
+
     /**
      * Display and update the persistent configurations
      */
-    public function viewAction()
+    public function generalAction()
     {
         Fisma_Acl::requirePrivilege('area', 'configuration');
 
         $form = $this->getConfigForm('general_config');
-        if ($this->_request->isPost()) {
-            $configPost = $this->_request->getPost();
-            if ('genernal' == $this->_request->getParam('type')) {
-                if ($form->isValid($configPost)) {
-                    $values = $form->getValues();
-                    //array_intersect_key requires PHP > 5.1.0
-                    $validVals = array(
-                        Configuration::SYSTEM_NAME =>0,
-                        Configuration::MAX_ABSENT  =>0,
-                        Configuration::AUTH_TYPE   =>0,
-                        Configuration::EXPIRING_TS =>0,
-                        Configuration::USE_NOTIFICATION =>0,
-                        Configuration::BEHAVIOR_RULE =>0,
-                        Configuration::ROB_DURATION  =>0
-                    );
-
-                    $values = array_intersect_key($values, $validVals);
-                    // to store modified key
-                    $records = array();
-                    foreach ($values as $k => $v) {
-                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
-                        if (in_array($k, array(Configuration::EXPIRING_TS, Configuration::UNLOCK_DURATION))) {
-                            $v *= 60; //convert to second
-                        }
-                        $config->value = $v;
-                        if ($config->isModified()) {
-                            $config->save();
-                            array_push($records, $k);
-                        }
-                    }
-                    $msg = 'Configuration updated successfully';
-                    Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
-                    $this->message($msg, self::M_NOTICE);
-                } else {
-                    $errorString = Fisma_Form_Manager::getErrors($form);
-                    // Error message
-                    $this->message("Unable to save general policies:<br>$errorString", self::M_WARNING);
-                }
-            }
-        }
-        
         $configs = Doctrine::getTable('Configuration')->findAll();
 
         $configArray = array();
@@ -137,12 +113,6 @@ class ConfigController extends SecurityController
         }
         $form->setDefaults($configArray);
         $this->view->generalConfig = $form;
-
-        if ('ldap' == Configuration::getConfig('auth_type', true)) {
-            $this->_helper->actionStack('ldaplist');
-        }
-
-        $this->render();
     }
 
     /**
@@ -152,7 +122,6 @@ class ConfigController extends SecurityController
     {
         $ldaps = Doctrine::getTable('LdapConfig')->findAll();
         $this->view->assign('ldaps', $ldaps->toArray());
-        $this->render();
     }
 
     /**
@@ -163,35 +132,12 @@ class ConfigController extends SecurityController
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('contact_config');
-        if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if ('contact' == $this->_request->getParam('type')) {
-                if ($form->isValid($data)) {
-                    $data = $form->getValues();
-                    unset($data['saveContactConfig']);
-                    unset($data['reset']);
-                    foreach ($data as $k => $v) {
-                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
-                        $config->value =  $v;
-                        $config->save();
-                    }
-                    $msg = 'Configuration updated successfully';
-                    $this->message($msg, self::M_NOTICE);
-                } else {
-                    $errorString = Fisma_Form_Manager::getErrors($form);
-                    // Error message
-                    $this->message("Unable to save Technical Contact Information:<br>$errorString",
-                        self::M_WARNING);
-                }
-            }
-        }
         $columns = array('contact_name', 'contact_phone', 'contact_email', 'contact_subject');
         foreach ($columns as $column) {
             $configs[$column] = Configuration::getConfig($column);
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
-        $this->render();
     }
 
 
@@ -292,36 +238,12 @@ class ConfigController extends SecurityController
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('notification_config');
-        if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if ('notification' == $this->_request->getParam('type')) {
-                if ($form->isValid($data)) {
-                    $data = $form->getValues();
-                    unset($data['saveNotificationConfig']);
-                    unset($data['reset']);
-                    unset($data['submit']);
-                    foreach ($data as $k => $v) {
-                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
-                        $config->value = $v;
-                        $config->save();
-                    }
-                    $msg = 'Configuration updated successfully';
-                    $this->message($msg, self::M_NOTICE);
-                } else {
-                    $errorString = Fisma_Form_Manager::getErrors($form);
-                    // Error message
-                    $this->message("Unable to save Notifciation Policies:<br>$errorString", self::M_WARNING);
-                }
-            }
-        }
-        
         $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password');
         foreach ($columns as $column) {
             $configs[$column] = Configuration::getConfig($column);
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
-        $this->render();
     }
 
     /**
@@ -332,27 +254,8 @@ class ConfigController extends SecurityController
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('privacy_policy_config');
-        if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if ('privacy' == $this->_request->getParam('type')) {
-                if ($form->isValid($data)) {
-                    $data = $form->getValues();
-                    $config = Doctrine::getTable('Configuration')->findOneByName('privacy_policy');
-                    $config->value = $data['privacy_policy'];
-                    $config->save();
-                    $msg = 'Configuration updated successfully';
-                    $this->message($msg, self::M_NOTICE);
-                } else {
-                    $errorString = Fisma_Form_Manager::getErrors($form);
-                    // Error message
-                    $this->message("Unable to save privacy policies:<br>$errorString", self::M_WARNING);
-                }
-            }
-        }
-        
         $form->setDefaults(array('privacy_policy' => Configuration::getConfig('privacy_policy')));
         $this->view->form = $form;
-        $this->render();
     }
      
     /**
@@ -363,32 +266,6 @@ class ConfigController extends SecurityController
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('password_config');
-        if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if ('password' == $this->_request->getParam('type')) {
-                if ($form->isValid($data)) {
-                    $values = $form->getValues();
-                    unset($values['savePassword']);
-                    unset($values['reset']);
-                    unset($values['submit']);
-                    foreach ($values as $k => $v) {
-                        if ($k == Configuration::UNLOCK_DURATION) {
-                            $v *=  60;//Convert to sencond
-                        }
-                        $config = Doctrine::getTable('Configuration')->findOneByName($k);
-                        $config->value = $v;
-                        $config->save();
-                    }
-                    $msg = 'Password Complexity Configuration updated successfully';
-                    $this->message($msg, self::M_NOTICE);
-                } else {
-                    $errorString = Fisma_Form_Manager::getErrors($form);
-                    // Error message
-                    $this->message("Unable to save password policies:<br>$errorString", self::M_WARNING);
-                }
-            }
-        }
-        
         $columns = array('failure_threshold' ,'unlock_enabled', 'unlock_duration', 'pass_expire',
                          'pass_warning', 'pass_uppercase', 'pass_lowercase',
                          'pass_numerical', 'pass_special', 'pass_min_length', 'pass_max_length');
@@ -398,6 +275,5 @@ class ConfigController extends SecurityController
         $configs[Configuration::UNLOCK_DURATION] /= 60 ;//Convert to minutes
         $form->setDefaults($configs);
         $this->view->form = $form;
-        $this->render();
     }
 }

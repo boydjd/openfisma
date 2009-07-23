@@ -13,7 +13,7 @@ elementPrefixPath.prefix = Fisma_Form
 elementPrefixPath.path = Fisma/Form
 elementPrefixPath.type = Validate
 method = "post"
-action = "/panel/config/type/privacy"
+action = "/panel/config/type/privacy_policy"
 
 elements.privacy_policy.type = "textarea"
 elements.privacy_policy.options.label = "Privacy Policy"

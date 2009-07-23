@@ -14,7 +14,7 @@ elementPrefixPath.path = Fisma/Form
 elementPrefixPath.type = Validate
 
 method = "post"
-action = "/panel/config/type/genernal"
+action = "/panel/config/type/general"
 elementFilters.trim = "StringTrim"
 elementFilters.tags = "StripTags"
 
