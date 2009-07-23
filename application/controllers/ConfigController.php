@@ -115,7 +115,8 @@ class ConfigController extends SecurityController
                             array_push($records, $k);
                         }
                     }
-                    $msg = 'Configuration updated successfully, ' . implode(',', $records) . ' was(were) changed';
+                    $msg = 'Configuration updated successfully';
+                    Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
                     $this->message($msg, self::M_NOTICE);
                 } else {
                     $errorString = Fisma_Form_Manager::getErrors($form);

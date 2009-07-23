@@ -84,12 +84,17 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      */
     function render() {
         $render = '';
-        // @todo ideally this would be configurable in the constructor
-        $columnCount = 4;
-        $systemCount = count($this->_checkboxes);
-        $rowCount = ceil($systemCount / $columnCount);
         
-        // These HTML attributes are the same for all checkboxes
+        // Setup the tooltip
+        $tooltipHtml = '<p>Checking a system or organization will automatically select all of the nested'
+                     . ' systems and organizations within it. Clicking the same box again will deselect'
+                     . ' all of the nested items.</p><p><i>Hold down the Option or Alt key while clicking'
+                     . ' in order to select a single checkbox.</i></p>';
+        $tooltip = new Fisma_Yui_Tooltip('checkboxMatrix', 
+                                         ucfirst($this->getLabel()), 
+                                         $tooltipHtml);
+        
+        // Setup HTML attributes
         $disabled = '';
         if ($this->readOnly) {
             $disabled = ' disabled=\'disabled\'';
@@ -97,32 +102,35 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
         $class = $this->getAttrib('class') != ''
                  ? ' class=\''.$this->getAttrib('class').'\'' : '';
 
-        // Render the checkbox matrix as a table, filling out the columns
-        // top to bottom then left to right
+        // Render the checkbox tree as a list with CSS indents based on the nesting level
         $groupName = $this->getName();
         $render .= "<tr class='fisma_checkboxes'>"
                  . "<td colspan='2' style=\"text-align:left\">"
-                 . ucfirst($this->getLabel())
+                 . $tooltip
                  . "</td></tr>";
         $render .= "<tr><td colspan='2'><ul class='treelist'>";
         foreach ($this->_checkboxes as $checkbox) {
-            $render .= "<li style=\"padding-left:".(2*$checkbox['level'])."em\">";
+            $render .= "<li style=\"padding-left:" 
+                     . (2*$checkbox['level']) 
+                     . "em\">";
             $checked = in_array($checkbox['name'], $this->_defaults) ? ' checked=\'checked\'' : '';
             $render .= "<input type='checkbox'"
                      . " id =\"{$groupName}[{$checkbox['name']}]\""
                      . " name=\"{$groupName}[]\""
                      . " value='{$checkbox['name']}'"
+                     . ' onclick=\'YAHOO.fisma.CheckboxTree.handleClick(this, event);\''
+                     . " nestedLevel=\"{$checkbox['level']}\""
                      . "$class$checked$disabled>&nbsp;"
-                     . "<label for=\"{$groupName}[{$checkbox['name']}]\">{$checkbox['label']}</label>\n";
-            $render .= "&nbsp;</li>";
+                     . "<label for=\"{$groupName}[{$checkbox['name']}]\">{$checkbox['label']}</label>"
+                     . "&nbsp;</li>";
         }
         $render .= "</ul></td></tr>\n";
 
-        $selectAllButton = new Fisma_Yui_Form_Button('SelectAll',
+        $selectAllButton = new Fisma_Yui_Form_Button('Select All',
 											   array('value' => 'Select All',
 											    	 'onClickFunction' => 'selectAllUnsafe'));
 
-        $selectNoneButton = new Fisma_Yui_Form_Button('SelectNone',
+        $selectNoneButton = new Fisma_Yui_Form_Button('Select None',
 												array('value' => 'Select None',
 												      'onClickFunction' => 'selectNoneUnsafe'));
         
