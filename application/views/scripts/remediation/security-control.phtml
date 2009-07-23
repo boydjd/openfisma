@@ -1,4 +1,7 @@
-<?php Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');?>
+<?php 
+    Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
+    $organization = $this->finding->ResponsibleOrganization->nickname;
+?>
 <table class="keyValues">
     <tr>
         <td width="200">
@@ -9,7 +12,7 @@
         <td>
             <span id="security_control" type="select" name="finding[securityControlId]" href="/metainfo/list/o/security_control/format/html/"
                 <?php
-                if (Fisma_Acl::hasPrivilege('finding', 'update_control_assignment')) {
+                if (Fisma_Acl::hasPrivilege('finding', 'update_control_assignment', $organization)) {
                     echo "class='editable' target='security_control'";
                 }
                 ?>>

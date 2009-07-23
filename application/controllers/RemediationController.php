@@ -130,7 +130,7 @@ class RemediationController extends SecurityController
      */    
     public function summaryAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         $mitigationEvaluationQuery = Doctrine_Query::create()
                                      ->from('Evaluation e')
@@ -300,7 +300,6 @@ class RemediationController extends SecurityController
      */
     private function _parseCriteria()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read');
         $params = array('responsibleOrganizationId' => 0, 'sourceId' => 0, 'type' => '',
                         'status' => '', 'ids' => '', 'assetOwner' => 0,
                         'estDateBegin' => '', 'estDateEnd' => '',
@@ -418,7 +417,7 @@ class RemediationController extends SecurityController
     */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         $params = $this->_parseCriteria();
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
@@ -444,7 +443,7 @@ class RemediationController extends SecurityController
      */
     public function searchboxAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         $params = $this->_parseCriteria();
         $this->view->assign('params', $params);
@@ -505,7 +504,7 @@ class RemediationController extends SecurityController
 
         $finding  = $this->_getFinding($id);
         if (!empty($decision)) {
-            var_dump($finding->toArray());die;
+//            var_dump($finding->toArray());die;
             Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action);
         }
        
@@ -513,11 +512,11 @@ class RemediationController extends SecurityController
             Doctrine_Manager::connection()->beginTransaction();
 
             if ('submitmitigation' == $do) {
-                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_submit', $finding->responsibleOrganizationId);
+                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_submit', $finding->ResponsibleOrganization->nickname);
                 $finding->submitMitigation(User::currentUser());
             }
             if ('revisemitigation' == $do) {
-                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_revise', $finding->responsibleOrganizationId);
+                Fisma_Acl::requirePrivilege('finding', 'mitigation_strategy_revise', $finding->ResponsibleOrganization->nickname);
                 $finding->reviseMitigation(User::currentUser());
             }
 
@@ -554,7 +553,7 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
 
-        Fisma_Acl::requirePrivilege('finding', 'upload_evidence', $finding->responsibleOrganizationId);
+        Fisma_Acl::requirePrivilege('finding', 'upload_evidence', $finding->ResponsibleOrganization->nickname);
 
         define('EVIDENCE_PATH', Fisma::getPath('data') . '/uploads/evidence');
         $file = $_FILES['evidence'];
@@ -611,7 +610,7 @@ class RemediationController extends SecurityController
             throw new Fisma_Exception('Invalid evidence ID');
         }
 
-        Fisma_Acl::requirePrivilege('finding', 'read_evidence', $evidence->Finding->responsibleOrganizationId);
+        Fisma_Acl::requirePrivilege('finding', 'read_evidence', $evidence->Finding->ResponsibleOrganization->nickname);
 
         if (!in_array($evidence->Finding->ResponsibleOrganization, $this->_me->getOrganizations()->toArray())
             && 'root' != $this->_me->username) {
@@ -652,7 +651,7 @@ class RemediationController extends SecurityController
         $finding  = $this->_getFinding($id);
 
         if (!empty($decision)) {
-            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action, $finding->responsibleOrganizationId);
+            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action, $finding->ResponsibleOrganization->nickname);
         }
 
         try {
@@ -685,12 +684,10 @@ class RemediationController extends SecurityController
      */
     public function rafAction()
     {
-        Fisma_Acl::requirePrivilege('report', 'generate_system_rafs');
-
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
 
-        Fisma_Acl::requirePrivilege('finding', 'read', $finding->responsibleOrganizationId);
+        Fisma_Acl::requirePrivilege('finding', 'read', $finding->ResponsibleOrganization->nickname);
 
         try {
             if ($finding->threat == '' ||
@@ -814,7 +811,7 @@ class RemediationController extends SecurityController
      *
      */
     public function search2Action() {
-        Fisma_Acl::requirePrivilege('finding', 'read');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         /* @todo A hack to translate column names in the data table to column names
          * which can be sorted... this could probably be done in a much better way.

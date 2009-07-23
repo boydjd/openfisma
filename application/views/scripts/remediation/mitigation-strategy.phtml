@@ -1,6 +1,7 @@
 <?php
     Fisma_Format_Section::startSection("Mitigation Strategy"); 
     $finding = $this->finding;
+    $organization = $finding->ResponsibleOrganization->nickname;
 ?>
 <p>
     <b>Type:</b>
@@ -8,7 +9,7 @@
     <span type="select" name="finding[type]" href="/metainfo/list/o/type/format/html/" id="type"
         <?php 
             if (('NEW' == $finding->status || 'DRAFT' == $finding->status) 
-                && Fisma_Acl::hasPrivilege('finding','update_course_of_action')) {
+                && Fisma_Acl::hasPrivilege('finding', 'update_course_of_action', $organization)) {
                 echo 'class="editable" target="type"';
             }
         ?>>
@@ -20,7 +21,7 @@
     <b target="mitigation_strategy"
         <?php 
             if (in_array($finding->status, array('NEW', 'DRAFT'))
-                && Fisma_Acl::hasPrivilege('finding','update_course_of_action')) {
+                && Fisma_Acl::hasPrivilege('finding', 'update_course_of_action', $organization)) {
                echo 'class="editable"';
             }
         ?>>
@@ -35,7 +36,7 @@
     <b
         <?php
             if(in_array($finding->status, array('NEW', 'DRAFT'))
-                && Fisma_Acl::hasPrivilege('finding', 'update_resources')) {
+                && Fisma_Acl::hasPrivilege('finding', 'update_resources', $organization)) {
                 echo 'class="editable" target="resources_required"';
             } 
         ?>>
@@ -53,7 +54,7 @@ if ($finding->originalEcd == $finding->currentEcd) {
     <b>Expected Completion Date:</b>
     <span name="finding[currentEcd]" id="currentEcd" type="text"
         <?php 
-            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action')
+            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action', $organization)
                 && in_array($finding->status, array('NEW', 'DRAFT'))) {
                 echo ' class="date editable" target="currentEcd"';
                 if ($finding->ecdLocked) {
@@ -92,7 +93,7 @@ if ($finding->originalEcd == $finding->currentEcd) {
     <b>Current ECD:</b>
     <span name="finding[currentEcd]" id="currentEcd" type="text"
         <?php 
-            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action')
+            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action', $organization)
                 && in_array($finding->status, array('NEW', 'DRAFT'))) {
                 echo ' class="date editable" target="currentEcd"';
                 if ($finding->ecdLocked) {
@@ -175,13 +176,13 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
                                                   array('label' => 'Submit Mitigation Strategy', 
                                                         'onClickFunction' => 'submitMitigationStrategy')    );
     if (false == $complete
-        || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit')) {
+        || !Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_submit', $organization)) {
         $submitMitigationButton->readOnly = true;
     }
     echo "<div class='toolbar'>$submitMitigationButton</div>";
 }
 
-if ('EN' == $finding->status && Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_revise')) {
+if ('EN' == $finding->status && Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_revise', $organization)) {
     echo "<script language=\"javascript\">
             function reviseMitigationStrategy()
             {
@@ -221,7 +222,7 @@ if ($finding->status != 'NEW'
     $activeEvaluation = $finding->CurrentEvaluation;
     if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'action') {
         echo '<p><b>' . html_entity_decode($activeEvaluation->name) . '</b>';
-        if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action)) {
+        if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action, $organization)) {
             echo '<input type="hidden" name="comment" value="" />';
             echo '<input type="hidden" name="decision" value="APPROVED" />';
             echo '<input name="submit_msa" type="submit" value="APPROVED"

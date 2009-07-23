@@ -1,6 +1,9 @@
-<?php $finding = $this->finding; ?>
+<?php 
+    $finding = $this->finding; 
+    $organization = $finding->ResponsibleOrganization->nickname;
+?>
 <?php
-if (Fisma_Acl::hasPrivilege('report','generate_system_rafs')) {
+if (Fisma_Acl::hasPrivilege('report', 'generate_system_rafs', $organization)) {
     Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
 ?>
     <p>
@@ -17,11 +20,11 @@ if (Fisma_Acl::hasPrivilege('report','generate_system_rafs')) {
             && $finding->countermeasures != '' && $finding->countermeasuresEffectiveness != 'NONE') {
             print new Fisma_Yui_Form_Button_Link('viewRaf',
                                    array('value' => 'View Risk Analysis Form', 
-                                   'href' => "/panel/remediation/sub/raf/format/pdf/id/{$finding->id}", 
-                                   'imageSrc' => '/images/pdf.gif'));
+                                         'href' => "/panel/remediation/sub/raf/format/pdf/id/{$finding->id}", 
+                                         'imageSrc' => '/images/pdf.gif'));
         } else {
             print '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>';
-        } 
+        }
         ?>
     </p>
 <?php
@@ -47,7 +50,7 @@ if (Fisma_Acl::hasPrivilege('report','generate_system_rafs')) {
 
     <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
         <?php 
-        if (Fisma_Acl::hasPrivilege('finding', 'update_threat')) {
+        if (Fisma_Acl::hasPrivilege('finding', 'update_threat', $organization)) {
             echo ' class="editable" target="threat_level"';
         }
         ?>>
@@ -58,7 +61,7 @@ if (Fisma_Acl::hasPrivilege('report','generate_system_rafs')) {
 <p>
     <b target="threat" 
         <?php
-        if(Fisma_Acl::hasPrivilege('finding','update_threat')) { 
+        if(Fisma_Acl::hasPrivilege('finding','update_threat', $organization)) { 
             echo 'class="editable"';
         } 
         ?>>Threat Description:</b>
@@ -89,7 +92,7 @@ if (Fisma_Acl::hasPrivilege('report','generate_system_rafs')) {
 
     <span type="select" name="finding[countermeasuresEffectiveness]" id="effectiveness" href="/metainfo/list/o/countermeasures-effectiveness/format/html/"
         <?php
-        if(Fisma_Acl::hasPrivilege('finding', 'update_countermeasures')) {
+        if(Fisma_Acl::hasPrivilege('finding', 'update_countermeasures', $organization)) {
             echo 'class="editable" target="effectiveness"';
         }
         ?>>
@@ -100,7 +103,7 @@ if (Fisma_Acl::hasPrivilege('report','generate_system_rafs')) {
 <p>
     <b target="countermeasures" 
         <?php 
-            if(Fisma_Acl::hasPrivilege('finding', 'update_countermeasures')) {
+            if(Fisma_Acl::hasPrivilege('finding', 'update_countermeasures', $organization)) {
                 echo 'class="editable"';
             } 
         ?>>

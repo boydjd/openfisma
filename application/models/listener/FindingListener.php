@@ -121,7 +121,9 @@ class FindingListener extends Doctrine_Record_Listener
 
                 // Check whether the user has the privilege to update this column
                 if (isset(self::$_requiredPrivileges[$key])) {
-                    Fisma_Acl::requirePrivilege('finding', self::$_requiredPrivileges[$key]);
+                    Fisma_Acl::requirePrivilege('finding', 
+                                                self::$_requiredPrivileges[$key], 
+                                                $finding->ResponsibleOrganization->nickname);
                 }
 
                 // Check whether this field generates any notification events
@@ -206,14 +208,18 @@ class FindingListener extends Doctrine_Record_Listener
                                                        in order to modify the ECD.');
                         }
                         if (!$finding->ecdLocked) {
-                            Fisma_Acl::requirePrivilege('finding', 'update_ecd');
+                            Fisma_Acl::requirePrivilege('finding', 
+                                                        'update_ecd', 
+                                                        $finding->ResponsibleOrganization->nickname);
                             $finding->originalEcd = $finding->currentEcd;
                             Notification::notify('UPDATE_ECD', 
                                                  $finding, 
                                                  User::currentUser(), 
                                                  $finding->responsibleOrganizationId);
                         } else {
-                            Fisma_Acl::requirePrivilege('finding', 'update_locked_ecd');
+                            Fisma_Acl::requirePrivilege('finding', 
+                                                        'update_locked_ecd', 
+                                                        $finding->ResponsibleOrganization->nickname);
                             Notification::notify('UPDATE_LOCKED_ECD', 
                                                  $finding, 
                                                  User::currentUser(), 
@@ -266,7 +272,7 @@ class FindingListener extends Doctrine_Record_Listener
         $modified = $finding->getModified($old=false, $last=true);
         Fisma_Lucene::updateIndex('finding', $finding->id, $modified);
         
-        // Invalidate the caches that contain this finding. This will ensure that user's always see
+        // Invalidate the caches that contain this finding. This will ensure that users always see
         // accurate summary counts on the finding summary screen.
         $finding->ResponsibleOrganization->invalidateCache();
     }

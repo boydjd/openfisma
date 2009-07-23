@@ -1,5 +1,6 @@
 <?php
     $finding = $this->finding;
+    $orgId = $finding->ResponsibleOrganization->nickname;
     $status  = $finding->getStatus();
 ?>
 <div class="column left">
@@ -70,7 +71,7 @@
                      href="/metainfo/list/o/organization/format/html/"
                      <?php
                      if('NEW' == $status || 'DRAFT' == $status
-                         && Fisma_Acl::hasPrivilege('finding', 'update_assignment')) {
+                         && Fisma_Acl::hasPrivilege('finding', 'update_assignment', $orgId)) {
                          echo 'class="editable" target="organization"'; 
                      }
                      ?>>
@@ -140,7 +141,7 @@
 <div class="clear"></div>
 
 <?php 
-if (Fisma_Acl::hasPrivilege('finding','update_description')) {
+if (Fisma_Acl::hasPrivilege('finding', 'update_description', $orgId)) {
     Fisma_Format_Section::startSection('Description', 'finding_description');
 } else {
     Fisma_Format_Section::startSection('Description');
@@ -153,7 +154,7 @@ if (Fisma_Acl::hasPrivilege('finding','update_description')) {
 
 <?php
 if ('NEW' == $status || 'DRAFT' == $status
-    && Fisma_Acl::hasPrivilege('finding', 'update_recommendation')) {
+    && Fisma_Acl::hasPrivilege('finding', 'update_recommendation', $orgId)) {
     Fisma_Format_Section::startSection('Recommendation', 'recommendation');
 } else {
     Fisma_Format_Section::startSection('Recommendation');
