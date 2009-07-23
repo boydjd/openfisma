@@ -538,7 +538,7 @@ function form_confirm (check_form, action) {
     }
     
     if (confirm('WARNING: You are about to ' + action + '. This action cannot be undone.'
-              + 'Please click "Ok" to confirm your action or click "Cancel" to stop.')) {
+              + ' Please click "Ok" to confirm your action or click "Cancel" to stop.')) {
         return true;
     }
 

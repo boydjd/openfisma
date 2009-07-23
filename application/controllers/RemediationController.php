@@ -505,7 +505,7 @@ class RemediationController extends SecurityController
         $finding  = $this->_getFinding($id);
         if (!empty($decision)) {
 //            var_dump($finding->toArray());die;
-            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action);
+            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action, $finding->ResponsibleOrganization->nickname);
         }
        
         try {
@@ -610,12 +610,7 @@ class RemediationController extends SecurityController
             throw new Fisma_Exception('Invalid evidence ID');
         }
 
-        Fisma_Acl::requirePrivilege('finding', 'read_evidence', $evidence->Finding->ResponsibleOrganization->nickname);
-
-        if (!in_array($evidence->Finding->ResponsibleOrganization, $this->_me->getOrganizations()->toArray())
-            && 'root' != $this->_me->username) {
-            throw new Fisma_Exception_InvalidPrivilege('You do not have permission to view this file');
-        }
+        Fisma_Acl::requirePrivilege('finding', 'read', $evidence->Finding->ResponsibleOrganization->nickname);
 
         $fileName = $evidence->filename;
         $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $evidence->findingId . '/';

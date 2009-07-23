@@ -1,5 +1,6 @@
 <?php 
     Fisma_Format_Section::startSection('Artifacts (' . $this->finding->Evidence->count() . ')');
+    $organization = $this->finding->ResponsibleOrganization->nickname;
     if (count($this->finding->Evidence) == 0) {
         print "<p><i>There are no artifacts for this finding.</i></p>";
     }
@@ -8,7 +9,7 @@
         <div class="approvalHeader">
             <b>File: </b>
             <a href='/remediation/downloadevidence/id/<?php echo $evidence->id;?>' target='_blank'><?php echo $evidence->filename; ?></a>
-            (submitted by <?php echo $evidence->User->nameFirst . $evidence->User->nameLast; ?> on <?php echo $evidence->createdTs; ?>)
+            (submitted by <?php echo $evidence->User->nameFirst . ' ' . $evidence->User->nameLast; ?> on <?php echo $evidence->createdTs; ?>)
         </div>
         <div class="approval">
         <?php
@@ -34,14 +35,14 @@
     $activeEvaluation = $this->finding->CurrentEvaluation;
     if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'evidence') {
         echo '<p><b>' . html_entity_decode($activeEvaluation->name) . '</b>';
-        if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action)) {
+        if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action, $organization)) {
             echo '<input type="hidden" name="comment" value="" />';
             echo '<input type="hidden" name="decision" value="APPROVED" />';
             echo '<input name="submit_ea" type="submit" value="APPROVED"
                 onclick="return form_confirm(document.finding_detail, \'approve ' . $activeEvaluation->name . '\');"/>&nbsp;';
             echo '<input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />';
         } else {
-            echo "EXCLUDED";
+            echo "PENDING";
         }
     }
 
@@ -62,7 +63,7 @@
     $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
                                                 array('label' => 'Upload Evidence', 
                                                       'onClickFunction' => 'upload_evidence'));
-    if('EN' != $this->finding->status || !Fisma_Acl::hasPrivilege('finding', 'upload_evidence')) {
+    if('EN' != $this->finding->status || !Fisma_Acl::hasPrivilege('finding', 'upload_evidence', $organization)) {
         $uploadEvidenceButton->readOnly = true;
     }
     echo "<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
