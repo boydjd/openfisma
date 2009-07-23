@@ -151,7 +151,7 @@ class RemediationController extends SecurityController
      * Invoked asynchronously to load data for the summary table.
      */
     public function summaryDataAction() {
-        Fisma_Acl::requirePrivilege('finding', 'read');
+        Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
@@ -1098,6 +1098,7 @@ class RemediationController extends SecurityController
         if (false == $finding) {
              throw new Fisma_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
         }
+
         return $finding;
     }
 }

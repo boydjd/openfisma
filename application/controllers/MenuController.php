@@ -63,22 +63,22 @@ class MenuController extends SecurityController
             $menubar->add($dashboard);
         }
 
-        if (Fisma_Acl::hasPrivilege('finding', 'read')) {
+        if (Fisma_Acl::hasPrivilege('finding', 'read', '*')) {
             $findings = new Fisma_Yui_Menu('Findings');
             
             $findings->add(new Fisma_Yui_MenuItem('Summary', '/panel/remediation/sub/summary'));
             $findings->add(new Fisma_Yui_MenuItem('Search', '/panel/remediation/sub/searchbox'));
 
-            if (Fisma_Acl::hasPrivilege('finding', 'create')) {
+            if (Fisma_Acl::hasPrivilege('finding', 'create', '*')) {
                 $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/panel/finding/sub/create'));
             }
             
-            if (Fisma_Acl::hasPrivilege('finding', 'inject')) {
+            if (Fisma_Acl::hasPrivilege('finding', 'inject', '*')) {
                 $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/panel/finding/sub/injection'));
                 $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/panel/finding/sub/plugin'));
             }
             
-            if (Fisma_Acl::hasPrivilege('finding', 'approve')) {
+            if (Fisma_Acl::hasPrivilege('finding', 'approve', '*')) {
                 $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/panel/finding/sub/approve'));
             }
             
@@ -90,11 +90,11 @@ class MenuController extends SecurityController
 
             $systems->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
             
-            if (Fisma_Acl::hasPrivilege('Asset', 'read')) {
+            if (Fisma_Acl::hasPrivilege('Asset', 'read', '*')) {
                 $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
 
-            if (Fisma_Acl::hasPrivilege('System', 'read')) {
+            if (Fisma_Acl::hasPrivilege('System', 'read', '*')) {
                 $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
             }
             
