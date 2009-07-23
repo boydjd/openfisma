@@ -62,23 +62,29 @@
         </tr>
         <tr>
             <td colspan="2"><p>
-        <div class="inline"><b>Available events:</b><br/>
+        <div class="left"><b>Available events:</b><br/>
             <?php echo $this->formSelect('availableEvents',null, array('multiple'=>"multiple", 'size' => '20'), $this->me->getAvailableEvents())?>        </div>
-        <div class="inline" id="move">
+        <div class="left" id="move">
             <p>
-                <?php echo new Fisma_Yui_Form_Button('addNotificationEvents',
-                                              array('label'           => '-->',
-                                                    'onClickFunction' => 'addNotificationEvents'));
+                <?php 
+                $addEvent = new Fisma_Yui_Form_Button('addNotificationEvents',
+                                                      array('label' => 'Select',
+                                                            'onClickFunction' => 'addNotificationEvents'));
+                $addEvent->imageSrc = '/images/right_arrow.png';
+                echo $addEvent;
                 ?>
             </p>
             <p>
-                <?php echo new Fisma_Yui_Form_Button('removeNotificationEvents',
-                                              array('label'           => '<--',
-                                                    'onClickFunction' => 'removeNotificationEvents'));
+                <?php 
+                $removeEvent = new Fisma_Yui_Form_Button('removeNotificationEvents',
+                                                         array('label' => 'Remove',
+                                                               'onClickFunction' => 'removeNotificationEvents'));
+                $removeEvent->imageSrc = '/images/left_arrow.png';
+                echo $removeEvent;
                 ?>
             </p>
         </div>
-        <div class="inline" id="enable"><b>Selected events:</b><br />
+        <div class="left" id="enable"><b>Selected events:</b><br />
         <?php echo $this->formSelect('existEvents',null, array('multiple' => 'multiple', 'size' => '20'), $this->me->getExistEvents())?></div>
         </td></tr>
         <tr>

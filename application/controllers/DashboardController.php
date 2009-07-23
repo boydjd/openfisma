@@ -151,7 +151,7 @@ class DashboardController extends SecurityController
      */
     public function totalstatusAction()
     {
-        Fisma_Acl::requirePrivilege('dashboard', 'read');
+        Fisma_Acl::requirePrivilege('area', 'dashboard');
         
         $q = Doctrine_Query::create()
              ->select('f.status, e.nickname')
@@ -197,7 +197,7 @@ class DashboardController extends SecurityController
      */
     public function totaltypeAction()
     {
-        Fisma_Acl::requirePrivilege('dashboard', 'read');
+        Fisma_Acl::requirePrivilege('area', 'dashboard');
         $this->view->summary = array(
             'NONE' => 0,
             'CAP' => 0,
