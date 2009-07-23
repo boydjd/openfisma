@@ -5,30 +5,66 @@ Fisma_Format_Section::startSection('Details');
     <tr>
         <td>System Name: </td>
         <td>
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
             <span id="name" class="editable" target="name" name="name" type="text">
                 <?php echo $this->organization->name; ?>
             </span>
+            <?php
+            } else {
+            ?>
+            <span>
+                <?php echo $this->organization->name; ?>
+            </span>
+            <?php
+            }
+            ?>
         </td>
     </tr>
     <tr>
         <td>System Nickname: </td>
         <td>
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
             <span id="nickname" class="editable" target="nickname" name="nickname" type="text">
                 <?php echo $this->organization->nickname; ?>
             </span>
+            <?php
+            } else {
+            ?>
+            <span>
+                <?php echo $this->organization->nickname; ?>
+            </span>
+            <?php
+            }
+            ?>
         </td>
     </tr>
     <tr>
         <td>System Type: </td>
         <td>
-            <span id="type" 
-                  class="editable" 
-                  target="type" 
-                  name="type" 
-                  type="select" 
-                  href="/metainfo/list/o/systemType/format/html/">
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                <span id="type" 
+                      class="editable" 
+                      target="type" 
+                      name="type" 
+                      type="select" 
+                      href="/metainfo/list/o/systemType/format/html/">
+                    <?php echo $this->organization->getOrgTypeLabel(); ?>
+                </span>
+            <?php
+            } else {
+            ?>
+            <span>
                 <?php echo $this->organization->getOrgTypeLabel(); ?>
             </span>
+            <?php
+            }
+            ?>
         </td>
     </tr>
     <tr>
@@ -41,7 +77,7 @@ Fisma_Format_Section::startSection('Details');
 <?php
 Fisma_Format_Section::stopSection();
 
-if (Fisma_Acl::hasPrivilege('system','update')) {
+if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
     Fisma_Format_Section::startSection('System Description', 'system_description');
 } else {
     Fisma_Format_Section::startSection('System Description');

@@ -5,7 +5,7 @@ function discardChanges(event) {
 
 function showUploadPanel() {
     // IE can't handle the flash uploader. Send it to a separate upload page
-    if (0 < YAHOO.env.ua.ie) {
+    if (YAHOO.env.ua.ie > 0) {
         window.location = "/panel/system/sub/upload-for-ie/id/<?php echo $this->organization->id; ?>";
     } else {
         panel('Upload Document', document.body, '/system/upload-document-form/id/<?php echo $this->organization->id; ?>', null, executeScript);        

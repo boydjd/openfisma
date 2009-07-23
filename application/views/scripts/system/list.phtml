@@ -72,7 +72,6 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('system','read')) { ?>
     myDataTable.subscribe("rowClickEvent", 
         function (oArgs) {
             var elTarget = oArgs.target;
@@ -80,6 +79,5 @@ var myColumnDefs = [
             document.location = "/panel/system/sub/view/id/" + oRecord.getData("o_id");
         }
     );
-    <?php }?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>

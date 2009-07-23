@@ -220,12 +220,12 @@ Privilege:
         resource: system
         action: read
         description: View Systems
-        orgSpecific: false
+        orgSpecific: true
     system_update:
         resource: system
         action: update
         description: Edit Systems
-        orgSpecific: false
+        orgSpecific: true
     system_delete:
         resource: system
         action: delete

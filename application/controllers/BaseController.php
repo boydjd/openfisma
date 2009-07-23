@@ -48,6 +48,17 @@ abstract class BaseController extends SecurityController
      */
     protected $_modelName = null;
 
+    /** 
+     * This field is used to query the ACL, since some objects are tied to organizations and other objects
+     * are not. It is null by default, but subclasses should set it to '*' to indicate that those objects
+     * are tied to specific organizations.
+     * 
+     * @var string
+     */
+    protected $_organizations = null;
+    
+    private $_aclResource; // which ACL resources this controller corresponds to
+
     /**
      * Make sure the model has been properly set
      */
@@ -57,6 +68,11 @@ abstract class BaseController extends SecurityController
         if (is_null($this->_modelName)) {
             //Actually user should not be able to see this error message
             throw new Fisma_Exception('Internal error. Subclasses of the BaseController must specify the _modelName field');
+        } else {
+            // Covert UpperCamelCase to lower_underscore_format to get the aclResource name
+            $aclResource = preg_replace('/([A-Z])/', '_$1', $this->_modelName);
+            $aclResource = strtolower(substr($aclResource, 1));
+            $this->_aclResource = $aclResource;
         }
     }
 
@@ -120,7 +136,7 @@ abstract class BaseController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'read');
+        Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
@@ -142,7 +158,7 @@ abstract class BaseController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'create');
+        Fisma_Acl::requirePrivilege($this->_aclResource, 'create', $this->_organizations);
         // Get the subject form
         $form   = $this->getForm();
         $form->setAction("/panel/{$this->_modelName}/sub/create");
@@ -178,7 +194,7 @@ abstract class BaseController extends SecurityController
      */
     public function editAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'update');
+        Fisma_Acl::requirePrivilege($this->_aclResource, 'update', $this->_organizations);
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
@@ -222,7 +238,7 @@ abstract class BaseController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'delete');
+        Fisma_Acl::requirePrivilege($this->_aclResource, 'delete', $this->_organizations);
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
@@ -252,7 +268,7 @@ abstract class BaseController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'read');
+        Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
         $keywords = trim($this->_request->getParam('keywords'));
         $link = empty($keywords) ? '' :'/keywords/'.$keywords;
         $this->view->link     = $link;
@@ -268,7 +284,7 @@ abstract class BaseController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'read');
+        Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
         $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
         $keywords  = $this->_request->getParam('keywords'); 

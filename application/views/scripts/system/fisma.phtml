@@ -5,12 +5,19 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>Agency or Contractor System: </td>
         <td width="350px">
-            <span id="controlledBy" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                  id="controlledBy" 
                   class="editable" 
                   target="controlledBy" 
                   name="controlledBy" 
                   type="select" 
-                  href="/metainfo/list/o/controlledBy/format/html/">
+                  href="/metainfo/list/o/controlledBy/format/html/"
+            <?php 
+            }
+            ?>>
                   <?php echo $this->system->controlledBy; ?>&nbsp;
             </span>
         </td>
@@ -18,11 +25,18 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>Last Security Authorization Date: </td>
         <td>
-            <span id="securityAuthorizationDt" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                  id="securityAuthorizationDt" 
                   class="editable date" 
                   target="securityAuthorizationDt" 
                   name="securityAuthorizationDt" 
-                  type="text">
+                  type="text"
+              <?php 
+              }
+              ?>>
                  <?php echo $this->system->securityAuthorizationDt; ?>&nbsp;
             </span>
         </td>
@@ -30,11 +44,18 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>Last Contingency Plan Test Date: </td>
         <td>
-            <span id="contingencyPlanTestDt" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="contingencyPlanTestDt" 
                   class="editable date" 
                   target="contingencyPlanTestDt" 
                   name="contingencyPlanTestDt" 
-                  type="text">
+                  type="text"
+            <?php 
+            }
+            ?>>                  
                  <?php echo $this->system->contingencyPlanTestDt; ?>&nbsp;
             </span>
         </td>
@@ -42,11 +63,19 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>Last Self-Assessment Date: </td>
         <td>
-            <span id="controlAssessmentDt" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="controlAssessmentDt" 
                   class="editable date" 
                   target="controlAssessmentDt" 
                   name="controlAssessmentDt" 
-                  type="text">
+                  type="text"
+            <?php 
+            }
+            ?>>
+                  
                  <?php echo $this->system->controlAssessmentDt; ?>&nbsp;
             </span>
         </td>
@@ -54,12 +83,19 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>Contains Federal Information in Identifiable Form: </td>
         <td>
-            <span id="hasFiif" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="hasFiif" 
                   class="editable" 
                   target="hasFiif" 
                   name="hasFiif" 
                   type="select" 
-                  href="/metainfo/list/o/yesNo/format/html/">
+                  href="/metainfo/list/o/yesNo/format/html/"
+            <?php 
+            }
+            ?>>                  
                   <?php echo $this->system->hasFiif; ?>&nbsp;
             </span>
         </td>
@@ -72,12 +108,19 @@ Fisma_Format_Section::startSection('FISMA Data');
             ?>
         </td>
         <td>
-            <span id="hasPii" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="hasPii" 
                   class="editable" 
                   target="hasPii" 
                   name="hasPii" 
                   type="select" 
-                  href="/metainfo/list/o/yesNo/format/html/">
+                  href="/metainfo/list/o/yesNo/format/html/"
+            <?php 
+            }
+            ?>>                  
                   <?php echo $this->system->hasPii; ?>&nbsp;
             </span>
         </td>
@@ -85,12 +128,19 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>Privacy Impact Analysis (PIA) required: </td>
         <td>
-            <span id="piaRequired" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+            id="piaRequired" 
                   class="editable" 
                   target="piaRequired" 
                   name="piaRequired" 
                   type="select" 
-                  href="/metainfo/list/o/yesNo/format/html/">
+                  href="/metainfo/list/o/yesNo/format/html/"
+            <?php 
+            }
+            ?>>                  
                   <?php echo $this->system->piaRequired; ?>&nbsp;
             </span>
         </td>
@@ -98,11 +148,19 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>URL for the PIA: </td>
         <td>
-            <span id="piaUrl" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="piaUrl" 
                   class="editable" 
                   target="piaUrl" 
                   name="piaUrl" 
-                  type="text">
+                  type="text"
+            <?php 
+            }
+            ?>>
+                  
                 <?php
                     if (!empty($this->system->piaUrl)) {
                         echo '<a href="/redirect/redirect/?url='
@@ -118,12 +176,19 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>System Of Record Notice (SORN) required: </td>
         <td>
-            <span id="sornRequired" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="sornRequired" 
                   class="editable" 
                   target="sornRequired" 
                   name="sornRequired" 
                   type="select" 
-                  href="/metainfo/list/o/yesNo/format/html/">
+                  href="/metainfo/list/o/yesNo/format/html/"
+                  <?php 
+                  }
+                  ?>>                  
                   <?php echo $this->system->sornRequired; ?>&nbsp;
             </span>
         </td>
@@ -131,11 +196,19 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>URL for the SORN: </td>
         <td>
-            <span id="sornUrl" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="sornUrl" 
                   class="editable" 
                   target="sornUrl" 
                   name="sornUrl" 
-                  type="text">
+                  type="text"
+                  <?php 
+                  }
+                  ?>>
+                  
                 <?php
                     if (!empty($this->system->sornUrl)) {
                         echo '<a href="/redirect/redirect/?url='
@@ -156,11 +229,19 @@ Fisma_Format_Section::startSection('FISMA Data');
             ?>
         </td>
         <td>
-            <span id="uniqueProjectId" 
+            <span 
+            <?php
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            ?>
+                id="uniqueProjectId" 
                   class="editable" 
                   target="uniqueProjectId" 
                   name="uniqueProjectId" 
-                  type="text">
+                  type="text"
+            <?php 
+            }
+            ?>>
+                  
                   <?php echo $this->system->uniqueProjectId; ?>&nbsp;
             </span>
         </td>
