@@ -208,25 +208,30 @@ class InstallController extends Zend_Controller_Action
         // test the connection of database
         try {
             $method = 'connection / creation';
-            Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
+            //Use command line mode to prevent user session when installation
+            Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
             Fisma::connectDb();
             Fisma::getNotificationEnabled(false);
-            Fisma::setListenerEnabled(false);
+
             $checklist['connection'] = 'ok';
             Doctrine::dropDatabases();
             // create database
             $method = 'creation';
             Doctrine::createDatabases();
             $checklist['creation'] = 'ok';
-            Doctrine::createTablesFromModels();
+            Doctrine::createTablesFromModels(Fisma::getPath('model'));
 
             //load sample data
             //Fix: loadData cause timeout (30) in windows. 
             set_time_limit(50);
             Doctrine::loadData(Fisma::getPath('fixture'));
+
+            $config = Doctrine::getTable('Configuration')->findOneByName('hash_type');
+            $config->value = $dsn['encrypt'];
+            $config->save();
             
             $root = Doctrine::getTable('User')->find(1);
-            $root->password = $root->hash($dsn['adminpwd'], $dsn['encrypt']);
+            $root->password = $dsn['adminpwd'];
             $root->save();
             
             $checklist['schema'] = 'ok';
@@ -251,6 +256,8 @@ class InstallController extends Zend_Controller_Action
      */
     public function completeAction()
     {
+        Zend_Auth::getInstance()->setStorage(new Fisma_Auth_Storage_Session())
+                                ->clearIdentity();
         $this->view->title = 'Install complete';
         $this->view->next = '/';
     }
@@ -276,64 +283,5 @@ class InstallController extends Zend_Controller_Action
             $this->getResponse()->setRawHeader('HTTP/1.1 404 Not Found');
         }
         $this->getResponse()->clearBody();
-    }
-
-    /**
-     * trim unnecessary comments or data from the input and output the pure sql
-     *
-     * @param string $data raw string mess with comments and unexcutable information
-     * @return string executable sql statement only
-     */
-    function sanitize($dataString){
-        $dataString = preg_replace('/\/\*.*\*\//', '', $dataString);
-        if (ereg(";$", trim($dataString))) {
-            $execute['opt']='execute';
-        } else {
-            $execute['opt']='incomplete';
-        }
-        $execute['sql']= $dataString;
-        return $execute;    
-    }
-
-    /**
-     * Read from a sql dump file and execute then in a database.
-     *
-     * This function can handle a large data dump file. 
-     * LIMIT please make sure comment in one line!
-     *
-     * @param a formatted array  
-     * 
-     */
-    private function importSql($db,$dataFile){
-        $tmp = "";
-        foreach ($dataFile as $elem) {
-            $ret = true;
-            if ($handle = fopen($elem, 'r')) {
-                $dumpline = '';
-                while (!feof($handle)&& substr($dumpline, -1)!= "\n") {
-                    $dumpline = fgets($handle, '4096');
-                    $dumpline = ereg_replace("\r\n$", "\n", $dumpline);
-                    $dumpline = ereg_replace("\r$", "\n", $dumpline);
-                    $dumpline = ereg_replace("--.*\n", "\n", $dumpline);
-                    $dumpline = trim($dumpline);
-                    $execute = $this->sanitize($dumpline);
-                    if ($execute['opt']=='incomplete') {
-                        $tmp .= $execute['sql'];
-                    } else {
-                        $ret = $db->query($tmp.$execute['sql']);
-                        $tmp = '';
-                    }
-                    if ( !$ret ) {
-                        break;
-                    }
-                }
-            } else {
-                $ret = false;
-            }
-            if (!$ret) {
-                return $ret;
-            }
-        }
-        return  true;
     }
 }
