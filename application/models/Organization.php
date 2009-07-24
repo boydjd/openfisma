@@ -106,8 +106,8 @@ class Organization extends BaseOrganization
      * 
      * @return array 
      */
-    public function getSummaryCounts($type, $source) {
-        $cache = Fisma::getCacheInstance($identify = 'finding_summary');
+    public function getSummaryCounts($type = null, $source = null) {
+        $cache = Fisma::getCacheInstance('finding_summary');
         $cacheId = $this->getCacheId(array('type' => $type, 'source' => $source));
                      
         if (!$cache->test($cacheId)) {

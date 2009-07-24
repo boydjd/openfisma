@@ -153,7 +153,7 @@ class FindingController extends BaseController
      */
     public function injectionAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'inject');
+        Fisma_Acl::requirePrivilege('finding', 'inject', '*');
 
         /** @todo convert this to a Zend_Form */
         // If the form isn't submitted, then there is no work to do
@@ -214,7 +214,7 @@ class FindingController extends BaseController
      */
     public function templateAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'inject');
+        Fisma_Acl::requirePrivilege('finding', 'inject', '*');
         
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addContext('xls', array(
@@ -297,7 +297,7 @@ class FindingController extends BaseController
      */
     public function pluginAction()
     {       
-        Fisma_Acl::requirePrivilege('finding', 'inject');
+        Fisma_Acl::requirePrivilege('finding', 'inject', '*');
 
         // Load the finding plugin form
         $uploadForm = Fisma_Form_Manager::loadForm('finding_upload');
@@ -416,7 +416,7 @@ class FindingController extends BaseController
      */
     public function approveAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'approve');
+        Fisma_Acl::requirePrivilege('finding', 'approve', '*');
         
         $q = Doctrine_Query::create()
              ->select('*')
@@ -430,7 +430,7 @@ class FindingController extends BaseController
      *  Process the form submitted from the approveAction()
      */
     public function processApprovalAction() {
-        Fisma_Acl::requirePrivilege('finding', 'approve');
+        Fisma_Acl::requirePrivilege('finding', 'approve', '*');
 
         $findings = $this->_request->getPost('findings', array());
         foreach ($findings as $id) {
