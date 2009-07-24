@@ -504,8 +504,9 @@ class RemediationController extends SecurityController
 
         $finding  = $this->_getFinding($id);
         if (!empty($decision)) {
-//            var_dump($finding->toArray());die;
-            Fisma_Acl::requirePrivilege('finding', $finding->CurrentEvaluation->Privilege->action, $finding->ResponsibleOrganization->nickname);
+            Fisma_Acl::requirePrivilege('finding', 
+                                        $finding->CurrentEvaluation->Privilege->action,
+                                        $finding->ResponsibleOrganization->nickname);
         }
        
         try {

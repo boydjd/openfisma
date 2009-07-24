@@ -1,5 +1,3 @@
-<?php Fisma_Format_Section::startSection("Generate Risk Analysis Forms (RAFs)"); ?>
-
 <form action="/report/rafs" method="post">
 <script type="text/javascript">
 var clearWarning = function(){
@@ -7,22 +5,19 @@ var clearWarning = function(){
     ele.parentNode.removeChild(ele);
 }
 </script>
-<table class="searchFilters">
-<tr>
-    <td><b>System:</b></td>
-    <td>
+
+<div class="searchFilters">
+<b>
+    Organization/System:
+</b>
     <?php echo $this->formSelect('system_id',
                                  $this->sid,
                                  null,
-                                 $this->system_list);?>
+                                 $this->organizations);?>
 
     <?php $submitBtn = new Fisma_Yui_Form_Button_Submit('generateRafsSubmit', 
                                                   array('label' => 'Generate RAFS',
                                                         'onClickFunction' => 'clearWarning'));
           echo $submitBtn;
      ?>
-    </td>
-</tr>
-</table>
-</form>
-<?php Fisma_Format_Section::stopSection(); ?>
+</div>

@@ -73,14 +73,7 @@ class ReportController extends SecurityController
         parent::preDispatch();
         $this->req = $this->getRequest();
         $swCtx = $this->_helper->contextSwitch();
-        $swCtx->addActionContext('poam', array('pdf', 'xls'))
-              ->addActionContext('fisma', array('pdf', 'xls'))
-              ->addActionContext('blscr', array('pdf', 'xls'))
-              ->addActionContext('fips', array('pdf', 'xls'))
-              ->addActionContext('prods', array('pdf', 'xls'))
-              ->addActionContext('swdisc', array('pdf', 'xls'))
-              ->addActionContext('total', array('pdf', 'xls'))
-              ->addActionContext('overdue', array('pdf', 'xls'))
+        $swCtx->addActionContext('overdue', array('pdf', 'xls'))
               ->addActionContext('plugin-report', array('pdf', 'xls'))
               ->addActionContext('fisma-quarterly', 'xls')
               ->addActionContext('fisma-annual', 'xls')
@@ -256,22 +249,22 @@ class ReportController extends SecurityController
     }
 
     /**
-     * rafsAction() - Batch generate RAFs for each system
+     * Batch generate RAFs for each system
      */
     public function rafsAction()
     {
         Fisma_Acl::requirePrivilege('area', 'reports');
         $sid = $this->getRequest()->getParam('system_id', 0);
-        $this->view->assign('system_list', $this->_systemList);
+        $organizations = User::currentUser()->getOrganizations();
+        $this->view->assign('organizations', $organizations->toKeyValueArray('id', 'name'));
         if (!empty($sid)) {
-            $query = $this->_poam->select()->from($this->_poam, array(
-                'id'
-            ))->where('system_id=?', $sid)
-                ->where('threat_level IS NOT NULL AND threat_level != \'NONE\'')
-                ->where('cmeasure_effectiveness IS NOT NULL AND 
-                                    cmeasure_effectiveness != \'NONE\'');
-            $poamIds = $this->_poam->getAdapter()->fetchCol($query);
-            $count = count($poamIds);
+            $query = Doctrine_Query::create()
+                     ->select('*')
+                     ->from('Finding f')
+                     ->where('threat_level IS NOT NULL')
+                     ->andWhere('countermeasure_effectiveness IS NOT NULL');
+            $findings = $query->execute();
+            $count = count($findings);
             if ($count > 0) {
                 $fname = tempnam('/tmp/', "RAFs");
                 @unlink($fname);
@@ -281,8 +274,7 @@ class ReportController extends SecurityController
                                         'controller' => 'remediation',
                                         'suffix' => 'pdf.phtml'));
                 try {
-                    $system = new System();
-                    foreach ($poamIds as $id) {
+                    foreach ($findings as $finding) {
                         $poamDetail = & $this->_poam->getDetail($id);
                         $this->view->assign('poam', $poamDetail);
                         $ret = $system->find($poamDetail['system_id']);

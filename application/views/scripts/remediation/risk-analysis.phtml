@@ -3,7 +3,7 @@
     $organization = $finding->ResponsibleOrganization->nickname;
 ?>
 <?php
-if (Fisma_Acl::hasPrivilege('report', 'generate_system_rafs', $organization)) {
+if (Fisma_Acl::hasPrivilege('finding', 'read', $organization)) {
     Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
 ?>
     <p>
