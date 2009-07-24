@@ -336,8 +336,6 @@ class ReportController extends SecurityController
      */         
     public function pluginReportAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'reports');
-        
         // Verify a plugin report name was passed to this action
         $reportName = $this->getRequest()->getParam('name');
         if (!isset($reportName)) {
@@ -354,7 +352,21 @@ class ReportController extends SecurityController
             if (!is_array($reportRoles)) {
                 $reportRoles = array($reportRoles);
             }
-            if (!in_array($this->_me->Roles, $reportRoles)) {
+            $userRolesQuery = Doctrine_Query::create()
+                              ->select('u.id, r.nickname')
+                              ->from('User u')
+                              ->innerJoin('u.Roles r')
+                              ->where('u.id = ?', User::currentUser()->id)
+                              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+            $userRolesResult = $userRolesQuery->execute();
+            $userRoles = array();
+            $hasRole = false;
+            foreach ($userRolesResult as $key => $result) {
+                if (in_array($result['r_nickname'], $reportRoles)) {
+                    $hasRole = true;
+                }
+            }
+            if (!$hasRole) {
                 throw new Fisma_Exception("User \"{$this->_me->username}\" does not have permission to view"
                                           . " the \"$reportName\" plug-in report.");
             }
