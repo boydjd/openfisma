@@ -44,6 +44,11 @@ class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session
     const MEMBER_DEFAULT = 'currentUser';
 
     /**
+     * Default session timeout seconds
+     */
+    const INACTIVITY_SECONDS = 5400;
+
+    /**
      * Sets session storage options and initializes session namespace object
      *
      * @param  mixed $namespace
@@ -55,8 +60,13 @@ class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session
         $this->_namespace = $namespace;
         $this->_member    = $member;
         $this->_session   = new Zend_Session_Namespace($this->_namespace);
-        // Set up the session timeout for the authentication token
-        $refreshSeconds = Configuration::getConfig('session_inactivity_period');
+        try {
+            // Set up the session timeout for the authentication token
+            $refreshSeconds = Configuration::getConfig('session_inactivity_period');
+        } catch (Exception $e) {
+            // in any case such as the database is not available during installation
+            $refreshSeconds = self::INACTIVITY_SECONDS;
+        }
         $this->_session->setExpirationSeconds($refreshSeconds);
     }
 

@@ -208,18 +208,18 @@ class InstallController extends Zend_Controller_Action
         // test the connection of database
         try {
             $method = 'connection / creation';
-            //Use command line mode to prevent user session when installation
-            Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+            Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
             Fisma::connectDb();
             Fisma::getNotificationEnabled(false);
 
             $checklist['connection'] = 'ok';
-            Doctrine::dropDatabases();
             // create database
             $method = 'creation';
             Doctrine::createDatabases();
             $checklist['creation'] = 'ok';
             Doctrine::createTablesFromModels(Fisma::getPath('model'));
+            Zend_Auth::getInstance()->setStorage(new Fisma_Auth_Storage_Session())
+                                    ->clearIdentity();
 
             //load sample data
             //Fix: loadData cause timeout (30) in windows. 
@@ -256,8 +256,6 @@ class InstallController extends Zend_Controller_Action
      */
     public function completeAction()
     {
-        Zend_Auth::getInstance()->setStorage(new Fisma_Auth_Storage_Session())
-                                ->clearIdentity();
         $this->view->title = 'Install complete';
         $this->view->next = '/';
     }
