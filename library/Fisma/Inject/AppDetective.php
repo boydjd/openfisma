@@ -41,7 +41,6 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
     private $_asset;
     private $_product;
     private $_findings;
-    
     /**
      * Some appDetective reports can contain over 100k of vulnDetail data per finding. This is too much data to save
      * in a mysql column, so we limit the number of vulnDetails captured to a manageable number. Anything over this
@@ -60,21 +59,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      */
     public function parse($uploadId)
     {
-        // Parse the XML file and check for errors
-        libxml_use_internal_errors(true);
+        // Parse the XML file
         $report = simplexml_load_file($this->_file);
-        if ($report === false) {
-            // libxml and simplexml are interoperable:
-            $errors = libxml_get_errors();
-            $errorHtml = '<p>Parse Errors:<br>';
-            foreach ($errors as $error) {
-                $errorHtml .= "\"{$error->message}\" at line {$error->line}, column {$error->column}<br>"; 
-            }
-            $errorHtml .= '</p>';
-            throw new Fisma_Exception_InvalidFileFormat('This file is not a valid XML format. 
-                                                   Please ensure that you selected the correct file.'
-                                                . $errorHtml);
-        }
         
         // Bug 2596247 - "App Detective plug-in does not work with recent vrsn. of AD"        
         // Make sure that this is an AppDetective report, not a Crystal report. (App Detective can generate both 
@@ -84,8 +70,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             throw new Fisma_Exception_InvalidFileFormat('This is a Crystal Report, not an App Detective report.');
         }
         // Apply mapping rules
-        $this->_asset = $this->_mapAsset($report);
-        $this->_product = $this->_mapProduct($report);
+        $this->_asset    = $this->_mapAsset($report);
+        $this->_product  = $this->_mapProduct($report);
         $this->_findings = $this->_mapFindings($report, $uploadId);
         // Free resources used by XML object
         unset($report);
@@ -139,26 +125,6 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             );
         }
         $asset['addressPort'] = $port[1]; // match the parenthesized part of the regex
-
-        // Remaining mappings
-        $asset['networkId'] = $this->_networkId;
-        $asset['orgSystemId'] = $this->_orgSystemId;
-        $now = new Zend_Date();
-        $asset['source'] = 'SCAN';
-        // Verify whether asset exists or not
-        $q = Doctrine_Query::create()
-             ->select()
-             ->from('Asset a')
-             ->where('a.networkId = ?', $asset['networkId'])
-             ->andWhere('a.addressIp = ?', $asset['addressIp'])
-             ->andWhere('a.addressPort = ?', $asset['addressPort']);
-        $assetRecord = $q->execute();
-        if ($assetRecord) {
-            $assetRecord->toArray();
-            $asset['id'] = $assetRecord[0]['id'];
-        } else {
-            $asset['id'] = 0;
-        }
         return $asset;
     }
 
@@ -194,11 +160,11 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             return null;
         }
 
-        $product['name'] = $cpe->product;
+        $product['name']    = $cpe->product;
         $product['cpeName'] = $cpe->cpeName;
-        $product['vendor'] = $cpe->vendor;
+        $product['vendor']  = $cpe->vendor;
         $product['version'] = $cpe->version;
-
+        
         return $product;
     }
     
@@ -283,7 +249,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 $findings[] = $finding;
             }
         }
-        
+
         return $findings;
     }
     
@@ -294,69 +260,16 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      */
     private function _persist()
     {
-        // If the asset id is null, then create a new asset with the specified asset information. Save the asset Id
-        // in order to persist the findings.
-        $assetId = $this->_asset['id'];
-        
-        $asset = new Asset();
-        if (empty($assetId)) {
-            $asset->merge($this->_asset);
-            $asset->save();
-            $assetId = $asset->id;
-        } else {
-            $asset = $asset->getTable('Asset')->find($assetId);
-        }
-
-        if (isset($this->_product)) {
-            // If the asset does not have a product associated with it, then re-use an existing asset or 
-            // create a new asset if necessary.
-            $product = new Product();
-            if (empty($asset->productId)) {
-                $existedProduct = $product->getTable('Product')->findOneByCpeName($this->_product['cpeName']);
-                if ($existedProduct) {
-                    // Use the existing product if one is found
-                    $asset->productId = $existedProduct->id;
-                } else {
-                    // If no existing product, create a new one
-                    $product->merge($this->_product);
-                    $product->save();
-                    $asset->productId = $product->id;
-                }
-                $asset->save();
-            } else {
-                // If the asset does have a product, then do not modify it unless the CPE name is null,
-                // in which case update the CPE name.
-                $product = $product->getTable('Product')->find($asset->productId)->toArray();
-                if ($product && empty($product->cpeName)) {
-                    $product->cpeName = $this->_product['cpeName'];
-                    $product->save();
-                }
-            }
-        }
-        
+        $this->_saveAsset($this->_asset);
+        $this->_saveProduct($this->_product);
         // Commit the findings
         foreach ($this->_findings as $finding) {
             // First set the asset ID
-            $finding['assetId'] = $assetId;
+            $finding['assetId'] = $this->_assetId;
             
             // Now commit the finding
             $this->_commit($finding);
         }
-        
-        return count($this->_findings);
     }
     
-    /**
-     * Convert plain text into a similar HTML representation.
-     * 
-     * @todo refactor, put this into a class that is available system-wide
-     * @param string $plainText Plain text that needs to be marked up
-     * @return string HTML version of $plainText
-     */
-    function textToHtml($plainText) {
-        $html = '<p>' . trim($plainText) . '</p>';
-        $html = str_replace("\n\n", '</p><p>', $html);
-        $html = str_replace("\n", '<br>', $html);
-        return $html;
-    }
 }

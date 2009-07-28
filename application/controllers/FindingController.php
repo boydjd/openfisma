@@ -356,13 +356,14 @@ class FindingController extends BaseController
                 $pluginTbl = $pluginTbl->getTable('Plugin')->find($values['plugin']);
                 $pluginClass = $pluginTbl->class;
                 $pluginName = $pluginTbl->name;
-                $plugin = new $pluginClass($filePath,
-                                           $values['network'],
-                                           $values['system'],
-                                           $values['findingSource']);
-                
+                                
                 // Execute the plugin with the received file
                 try {
+                    $plugin = new $pluginClass($filePath,
+                                               $values['network'],
+                                               $values['system'],
+                                               $values['findingSource']);
+
                     // get original file name
                     $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
                     // get current time and set to a format like '_2009-05-04_11_22_02'

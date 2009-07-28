@@ -38,6 +38,7 @@ abstract class Fisma_Inject_Abstract
     protected $_networkId;
     protected $_orgSystemId;
     protected $_findingSourceId;
+    protected $_assetId;
     
     /**
      * insert finding ids
@@ -70,6 +71,30 @@ abstract class Fisma_Inject_Abstract
         $this->_networkId = $networkId;
         $this->_orgSystemId = $systemId;
         $this->_findingSourceId = $findingSourceId;
+        $this->_checkFile();
+    }
+
+    /**
+     * Check errors for the upload file
+     *
+     * @throw errors
+     */
+    protected function _checkFile()
+    {
+        libxml_use_internal_errors(true);
+        $report = simplexml_load_file($this->_file);
+        if ($report === false) {
+            // libxml and simplexml are interoperable:
+            $errors = libxml_get_errors();
+            $errorHtml = '<p>Parse Errors:<br>';
+            foreach ($errors as $error) {
+                $errorHtml .= "\"{$error->message}\" at line {$error->line}, column {$error->column}<br>"; 
+            }
+            $errorHtml .= '</p>';
+            throw new Fisma_Exception_InvalidFileFormat('This file is not a valid XML format. 
+                                                   Please ensure that you selected the correct file.'
+                                                . $errorHtml);
+        }
     }
 
     /**
@@ -80,19 +105,19 @@ abstract class Fisma_Inject_Abstract
      *
      * Subclasses must call this function to commit findings rather than committing new findings directly.
      *
-     * @param array $finding Column data for the new finding object
+     * @param array $findingData Column data for the new finding object
      * action was taken.
      */
-    protected function _commit($finding) {
+    protected function _commit($findingData) {
         Doctrine_Manager::connection()->beginTransaction();
-        $findingTable = new Finding();
-        $findingTable->merge($finding);
-        $findingTable->save();
-        if ($findingTable->status == 'PEND') {
-            $duplicate = Doctrine::getTable('Finding')->find($findingTable->duplicateFindingId);
+        $finding = new Finding();
+        $finding->merge($findingData);
+        $finding->save();
+        if ($finding->status == 'PEND') {
+            $duplicate = $finding->DuplicateFinding;
             // If a duplicate exists, then run the Injection Filtering rules
             if ($duplicate->type == 'NONE' || $duplicate->type == 'CAP' || $duplicate->type == 'FP') {
-                if ($findingTable->responsibleOrganizationId == $duplicate->responsibleOrganizationId) {
+                if ($finding->responsibleOrganizationId == $duplicate->responsibleOrganizationId) {
                     if ($duplicate->status == 'CLOSED') {
                         $this->_totalFindings['created']++;
                         Doctrine_Manager::connection()->commit();
@@ -105,7 +130,7 @@ abstract class Fisma_Inject_Abstract
                     Doctrine_Manager::connection()->commit();
                 }
             } elseif ($duplicate->type == 'AR') {
-                if ($duplicate->responsibleOrganizationId == $findingTable->responsibleOrganizationId) {
+                if ($duplicate->responsibleOrganizationId == $finding->responsibleOrganizationId) {
                     $this->_totalFindings['deleted']++;
                     Doctrine_Manager::connection()->rollback();
                 } else {
@@ -145,4 +170,82 @@ abstract class Fisma_Inject_Abstract
      * @return Return the number of findings created.
      */
     abstract public function parse($uploadId);
+
+    /**
+     * Save or get the asset id which is associated with the address ip and port
+     * If there has the same ip, port and network, get the exist asset id, else create a new one
+     *
+     * @param array $assetData asset data
+     */
+    protected function _saveAsset($assetData)
+    {
+        $assetData['networkId'] = $this->_networkId;
+        $assetData['orgSystemId'] = $this->_orgSystemId;
+        $assetData['source'] = 'SCAN';
+        // Verify whether asset exists or not
+        $assetRecord  = Doctrine_Query::create()
+                         ->select()
+                         ->from('Asset a')
+                         ->where('a.networkId = ?', $assetData['networkId'])
+                         ->andWhere('a.addressIp = ?', $assetData['addressIp'])
+                         ->andWhere('a.addressPort = ?', $assetData['addressPort'])
+                         ->execute()
+                         ->toArray();
+        if ($assetRecord) {
+            $this->_assetId = $assetRecord[0]['id'];
+        } else {
+            $asset = new Asset();
+            $asset->merge($assetData);
+            $asset->save();
+            $this->_assetId = $asset->id;
+        }
+    }
+    
+    /**
+     * Save product and update asset's product
+     *
+     * @param array $productData product data
+     */
+    protected function _saveProduct($productData)
+    {
+        $product = new Product();
+        $asset   = new Asset();
+        $asset   = $asset->getTable()->find($this->_assetId);
+        if (empty($asset->productId)) {
+            $existedProduct = $product->getTable('Product')->findOneByCpeName($productData['cpeName']);
+            if ($existedProduct) {
+                // Use the existing product if one is found
+                $asset->productId = $existedProduct->id;
+            } else {
+                // If no existing product, create a new one
+                $product->merge($productData);
+                $product->save();
+                $asset->productId = $product->id;
+            }
+            $asset->getTable()->getRecordListener()->setOption('disabled', true);
+            $asset->save();
+        } else {
+            // If the asset does have a product, then do not modify it unless the CPE name is null,
+            // in which case update the CPE name.
+            $product = $product->getTable()->find($asset->productId);
+            if ($product && empty($product->cpeName)) {
+                $product->cpeName = $productData['cpeName'];
+                $product->save();
+            }
+        }
+    }
+
+    /**
+     * Convert plain text into a similar HTML representation.
+     * 
+     * @todo refactor, put this into a class that is available system-wide
+     * @param string $plainText Plain text that needs to be marked up
+     * @return string HTML version of $plainText
+     */
+    protected function textToHtml($plainText) {
+        $html = '<p>' . trim($plainText) . '</p>';
+        $html = str_replace("\\n\\n", '</p><p>', $html);
+        $html = str_replace("\\n", '<br>', $html);
+        return $html;
+    }
 }
