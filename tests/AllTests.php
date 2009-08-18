@@ -79,7 +79,7 @@ class AllTests
         
         // Load in all files which are in subdirectories of the test
         // directory
-        chdir(TEST);
+        chdir(dirname(__FILE__));
         $directory = opendir('.');
         while (false !== ($subdirectory = readdir($directory))) {
             // Ignore directories prefixed with a '.'
