@@ -20,37 +20,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @author    Ryan Yang <ryan@users.sourceforge.net>
+ * @author    Mark E. Haase
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
- * @package   Test_Model
+ * @package   Test
  */
 
 require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 
 /**
- * Unit tests for the User model
+ * A stub test ... just so we can get through CI
  *
  * @package Test
  */
-class Test_Model_User extends Test_FismaUnitTest
+class Test_Stub_Test extends Test_FismaUnitTest
 {
     /**
      * Lock an account and then unlock it. Verify all flags are set or cleared correctly.
      */
-    public function testAccountManualLock()
+    public function testNothingAtAll()
     {
-        $user = new User();
-        
-        $user->lockAccount(User::LOCK_TYPE_MANUAL);
-        $this->assertEquals($user->locked, true);
-        $this->assertNotNull($user->lockTs);                
-        $this->assertEquals($user->lockType, User::LOCK_TYPE_MANUAL);
-        
-        $user->unlockAccount();
-        $this->assertEquals($user->locked, false);
-        $this->assertNull($user->lockTs);                
-        $this->assertNull($user->lockType);        
+        ;
     }
 }

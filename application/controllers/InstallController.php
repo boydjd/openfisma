@@ -77,7 +77,6 @@ class InstallController extends Zend_Controller_Action
     public function checkingAction()
     {
         $wDirectories = array(
-            Fisma::getPath('data') . '/temp',
             Fisma::getPath('data') . '/logs',
             Fisma::getPath('data') . '/uploads/evidence',
             Fisma::getPath('data') . '/cache',
@@ -86,6 +85,7 @@ class InstallController extends Zend_Controller_Action
             Fisma::getPath('data') . '/index',
             Fisma::getPath('data') . '/uploads/evidence',
             Fisma::getPath('data') . '/uploads/scanreports',
+            Fisma::getPath('model') . '/generated',
             Fisma::getPath('config')
         );
         $notwritables = array();
@@ -217,6 +217,7 @@ class InstallController extends Zend_Controller_Action
             $method = 'creation';
             Doctrine::createDatabases();
             $checklist['creation'] = 'ok';
+            Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
             Doctrine::createTablesFromModels(Fisma::getPath('model'));
             Zend_Auth::getInstance()->setStorage(new Fisma_Auth_Storage_Session())
                                     ->clearIdentity();
