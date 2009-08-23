@@ -87,7 +87,6 @@ elements.assetId.type = "select"
 elements.assetId.options.size = 8
 elements.assetId.options.style = "width:130px"
 elements.assetId.options.label = "Asset"
-elements.assetId.options.required = true
 elements.assetId.options.url = "/asset/view/format/ajax/id/"
 displayGroups.searchasset.elements.assetId = "assetId"
 

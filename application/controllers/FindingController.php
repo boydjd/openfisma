@@ -145,13 +145,26 @@ class FindingController extends BaseController
             unset($values['securityControlId']);
         }
         
-        // find the asset record by asset id
+        $subject->merge($values);
+        
+        // If an asset is specified, then try to link the finding to that asset and assign
+        // the responsible system automatically. Otherwise, link to the responsible system
+        // that the user selected.
         $asset = Doctrine::getTable('Asset')->find($values['assetId']);
         if ($asset) {
             // set organization id by related asset
-            $values['responsibleOrganizationId'] = $asset->Organization->id;
+            $subject->ResponsibleOrganization = $asset->Organization;
+        } else {
+            $subject->assetId = null;
+            $organization = Doctrine::getTable('Organization')->find($values['orgSystemId']);
+            if ($organization !== false) {
+                $subject->ResponsibleOrganization = $organization;
+            } else {
+                throw new Fisma_Exception("The user tried to associate a new finding with a"
+                                        . " non-existent organization (id={$values['orgSystemId']}).");
+            }
         }
-        $subject->merge($values);
+                
         $subject->save();
     }
     
