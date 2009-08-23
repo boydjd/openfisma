@@ -36,12 +36,18 @@ class SystemController extends BaseController
     protected $_modelName = 'System';
 
     /**
+     * Invokes a contract with BaseController regarding privileges. 
+     * @link http://jira.openfisma.org/browse/OFJ-24
+     * @var string
+     */
+    protected $_organizations = '*';
+
+    /**
      * Setup the _organization member so that the base controller knows how to query the ACL
      */
     public function init() 
     {
         parent::init();
-        $this->_organizations = '*';
     }
 
     /**

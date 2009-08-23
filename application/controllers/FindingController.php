@@ -56,6 +56,13 @@ class FindingController extends BaseController
     private $_myOrgSystemIds = null;
     
     /**
+     * Invokes a contract with BaseController regarding privileges. 
+     * @link http://jira.openfisma.org/browse/OFJ-24
+     * @var string
+     */
+    protected $_organizations = '*';
+    
+    /**
      * initialize the basic information, my orgSystems
      *
      */
