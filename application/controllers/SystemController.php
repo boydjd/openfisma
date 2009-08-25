@@ -440,14 +440,9 @@ class SystemController extends BaseController
         Fisma_Acl::requirePrivilege('system', 'update', $organization->nickname);
 
         $error = $this->getRequest()->getParam('error');
-
-        // Give the user some notice that IE is limiting the features they can use
-        if (!isset($error)) {
-            $error = 'Uploading files has better support in standards-compliant browsers, '
-                   . 'such as Firefox, Safari, and Chrome.';
+        if (!empty($error)) {
+            $this->message($error, self::M_WARNING);
         }
-
-        $this->message($error, self::M_WARNING);
 
         $this->view->organizationId = $id;        
         $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();        
