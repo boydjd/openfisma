@@ -81,9 +81,11 @@ class UserController extends BaseController
                                              $organization['level']);
             }
         }
-        if (Configuration::getConfig('auth_type') == 'database') {
+        if ('database' == Configuration::getConfig('auth_type')) {
             $form->removeElement('checkAccount');
         } else {
+            $form->removeElement('password');
+            $form->removeElement('confirmPassword');
             $form->removeElement('generate_password');
         }
         
