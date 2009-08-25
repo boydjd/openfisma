@@ -119,6 +119,15 @@ class FindingController extends BaseController
             new Fisma_Form_CreateFindingDecorator()
         ));
         
+        // Check if the user is allowed to read assets.
+        if (!Fisma_Acl::hasPrivilege('asset', 'read', '*')) {
+            $form->removeElement('name');
+            $form->removeElement('ip');
+            $form->removeElement('port');
+            $form->removeElement('searchAsset');
+            $form->removeElement('assetId');
+        }
+        
         $form->setElementDecorators(array(new Fisma_Form_CreateFindingDecorator()));
         $dateElement = $form->getElement('discoveredDate');
         $dateElement->clearDecorators();

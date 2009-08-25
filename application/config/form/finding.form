@@ -66,6 +66,8 @@ displayGroups.searchasset.elements.orgSystemId = "orgSystemId"
 elements.name.type = "text"
 elements.name.options.label = "Asset Name"
 elements.name.options.class = "assets"
+elements.name.options.privilegeObject = "asset"
+elements.name.options.privilegeAction = "read"
 displayGroups.searchasset.elements.name = "name"
 
 elements.ip.type = "text"
@@ -92,5 +94,5 @@ displayGroups.searchasset.elements.assetId = "assetId"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Create Finding"
-displayGroups.finding.elements.save = "save"
+displayGroups.searchasset.elements.save = "save"
 

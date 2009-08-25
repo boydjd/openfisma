@@ -84,7 +84,10 @@
 </div>
 
 <div class="column right">
-    <?php Fisma_Format_Section::startSection("Asset"); ?>
+    <?php 
+        Fisma_Format_Section::startSection("Asset");
+        if (Fisma_Acl::hasPrivilege('asset', 'read', '*')):
+    ?>
     <table class="keyValues">
         <tr>
             <td>
@@ -135,7 +138,12 @@
             </td>
         </tr>
     </table>
-    <?php Fisma_Format_Section::stopSection(); ?>
+    <?php 
+        else:
+            print "<i>Asset information cannot be displayed because you do not have the privileges required.</i>";
+        endif;
+        Fisma_Format_Section::stopSection(); 
+    ?>
 </div>
 
 <div class="clear"></div>
