@@ -341,12 +341,24 @@ YAHOO.fisma.TreeTable.updateCellCount = function(cell, count, orgId, status, ont
 }
 
 YAHOO.fisma.TreeTable.makeLink = function(orgId, status, ontime) {
-    var uri = '/panel/remediation/sub/search/ontime/'
-            + ontime
+    // CLOSED and TOTAL columns should not have an 'ontime' criteria in the link
+    var onTimeString = '';
+    if (!(status == 'CLOSED' || status == 'TOTAL')) {
+        var onTimeString = '/ontime/' + ontime;
+    }
+    
+    // TOTAL columns should not include a 'status' criteria in the link
+    var statusString = '';
+    if (status != 'TOTAL') {
+        statusString = '/status/' + escape(status);
+    }
+    
+    // Render the link
+    var uri = '/panel/remediation/sub/search'
+            + onTimeString
+            + statusString
             + '/orgId/'
-            + orgId
-            + '/status/' 
-            + escape(status);
+            + orgId;
     return uri;
 }
 
