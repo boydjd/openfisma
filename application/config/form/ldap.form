@@ -48,7 +48,7 @@ elements.username.options.label = "Username"
 ;elements.username.options.validators.strlen.options.max = "20"
 displayGroups.general.elements.username = "username"
 
-elements.password.type = "text"
+elements.password.type = "password"
 elements.password.options.label = "Password"
 elements.password.options.validators.strlen.validator = "StringLength"
 elements.password.options.validators.strlen.options.min = "1"
