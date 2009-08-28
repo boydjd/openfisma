@@ -110,7 +110,7 @@ class Organization extends BaseOrganization
         $cache = Fisma::getCacheInstance('finding_summary');
         $cacheId = $this->getCacheId(array('type' => $type, 'source' => $source));
                      
-        if (!$cache->test($cacheId)) {
+        if (!($counts = $cache->load($cacheId))) {
             // First get all of the business statuses
             $statusList = Finding::getAllStatuses();
 
@@ -206,8 +206,6 @@ class Organization extends BaseOrganization
             $counts['all_ontime']['TOTAL'] += array_sum($counts['all_overdue']);
             
             $cache->save($counts, $cacheId, array($this->getCacheTag()));
-        } else {
-            $counts = $cache->load($cacheId);
         }
         
         return $counts;
