@@ -261,13 +261,21 @@ class FindingController extends BaseController
          */
         try {
             $this->_myOrgSystems;
-            $this->view->systems = array();
+            $systems = array();
             foreach ($this->_myOrgSystems as $orgSystem) {
-                $this->view->systems[$orgSystem['id']] = $orgSystem['nickname'];
+                $systems[$orgSystem['id']] = $orgSystem['nickname'];
             }
-            if (count($this->view->systems) == 0) {
+            if (count($systems) == 0) {
                 throw new Fisma_Exception("The spreadsheet template can not be
                     prepared because there are no systems defined.");
+            } else {
+                /** 
+                 * @todo This really needs to be reconstructed. We shouldn't sort in PHP when the DBMS
+                 * already has this field (nickname) indexed for us. Ideally, the user object would be
+                 * able to return a query object that we could then modify.
+                 */
+                sort($systems);
+                $this->view->systems = $systems;
             }
             
             $networks = Doctrine::getTable('Network')->findAll()->toArray();
