@@ -256,22 +256,22 @@ Privilege:
     
     # Finding Sources CRUD
     source_create:
-        resource: finding_sources
+        resource: source
         action: create
         description: Create Finding Sources
         orgSpecific: false
     source_read:
-        resource: finding_sources
+        resource: source
         action: read
         description: View Finding Sources
         orgSpecific: false
     source_update:
-        resource: finding_sources
+        resource: source
         action: update
         description: Edit Finding Sources
         orgSpecific: false
     source_delete:
-        resource: finding_sources
+        resource: source
         action: delete
         description: Delete Finding Sources
         orgSpecific: false
