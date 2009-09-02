@@ -297,6 +297,11 @@ Privilege:
         action: delete
         description: Delete Roles
         orgSpecific: false
+    roles_assignPrivileges:
+        resource: role
+        action: assignPrivileges
+        description: Assign Privileges
+        orgSpecific: false
 
     # Networks CRUD
     networks_create:

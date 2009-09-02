@@ -80,7 +80,7 @@ class RoleController extends BaseController
      */
     public function rightAction()
     {
-        Fisma_Acl::requirePrivilege('role', 'definition');
+        Fisma_Acl::requirePrivilege('role', 'assignPrivileges');
         $req = $this->getRequest();
         $do = $req->getParam('do');
         $roleId = $req->getParam('id');
