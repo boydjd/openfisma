@@ -16,9 +16,18 @@ You must have the following software installed before proceeding with
 the installation of OpenFISMA.
 
 * Apache 2 or greater
-* PHP 5.2.0 or greator
-* MySQL 5 or greator
-* MySQL module for php5
+* PHP 5.2.0 or greater
+* MySQL 5 or greater
+* MySQL module for PHP (php-mysql)
+* XML module for PHP (php-xml)
+
+   NOTE: CentOS requires the use the Testing Repository to utilize the latest
+   version of PHP 5.2
+   rpm --import http://dev.centos.org/centos/RPM-GPG-KEY-CentOS-testing
+   cd /etc/yum.repos.d
+   wget http://dev.centos.org/centos/5/CentOS-Testing.repo
+   yum --disablerepo=* --enablerepo=c5-testing install php php-mysql php-xml
+   Packages Needed: httpd, php, php-mysql, php-xml, mysql-server
 
 You will need to install these dependencies before installing OpenFISMA. 
 Installing these programs is beyond the scope of this quick start guide.
@@ -78,18 +87,20 @@ NameVirtualHost *:80
     Order allow,deny
     allow from all
 
-    # Instructs Apache to (1) not list directory contents, (2) not follow 
-    # symbolic links, (3) disables server side includes, and (4) disables
-    # content negotiation
-    Options -Indexes -FollowSymLinks -Includes -Multiviews
+    # Allow Options and php_admin flags to be specified in .htaccess
+    # files which override any settings defined here
+    AllowOverride FileInfo Options	
 
-    # Allow Options to be specified in .htaccess files which override
-    # any settings defined here.
-    AllowOverride Options
+	# Instructs Apache to (1) follow symbolic links if owners match (required for 
+	# RewriteEngine), (2) not list directory contents, (3) not follow 
+	# symbolic links, (4) disables server side includes, (5) disables 
+	# content negotiation, and (6) disables execution of CGI scripts	
+    Options +SymLinksIfOwnerMatch -Indexes -FollowSymLinks -Includes -Multiviews -ExecCGI
 
     </Directory>
     
     # sets the name of the file to which the server will log any errors it encounters
+	# may need to be set to /var/log/httpd/openfisma-error.log depending on OS type
     ErrorLog /var/log/apache2/openfisma-error.log
     # sets the name of the file to which the server will log information to
     CustomLog /var/log/apache2/openfisma-access.log common
@@ -108,21 +119,26 @@ NameVirtualHost *:80
 The following files and directories need to be writeable for the 
 installation script to run. 
 
-    /application/config/app.conf
-    /data
+    /opt/openfisma/application/config/
+	/opt/openfisma/application/models/generated
+    /opt/openfisma/data
 
 To accomplish this we will run the following commands.
 
-   $ chmod 777 /opt/openfisma/application/config/app.conf
+   $ chmod 777 -R /opt/openfisma/application/config
+   $ chmod 777 -R /opt/openfisma/application/models/generated
    $ chmod 777 -R /opt/openfisma/data
+  
+If you have just installed mysql, you will need to set a password for
+the root account, OpenFISMA requires you set a root password on the
+database before it installs. Example of how to do this below:
+
+	$ mysql -u root mysql
+	mysql> SET PASSWORD FOR root@localhost=PASSWORD('ubbersecretpassword');
   
 If all has gone well, you will be able to run the installation script
 from your browser at http://<server_name>/. Follow the wizard through
 the installation steps.
-
-Once the wizard has completed you may log in with the username
-"root" and password "0p3nfism@", please note the 0 is a zero. This
-password should be changed immediately after logging in.
 
 2.1 Email Notification Setting
 ----------------------------------------------------------------------------
