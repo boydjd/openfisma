@@ -66,10 +66,10 @@ function showTree(treeNodes) {
 
 function contextMenuHandler(event, eventArgs) {
     var target = this.contextEventTarget;
-    
+
     // To get the ID of the organization related to this event, we have to do some circuitous logic:
     // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
-    parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvitem");
+    parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvcell");
 
     // Now the organization or system Id & type can be looked up in the treemap
     var type = treeMap[parent.id]['type'];
@@ -79,9 +79,7 @@ function contextMenuHandler(event, eventArgs) {
               ? 'organization'
               : 'system';
 
-    var organizationId = (type == 'agency' || type == 'bureau' || type == 'organization') 
-              ? treeMap[parent.id]['id']
-              : treeMap[parent.id]['systemId'];   
+    var organizationId = treeMap[parent.id]['id'];
 
     // Now check which menu item was selected and redirect
     var menuItem = eventArgs[1];
@@ -90,39 +88,220 @@ function contextMenuHandler(event, eventArgs) {
     window.location = url;
 }
 
+var dragDropGroup = 'organizationTreeDndGroup';
+
+// These constants are used to track whether a node is being dragged above, onto, or below another node
+var DRAG_ABOVE = 0;
+var DRAG_ONTO = 1;
+var DRAG_BELOW = 2;
+var currentDragDestination;
+
 function renderTreeNodes(treeNodes, parentNode, depth) {
     for (var i in treeNodes) {
+        // Create tree node
         treeNode = treeNodes[i];
         nodeText = "<b>" + treeNode.label + "</b> - <i>" + treeNode.orgTypeLabel + "</i>";
         var yuiNode = new YAHOO.widget.TextNode(nodeText, parentNode, false);
         yuiNode.labelStyle = treeNode.orgType;
         
+        // Set up drag and drop
+        var yuiNodeDrag = new DDTree(yuiNode.contentElId, dragDropGroup, null);        
+        
         // Save the org ID into the tree map so it can be looked up later
         // This is a limitation of the YUI treeview... you can't find a treenode automatically
         // from an element Id
-        treeMap[yuiNode.getElId()] = {
+        treeMap[yuiNode.contentElId] = {
             id: treeNode.id,
             type: treeNode.orgType,
-            systemId: treeNode.systemId
+            systemId: treeNode.systemId,
+            node: yuiNode
         };
 
         // Automatically expand the first 2 levels
         if (depth < 2) {
             yuiNode.expand();
         }
+        
+        // Recurse
         if (treeNode.children.length > 0) {
             renderTreeNodes(treeNode.children, yuiNode, depth + 1);
         }
     }
 }
 
+// DDTree is a custom object which subclasses DDProxy
+DDTree = function(id, sGroup, config) {
+    DDTree.superclass.constructor.call(this, id, sGroup, config);
+
+    // Make the proxy object slightly transparent
+    var el = this.getDragEl();
+    YAHOO.util.Dom.setStyle(el, "opacity", 0.85);
+}
+
+YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
+    currentDragEl: null,
+    
+    currentDragSuccessful: false,
+    
+    startDrag: function (event, id) {
+        // Make the dragged proxy look like the source elemnt
+        var dragEl = this.getDragEl();
+        var clickEl = this.getEl();
+        
+        dragEl.innerHTML = clickEl.innerHTML;
+        YAHOO.util.Dom.setStyle(dragEl, "background", "white");
+        YAHOO.util.Dom.setStyle(dragEl, "border", "none");
+    },
+    
+    endDrag: function (event, id) {
+        var srcEl = this.getEl();
+        var proxy = this.getDragEl();
+        
+        // Remove any visual highlighting
+        this.currentDragEl.style.border = "";
+        this.currentDragEl.style.backgroundColor = "";
+
+        if (!this.currentDragSuccessful) {
+            // Animate the proxy element returning to its origin
+            YAHOO.util.Dom.setStyle(proxy, "visibility", "");
+            var anim = new YAHOO.util.Motion(
+                proxy, 
+                { points: { to: YAHOO.util.Dom.getXY(srcEl) } },
+                0.2,
+                YAHOO.util.Easing.easeOut
+            );
+        
+            // Hide the proxy element when the animation finishes
+            anim.onComplete.subscribe(function () {
+                YAHOO.util.Dom.setStyle(proxy.id, "visibility", "hidden");
+            });
+            anim.animate();
+            this.currentDragSuccessful = false;
+        }
+    },
+    
+    onDragOver: function (event, id) {
+        var dragLocation = getDragLocation(id, {x: event.x, y: event.y});
+        
+        // If the drag is near the top of the element, then we set the top border. If its near the middle, we highlight
+        // the entire element. If its near the bottom, we set the bottom border.
+        this.currentDragEl = YAHOO.util.Dom.get(id);   
+        if (dragLocation == DRAG_ABOVE) {
+            this.currentDragEl.style.backgroundColor = "";
+            this.currentDragEl.style.borderTop = "4px solid orange";
+            this.currentDragEl.style.borderTop = "4px solid orange";
+        } else if (dragLocation == DRAG_ONTO) {
+            this.currentDragEl.style.border = "";
+            this.currentDragEl.style.backgroundColor = "orange";
+        } else {
+            this.currentDragEl.style.backgroundColor = "";
+            this.currentDragEl.style.borderBottom = "4px solid orange";
+        }
+    },
+    
+    onDragOut: function (event, id) {
+        // The drag out event removes provides visual feedback.
+        var dragDropDestination = YAHOO.util.Dom.get(id);            
+        dragDropDestination.style.backgroundColor = "";
+        dragDropDestination.style.border = "";
+    },
+    
+    // The drag drop event sends an asynchronous event to the server to update the persistent
+    // storage of the tree. 
+    onDragDrop: function(event, id) {
+        // Need to get references to the element being moved and the element it is being moved relative to
+        var srcEl = this.getEl();
+        var src = treeMap[srcEl.id];
+        var dest = treeMap[id];
+        
+        // Set up the query string for this operation
+        var dragLocation = getDragLocation(id, {x: event.x, y: event.y});
+        var query = '/organization/move-node/src/' 
+                  + src.id 
+                  + '/dest/' 
+                  + dest.id 
+                  + '/dragLocation/' 
+                  + dragLocation;
+
+        // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
+        // but it prevents the user from modifying the tree while an update is already pending.
+        savePanel = new YAHOO.widget.Panel(
+            "savePanel",
+            {
+                width: "250px",
+                fixedcenter: true,
+                close: false,
+                draggable: false,
+                modal: true,
+                visible: true
+            }
+        );
+        savePanel.setHeader('Saving...');
+        savePanel.setBody('<img src="/images/loading_bar.gif">')
+        savePanel.render(document.body);
+
+        YAHOO.util.Connect.asyncRequest(
+            'GET', 
+            query, 
+            {
+                success: function (event) {
+                    var result = YAHOO.lang.JSON.parse(event.responseText);
+                    if (!result.success) {
+                        alert("Not able to move the node: " + result.message);
+                    } else {
+                        // The tree loses drag and drop ability when you move items around, because YUI
+                        // changes the element IDs. So we actually need to fully refresh the tree from the server.
+                        /**
+                         * @todo This is clunky, but YUI doesn't seem to provide a good alternative.
+                         */
+                        showTree(result.treeData);
+                    }
+                    
+                    savePanel.hide();
+                },
+                failure: function (event) {
+                    alert('Unable to reach the server to save your changes: ' 
+                          + event.statusText);
+                    savePanel.hide();
+                }
+            }, 
+            null
+        );
+
+        // @todo remove
+        this.currentDragSuccessful = true; 
+    }
+});
+
+// Given an element and a drag location, return a constant which indicates whether the drag
+// operation is currently above, on top of, or below the targeted tree node.
+function getDragLocation(targetElement, dragPoint) {
+    var targetRegion = YAHOO.util.Dom.getRegion(targetElement);
+    var height = targetRegion.bottom - targetRegion.top;
+    var clickVerticalOffset = dragPoint.y - targetRegion.top;
+    
+    // This ratio indicates how far down the click was inside the element. This is used for deciding whether the
+    // mouse is near the top, near the bottom, or somewhere in the middle.
+    var verticalRatio = clickVerticalOffset / height;
+    if (verticalRatio < 0.25) {
+        return DRAG_ABOVE;
+    } else if (verticalRatio < 0.75) {
+        return DRAG_ONTO;
+    } else {
+        return DRAG_BELOW;
+    }
+}
+
+// Expand all tree nodes
 function expandAll() {
     tree.getRoot().expandAll();
 }
 
+// Collapse all tree nodes
 function collapseAll() {
     tree.getRoot().collapseAll();
 }
+
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>

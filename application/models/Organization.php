@@ -182,8 +182,9 @@ class Organization extends BaseOrganization
             // Recursively get summary counts from each child and add to the running sum
             $counts['all_ontime'] = $counts['single_ontime'];
             $counts['all_overdue'] = $counts['single_overdue'];
-            if ($this->getNode()->hasChildren()) {
-                $iterator = $this->getNode()->getChildren()->getNormalIterator();
+            $children = $this->getNode()->getChildren();
+            if ($children) {
+                $iterator = $children->getNormalIterator();
                 foreach ($iterator as $child) {
                     $childCounts = $child->getSummaryCounts($type, $source);
                     unset($childCounts['all_ontime']['TOTAL']);
