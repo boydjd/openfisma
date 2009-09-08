@@ -110,15 +110,12 @@ class SystemController extends BaseController
             throw new Fisma_Exception('Invalid "order" parameter');
         }
         
-        $q = Doctrine_Query::create()
+        $q = User::currentUser()
+             ->getOrganizationsQuery()
              ->select('o.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
-             ->from('Organization o')
-             ->leftJoin('o.System s')
-             ->leftJoin('o.Users u')
+             ->innerJoin('o.System s')
              ->where('o.orgType = ?', 'system')
-             ->andWhere('u.id = ?', User::currentUser()->id)
              ->orderBy("$sortBy $order")
-             ->limit($this->_paging['count'])
              ->offset($this->_paging['startIndex'])
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
@@ -131,8 +128,9 @@ class SystemController extends BaseController
             $q->whereIn('s.id', $systemIds);
         }
 
-        $organizations = $q->execute();
         $totalRecords = count($organizations);
+        $q->limit($this->_paging['count']);
+        $organizations = $q->execute();
 
         $tableData = array('table' => array(
             'recordsReturned' => count($organizations),
