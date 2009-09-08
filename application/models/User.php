@@ -429,7 +429,8 @@ class User extends BaseUser
         // For all users other than root, we want to join to the user table to limit the systems returned
         // to those which this user has been granted access to.
         if ('root' != $this->username) {
-            $query->innerJoin('o.User u ON u.id = ?', $this->id);
+            $query->innerJoin('o.User u')
+                  ->where('u.id = ?', $this->id);
         }
         
         return $query;      
