@@ -395,7 +395,9 @@ class User extends BaseUser
     /**
      * Get the user's organizations.
      * 
-     * This implements the correct logic for getting the root user's
+     * Unlike using $this->Organizations, this method implements the correct business logic for the root user,
+     * who won't have any joins in the UserOrganization model, but should still have access to all organizations
+     * anyway.
      * 
      * @return Doctrine_Collection
      */

@@ -94,6 +94,10 @@ class MenuController extends SecurityController
                 $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
 
+            if (Fisma_Acl::hasPrivilege('organization', 'read')) {
+                $systems->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/tree'));
+            }
+
             $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
             
             $menubar->add($systems);
@@ -131,10 +135,6 @@ class MenuController extends SecurityController
 
             if (Fisma_Acl::hasPrivilege('role', 'read')) {
                 $admin->add(new Fisma_Yui_MenuItem('Roles', '/panel/role/sub/list'));
-            }
-
-            if (Fisma_Acl::hasPrivilege('organization', 'read')) {
-                $admin->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/list'));
             }
 
             if (Fisma_Acl::hasPrivilege('user', 'read')) {
