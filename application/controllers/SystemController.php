@@ -128,7 +128,7 @@ class SystemController extends BaseController
             $q->whereIn('s.id', $systemIds);
         }
 
-        $totalRecords = count($organizations);
+        $totalRecords = $q->count();
         $q->limit($this->_paging['count']);
         $organizations = $q->execute();
 
