@@ -304,7 +304,7 @@ class RemediationController extends SecurityController
                         'status' => '', 'ids' => '', 'assetOwner' => 0,
                         'estDateBegin' => '', 'estDateEnd' => '',
                         'createdDateBegin' => '', 'createdDateEnd' => '',
-                        'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '');
+                        'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null);
         $req = $this->getRequest();
         $tmp = $req->getParams();
         foreach ($params as $k => &$v) {
@@ -978,9 +978,21 @@ class RemediationController extends SecurityController
                     if (!empty($sqlPart)) {
                         $q->andWhere(implode(' OR ', $sqlPart));
                     }
+                } elseif ($k == 'expanded') {
+                    // Intentionally falls through. This is a consequence of bad design in this method. The 
+                    // 'expanded' variable is not literally added to the query, but is actually just
+                    // a modifier for the responsibleOrganizationId parameter.
+                    ;
+                } elseif ($k == 'responsibleOrganizationId') {
+                    if ('false' == $params['expanded']) {
+                        $o = Doctrine::getTable('Organization')->find($v);
+                        $q->addWhere('ro.lft >= ? AND ro.rgt <= ?', array($o->lft, $o->rgt));
+                    } else {
+                        $q->addWhere('ro.id = ?', $v);
+                    }
                 } elseif ($k != 'keywords' && $k != 'dir' && $k != 'sortby') {
                     $q->andWhere("f.$k = ?", $v);
-                }
+                } 
             }
         }
         if ($format == 'json') {
