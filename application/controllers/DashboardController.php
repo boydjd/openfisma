@@ -178,14 +178,14 @@ class DashboardController extends SecurityController
             if ($evaluation['approvalGroup'] == 'evidence') {
                 $arrTotal['EN'] = 0;
             }
-            $arrTotal[html_entity_decode($evaluation['nickname'])] = 0;
+            $arrTotal[$evaluation['nickname']] = 0;
         }
 
         foreach ($results as $result) {
             if (in_array($result['status'], array_keys($arrTotal))) {
                 $arrTotal[$result['status']] = $result['statusCount'];
             } else {
-                $arrTotal[html_entity_decode($result['CurrentEvaluation']['nickname'])] = $result['subStatusCount'];
+                $arrTotal[$result['CurrentEvaluation']['nickname']] = $result['subStatusCount'];
             }
         }
 

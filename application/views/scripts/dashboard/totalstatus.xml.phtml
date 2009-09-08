@@ -69,26 +69,34 @@
     }
     
     // Colors for NEW & DRAFT
-    print '<!-- NEW --><color>cccccc</color>';
-    print '<!-- DRAFT --><color>66ff66</color>';
+    print '<color>cccccc</color>';
+    print '<color>66ff66</color>';
     
     // Colors for MSA
     define('START_COLOR', 200); // These constants are used for creating a gradient
     define('STOP_COLOR', 25); // The range of these constants sets the high and low gradient value
-    $colorStep = (STOP_COLOR - START_COLOR) / (count($msaColors) - 1);
+    if (count($msaColors) > 1) {
+        $colorStep = (STOP_COLOR - START_COLOR) / (count($msaColors) - 1);
+    } else {
+        $colorStep = (STOP_COLOR - START_COLOR) / 2;
+    }
 	for ($i = 0; $i < count($msaColors); $i++) {
         $hex = dechex(START_COLOR + ($colorStep * $i));
-        print "<!-- MSA --><color>ff{$hex}{$hex}</color>";
+        print "<color>ff{$hex}{$hex}</color>";
 	}
 	
 	// Color for EN
-	print '<!-- EN --><color>ff9933</color>';
+	print '<color>ff9933</color>';
 	
 	// Colors for EA
-    $colorStep = (STOP_COLOR - START_COLOR) / (count($epColors) - 1);
+    if (count($epColors) > 1) {
+        $colorStep = (STOP_COLOR - START_COLOR) / (count($epColors) - 1);
+    } else {
+        $colorStep = (STOP_COLOR - START_COLOR) / 2;
+    }
 	for ($i = 0; $i < count($epColors); $i++) {
         $hex = dechex(START_COLOR + ($colorStep * $i));
-        print "<!-- EA --><color>{$hex}{$hex}ff</color>";
+        print "<color>{$hex}{$hex}ff</color>";
 	}
 ?>
 	</series_color>
