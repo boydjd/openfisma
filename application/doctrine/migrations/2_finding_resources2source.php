@@ -40,7 +40,7 @@ class ModifyResource extends Doctrine_Migration_Base
     {
         Doctrine_Query::create()
             ->update('Privilege p')
-            ->set('p.resource', '?', 'source')
+            ->set('p.resource', '"source"')
             ->where('p.resource = ?', 'finding_sources')
             ->execute();
     }
@@ -52,7 +52,7 @@ class ModifyResource extends Doctrine_Migration_Base
     {
         Doctrine_Query::create()
             ->update('Privilege p')
-            ->set('p.resource', '?', 'finding_sources')
+            ->set('p.resource', '"finding_sources"')
             ->where('p.resource = ?', 'source')
             ->execute();
     }
