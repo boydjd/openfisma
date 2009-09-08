@@ -67,7 +67,9 @@ YAHOO.fisma.TreeTable.render = function (tableId, tree) {
         // @todo convert to YUI and remove innerHTML if possible
         // general cleanup is needed too
         needsLink = node.children.length > 0;
-        linkOpen = (needsLink ? "<a href='#' onclick='YAHOO.fisma.TreeTable.toggleNode(\"" + node.nickname + "\")'>" : "");
+        linkOpen = needsLink 
+                   ? "<a href='#' onclick='YAHOO.fisma.TreeTable.toggleNode(\"" + node.nickname + "\"); return false;'>"
+                   : "";
         linkClose = needsLink ? "</a>" : "";
         linkDivClass = needsLink ? " link" : "";
         controlImage = node.expanded ? "minus.png" : "plus.png";
