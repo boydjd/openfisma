@@ -189,6 +189,10 @@ class DashboardController extends SecurityController
             }
         }
 
+        // Work around an IE bug with SSL caching
+        $this->getResponse()->setHeader('Pragma', 'private', true);
+        $this->getResponse()->setHeader('Cache-Control', 'private', true);
+
         $this->view->summary = $arrTotal;
     }
 
@@ -218,5 +222,9 @@ class DashboardController extends SecurityController
                 $this->view->summary["{$result['type']}"] = $result['typeCount'];
             }
         }
+        
+        // Work around an IE bug with SSL caching
+        $this->getResponse()->setHeader('Pragma', 'private', true);
+        $this->getResponse()->setHeader('Cache-Control', 'private', true);
     }
 }
