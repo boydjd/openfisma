@@ -249,6 +249,16 @@ class InstallController extends Zend_Controller_Action
         $this->view->method = $method;
         $this->view->checklist = $checklist;
         $this->view->back = '/install/dbsetting';
+        
+        // Overwrite the default host_url value. Can't use the Configuration class b/c that requires authentication.
+        $setHostUrlQuery = Doctrine_Query::create()
+                           ->update('Configuration c')
+                           ->set('value', '?', $_SERVER['SERVER_NAME'])
+                           ->where('name LIKE ?', 'host_url');
+        if (!$setHostUrlQuery->execute()) {
+            throw new Exception("Unable to set the host_url value in the configuration table.");
+        }
+        
         $this->render('initial');
     }
 
@@ -266,21 +276,18 @@ class InstallController extends Zend_Controller_Action
      */
     public function errorAction()
     {
-        $content = null;
-        $errors = $this->_getParam('error_handler');
-        //$this->_helper->layout->setLayout('error');
-        if (!empty($errors)) {
-            switch ($errors->type) {
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
-            default:
-                // 404 error -- controller or action not found
-                $this->getResponse()->setRawHeader('HTTP/1.1 404 Not Found');
-                break;
-            }
-        } else {
-            $this->getResponse()->setRawHeader('HTTP/1.1 404 Not Found');
-        }
         $this->getResponse()->clearBody();
+        
+        // Display an error. Notice that the installer displays stack traces even when in "production" mode.
+        $errors = $this->_getParam('error_handler');
+        if (!empty($errors)) {
+            $content = get_class($errors->exception)
+                     . ": "
+                     . $errors->exception->getMessage()
+                     . '<br>'
+                     . $errors->exception->getTraceAsString()
+                     . '<br>';
+        }
+        $this->view->error = $content;
     }
 }
