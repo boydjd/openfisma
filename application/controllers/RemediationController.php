@@ -446,8 +446,12 @@ class RemediationController extends SecurityController
         Fisma_Acl::requirePrivilege('finding', 'read', '*');
         
         $params = $this->_parseCriteria();
-        $this->view->assign('params', $params);
-        $this->view->assign('systems', $this->_organizations->toKeyValueArray('id', 'name'));
+        $systemList = array();
+        foreach ($this->_organizations as $system) {
+            $systemList[$system->id] = "$system->nickname - $system->name";
+        }
+        sort($systemList);
+        $this->view->assign('systems', $systemList);
         $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
         $this->_helper->actionStack('search', 'Remediation');
         $this->render();
