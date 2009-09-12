@@ -1,5 +1,5 @@
 Organization:    
-    listeners: [XssListener, BaseListener]
+    listeners: [XssListener]
 
     columns:
         createdTs: timestamp

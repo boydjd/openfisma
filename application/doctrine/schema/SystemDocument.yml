@@ -1,5 +1,5 @@
 SystemDocument:
-    listeners: [XssListener]
+    listeners: [XssListener, IndexListener]
     
     indexes: 
         uniqueTypePerSystem:
@@ -7,7 +7,6 @@ SystemDocument:
                  systemId: []
                  documentTypeId: []
             type: unique
-            
     
     columns:
         createdTs: timestamp
@@ -20,14 +19,19 @@ SystemDocument:
             type: string(255)
             extra:
                 purify: plaintext
+                searchIndex: unstored
+                searchAlias: file
             comment: Name of the uploaded file
         size:
             type: integer
+            extra:
+                searchIndex: unstored
             comment: Size of the file in bytes
         description:
             type: string
             extra:
                 purify: plaintext
+                searchIndex: unstored
             comment: A place for the user to enter version comments
 
         documentTypeId:

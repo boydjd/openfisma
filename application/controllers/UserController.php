@@ -336,7 +336,7 @@ class UserController extends BaseController
      */
     public function acceptRobAction() {
         $user = User::currentUser();
-        $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
+//        $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
         $user->lastRob = Fisma::now();
         $user->save();
         $this->_forward('index', 'Panel');
@@ -399,7 +399,7 @@ class UserController extends BaseController
     {
         Fisma_Acl::requirePrivilege('user', 'read');
         $ldapConfig = new LdapConfig();
-        $data = $ldapConfig->getLdaps();
+        $data = $ldapConfig->getLdaps()->toArray();
         $account = $this->_request->getParam('account');
         $msg = '';
         if (count($data) == 0) {

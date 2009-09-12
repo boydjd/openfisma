@@ -1,5 +1,5 @@
 Asset:
-    listeners: [XssListener, BaseListener]
+    listeners: [XssListener, IndexListener]
         
     columns:
         createdTs: timestamp
@@ -9,26 +9,29 @@ Asset:
             type: string(255)
             extra:
                 logicalName: Asset Name
-                template: true
                 purify: plaintext
+                searchIndex: unstored
             comment: The name of this asset
         source:
             type: enum
             values: [manual, scan]
             default: manual
+            extra:
+                searchIndex: keyword
             comment: Whether this asset was created manually or by an automated scanner
         addressIp:
             type: string(15)
             ip: true
             extra:
                 logicalName: IP Address
-                template: true
+                searchIndex: unstored
+                searchAlias: ip
             comment: The IP address for this asset
         addressPort:
             type: integer(2)
             extra:
                 logicalName: Port Number
-                template: true
+                searchIndex: unstored
             comment: The IP port for this asset
         
         productId:

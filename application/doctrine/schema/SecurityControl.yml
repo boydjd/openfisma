@@ -1,18 +1,45 @@
 SecurityControl:
+    listeners: [IndexListener]
+
     columns:
         code: 
             type: string(5)
             fixed: true
             comment: The control number, e.g. AC-05
+            extra:
+                searchIndex: unstored
         class:
             type: enum
             values: [MANAGEMENT, OPERATIONAL, TECHNICAL]
-        subclass: string(255)
-        family: string(255)
-        control: string
-        guidance: string
+            extra:
+                searchIndex: keyword
+        subclass: 
+            type: string(255)
+            extra:
+                searchIndex: unstored
+        family: 
+            type: string(255)
+            extra:
+                searchIndex: unstored
+        control: 
+            type: string
+            extra:
+                searchIndex: unstored
+        guidance: 
+            type: string
+            extra:
+                searchIndex: unstored
         controlLevel:
             type: enum
             values: [NONE, LOW, MODERATE, HIGH]
-        enhancements: string
-        supplement: string
+            extra:
+                searchIndex: keyword
+                searchAlias: level
+        enhancements: 
+            type: string
+            extra:
+                searchIndex: unstored
+        supplement: 
+            type: string
+            extra:
+                searchIndex: unstored
