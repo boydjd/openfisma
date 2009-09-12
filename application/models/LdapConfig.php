@@ -20,7 +20,7 @@
  * @author    Ryan Yang <ryanyang@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id:$
+ * @version   $Id$
  * @package   Model
  */
  
@@ -35,20 +35,6 @@
  */
 class LdapConfig extends BaseLdapConfig
 {
-    private $_mapLdap = array(
-            'host' => 'host',
-            'port' => 'port',
-            'username' => 'username',
-            'password' => 'password',
-            'useSsl' => 'useSsl',
-            'bindRequiresDn' => 'bindRequiresDn',
-            'baseDn' => 'basedn',
-            'accountFilterFormat' => 'accountFilter',
-            'accountCanonicalForm' => 'accountCanonical',
-            'accountDomainNameShort' => 'domainShort',
-            'accountDomainName' => 'domainName'
-    );
-    
     /**
      *  Retrive the ldap configuration(s)
      *
@@ -64,18 +50,11 @@ class LdapConfig extends BaseLdapConfig
                            ->whereIn('lc.id', $id);
             $ldapConfigs = $q->execute();
         } elseif (is_numeric($id)) {
-            $ldapConfigs[] = Doctrine::getTable('LdapConfig')->find($id);
+            $ldapConfigs = Doctrine::getTable('LdapConfig')->find($id);
         } else {
             $ldapConfigs = Doctrine::getTable('LdapConfig')->findAll();
         }
-        $ldapData = array();
-        $i = 0;
-        foreach ($ldapConfigs as $ldapConfig) {
-            foreach ($this->_mapLdap as $k => $v) {
-                $ldapData[$i][$k] = $ldapConfig->$v;
-            }
-            $i ++;
-        }
-        return $ldapData;
+
+        return $ldapConfigs;
     }
 }

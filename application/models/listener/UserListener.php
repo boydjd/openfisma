@@ -97,7 +97,10 @@ class UserListener extends Doctrine_Record_Listener
         $modified = $user->getModified($old=true, $last=true);
         $user->password = $modified['password'];
         $mail = new Fisma_Mail();
-        $mail->sendAccountInfo($user);
+        /**
+         * @todo DON'T FORGET ABOUT ME
+         */
+//        $mail->sendAccountInfo($user);
     }
     
     /**
