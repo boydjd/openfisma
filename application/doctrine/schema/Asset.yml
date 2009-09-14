@@ -32,6 +32,7 @@ Asset:
             extra:
                 logicalName: Port Number
                 searchIndex: unstored
+                searchAlias: port
             comment: The IP port for this asset
         
         productId:

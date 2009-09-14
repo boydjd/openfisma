@@ -41,6 +41,7 @@ class OptimizeIndexes
      * @var array
      */
     private $_models = array(
+        'AccountLog',
         'Asset',
         'Finding',
         'Network',
@@ -134,7 +135,7 @@ class OptimizeIndexes
             $offset += $count;
 
             // Update status
-            $status = "$model: Indexed 0 rows";
+            $status = "$model: Indexed 0 rows (0%)";
             fwrite(STDOUT, $status);        
             $statusLength = strlen($status);
         
@@ -147,11 +148,14 @@ class OptimizeIndexes
                 if (time() - $lastStatusUpdateTime >= self::STATUS_UPDATE_INTERVAL) {
                     // 0x8 is the backspace code
                     fwrite(STDOUT, str_repeat(chr(0x8), $statusLength));
-                    $status = "$model: Indexed $currentRecord rows";
+                    $status = "$model: Indexed $currentRecord rows (" 
+                            . sprintf('%d%%', ($currentRecord / $totalRecords) * 100) 
+                            . ")" ;
                     fwrite(STDOUT, "$status");
                     $statusLength = strlen($status);
+                    $lastStatusUpdateTime = time();
                 }
-                
+
                 // Defrag the index after every 1000 records
                 if (0 == $currentRecord % self::DEFRAG_RECORD_COUNT) {
                     $index->optimize();

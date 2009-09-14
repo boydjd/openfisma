@@ -878,7 +878,8 @@ class RemediationController extends SecurityController
         }
         // Use Zend Lucene to find all POAM ids which match the keyword query
         if (!empty($params['keywords'])) {
-            $poamIds = Fisma_Lucene::search($params['keywords'], 'finding');
+            $index = new Fisma_Index('Finding');
+            $poamIds = $index->findIds($params['keywords']);
             if ($params['ids'] && $poamIds) {
                 $params['ids'] = array_intersect($poamIds, $params['ids']);
                 if (!$params['ids']) {

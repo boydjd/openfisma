@@ -29,7 +29,7 @@
  * 
  * @package Fisma
  */
-class Fisma_Index extends Zend_Search_Lucene
+class Fisma_Index
 {
     /**
      * Zend_Search_Lucene optimization tuning
@@ -53,6 +53,13 @@ class Fisma_Index extends Zend_Search_Lucene
     const MERGE_FACTOR = 5;
     
     /**
+     * The Zend_Search_Lucene instance that is being wrapped
+     * 
+     * @var Zend_Search_Lucene
+     */
+    private $_lucene;
+    
+    /**
      * Open the index for the specified class, creating the index first if necessary.
      * 
      * This also tunes some of the configuration parameters.
@@ -64,10 +71,10 @@ class Fisma_Index extends Zend_Search_Lucene
         // Set privileges on index files to be readable only by owner and group
         Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(0660);
         
-        // Call the parent constructor
+        // Create a new lucene object
         $indexPath = Fisma::getPath('index') . '/' . $class;
         $createIndex = !is_dir($indexPath);
-        parent::__construct($indexPath, $createIndex);
+        $this->_lucene = new Zend_Search_Lucene($indexPath, $createIndex);
         if ($createIndex) {
             // Set permissions to that only owner and group can read or list index files
             chmod($indexPath, 0770);
@@ -75,9 +82,9 @@ class Fisma_Index extends Zend_Search_Lucene
         
         // Set optimization parameters. This is tuned for small batch, interactive indexing. It will not be very
         // efficient for large batch indexing.
-        $this->setMaxBufferedDocs(self::MAX_BUFFERED_DOCS);
-        $this->setMaxMergeDocs(self::MAX_MERGE_DOCS);
-        $this->setMergeFactor(self::MERGE_FACTOR);
+        $this->_lucene->setMaxBufferedDocs(self::MAX_BUFFERED_DOCS);
+        $this->_lucene->setMaxMergeDocs(self::MAX_MERGE_DOCS);
+        $this->_lucene->setMergeFactor(self::MERGE_FACTOR);
     }
 
     /**
@@ -101,18 +108,13 @@ class Fisma_Index extends Zend_Search_Lucene
 
         // The indexer will pick up columns and relations that are tagged as being indexable.
         $this->_indexRecordColumns($luceneDoc, $record);
-        $this->_indexRecordRelations($luceneDoc, $record);
+        $this->_indexRecordRelations($luceneDoc, $record);       
+
+        // Delete this record if it already exists in the database
+        $this->delete($record);    
         
-        // Check whether this record already exists in the index. If so, it must be removed first.
-        $luceneTerm = new Zend_Search_Lucene_Index_Term($record->id, 'id');
-        $luceneQuery = new Zend_Search_Lucene_Search_Query_Term($luceneTerm);
-        $existingDocuments = $this->find($luceneQuery);
-        foreach ($existingDocuments as $document) {
-            $this->delete($document->id);
-        }
-        
-        // Add the new document
-        $this->addDocument($luceneDoc);
+        // Add the new document to the index
+        $this->_lucene->addDocument($luceneDoc);
     }
     
     /**
@@ -125,12 +127,36 @@ class Fisma_Index extends Zend_Search_Lucene
     {
         $ids = array();
         
-        $results = $this->find($query);
+        $results = $this->_lucene->find($query);
         foreach ($results as $result) {
             $ids[] = $result->getDocument()->id;
         }
         
         return $ids;
+    }
+    
+    /**
+     * Delete a record from the index
+     * 
+     * If the record hasn't been indexed yet, then nothing happens
+     */
+    public function delete(Doctrine_Record $record)
+    {
+        $luceneTerm = new Zend_Search_Lucene_Index_Term($record->id, 'id');
+        $luceneQuery = new Zend_Search_Lucene_Search_Query_Term($luceneTerm);
+        $existingDocuments = $this->_lucene->find($luceneQuery);        
+        foreach ($existingDocuments as $document) {
+            $this->_lucene->delete($document->id);
+        }
+        $d = $this->_lucene->getDirectory();
+    }
+
+    /**
+     * Defragment the index
+     */
+    public function optimize()
+    {
+        $this->_lucene->optimize();
     }
     
     /**
@@ -152,54 +178,105 @@ class Fisma_Index extends Zend_Search_Lucene
             $columnName = $table->getFieldName($physicalColumnName);
             if (isset($columnDefinition['extra']['searchIndex'])) {                                
                 // If this field is also marked as HTML, then strip tags before indexing it. Otherwise, index it as is.
-                if ($columnDefinition['extra']['purify']) {
+                if ($columnDefinition['extra']['purify'] == 'html') {
                     $indexData = strip_tags($record->$columnName);
                 } else {
                     $indexData = $record->$columnName;
                 }
                 
                 // Create a Lucene field with a type that corresponds to this column
-                $fieldName = $this->_getIndexFieldName($columnName, $columnDefintion);
-                switch ($columnDefinition['extra']['searchIndex']) {
-                    case 'keyword':
-                        $field = Zend_Search_Lucene_Field::Keyword($fieldName, $indexData);
-                        break;
-                    case 'unindexed':
-                        $field = Zend_Search_Lucene_Field::UnIndexed($fieldName, $indexData);
-                        break;
-                    case 'binary':
-                        $field = Zend_Search_Lucene_Field::Binary($fieldName, $indexData);
-                        break;
-                    case 'text':
-                        $field = Zend_Search_Lucene_Field::Text($fieldName, $indexData);
-                        break;
-                    case 'unstored':
-                        $field = Zend_Search_Lucene_Field::UnStored($fieldName, $indexData);
-                        break;
-                    default:
-                        throw new Fisma_Index_Exception("Invalid index type: {$columnDefinition['extra']['searchIndex']}");
-                }
+                $fieldName = $this->_getIndexFieldName($columnName, $columnDefinition);
+                $field = $this->_getIndexField($columnDefinition['extra']['searchIndex'], $fieldName, $indexData);                
                 $document->addField($field);
             }
         }
     }
     
     /**
-     * Add any record relations with a 'searchIndex' attribute to the lucene document
+     * Index specified fields in related records.
      * 
      * Notice that the document is passed by reference and will be modified by this method
+     * 
+     * This method works by requiring a somewhat ugly hack. The class being indexed has to declare a public
+     * associative array called $relationIndex (see the Asset.php model for an example) if the author desires
+     * any fields in the related record to be indexed.
+     * 
+     * If this array is not declared, then record relation indexing will be silently skipped
+     * 
+     * This method might be slow if it has to fetch many relations. One way to speed this up would be to pre-fetch
+     * a bunch of objects with their relations before you index them.
      * 
      * @param Zend_Search_Lucene_Document $document
      * @param Doctrine_Record $record
      */
     private function _indexRecordRelations(Zend_Search_Lucene_Document &$document, Doctrine_Record $record)
     {
-        $relations = $record->getTable()->getRelations();
-        foreach ($relations as $relationName => $relationDefinition) {
-            ;
+        if (isset($record->relationIndex)) {
+            // Loop through each field of each model
+            foreach ($record->relationIndex as $foreignModel => $foreignFields) {
+                foreach ($foreignFields as $foreignFieldName => $foreignFieldIndex) {
+                    if (!is_array($foreignFieldIndex)) {
+                        throw new Fisma_Index_Exception("The relation index is malformed");
+                    }
+                    
+                    // Get data from this foreign field
+                    $foreignTable = Doctrine::getTable($foreignModel);
+                    $foreignColumnDef = $foreignTable->getColumnDefinition($foreignFieldName);
+                    $indexData = $record->$foreignModel->$foreignFieldName;
+
+                    // If the field is marked as HTML, then strip the HTML from the data (presumably, this
+                    // has already been filtered by HtmlPurifier)
+                    if ($foreignColumnDef['extra']['purify'] == 'html') {
+                        $indexData = strip_tags($indexData);
+                    }
+
+                    // The naming convention for the foreign field in lucene: for example, asset will have
+                    // an indexed field called 'product_version'. This can be overridden by defining the 'alias'
+                    // attribute
+                    if (isset($foreignFieldIndex['alias'])) {
+                        $fieldName = $foreignFieldIndex['alias'];
+                    } else {
+                        $fieldName = strtolower("{$foreignModel}_{$foreignFieldName}");
+                    }
+
+                    // Add this field to the document
+                    $field = $this->_getIndexField($foreignFieldIndex['type'], $fieldName, $indexData);                
+                    $document->addField($field);
+                }
+            }
         }
     }
     
+    /**
+     * Returns a Lucene field object based on the specified type, field name, and data
+     * 
+     * @param 
+     */
+    private function _getIndexField($type, $fieldName, $indexData) 
+    {
+        switch ($type) {
+            case 'keyword':
+                $field = Zend_Search_Lucene_Field::Keyword($fieldName, $indexData);
+                break;
+            case 'unindexed':
+                $field = Zend_Search_Lucene_Field::UnIndexed($fieldName, $indexData);
+                break;
+            case 'binary':
+                $field = Zend_Search_Lucene_Field::Binary($fieldName, $indexData);
+                break;
+            case 'text':
+                $field = Zend_Search_Lucene_Field::Text($fieldName, $indexData);
+                break;
+            case 'unstored':
+                $field = Zend_Search_Lucene_Field::UnStored($fieldName, $indexData);
+                break;
+            default:
+                throw new Fisma_Index_Exception("Invalid index type: $type");
+        }
+        
+        return $field;
+    }
+        
     /**
      * Determine what name the index will use to represent the specified column
      * 

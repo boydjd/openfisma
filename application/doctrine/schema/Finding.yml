@@ -6,7 +6,7 @@ Finding:
     
         discoveredDate:
             type: date
-            comment: The when the finding was discovered. This is self-reported by users
+            comment: The date when the finding was discovered. This is self-reported by users
             extra:
                 logicalName: Date Discovered
         closedTs:
@@ -18,7 +18,7 @@ Finding:
             type: date
             comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
             extra:
-                logicalName: Next Action Due Date
+                logicalName: Next Action Due Date        
             
         legacyFindingKey:
             type: string(255)

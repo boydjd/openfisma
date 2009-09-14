@@ -1,39 +1,59 @@
 System:
-    listeners: [XssListener, SystemListener]
+    listeners: [XssListener, SystemListener, IndexListener]
     
     columns:    
         type:
             type: enum
             values: [gss, major, minor]
+            extra:
+                searchIndex: keyword
             comment: General Support System, Major Application, or Minor Application
-
         confidentiality:
             type: enum
             values: [NA, LOW, MODERATE, HIGH]
+            extra:
+                searchIndex: unstored
             comment: The FIPS-199 confidentiality impact
         confidentialityDescription:
             type: string
+            extra:
+                purify: html
+                searchIndex: unstored
         integrity:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            extra:
+                searchIndex: unstored
             comment: The FIPS-199 integrity impact
         integrityDescription:
             type: string
+            extra:
+                purify: html
+                searchIndex: unstored
         availability:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            extra:
+                searchIndex: unstored
             comment: The FIPS-199 availability impact
         availabilityDescription:
             type: string
+            extra:
+                purify: html
+                searchIndex: unstored
         fipsCategory:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            extra:
+                searchIndex: unstored    
             comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
         
         # FISMA Report Criteria:
         controlledBy:
             type: enum
             values: [AGENCY, CONTRACTOR]
+            extra:
+                searchIndex: unstored    
             comment: Is this system principally controlled by the agency or by a contractor?
         securityAuthorizationDt:
             type: date
@@ -47,14 +67,20 @@ System:
         hasFiif:
             type: enum
             values: ["YES", "NO"] # YAML converts YES to a boolean unless its quoted
+            extra:
+                searchIndex: unstored    
             comment: Whether the system contains any Federal Information in Identifiable Form
         hasPii:
             type: enum
             values: ["YES", "NO"]
+            extra:
+                searchIndex: unstored    
             comment: Whether the system contains any Personally Identifiable Information
         piaRequired:
             type: enum
             values: ["YES", "NO"]
+            extra:
+                searchIndex: unstored    
             comment: Whether this system requires a Privacy Impact Analysis
         piaUrl:
             type: string(255)
@@ -64,6 +90,8 @@ System:
         sornRequired:
             type: enum
             values: ["YES", "NO"]
+            extra:
+                searchIndex: unstored    
             comment: Whether a System Of Record Notice is required
         sornUrl:
             type: string(255)
@@ -74,4 +102,12 @@ System:
             type: string(23)
             extra:
                 purify: plaintext
-            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the folLOWing format: "xxx-xx-xx-xx-xx-xxxx-xx"        
+                searchIndex: unstored
+                searchAlias: upi
+            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"        
+
+#    relations:
+#        System:
+#            local: systemId
+#            foreign: id
+#            type: one

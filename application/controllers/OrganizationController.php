@@ -154,7 +154,7 @@ class OrganizationController extends SecurityController
     public function searchAction()
     {
         Fisma_Acl::requirePrivilege('organization', 'read');
-        $value = trim($this->_request->getParam('keywords'));
+        $keywords = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
@@ -165,7 +165,6 @@ class OrganizationController extends SecurityController
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
             throw new Fisma_Exception('Invalid "sortBy" parameter');
         }
-        
         
         $order = strtoupper($order);
         if ($order != 'DESC') {
@@ -181,8 +180,9 @@ class OrganizationController extends SecurityController
              ->limit($this->_paging['count'])
              ->offset($this->_paging['startIndex']);
 
-        if (!empty($value)) {
-            $organizationIds = Fisma_Lucene::search($value, 'organization');
+        if (!empty($keywords)) {
+            $index = new Fisma_Index('Organization');
+            $organizationIds = $index->findIds($keywords);
             if (empty($organizationIds)) {
                 $organizationIds = array(-1);
             }

@@ -1,5 +1,5 @@
 Organization:    
-    listeners: [XssListener]
+    listeners: [XssListener, IndexListener]
 
     columns:
         createdTs: timestamp
@@ -8,25 +8,32 @@ Organization:
             type: string(255)
             extra:
                 purify: plaintext
+                searchIndex: unstored
         nickname:
             type: string(255)
             unique: true
             extra:
                 purify: plaintext
+                searchIndex: unstored
         orgType:
             type: enum
             values: [agency, bureau, organization, system]
+            extra:
+                searchIndex: keyword
+                searchAlias: type
         systemId:
             type: integer
         description: 
             type: string
             extra:
                 purify: html
+                searchIndex: unstored
 
     relations:
         System:
             local: systemId
             foreign: id
+            foreignType: one # Forces Doctrine to make this one-to-one instead of one-to-many
         # Users is a many-to-many relation
         Users:
             class: User

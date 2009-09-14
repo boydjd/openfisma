@@ -3,7 +3,7 @@ echo $this->partial('system-document/searchbox.phtml');
 
 Fisma_Format_Section::startSection($this->document->DocumentType->name
                                  . " for " 
-                                 . $this->document->System->Organization[0]->name);
+                                 . $this->document->System->Organization->name);
 ?>
     
 <table class="keyValues">
@@ -34,8 +34,8 @@ Fisma_Format_Section::startSection($this->document->DocumentType->name
     <tr>
         <td>System:</td>
         <td>
-            <a href="/panel/system/sub/view/id/<?php echo $this->document->System->Organization[0]->id; ?>">
-                <?php echo $this->document->System->Organization[0]->name; ?>
+            <a href="/panel/system/sub/view/id/<?php echo $this->document->System->Organization->id; ?>">
+                <?php echo $this->document->System->Organization->name; ?>
             </a>
         </td>
     </tr>

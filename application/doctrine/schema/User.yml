@@ -95,7 +95,7 @@ User:
             extra:
                 logicalName: Office Phone
                 purify: plaintext
-                searchIndex: unstored
+                searchIndex: keyword
             comment: U.S. 10 digit phone number; stored without punctuation
         phoneMobile:
             type: string(10)
@@ -103,7 +103,7 @@ User:
             extra:
                 logicalName: Mobile Phone
                 purify: plaintext
-                searchIndex: unstored
+                searchIndex: keyword
             comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
         searchColumnsPref:
             type: integer

@@ -99,7 +99,7 @@ class SystemController extends BaseController
     {
         Fisma_Acl::requirePrivilege('system', 'read', '*');
         
-        $value = trim($this->_request->getParam('keywords'));
+        $keywords = trim($this->_request->getParam('keywords'));
         
         $sortBy = $this->_request->getParam('sortby', 'name');
         // Replace the HYDRATE_SCALAR alias syntax with the regular Doctrine alias syntax
@@ -119,8 +119,9 @@ class SystemController extends BaseController
              ->offset($this->_paging['startIndex'])
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        if (!empty($value)) {
-            $systemIds = Fisma_Lucene::search($value, 'system');
+        if (!empty($keywords)) {
+            $index = new Fisma_Index('System');
+            $systemIds = $index->findIds($keywords);
             if (empty($systemIds)) {
                 // set ids as a not exist value in database if search results is none.
                 $systemIds = array(-1);
@@ -400,7 +401,7 @@ class SystemController extends BaseController
         $id = $this->getRequest()->getParam('id');
         $version = $this->getRequest()->getParam('version');
         $document = Doctrine::getTable('SystemDocument')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $document->System->Organization[0]->nickname);
+        Fisma_Acl::requirePrivilege('system', 'read', $document->System->Organization->nickname);
 
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);

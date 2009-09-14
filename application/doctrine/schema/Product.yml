@@ -18,7 +18,7 @@ Product:
             type: string(255)
             extra:
                 purify: plaintext
-                searchIndex: unstored
+                searchIndex: keyword
             comment: Version of the product
         cpeName:
             type: string(255)
