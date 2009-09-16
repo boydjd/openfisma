@@ -212,7 +212,7 @@ class UserController extends BaseController
     public function passwordAction()
     {
         // This action isn't allowed unless the system's authorization is based on the database
-        if ('database' != Configuration::getConfig('auth_type')) {
+        if ('database' != Configuration::getConfig('auth_type') && 'root' != User::currentUser()->username) {
             throw new Fisma_Exception('Password action is not allowed when the authentication type is not "database"');
         }
         

@@ -52,26 +52,28 @@ class View_Helper_ShowLongText extends Zend_View_Helper_Abstract
         // so as to use 'substr' method to deal easily later
         $text = html_entity_decode($text);
         $text = trim($text);
+        
+        // set the return value to the default first
+        $result = substr($text, 0, $limitLength) . '...';
+        
         // if the text's length over the limitation,
         // than output the text with the specify length
         if (strlen($text) > $limitLength) {
             if (!empty($keywords)) {
-                // get the first keywords
-                $keywords = array_shift(explode(',', $keywords));
-                $pos = stripos($text, $keywords);
-                // if the keywords is in the middle of the text
-                // then cut the words around the keywords to output
-                if ($pos > ($limitLength - strlen($keywords))) {
-                    $result = '...' . substr($text, $pos - $limitLength/2, $limitLength) . '...';
-                } else {
-                    $result = substr($text, 0, $limitLength) . '...';
+                foreach ($keywords as $keyword) {
+                    $pos = stripos($text, $keyword);
+                    // if the keywords is in the middle of the text
+                    // then cut the words around the keywords to output
+                    if ($pos > ($limitLength - strlen($keyword))) {
+                        $result = '...' . substr($text, $pos - $limitLength/2, $limitLength) . '...';
+                        break;
+                    }
                 }
-            } else {
-                $result = substr($text, 0, $limitLength) . '...';
             }
         } else {
             $result = $text;
         }
+        
         $result = htmlentities($result);
         return $result;
     }

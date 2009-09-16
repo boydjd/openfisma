@@ -53,12 +53,32 @@ class Fisma_Index
     const MERGE_FACTOR = 5;
     
     /**
+     * The maximum number of terms which can be highlighted.
+     */
+    const MAX_HIGHLIGHT_WORDS = 25;
+    
+    /**
      * The Zend_Search_Lucene instance that is being wrapped
      * 
      * @var Zend_Search_Lucene
      */
     private $_lucene;
     
+    /**
+     * A reference to the most recently executed query
+     * 
+     * @var Zend_Search_Lucene_Search_Query
+     */
+    private $_lastQuery;
+
+    /**
+     * This stores the path to the index. 
+     * 
+     * This seems to be necessary due to a bug in Zend Search Lucene where the directory sometimes gets closed 
+     * prematurely when deleting a document. In that case, we need to reopen it.
+     */
+    private $_indexPath;
+
     /**
      * Open the index for the specified class, creating the index first if necessary.
      * 
@@ -72,9 +92,9 @@ class Fisma_Index
         Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(0660);
         
         // Create a new lucene object
-        $indexPath = Fisma::getPath('index') . '/' . $class;
-        $createIndex = !is_dir($indexPath);
-        $this->_lucene = new Zend_Search_Lucene($indexPath, $createIndex);
+        $this->_indexPath = Fisma::getPath('index') . '/' . $class;
+        $createIndex = !is_dir($this->_indexPath);
+        $this->_lucene = new Zend_Search_Lucene($this->_indexPath, $createIndex);
         if ($createIndex) {
             // Set permissions to that only owner and group can read or list index files
             chmod($indexPath, 0770);
@@ -113,21 +133,27 @@ class Fisma_Index
         // Delete this record if it already exists in the database
         $this->delete($record);    
         
-        // Add the new document to the index
+        // Add the new document to the index. Sometimes Lucene will lose its reference to the directory (bug?).
+        // If it does, then we need to recreate it.
+        $currentDir = $this->_lucene->getDirectory();
+        if (is_null($currentDir)) {
+            $this->_lucene = new Zend_Search_Lucene($this->_indexPath);
+        }
         $this->_lucene->addDocument($luceneDoc);
     }
     
     /**
      * Executes a Lucene query and returns an array of the matched IDs
      * 
-     * @param string $query
+     * @param string $queryString
      * @return array
      */
-    public function findIds($query)
+    public function findIds($queryString)
     {
         $ids = array();
         
-        $results = $this->_lucene->find($query);
+        $this->_lastQuery = Zend_Search_Lucene_Search_QueryParser::parse($queryString);
+        $results = $this->_lucene->find($this->_lastQuery);
         foreach ($results as $result) {
             $ids[] = $result->getDocument()->id;
         }
@@ -148,7 +174,19 @@ class Fisma_Index
         foreach ($existingDocuments as $document) {
             $this->_lucene->delete($document->id);
         }
-        $d = $this->_lucene->getDirectory();
+    }
+
+    /**
+     * Get an array of the words which should be highlighted (Based on the last execute query)
+     */
+    public function getHighlightWords()
+    {
+        if (!isset($this->_lastQuery)) {
+            throw new Fisma_Index_Exception("Cannot call 'getHighlightWords()' until after a query"
+                                          . " is executed.");
+        }
+        
+        return $this->_extractHighlightWordsFromQuery($this->_lastQuery);
     }
 
     /**
@@ -206,6 +244,8 @@ class Fisma_Index
      * This method might be slow if it has to fetch many relations. One way to speed this up would be to pre-fetch
      * a bunch of objects with their relations before you index them.
      * 
+     * @todo This is limited because if a related record changes, then the index does not get recreated automatically
+     * 
      * @param Zend_Search_Lucene_Document $document
      * @param Doctrine_Record $record
      */
@@ -220,7 +260,7 @@ class Fisma_Index
                     }
                     
                     // Get data from this foreign field
-                    $foreignTable = Doctrine::getTable($foreignModel);
+                    $foreignTable = $record->$foreignModel->getTable();
                     $foreignColumnDef = $foreignTable->getColumnDefinition($foreignFieldName);
                     $indexData = $record->$foreignModel->$foreignFieldName;
 
@@ -293,5 +333,30 @@ class Fisma_Index
                    : $columnName;
         
         return $fieldName;
+    }
+    
+    /**
+     * Given a Lucene query, return an array of the search terms which should be highlighted
+     * 
+     * Some queries, such as '*', would match so many terms that highlighting would become absurd.
+     * Therefore, a maximum limit is imposed.
+     * 
+     * @param Zend_Search_Lucene_Search_Query $query
+     * @return array
+     */
+    private function _extractHighlightWordsFromQuery($query)
+    {
+        $highlightWords = array();
+        
+        // Iterate over the query terms and extract the part we are interested in
+        $terms = $query->getQueryTerms();
+        foreach ($terms as $term) {
+            $highlightWords[] = $term->text;
+            if (count($highlightWords) > self::MAX_HIGHLIGHT_WORDS) {
+                break;
+            }
+        }
+        
+        return $highlightWords;
     }
 }

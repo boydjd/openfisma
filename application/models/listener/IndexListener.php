@@ -38,8 +38,28 @@ class IndexListener extends Doctrine_Record_Listener
     public function postSave(Doctrine_Event $event)
     {
         $record = $event->getInvoker();
+        $modified = $record->getModified();
         
-        $index = new Fisma_Index(get_class($record));
-        $index->update($record);
+        // A quick shortcut:
+        if (0 == count($modified)) {
+            return;
+        }
+
+        // Determine whether any of the indexable fields have changed
+        $needsIndex = false;
+        $table = $record->getTable();
+        foreach ($modified as $modifiedField => $modifiedValue) {
+            $columnDef = $table->getColumnDefinition($modifiedField);
+            if (isset($columndDef['extra']['searchIndex'])) {
+                $needsIndex = true;
+                break;
+            }
+        }
+
+        // If an indexed field changed, then update the index
+        if ($needsIndex) {
+            $index = new Fisma_Index(get_class($record));
+            $index->update($record);
+        }
     }
 }

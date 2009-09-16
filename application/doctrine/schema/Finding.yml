@@ -1,5 +1,5 @@
 Finding:
-    listeners: [XssListener, FindingListener]
+    listeners: [XssListener, FindingListener, IndexListener]
     
     columns:
         createdTs: timestamp
@@ -26,6 +26,7 @@ Finding:
             extra: 
                 purify: plaintext
                 logicalName: Legacy Finding ID
+                searchIndex: unstored
             comment: This field can be used by end clients to track findings under a legacy tracking system
         
         type:
@@ -34,11 +35,14 @@ Finding:
             default: NONE
             notnull: true
             extra:
-                logicalName: Mitigation Type            
+                logicalName: Mitigation Type
+                searchIndex: unstored
             comment: The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)
         status:
             type: enum
             values: [PEND, NEW, DRAFT, MSA, EN, EA, CLOSED]
+            extra:
+                searchIndex: unstored
             comment: The current status. MSA and EA are physical status codes that need to be translated into logical status codes before displaying to the user
         currentEvaluationId:
             type: integer
@@ -49,29 +53,33 @@ Finding:
             extra: 
                 purify: html
                 logicalName: Finding Description
+                searchIndex: unstored
             comment: Description of the finding
         recommendation:
             type: string
             extra: 
                 purify: html
                 logicalName: Recommendation
+                searchIndex: unstored
             comment: The auditors recommendation to remediate this finding
         mitigationStrategy:
             type: string
             extra: 
                 purify: html
                 logicalName: Mitigation Strategy
+                searchIndex: unstored
             comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
         resourcesRequired:
             type: string
             extra: 
                 purify: html
                 logicalName: Resources Required
+                searchIndex: unstored
             comment: Any additional resources (financial) required to complete this course of action
         originalEcd:
             type: date
             extra:
-                logicalName: Original ECD            
+                logicalName: Original ECD
             comment: The original date when the course of action or business case was planned to be completed
         currentEcd:
             type: date
@@ -96,18 +104,21 @@ Finding:
             extra: 
                 purify: html
                 logicalName: Description of Threat Source
+                searchIndex: unstored
             comment: Description of the threat source which affects this finding
         threatLevel:
             type: enum
             values: [LOW, MODERATE, HIGH]
             extra:
-                logicalName: Threat Level            
+                logicalName: Threat Level
+                searchIndex: unstored
             comment: A subjective assessment of the probability and impact of exploiting this finding
         countermeasures:
             type: string
             extra: 
                 purify: html
                 logicalName: Description of Countermeasures
+                searchIndex: unstored
             comment: The countermeasures in place against the threat source
         countermeasuresEffectiveness:
             type: enum

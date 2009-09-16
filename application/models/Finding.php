@@ -42,9 +42,9 @@ class Finding extends BaseFinding
      */
     public $relationIndex = array(
         'Source' => array('nickname' => array('type' => 'keyword', 'alias' => 'source')),
-        'ResponsibleOrganization' => array('nickname' => array('type' => 'keyword', 'alias' => 'organization')),
+        'ResponsibleOrganization' => array('nickname' => array('type' => 'unstored', 'alias' => 'system')),
         'Asset' => array('name' => array('type' => 'unstored', 'alias' => 'asset')),
-        'SecurityControl' => array('code' => array('type' => 'unstored', 'alias' => 'securitycontrol'))
+        'SecurityControl' => array('code' => array('type' => 'keyword', 'alias' => 'securitycontrol'))
     );
 
     //Threshold of overdue for various status
