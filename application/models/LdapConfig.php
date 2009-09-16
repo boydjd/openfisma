@@ -54,6 +54,11 @@ class LdapConfig extends BaseLdapConfig
         } else {
             $ldapConfigs = Doctrine::getTable('LdapConfig')->findAll();
         }
+        if ($ldapConfigs instanceof Doctrine_Collection) {
+        foreach ($ldapConfigs as &$a) {
+        unset ($a->id);
+        }
+        }
 
         return $ldapConfigs;
     }

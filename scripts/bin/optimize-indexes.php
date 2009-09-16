@@ -81,6 +81,9 @@ class OptimizeIndexes
 
         Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
         Fisma::connectDb();
+        
+        // Zend Search Lucene is a memory hog, esp. in php 5.2
+        ini_set('memory_limit', '256M');
     }
         
     /**
@@ -128,16 +131,16 @@ class OptimizeIndexes
         $currentRecord = 0;
         $lastStatusUpdateTime = time();
         
+        // Update status
+        $status = "$model: Indexed 0 rows (0%)";
+        fwrite(STDOUT, $status);        
+        $statusLength = strlen($status);
+        
         while ($currentRecord < $totalRecords) {
             // Set the offset and execute the query
             $query->offset($offset);
             $records = $query->execute();
-            $offset += $count;
-
-            // Update status
-            $status = "$model: Indexed 0 rows (0%)";
-            fwrite(STDOUT, $status);        
-            $statusLength = strlen($status);
+            $offset += self::FETCH_ROWS;
         
             // Loop through records
             foreach ($records as $record) {

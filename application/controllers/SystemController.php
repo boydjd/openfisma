@@ -114,7 +114,7 @@ class SystemController extends BaseController
              ->getOrganizationsQuery()
              ->select('o.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
              ->innerJoin('o.System s')
-             ->where('o.orgType = ?', 'system')
+             ->addWhere('o.orgType = ?', 'system')
              ->orderBy("$sortBy $order")
              ->offset($this->_paging['startIndex'])
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -129,7 +129,7 @@ class SystemController extends BaseController
             $q->whereIn('s.id', $systemIds);
         }
 
-        $totalRecords = $q->count();
+        $totalRecords = $q->count() + 1;
         $q->limit($this->_paging['count']);
         $organizations = $q->execute();
 

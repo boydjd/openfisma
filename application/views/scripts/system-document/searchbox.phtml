@@ -7,7 +7,6 @@
         echo $listButton;
         ?>
     </div>
-    <?php if (is_dir(Fisma::getPath('index') . '/systemdocument')) { ?>
         <div class="right">
             <form name="query" method="post" action="/panel/system-document/sub/list" style="display:inline">
             <span class="searchField">
@@ -26,8 +25,5 @@
             </script>
             </form>
         </div>
-    <?php } else {
-        echo '<b>The index has not been built</b>';
-    } ?>
     <div class="clear"></div>
 </div>

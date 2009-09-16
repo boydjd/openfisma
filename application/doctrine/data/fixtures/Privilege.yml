@@ -198,12 +198,12 @@ Privilege:
         resource: organization
         action: read
         description: View Organizations
-        orgSpecific: false
+        orgSpecific: true
     organization_update:
         resource: organization
         action: update
         description: Edit Organizations
-        orgSpecific: false
+        orgSpecific: true
     organization_delete:
         resource: organization
         action: delete

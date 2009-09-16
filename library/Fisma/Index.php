@@ -97,9 +97,9 @@ class Fisma_Index
         $this->_lucene = new Zend_Search_Lucene($this->_indexPath, $createIndex);
         if ($createIndex) {
             // Set permissions to that only owner and group can read or list index files
-            chmod($indexPath, 0770);
+            chmod($this->_indexPath, 0770);
         }
-        
+
         // Set optimization parameters. This is tuned for small batch, interactive indexing. It will not be very
         // efficient for large batch indexing.
         $this->_lucene->setMaxBufferedDocs(self::MAX_BUFFERED_DOCS);
@@ -216,7 +216,7 @@ class Fisma_Index
             $columnName = $table->getFieldName($physicalColumnName);
             if (isset($columnDefinition['extra']['searchIndex'])) {                                
                 // If this field is also marked as HTML, then strip tags before indexing it. Otherwise, index it as is.
-                if ($columnDefinition['extra']['purify'] == 'html') {
+                if (@$columnDefinition['extra']['purify'] == 'html') {
                     $indexData = strip_tags($record->$columnName);
                 } else {
                     $indexData = $record->$columnName;
@@ -266,7 +266,7 @@ class Fisma_Index
 
                     // If the field is marked as HTML, then strip the HTML from the data (presumably, this
                     // has already been filtered by HtmlPurifier)
-                    if ($foreignColumnDef['extra']['purify'] == 'html') {
+                    if (@$foreignColumnDef['extra']['purify'] == 'html') {
                         $indexData = strip_tags($indexData);
                     }
 

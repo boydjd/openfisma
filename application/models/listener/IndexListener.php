@@ -31,15 +31,28 @@
 class IndexListener extends Doctrine_Record_Listener 
 {
     /**
-     * After a record is saved, update the corresponding Lucene index.
+     * New records always get indexed
      * 
      * @param Doctrine_Event
      */
-    public function postSave(Doctrine_Event $event)
+    public function postInsert(Doctrine_Event $event)
     {
         $record = $event->getInvoker();
-        $modified = $record->getModified();
-        
+
+        $index = new Fisma_Index(get_class($record));
+        $index->update($record);
+    }
+
+    /**
+     * Updated records are only indexed if one of its indexable fields was modified
+     * 
+     * @param Doctrine_Event
+     */
+    public function postUpdate(Doctrine_Event $event)
+    {
+        $record = $event->getInvoker();
+        $modified = $record->getLastModified();
+
         // A quick shortcut:
         if (0 == count($modified)) {
             return;
@@ -50,7 +63,7 @@ class IndexListener extends Doctrine_Record_Listener
         $table = $record->getTable();
         foreach ($modified as $modifiedField => $modifiedValue) {
             $columnDef = $table->getColumnDefinition($modifiedField);
-            if (isset($columndDef['extra']['searchIndex'])) {
+            if (isset($columnDef['extra']['searchIndex'])) {
                 $needsIndex = true;
                 break;
             }
