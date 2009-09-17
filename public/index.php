@@ -35,15 +35,16 @@ try {
     echo '<p>If you have not run the installer, you should do that now.</p>';
 } catch (Exception $exception) {
     // If a bootstrap exception occurs, that indicates a serious problem, such as a syntax error.
-    // At this point, we can't rely on any application code, so rather than check for debug mode,
-    // we just display the error message.
+    // We won't be able to do anything except display an error.
     echo '<h1>An exception occurred while bootstrapping the application.</h1>';
-    echo '<p>' 
-         . get_class($exception) 
-         . '</p><p>' 
-         . $exception->getMessage() 
-         . '</p><p>'
-         . "<p><pre>Stack Trace:\n" 
-         . $exception->getTraceAsString() 
-         . '</pre></p>';
+    if (Fisma::debug()) {
+        echo '<p>' 
+             . get_class($exception) 
+             . '</p><p>' 
+             . $exception->getMessage() 
+             . '</p><p>'
+             . "<p><pre>Stack Trace:\n" 
+             . $exception->getTraceAsString() 
+             . '</pre></p>';
+    }
 }
