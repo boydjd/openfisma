@@ -33,6 +33,13 @@
  */
 class OrganizationController extends SecurityController
 {
+    /**
+     * A set of constants which is used during drag and drop operations to re-order organization nodes.
+     */
+    const DRAG_ABOVE = 0;
+    const DRAG_ONTO = 1;
+    const DRAG_BELOW = 2;
+    
     private $_paging = array(
         'startIndex' => 0,
         'count' => 20,
@@ -147,7 +154,7 @@ class OrganizationController extends SecurityController
     public function searchAction()
     {
         Fisma_Acl::requirePrivilege('organization', 'read');
-        $value = trim($this->_request->getParam('keywords'));
+        $keywords = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
@@ -158,7 +165,6 @@ class OrganizationController extends SecurityController
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
             throw new Fisma_Exception('Invalid "sortBy" parameter');
         }
-        
         
         $order = strtoupper($order);
         if ($order != 'DESC') {
@@ -174,8 +180,9 @@ class OrganizationController extends SecurityController
              ->limit($this->_paging['count'])
              ->offset($this->_paging['startIndex']);
 
-        if (!empty($value)) {
-            $organizationIds = Fisma_Lucene::search($value, 'organization');
+        if (!empty($keywords)) {
+            $index = new Fisma_Index('Organization');
+            $organizationIds = $index->findIds($keywords);
             if (empty($organizationIds)) {
                 $organizationIds = array(-1);
             }
@@ -372,14 +379,14 @@ class OrganizationController extends SecurityController
         $this->searchbox();
         $this->render('tree');        
     }
-    
+
     /**
-     * Returns a JSON object that describes the organization tree, including systems
+     * Gets the organization tree for the current user. 
+     * 
+     * This should be refactored into the user class, but I'm in a hurry.
      */
-    public function treeDataAction() 
+    public function getOrganizationTree() 
     {
-        Fisma_Acl::requirePrivilege('organization', 'read', '*');
-        
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
         if ('root' == Zend_Auth::getInstance()->getIdentity()->username) {
@@ -402,7 +409,17 @@ class OrganizationController extends SecurityController
         
         $organizations = $this->toHierarchy($organizations);
         
-        $this->view->treeData = $organizations;        
+        return $organizations;    
+    }
+    
+    /**
+     * Returns a JSON object that describes the organization tree, including systems
+     */
+    public function treeDataAction() 
+    {
+        Fisma_Acl::requirePrivilege('organization', 'read', '*');
+        
+        $this->view->treeData = $this->getOrganizationTree();        
     }
 
     /**
@@ -452,4 +469,63 @@ class OrganizationController extends SecurityController
         } 
         return $trees; 
     }    
+    
+    /**
+     * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
+     * of organization nodes. It replies with a JSON object.
+     */
+    public function moveNodeAction() 
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $this->_helper->layout()->disableLayout();
+        $return = array('success' => true, 'message' => null);
+        
+        // Find the source and destination objects from the tree
+        $srcId = $this->getRequest()->getParam('src');
+        $src = Doctrine::getTable('Organization')->find($srcId);
+        
+        $destId = $this->getRequest()->getParam('dest');
+        $dest = Doctrine::getTable('Organization')->find($destId);
+        
+        if ($src && $dest) {
+            // Make sure that $dest is not in the subtree under $src... this leads to unpredictable results
+            if (!$dest->getNode()->isDescendantOf($src)) {
+                // Invalidate the cache for the source node BEFORE the move. This way, its old parents
+                // will be updated.
+                $src->invalidateCache();
+                
+                // Based on the dragLocation parameter, execute a corresponding tree move method
+                $dragLocation = $this->getRequest()->getParam('dragLocation');
+                switch ($dragLocation) {
+                    case self::DRAG_ABOVE:
+                        $src->getNode()->moveAsPrevSiblingOf($dest);
+                        break;
+                    case self::DRAG_ONTO:
+                        $src->getNode()->moveAsLastChildOf($dest);
+                        break;
+                    case self::DRAG_BELOW:
+                        $src->getNode()->moveAsNextSiblingOf($dest);
+                        break;
+                    default:
+                        $return['success'] = false;
+                        $return['message'] = "Invalid dragLocation parameter ($dragLocation)";
+                }
+                
+                // Invalidate the cache for the souce node AFTER the move. This way its new parents will be
+                // updated, too.
+                $src->invalidateCache();
+                
+                // Get refreshed organization tree data
+                $return['treeData'] = $this->getOrganizationTree();
+            } else {
+                $return['success'] = false;
+                $return['message'] = 'Cannot move an organization into itself.';
+            }
+        } else {
+            $return['success'] = false;
+            $return['message'] = "Invalid src or dest parameter ($srcId, $destId)";
+        }
+        
+        print Zend_Json::encode($return);
+    }
 }

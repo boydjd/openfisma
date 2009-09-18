@@ -1,5 +1,5 @@
 User:
-    listeners: [XssListener, BaseListener, UserListener]
+    listeners: [XssListener, UserListener, IndexListener]
     
     columns:
         createdTs: timestamp
@@ -11,7 +11,7 @@ User:
             extra:
                 logicalName: User Name
                 purify: plaintext
-                template: true
+                searchIndex: unstored
             comment: This users unique authentication credential
         password: 
             type: string(255)
@@ -61,28 +61,28 @@ User:
             extra:
                 logicalName: Title
                 purify: plaintext
-                template: true
+                searchIndex: unstored
             comment: The users position or title within the agency
         nameFirst: 
             type: string(255)
             extra:
                 logicalName: First Name
-                template: true
                 purify: plaintext
+                searchIndex: unstored
             comment: The users first name
         nameLast: 
             type: string(255)
             extra:
                 logicalName: Last Name
-                template: true
                 purify: plaintext
+                searchIndex: unstored
             comment: The users last name
         email: 
             type: string(255)
             extra:
                 logicalName: E-mail Address
-                template: true
                 purify: plaintext
+                searchIndex: unstored
             email: true
             comment: The users primary e-mail address
         emailValidate: 
@@ -94,16 +94,16 @@ User:
             fixed: true
             extra:
                 logicalName: Office Phone
-                template: true
                 purify: plaintext
+                searchIndex: keyword
             comment: U.S. 10 digit phone number; stored without punctuation
         phoneMobile:
             type: string(10)
             fixed: true
             extra:
                 logicalName: Mobile Phone
-                template: true
                 purify: plaintext
+                searchIndex: keyword
             comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
         searchColumnsPref:
             type: integer

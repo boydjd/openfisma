@@ -45,7 +45,8 @@ YAHOO.fisma.CheckboxTree.handleClick = function(clickedBox, event)
     var topListItem = clickedBox.parentNode;
 
     // If there are no nested checkboxes, then there is nothing to do
-    if (topListItem.nextSibling) {
+    var nextCheckbox = topListItem.nextSibling.childNodes[0];
+    if (nextCheckbox.getAttribute('nestedLevel') > clickedBox.getAttribute('nestedLevel')) {
         var minLevel = clickedBox.getAttribute('nestedlevel');
         var checkboxArray = new Array();
         var allChildNodesChecked = true;

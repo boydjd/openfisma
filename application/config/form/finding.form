@@ -50,12 +50,18 @@ elements.securityControlId.options.label = "Security Control"
 displayGroups.finding.elements.securityControlId = "securityControlId"
 
 elements.threatLevel.type = "select"
-elements.threatLevel.options.label = "Risk Level"
+elements.threatLevel.options.label = "Threat Level"
 elements.threatLevel.options.MultiOptions.NONE = "NONE"
 elements.threatLevel.options.MultiOptions.LOW = "LOW"
 elements.threatLevel.options.MultiOptions.MODERATE = "MODERATE"
 elements.threatLevel.options.MultiOptions.HIGH = "HIGH"
 displayGroups.finding.elements.threatLevel = "threatLevel"
+
+elements.threat.type = "textarea"
+elements.threat.options.label = "Threat Description"
+elements.threat.options.cols = "70%"
+elements.threat.options.rows = "7"
+displayGroups.finding.elements.threat = "threat"
 
 elements.orgSystemId.type = "select"
 elements.orgSystemId.options.style = "width:172px"
@@ -66,6 +72,8 @@ displayGroups.searchasset.elements.orgSystemId = "orgSystemId"
 elements.name.type = "text"
 elements.name.options.label = "Asset Name"
 elements.name.options.class = "assets"
+elements.name.options.privilegeObject = "asset"
+elements.name.options.privilegeAction = "read"
 displayGroups.searchasset.elements.name = "name"
 
 elements.ip.type = "text"
@@ -87,11 +95,10 @@ elements.assetId.type = "select"
 elements.assetId.options.size = 8
 elements.assetId.options.style = "width:130px"
 elements.assetId.options.label = "Asset"
-elements.assetId.options.required = true
 elements.assetId.options.url = "/asset/view/format/ajax/id/"
 displayGroups.searchasset.elements.assetId = "assetId"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Create Finding"
-displayGroups.finding.elements.save = "save"
+displayGroups.searchasset.elements.save = "save"
 

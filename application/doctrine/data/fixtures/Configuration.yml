@@ -156,5 +156,5 @@ Configuration:
         
     host_url:
         name: host_url
-        value: "https://openfisma.agency.gov"
-        description: The URL which OpenFISMA uses to refer to itself
+        value: "openfisma.agency.gov"
+        description: This is used to construct self-referencing URLs in non-HTTP contexts. The installer should overwrite this value.

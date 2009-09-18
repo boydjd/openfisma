@@ -105,10 +105,10 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
         // Render the checkbox tree as a list with CSS indents based on the nesting level
         $groupName = $this->getName();
         $render .= "<tr class='fisma_checkboxes'>"
-                 . "<td colspan='2' style=\"text-align:left\">"
+                 . "<td style=\"text-align:left\">"
                  . $tooltip
                  . "</td></tr>";
-        $render .= "<tr><td colspan='2'><ul class='treelist'>";
+        $render .= "<tr><td><ul class='treelist'>";
         foreach ($this->_checkboxes as $checkbox) {
             $render .= "<li style=\"padding-left:" 
                      . (2*$checkbox['level']) 
@@ -134,7 +134,7 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
 												array('value' => 'Select None',
 												      'onClickFunction' => 'selectNoneUnsafe'));
         
-        $render .= "<tr><td colspan='$columnCount'>"
+        $render .= "<tr><td>"
                  . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'
                  . "$selectAllButton $selectNoneButton</td></tr>";
         

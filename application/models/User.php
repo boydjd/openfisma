@@ -395,14 +395,44 @@ class User extends BaseUser
     /**
      * Get the user's organizations.
      * 
-     * Useful for getting the root user's organizations
+     * Unlike using $this->Organizations, this method implements the correct business logic for the root user,
+     * who won't have any joins in the UserOrganization model, but should still have access to all organizations
+     * anyway.
+     * 
+     * @return Doctrine_Collection
      */
     public function getOrganizations() 
     {
-        if ('root' == $this->username) {
-            return Doctrine::getTable('Organization')->findAll();
-        } else {
-            return $this->Organizations;
-        }
+        $query = $this->getOrganizationsQuery();
+        $result = $query->execute();
+        
+        return $result;
+    }
+    
+    /**
+     * Get a query which will select this user's organizations.
+     * 
+     * This could be useful if you want to do something more advanced with the user's organizations,
+     * such as using aggregation functions or joining to another model. You can extend the query returned
+     * by this function to do so.
+     * 
+     * @return Doctrine_Query
+     */
+    public function getOrganizationsQuery()
+    {
+        // The base query grabs all organizations and sorts by 'lft', which will put the records into 
+        // tree order.
+        $query = Doctrine_Query::create()
+                 ->from('Organization o')
+                 ->orderBy('o.lft');
+        
+        // For all users other than root, we want to join to the user table to limit the systems returned
+        // to those which this user has been granted access to.
+        if ('root' != $this->username) {
+            $query->innerJoin('o.Users u')
+                  ->where('u.id = ?', $this->id);
+        } 
+        
+        return $query;      
     }
 }

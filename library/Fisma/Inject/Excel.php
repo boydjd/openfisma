@@ -198,7 +198,7 @@ class Fisma_Inject_Excel
             if (!empty($finding['securityControl'])) {
                 $securityControlTable = Doctrine::getTable('SecurityControl')->findOneByCode($finding['securityControl']);
                 if (!$securityControlTable) {
-                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
+                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid security control selected. Your
                                                           template may
                                                           be out of date. Please try downloading it again.");
                 }
@@ -206,9 +206,9 @@ class Fisma_Inject_Excel
             } else {
                 $poam['securityControlId'] = null;
             }
-            $poam['description'] = $finding['findingDescription'];
+            $poam['description'] = "<p>{$finding['findingDescription']}</p>";
             if (!empty($finding['contactInfo'])) {
-                $poam['description'] .= "<br>Point of Contact: {$finding['contactInfo']}";
+                $poam['description'] .= "<p>Point of Contact: {$finding['contactInfo']}</p>";
             }
             $poam['recommendation'] = $finding['findingRecommendation'];
             $poam['type'] = $finding['findingType'];
@@ -232,14 +232,16 @@ class Fisma_Inject_Excel
             $poam['countermeasures'] = $finding['countermeasureDescription'];
             $poam['resourcesRequired'] = 'None';
 
-            $asset = array();  
-            $networkTable = Doctrine::getTable('Network')->findOneByNickname($finding['network']);
-            if (!$networkTable) {
-                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
-                                                      template may
-                                                      be out of date. Please try downloading it again.");
+            $asset = array();
+            if (!empty($finding['network'])) {
+                $networkTable = Doctrine::getTable('Network')->findOneByNickname($finding['network']);
+                if (!$networkTable) {
+                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
+                                                          template may
+                                                          be out of date. Please try downloading it again.");
+                }
+                $asset['networkId'] = $networkTable->id;
             }
-            $asset['networkId'] = $networkTable->id;
             
             $asset['addressIp'] = $finding['assetIp'];
             $asset['addressPort'] = $finding['assetPort'];

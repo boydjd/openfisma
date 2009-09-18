@@ -136,6 +136,7 @@
  </Styles>
  <Names>
   <NamedRange ss:Name="controls" ss:RefersTo="=ControlIDs!C1"/>
+  <NamedRange ss:Name="systems" ss:RefersTo="Systems!C1"/>
  </Names>
  <Worksheet ss:Name="Findings">
   <Table ss:ExpandedColumnCount="21" ss:ExpandedRowCount="8" x:FullColumns="1"
@@ -278,8 +279,7 @@
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C1:R65536C1</Range>
    <Type>List</Type>
-   <CellRangeList/>
-   <Value>&quot;<?php echo implode(',',array_values($this->systems));?>&quot;</Value>
+   <Value>systems</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C2:R65536C2</Range>
@@ -323,4 +323,35 @@
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
  </Worksheet>
+ <Worksheet ss:Name="Systems">
+  <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
+   <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
+<?php
+    foreach ($this->systems as $system) {
+?>
+<Row>
+<Cell>
+<Data ss:Type="String"><?php echo $system; ?></Data>
+<NamedCell ss:Name="systems"/>
+</Cell>
+</Row>
+<?php
+    }
+?>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>0</VerticalResolution>
+   </Print>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+    </Pane>
+   </Panes>
+   <ProtectObjects>True</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet> 
 </Workbook>

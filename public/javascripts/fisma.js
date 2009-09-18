@@ -398,54 +398,63 @@ function addBookmark(title, url){
 }
 
 /**
- * Highlights search results according to the keywords which were used to search
+ * A hastily written helper function for highlightWord() that iterates over an array of keywords
+ */
+function highlight(node, keywords) {
+    if ('' == keywords) {
+        return;
+    }
+    
+    // Sort in reverse. If a word is a fragment of another word on this list, it will highlight the larger
+    // word first
+    keywords.sort();
+    keywords.reverse();
+
+    for (var i in keywords) {
+        highlightWord(node, keywords[i]);
+    }
+}
+
+/**
+ * Recursively searches the dom for a keyword and highlights it by appliying a class selector called
+ * 'highlight'
  *
  * @param node object
  * @param keyword string
  */ 
-function highlight(node,keywords) {
-    if (!keywords) {
-        return true;
-    }
+function highlightWord(node, keyword) {
+	// Iterate into this nodes childNodes
+	if (node && node.hasChildNodes) {
+		var hi_cn;
+		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+			highlightWord(node.childNodes[hi_cn],keyword);
+		}
+	}
 
-    // Remove special chars
-	keywords = keywords.split(' ');
-	for (var i in keywords) {
-		keyword = keywords[i];
-
-		// Iterate into this nodes childNodes
-		if (node && node.hasChildNodes) {
-			var hi_cn;
-			for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
-				highlight(node.childNodes[hi_cn],keyword);
+	// And do this node itself
+	if (node && node.nodeType == 3) { // text node
+		tempNodeVal = node.nodeValue.toLowerCase();
+		tempWordVal = keyword.toLowerCase();
+		if (tempNodeVal.indexOf(tempWordVal) != -1) {
+			pn = node.parentNode;
+			if (pn.className != "highlight") {
+				// keyword has not already been highlighted!
+				nv = node.nodeValue;
+				ni = tempNodeVal.indexOf(tempWordVal);
+				// Create a load of replacement nodes
+				before = document.createTextNode(nv.substr(0,ni));
+				docWordVal = nv.substr(ni,keyword.length);
+				after = document.createTextNode(nv.substr(ni+keyword.length));
+				hiwordtext = document.createTextNode(docWordVal);
+				hiword = document.createElement("span");
+				hiword.className = "highlight";
+				hiword.appendChild(hiwordtext);
+				pn.insertBefore(before,node);
+				pn.insertBefore(hiword,node);
+				pn.insertBefore(after,node);
+				pn.removeChild(node);
 			}
 		}
-
-		// And do this node itself
-		if (node && node.nodeType == 3) { // text node
-			tempNodeVal = node.nodeValue.toLowerCase();
-			tempWordVal = keyword.toLowerCase();
-			if (tempNodeVal.indexOf(tempWordVal) != -1) {
-				pn = node.parentNode;
-				if (pn.className != "highlight") {
-					// keyword has not already been highlighted!
-					nv = node.nodeValue;
-					ni = tempNodeVal.indexOf(tempWordVal);
-					// Create a load of replacement nodes
-					before = document.createTextNode(nv.substr(0,ni));
-					docWordVal = nv.substr(ni,keyword.length);
-					after = document.createTextNode(nv.substr(ni+keyword.length));
-					hiwordtext = document.createTextNode(docWordVal);
-					hiword = document.createElement("span");
-					hiword.className = "highlight";
-					hiword.appendChild(hiwordtext);
-					pn.insertBefore(before,node);
-					pn.insertBefore(hiword,node);
-					pn.insertBefore(after,node);
-					pn.removeChild(node);
-				}
-			}
-    	}
 	}
 }
 
@@ -511,21 +520,29 @@ function form_confirm (check_form, action) {
             if (e_type == 'text' || e_type == 'password') {
                 var _v = elements[i].getAttribute('_value');
                 if(typeof(_v) == 'undefined')   _v = '';
-                if(_v != elements[i].value) changed = true;
+                if(_v != elements[i].value) {
+                    ; //this logic is broken... needs a complete rewrite
+                }
             }
             if (e_type == 'checkbox' || e_type == 'radio') {
                 var _v = elements[i].checked ? 'on' : 'off';  
-                if(_v != elements[i].getAttribute('_value')) changed = true;  
+                if(_v != elements[i].getAttribute('_value')) {
+                    changed = true;  
+                }
             }
         } else if (tag_name == 'SELECT') {
             var _v = elements[i].getAttribute('_value');    
             if(typeof(_v) == 'undefined')   _v = '';    
-            if(_v != elements[i].options[elements[i].selectedIndex].value) changed = true;  
+            if(_v != elements[i].options[elements[i].selectedIndex].value) {
+                changed = true;  
+            }
         } else if (tag_name == 'TEXTAREA') {
             var _v = elements[i].getAttribute('_value');
             if(typeof(_v) == 'undefined')   _v = '';
             var textarea_val = elements[i].value ? elements[i].value : elements[i].innerHTML;
-            if(_v != textarea_val) changed = true;
+            if(_v != textarea_val) {
+                changed = true;
+            }
         }
     }
 

@@ -81,9 +81,11 @@ class UserController extends BaseController
                                              $organization['level']);
             }
         }
-        if (Configuration::getConfig('auth_type') == 'database') {
+        if ('database' == Configuration::getConfig('auth_type')) {
             $form->removeElement('checkAccount');
         } else {
+            $form->removeElement('password');
+            $form->removeElement('confirmPassword');
             $form->removeElement('generate_password');
         }
         
@@ -210,7 +212,7 @@ class UserController extends BaseController
     public function passwordAction()
     {
         // This action isn't allowed unless the system's authorization is based on the database
-        if ('database' != Configuration::getConfig('auth_type')) {
+        if ('database' != Configuration::getConfig('auth_type') && 'root' != User::currentUser()->username) {
             throw new Fisma_Exception('Password action is not allowed when the authentication type is not "database"');
         }
         
@@ -334,7 +336,7 @@ class UserController extends BaseController
      */
     public function acceptRobAction() {
         $user = User::currentUser();
-        $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
+//        $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
         $user->lastRob = Fisma::now();
         $user->save();
         $this->_forward('index', 'Panel');
@@ -397,7 +399,7 @@ class UserController extends BaseController
     {
         Fisma_Acl::requirePrivilege('user', 'read');
         $ldapConfig = new LdapConfig();
-        $data = $ldapConfig->getLdaps();
+        $data = $ldapConfig->getLdaps()->toArray();
         $account = $this->_request->getParam('account');
         $msg = '';
         if (count($data) == 0) {

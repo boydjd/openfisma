@@ -198,12 +198,12 @@ Privilege:
         resource: organization
         action: read
         description: View Organizations
-        orgSpecific: false
+        orgSpecific: true
     organization_update:
         resource: organization
         action: update
         description: Edit Organizations
-        orgSpecific: false
+        orgSpecific: true
     organization_delete:
         resource: organization
         action: delete
@@ -256,22 +256,22 @@ Privilege:
     
     # Finding Sources CRUD
     source_create:
-        resource: finding_sources
+        resource: source
         action: create
         description: Create Finding Sources
         orgSpecific: false
     source_read:
-        resource: finding_sources
+        resource: source
         action: read
         description: View Finding Sources
         orgSpecific: false
     source_update:
-        resource: finding_sources
+        resource: source
         action: update
         description: Edit Finding Sources
         orgSpecific: false
     source_delete:
-        resource: finding_sources
+        resource: source
         action: delete
         description: Delete Finding Sources
         orgSpecific: false
@@ -296,6 +296,11 @@ Privilege:
         resource: role
         action: delete
         description: Delete Roles
+        orgSpecific: false
+    roles_assignPrivileges:
+        resource: role
+        action: assignPrivileges
+        description: Assign Privileges
         orgSpecific: false
 
     # Networks CRUD

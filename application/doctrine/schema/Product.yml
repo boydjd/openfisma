@@ -1,21 +1,24 @@
 Product:
-    listeners: [XssListener, BaseListener]
+    listeners: [XssListener, IndexListener]
     
     columns:
         vendor:
             type: string(255)
             extra:
                 purify: plaintext
+                searchIndex: unstored
             comment: The name of the vendor who brands this product
         name:
             type: string(255)
             extra:
                 purify: plaintext
+                searchIndex: unstored
             comment: Name of the product
         version:
             type: string(255)
             extra:
                 purify: plaintext
+                searchIndex: keyword
             comment: Version of the product
         cpeName:
             type: string(255)

@@ -36,12 +36,18 @@ class SystemController extends BaseController
     protected $_modelName = 'System';
 
     /**
+     * Invokes a contract with BaseController regarding privileges. 
+     * @link http://jira.openfisma.org/browse/OFJ-24
+     * @var string
+     */
+    protected $_organizations = '*';
+
+    /**
      * Setup the _organization member so that the base controller knows how to query the ACL
      */
     public function init() 
     {
         parent::init();
-        $this->_organizations = '*';
     }
 
     /**
@@ -93,7 +99,7 @@ class SystemController extends BaseController
     {
         Fisma_Acl::requirePrivilege('system', 'read', '*');
         
-        $value = trim($this->_request->getParam('keywords'));
+        $keywords = trim($this->_request->getParam('keywords'));
         
         $sortBy = $this->_request->getParam('sortby', 'name');
         // Replace the HYDRATE_SCALAR alias syntax with the regular Doctrine alias syntax
@@ -104,20 +110,18 @@ class SystemController extends BaseController
             throw new Fisma_Exception('Invalid "order" parameter');
         }
         
-        $q = Doctrine_Query::create()
+        $q = User::currentUser()
+             ->getOrganizationsQuery()
              ->select('o.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
-             ->from('Organization o')
-             ->leftJoin('o.System s')
-             ->leftJoin('o.Users u')
-             ->where('o.orgType = ?', 'system')
-             ->andWhere('u.id = ?', User::currentUser()->id)
+             ->innerJoin('o.System s')
+             ->addWhere('o.orgType = ?', 'system')
              ->orderBy("$sortBy $order")
-             ->limit($this->_paging['count'])
              ->offset($this->_paging['startIndex'])
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        if (!empty($value)) {
-            $systemIds = Fisma_Lucene::search($value, 'system');
+        if (!empty($keywords)) {
+            $index = new Fisma_Index('System');
+            $systemIds = $index->findIds($keywords);
             if (empty($systemIds)) {
                 // set ids as a not exist value in database if search results is none.
                 $systemIds = array(-1);
@@ -125,8 +129,9 @@ class SystemController extends BaseController
             $q->whereIn('s.id', $systemIds);
         }
 
+        $totalRecords = $q->count() + 1;
+        $q->limit($this->_paging['count']);
         $organizations = $q->execute();
-        $totalRecords = count($organizations);
 
         $tableData = array('table' => array(
             'recordsReturned' => count($organizations),
@@ -396,7 +401,7 @@ class SystemController extends BaseController
         $id = $this->getRequest()->getParam('id');
         $version = $this->getRequest()->getParam('version');
         $document = Doctrine::getTable('SystemDocument')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $document->System->Organization[0]->nickname);
+        Fisma_Acl::requirePrivilege('system', 'read', $document->System->Organization->nickname);
 
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
@@ -434,14 +439,9 @@ class SystemController extends BaseController
         Fisma_Acl::requirePrivilege('system', 'update', $organization->nickname);
 
         $error = $this->getRequest()->getParam('error');
-
-        // Give the user some notice that IE is limiting the features they can use
-        if (!isset($error)) {
-            $error = 'Uploading files has better support in standards-compliant browsers, '
-                   . 'such as Firefox, Safari, and Chrome.';
+        if (!empty($error)) {
+            $this->message($error, self::M_WARNING);
         }
-
-        $this->message($error, self::M_WARNING);
 
         $this->view->organizationId = $id;        
         $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();        

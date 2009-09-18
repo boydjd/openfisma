@@ -153,12 +153,19 @@ class Fisma_Mail extends Zend_Mail
     {
         $transport = null;
         if ( 'smtp' == Configuration::getConfig('send_type')) {
-            $config = array('auth' => 'login',
-                'username' => Configuration::getConfig('smtp_username'),
-                'password' => Configuration::getConfig('smtp_password'),
-                'port' => Configuration::getConfig('smtp_port'));
-            $transport = new Zend_Mail_Transport_Smtp(
-                Configuration::getConfig('smtp_host'), $config);
+            $username = Configuration::getConfig('smtp_username');
+            $password = Configuration::getConfig('smtp_password');
+            $port     = Configuration::getConfig('smtp_port');
+            if (empty($username) && empty($password)) {
+                //Un-authenticated SMTP configuration
+                $config = array('port' => $port);
+            } else {
+                $config = array('auth'     => 'login',
+                                'port'     => $port,
+                                'username' => $username,
+                                'password' => $password);
+            }
+            $transport = new Zend_Mail_Transport_Smtp(Configuration::getConfig('smtp_host'), $config);
         } else {
             $transport = new Zend_Mail_Transport_Sendmail();
         }

@@ -34,6 +34,19 @@
  */
 class Finding extends BaseFinding
 {
+    /**
+     * Declares fields stored in related records that should be indexed along with records in this table
+     * 
+     * @see Asset.php
+     * @todo Doctrine 2.0 might provide a nicer approach for this
+     */
+    public $relationIndex = array(
+        'Source' => array('nickname' => array('type' => 'keyword', 'alias' => 'source')),
+        'ResponsibleOrganization' => array('nickname' => array('type' => 'unstored', 'alias' => 'system')),
+        'Asset' => array('name' => array('type' => 'unstored', 'alias' => 'asset')),
+        'SecurityControl' => array('code' => array('type' => 'keyword', 'alias' => 'securitycontrol'))
+    );
+
     //Threshold of overdue for various status
     private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
 

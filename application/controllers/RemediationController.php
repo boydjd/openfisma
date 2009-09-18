@@ -304,16 +304,12 @@ class RemediationController extends SecurityController
                         'status' => '', 'ids' => '', 'assetOwner' => 0,
                         'estDateBegin' => '', 'estDateEnd' => '',
                         'createdDateBegin' => '', 'createdDateEnd' => '',
-                        'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '');
+                        'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null);
         $req = $this->getRequest();
         $tmp = $req->getParams();
         foreach ($params as $k => &$v) {
             if (isset($tmp[$k])) {
-                if ('keywords' == $k) {
-                    $v = trim($tmp[$k], '"\'');
-                } else {
-                    $v = $tmp[$k];
-                }
+                $v = $tmp[$k];
             }
         }
         if (is_numeric($params['responsibleOrganizationId'])) {
@@ -447,7 +443,12 @@ class RemediationController extends SecurityController
         
         $params = $this->_parseCriteria();
         $this->view->assign('params', $params);
-        $this->view->assign('systems', $this->_organizations->toKeyValueArray('id', 'name'));
+        $systemList = array();
+        foreach ($this->_organizations as $system) {
+            $systemList[$system->id] = "$system->nickname - $system->name";
+        }
+        asort($systemList);
+        $this->view->assign('systems', $systemList);
         $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
         $this->_helper->actionStack('search', 'Remediation');
         $this->render();
@@ -716,39 +717,6 @@ class RemediationController extends SecurityController
                ->initContext();
         $this->view->finding = $finding;
     }
-
-    /**
-     * Get keywords from basic search query for highlight
-     *
-     * Basic search query is a complicated format string, system should pick-up available keywords to highlight
-     */
-    protected function getKeywords($query)
-    {
-        $keywords = '';
-        $keywords = strtolower($query);
-
-        //delete not contain keyword (-keyword, NOT keyword)
-        $keywords = preg_replace('/-[A-Za-z0-9]+$/', '', $keywords);
-        $keywords = preg_replace('/not\s+[A-Za-z0-9]+$/', '', $keywords);
-
-        //delete Zend_Search_Lucene query keywords
-        $searchKeys = array(' and ', ' or ', ' not ', ' to ', '+', '-', '&&', '~', '||', '!', '*', '?', '"', "'");
-        foreach ($searchKeys as $row) {
-            $keywords = str_replace($row, ' ', $keywords);
-        }
-        
-        //delete multi-spaces
-        $keywords = preg_replace('/\s{2,}/', ' ', $keywords);
-
-        //delete search field
-        $keywords = explode(' ', trim($keywords));
-        foreach ($keywords as &$word) {
-            $word = preg_replace('/^.+:/', '', $word);
-        }
-        
-        $keywords = implode(',', $keywords);
-        return $keywords;
-    }
     
     /**
      * Display basic data about the finding and the affected asset
@@ -804,7 +772,6 @@ class RemediationController extends SecurityController
     
     /**
      * Real searching worker, to return searching results for page, PDF, Excel
-     *
      */
     public function search2Action() {
         Fisma_Acl::requirePrivilege('finding', 'read', '*');
@@ -874,18 +841,30 @@ class RemediationController extends SecurityController
         }
         // Use Zend Lucene to find all POAM ids which match the keyword query
         if (!empty($params['keywords'])) {
-            $poamIds = Fisma_Lucene::search($params['keywords'], 'finding');
-            if ($params['ids'] && $poamIds) {
-                $params['ids'] = array_intersect($poamIds, $params['ids']);
-                if (!$params['ids']) {
+            if (preg_match('/^[0-9, ]+$/', $params['keywords'])) {
+                // if the query contains only numbers and commas and whitespace, then interpret it as a list of 
+                // ids to search for
+                $params['ids'] = explode(',', $params['keywords']);
+            } else {
+                // Otherwise, interpret it as a lucene query
+                $index = new Fisma_Index('Finding');
+                $poamIds = $index->findIds($params['keywords']);
+                $tableData['highlightWords'] = $index->getHighlightWords();
+                // Even though it isn't rendered in the view, the highlight words need to be exported to the view...
+                // due the stupid design of this class
+                $this->view->keywords = $tableData['highlightWords'];
+                // Merge keyword results with filter results
+                if ($params['ids'] && $poamIds) {
+                    $params['ids'] = array_intersect($poamIds, $params['ids']);
+                    if (!$params['ids']) {
+                        $list = array();
+                    }
+                } elseif ($poamIds) {
+                    $params['ids'] = $poamIds;
+                } else {
                     $list = array();
                 }
-            } elseif ($poamIds) {
-                $params['ids'] = $poamIds;
-            } else {
-                $list = array();
             }
-            $this->view->assign('keywords', $this->getKeywords($params['keywords']));
         }
         
         if (!isset($list)) {
@@ -978,14 +957,27 @@ class RemediationController extends SecurityController
                     if (!empty($sqlPart)) {
                         $q->andWhere(implode(' OR ', $sqlPart));
                     }
+                } elseif ($k == 'expanded') {
+                    // Intentionally falls through. This is a consequence of bad design in this method. The 
+                    // 'expanded' variable is not literally added to the query, but is actually just
+                    // a modifier for the responsibleOrganizationId parameter.
+                    ;
+                } elseif ($k == 'responsibleOrganizationId') {
+                    if ('false' == $params['expanded']) {
+                        $o = Doctrine::getTable('Organization')->find($v);
+                        $q->addWhere('ro.lft >= ? AND ro.rgt <= ?', array($o->lft, $o->rgt));
+                    } else {
+                        $q->addWhere('ro.id = ?', $v);
+                    }
                 } elseif ($k != 'keywords' && $k != 'dir' && $k != 'sortby') {
                     $q->andWhere("f.$k = ?", $v);
-                }
+                } 
             }
         }
         if ($format == 'json') {
             $q->limit($this->_paging['count'])->offset($this->_paging['startIndex']);
         }
+
         // The total number of found rows is appended to the list of finding. 
         $total = $q->count();
         $results = $q->execute();
@@ -1027,7 +1019,7 @@ class RemediationController extends SecurityController
             } elseif(date('Ymd', strtotime($result->nextDueDate)) >= date('Ymd', time())) {
                 $row['duetime'] = 'On time';
             } else {
-                $row['duetime'] = 'Due time';
+                $row['duetime'] = 'Overdue';
             }
             if ($format == 'pdf' || $format == 'xls') {
                 $row['description'] = strip_tags(html_entity_decode($result->description));

@@ -56,6 +56,13 @@ class FindingController extends BaseController
     private $_myOrgSystemIds = null;
     
     /**
+     * Invokes a contract with BaseController regarding privileges. 
+     * @link http://jira.openfisma.org/browse/OFJ-24
+     * @var string
+     */
+    protected $_organizations = '*';
+    
+    /**
      * initialize the basic information, my orgSystems
      *
      */
@@ -112,6 +119,15 @@ class FindingController extends BaseController
             new Fisma_Form_CreateFindingDecorator()
         ));
         
+        // Check if the user is allowed to read assets.
+        if (!Fisma_Acl::hasPrivilege('asset', 'read', '*')) {
+            $form->removeElement('name');
+            $form->removeElement('ip');
+            $form->removeElement('port');
+            $form->removeElement('searchAsset');
+            $form->removeElement('assetId');
+        }
+        
         $form->setElementDecorators(array(new Fisma_Form_CreateFindingDecorator()));
         $dateElement = $form->getElement('discoveredDate');
         $dateElement->clearDecorators();
@@ -138,13 +154,26 @@ class FindingController extends BaseController
             unset($values['securityControlId']);
         }
         
-        // find the asset record by asset id
+        $subject->merge($values);
+        
+        // If an asset is specified, then try to link the finding to that asset and assign
+        // the responsible system automatically. Otherwise, link to the responsible system
+        // that the user selected.
         $asset = Doctrine::getTable('Asset')->find($values['assetId']);
         if ($asset) {
             // set organization id by related asset
-            $values['responsibleOrganizationId'] = $asset->Organization->id;
+            $subject->ResponsibleOrganization = $asset->Organization;
+        } else {
+            $subject->assetId = null;
+            $organization = Doctrine::getTable('Organization')->find($values['orgSystemId']);
+            if ($organization !== false) {
+                $subject->ResponsibleOrganization = $organization;
+            } else {
+                throw new Fisma_Exception("The user tried to associate a new finding with a"
+                                        . " non-existent organization (id={$values['orgSystemId']}).");
+            }
         }
-        $subject->merge($values);
+                
         $subject->save();
     }
     
@@ -232,13 +261,21 @@ class FindingController extends BaseController
          */
         try {
             $this->_myOrgSystems;
-            $this->view->systems = array();
+            $systems = array();
             foreach ($this->_myOrgSystems as $orgSystem) {
-                $this->view->systems[$orgSystem['id']] = $orgSystem['nickname'];
+                $systems[$orgSystem['id']] = $orgSystem['nickname'];
             }
-            if (count($this->view->systems) == 0) {
+            if (count($systems) == 0) {
                 throw new Fisma_Exception("The spreadsheet template can not be
                     prepared because there are no systems defined.");
+            } else {
+                /** 
+                 * @todo This really needs to be reconstructed. We shouldn't sort in PHP when the DBMS
+                 * already has this field (nickname) indexed for us. Ideally, the user object would be
+                 * able to return a query object that we could then modify.
+                 */
+                sort($systems);
+                $this->view->systems = $systems;
             }
             
             $networks = Doctrine::getTable('Network')->findAll()->toArray();

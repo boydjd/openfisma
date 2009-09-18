@@ -110,7 +110,7 @@ class Organization extends BaseOrganization
         $cache = Fisma::getCacheInstance('finding_summary');
         $cacheId = $this->getCacheId(array('type' => $type, 'source' => $source));
                      
-        if (!$cache->test($cacheId)) {
+        if (!($counts = $cache->load($cacheId))) {
             // First get all of the business statuses
             $statusList = Finding::getAllStatuses();
 
@@ -182,8 +182,9 @@ class Organization extends BaseOrganization
             // Recursively get summary counts from each child and add to the running sum
             $counts['all_ontime'] = $counts['single_ontime'];
             $counts['all_overdue'] = $counts['single_overdue'];
-            if ($this->getNode()->hasChildren()) {
-                $iterator = $this->getNode()->getChildren()->getNormalIterator();
+            $children = $this->getNode()->getChildren();
+            if ($children) {
+                $iterator = $children->getNormalIterator();
                 foreach ($iterator as $child) {
                     $childCounts = $child->getSummaryCounts($type, $source);
                     unset($childCounts['all_ontime']['TOTAL']);
@@ -206,8 +207,6 @@ class Organization extends BaseOrganization
             $counts['all_ontime']['TOTAL'] += array_sum($counts['all_overdue']);
             
             $cache->save($counts, $cacheId, array($this->getCacheTag()));
-        } else {
-            $counts = $cache->load($cacheId);
         }
         
         return $counts;

@@ -72,7 +72,7 @@ $data = array(array("<b>Finding Number:</b>",    $finding->id,
                     "<b>Finding Source:</b>",    $this->plainText($finding->Source->name)),
               array("<b>Date Opened:</b>",       $finding->createdTs,
                     "<b>Date Discovered:</b>",   $finding->discoveredDate),
-              array("<b>Organization:</b>",      $system->Organization[0]->name,"",""),
+              array("<b>Organization:</b>",      $system->Organization->name,"",""),
               array("<b>Asset(s) Affected:</b>", $finding->Asset->name,"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 

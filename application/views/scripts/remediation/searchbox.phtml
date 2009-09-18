@@ -34,11 +34,6 @@
     $this->systems = array('--Any--') + (array)$this->systems;
     $this->sources = array('--Any--') + (array)$this->sources;
 
-    $keywordSearch = true;
-    if (!is_dir(Fisma::getPath('data') . '/index/finding')) {
-        $keywordSearch = false;
-    }
-
     $flag = '';
     foreach ($this->params as $k => $value) {
         if (!empty($value) && $k != 'keywords' && $k != 'evidence_include') {
@@ -49,11 +44,11 @@
 <form name="filters" method="post" action="/panel/remediation/sub/searchbox">
 <div class="searchFilters">
         <span class="searchField"><b>Search: </b>
+        <input type="hidden" name="expanded" value="true">
         <input type="text" 
                name="keywords" 
                size="50" 
-               value='<?php echo $this->params['keywords'];?>' 
-               <?php echo $keywordSearch ? '' : 'disabled="disabled"'; ?>></span>
+               value='<?php echo $this->params['keywords'];?>'></span>
     <?php 
         echo new Fisma_Yui_Form_Button_Submit('remediationSearchSubmit',
                                               array('label' => 'Search'));
@@ -66,9 +61,6 @@
                                                 'onClickFunction' => 'showHelp',
                                                 'onClickArgument' => 'search'));
         echo $helpButton; 
-        if (!$keywordSearch) { 
-            echo "<br><i>The index has not been created yet. You can't use keywords search.</i>";
-        }
     ?>
 </div>
 

@@ -90,7 +90,7 @@ class FindingListener extends Doctrine_Record_Listener
     {
         $finding = $event->getInvoker();
         $duplicateFinding  = $finding->getTable()
-                                     ->findByDql('description LIKE ?', "%{$finding->description}%");
+                                     ->findByDql('description LIKE ?', $finding->description);
         if (!empty($duplicateFinding[0])) {
             $finding->DuplicateFinding = $duplicateFinding[0];
             $finding->status           = 'PEND';
@@ -270,19 +270,11 @@ class FindingListener extends Doctrine_Record_Listener
     {
         $finding  = $event->getInvoker();
         $modified = $finding->getModified($old=false, $last=true);
-        Fisma_Lucene::updateIndex('finding', $finding->id, $modified);
+        $index = new Fisma_Index('Finding');
+        $index->update($finding);
         
         // Invalidate the caches that contain this finding. This will ensure that users always see
         // accurate summary counts on the finding summary screen.
         $finding->ResponsibleOrganization->invalidateCache();
-    }
-
-    /**
-     * Delete a finding lucene index
-     */
-    public function postDelete(Doctrine_Event $event)
-    {
-        $finding  = $event->getInvoker();
-        Fisma_Lucene::deleteIndex('finding', $finding->id);
     }
 }

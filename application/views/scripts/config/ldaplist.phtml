@@ -32,9 +32,9 @@ function makeLdapUrl($value)
 foreach ($this->ldaps as $opt) { 
     echo '<tr>
            <td class="tdc">', makeLdapUrl($opt), '</td>';
-    echo '<td class="tdc">', $opt['domainName'], '</td>';
+    echo '<td class="tdc">', $opt['accountDomainName'], '</td>';
     echo '<td class="tdc">', $opt['bindRequiresDn']?'yes':'no', '</td>';
-    echo '<td class="tdc">', $opt['accountFilter'], '</td>';
+    echo '<td class="tdc">', $opt['accountFilterFormat'], '</td>';
     echo '<td class="tdc" >
         <a href="/panel/config/sub/ldapupdate/id/'.$opt['id'].'" title="edit the LDAP configuration">
         <img src="/images/edit.png" border="0"></a>

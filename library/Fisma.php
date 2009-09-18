@@ -152,6 +152,7 @@ class Fisma
         self::$_includePath = array(
             'doctrine-models' => 'application/models/generated',
             'model' => 'application/models',
+            'controller' => 'application/controllers',
             'listener' => 'application/models/listener',
             'library' => 'library',
             'pear' => 'library/Pear'
@@ -168,8 +169,10 @@ class Fisma
         set_include_path($currentPath . PATH_SEPARATOR . get_include_path());
 
         // Enable the Zend autoloader. This depends on the Zend library being in its expected place.
-        require_once(self::$_rootPath . '/library/Zend/Loader.php');
-        Zend_Loader::registerAutoload();
+        require_once(self::$_rootPath . '/library/Zend/Loader/Autoloader.php');
+        $loader = Zend_Loader_Autoloader::getInstance();
+        $loader->registerNamespace('Fisma_');
+        $loader->setFallbackAutoloader(true);
 
         // Set the initialized flag
         self::$_initialized = true;
@@ -179,7 +182,6 @@ class Fisma
             'application' => 'application',
             'cache' => 'data/cache',
             'config' => 'application/config',
-            'controller' => 'application/controllers',
             'data' => 'data',
             'fixture' => 'application/doctrine/data/fixtures',
             'form' => 'application/config/form',
@@ -232,6 +234,9 @@ class Fisma
         } else {
             self::$_isInstall = false;
         }
+        
+        // Configure the autoloader to suppress warnings in production mode, but enable them in development mode
+        $loader->suppressNotFoundWarnings(!Fisma::debug());
     }
     
     /**

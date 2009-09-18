@@ -1,7 +1,7 @@
 <?php
 echo $this->partial('role/searchbox.phtml');
 $operation = '';
-if (Fisma_Acl::hasPrivilege('role','definition')) {
+if (Fisma_Acl::hasPrivilege('role','assignPrivileges')) {
     $operation .= "[<a href='{$this->rightLink}'>Right</a>]";
 }
 if (Fisma_Acl::hasPrivilege('role','update')) {

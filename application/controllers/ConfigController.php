@@ -121,6 +121,10 @@ class ConfigController extends SecurityController
     public function ldaplistAction()
     {
         $ldaps = Doctrine::getTable('LdapConfig')->findAll();
+        // @see http://jira.openfisma.org/browse/OFJ-30
+        foreach ($ldaps as $ldap) {
+            $ldap->password = '********';
+        }
         $this->view->assign('ldaps', $ldaps->toArray());
     }
 
@@ -154,6 +158,8 @@ class ConfigController extends SecurityController
         $ldap = new LdapConfig();
         if (!empty($id)) {
             $ldap = $ldap->getTable('LdapConfig')->find($id);
+            // @see http://jira.openfisma.org/browse/OFJ-30
+            $ldap->password = '********';
         }
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
@@ -211,6 +217,14 @@ class ConfigController extends SecurityController
                     unset($data['id']);
                     unset($data['SaveLdap']);
                     unset($data['Reset']);
+                    if (empty($data['password'])) {
+                        $ldap = Doctrine::getTable('LdapConfig')
+                                ->findByDql('host = ? AND port = ? AND username = ?',
+                                        array($data['host'], $data['port'], $data['username']));
+                        if (!empty($ldap[0])) {
+                            $data['password'] = $ldap[0]->password;
+                        }
+                    }
                     $ldapcn = new Zend_Ldap($data);
                     $ldapcn->connect();
                     $ldapcn->bind();

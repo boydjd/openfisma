@@ -19,27 +19,15 @@
  *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @license   http://openfisma.org/content/license
  * @version   $Id$
- * @package   Model
  */
- 
+
 /**
- * Logs for events related to authentication
+ * An exception caused by Fisma_Index
  * 
- * @package   Model
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @package Fisma_Index
  */
-class AccountLog extends BaseAccountLog
+class Fisma_Index_Exception extends Fisma_Exception
 {
-    /**
-     * Declares fields stored in related records that should be indexed along with records in this table
-     * 
-     * @see Asset.php
-     * @todo Doctrine 2.0 might provide a nicer approach for this
-     */
-    public $relationIndex = array(
-        'User' => array('username' => array('type' => 'unstored', 'alias' => 'user'))
-    );
 }

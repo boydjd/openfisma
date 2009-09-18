@@ -44,7 +44,7 @@ class SystemDocument extends BaseSystemDocument
     {
         $path = Fisma::getPath('systemDocument')
               . '/'
-              . $this->System->Organization[0]->id
+              . $this->System->Organization->id
               . '/'
               . $this->fileName;
               

@@ -14,7 +14,6 @@
         echo $createButton;
         } ?>
     </div>
-    <?php if (is_dir(Fisma::getPath('index') . '/network')) { ?>
     <div class="right">
         <form name="query" method="post" action="/panel/network/sub/list" style="display:inline">
         <span class="searchField">
@@ -33,8 +32,5 @@
         </script>
         </form>
     </div>
-    <?php } else {
-        echo '<b>The search index needs to be built</b>';
-    } ?>
     <div class="clear"></div>
 </div>

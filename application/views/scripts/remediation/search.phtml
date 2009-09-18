@@ -52,7 +52,8 @@ myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.responseSchema = {
     resultsList: "findings.records",
     metaFields: {
-        totalRecords: "findings.totalRecords"
+        totalRecords: "findings.totalRecords",
+        highlightWords: "findings.highlightWords"
     }
 };
 
@@ -74,13 +75,6 @@ var myRequestBuilder = function(oState, oSelf) {
     return request;
 };
 
-// A function handle clicks on the rows
-var myRowClickHandler = function(clickEvent) {
-    var target = clickEvent.target
-    alert(clickEvent.target);
-    dump(clickEvent.target);
-};
-
 // DataTable configuration
 var myConfigs = {
     initialRequest: "<?php echo $this->link; ?>/sortby/id/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['count']; ?>",
@@ -98,9 +92,14 @@ var myConfigs = {
 // DataTable instance
 var myDataTable = new YAHOO.widget.DataTable("dynamicdata", myColumnDefs, myDataSource, myConfigs);
 
+// Holds an array of words which need to be highlighted
+var highlightWords;
+
 // Update totalRecords on the fly with value from server
 myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
     oPayload.totalRecords = oResponse.meta.totalRecords;
+    highlightWords = oResponse.meta.highlightWords;
+
     // display total records in the search results header, if not already present
     var searchResultsHeader = document.getElementById('searchResultsTotalFound');
     if (!searchResultsHeader.firstChild) {
@@ -122,10 +121,12 @@ myDataTable.subscribe("rowClickEvent",
         document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
     }
 );
+
+
 // Enable keyword highlighting when loading data from the data source
 myDataTable.subscribe("renderEvent", 
     function (oArgs) {
-        highlight(document.getElementById('dynamicdata'), "<?php echo addslashes($this->params['keywords']); ?>");        
+        highlight(document.getElementById('dynamicdata'), highlightWords);        
     }
 );
 
