@@ -33,7 +33,7 @@ class IndexListener extends Doctrine_Record_Listener
     /**
      * New records always get indexed
      * 
-     * @param Doctrine_Event
+     * @param Doctrine_Event $event
      */
     public function postInsert(Doctrine_Event $event)
     {
@@ -46,7 +46,7 @@ class IndexListener extends Doctrine_Record_Listener
     /**
      * Updated records are only indexed if one of its indexable fields was modified
      * 
-     * @param Doctrine_Event
+     * @param Doctrine_Event $event
      */
     public function postUpdate(Doctrine_Event $event)
     {
@@ -74,5 +74,18 @@ class IndexListener extends Doctrine_Record_Listener
             $index = new Fisma_Index(get_class($record));
             $index->update($record);
         }
+    }
+    
+    /**
+     * Remove deleted records from the keyword index
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postDelete(Doctrine_Event $event)
+    {
+        $record = $event->getInvoker();
+
+        $index = new Fisma_Index(get_class($record));
+        $index->delete($record);
     }
 }

@@ -277,13 +277,4 @@ class FindingListener extends Doctrine_Record_Listener
         // accurate summary counts on the finding summary screen.
         $finding->ResponsibleOrganization->invalidateCache();
     }
-
-    /**
-     * Delete a finding lucene index
-     */
-    public function postDelete(Doctrine_Event $event)
-    {
-        $finding  = $event->getInvoker();
-        Fisma_Lucene::deleteIndex('finding', $finding->id);
-    }
 }
