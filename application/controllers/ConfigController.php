@@ -217,6 +217,14 @@ class ConfigController extends SecurityController
                     unset($data['id']);
                     unset($data['SaveLdap']);
                     unset($data['Reset']);
+                    if (empty($data['password'])) {
+                        $ldap = Doctrine::getTable('LdapConfig')
+                                ->findByDql('host = ? AND port = ? AND username = ?',
+                                        array($data['host'], $data['port'], $data['username']));
+                        if (!empty($ldap[0])) {
+                            $data['password'] = $ldap[0]->password;
+                        }
+                    }
                     $ldapcn = new Zend_Ldap($data);
                     $ldapcn->connect();
                     $ldapcn->bind();
