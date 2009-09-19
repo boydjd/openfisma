@@ -401,6 +401,11 @@ function addBookmark(title, url){
  * A hastily written helper function for highlightWord() that iterates over an array of keywords
  */
 function highlight(node, keywords) {
+    // Sometimes keyword is blank... in that case, just return
+    if ('' == keywords) {
+        return;
+    }
+    
     // Sort in reverse. If a word is a fragment of another word on this list, it will highlight the larger
     // word first
     keywords.sort();
