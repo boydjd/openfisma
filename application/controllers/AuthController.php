@@ -71,7 +71,6 @@ class AuthController extends MessageController
                 throw new Zend_Auth_Exception("Incorrect username or password");                
             }
             
-            //  $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
             // Authenticate this user based on their password
             $authType = Configuration::getConfig('auth_type');
             // The root user is always authenticated against the database.

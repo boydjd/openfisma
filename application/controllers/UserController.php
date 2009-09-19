@@ -266,7 +266,6 @@ class UserController extends BaseController
 
                 $user->unlink('Events');
                 $user->link('Events', $postEvents);
-                $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
                 $user->save();
                 Doctrine_Manager::connection()->commit();
 
@@ -336,7 +335,6 @@ class UserController extends BaseController
      */
     public function acceptRobAction() {
         $user = User::currentUser();
-//        $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
         $user->lastRob = Fisma::now();
         $user->save();
         $this->_forward('index', 'Panel');
