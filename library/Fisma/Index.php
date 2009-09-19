@@ -145,10 +145,10 @@ class Fisma_Index
         
             // Add the new document to the index. Sometimes Lucene will lose its reference to the directory (bug?).
             // If it does, then we need to recreate it.
-            /*$currentDir = $this->_lucene->getDirectory();
+            $currentDir = $this->_lucene->getDirectory();
             if (is_null($currentDir)) {
                 $this->_lucene = new Zend_Search_Lucene($this->_indexPath);
-            }*/
+            }
             $this->_lucene->addDocument($luceneDoc);
         } catch (Zend_Search_Lucene_Exception $e) {
             /**
