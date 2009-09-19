@@ -38,26 +38,15 @@ class LdapConfig extends BaseLdapConfig
     /**
      *  Retrive the ldap configuration(s)
      *
-     *  @param numeric $id default null the group id of ldap config
-     *  @return array all the configurations of LDAP servers. One configuration 
-     *      if the $id is specified. 
+     *  @return array all the configurations of LDAP servers. One configuration if the $id is specified.
      */
-    public function getLdaps($id = null)
+    public function getLdaps()
     {
-        if (is_array($id)) {
-            $q = Doctrine_Query::create()
-                           ->from('LdapConfig lc')
-                           ->whereIn('lc.id', $id);
-            $ldapConfigs = $q->execute();
-        } elseif (is_numeric($id)) {
-            $ldapConfigs = Doctrine::getTable('LdapConfig')->find($id);
-        } else {
-            $ldapConfigs = Doctrine::getTable('LdapConfig')->findAll();
-        }
-        if ($ldapConfigs instanceof Doctrine_Collection) {
-        foreach ($ldapConfigs as &$a) {
-        unset ($a->id);
-        }
+        $ldapConfigs = Doctrine::getTable('LdapConfig')->findAll()->toArray();
+        
+        //Remove the id field from each LDAP configuration item
+        foreach ($ldapConfigs as &$ldapConfig) {
+            unset($ldapConfig['id']);
         }
 
         return $ldapConfigs;

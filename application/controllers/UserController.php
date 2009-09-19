@@ -399,7 +399,7 @@ class UserController extends BaseController
     {
         Fisma_Acl::requirePrivilege('user', 'read');
         $ldapConfig = new LdapConfig();
-        $data = $ldapConfig->getLdaps()->toArray();
+        $data = $ldapConfig->getLdaps();
         $account = $this->_request->getParam('account');
         $msg = '';
         if (count($data) == 0) {

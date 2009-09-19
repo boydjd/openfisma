@@ -83,7 +83,7 @@ class AuthController extends MessageController
             if ($authType == 'ldap') {
                 // Handle LDAP authentication 
                 $config = new LdapConfig();
-                $data = $config->getLdaps()->toArray();
+                $data = $config->getLdaps();
                 $authAdapter = new Fisma_Auth_Adapter_Ldap($data, $user, $password);
             } else if ($authType == 'database') {
                 // Handle database authentication 
