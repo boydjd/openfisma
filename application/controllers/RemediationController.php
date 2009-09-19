@@ -847,9 +847,13 @@ class RemediationController extends SecurityController
                 $params['ids'] = explode(',', $params['keywords']);
             } else {
                 // Otherwise, interpret it as a lucene query
-                $index = new Fisma_Index('Finding');
-                $poamIds = $index->findIds($params['keywords']);
-                $tableData['highlightWords'] = $index->getHighlightWords();
+                try {
+                    $index = new Fisma_Index('Finding');
+                    $poamIds = $index->findIds($params['keywords']);
+                    $tableData['highlightWords'] = $index->getHighlightWords();
+                } catch (Zend_Search_Lucene_Exception $e) {
+                    $tableData['exception'] = $e->getMessage();
+                }
                 // Even though it isn't rendered in the view, the highlight words need to be exported to the view...
                 // due the stupid design of this class
                 $this->view->keywords = $tableData['highlightWords'];

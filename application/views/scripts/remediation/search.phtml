@@ -53,7 +53,8 @@ myDataSource.responseSchema = {
     resultsList: "findings.records",
     metaFields: {
         totalRecords: "findings.totalRecords",
-        highlightWords: "findings.highlightWords"
+        highlightWords: "findings.highlightWords",
+        exception: "findings.exception"
     }
 };
 
@@ -107,6 +108,17 @@ myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
         var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
         searchResultsHeader.appendChild(searchTotalFound);
     }
+    
+    // If an exception occurred, then display that to the user
+    if (!YAHOO.lang.isUndefined(oResponse.meta.exception)) {
+        var alertEl = document.getElementById('msgbar');
+        alertEl.style.border = "1px solid red";
+        alertEl.style.color = "red";
+        alertEl.style.backgroundColor = "pink";
+        alertEl.style.display = "block";
+        alertEl.innerHTML = "<b>" + oResponse.meta.exception + "</b>";
+    }
+    
     return oPayload;
 }
 
@@ -126,7 +138,8 @@ myDataTable.subscribe("rowClickEvent",
 // Enable keyword highlighting when loading data from the data source
 myDataTable.subscribe("renderEvent", 
     function (oArgs) {
-        highlight(document.getElementById('dynamicdata'), highlightWords);        
+        var tableElement = YAHOO.util.Selector.query('.yui-dt-data', 'dynamicdata', true);
+        highlight(tableElement, highlightWords);        
     }
 );
 
