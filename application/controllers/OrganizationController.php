@@ -75,10 +75,7 @@ class OrganizationController extends SecurityController
         $form = Fisma_Form_Manager::loadForm('organization');
         
         // build base query
-        $q = Doctrine_Query::create()
-                ->select('o.*')
-                ->from('Organization o')
-                ->where('o.orgType != "system"');
+        $q = User::currentUser()->getOrganizationsQuery();
 
         if ($currOrg == null) {
             $currOrg = new Organization();
