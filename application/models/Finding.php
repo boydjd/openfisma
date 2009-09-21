@@ -132,8 +132,9 @@ class Finding extends BaseFinding
      * or CLOSED as appropriate
      * 
      * @param Object $user a specific user object
+     * @param string $comment The user can comment on why they are approving it
      */
-    public function approve(User $user)
+    public function approve(User $user, $comment)
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
             throw new Fisma_Exception("Findings can only be approved when in MSA or EA status");
@@ -147,6 +148,7 @@ class Finding extends BaseFinding
         $findingEvaluation->Evaluation = $this->CurrentEvaluation;
         $findingEvaluation->decision   = 'APPROVED';
         $findingEvaluation->User       = $user;
+        $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]    = $findingEvaluation;
 
         $this->log('Approved: ' . $this->getStatus());

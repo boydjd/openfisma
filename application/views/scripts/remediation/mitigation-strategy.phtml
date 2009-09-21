@@ -207,10 +207,16 @@ if ($finding->status != 'NEW'
         $decision = $findingEvaluation->decision;
         echo '<p><b>' . html_entity_decode($findingEvaluation->Evaluation->name) . '</b>';
         if ('APPROVED' == $decision) {
-            echo "<span class=\"approved\">$decision ($userName on {$findingEvaluation->createdTs})</span>";
+            echo "<span class=\"approved\">$decision ";
+            if (!empty($findingEvaluation->comment)) {
+                echo "&mdash; \"{$findingEvaluation->comment}\" ";
+            }
+            echo "($userName on $findingEvaluation->createdTs)</span>";
         } elseif ('DENIED' == $decision) {
-            echo "<span class=\"denied\">$decision";
-            echo " &mdash; \"{$findingEvaluation->comment}\" ";
+            echo "<span class=\"denied\">$decision ";
+            if (!empty($findingEvaluation->comment)) {
+                echo "&mdash; \"{$findingEvaluation->comment}\" ";
+            }
             echo "($userName on $findingEvaluation->createdTs)</span>";
         }
         echo "</p>";
@@ -225,9 +231,9 @@ if ($finding->status != 'NEW'
         if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action, $organization)) {
             echo '<input type="hidden" name="comment" value="" />';
             echo '<input type="hidden" name="decision" value="APPROVED" />';
-            echo '<input name="submit_msa" type="submit" value="APPROVED"
-                onclick="return form_confirm(document.finding_detail, \'approve ' . $activeEvaluation->name . '\');"/>&nbsp;';
-            echo '<input type="button" value="DENIED" onclick="ms_comment(document.finding_detail);" />';
+            echo '<input name="submit_msa" type="button" value="APPROVED"
+                onclick="ms_approve(document.finding_detail);"/>&nbsp;';
+            echo '<input type="button" value="DENIED" onclick="ms_deny(document.finding_detail);" />';
         } else {
             echo "PENDING";
         }

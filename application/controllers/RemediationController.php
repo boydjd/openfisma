@@ -523,7 +523,8 @@ class RemediationController extends SecurityController
             }
 
             if ('APPROVED' == $decision) {
-                $finding->approve(User::currentUser());
+                $comment = $this->_request->getParam('comment');
+                $finding->approve(User::currentUser(), $comment);
             }
 
             if ('DENIED' == $decision) {
@@ -654,7 +655,8 @@ class RemediationController extends SecurityController
         try {
             Doctrine_Manager::connection()->beginTransaction();
             if ('APPROVED' == $decision) {
-                $finding->approve(User::currentUser());
+                $comment = $this->_request->getParam('comment');
+                $finding->approve(User::currentUser(), $comment);
             }
 
             if ('DENIED' == $decision) {
