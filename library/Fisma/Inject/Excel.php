@@ -188,6 +188,7 @@ class Fisma_Inject_Excel
             }
             $poam['responsibleOrganizationId'] = $organization->id;
 
+            $finding['findingSource'] = html_entity_decode($finding['findingSource']);
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
                 throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
@@ -218,7 +219,8 @@ class Fisma_Inject_Excel
                 $poam['status'] = 'DRAFT';
             }
             $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
-            $poam['expectedCompletionDate'] = $finding['ecdDate'];
+            $poam['currentEcd'] = $finding['ecdDate'];
+            $poam['ecdLocked'] = 0;
             $poam['discoveredDate'] = $finding['discoveredDate'];
             $poam['threatLevel'] = $finding['threatLevel'];
             if (empty($poam['threatLevel'])) {

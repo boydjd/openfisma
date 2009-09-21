@@ -109,7 +109,7 @@ class FindingListener extends Doctrine_Record_Listener
      * @todo the log need to get the user who did it
      * @param Doctrine_Event $event
      */
-    public function preUpdate(Doctrine_Event $event)
+    public function preSave(Doctrine_Event $event)
     {
         $finding = $event->getInvoker();
         $modifyValues = $finding->getModified(true);
