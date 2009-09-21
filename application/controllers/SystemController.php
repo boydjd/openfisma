@@ -59,10 +59,7 @@ class SystemController extends BaseController
     {
         $form = Fisma_Form_Manager::loadForm('system');
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $q = Doctrine_Query::create()
-                ->select('o.*')
-                ->from('Organization o')
-                ->where('o.orgType != ?', 'system');
+        $q = User::currentUser()->getOrganizationsQuery();
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
         if (!empty($organizationTree)) {
@@ -129,7 +126,7 @@ class SystemController extends BaseController
             $q->whereIn('s.id', $systemIds);
         }
 
-        $totalRecords = $q->count() + 1;
+        $totalRecords = $q->count();
         $q->limit($this->_paging['count']);
         $organizations = $q->execute();
 

@@ -817,7 +817,7 @@ class RemediationController extends SecurityController
         }
         
         if (!empty($params['status'])) {
-            $now = new Zend_Date(null, 'Y-m-d');
+            $now = new Zend_Date();
             switch ($params['status']) {
                 case 'NOT-CLOSED': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
                     break;
