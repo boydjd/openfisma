@@ -38,7 +38,8 @@
  *******************************************************************************
  */
 
-/* 
- * The styles that used to exist in this document were deprecated. This document is still maintained in case
- * new CSS hacks are needed for IE6.
- */
+/* IE6 doesn't support first-child. The approvalStep style needs first child to render correctly, so
+   we disable it that style completely */
+div.approvalStep {
+    border-top: none;
+}
