@@ -126,13 +126,14 @@ class Organization extends BaseOrganization
             unset($counts['single_overdue']['CLOSED']);
         
             // Count the single_ontime and single_overdue
+            $now = new Zend_Date();
             $onTimeQuery = Doctrine_Query::create()
                            ->select('COUNT(*) AS count, f.status, e.nickname')
                            ->from('Finding f')
                            ->leftJoin('f.CurrentEvaluation e')
                            ->innerJoin('f.ResponsibleOrganization o')
                            ->where("f.status <> 'PEND'")
-                           ->andWhere("f.nextDueDate >= NOW() OR f.nextDueDate IS NULL")
+                           ->andWhere("f.nextDueDate >= ? OR f.nextDueDate IS NULL", $now->toString('Y-m-d'))
                            ->andWhere('o.id = ?', array($this->id))
                            ->groupBy('f.status, e.nickname')
                            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -153,13 +154,14 @@ class Organization extends BaseOrganization
                 }
             }
             
+            $now = new Zend_Date();
             $overdueQuery = Doctrine_Query::create()
                             ->select('COUNT(*) AS count, f.status, e.nickname')
                             ->from('Finding f')
                             ->leftJoin('f.CurrentEvaluation e')
                             ->innerJoin('f.ResponsibleOrganization o')
                             ->where("f.status <> 'PEND'")
-                            ->andWhere("f.nextDueDate < NOW()")
+                            ->andWhere("f.nextDueDate < ?", $now->toString('Y-m-d'))
                             ->andWhere('o.id = ?', array($this->id))
                             ->groupBy('f.status, e.nickname')
                             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
