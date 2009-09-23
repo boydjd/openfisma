@@ -54,11 +54,8 @@ class UserController extends BaseController
     public function getForm() 
     {
         $form = Fisma_Form_Manager::loadForm('account');
-        if (in_array($this->_request->getActionName(), array('create', 'edit'))) {
-            if ('create' == $this->_request->getActionName()) {
-                $form->getElement('password')->setRequired(true);
-            }
-            $this->view->requirements =  $this->_getPasswordRequirements();
+        if ('create' == $this->_request->getActionName()) {
+            $form->getElement('password')->setRequired(true);
         }
         $roles  = Doctrine_Query::create()
                     ->select('*')
@@ -83,6 +80,7 @@ class UserController extends BaseController
         }
         if ('database' == Configuration::getConfig('auth_type')) {
             $form->removeElement('checkAccount');
+            $this->view->requirements =  $this->_getPasswordRequirements();
         } else {
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
