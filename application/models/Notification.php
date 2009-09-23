@@ -68,6 +68,8 @@ class Notification extends BaseNotification
 
         if (!is_null($user)) {
             $eventText .= " by $user->nameFirst $user->nameLast";
+        } else {
+            $eventText .= ' by ' . Configuration::getConfig('system_name');
         }
 
         // Figure out which users are listening for this event
@@ -95,6 +97,7 @@ class Notification extends BaseNotification
             $notification->eventText = $eventText;
             $notifications[] = $notification;
         }
+
         /** @todo this does not perform well. to send notifications to 500 users, this would create 500 queries.
          * unfortunately, DQL does not provide a good alternative that I am aware of. 
          */

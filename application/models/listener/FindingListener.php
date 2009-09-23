@@ -130,6 +130,7 @@ class FindingListener extends Doctrine_Record_Listener
                 if (array_key_exists($key, self::$notificationKeys)) {
                     $type = self::$notificationKeys[$key];
                 }
+
                 if (!empty($type)) {
                     Notification::notify($type, $finding, User::currentUser(), $finding->responsibleOrganizationId);
                 }
@@ -246,21 +247,6 @@ class FindingListener extends Doctrine_Record_Listener
                 $finding->log($message);
             }
         }
-    }
-
-    /**
-     * Notify the finding creation, the finding id exists now.
-     */
-    public function postInsert(Doctrine_Event $event)
-    {
-        $finding = $event->getInvoker();
-        if ('scan' == $finding->Asset->source) {
-            $notifyType = 'FINDING_INJECTED';
-        } else {
-            $notifyType = 'FINDING_CREATED';
-        }
-
-        Notification::notify($notifyType, $finding, User::currentUser(), $finding->responsibleOrganizationId);
     }
 
     /**
