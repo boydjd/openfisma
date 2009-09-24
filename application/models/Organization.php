@@ -481,4 +481,53 @@ class Organization extends BaseOrganization
 
         return $stats;
     }
+    
+    /**
+     * A post-insert hook to send notifications
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postInsert(Doctrine_Event $event)
+    {    
+        // This model can generate events for organization objects AND system objects
+        if ('organization' == $this->orgType) {
+            $eventName = 'ORGANIZATION_CREATED';
+        } else {
+            $eventName = 'SYSTEM_CREATED';
+        }
+
+        Notification::notify($eventName, $this, User::currentUser());
+    }
+    
+    /**
+     * A post-update hook to send notifications
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postUpdate(Doctrine_Event $event)
+    {        
+        // The system model will handle update events on its own, but we need to filter them out here
+        // in case the system model somehow triggers a save() on its related organization object
+        if ('organization' == $this->orgType) {
+            $eventName = 'ORGANIZATION_UPDATED';
+            Notification::notify($eventName, $this, User::currentUser(), $this->id);
+        }
+    }
+
+    /**
+     * A post-delete hook to send notifications
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postDelete(Doctrine_Event $event)
+    {        
+        // This model can generate events for organization objects AND system objects
+        if ('organization' == $this->orgType) {
+            $eventName = 'ORGANIZATION_DELETED';
+        } else {
+            $eventName = 'SYSTEM_DELETED';
+        }
+        
+        Notification::notify($eventName, $this, User::currentUser());
+    }
 }
