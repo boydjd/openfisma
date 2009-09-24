@@ -78,10 +78,10 @@ class Fisma_Mail extends Zend_Mail
      */
     public function sendNotification($notifications)
     {
-        $user   = new User();
-        $userId = $notifications[0]->userId;
-        $user   = $user->getTable()->find($userId);
-        $receiveEmail = $user->notifyEmail ? $user->notifyEmail : $user->email;
+        $user = $notifications[0]->User;
+        $receiveEmail = empty($user->notifyEmail)
+                      ? $user->email
+                      : $user->notifyEmail;
 
         $this->addTo($receiveEmail, $user->nameFirst . $user->nameLast);
         $this->setSubject("Your notifications for " . Configuration::getConfig('system_name'));

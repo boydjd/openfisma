@@ -60,7 +60,7 @@ class Notification extends BaseNotification
         // If the model has a "nickname" field, then identify the record by the nickname. Otherwise, identify the record
         // by it's ID, which is a field that all models are expected to have (except for join tables). Some notifications
         // won't have a nickname or ID (such as notifications about the application's configuration)
-        if (isset($record) && !is_null($record->nickname)) {
+        if (isset($record->nickname) && !is_null($record->nickname)) {
             $eventText .= " ($record->nickname)";
         } elseif (isset($record)) {
             $eventText .= " (ID #$record->id)";            

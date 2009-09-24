@@ -60,15 +60,25 @@ class Notify
      */
     function processNotificationQueue() {
         // Get all notifications grouped by user_id
-        $query = Doctrine_Query::create()
+        /**
+         * @todo can't find a way to do this in DQL... substituting a mysql raw connection for now.
+         */
+        /*$query = Doctrine_Query::create()
                     ->select('n.*, u.email, u.notifyFrequency')
                     ->from('Notification n')
                     ->innerJoin('n.User u')
-                    ->innerJoin('n.Event e')
                     ->where('u.emailValidate = 1')
-                    ->addWhere(time() . ' > ? ',
-                        strtotime("'u.mostRecentNotifyTs'") + "'u.notifyFrequency'" * 3600 )
+                    ->addWhere('u.mostRecentNotifyTs is NULL OR u.mostRecentNotifyTs <= ?'. 
+                               new Doctrine_Expression("DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR)"))
                     ->orderBy('n.userId');
+        $notifications = $query->execute();*/
+        $query = new Doctrine_RawSql();
+        $query->select('{n.eventtext}, {n.createdts}, {u.email}, {u.notifyEmail}, {u.nameFirst}, {u.nameLast}')
+              ->addComponent('n', 'Notification n')
+              ->addComponent('u', 'n.User u')
+              ->from('user u INNER JOIN notification n on u.id = n.userid')
+              ->where('u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR)')
+              ->orderBy('u.id');
         $notifications = $query->execute();
 
         // Loop through the groups of notifications, concatenate all messages
