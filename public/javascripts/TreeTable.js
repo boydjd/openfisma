@@ -46,7 +46,6 @@ YAHOO.fisma.TreeTable.render = function (tableId, tree, newTree) {
     // Set the global tree root first, if necessary
     if (newTree) {
         YAHOO.fisma.TreeTable.treeRoot = tree;
-        console.log(YAHOO.fisma.TreeTable.treeRoot);
     }
     var table = document.getElementById(tableId);
 
