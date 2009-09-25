@@ -55,7 +55,7 @@ class Fisma_Yui_Tooltip
      */
     function __toString() {
         $render = "<span id='{$this->_id}Tooltip' class='tooltip'>$this->_title</span><script type='text/javascript'>"
-                . "{$this->_id}Tooltip = new YAHOO.widget.Tooltip("
+                . "var {$this->_id}TooltipVar = new YAHOO.widget.Tooltip("
                 . "\"{$this->_id}TooltipObj\", { context:\"{$this->_id}Tooltip\", "
                 . "showdelay: 150, hidedelay: 150, autodismissdelay: 25000, "
                 . "text:\"{$this->_content}\", "

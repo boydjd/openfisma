@@ -126,7 +126,7 @@ print $exportPdf;
     <tr>
         <th rowspan="3">
             <?php 
-               /* $agencyTooltip = "<p>Click on any item with a plus (+) to expand it and reveal the items "
+                $agencyTooltip = "<p>Click on any item with a plus (+) to expand it and reveal the items "
                                . "contained in it. Click any item with a minus (-) to collapse it and hide "
                                . "the items inside.</p>"
                                . "<p>When an item is collapsed, the summary numbers displayed "
@@ -135,7 +135,7 @@ print $exportPdf;
                                . "only include findings against that specific organization.</p>"
                                . "<p>Green rows represent findings which are not overdue. If any overdue "
                                . "items exist, then a red row containing the overdue items will be displayed "
-                               . "directly under the green row.</p>";*/$agencyTooltip = 'hello';
+                               . "directly under the green row.</p>";
                 echo new Fisma_Yui_Tooltip('agencyTip', 
                                            'Agency Organizations &amp; Information Systems', 
                                            $agencyTooltip);
