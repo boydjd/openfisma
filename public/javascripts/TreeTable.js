@@ -35,13 +35,18 @@ YAHOO.namespace ("fisma.TreeTable");
 // This only supports one tree table per instance.
 YAHOO.fisma.TreeTable.treeRoot;
 
+// Holds values for current filters
+YAHOO.fisma.TreeTable.filterType;
+YAHOO.fisma.TreeTable.filterSource;
+
 // How many tree levels to display, by default
 YAHOO.fisma.TreeTable.defaultDisplayLevel = 2;
 
-YAHOO.fisma.TreeTable.render = function (tableId, tree) {
+YAHOO.fisma.TreeTable.render = function (tableId, tree, newTree) {
     // Set the global tree root first, if necessary
-    if (YAHOO.lang.isUndefined(YAHOO.fisma.TreeTable.treeRoot)) {
+    if (newTree) {
         YAHOO.fisma.TreeTable.treeRoot = tree;
+        console.log(YAHOO.fisma.TreeTable.treeRoot);
     }
     var table = document.getElementById(tableId);
 
@@ -356,6 +361,18 @@ YAHOO.fisma.TreeTable.makeLink = function(orgId, status, ontime, expanded) {
         statusString = '/status/' + escape(status);
     }
 
+    // Include any filters
+    var filterType = '';
+    if (!YAHOO.lang.isUndefined(YAHOO.fisma.TreeTable.filterType) 
+        && YAHOO.fisma.TreeTable.filterType != '') {
+        filterType = '/type/' + YAHOO.fisma.TreeTable.filterType;
+    }
+    var filterSource = '';
+    if (!YAHOO.lang.isUndefined(YAHOO.fisma.TreeTable.filterSource)
+        && YAHOO.fisma.TreeTable.filterSource != '') {
+        filterSource = '/sourceId/' + YAHOO.fisma.TreeTable.filterSource;
+    }
+
     // Render the link
     var uri = '/panel/remediation/sub/search'
             + onTimeString
@@ -363,7 +380,9 @@ YAHOO.fisma.TreeTable.makeLink = function(orgId, status, ontime, expanded) {
             + '/responsibleOrganizationId/'
             + orgId
             + '/expanded/'
-            + expanded;
+            + expanded
+            + filterType
+            + filterSource;
     return uri;
 }
 

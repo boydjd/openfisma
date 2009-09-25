@@ -155,24 +155,11 @@ class RemediationController extends SecurityController
         
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
-        if ('root' == Zend_Auth::getInstance()->getIdentity()->username) {
-            $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type')
-                            ->from('Organization o')
-                            ->leftJoin('o.System s');
-        } else {
-            $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type')
-                            ->from('Organization o')
-                            ->innerJoin('o.Users u')
-                            ->leftJoin('o.System s')
-                            ->where('u.id = ?', $this->_me->id);
-        }
+        $userOrgQuery = User::currentUser()->getOrganizationsQuery();
         $orgTree = Doctrine::getTable('Organization')->getTree();
         $orgTree->setBaseQuery($userOrgQuery);
         $organizations = $orgTree->fetchTree();
         $orgTree->resetBaseQuery();
-            
 
         // For excel and PDF requests, return a table format. For JSON requests, return a hierarchical
         // format
