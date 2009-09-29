@@ -105,7 +105,7 @@ class FindingListener extends Doctrine_Record_Listener
     }
 
     /**
-     * Check ACL before updating a record
+     * Check ACL before updating a record. See if any notifications need to be sent.
      * 
      * @param Doctrine_Event $event
      */
@@ -121,6 +121,15 @@ class FindingListener extends Doctrine_Record_Listener
                     Fisma_Acl::requirePrivilege('finding', 
                                                 self::$_requiredPrivileges[$key], 
                                                 $finding->ResponsibleOrganization->nickname);
+                }
+            
+                // Check whether this field generates any notification events
+                if (array_key_exists($key, self::$notificationKeys)) {
+                    $type = self::$notificationKeys[$key];
+                }
+
+                if (isset($type)) {
+                    Notification::notify($type, $finding, User::currentUser(), $finding->responsibleOrganizationId);
                 }
             }
         }       
@@ -139,16 +148,6 @@ class FindingListener extends Doctrine_Record_Listener
         if (!empty($modifyValues)) {
             foreach ($modifyValues as $key => $value) {
                 $newValue = $finding->$key;
-                $type     = null;
-
-                // Check whether this field generates any notification events
-                if (array_key_exists($key, self::$notificationKeys)) {
-                    $type = self::$notificationKeys[$key];
-                }
-
-                if (!empty($type)) {
-                    Notification::notify($type, $finding, User::currentUser(), $finding->responsibleOrganizationId);
-                }
 
                 // Now address business rules for each field individually
                 switch ($key) {
