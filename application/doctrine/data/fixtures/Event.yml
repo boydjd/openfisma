@@ -4,6 +4,11 @@ Event:
         description: Finding Created
         Privilege: notification_finding
 
+    FINDING_DELETED:
+        name: FINDING_DELETED
+        description: Finding Deleted
+        Privilege: notification_finding
+        
     FINDING_INJECTED:
         name: FINDING_INJECTED
         description: Security Scanner Finding Injected
