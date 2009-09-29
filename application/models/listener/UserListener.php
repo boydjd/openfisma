@@ -51,11 +51,20 @@ class UserListener extends Doctrine_Record_Listener
         }
         
         if (isset($modified['password'])) {
-            $user->generateSalt();
+            if (empty($user->passwordSalt)) {
+                $user->generateSalt();
+            }
             $user->password        = $user->hash($modified['password']);
             $user->passwordTs      = Fisma::now();
 
-            /** @todo where is the password policy enforcement ? */
+            // Check password history
+            if (strpos($user->passwordHistory, $user->password)) {
+                /**
+                 * @todo Throw a doctrine exception... not enough time to fix the exception handlers right now
+                 */
+                throw new Doctrine_Exception('Your password cannot be the same as any of your previous'
+                                           . ' 3 passwords.');
+            }
             
             // Generate user's password history
             $pwdHistory = $user->passwordHistory;
@@ -97,10 +106,7 @@ class UserListener extends Doctrine_Record_Listener
         $modified = $user->getModified($old=true, $last=true);
         $user->password = $modified['password'];
         $mail = new Fisma_Mail();
-        /**
-         * @todo DON'T FORGET ABOUT ME
-         */
-//        $mail->sendAccountInfo($user);
+        $mail->sendAccountInfo($user);
     }
     
     /**

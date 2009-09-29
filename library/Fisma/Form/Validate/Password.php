@@ -128,10 +128,6 @@ class Fisma_Form_Validate_Password extends Zend_Validate_Abstract
             $errno++;
             $this->_error(self::PASS_INCLUDE);
         }
-        if (strpos($user->passwordHistory, $user->hash($pass)) > 0) {
-            $errno++;
-            $this->_error(self::PASS_HISTORY);
-        }
 
         if ($errno > 0) {
             return false;

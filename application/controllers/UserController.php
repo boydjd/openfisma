@@ -231,7 +231,6 @@ class UserController extends BaseController
                     $message = "Password updated successfully."; 
                     $model   = self::M_NOTICE;
                 } catch (Doctrine_Exception $e) {
-                    Doctrine_Manager::connection()->rollback();
                     $message = $e->getMessage();
                     $model   = self::M_WARNING;
                 }
