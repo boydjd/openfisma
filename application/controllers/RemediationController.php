@@ -1060,7 +1060,13 @@ class RemediationController extends SecurityController
     private function _viewFinding()
     {
         $id = $this->_request->getParam('id');
-        $this->view->finding = $this->_getFinding($id);
+        $finding = $this->_getFinding($id);
+        $orgNickname = $finding->ResponsibleOrganization->nickname;
+
+        // Check that the user is permitted to view this finding
+        Fisma_Acl::requirePrivilege('finding', 'read', $orgNickname);
+
+        $this->view->finding = $finding;
     }
 
     /**
