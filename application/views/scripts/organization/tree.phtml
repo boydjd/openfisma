@@ -181,7 +181,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
     },
     
     onDragOver: function (event, id) {
-        var dragLocation = getDragLocation(id, {x: event.x, y: event.y});
+        var dragLocation = getDragLocation(id, event);
         
         // If the drag is near the top of the element, then we set the top border. If its near the middle, we highlight
         // the entire element. If its near the bottom, we set the bottom border.
@@ -215,7 +215,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
         var dest = treeMap[id];
         
         // Set up the query string for this operation
-        var dragLocation = getDragLocation(id, {x: event.x, y: event.y});
+        var dragLocation = getDragLocation(id, event);
         var query = '/organization/move-node/src/' 
                   + src.id 
                   + '/dest/' 
@@ -275,10 +275,10 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
 
 // Given an element and a drag location, return a constant which indicates whether the drag
 // operation is currently above, on top of, or below the targeted tree node.
-function getDragLocation(targetElement, dragPoint) {
+function getDragLocation(targetElement, event) {
     var targetRegion = YAHOO.util.Dom.getRegion(targetElement);
     var height = targetRegion.bottom - targetRegion.top;
-    var clickVerticalOffset = dragPoint.y - targetRegion.top;
+    var clickVerticalOffset = event.pageY - targetRegion.top;
     
     // This ratio indicates how far down the click was inside the element. This is used for deciding whether the
     // mouse is near the top, near the bottom, or somewhere in the middle.
