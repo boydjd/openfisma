@@ -155,24 +155,11 @@ class RemediationController extends SecurityController
         
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
-        if ('root' == Zend_Auth::getInstance()->getIdentity()->username) {
-            $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type')
-                            ->from('Organization o')
-                            ->leftJoin('o.System s');
-        } else {
-            $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type')
-                            ->from('Organization o')
-                            ->innerJoin('o.Users u')
-                            ->leftJoin('o.System s')
-                            ->where('u.id = ?', $this->_me->id);
-        }
+        $userOrgQuery = User::currentUser()->getOrganizationsQuery();
         $orgTree = Doctrine::getTable('Organization')->getTree();
         $orgTree->setBaseQuery($userOrgQuery);
         $organizations = $orgTree->fetchTree();
         $orgTree->resetBaseQuery();
-            
 
         // For excel and PDF requests, return a table format. For JSON requests, return a hierarchical
         // format
@@ -418,6 +405,7 @@ class RemediationController extends SecurityController
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/remediation/search2' . $link);
+        setcookie('lastSearchUrl', '/panel/remediation/sub/searchbox' . $link, 0, '/');
         $this->view->assign('columns', $this->_getColumns());
         $this->view->assign('pageInfo', $this->_paging);
         $this->render();
@@ -523,7 +511,8 @@ class RemediationController extends SecurityController
             }
 
             if ('APPROVED' == $decision) {
-                $finding->approve(User::currentUser());
+                $comment = $this->_request->getParam('comment');
+                $finding->approve(User::currentUser(), $comment);
             }
 
             if ('DENIED' == $decision) {
@@ -654,7 +643,8 @@ class RemediationController extends SecurityController
         try {
             Doctrine_Manager::connection()->beginTransaction();
             if ('APPROVED' == $decision) {
-                $finding->approve(User::currentUser());
+                $comment = $this->_request->getParam('comment');
+                $finding->approve(User::currentUser(), $comment);
             }
 
             if ('DENIED' == $decision) {
@@ -817,7 +807,7 @@ class RemediationController extends SecurityController
         }
         
         if (!empty($params['status'])) {
-            $now = new Zend_Date(null, 'Y-m-d');
+            $now = new Zend_Date();
             switch ($params['status']) {
                 case 'NOT-CLOSED': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
                     break;
@@ -847,9 +837,13 @@ class RemediationController extends SecurityController
                 $params['ids'] = explode(',', $params['keywords']);
             } else {
                 // Otherwise, interpret it as a lucene query
-                $index = new Fisma_Index('Finding');
-                $poamIds = $index->findIds($params['keywords']);
-                $tableData['highlightWords'] = $index->getHighlightWords();
+                try {
+                    $index = new Fisma_Index('Finding');
+                    $poamIds = $index->findIds($params['keywords']);
+                    $tableData['highlightWords'] = $index->getHighlightWords();
+                } catch (Zend_Search_Lucene_Exception $e) {
+                    $tableData['exception'] = $e->getMessage();
+                }
                 // Even though it isn't rendered in the view, the highlight words need to be exported to the view...
                 // due the stupid design of this class
                 $this->view->keywords = $tableData['highlightWords'];
@@ -1066,7 +1060,13 @@ class RemediationController extends SecurityController
     private function _viewFinding()
     {
         $id = $this->_request->getParam('id');
-        $this->view->finding = $this->_getFinding($id);
+        $finding = $this->_getFinding($id);
+        $orgNickname = $finding->ResponsibleOrganization->nickname;
+
+        // Check that the user is permitted to view this finding
+        Fisma_Acl::requirePrivilege('finding', 'read', $orgNickname);
+
+        $this->view->finding = $finding;
     }
 
     /**

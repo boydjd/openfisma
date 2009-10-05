@@ -1,17 +1,17 @@
-============================================================================
-    OpenFISMA INSTALLATION INSTRUCTIONS
-============================================================================
+=======================================================================
+OpenFISMA INSTALLATION INSTRUCTIONS
+=======================================================================
 
-This quickstart guide is intended to help you set up your own instance of 
-OpenFISMA. The guide assumes that you are familiar with basic server concepts 
-such as installing packages and setting permissions.
+This quickstart guide is intended to help you set up your own instance 
+of OpenFISMA. The guide assumes that you are familiar with basic server 
+concepts such as installing packages and setting permissions.
 
-Note: This guide does not cover any security best-practices recommended when 
-setting up OpenFISMA. If you are setting up a production server, please 
-contact us for recommendations on setting up a secure site.
+Note: This guide does not cover any security best-practices recommended 
+when setting up OpenFISMA. If you are setting up a production server, 
+please contact us for recommendations on setting up a secure site.
 
 1.0 Software Pre-Requisites
-----------------------------------------------------------------------------
+-----------------------------------------------------------------------
 You must have the following software installed before proceeding with
 the installation of OpenFISMA.
 
@@ -20,20 +20,22 @@ the installation of OpenFISMA.
 * MySQL 5 or greater
 * MySQL module for PHP (php-mysql)
 * XML module for PHP (php-xml)
+Optional --> LDAP module for PHP (php-ldap)
 
-   NOTE: CentOS requires the use the Testing Repository to utilize the latest
-   version of PHP 5.2
-   rpm --import http://dev.centos.org/centos/RPM-GPG-KEY-CentOS-testing
-   cd /etc/yum.repos.d
-   wget http://dev.centos.org/centos/5/CentOS-Testing.repo
-   yum --disablerepo=* --enablerepo=c5-testing install php php-mysql php-xml
-   Packages Needed: httpd, php, php-mysql, php-xml, mysql-server
+NOTE: CentOS requires the use the Testing Repository to utilize the 
+latest version of PHP 5.2
+$ rpm --import http://dev.centos.org/centos/RPM-GPG-KEY-CentOS-testing
+$ cd /etc/yum.repos.d
+$ wget http://dev.centos.org/centos/5/CentOS-Testing.repo
+$ yum --disablerepo=* --enablerepo=c5-testing install php php-mysql \ 
+php-xml php-ldap
+Packages Needed: httpd, php, php-mysql, php-xml, php-ldap, mysql-server
 
 You will need to install these dependencies before installing OpenFISMA. 
 Installing these programs is beyond the scope of this quick start guide.
 
 2.0 OpenFISMA Setup
-----------------------------------------------------------------------------
+-----------------------------------------------------------------------
 Create a directory for OpenFISMA
  $ mkdir /opt/openfisma
 
@@ -51,14 +53,13 @@ You should now have a directory structure which looks like the following
   > public      - public folder or document root for webserver
   > library     - third party modules used by OpenFISMA
   > data        - holds log files and other data created by OpenFISMA
-  > scripts		- holds command line tools related to OpenFISMA
+  > scripts     - holds command line tools related to OpenFISMA
 
-Next you will need to tell Apache where the public directory of OpenFISMA
-resides. Apache configuration is different on almost all flavors of unix
-but the configuration file below should only require minimal changes to 
-get you up and running. You will need to customize the server name to 
-the appropriate name and validate that the path for the error logs is 
-correct. 
+Next you will need to tell Apache where the public directory of OpenFISMA 
+resides. Apache configuration is different on almost all flavors of unix 
+but the configuration file below should only require minimal changes to get 
+you up and running. You will need to customize the server name to the 
+appropriate name and validate that the path for the error logs is correct. 
 
 # Virtual Host for serving access to OpenFISMA
 NameVirtualHost *:80
@@ -91,15 +92,18 @@ NameVirtualHost *:80
     # files which override any settings defined here
     AllowOverride FileInfo Options	
 
-	# Instructs Apache to (1) follow symbolic links if owners match (required for 
-	# RewriteEngine), (2) not list directory contents, (3) not follow 
-	# symbolic links, (4) disables server side includes, (5) disables 
-	# content negotiation, and (6) disables execution of CGI scripts	
+	# Instructs Apache to (1) follow symbolic links if owners match          
+	# (required for RewriteEngine), (2) not list directory contents, 
+	# (3) not follow symbolic links, (4) disables server side includes, 
+	# (5) disables content negotiation, and (6) disables execution of 
+	# CGI scripts
     Options +SymLinksIfOwnerMatch -Indexes -FollowSymLinks -Includes -Multiviews -ExecCGI
 
     </Directory>
     
-    # sets the name of the file to which the server will log any errors it encounters
+    # sets the name of the file to which the server will log any errors 
+    # it encounters, this may need to be changed depending on os type,
+    # here is an example for redhat: /var/log/httpd/openfisma-error.log 
 	# may need to be set to /var/log/httpd/openfisma-error.log depending on OS type
     ErrorLog /var/log/apache2/openfisma-error.log
     # sets the name of the file to which the server will log information to
@@ -150,4 +154,3 @@ For example:
 * * * * *  /opt/openfisma/scripts/cronjobs/FismaNotify.php >> /tmp/out 2>&1
 # Enable OpenFISMA Overdue alerts and run the script every 5 minutes
 * * * * *  /opt/openfisma/scripts/cronjobs/ECDNotifier.php >> /tmp/out 2>&1
-  

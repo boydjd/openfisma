@@ -264,6 +264,14 @@ div.approvalHeader {
     padding: 3px 8px;
 }
 
+div.approvalStep {
+    border-top: 2px dashed #cecece;
+}
+
+div.approvalStep:first-child {
+    border-top: none;
+}
+
 div.approval b {
     margin-right: 10px;
 }

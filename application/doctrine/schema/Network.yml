@@ -1,26 +1,26 @@
 Network:
-    listeners: [XssListener, IndexListener]
+    listeners: [XssListener, IndexListener, NotificationListener]
     
     columns:
         name: 
             type: string(255)
             extra:
                 logicalName: Network Name
-                template: true
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
         nickname:
             type: string(255)
             extra:
                 logicalName: Network Acronym
-                template: true
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
         description: 
             type: string
             extra:
                 logicalName: Description
-                template: true
                 purify: html
                 searchIndex: unstored
+                notify: true
             comment: Any extra information about this network, such as protocols used, geographic location, etc.

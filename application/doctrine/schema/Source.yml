@@ -1,5 +1,5 @@
 Source:
-    listeners: [XssListener, IndexListener]
+    listeners: [XssListener, IndexListener, NotificationListener]
         
     columns:
         name: 
@@ -8,16 +8,19 @@ Source:
                 logicalName: Source Name
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
         nickname: 
             type: string(255)
             extra:
                 logicalName: Source Acronym
                 purify: plaintext
                 searchIndex: unstored
+                notify: true    
         description: 
             type: string
             extra:
                 logicalName: Description
                 purify: html
                 searchIndex: unstored
+                notify: true
             comment: Any extra information about this finding source

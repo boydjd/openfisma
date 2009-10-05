@@ -71,7 +71,6 @@ class AuthController extends MessageController
                 throw new Zend_Auth_Exception("Incorrect username or password");                
             }
             
-            //  $user->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
             // Authenticate this user based on their password
             $authType = Configuration::getConfig('auth_type');
             // The root user is always authenticated against the database.
@@ -83,7 +82,7 @@ class AuthController extends MessageController
             if ($authType == 'ldap') {
                 // Handle LDAP authentication 
                 $config = new LdapConfig();
-                $data = $config->getLdaps()->toArray();
+                $data = $config->getLdaps();
                 $authAdapter = new Fisma_Auth_Adapter_Ldap($data, $user, $password);
             } else if ($authType == 'database') {
                 // Handle database authentication 

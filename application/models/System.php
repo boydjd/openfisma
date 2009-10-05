@@ -274,4 +274,14 @@ class System extends BaseSystem
     {
         return $this->Organization->nickname . ' - ' . $this->Organization->name;
     }
+    
+    /**
+     * A post-update hook to send notifications
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postUpdate(Doctrine_Event $event)
+    {
+        Notification::notify('SYSTEM_UPDATED', $this->Organization, User::currentUser(), $this->Organization->id);
+    }
 }

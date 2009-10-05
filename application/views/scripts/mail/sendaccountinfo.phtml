@@ -1,12 +1,12 @@
 This is an automatically generated message, please do not reply to this address.
 
-Your <?php echo Configuration::getConfig('system_name');?> account has been created.
+Your <?php echo Configuration::getConfig('system_name'); ?> account has been created.
 
-Login: <?php echo "{$this->user->username}\n";?>
+Login: <?php echo "{$this->user->username}\n"; ?>
 <?php if (Configuration::getConfig('auth_type') == 'ldap'): ?>
 Password: <Same as your network password>
-<? else: ?>
-Temporary Password: <?php echo "{$this->user->password}\n";?>
-<? endif; ?>
+<?php else: ?>
+Temporary Password: <?php echo "{$this->user->password}\n"; ?>
+<?php endif; ?>
 
-Please click here to login:  http://<?php echo $this->host;?>/auth/login
+Please click here to login:  http://<?php echo $this->host; ?>/auth/login

@@ -87,24 +87,33 @@ class Fisma_Index
      * @param $class string The name of the class which this record should go in
      */
     public function __construct($class) 
-    {
-        // Set privileges on index files to be readable only by owner and group
-        Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(0660);
-        
-        // Create a new lucene object
-        $this->_indexPath = Fisma::getPath('index') . '/' . $class;
-        $createIndex = !is_dir($this->_indexPath);
-        $this->_lucene = new Zend_Search_Lucene($this->_indexPath, $createIndex);
-        if ($createIndex) {
-            // Set permissions to that only owner and group can read or list index files
-            chmod($this->_indexPath, 0770);
-        }
+    {        
+        try {
+            // Set privileges on index files to be readable only by owner and group
+            Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(0660);
 
-        // Set optimization parameters. This is tuned for small batch, interactive indexing. It will not be very
-        // efficient for large batch indexing.
-        $this->_lucene->setMaxBufferedDocs(self::MAX_BUFFERED_DOCS);
-        $this->_lucene->setMaxMergeDocs(self::MAX_MERGE_DOCS);
-        $this->_lucene->setMergeFactor(self::MERGE_FACTOR);
+            // Create a new lucene object
+            $this->_indexPath = Fisma::getPath('index') . '/' . $class;
+            $createIndex = !is_dir($this->_indexPath);
+            $this->_lucene = new Zend_Search_Lucene($this->_indexPath, $createIndex);
+            if ($createIndex) {
+                // Set permissions to that only owner and group can read or list index files
+                chmod($this->_indexPath, 0770);
+            }
+
+            // Set optimization parameters. This is tuned for small batch, interactive indexing. It will not be very
+            // efficient for large batch indexing.
+            $this->_lucene->setMaxBufferedDocs(self::MAX_BUFFERED_DOCS);
+            $this->_lucene->setMaxMergeDocs(self::MAX_MERGE_DOCS);
+            $this->_lucene->setMergeFactor(self::MERGE_FACTOR);
+        } catch (Zend_Search_Lucene_Exception $e) {
+            /**
+             * @see http://jira.openfisma.org/browse/OFJ-93
+             */
+            if (Fisma::debug()) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -114,32 +123,41 @@ class Fisma_Index
      */
     public function update(Doctrine_Record $record)
     {
-        $luceneDoc = new Zend_Search_Lucene_Document();
+        try {
+            $luceneDoc = new Zend_Search_Lucene_Document();
         
-        // Each Lucene document must have a unique ID field. If the record does not contain an id field,
-        // then throw an exception.
-        if (!isset($record->id)) {
-            throw new Fisma_Index_Exception('Cannot index class (' 
-                                           . get_class($record) 
-                                           . ') because it does not contain an "id" field');
-        } else {
-            $luceneDoc->addField(Zend_Search_Lucene_Field::Keyword('id', $record->id));
-        }
+            // Each Lucene document must have a unique ID field. If the record does not contain an id field,
+            // then throw an exception.
+            if (!isset($record->id)) {
+                throw new Fisma_Index_Exception('Cannot index class (' 
+                                               . get_class($record) 
+                                               . ') because it does not contain an "id" field');
+            } else {
+                $luceneDoc->addField(Zend_Search_Lucene_Field::Keyword('id', $record->id));
+            }
 
-        // The indexer will pick up columns and relations that are tagged as being indexable.
-        $this->_indexRecordColumns($luceneDoc, $record);
-        $this->_indexRecordRelations($luceneDoc, $record);       
+            // The indexer will pick up columns and relations that are tagged as being indexable.
+            $this->_indexRecordColumns($luceneDoc, $record);
+            $this->_indexRecordRelations($luceneDoc, $record);       
 
-        // Delete this record if it already exists in the database
-        $this->delete($record);    
+            // Delete this record if it already exists in the database
+            $this->delete($record);    
         
-        // Add the new document to the index. Sometimes Lucene will lose its reference to the directory (bug?).
-        // If it does, then we need to recreate it.
-        $currentDir = $this->_lucene->getDirectory();
-        if (is_null($currentDir)) {
-            $this->_lucene = new Zend_Search_Lucene($this->_indexPath);
+            // Add the new document to the index. Sometimes Lucene will lose its reference to the directory (bug?).
+            // If it does, then we need to recreate it.
+            $currentDir = $this->_lucene->getDirectory();
+            if (is_null($currentDir)) {
+                $this->_lucene = new Zend_Search_Lucene($this->_indexPath);
+            }
+            $this->_lucene->addDocument($luceneDoc);
+        } catch (Zend_Search_Lucene_Exception $e) {
+            /**
+             * @see http://jira.openfisma.org/browse/OFJ-93
+             */
+            if (Fisma::debug()) {
+                throw $e;
+            }
         }
-        $this->_lucene->addDocument($luceneDoc);
     }
     
     /**
@@ -151,13 +169,15 @@ class Fisma_Index
     public function findIds($queryString)
     {
         $ids = array();
-        
+    
         $this->_lastQuery = Zend_Search_Lucene_Search_QueryParser::parse($queryString);
-        $results = $this->_lucene->find($this->_lastQuery);
+        // Call time pass by reference is deprecated...but it appears to be the only way to get 
+        // ZSL to return the rewritten query
+        $results = $this->_lucene->find(&$this->_lastQuery);
         foreach ($results as $result) {
             $ids[] = $result->getDocument()->id;
         }
-        
+
         return $ids;
     }
     
@@ -168,11 +188,20 @@ class Fisma_Index
      */
     public function delete(Doctrine_Record $record)
     {
-        $luceneTerm = new Zend_Search_Lucene_Index_Term($record->id, 'id');
-        $luceneQuery = new Zend_Search_Lucene_Search_Query_Term($luceneTerm);
-        $existingDocuments = $this->_lucene->find($luceneQuery);        
-        foreach ($existingDocuments as $document) {
-            $this->_lucene->delete($document->id);
+        try {
+            $luceneTerm = new Zend_Search_Lucene_Index_Term($record->id, 'id');
+            $luceneQuery = new Zend_Search_Lucene_Search_Query_Term($luceneTerm);
+            $existingDocuments = $this->_lucene->find($luceneQuery);        
+            foreach ($existingDocuments as $document) {
+                $this->_lucene->delete($document->id);
+            }
+        } catch (Zend_Search_Lucene_Exception $e) {
+            /**
+             * @see http://jira.openfisma.org/browse/OFJ-93
+             */
+            if (Fisma::debug()) {
+                throw $e;
+            }
         }
     }
 
@@ -181,12 +210,21 @@ class Fisma_Index
      */
     public function getHighlightWords()
     {
-        if (!isset($this->_lastQuery)) {
-            throw new Fisma_Index_Exception("Cannot call 'getHighlightWords()' until after a query"
-                                          . " is executed.");
+        try {
+            if (!isset($this->_lastQuery)) {
+                throw new Fisma_Index_Exception("Cannot call 'getHighlightWords()' until after a query"
+                                              . " is executed.");
+            }
+            
+            return $this->_extractHighlightWordsFromQuery($this->_lastQuery);
+        } catch (Zend_Search_Lucene_Exception $e) {
+            /**
+             * @see http://jira.openfisma.org/browse/OFJ-93
+             */
+            if (Fisma::debug()) {
+                throw $e;
+            }
         }
-        
-        return $this->_extractHighlightWordsFromQuery($this->_lastQuery);
     }
 
     /**
@@ -350,6 +388,7 @@ class Fisma_Index
         
         // Iterate over the query terms and extract the part we are interested in
         $terms = $query->getQueryTerms();
+
         foreach ($terms as $term) {
             $highlightWords[] = $term->text;
             if (count($highlightWords) > self::MAX_HIGHLIGHT_WORDS) {

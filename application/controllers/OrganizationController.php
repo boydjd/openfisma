@@ -75,10 +75,7 @@ class OrganizationController extends SecurityController
         $form = Fisma_Form_Manager::loadForm('organization');
         
         // build base query
-        $q = Doctrine_Query::create()
-                ->select('o.*')
-                ->from('Organization o')
-                ->where('o.orgType != "system"');
+        $q = User::currentUser()->getOrganizationsQuery();
 
         if ($currOrg == null) {
             $currOrg = new Organization();
@@ -261,7 +258,6 @@ class OrganizationController extends SecurityController
                     $msg = "Failure in creation";
                     $model = self::M_WARNING;
                 } else {
-                    $organization->getTable()->getRecordListener()->get('BaseListener')->setOption('disabled', true);
                     // the organization hasn't parent, so it is a root
                     if ((int)$orgValues['parent'] == 0) {
                         $treeObject = Doctrine::getTable('Organization')->getTree();

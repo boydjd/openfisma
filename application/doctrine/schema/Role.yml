@@ -1,5 +1,5 @@
 Role:
-    listeners: [XssListener, IndexListener]
+    listeners: [XssListener, IndexListener, NotificationListener]
     
     columns:
         createdTs: timestamp
@@ -11,12 +11,14 @@ Role:
                 logicalName: Role Name
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
         nickname: 
             type: string(255)
             extra:
                 logicalName: Role Acronym
                 purify: plaintext        
-                searchIndex: unstored        
+                searchIndex: unstored  
+                notify: true      
             unique: true;
         description: 
             type: string
@@ -24,6 +26,7 @@ Role:
                 logicalName: Description
                 purify: html
                 searchIndex: unstored
+                notify: true
             comment: Any extra information about this role, such as security clearances required to hold it, etc.
 
     relations:

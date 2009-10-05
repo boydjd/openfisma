@@ -7,7 +7,7 @@ YAHOO.util.Event.onDOMReady(function () {
                                         success: function(o) {
                                             var json = YAHOO.lang.JSON.parse(o.responseText);
                                             hideLoadingRow();
-                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData, true);
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },
@@ -38,7 +38,7 @@ function reloadTable(url) {
                                         success: function(o) {
                                             var json = YAHOO.lang.JSON.parse(o.responseText);
                                             hideLoadingRow();
-                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData);
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData, true);
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },
@@ -60,7 +60,10 @@ function menuHandler(source) {
     var sourceFilterEl = document.getElementById('sources');
     
     var selectedType = typeFilterEl.options[typeFilterEl.selectedIndex];
+    YAHOO.fisma.TreeTable.filterType = (selectedType.value == 'ALL') ? '' : selectedType.value;
+    
     var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
+    YAHOO.fisma.TreeTable.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
     
     var url = '/remediation/summary-data'
             + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
@@ -83,7 +86,7 @@ function menuHandler(source) {
         <option value="ALL_SOURCES">All Sources</option>
         <?php
             foreach ($this->findingSources as $source) {
-               print "<option value='$source->nickname'>$source->nickname - $source->name</option>";
+               print "<option value='$source->id'>$source->nickname - $source->name</option>";
             }
         ?>
     </select>
@@ -103,11 +106,13 @@ $collapseAll = new Fisma_Yui_Form_Button('collapseAll',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
 print $collapseAll;
 
+/*
 $exportExcel = new Fisma_Yui_Form_Button('exportExcel', 
                                          array('label' => 'Export to Excel', 
                                              'imageSrc' => '/images/xls.gif',
                                              'onClickFunction' => 'YAHOO.fisma.TreeTable.exportExcel'));
 print $exportExcel;
+*/
 
 $exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
                                        array('label' => 'Export to PDF', 

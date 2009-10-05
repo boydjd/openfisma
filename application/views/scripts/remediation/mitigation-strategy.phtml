@@ -205,32 +205,39 @@ if ($finding->status != 'NEW'
     foreach ($finding->getFindingEvaluations('action') as $findingEvaluation) {
         $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
         $decision = $findingEvaluation->decision;
-        echo '<p><b>' . html_entity_decode($findingEvaluation->Evaluation->name) . '</b>';
+        echo '<div class="approvalStep"><p><b>' 
+           . html_entity_decode($findingEvaluation->Evaluation->name) 
+           . ':</b>';
         if ('APPROVED' == $decision) {
-            echo "<span class=\"approved\">$decision ($userName on {$findingEvaluation->createdTs})</span>";
+            echo "<span class=\"approved\"><b>$decision</b> ($userName at $findingEvaluation->createdTs)</span></p>";
+            if (!empty($findingEvaluation->comment)) {
+                echo $this->textToHtml($findingEvaluation->comment);
+            }
         } elseif ('DENIED' == $decision) {
-            echo "<span class=\"denied\">$decision";
-            echo " &mdash; \"{$findingEvaluation->comment}\" ";
-            echo "($userName on $findingEvaluation->createdTs)</span>";
+            echo "<span class=\"denied\"><b>$decision</b> ($userName at $findingEvaluation->createdTs)</span></p>";
+            if (!empty($findingEvaluation->comment)) {
+                echo $this->textToHtml($findingEvaluation->comment);
+            }
         }
-        echo "</p>";
+        echo "</div>";
         if ($findingEvaluation->Evaluation->nextId == null || 'DENIED' == $decision) {
-            echo '</div><div class="approval">';
+            echo '</div>';
         }
     }
 
     $activeEvaluation = $finding->CurrentEvaluation;
     if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'action') {
-        echo '<p><b>' . html_entity_decode($activeEvaluation->name) . '</b>';
+        echo '<div class="approvalStep"><p><b>' . html_entity_decode($activeEvaluation->name) . '</b>';
         if (Fisma_Acl::hasPrivilege('finding', $activeEvaluation->Privilege->action, $organization)) {
             echo '<input type="hidden" name="comment" value="" />';
             echo '<input type="hidden" name="decision" value="APPROVED" />';
-            echo '<input name="submit_msa" type="submit" value="APPROVED"
-                onclick="return form_confirm(document.finding_detail, \'approve ' . $activeEvaluation->name . '\');"/>&nbsp;';
-            echo '<input type="button" value="DENIED" onclick="ms_comment(document.finding_detail);" />';
+            echo '<input name="submit_msa" type="button" value="APPROVED"
+                onclick="ms_approve(document.finding_detail);"/>&nbsp;';
+            echo '<input type="button" value="DENIED" onclick="ms_deny(document.finding_detail);" />';
         } else {
             echo "PENDING";
         }
+        echo '</div>';
     }
 
     $disableEvaluations = array();
@@ -243,8 +250,7 @@ if ($finding->status != 'NEW'
     }
 
     foreach ($disableEvaluations as $evaluation) {
-        echo "<p><b>{$evaluation->name}</b>";
-        echo "EXCLUDED";
+        echo "<div class='approvalStep'><p><b>{$evaluation->name}</b>N/A</div>";
     }
     echo "</div>";
 }

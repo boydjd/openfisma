@@ -1,5 +1,5 @@
 User:
-    listeners: [XssListener, UserListener, IndexListener]
+    listeners: [XssListener, UserListener, IndexListener, NotificationListener]
     
     columns:
         createdTs: timestamp
@@ -12,12 +12,13 @@ User:
                 logicalName: User Name
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
             comment: This users unique authentication credential
         password: 
             type: string(255)
             extra: 
                 logicalName: Password
-                template: "true"
+                notify: true
         passwordSalt:
             type: string(10)
             fixed: true
@@ -34,6 +35,8 @@ User:
         locked: 
             type: boolean
             default: false
+            extra:
+                notify: true
         lockTs: timestamp
         lockType: 
             type: enum
@@ -62,6 +65,7 @@ User:
                 logicalName: Title
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
             comment: The users position or title within the agency
         nameFirst: 
             type: string(255)
@@ -69,6 +73,7 @@ User:
                 logicalName: First Name
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
             comment: The users first name
         nameLast: 
             type: string(255)
@@ -76,6 +81,7 @@ User:
                 logicalName: Last Name
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
             comment: The users last name
         email: 
             type: string(255)
@@ -83,6 +89,7 @@ User:
                 logicalName: E-mail Address
                 purify: plaintext
                 searchIndex: unstored
+                notify: true
             email: true
             comment: The users primary e-mail address
         emailValidate: 
@@ -96,6 +103,7 @@ User:
                 logicalName: Office Phone
                 purify: plaintext
                 searchIndex: keyword
+                notify: true
             comment: U.S. 10 digit phone number; stored without punctuation
         phoneMobile:
             type: string(10)
@@ -104,6 +112,7 @@ User:
                 logicalName: Mobile Phone
                 purify: plaintext
                 searchIndex: keyword
+                notify: true
             comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
         searchColumnsPref:
             type: integer

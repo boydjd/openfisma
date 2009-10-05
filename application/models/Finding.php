@@ -132,8 +132,9 @@ class Finding extends BaseFinding
      * or CLOSED as appropriate
      * 
      * @param Object $user a specific user object
+     * @param string $comment The user can comment on why they are approving it
      */
-    public function approve(User $user)
+    public function approve(User $user, $comment)
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
             throw new Fisma_Exception("Findings can only be approved when in MSA or EA status");
@@ -147,6 +148,7 @@ class Finding extends BaseFinding
         $findingEvaluation->Evaluation = $this->CurrentEvaluation;
         $findingEvaluation->decision   = 'APPROVED';
         $findingEvaluation->User       = $user;
+        $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]    = $findingEvaluation;
 
         $this->log('Approved: ' . $this->getStatus());
@@ -253,20 +255,17 @@ class Finding extends BaseFinding
         }
         switch ($this->status) {
             case 'NEW':
-                $startDate = $this->createdTs;
-                break;
             case 'DRAFT':
-                $startDate = $this->createdTs;
-                break;
             case 'MSA':
+            case 'EA':
                 $startDate = Fisma::now();
                 break;
             case 'EN':
                 $startDate = $this->currentEcd;
                 break;
-            case 'EA':
-                $startDate = Fisma::now();
-                break;
+            default:
+                throw new Fisma_Exception('Cannot update the next due date because the finding has an'
+                                        . " invalid status: '$this->status'");
         }
         $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
         $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
