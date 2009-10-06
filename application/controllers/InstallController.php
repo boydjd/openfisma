@@ -39,10 +39,6 @@ class InstallController extends Zend_Controller_Action
      */
     public function preDispatch()
     {
-        // Turn off the maximum execution time and maximum before each action during
-        // install, so that no limits are hit during this crucial time
-        set_time_limit(0);
-
         $this->_helper->layout->setLayout('install');
     }
 
