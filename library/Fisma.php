@@ -293,6 +293,8 @@ class Fisma
         Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Controller_Action_Helper');
 
         if (!self::isInstall()) {
+            set_time_limit(0);
+
             // set the fixed controller when Openfisma has been installed 
             $router = $frontController->getRouter();
             $route['install'] = new Zend_Controller_Router_Route_Regex (
