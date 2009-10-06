@@ -382,8 +382,12 @@ class Fisma
         if (!self::$_initialized) {
             throw new Fisma_Exception('The Fisma object has not been initialized.');
         }
-        
-        return (self::$_appConf->debug == 1);
+
+        if(!isset(self::$_appConf->debug)) {
+            return false;
+        } else {
+            return (self::$_appConf->debug == 1);
+        }
     }
     
     /**
