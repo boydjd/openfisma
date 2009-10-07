@@ -319,7 +319,7 @@ class UserController extends BaseController
     public function setColumnPreferenceAction()
     {
         $me = Doctrine::getTable('User')->find($this->_me->id);
-        $me->searchColumnsPref = $_COOKIE['search_columns_pref'];
+        $me->searchColumnsPref = Fisma_Cookie::get($_COOKIE, 'search_columns_pref');
         $me->getTable()->getRecordListener()->setOption('disabled', true);
         $me->save();
         $this->_helper->layout->setLayout('ajax');

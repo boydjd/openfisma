@@ -104,7 +104,7 @@ class AuthController extends MessageController
             // Set cookie for 'column manager' to control the columns visible on the search page
             // Persistent cookies are prohibited on U.S. government web servers by federal law. 
             // This cookie will expire at the end of the session.
-            setcookie(User::SEARCH_PREF_COOKIE, $user->searchColumnsPref, false, '/');
+            call_user_func_array("setcookie", Fisma_Cookie::prepare(User::SEARCH_PREF_COOKIE, $user->searchColumnsPref));
 
             $passExpirePeriod = Configuration::getConfig('pass_expire');
             // Check whether the user's password is about to expire (for database authentication only)
