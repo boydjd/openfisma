@@ -84,7 +84,7 @@ class FindingController extends BaseController
      *
      * @return Zend_Form
      */
-    public function getForm()
+    public function getForm($formName = null)
     {
         $form = Fisma_Form_Manager::loadForm('finding');
         

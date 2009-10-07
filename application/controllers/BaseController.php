@@ -88,7 +88,7 @@ abstract class BaseController extends SecurityController
      *
      * @param string $formName
      */
-    public function getForm(string $formName=null)
+    public function getForm($formName=null)
     {
         static $form = null;
         if (is_null($form)) {
