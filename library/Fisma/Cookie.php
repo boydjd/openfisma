@@ -59,15 +59,13 @@ class Fisma_Cookie
     * prepare - Prepares a cookie for sending to the client. 
     * 
     * @param string $name 
-    * @param string $value 
+    * @param string $value
+    * @param boolean $secure
     * @static
     * @access public
     * @return array 
     */
-    public static function prepare($name, $value) {
-        // Pull secure cookie option out of the session.
-        $secure = Zend_Session::getOptions('cookie_secure');
-
+    public static function prepare($name, $value, $secure) {
         // Create an array containing the arguments to be passed to setcookie()
         // by the caller. Expire is set to false, so that the cookie expires
         // with the session, pursuant to United States federal law. 
