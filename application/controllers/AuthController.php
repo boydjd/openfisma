@@ -62,6 +62,16 @@ class AuthController extends MessageController
         
         // Attempt login. Display any authentication exceptions back to the user
         try {
+            // Honor the session.cookie_secure configuration from Zend_Session. If
+            // the user attempts to login over HTTP with session.cookie_secure=true
+            // the user will be shown an error message that they must use the system
+            // over HTTPS.
+            if ( Zend_Session::getOptions('cookie_secure') && 
+                !$this->_request->isSecure() 
+            ) {
+                throw new Zend_Auth_Exception("You must access this application via HTTPS, since secure cookies are enabled.");
+            }
+
             $user = Doctrine::getTable('User')->findOneByUsername($username);
             
             // If the user name isn't found, then display an error message
