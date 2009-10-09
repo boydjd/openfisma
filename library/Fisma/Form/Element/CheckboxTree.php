@@ -82,7 +82,7 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      *
      * @return string The rendered matrix
      */
-    function render() {
+    function render(Zend_View_Interface $view = null) {
         $render = '';
         
         // Setup the tooltip
