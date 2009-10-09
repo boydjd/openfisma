@@ -115,8 +115,7 @@ class AuthController extends MessageController
             // Persistent cookies are prohibited on U.S. government web servers by federal law. 
             // This cookie will expire at the end of the session.
             call_user_func_array("setcookie", Fisma_Cookie::prepare(
-                User::SEARCH_PREF_COOKIE, $user->searchColumnsPref, 
-                Zend_Session::getOptions('cookie_secure')
+                User::SEARCH_PREF_COOKIE, $user->searchColumnsPref 
                 )
             );
 
