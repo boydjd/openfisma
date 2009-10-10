@@ -105,7 +105,7 @@ class AssetController extends BaseController
     /**
      * Get the specific form of the subject model
      */
-    public function getForm()
+    public function getForm($formName=null)
     {
         $form = Fisma_Form_Manager::loadForm($this->_modelName);
         

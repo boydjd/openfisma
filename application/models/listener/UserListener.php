@@ -83,7 +83,7 @@ class UserListener extends Doctrine_Record_Listener
         }
 
         //@todo can't use $user->lockAccount() which has save function in itsself.
-        if ($modified['locked']) {
+        if (isset($modified['locked']) && $modified['locked']) {
             $user->lockType = User::LOCK_TYPE_MANUAL;
         }
     }

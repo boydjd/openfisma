@@ -51,7 +51,7 @@ class UserController extends BaseController
     /**
      * Get the specific form of the subject model
      */
-    public function getForm() 
+    public function getForm($formName = null) 
     {
         $form = Fisma_Form_Manager::loadForm('account');
         if ('create' == $this->_request->getActionName()) {
@@ -319,7 +319,7 @@ class UserController extends BaseController
     public function setColumnPreferenceAction()
     {
         $me = Doctrine::getTable('User')->find($this->_me->id);
-        $me->searchColumnsPref = $_COOKIE['search_columns_pref'];
+        $me->searchColumnsPref = Fisma_Cookie::get($_COOKIE, 'search_columns_pref');
         $me->getTable()->getRecordListener()->setOption('disabled', true);
         $me->save();
         $this->_helper->layout->setLayout('ajax');

@@ -487,7 +487,7 @@ class Organization extends BaseOrganization
      * 
      * @param Doctrine_Event $event
      */
-    public function postInsert(Doctrine_Event $event)
+    public function postInsert($event)
     {    
         // This model can generate events for organization objects AND system objects
         if ('organization' == $this->orgType) {
@@ -504,7 +504,7 @@ class Organization extends BaseOrganization
      * 
      * @param Doctrine_Event $event
      */
-    public function postUpdate(Doctrine_Event $event)
+    public function postUpdate($event)
     {        
         // The system model will handle update events on its own, but we need to filter them out here
         // in case the system model somehow triggers a save() on its related organization object
@@ -519,7 +519,7 @@ class Organization extends BaseOrganization
      * 
      * @param Doctrine_Event $event
      */
-    public function postDelete(Doctrine_Event $event)
+    public function postDelete($event)
     {        
         // This model can generate events for organization objects AND system objects
         if ('organization' == $this->orgType) {

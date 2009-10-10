@@ -55,7 +55,7 @@ class SystemController extends BaseController
      *
      * @return Zend_Form
      */
-    public function getForm()
+    public function getForm($formName = null)
     {
         $form = Fisma_Form_Manager::loadForm('system');
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();

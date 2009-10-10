@@ -62,6 +62,16 @@ class AuthController extends MessageController
         
         // Attempt login. Display any authentication exceptions back to the user
         try {
+            // Honor the session.cookie_secure configuration from Zend_Session. If
+            // the user attempts to login over HTTP with session.cookie_secure=true
+            // the user will be shown an error message that they must use the system
+            // over HTTPS.
+            if ( Zend_Session::getOptions('cookie_secure') && 
+                !$this->_request->isSecure() 
+            ) {
+                throw new Zend_Auth_Exception("You must access this application via HTTPS, since secure cookies are enabled.");
+            }
+
             $user = Doctrine::getTable('User')->findOneByUsername($username);
             
             // If the user name isn't found, then display an error message
@@ -104,7 +114,10 @@ class AuthController extends MessageController
             // Set cookie for 'column manager' to control the columns visible on the search page
             // Persistent cookies are prohibited on U.S. government web servers by federal law. 
             // This cookie will expire at the end of the session.
-            setcookie(User::SEARCH_PREF_COOKIE, $user->searchColumnsPref, false, '/');
+            call_user_func_array("setcookie", Fisma_Cookie::prepare(
+                User::SEARCH_PREF_COOKIE, $user->searchColumnsPref 
+                )
+            );
 
             $passExpirePeriod = Configuration::getConfig('pass_expire');
             // Check whether the user's password is about to expire (for database authentication only)

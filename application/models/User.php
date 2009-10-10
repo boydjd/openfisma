@@ -325,8 +325,12 @@ class User extends BaseUser
         $accountLog->message = $message;
         // Assigning the ID instead of the user object prevents doctrine from calling the preSave hook on the 
         // User object
-        $operator = self::currentUser()->id;
-        $operator = $operator ? $operator : $this->id; //If the currentUser has not been set yet during login
+        if(isset(self::currentUser()->id)) {
+            $operator = self::currentUser()->id;
+        } else {
+            //if the currentUser has not been set yet during login
+            $operator = $this->id;
+        }
         $accountLog->userId = $operator;
         $accountLog->save();
     }

@@ -223,8 +223,6 @@ class InstallController extends Zend_Controller_Action
                                     ->clearIdentity();
 
             //load sample data
-            //Fix: loadData cause timeout (30) in windows. 
-            set_time_limit(50);
             Doctrine::loadData(Fisma::getPath('fixture'));
 
             $config = Doctrine::getTable('Configuration')->findOneByName('hash_type');

@@ -105,6 +105,7 @@ NameVirtualHost *:80
     # it encounters, this may need to be changed depending on os type,
     # here is an example for redhat: /var/log/httpd/openfisma-error.log 
 	# may need to be set to /var/log/httpd/openfisma-error.log depending on OS type
+
     ErrorLog /var/log/apache2/openfisma-error.log
     # sets the name of the file to which the server will log information to
     CustomLog /var/log/apache2/openfisma-access.log common
@@ -153,4 +154,7 @@ For example:
 # Enable OpenFISMA Email alerts and run the script every 5 minutes
 * * * * *  /opt/openfisma/scripts/cronjobs/FismaNotify.php >> /tmp/out 2>&1
 # Enable OpenFISMA Overdue alerts and run the script every 5 minutes
+<<<<<<< .working
 * * * * *  /opt/openfisma/scripts/cronjobs/ECDNotifier.php >> /tmp/out 2>&1
+=======
+* * * * *  /opt/openfisma/scripts/cronjobs/ECDNotifier.php >> /tmp/out 2>&1>>>>>>> .merge-right.r2381

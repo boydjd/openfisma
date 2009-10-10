@@ -280,7 +280,7 @@ class System extends BaseSystem
      * 
      * @param Doctrine_Event $event
      */
-    public function postUpdate(Doctrine_Event $event)
+    public function postUpdate($event)
     {
         Notification::notify('SYSTEM_UPDATED', $this->Organization, User::currentUser(), $this->Organization->id);
     }

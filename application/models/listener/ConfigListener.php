@@ -36,7 +36,7 @@ class ConfigListener extends Doctrine_Record_Listener
         $config = $event->getInvoker();
         $modifyValue = $config->getModified();
 
-        if ($modifyValue) {
+        if ($modifyValue && isset($modifyValue['value'])) {
             $value = $modifyValue['value'];
             $affectedArray = array(Configuration::EXPIRING_TS, Configuration::UNLOCK_DURATION);
             if (in_array($config->name, $affectedArray)) {

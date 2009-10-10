@@ -330,14 +330,19 @@ class RemediationController extends SecurityController
     private function _getColumns(){
         // Set up the data for the columns in the search results table
         $me = Doctrine::getTable('User')->find($this->_me->id);
-        if (isset($_COOKIE['search_columns_pref'])) {
-            $visibleColumns = $_COOKIE['search_columns_pref'];
-        } elseif (empty($me->searchColumnsPref)) {
-            $me->searchColumnsPref = $visibleColumns = 66037;
-            $me->save();
-        } else {
-            $visibleColumns = $me->searchColumnsPref;
+        
+        try {
+            $cookie = Fisma_Cookie::get($_COOKIE, 'search_columns_pref');
+            $visibleColumns = $cookie;
+        } catch(Fisma_Exception $e) {
+            if(empty($me->searchColumnsPref)) {
+                $me->searchColumnsPref = $visibleColumns = 66037;
+                $me->save();
+            } else {
+                $visibleColumns = $me->searchColumnsPref;
+            }
         }
+
         $columns = array(
             'id' => array('label' => 'ID', 
                           'sortable' => true, 
@@ -405,7 +410,10 @@ class RemediationController extends SecurityController
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/remediation/search2' . $link);
-        setcookie('lastSearchUrl', '/panel/remediation/sub/searchbox' . $link, 0, '/');
+        call_user_func_array("setcookie", Fisma_Cookie::prepare('lastSearchUrl',
+            "/panel/remediation/sub/searchbox$link" 
+            )
+        );
         $this->view->assign('columns', $this->_getColumns());
         $this->view->assign('pageInfo', $this->_paging);
         $this->render();

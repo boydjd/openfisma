@@ -73,7 +73,7 @@ class ErrorController extends Zend_Controller_Action
             $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;
 
-            if ($errors->exception instanceof Exception_InvalidPrivilege) {
+            if ($errors->exception instanceof Fisma_Exception_InvalidPrivilege) {
                 $this->view->message = "<p>You do not have permission to perform the requested function.</p>";   
             } else {         
                 $this->view->message = "<p>An unexpected error has occurred. This error has been logged"
