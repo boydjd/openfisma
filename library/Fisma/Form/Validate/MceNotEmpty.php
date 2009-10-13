@@ -58,9 +58,9 @@ class Fisma_Form_Validate_MceNotEmpty extends Fisma_Form_Validate_NotBlank
 
         if ($validator->isValid($value)) {
             return parent::isValid($value);
-        } else {
-            $this->_error();
-            return false;
         }
+
+        $this->_error();
+        return false;
     }
 }
