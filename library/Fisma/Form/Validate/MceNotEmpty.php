@@ -31,8 +31,14 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class Fisma_Form_Validate_MceNotEmpty extends Zend_Validate_NotEmpty
+class Fisma_Form_Validate_MceNotEmpty extends Fisma_Form_Validate_NotBlank
 {
+    const NOTEMPTY = "notempty";
+
+    protected $_messageTemplates = array(
+        self::NOTEMPTY => "cannot be empty."
+    );
+
     /** 
      * Returns true if the mce editor has none empty value after removing the wrapper tags
      *
@@ -41,7 +47,20 @@ class Fisma_Form_Validate_MceNotEmpty extends Zend_Validate_NotEmpty
      */
     public function isValid($value)
     {
-        $value = preg_replace("/\<p\>( *\<[^>]*\>)*(.*)\<\/p\>/", "$2",  $value); 
-        return parent::isValid($value);
+        // tags don't count as content
+        $value = strip_tags($value);
+        $value = html_entity_decode($value);
+
+        // remove all non breaking spaces
+        $value = trim($value, "\xA0");
+
+        $validator = new Zend_Validate_NotEmpty();
+
+        if ($validator->isValid($value)) {
+            return parent::isValid($value);
+        } else {
+            $this->_error();
+            return false;
+        }
     }
 }
