@@ -95,6 +95,12 @@ class Fisma_Acl extends Zend_Acl
             return ;
         }
 
+        $orgSpecific = Doctrine::getTable('Privilege')->findByResourceAndActionAndOrgSpecific($resource, $privilege, true);
+
+        if (!$orgSpecific) {
+            $organization = null;
+        }
+
         if (!self::hasPrivilege($resource, $privilege, $organization)) {
             if (isset($organization)) {
                 throw new Fisma_Exception_InvalidPrivilege("User does not have the privilege for "
