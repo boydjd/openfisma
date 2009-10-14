@@ -192,7 +192,7 @@ class SystemController extends BaseController
         } else {
             $this->view->parentOrganization = "<i>None</i>";
         }
-        
+
         $this->render();
     }
     
@@ -269,14 +269,18 @@ class SystemController extends BaseController
         $system = $organization->System;
 
         $post = $this->_request->getPost();
+
         if ($post) {
             $organization->merge($post);
-            $organization->save();
-
             $system->merge($post);
-            $system->save();
+            var_dump($organization->isValid());
+            die;
+            if ($organization->isValid(true) && $system->isValid(true)) {
+                $organization->save();
+                $system->save();
+            }
         }
-        
+
         $this->_redirect("/panel/system/sub/view/id/$id");
     }
 
