@@ -123,7 +123,7 @@ class OrganizationController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Acl::requirePrivilege('organization', 'read');
+        Fisma_Acl::requirePrivilege('organization', 'read', '*');
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
         $this->render('searchbox');
@@ -134,7 +134,7 @@ class OrganizationController extends SecurityController
      */     
     public function listAction()
     {
-        Fisma_Acl::requirePrivilege('organization', 'read'); 
+        Fisma_Acl::requirePrivilege('organization', 'read', '*'); 
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
         $this->searchbox();
@@ -150,7 +150,7 @@ class OrganizationController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('organization', 'read');
+        Fisma_Acl::requirePrivilege('organization', 'read', '*');
         $keywords = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
@@ -206,7 +206,7 @@ class OrganizationController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege('organization', 'read'); 
+        Fisma_Acl::requirePrivilege('organization', 'read', '*'); 
         $this->searchbox();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'view');
@@ -243,7 +243,7 @@ class OrganizationController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('organization', 'create'); 
+        Fisma_Acl::requirePrivilege('organization', 'create', '*'); 
         $form = $this->_getOrganizationForm();
         $orgValues = $this->_request->getPost();
         
@@ -294,7 +294,7 @@ class OrganizationController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('organization', 'delete');
+        Fisma_Acl::requirePrivilege('organization', 'delete', '*');
         $id = $this->_request->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
         if ($organization) {
@@ -317,7 +317,7 @@ class OrganizationController extends SecurityController
      */
     public function updateAction()
     {
-        Fisma_Acl::requirePrivilege('organization', 'update'); 
+        Fisma_Acl::requirePrivilege('organization', 'update', '*'); 
         $id = $this->_request->getParam('id', 0);
         $organization = new Organization();
         $organization = $organization->getTable()->find($id);
