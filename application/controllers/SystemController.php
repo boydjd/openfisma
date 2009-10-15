@@ -273,8 +273,6 @@ class SystemController extends BaseController
         if ($post) {
             $organization->merge($post);
             $system->merge($post);
-            var_dump($organization->isValid());
-            die;
             if ($organization->isValid(true) && $system->isValid(true)) {
                 $organization->save();
                 $system->save();
