@@ -373,8 +373,11 @@ class Fisma
         while ($file = readdir($modelDir)) {
             if ($match = strpos($file, '.php')) {
                 $modelName = substr($file, 0, $match);
-                require_once(Fisma::getPath('model') . '/' . $file);
-                Doctrine::getTable($modelName)->getRecordListener()->setOption('disabled', !self::$_listenerEnabled);
+
+                if (!strstr($modelName, 'Table')) {
+                    require_once(Fisma::getPath('model') . '/' . $file);
+                    Doctrine::getTable($modelName)->getRecordListener()->setOption('disabled', !self::$_listenerEnabled);
+                }
             }
         }
     }
