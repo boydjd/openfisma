@@ -31,7 +31,7 @@ Asset:
                 notify: true
             comment: The IP address for this asset
         addressPort:
-            type: integer(5)
+            type: integer(2)
             unsigned: false
             extra:
                 logicalName: Port Number
