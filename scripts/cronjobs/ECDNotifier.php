@@ -65,20 +65,19 @@ class ECDNotifier
     static function run() {
         // Get all findings which expire today, or 7/14/21 days from now
         $query = Doctrine_Query::create()
-                    ->select('f.id, f.expectedCompletionDate, f.responsibleOrganizationId')
+                    ->select('f.id, f.currentEcd, f.responsibleOrganizationId')
                     ->from('Finding f')
                     ->where('f.status != ?', 'CLOSED')
-                    ->addWhere('f.expectedCompletionDate = ?', date('Y-m-d'))
-                    ->orWhere('f.expectedCompletionDate = ?', date('Y-m-d', time() + 7 * 3600 * 24))
-                    ->orWhere('f.expectedCompletionDate = ?', date('Y-m-d', time() + 14 * 3600 * 24))
-                    ->orWhere('f.expectedCompletionDate = ?', date('Y-m-d', time() + 21 * 3600 * 24));
+                    ->addWhere('f.currentEcd = ?', date('Y-m-d'))
+                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 7 * 3600 * 24))
+                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 14 * 3600 * 24))
+                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 21 * 3600 * 24));
         $expiringFindings = $query->execute();
-
         // Now iterate through the findings and create the appropriate
         // notifications
         $notification = new Notification();
         foreach($expiringFindings as $finding) {
-            $daysRemaining = ceil((strtotime($finding->expectedCompletionDate) - time()) / (3600 * 24));
+            $daysRemaining = ceil((strtotime($finding->currentEcd) - time()) / (3600 * 24));
             switch($daysRemaining) {
                 case 0:
                     $notificationType = 'ECD_EXPIRES_TODAY';
