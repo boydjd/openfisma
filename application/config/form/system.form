@@ -4,7 +4,7 @@
 ; Author    Ryan yang <ryan.yang@reyosoft.com
 ; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
-; Version   $Id$
+; Version   $Id: system.form 2140 2009-08-25 21:06:30Z nathanrharris $
 
 [system]
 method = "post"
@@ -15,12 +15,14 @@ elements.name.type = "text"
 elements.name.options.label = "System Name"
 elements.name.options.validators.strlen.validator = "StringLength"
 elements.name.options.required = true
+elements.name.options.tooltip = "<p><b>System Name</b></p><p>Please select a unique Information System Name. The Name will be the human readable identifier of the information system and used throughout OpenFISMA.</p>"
 displayGroups.system.elements.name = "name"
 
 elements.nickname.type = "text"
 elements.nickname.options.label = "Acronym"
 elements.nickname.options.validators.strlen.validator = "StringLength"
 elements.nickname.options.required = true
+elements.nickname.options.tooltip = "<p><b>Acronym or Nickname</b></p><p>Please select a short unique identifier for the information system. The short nickname will be used on reports and other areas of OpenFISMA to display large amounts of data in short column space.</p>"
 displayGroups.system.elements.nickname = "nickname"
 
 elements.organizationId.type = "select"
@@ -37,10 +39,12 @@ elements.type.options.label = "Type"
 elements.type.options.validators.alnum.validator = "NotEmpty"
 elements.type.options.validators.strlen.validator = "StringLength"
 elements.type.options.required = true
+elements.type.options.tooltip = "<p><b>GSS stands for General Support System</b></p><p>Definition: An interconnected set of information resources under the same direct management control which shares common functionality. A General Support System may be, for example, a local area network (LAN) or an agency-wide backbone, or a communications network, or a departmental data processing center including its operating system and utilities. The term General Support System is used in context of security. Individual applications supporting different business-related functions may run on a single GSS.</p><p><b>Major stands for Major Application</b></p><p>Definition: An IT system that requires special management attention because of its importance to the organization; or its significant role in the administration of the organizations programs, finances, property, or other significant resources. An adverse impact on a major system would constitute serious, severe, or catastrophic harm due to the loss of confidentiality, integrity, or availability, as determined through conducting a system risk assessment. Major systems would be classified as either moderate or high impact as defined in FIPS 199. Those systems identified as Critical Infrastructure Protection (CIP) assets would clearly fall in this category as a major system.</p><p><b>Minor stands for Minor Application</b></p><p>Definition: An IT system that does not require special attention as it mainly provides mission supportive information to the organization and usually relies on another General Support System for the majority of its security controls.</p>"
 displayGroups.system.elements.type = "type"
 
 elements.description.type = "textarea"
 elements.description.options.label = "System Description"
+elements.description.options.tooltip = "<p><b>System Description</b></p><p>Prepare a brief description (one to three paragraphs) of the function and purpose of the system (e.g., economic indicator, network support for an agency, business census data analysis, crop reporting support).</p>"
 elements.description.options.cols = "70%"
 elements.description.options.rows = "7"
 displayGroups.system.elements.description = "description"
@@ -48,12 +52,14 @@ displayGroups.system.elements.description = "description"
 elements.confidentiality.type = "select"
 elements.confidentiality.options.label = "Confidentiality"
 elements.confidentiality.options.required = true
+elements.confidentiality.options.tooltip = "<p><b>Confidentiality</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was disclosed, see examples below.</p><p><b>Choose Low if:</b> The unauthorized disclosure of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The unauthorized disclosure of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The unauthorized disclosure of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
 displayGroups.system.elements.confidentiality = "confidentiality"
 
 elements.integrity.type = "select"
 elements.integrity.options.label = "Integrity"
 elements.integrity.options.validators.alnum.validator = "NotEmpty"
 elements.integrity.options.required = true
+elements.integrity.options.tooltip = "<p><b>Integrity</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was modified, see examples below.</p><p><b>Choose Low if:</b> The unauthorized modification or destruction of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The unauthorized modification or destruction of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The unauthorized modification or destruction of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
 displayGroups.system.elements.integrity = "integrity"
 
 elements.availability.type = "select"
@@ -61,6 +67,7 @@ elements.availability.options.label = "Availability"
 elements.availability.options.validators.alnum.validator = "NotEmpty"
 elements.availability.options.validators.strlen.validator = "StringLength"
 elements.availability.options.required = true
+elements.availability.options.tooltip = "<p><b>Availability</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was unavailable, see examples below.</p><p><b>Choose Low if:</b> The disruption of access to or use of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The disruption of access to or use of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The disruption of access to or use of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
 displayGroups.system.elements.availability = "availability"
 
 elements.save.type = "Form_Button_Submit"
