@@ -6,7 +6,7 @@
 ; Author    Mark E. Haase <mhaase@endeavorsystems.com
 ; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
-; Version   $Id:$
+; Version   $Id: general_config.form 2140 2009-08-25 21:06:30Z nathanrharris $
 
 [general_config]
 elementPrefixPath.prefix = Fisma_Form
@@ -22,18 +22,22 @@ elements.system_name.type = "text"
 elements.system_name.options.label = "System Name"
 elements.system_name.options.validators.strlen.validator = "StringLength"
 elements.system_name.options.required = true
+elements.system_name.options.tooltip = "<p><b>System Name</b></p><p>The System Name will be used to identify the OpenFISMA application in the browser tab and in email communications sent back and forth between users and OpenFISMA.</p>"
 displayGroups.general.elements.system_name = "system_name"
+
 
 elements.account_inactivity_period.type = "text"
 elements.account_inactivity_period.options.label = "Inactive Account Expiration (days)"
 elements.account_inactivity_period.options.validators.alnum.validator = "Digits"
 elements.account_inactivity_period.options.required = true
+elements.account_inactivity_period.options.tooltip = "<p><b>Inactive Account Expiration</b></p><p>Enter the number of days you will allow users to remain inactive before there access is disabled. For example, if you choose 90, the user can wait 90 days before logging in, if the wait 91 days, there account will be disabled.</p>"
 displayGroups.general.elements.account_inactivity_period = "account_inactivity_period"
 
 elements.session_inactivity_period.type = "text"
 elements.session_inactivity_period.options.label = "Session Timeout (minutes)"
 elements.session_inactivity_period.options.validators.alnum.validator = "Digits"
 elements.session_inactivity_period.options.required = true
+elements.session_inactivity_period.options.tooltip = "<p><b>Session Timeout</b></p><p>Enter the number of minutes you will allow the users to remain idle without logging them off of the application. Please note that <b>idle</b> refers to time that the user is not submitting information to the server, they may be editing findings and formatting responses in the application but this is still considered inactivity.</p>"
 displayGroups.general.elements.session_inactivity_period = "session_inactivity_period"
 
 elements.auth_type.type = "select"
@@ -48,6 +52,7 @@ elements.rob_duration.type = "text"
 elements.rob_duration.options.label = "Rules Of Behavior Period (days)"
 elements.rob_duration.options.validators.alnum.validator = "Digits"
 elements.rob_duration.options.required = true
+elements.rob_duration.options.tooltip = "<p><b>Rules of Behavior Period</b></p><p>OpenFISMA requires users to accept a rules of behavior agreement before logging onto the application. OpenFISMA stores this acceptance in its database for compliance purposes. Please enter the period in which users need to re-accept the rules of behavior. For example, if you enter 365, the user will be able to use OpenFISMA for one year, at which time, they will need to read the rules of behavior again and re-accept the agreement.</p>"
 displayGroups.general.elements.rob_duration = "rob_duration"
 
 elements.use_notification.type = "textarea"
@@ -56,6 +61,7 @@ elements.use_notification.options.validators.mce.validator = "MceNotEmpty"
 elements.use_notification.options.cols = "70%"
 elements.use_notification.options.rows = "7"
 elements.use_notification.options.required = true
+elements.use_notification.options.tooltip = "<p><b>Warning Banner</b></p><p>This is the warning banner displayed to all users before they log into OpenFISMA. You may customize the warning banner as you see fit.</p>"
 displayGroups.general.elements.use_notification = "use_notification"
 
 elements.behavior_rule.type = "textarea"
@@ -64,6 +70,7 @@ elements.behavior_rule.options.validators.strlen.validator = "MceNotEmpty"
 elements.behavior_rule.options.cols = "70%"
 elements.behavior_rule.options.rows = "7"
 elements.behavior_rule.options.required = true
+elements.behavior_rule.options.tooltip = "<p><b>Rules of Behavior</b></p><p>The Office of Management and Budget (OMB) Circular A-130, Appendix III, Security of Federal Automated Information Resources requires that "Rules of Behavior" be established for each general support information technology (IT) system and major application processing government information.</p>"
 displayGroups.general.elements.behavior_rule = "behavior_rule"
 
 elements.saveGeneral.type = "Form_Button_Submit"
