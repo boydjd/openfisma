@@ -93,13 +93,8 @@ abstract class Fisma_Inject_Abstract
             // If a duplicate exists, then run the Injection Filtering rules
             if ($duplicate->type == 'NONE' || $duplicate->type == 'CAP' || $duplicate->type == 'FP') {
                 if ($findingTable->responsibleOrganizationId == $duplicate->responsibleOrganizationId) {
-                    if ($duplicate->status == 'CLOSED') {
-                        $this->_totalFindings['created']++;
-                        Doctrine_Manager::connection()->commit();
-                    } else {
                         $this->_totalFindings['deleted']++;
                         Doctrine_Manager::connection()->rollback();
-                    }
                 } else {
                     $this->_totalFindings['reviewed']++;
                     Doctrine_Manager::connection()->commit();
