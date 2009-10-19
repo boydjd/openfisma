@@ -84,9 +84,18 @@ abstract class Fisma_Inject_Abstract
      * action was taken.
      */
     protected function _commit($finding) {
+        // disable the preInsert listener on Finding
+        Doctrine::getTable('Finding')->getRecordListener()->get('FindingListener')->setOption('disabled', array('preInsert'));
+
         Doctrine_Manager::connection()->beginTransaction();
         $findingTable = new Finding();
         $findingTable->merge($finding);
+
+        // set the necessary options on finding that aren't covered by the preInsert listener anymore
+        $findingTable->status = 'NEW';
+        $findingTable->createdBy = User::currentUser();
+        $findingTable->updateNextDueDate();
+
         $findingTable->save();
         if ($findingTable->status == 'PEND') {
             $duplicate = Doctrine::getTable('Finding')->find($findingTable->duplicateFindingId);
@@ -96,6 +105,7 @@ abstract class Fisma_Inject_Abstract
                     if ($duplicate->status == 'CLOSED') {
                         $this->_totalFindings['created']++;
                         Doctrine_Manager::connection()->commit();
+                        $findingTable->log('New Finding Created');
                     } else {
                         $this->_totalFindings['deleted']++;
                         Doctrine_Manager::connection()->rollback();
@@ -103,6 +113,7 @@ abstract class Fisma_Inject_Abstract
                 } else {
                     $this->_totalFindings['reviewed']++;
                     Doctrine_Manager::connection()->commit();
+                    $findingTable->log('New Finding Created');
                 }
             } elseif ($duplicate->type == 'AR') {
                 if ($duplicate->responsibleOrganizationId == $findingTable->responsibleOrganizationId) {
@@ -111,11 +122,13 @@ abstract class Fisma_Inject_Abstract
                 } else {
                     $this->_totalFindings['reviewed']++;
                     Doctrine_Manager::connection()->commit();
+                    $findingTable->log('New Finding Created');
                 }
             }
         } else {
             $this->_totalFindings['created']++;
             Doctrine_Manager::connection()->commit();
+            $findingTable->log('New Finding Created');
         }
     }
     
