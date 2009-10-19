@@ -11,15 +11,7 @@
 [role]
 method = "post"
 elementFilters.trim = "StringTrim"
-elementFilters.tags.filter = "StripTags"
-elementFilters.tags.options.tagsAllowed.ol = "ol"
-elementFilters.tags.options.tagsAllowed.ul = "ul"
-elementFilters.tags.options.tagsAllowed.b = "b"
-elementFilters.tags.options.tagsAllowed.i = "i"
-elementFilters.tags.options.tagsAllowed.p = "p"
-elementFilters.tags.options.tagsAllowed.u = "u"
-elementFilters.tags.options.tagsAllowed.br = "br"
-elementFilters.tags.options.attributesAllowed.style = "style"
+elementFilters.tags = "StripTags"
 
 elements.name.type = "text"
 elements.name.options.label = "Role Name"
