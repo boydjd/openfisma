@@ -268,6 +268,9 @@ function ev_deny(formname){
         } else {// firefox
             var comment = document.getElementById('dialog_comment').value;
         }
+        if (comment.length <= 0) {
+            return;
+        }
         form2.elements['comment'].value = comment;
         form2.elements['decision'].value = 'DENIED';
         var submitMsa = document.createElement('input');
