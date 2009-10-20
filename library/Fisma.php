@@ -225,7 +225,12 @@ class Fisma
                     ini_set("xdebug.$param", $value);
                 }
             }
-            
+
+            // Log all PHP errors
+            ini_set('error_reporting', E_ALL | E_STRICT);
+            ini_set('log_errors', TRUE);
+            ini_set('error_log', self::$_rootPath . '/data/logs/php.log');
+
             // Session configuration
             $sessionOptions = self::$_appConf->session->toArray();
             $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
