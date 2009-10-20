@@ -81,7 +81,8 @@ class FindingListener extends Doctrine_Record_Listener
     );
     
     /**
-     * Set the status as "NEW"  for a new finding created or as "PEND" when duplicated
+     * Set the status as "NEW"  for a new finding created or as "PEND" when duplicated unless duplicated finding is 
+     * marked as closed.
      * write the audit log
      * 
      * @param Doctrine_Event $event
@@ -91,7 +92,7 @@ class FindingListener extends Doctrine_Record_Listener
         $finding = $event->getInvoker();
         $duplicateFinding  = $finding->getTable()
                                      ->findByDql('description LIKE ?', $finding->description);
-        if (!empty($duplicateFinding[0])) {
+        if (!empty($duplicateFinding[0]) && $duplicateFinding[0]->status != 'CLOSED') {
             $finding->DuplicateFinding = $duplicateFinding[0];
             $finding->status           = 'PEND';
         } elseif (in_array($finding->type, array('CAP', 'AR', 'FP'))) {
