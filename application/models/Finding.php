@@ -188,6 +188,10 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("Findings can only be denined when in MSA or EA status");
         }
 
+        if (is_null($comment) || empty($comment)) {
+            throw new Fisma_Exception("Comments are required when denying an evaluation");
+        }
+
         $findingEvaluation = new FindingEvaluation();
         if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
             $findingEvaluation->Evidence   = $this->Evidence->getLast();
