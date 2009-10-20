@@ -249,17 +249,25 @@ class FindingListener extends Doctrine_Record_Listener
                     continue;
                 }
 
-                // See if you can look up a logical name for this column in the schema definition. If its not defined,
-                // then use the physical name instead
-                $column = $finding->getTable()->getColumnDefinition(strtolower($key));
-                $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
-                             ? $column['extra']['logicalName']
-                             : $key;
-                
                 $value    = $value ? html_entity_decode(strip_tags($value)) : 'NULL';
                 $newValue = html_entity_decode(strip_tags($newValue));
-                $message = "UPDATE: $logicalName\n ORIGINAL: $value\nNEW: $newValue";
-                $finding->log($message);
+
+                // Only log if $newValue is actually different from $value. 
+                // Ignore changes to NULL/""/NONE if one of these was present 
+                // in the original $value.
+                if ( (!(is_null($value) || empty($value) || $value == 'NONE') && 
+                      !(is_null($newValue) || empty($newValue) || $newValue == 'NONE'))
+                      || ($value != $newValue)) {
+                    // See if you can look up a logical name for this column in the schema definition. If its not defined,
+                    // then use the physical name instead
+                    $column = $finding->getTable()->getColumnDefinition(strtolower($key));
+                    $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
+                                 ? $column['extra']['logicalName']
+                                 : $key;
+ 
+                    $message = "UPDATE: $logicalName\n ORIGINAL: $value\nNEW: $newValue";
+                    $finding->log($message);
+                }
             }
         }
     }
