@@ -226,6 +226,14 @@ class Fisma
                 }
             }
 
+            // Timezone configuration
+            if (isset(self::$_appConf->timezone)) {
+                ini_set("date.timzeone", self::$_appConf->timezone);
+            }
+            else {
+                ini_set("date.timezone", "America/New_York");
+            }
+
             // Log all PHP errors
             ini_set('error_reporting', E_ALL | E_STRICT);
             ini_set('log_errors', TRUE);
