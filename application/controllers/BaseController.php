@@ -269,7 +269,7 @@ abstract class BaseController extends SecurityController
     public function listAction()
     {
         Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
-        $keywords = trim($this->_request->getParam('keywords'));
+        $keywords = htmlentities(trim($this->_request->getParam('keywords')));
         $link = empty($keywords) ? '' :'/keywords/'.$keywords;
         $this->view->link     = $link;
         $this->view->pageInfo = $this->_paging;
@@ -287,7 +287,7 @@ abstract class BaseController extends SecurityController
         Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
         $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
-        $keywords  = $this->_request->getParam('keywords'); 
+        $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
 
         //filter the sortby to prevent sqlinjection
         $subjectTable = Doctrine::getTable($this->_modelName);

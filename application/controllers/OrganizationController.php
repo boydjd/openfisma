@@ -135,7 +135,7 @@ class OrganizationController extends SecurityController
     public function listAction()
     {
         Fisma_Acl::requirePrivilege('organization', 'read', '*'); 
-        $value = trim($this->_request->getParam('keywords'));
+        $value = htmlentities(trim($this->_request->getParam('keywords')));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
         $this->searchbox();
         $this->view->assign('pageInfo', $this->_paging);
@@ -151,7 +151,7 @@ class OrganizationController extends SecurityController
     public function searchAction()
     {
         Fisma_Acl::requirePrivilege('organization', 'read', '*');
-        $keywords = trim($this->_request->getParam('keywords'));
+        $keywords = html_entity_decode(trim($this->_request->getParam('keywords')));
 
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
