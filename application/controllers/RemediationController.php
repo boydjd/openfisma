@@ -471,6 +471,15 @@ class RemediationController extends SecurityController
         $id          = $this->_request->getParam('id');
         $findingData = $this->_request->getPost('finding', array());
 
+        if (isset($findingData['currentEcd'])) {
+            $date = new Zend_Date();
+            $ecd  = new Zend_Date($findingData['currentEcd']);
+
+            if ($ecd->isEarlier($date)) {
+                $this->message('Expected completion date has been set before the current date. Make sure that this is correct.', self::M_NOTICE);
+            }
+        }
+
         $finding     = $this->_getFinding($id);
 
         try {
