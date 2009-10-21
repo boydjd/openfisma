@@ -103,9 +103,14 @@ class RemediationController extends SecurityController
                    ->addActionContext('search2', array('xls'))->setAutoDisableLayout(true);
         }
         $this->_helper->contextSwitch()
-                      ->addActionContext('summary-data', array('json', 'xls', 'pdf'))
-                      ->setAutoJsonSerialization(false)
-                      ->initContext();
+                      ->addActionContext('summary-data', array('json', 'xls', 'pdf'));
+
+        // Quick hack: disable auto-json-serialization for summary-data action
+        if ('summary-data' == $this->getRequest()->getActionName()) {
+            $this->_helper->contextSwitch()->setAutoJsonSerialization(false);
+        }
+        
+        $this->_helper->contextSwitch()->initContext();
         $this->_organizations = $this->_me->getOrganizations();
     }
     
