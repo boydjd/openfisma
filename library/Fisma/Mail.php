@@ -156,6 +156,7 @@ class Fisma_Mail extends Zend_Mail
             $username = Configuration::getConfig('smtp_username');
             $password = Configuration::getConfig('smtp_password');
             $port     = Configuration::getConfig('smtp_port');
+            $tls      = Configuration::getConfig('smtp_tls');
             if (empty($username) && empty($password)) {
                 //Un-authenticated SMTP configuration
                 $config = array('port' => $port);
@@ -164,6 +165,9 @@ class Fisma_Mail extends Zend_Mail
                                 'port'     => $port,
                                 'username' => $username,
                                 'password' => $password);
+                if ($tls == 1){
+                    $config['ssl'] = 'tls';
+                }
             }
             $transport = new Zend_Mail_Transport_Smtp(Configuration::getConfig('smtp_host'), $config);
         } else {

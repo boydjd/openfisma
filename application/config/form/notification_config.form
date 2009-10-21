@@ -45,6 +45,10 @@ elements.smtp_port.options.validators.int.validator = "Int"
 elements.smtp_port.options.size = 30
 displayGroups.general.elements.smtp_port = "smtp_port"
 
+elements.smtp_tls.type = "checkbox"
+elements.smtp_tls.options.label = "Use Transport Layer Security (TLS)"
+displayGroups.general.elements.smtp_tls = "smtp_tls"
+
 elements.smtp_username.type = "text"
 elements.smtp_username.options.label = "Username for smtp Authenticate"
 elements.smtp_username.options.size = 30
