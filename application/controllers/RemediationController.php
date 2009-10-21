@@ -103,9 +103,8 @@ class RemediationController extends SecurityController
                    ->addActionContext('search2', array('xls'))->setAutoDisableLayout(true);
         }
         $this->_helper->contextSwitch()
-                      ->addActionContext('summary-data', 'json')
-                      ->addActionContext('summary-data', 'xls')
-                      ->addActionContext('summary-data', 'pdf')                                            
+                      ->addActionContext('summary-data', array('json', 'xls', 'pdf'))
+                      ->setAutoJsonSerialization(false)
                       ->initContext();
         $this->_organizations = $this->_me->getOrganizations();
     }
@@ -221,8 +220,16 @@ class RemediationController extends SecurityController
 
             $this->view->tableData = $tableData;
         } else {
+            // Decide whether the response can be gzipped
+            $acceptEncodingHeader = $this->getRequest()->getHeader('Accept-Encoding');
+            $gzipEncode = (strstr($acceptEncodingHeader, 'gzip') !== false);
+            $this->view->gzipEncode = $gzipEncode;
+            if ('json' == $this->getRequest()->getParam('format')) {
+                $this->getResponse()->setHeader('Content-Encoding', 'gzip', true);
+            }
+            
+            // Convert organizations into hierarchical array
             $organizations = $this->toHierarchy($organizations, $type, $source);
-
             $this->view->summaryData = $organizations;
         } 
     }
@@ -253,6 +260,13 @@ class RemediationController extends SecurityController
 
                 $summaryCounts = $node->getSummaryCounts($type, $source);
                 $item = array_merge($item, $summaryCounts);
+
+                // OFJ-177 The finding controller summary-data action returns extraneous data
+                unset($item['createdTs']);
+                unset($item['modifiedTs']);
+                unset($item['name']);
+                unset($item['description']);
+                unset($item['deleted_at']);
                 
                 $item['children'] = array();
                 // Number of stack items 
@@ -273,7 +287,7 @@ class RemediationController extends SecurityController
                     $i = count($stack[$l - 1]['children']); 
                     $stack[$l - 1]['children'][$i] = $item; 
                     $stack[] = & $stack[$l - 1]['children'][$i]; 
-                } 
+                }
             } 
         } 
         return $trees; 
