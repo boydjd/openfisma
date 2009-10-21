@@ -199,4 +199,5 @@ Finding:
                 name: createdTs
                 type: timestamp
             updated:
-                disabled: true
+                name: modifiedTs
+                type: timestamp
