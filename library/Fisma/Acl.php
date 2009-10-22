@@ -60,7 +60,7 @@ class Fisma_Acl extends Zend_Acl
         $orgSpecific = Doctrine::getTable('Privilege')->findByResourceAndActionAndOrgSpecific($resource, $privilege, true);
 
         if (!$orgSpecific) {
-            $organization = '*';
+            $organization = null;
         }
        
         // Otherwise, check the ACL
