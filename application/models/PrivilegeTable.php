@@ -48,9 +48,9 @@
     public function findByResourceAndActionAndOrgSpecific($resource, $action, $orgSpecific) {
         return Doctrine_Query::create()
                ->from('Privilege p')
-               ->where('p.resource = ?', $this->_aclResource)
-               ->andWhere('p.action = ?', 'create')
-               ->andWhere('p.orgSpecific = ?', true)
+               ->where('p.resource = ?', $resource)
+               ->andWhere('p.action = ?', $action)
+               ->andWhere('p.orgSpecific = ?', $orgSpecific)
                ->execute(array(), Doctrine::HYDRATE_ARRAY);
     }
 }
