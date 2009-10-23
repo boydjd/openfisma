@@ -53,6 +53,11 @@ Configuration:
         name: smtp_port
         value: 25
         description: Smtp server port
+        
+    smtp_tls:
+        name: smtp_tls
+        value: 0
+        description: Use Transport Layer Security (TLS)           
 
     unlock_enabled:
         name: unlock_enabled
