@@ -650,6 +650,7 @@ class RemediationController extends SecurityController
             header('Content-type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . urlencode($fileName));
             header('Content-Length: ' . filesize($filePath . $fileName));
+            header('Pragma: ');
             $fp = fopen($filePath . $fileName, 'rb');
             while (!feof($fp)) {
                 $buffer = fgets($fp, 4096);
