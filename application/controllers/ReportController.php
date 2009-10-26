@@ -386,6 +386,12 @@ class ReportController extends SecurityController
         foreach ($this->_me->getOrganizations() as $organization) {
             $myOrganizations[] = $organization->id;
         }
+        if (empty($myOrganizations)) {
+            $msg = "The report could not be created because this user does not have access to any organizations.";
+            $this->message($msg, self::M_WARNING);
+            $this->_forward('plugin');
+            return;
+        }
         $reportScript = str_replace('##ORGANIZATIONS##', implode(',', $myOrganizations), $reportScript);
         $dbh = Doctrine_Manager::connection()->getDbh(); 
         $rawResults = $dbh->query($reportScript, PDO::FETCH_ASSOC);
