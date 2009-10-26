@@ -226,8 +226,7 @@ class Fisma
                 }
             }
 
-            // Date & time configuration
-            Zend_Date::setOptions(array('format_type' => 'php'));
+            // Timezone configuration
             if (isset(self::$_appConf->timezone)) {
                 ini_set("date.timzeone", self::$_appConf->timezone);
             }
@@ -275,19 +274,9 @@ class Fisma
                          . ($db->port ? ':' . $db->port : '') . '/' . $db->schema;
         Doctrine_Manager::connection($connectString);
         $manager = Doctrine_Manager::getInstance();
-        
-        // Allow models to override magic accessor/mutator functions:
-        $manager->setAttribute(Doctrine::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
-        
-        // Enable callback (hook) methods on DQL queries
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
-        
-        // Use the DBMS native enum type (if available) -- this has positive benefits for colation and sorting
         $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
-        
-        // Tell Doctrine to autoload custom table classes
         $manager->setAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES, true);
-        
         Zend_Registry::set('doctrine_config', array(
                'data_fixtures_path'  =>  self::getPath('fixture'),
                'models_path'         =>  self::getPath('model'),
@@ -315,6 +304,7 @@ class Fisma
         $frontController = Zend_Controller_Front::getInstance();
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
         
+        Zend_Date::setOptions(array('format_type' => 'php'));
         Zend_Layout::startMvc(self::getPath('layout'));
         
         Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Controller_Action_Helper');

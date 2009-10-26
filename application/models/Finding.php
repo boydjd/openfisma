@@ -39,7 +39,6 @@ class Finding extends BaseFinding
      * 
      * @see Asset.php
      * @todo Doctrine 2.0 might provide a nicer approach for this
-     * @var array
      */
     public $relationIndex = array(
         'Source' => array('nickname' => array('type' => 'keyword', 'alias' => 'source')),
@@ -48,84 +47,9 @@ class Finding extends BaseFinding
         'SecurityControl' => array('code' => array('type' => 'keyword', 'alias' => 'securitycontrol'))
     );
 
-    /**
-     * An array which indicates how many days each status get until it is overdue. 
-     * 
-     * EN is undefined since EN overdue is based on the ECD date
-     * 
-     * @var array
-     */
-    private $_overdue = array(
-        'NEW' => 30, 
-        'DRAFT' => 30, 
-        'MSA' => 7, 
-        'EN' => 0, 
-        'EA' => 7
-    );
+    //Threshold of overdue for various status
+    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
 
-    /**
-     * These are fields which should not be logged
-     * 
-     * @todo improve this design. loggable should be a behavior and which fields produce logs should be defined in yaml
-     */
-    private static $_unLogKeys = array(
-        'currentEvaluationId',
-        'status',
-        'ecdLocked',
-        'legacyFindingKey',
-        'modifiedTs',
-        'closedTs'
-    );
-
-    /**
-     * Maps fields to their corresponding privileges. This is kind of ugly. A better solution would be to store this
-     * information in the model itself, and then include it in a global listener.
-     * 
-     * @var array
-     */
-    private static $_requiredPrivileges = array(
-        'type' => 'update_type',
-        'description' => 'update_description',
-        'recommendation' => 'update_recommendation',
-        'mitigationStrategy' => 'update_course_of_action',
-        'responsibleOrganizationId' => 'update_assignment',
-        'securityControl' => 'update_control_assignment',
-        'threatLevel' => 'update_threat',
-        'threat' => 'update_threat',
-        'countermeasures' => 'update_countermeasures',
-        'countermeasuresEffectiveness' => 'update_countermeasures',
-        'recommendation' => 'update_recommendation',
-        'resourcesRequired' => 'update_resources'
-    );
-
-    /**
-     * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
-     * Threat & countermeasures are also handled separately.
-     * 
-     * @var array
-     */
-    private static $_notificationKeys = array(
-        'mitigationStrategy'        => 'UPDATE_COURSE_OF_ACTION',
-        'securityControlId'         => 'UPDATE_SECURITY_CONTROL',
-        'responsibleOrganizationId' => 'UPDATE_RESPONSIBLE_SYSTEM',
-        'countermeasures'           => 'UPDATE_COUNTERMEASURES',
-        'threat'                    => 'UPDATE_THREAT',
-        'resourcesRequired'         => 'UPDATE_RESOURCES_REQUIRED',
-        'description'               => 'UPDATE_DESCRIPTION',
-        'recommendation'            => 'UPDATE_RECOMMENDATION',
-        'type'                      => 'UPDATE_MITIGATION_TYPE'
-    );
-
-    /**
-     * Override Doctrine constructor
-     */
-    public function construct()
-    {
-        $this->status = 'NEW';
-        $this->CreatedBy = User::currentUser();
-        $this->_updateNextDueDate();
-    }
-    
     /**
      * Returns an ordered list of all business possible statuses
      * 
@@ -175,7 +99,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
         }
         $this->status = 'MSA';
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                       ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
@@ -194,7 +118,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("The mitigation strategy can only be revised in EN status");
         }
         $this->status = 'DRAFT';
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $this->CurrentEvaluation = null;
         $this->log('Revise mitigation strategy');
 
@@ -248,7 +172,7 @@ class Finding extends BaseFinding
         } else {
             $this->CurrentEvaluation = null;
         }
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $this->save();
     }
 
@@ -291,7 +215,7 @@ class Finding extends BaseFinding
                 $this->CurrentEvaluation   = null;
                 break;
         }
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $this->save();
     }
 
@@ -309,7 +233,7 @@ class Finding extends BaseFinding
         }
         $this->status    = 'EA';
         $this->ecdLocked = true;
-        $this->_updateNextDueDate();
+        $this->updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
@@ -324,32 +248,31 @@ class Finding extends BaseFinding
     }
 
     /**
-     * Due dates vary depending on the status of the finding
+     * Set the nextduedate when the status has changed except 'CLOSED'
+     * @todo why the 'Y-m-d' is a wrong date
      */
-    private function _updateNextDueDate()
+    public function updateNextDueDate()
     {
         if (in_array($this->status, array('PEND', 'CLOSED'))) {
             $this->nextDueDate = null;
             return;
         }
-        
         switch ($this->status) {
             case 'NEW':
             case 'DRAFT':
             case 'MSA':
             case 'EA':
-                $startDate = Zend_Date::now();
+                $startDate = Fisma::now();
                 break;
             case 'EN':
-                $startDate = new Zend_Date($this->currentEcd, 'Y-m-d');
+                $startDate = $this->currentEcd;
                 break;
             default:
                 throw new Fisma_Exception('Cannot update the next due date because the finding has an'
                                         . " invalid status: '$this->status'");
         }
-        
-        $nextDueDate = $startDate;
-        $nextDueDate->addDay($this->_overdue[$this->status]);
+        $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
+        $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
         $this->nextDueDate = $nextDueDate->toString('Y-m-d');
     }
 
@@ -388,251 +311,4 @@ class Finding extends BaseFinding
         $this->AuditLogs[]     = $auditLog;
     }
 
-    /**
-     * Setting the current ECD can, in some cases, also update the original ECD
-     * 
-     * @param string $newEcd
-     */
-    public function setCurrentEcd($newEcd)
-    {
-        if (!$this->ecdLocked) {
-            // Have to use private mutator to avoid invoking the public mutator (which would result in an exception)
-            $this->_set('originalEcd', $newEcd);
-        }
-
-        $this->currentEcd = $newEcd;
-    }
-    /**
-     * The original ECD can't be set directly, so this mutator throws an exception if somebody tries to set it
-     * 
-     * This is necessary because Doctrine will provide the mutator automatically. So we have to override the parent 
-     * method in order to enforce our policy.
-     * 
-     * @param string $unused This parameter is ignored
-     */
-    public function setOriginalEcd($unused)
-    {
-        throw new Fisma_Exception('The original ECD cannot be set directly.');
-    }
-    
-    /**
-     * Business rules for status
-     * 
-     * @param string $newStatus
-     */
-    public function setStatus($newStatus)
-    {
-        // Once the mitigation strategy is approved, the original ECD becomes locked.
-        if ('EN' == $newStatus) {
-            $this->ecdLocked = true;
-        }
-        
-        $this->status = $newStatus;
-    }
-    
-    /**
-     * Busines rules associated for the mitigation type
-     * 
-     * @param string $newType
-     */
-    public function setType($newType)
-    {
-        // If the finding is in NEW status, changing the type puts it into DRAFT
-        if ('NEW' == $this->status) {
-            $this->status = 'DRAFT';
-        }
-        
-        // Once set, the type cannot be unset
-        if (!empty($this->status) && empty($newType)) {
-            throw new Fisma_Exception("Mitigation type cannot be unset after it has been set previously");
-        }
-        
-        $this->type = $newType;
-    }
-
-    /**
-     * Override Doctrine hook
-     * 
-     * @param Doctrine_Event $event
-     */
-    public function preInsert($event)
-    {
-        // Duplicate findings have special logic... see requirements
-        $duplicateFinding  = $this->getTable()->findByDql('description LIKE ?', $finding->description);
-        if (!empty($duplicateFinding[0]) && $duplicateFinding[0]->status != 'CLOSED') {
-            $finding->DuplicateFinding = $duplicateFinding[0];
-            $finding->status           = 'PEND';
-        } elseif (in_array($finding->type, array('CAP', 'AR', 'FP'))) {
-            $finding->status           = 'DRAFT';
-        } else {
-            $finding->status           = 'NEW';
-        }
-
-        $finding->log('New Finding Created');
-    }
-
-    /**
-     * Perform ACL checks and send notifications
-     * 
-     * @param Doctrine_Event $event
-     */
-    public function preUpdate($event) 
-    {
-        $modified = $this->getModified(true);
-
-        if (!empty($modified)) {
-            foreach ($modified as $key => $value) {
-                // Check whether the user has the privilege to update this column
-                if (isset(self::$_requiredPrivileges[$key])) {
-                    Fisma_Acl::requirePrivilege('finding', 
-                                                self::$_requiredPrivileges[$key], 
-                                                $this->ResponsibleOrganization->nickname);
-                }
-            
-                // Check whether this field generates any notification events
-                if (array_key_exists($key, self::$_notificationKeys)) {
-                    $type = self::$_notificationKeys[$key];
-                }
-
-                if (isset($type)) {
-                    Notification::notify($type, $this, User::currentUser(), $this->responsibleOrganizationId);
-                }
-            }
-        }       
-    }
-
-    /**
-     * Write the audit logs and send notifications
-     * 
-     * @todo Notifications should be in post-save... or better yet a separate behavior
-     * 
-     * @param Doctrine_Event $event
-     */
-    public function preSave($event)
-    {
-        $modifyValues = $this->getModified(true);
-
-        if (!empty($modifyValues)) {
-            foreach ($modifyValues as $key => $value) {
-                $newValue = $this->$key;
-
-                // Some related fields need to be fetched to log the change values
-                switch ($key) {
-                    case 'securityControlId':
-                        $key      = 'Security Control';
-                        $value    = Doctrine::getTable('SecurityControl')->find($value)->code;
-                        $newValue = $this->SecurityControl->code;
-                        break;
-                    case 'responsibleOrganizationId':
-                        $key      = 'Responsible Organization';
-                        $value    = Doctrine::getTable('Organization')->find($value)->name;
-                        $newValue = $this->ResponsibleOrganization->name;
-                        break;
-                    case 'status':
-                        if ('MSA' == $value && 'EN' == $newValue) {
-                            Notification::notify('MITIGATION_APPROVED', 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                        } elseif ('EN' == $value && 'DRAFT' == $newValue) {
-                            Notification::notify('MITIGATION_REVISE', 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                        } elseif ('EA' == $newValue) {
-                            Notification::notify('EVIDENCE_UPLOADED', 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                            $this->actualCompletionDate = Fisma::now();
-                        } elseif ( ('EA' == $value && 'EN' == $newValue)
-                             || ('MSA' == $value && 'DRAFT' == $newValue) ) {
-                            Notification::notify('APPROVAL_DENIED', 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                        } elseif ('EA' == $value && 'CLOSED' == $newValue) {
-                            Notification::notify('FINDING_CLOSED', 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                            $this->closedTs = Fisma::now();
-                            $this->log('Finding closed');
-                        }
-                        
-                        break;
-                    case 'currentEvaluationId':
-                        $event = $this->CurrentEvaluation->Event->name;
-                        // If the event is null, then that indicates this was the last evaluation within its approval
-                        // process. That condition is handled above.
-                        if (isset($event)) {
-                            Notification::notify($event, 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                        }
-                        break;
-                    case 'currentEcd':
-                        if ($this->ecdLocked && empty($this->ecdChangeDescription)) {
-                            throw new Fisma_Exception('When the ECD is locked, the user must provide a change description
-                                                       in order to modify the ECD.');
-                        }
-                        if (!$this->ecdLocked) {
-                            Fisma_Acl::requirePrivilege('finding', 
-                                                        'update_ecd', 
-                                                        $this->ResponsibleOrganization->nickname);
-                            $this->originalEcd = $this->currentEcd;
-                            Notification::notify('UPDATE_ECD', 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                        } else {
-                            Fisma_Acl::requirePrivilege('finding', 
-                                                        'update_locked_ecd', 
-                                                        $this->ResponsibleOrganization->nickname);
-                            Notification::notify('UPDATE_LOCKED_ECD', 
-                                                 $this, 
-                                                 User::currentUser(), 
-                                                 $this->responsibleOrganizationId);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                if (in_array($key, self::$_unLogKeys)) {
-                    continue;
-                }
-
-                $value    = $value ? html_entity_decode(strip_tags($value)) : 'NULL';
-                $newValue = html_entity_decode(strip_tags($newValue));
-
-                // Only log if $newValue is actually different from $value. 
-                // Ignore changes to NULL/""/NONE if one of these was present 
-                // in the original $value.
-                if ( (!(is_null($value) || empty($value) || $value == 'NONE') && 
-                      !(is_null($newValue) || empty($newValue) || $newValue == 'NONE'))
-                      || ($value != $newValue)) {
-                    // See if you can look up a logical name for this column in the schema definition. If its not defined,
-                    // then use the physical name instead
-                    $column = $this->getTable()->getColumnDefinition(strtolower($key));
-                    $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
-                                 ? $column['extra']['logicalName']
-                                 : $key;
- 
-                    $message = "UPDATE: $logicalName\n ORIGINAL: $value\nNEW: $newValue";
-                    $this->log($message);
-                }
-            }
-        }
-    }
-
-    /**
-     * Invalidate finding caches after record is saved
-     * 
-     * @param Doctrine_Event $event
-     */
-    public function postSave($event)
-    {
-        $this->ResponsibleOrganization->invalidateCache();
-    }
 }
