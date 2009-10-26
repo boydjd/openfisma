@@ -448,8 +448,6 @@ class Finding extends BaseFinding
         }
         
         $this->type = $newType;
-        var_dump($this->toArray());die;
-        
     }
 
     /**
@@ -457,7 +455,7 @@ class Finding extends BaseFinding
      * 
      * @param Doctrine_Event $event
      */
-    public function preInsert(Doctrine_Event $event)
+    public function preInsert($event)
     {
         // Duplicate findings have special logic... see requirements
         $duplicateFinding  = $this->getTable()->findByDql('description LIKE ?', $finding->description);
@@ -478,7 +476,7 @@ class Finding extends BaseFinding
      * 
      * @param Doctrine_Event $event
      */
-    public function preUpdate(Doctrine_Event $event) 
+    public function preUpdate($event) 
     {
         $modified = $this->getModified(true);
 
@@ -510,7 +508,7 @@ class Finding extends BaseFinding
      * 
      * @param Doctrine_Event $event
      */
-    public function preSave(Doctrine_Event $event)
+    public function preSave($event)
     {
         $modifyValues = $this->getModified(true);
 
@@ -633,7 +631,7 @@ class Finding extends BaseFinding
      * 
      * @param Doctrine_Event $event
      */
-    public function postSave(Doctrine_Event $event)
+    public function postSave($event)
     {
         $this->ResponsibleOrganization->invalidateCache();
     }
