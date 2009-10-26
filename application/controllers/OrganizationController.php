@@ -372,6 +372,7 @@ class OrganizationController extends SecurityController
      */
     public function treeAction() 
     {
+        Fisma_Acl::requirePrivilege('organization', 'read', '*');
         $this->searchbox();
         $this->render('tree');        
     }
