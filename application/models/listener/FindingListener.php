@@ -158,12 +158,12 @@ class FindingListener extends Doctrine_Record_Listener
                         break;
                     case 'securityControlId':
                         $key      = 'Security Control';
-                        $value    = Doctrine::getTable('SecurityControl')->find($value)->code;
+                        $value    = isset(Doctrine::getTable('SecurityControl')->find($value)->code) ? Doctrine::getTable('SecurityControl')->find($value)->code : null;
                         $newValue = $finding->SecurityControl->code;
                         break;
                     case 'responsibleOrganizationId':
                         $key      = 'Responsible Organization';
-                        $value    = Doctrine::getTable('Organization')->find($value)->name;
+                        $value    = isset(Doctrine::getTable('Organization')->find($value)->name) ? Doctrine::getTable('Organization')->find($value)->name : null;
                         $newValue = $finding->ResponsibleOrganization->name;
                         break;
                     case 'status':
@@ -205,7 +205,7 @@ class FindingListener extends Doctrine_Record_Listener
                         }
                         break;
                     case 'currentEvaluationId':
-                        $event = $finding->CurrentEvaluation->Event->name;
+                        $event = isset($finding->CurrentEvaluation->Event->name) ? $finding->CurrentEvaluation->Event->name : null;
                         // If the event is null, then that indicates this was the last evaluation within its approval
                         // process. That condition is handled above.
                         if (isset($event)) {
