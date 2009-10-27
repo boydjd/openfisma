@@ -28,6 +28,7 @@ Evaluation:
             class: Evaluation
             local: nextId
             foreign: id
+            foreignType: one
             foreignAlias: PreviousEvaluation
         Event:
             local: eventId
