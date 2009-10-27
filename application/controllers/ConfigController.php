@@ -85,10 +85,10 @@ class ConfigController extends SecurityController
                 }
                 $msg = 'Configuration updated successfully';
                 Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
-                $this->message($msg, self::M_NOTICE);
+                $this->view->priorityMessenger($msg, 'notice');
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
-                $this->message("Unable to save configurations:<br>$errorString", self::M_WARNING);
+                $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
             }
         }
         $this->render();
@@ -169,13 +169,13 @@ class ConfigController extends SecurityController
                 $ldap->save();
                 
                 $msg = 'Configuration updated successfully';
-                $this->message($msg, self::M_NOTICE);
+                $this->view->priorityMessenger($msg, 'notice');
                 $this->_redirect('/panel/config/');
                 return;
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
                 // Error message
-                $this->message("Unable to save Ldap Configurations:<br>$errorString", self::M_WARNING);
+                $this->view->priorityMessenger("Unable to save Ldap Configurations:<br>$errorString", 'warning');
             }
         } else {
             //only represent the view
@@ -195,7 +195,7 @@ class ConfigController extends SecurityController
         $id = $this->_request->getParam('id');
         Doctrine::getTable('LdapConfig')->find($id)->delete();
         $msg = "Ldap Server deleted successfully.";
-        $this->message($msg, self::M_NOTICE);
+        $this->view->priorityMessenger($msg, 'notice');
         $this->_forward('index');
     }
 

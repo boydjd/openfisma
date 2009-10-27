@@ -55,12 +55,12 @@ class RoleController extends BaseController
         $role = Doctrine::getTable('Role')->find($id);
         if (!$role) {
             $msg   = "Invalid Role ID";
-            $type = self::M_WARNING;
+            $type = 'warning';
         } else {
             $users = $role->Users->toArray();
             if (!empty($users)) {
                 $msg = 'This role cannot be deleted because it is in use by one or more users';
-                $type = self::M_WARNING;
+                $type = 'warning';
             } else {
                 Doctrine::getTable('RolePrivilege')
                 ->findByRoleId($id)
@@ -71,7 +71,7 @@ class RoleController extends BaseController
                 return;
             }
         }
-        $this->message($msg, $type);
+        $this->view->priorityMessenger($msg, $type);
         $this->_forward('list');
     }
 
@@ -125,12 +125,12 @@ class RoleController extends BaseController
             }
             if ($errno > 0) {
                 $msg = "Set right for role failed.";
-                $model = self::M_WARNING;
+                $model = 'warning';
             } else {
                 $msg = "Successfully set right for role.";
-                $model = self::M_NOTICE;
+                $model = 'notice';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
             $this->_redirect('panel/role/sub/right/id/' . $roleId);
         } else {
             $role = Doctrine::getTable('Role')->find($roleId)->toArray();

@@ -46,12 +46,12 @@ class ProductController extends BaseController
         $product = Doctrine::getTable('Product')->find($id);
         if (!$product) {
             $msg   = "Invalid Product ID";
-            $type = self::M_WARNING;
+            $type = 'warning';
         } else {
             $assets = $product->Assets->toArray();
             if (!empty($assets)) {
                 $msg = 'This product can not be deleted because it is already associated with one or more assets';
-                $type = self::M_WARNING;
+                $type = 'warning';
             } else {
                 parent::deleteAction();
                 // parent method will take care 
@@ -59,7 +59,7 @@ class ProductController extends BaseController
                 return;
             }
         }
-        $this->message($msg, $type);
+        $this->view->priorityMessenger($msg, $type);
         $this->_forward('list');
     }
     

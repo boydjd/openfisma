@@ -256,7 +256,7 @@ class OrganizationController extends SecurityController
                 // save the data, if failure then return false
                 if (!$organization->trySave()) {
                     $msg = "Failure in creation";
-                    $model = self::M_WARNING;
+                    $model = 'warning';
                 } else {
                     // the organization hasn't parent, so it is a root
                     if ((int)$orgValues['parent'] == 0) {
@@ -268,15 +268,15 @@ class OrganizationController extends SecurityController
                         $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                     }
                     $msg = "The organization is created";
-                    $model = self::M_NOTICE;
+                    $model = 'notice';
                 }
-                $this->message($msg, $model);
+                $this->view->priorityMessenger($msg, $model);
                 $this->_forward('view', null, null, array('id' => $organization->id));
                 return;
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
                 // Error message
-                $this->message("Unable to create organization:<br>$errorString", self::M_WARNING);
+                $this->view->priorityMessenger("Unable to create organization:<br>$errorString", 'warning');
             }
         }
         
@@ -300,12 +300,12 @@ class OrganizationController extends SecurityController
         if ($organization) {
             if ($organization->delete()) {
                 $msg = "Organization deleted successfully";
-                $model = self::M_NOTICE;
+                $model = 'notice';
             } else {
                 $msg = "Failed to delete the Organization";
-                $model = self::M_WARNING;
+                $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
         }
         $this->_forward('list');
     }
@@ -350,17 +350,17 @@ class OrganizationController extends SecurityController
             
             if ($isModify) {
                 $msg = "The organization is saved";
-                $model = self::M_NOTICE;
+                $model = 'notice';
             } else {
                 $msg = "Nothing changes";
-                $model = self::M_WARNING;
+                $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
             $this->_forward('view', null, null, array('id' => $organization->id));
         } else {
             $errorString = Fisma_Form_Manager::getErrors($form);
             // Error message
-            $this->message("Unable to update organization<br>$errorString", self::M_WARNING);
+            $this->view->priorityMessenger("Unable to update organization<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }

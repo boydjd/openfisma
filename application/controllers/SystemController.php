@@ -377,7 +377,7 @@ class SystemController extends BaseController
         if ('ie' == $this->getRequest()->getParam('browser')) {
             // Special handling for IE
             if (!empty($error)) {
-                $this->message($error, self::M_WARNING);
+                $this->view->priorityMessenger($error, 'warning');
                 $this->_forward('system', 'Panel', null, array('sub' => 'upload-for-ie', 'error' => $error));
             } else {
                 $this->_redirect("/panel/system/sub/view/id/$id");
@@ -439,7 +439,7 @@ class SystemController extends BaseController
 
         $error = $this->getRequest()->getParam('error');
         if (!empty($error)) {
-            $this->message($error, self::M_WARNING);
+            $this->view->priorityMessenger($error, 'warning');
         }
 
         $this->view->organizationId = $id;        

@@ -495,7 +495,7 @@ class RemediationController extends SecurityController
             $ecd  = new Zend_Date($findingData['currentEcd']);
 
             if ($ecd->isEarlier($date)) {
-                $this->message('Expected completion date has been set before the current date. Make sure that this is correct.', self::M_NOTICE);
+                $this->view->priorityMessenger('Expected completion date has been set before the current date. Make sure that this is correct.', 'notice');
             }
         }
 
@@ -512,8 +512,8 @@ class RemediationController extends SecurityController
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
-            $model = self::M_WARNING;
-            $this->message($message, $model);
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -566,8 +566,8 @@ class RemediationController extends SecurityController
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
-            $model = self::M_WARNING;
-            $this->message($message, $model);
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -621,7 +621,7 @@ class RemediationController extends SecurityController
 
             $finding->uploadEvidence($filename, User::currentUser());
         } catch (Fisma_Exception $e) {
-            $this->message($e->getMessage(), self::M_WARNING);
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -695,8 +695,8 @@ class RemediationController extends SecurityController
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
-            $model = self::M_WARNING;
-            $this->message($message, $model);
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -734,7 +734,7 @@ class RemediationController extends SecurityController
             if ($e instanceof Fisma_Exception) {
                 $message = $e->getMessage();
             }
-            $this->message($message, self::M_WARNING);
+            $this->view->priorityMessenger($message, 'warning');
             $this->_forward('view', null, null, array('id' => $id));
             return;
         }

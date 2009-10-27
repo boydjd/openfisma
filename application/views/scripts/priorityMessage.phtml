@@ -1,3 +1,4 @@
+<?php if (count($this->messages)) { ?>
 <script type="text/javascript">
 <?php
         foreach ($this->messages as $severity=>$messages) {
@@ -8,4 +9,4 @@
             }
         } ?>
 </script>
-
+<?php } ?>

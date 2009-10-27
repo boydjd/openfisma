@@ -170,19 +170,19 @@ abstract class BaseController extends SecurityController
                     $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
                     $msg   = "{$this->_modelName} created successfully";
-                    $model = self::M_NOTICE;
+                    $model = 'notice';
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $msg   = "Could not create the object ";
                     if (Fisma::debug()) {
                         $msg .= $e->getMessage();
                     }
-                    $model = self::M_WARNING;
+                    $model = 'warning';
                 }
-                $this->message($msg, $model);
+                $this->view->priorityMessenger($msg, $model);
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
-                $this->message("Unable to create the {$this->_modelName}:<br>$errorString", self::M_WARNING);
+                $this->view->priorityMessenger("Unable to create the {$this->_modelName}:<br>$errorString", 'warning');
             }
         }
         $this->view->form = $form;
@@ -212,19 +212,19 @@ abstract class BaseController extends SecurityController
                 try {
                     $result = $this->saveValue($form, $subject);
                     $msg   = "{$this->_modelName} updated successfully";
-                    $model = self::M_NOTICE;
+                    $model = 'notice';
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
                     if (Fisma::debug()) {
                         $msg .= $e->getMessage();
                     }
-                    $type = self::M_WARNING;
+                    $type = 'warning';
                 }
-                $this->message($msg, $model);
+                $this->view->priorityMessenger($msg, $model);
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
-                $this->message("Error while trying to save: {$this->_modelName}:<br>$errorString", self::M_WARNING);
+                $this->view->priorityMessenger("Error while trying to save: {$this->_modelName}:<br>$errorString", 'warning');
             }
         }
         $form = $this->setForm($subject, $form);
@@ -243,23 +243,23 @@ abstract class BaseController extends SecurityController
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
             $msg   = "Invalid {$this->_modelName} ID";
-            $type = self::M_WARNING;
+            $type = 'warning';
         } else {
             try {
                 Doctrine_Manager::connection()->beginTransaction();
                 $subject->delete();
                 Doctrine_Manager::connection()->commit();
                 $msg   = "{$this->_modelName} deleted successfully";
-                $type = self::M_NOTICE;
+                $type = 'notice';
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
                 if (Fisma::debug()) {
                     $msg .= $e->getMessage();
                 }
-                $type = self::M_WARNING;
+                $type = 'warning';
             } 
         }
-        $this->message($msg, $type);
+        $this->view->priorityMessenger($msg, $type);
         $this->_forward('list');
     }
 
