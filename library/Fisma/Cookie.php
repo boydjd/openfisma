@@ -65,7 +65,11 @@ class Fisma_Cookie
     * @access public
     * @return array 
     */
-    public static function prepare($name, $value, $secure = Zend_Session::getOptions('cookie_secure')) {
+    public static function prepare($name, $value, $secure = null) {
+        if(is_null($secure)) {
+            $secure = Zend_Session::getOptions('cookie_secure');
+        }
+
         // Create an array containing the arguments to be passed to setcookie()
         // by the caller. Expire is set to false, so that the cookie expires
         // with the session, pursuant to United States federal law. 

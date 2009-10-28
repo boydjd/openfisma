@@ -31,7 +31,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class RedirectController extends MessageController
+class RedirectController extends Zend_Controller_Action
 {
     public function redirectAction() {
         $this->_helper->layout->setLayout('layout');

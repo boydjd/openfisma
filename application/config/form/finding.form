@@ -14,7 +14,6 @@ elementPrefixPath.path = Fisma/Form
 elementPrefixPath.type = Validate
 method = "post"
 elementFilters.trim = "StringTrim"
-elementFilters.tags = "StripTags"
 
 elements.discoveredDate.type = "text"
 elements.discoveredDate.options.label = "Discovered Date"

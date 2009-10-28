@@ -5,9 +5,9 @@ YAHOO.util.Event.onDOMReady(function () {
                                     '/remediation/summary-data/format/json', 
                                     {
                                         success: function(o) {
-                                            var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText);
                                             hideLoadingRow();
-                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData, true);
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', summaryData, true);
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },
@@ -36,9 +36,9 @@ function reloadTable(url) {
                                     url, 
                                     {
                                         success: function(o) {
-                                            var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText);
                                             hideLoadingRow();
-                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', json.summaryData, true);
+                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', summaryData, true);
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },

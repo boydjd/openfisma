@@ -82,10 +82,6 @@ class UserListener extends Doctrine_Record_Listener
             $user->log(User::ACCEPT_ROB, "Accepted Rules of Behavior");
         }
 
-        //@todo can't use $user->lockAccount() which has save function in itsself.
-        if (isset($modified['locked']) && $modified['locked']) {
-            $user->lockType = User::LOCK_TYPE_MANUAL;
-        }
     }
 
     public function preInsert(Doctrine_Event $event) {

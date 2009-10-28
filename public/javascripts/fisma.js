@@ -268,6 +268,9 @@ function ev_deny(formname){
         } else {// firefox
             var comment = document.getElementById('dialog_comment').value;
         }
+        if (comment.length <= 0) {
+            return;
+        }
         form2.elements['comment'].value = comment;
         form2.elements['decision'].value = 'DENIED';
         var submitMsa = document.createElement('input');
@@ -355,6 +358,9 @@ function ms_deny(formname){
             var comment = document.getElementById('dialog_comment').innerHTML;
         } else {// firefox
             var comment = document.getElementById('dialog_comment').value;
+        }
+        if (comment.length <= 0) {
+            return;
         }
         form2.elements['comment'].value = comment;
         form2.elements['decision'].value = 'DENIED';
@@ -469,18 +475,18 @@ function showJustification(){
     }
 }
 
-function addBookmark(title, url){
+function addBookmark(obj, url){
     if(window.sidebar){ // Firefox
-        window.sidebar.addPanel(title, url,'');
+        window.sidebar.addPanel(url.title, url.href,'');
     }else if(window.opera){ //Opera
         var a = document.createElement("A");
         a.rel = "sidebar";
         a.target = "_search";
-        a.title = title;
-        a.href = url;
+        a.title = url.title;
+        a.href = url.href;
         a.click();
     } else if(document.all){ //IE
-        window.external.AddFavorite(url, title);
+        window.external.AddFavorite(url.href, url.title);
     }
 }
 

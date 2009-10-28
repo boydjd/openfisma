@@ -57,6 +57,8 @@ testdb.schema =
 php.display_errors = false
 php.memory_limit = 64M
 
+timezone = "America/New_York"
+
 ; Development mode displays error messages to the user and enables some features that aid 
 ; debugging but reduce performance. Development mode inherits all properties from production
 ; mode unless specifically over-ridden.

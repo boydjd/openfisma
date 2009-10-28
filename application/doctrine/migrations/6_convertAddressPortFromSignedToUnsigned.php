@@ -40,7 +40,7 @@ class ConvertAddressPortFromSignedToUnsigned extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $this->changeColumn('asset', 'addressPort', 5, 'integer', array(
+        $this->changeColumn('asset', 'addressPort', 2, 'integer', array(
                 'unsigned' => false
             )
         );

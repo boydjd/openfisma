@@ -17,6 +17,7 @@ action = "/panel/config/type/privacy_policy"
 
 elements.privacy_policy.type = "textarea"
 elements.privacy_policy.options.label = "Privacy Policy"
+elements.privacy_policy.options.required = true
 elements.privacy_policy.options.validators.strlen.validator = "MceNotEmpty"
 elements.privacy_policy.options.cols = "80"
 elements.privacy_policy.options.rows = "10"

@@ -54,6 +54,20 @@ class MetainfoController extends SecurityController
         if ($module == 'organization') {
             $organizations  = User::currentUser()->getOrganizations();
             $list = $this->view->treeToSelect($organizations, 'nickname');
+
+            // Since the list for organizations is prepended with dashes, we need to do some
+            // string transformation on $this->view->selected so that the full name is ripped out
+            // and the appropriate level of padding is added.
+            $organization = substr($this->view->selected, 0, strpos($this->view->selected, '-')-1);
+
+            foreach ($list as $item) {
+                if ($pos = strpos($item, $organization)) {
+                    $organization = substr($item, 0, $pos) . $organization;
+                    break;
+                }
+            }
+
+            $this->view->selected = $organization;
         } elseif ($module == 'security_control') {
             $securityControls = Doctrine::getTable('SecurityControl')->findAll();
             foreach ($securityControls as $securityControl) {

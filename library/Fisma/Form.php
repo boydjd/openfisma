@@ -45,7 +45,7 @@ class Fisma_Form extends Zend_Form
      * 
      * @param Zend_View_Interface $view
      */
-    function render() {
+    function render(Zend_View_Interface $view = null) {
         if ($this->isReadOnly()) {
             foreach ($this->getElements() as $element) {
                 $element->readOnly = true;

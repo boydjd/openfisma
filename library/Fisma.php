@@ -225,7 +225,20 @@ class Fisma
                     ini_set("xdebug.$param", $value);
                 }
             }
-            
+
+            // Timezone configuration
+            if (isset(self::$_appConf->timezone)) {
+                ini_set("date.timzeone", self::$_appConf->timezone);
+            }
+            else {
+                ini_set("date.timezone", "America/New_York");
+            }
+
+            // Log all PHP errors
+            ini_set('error_reporting', E_ALL | E_STRICT);
+            ini_set('log_errors', TRUE);
+            ini_set('error_log', self::$_rootPath . '/data/logs/php.log');
+
             // Session configuration
             $sessionOptions = self::$_appConf->session->toArray();
             $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
@@ -263,11 +276,15 @@ class Fisma
         $manager = Doctrine_Manager::getInstance();
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
         $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
+        $manager->setAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES, true);
         Zend_Registry::set('doctrine_config', array(
                'data_fixtures_path'  =>  self::getPath('fixture'),
                'models_path'         =>  self::getPath('model'),
                'migrations_path'     =>  self::getPath('migration'),
-               'yaml_schema_path'    =>  self::getPath('schema')
+               'yaml_schema_path'    =>  self::getPath('schema'),
+               'generate_models_options' => array(
+                    'generateTableClasses' => true
+               )
         ));
     }
     
@@ -369,8 +386,11 @@ class Fisma
         while ($file = readdir($modelDir)) {
             if ($match = strpos($file, '.php')) {
                 $modelName = substr($file, 0, $match);
-                require_once(Fisma::getPath('model') . '/' . $file);
-                Doctrine::getTable($modelName)->getRecordListener()->setOption('disabled', !self::$_listenerEnabled);
+
+                if (!strstr($modelName, 'Table')) {
+                    require_once(Fisma::getPath('model') . '/' . $file);
+                    Doctrine::getTable($modelName)->getRecordListener()->setOption('disabled', !self::$_listenerEnabled);
+                }
             }
         }
     }

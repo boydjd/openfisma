@@ -52,12 +52,13 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
     function renderSelf() 
     {
         $disabled = $this->readOnly ? 'disabled' : '';
+        $obj = json_encode($this->getAttrib('onClickArgument'));
         $render = "<input type=\"button\" id=\"{$this->getName()}\" value=\"{$this->getLabel()}\" $disabled>
                    <script type='text/javascript'>
                        YAHOO.util.Event.onDOMReady(function() {
                            var button = new YAHOO.widget.Button('{$this->getName()}', 
                                {
-                                   onclick: {fn: {$this->getAttrib('onClickFunction')}, obj: \"{$this->getAttrib('onClickArgument')}\"}
+                                   onclick: {fn: {$this->getAttrib('onClickFunction')}, obj: {$obj}}
                                }
                            );";
         $image = $this->getAttrib('imageSrc');

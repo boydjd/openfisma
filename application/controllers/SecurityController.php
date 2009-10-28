@@ -36,7 +36,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class SecurityController extends MessageController
+class SecurityController extends Zend_Controller_Action
 {
     /**
      * Authenticated user instance

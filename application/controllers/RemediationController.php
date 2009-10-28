@@ -103,10 +103,14 @@ class RemediationController extends SecurityController
                    ->addActionContext('search2', array('xls'))->setAutoDisableLayout(true);
         }
         $this->_helper->contextSwitch()
-                      ->addActionContext('summary-data', 'json')
-                      ->addActionContext('summary-data', 'xls')
-                      ->addActionContext('summary-data', 'pdf')                                            
-                      ->initContext();
+                      ->addActionContext('summary-data', array('json', 'xls', 'pdf'));
+
+        // Quick hack: disable auto-json-serialization for summary-data action
+        if ('summary-data' == $this->getRequest()->getActionName()) {
+            $this->_helper->contextSwitch()->setAutoJsonSerialization(false);
+        }
+        
+        $this->_helper->contextSwitch()->initContext();
         $this->_organizations = $this->_me->getOrganizations();
     }
     
@@ -221,8 +225,16 @@ class RemediationController extends SecurityController
 
             $this->view->tableData = $tableData;
         } else {
+            // Decide whether the response can be gzipped
+            $acceptEncodingHeader = $this->getRequest()->getHeader('Accept-Encoding');
+            $gzipEncode = (strstr($acceptEncodingHeader, 'gzip') !== false);
+            $this->view->gzipEncode = $gzipEncode;
+            if ('json' == $this->getRequest()->getParam('format')) {
+                $this->getResponse()->setHeader('Content-Encoding', 'gzip', true);
+            }
+            
+            // Convert organizations into hierarchical array
             $organizations = $this->toHierarchy($organizations, $type, $source);
-
             $this->view->summaryData = $organizations;
         } 
     }
@@ -253,6 +265,13 @@ class RemediationController extends SecurityController
 
                 $summaryCounts = $node->getSummaryCounts($type, $source);
                 $item = array_merge($item, $summaryCounts);
+
+                // OFJ-177 The finding controller summary-data action returns extraneous data
+                unset($item['createdTs']);
+                unset($item['modifiedTs']);
+                unset($item['name']);
+                unset($item['description']);
+                unset($item['deleted_at']);
                 
                 $item['children'] = array();
                 // Number of stack items 
@@ -273,7 +292,7 @@ class RemediationController extends SecurityController
                     $i = count($stack[$l - 1]['children']); 
                     $stack[$l - 1]['children'][$i] = $item; 
                     $stack[] = & $stack[$l - 1]['children'][$i]; 
-                } 
+                }
             } 
         } 
         return $trees; 
@@ -471,6 +490,15 @@ class RemediationController extends SecurityController
         $id          = $this->_request->getParam('id');
         $findingData = $this->_request->getPost('finding', array());
 
+        if (isset($findingData['currentEcd'])) {
+            $date = new Zend_Date();
+            $ecd  = new Zend_Date($findingData['currentEcd']);
+
+            if ($ecd->isEarlier($date)) {
+                $this->view->priorityMessenger('Expected completion date has been set before the current date. Make sure that this is correct.', 'notice');
+            }
+        }
+
         $finding     = $this->_getFinding($id);
 
         try {
@@ -484,8 +512,8 @@ class RemediationController extends SecurityController
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
-            $model = self::M_WARNING;
-            $this->message($message, $model);
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -538,8 +566,8 @@ class RemediationController extends SecurityController
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
-            $model = self::M_WARNING;
-            $this->message($message, $model);
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -593,7 +621,7 @@ class RemediationController extends SecurityController
 
             $finding->uploadEvidence($filename, User::currentUser());
         } catch (Fisma_Exception $e) {
-            $this->message($e->getMessage(), self::M_WARNING);
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -622,6 +650,7 @@ class RemediationController extends SecurityController
             header('Content-type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . urlencode($fileName));
             header('Content-Length: ' . filesize($filePath . $fileName));
+            header('Pragma: ');
             $fp = fopen($filePath . $fileName, 'rb');
             while (!feof($fp)) {
                 $buffer = fgets($fp, 4096);
@@ -666,8 +695,8 @@ class RemediationController extends SecurityController
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
-            $model = self::M_WARNING;
-            $this->message($message, $model);
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
         }
         $this->_forward('view', null, null, array('id' => $id));
     }
@@ -705,7 +734,7 @@ class RemediationController extends SecurityController
             if ($e instanceof Fisma_Exception) {
                 $message = $e->getMessage();
             }
-            $this->message($message, self::M_WARNING);
+            $this->view->priorityMessenger($message, 'warning');
             $this->_forward('view', null, null, array('id' => $id));
             return;
         }

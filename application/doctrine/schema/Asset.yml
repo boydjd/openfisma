@@ -33,6 +33,7 @@ Asset:
         addressPort:
             type: integer(5)
             unsigned: false
+            unsigned: false
             extra:
                 logicalName: Port Number
                 searchIndex: unstored

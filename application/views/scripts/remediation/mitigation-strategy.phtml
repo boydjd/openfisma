@@ -202,7 +202,7 @@ if ('EN' == $finding->status && Fisma_Acl::hasPrivilege('finding', 'mitigation_s
 if ($finding->status != 'NEW' 
     && ($finding->status != 'DRAFT' || $finding->FindingEvaluations->count() > 0)) {
     echo '<div class="approval">';
-    foreach ($finding->getFindingEvaluations('action') as $findingEvaluation) {
+    foreach ($findingEvaluations = $finding->getFindingEvaluations('action') as $k => $findingEvaluation) {
         $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
         $decision = $findingEvaluation->decision;
         echo '<div class="approvalStep"><p><b>' 
@@ -222,6 +222,9 @@ if ($finding->status != 'NEW'
         echo "</div>";
         if ($findingEvaluation->Evaluation->nextId == null || 'DENIED' == $decision) {
             echo '</div>';
+            if ($k != count($findingEvaluations)-1 || 'MSA' == $finding->status) {
+                echo '<div class="approval">';
+            }
         }
     }
 
