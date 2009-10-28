@@ -189,6 +189,8 @@ function toggleColumn(event, columnKey) {
     } else {
         myDataTable.hideColumn(column);
     }
+
+    saveColumnPreferenceCookie();
 }
 
 /* Save the current displayed columns as the default for this user. The default is stored in a session cookie and
@@ -196,23 +198,26 @@ function toggleColumn(event, columnKey) {
  *  - obj is a required parameter for a handler, but this handler does not use it.
  */
 function saveColumnPreference(event, obj) {
-    // The column preference is stored as a bitmap: 1=>visible, 0=>hidden.
-    var prefBitmap = 0;
-    var columnKeys = myDataTable.getColumnSet().keys;
-    
-    for (column in columnKeys) {
-        if (!columnKeys[column].hidden) {
-            prefBitmap |= 1 << column;
-        }
-    }
-
-    // Now save the bitmask by calling the appropriate controller action. The controller doesn't return any data
-    // for this action, so there is no check for the return value.
-    YAHOO.util.Cookie.set("search_columns_pref", prefBitmap, {path: "/"});
+    saveColumnPreferenceCookie();
     YAHOO.util.Connect.asyncRequest('GET', 
                                     '/user/set-column-preference', 
                                     null,
                                     null); 
     alert('Your preference has been saved. These columns will be visible whenever you log in.');
+}
+
+function saveColumnPreferenceCookie() {
+    // The column preference is stored as a bitmap: 1=>visible, 0=>hidden.
+    var prefBitmap = 0;
+    var columnKeys = myDataTable.getColumnSet().keys;
+
+    for (column in columnKeys) {
+      if (!columnKeys[column].hidden) {
+        prefBitmap |= 1 << column;
+      }
+    }
+    // Now save the bitmask by calling the appropriate controller action. The controller doesn't return any data
+    // for this action, so there is no check for the return value.
+    YAHOO.util.Cookie.set("search_columns_pref", prefBitmap, {path: "/"});
 }
 </script>
