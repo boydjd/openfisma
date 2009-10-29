@@ -103,6 +103,9 @@ class FindingController extends BaseController
                  ->addMultiOptions(array($securityControl['id'] => $securityControl['code']));
         }
         
+        $threatLevel = $form->getElement('threatLevel')->getMultiOptions();
+        $form->getElement('threatLevel')->setMultiOptions(array_merge(array('' => ''), $threatLevel));
+        
         $systems = $this->_me->getOrganizations();
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);

@@ -489,7 +489,26 @@ class RemediationController extends SecurityController
         
         $id          = $this->_request->getParam('id');
         $findingData = $this->_request->getPost('finding', array());
-
+		
+		$reservedThreatLevelAndCountermeasureEffectiveness = array(
+                ""         => "",
+                "LOW"      => "LOW",
+                "MODERATE" => "MODERATE",
+                "HIGH"     => "HIGH"
+         );
+        
+        if (isset($findingData['threatLevel'])) {
+            if (!array_key_exists($findingData['threatLevel'], $reservedThreatLevelAndCountermeasureEffectiveness)) {
+                $this->view->priorityMessenger('Invalid threat level.', 'warning');
+            }
+        }
+        
+        if (isset($findingData['countermeasuresEffectiveness'])) {
+            if (!array_key_exists($findingData['countermeasuresEffectiveness'], $reservedThreatLevelAndCountermeasureEffectiveness)) {
+                $this->view->priorityMessenger('Invalid countermeasures effectiveness.', 'warning');
+            }
+        }
+        
         if (isset($findingData['currentEcd'])) {
             $date = new Zend_Date();
             $ecd  = new Zend_Date($findingData['currentEcd']);
@@ -714,10 +733,8 @@ class RemediationController extends SecurityController
         Fisma_Acl::requirePrivilege('finding', 'read', $finding->ResponsibleOrganization->nickname);
 
         try {
-            if ($finding->threat == '' ||
-                $finding->threatLevel == 'NONE' ||
-                $finding->countermeasures == '' ||
-                $finding->countermeasuresEffectiveness == 'NONE') {
+            if ($finding->threat == '' ||                
+                $finding->countermeasuresEffectiveness == '') {
                 throw new Fisma_Exception("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
@@ -1099,6 +1116,15 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
         $orgNickname = $finding->ResponsibleOrganization->nickname;
+        
+        //compatible with old NONE
+        if (!$finding->threatLevel == NULL && $finding->threatLevel == "NONE") {
+            $finding->threatLevel = "";
+        }
+        
+        if (!$finding->countermeasuresEffectiveness == NULL && $finding->countermeasuresEffectiveness == "NONE") {
+            $finding->countermeasuresEffectiveness = "";
+        }
 
         // Check that the user is permitted to view this finding
         Fisma_Acl::requirePrivilege('finding', 'read', $orgNickname);

@@ -108,10 +108,12 @@ Finding:
             comment: Description of the threat source which affects this finding
         threatLevel:
             type: enum
+            notnull: true
             values: [LOW, MODERATE, HIGH]
             extra:
                 logicalName: Threat Level
                 searchIndex: unstored
+                notify: true
             comment: A subjective assessment of the probability and impact of exploiting this finding
         countermeasures:
             type: string
@@ -122,9 +124,11 @@ Finding:
             comment: The countermeasures in place against the threat source
         countermeasuresEffectiveness:
             type: enum
+            notnull: true
             values: [LOW, MODERATE, HIGH]
             extra:
-                logicalName: Effectiveness of Countermeasures            
+                logicalName: Effectiveness of Countermeasures
+                notify: true
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
 
         duplicateFindingId:
