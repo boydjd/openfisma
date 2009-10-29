@@ -46,17 +46,32 @@ class RemoveNullFromThreatLevel extends Doctrine_Migration_Base {
 		$disabled = Doctrine::getTable ( 'Finding' )->getRecordListener ()->getOption ( 'disabled' );
 		Doctrine::getTable ( 'Finding' )->getRecordListener ()->setOption ( 'disabled', true );
 		
-		$q = Doctrine_Query::create ()->update ( 'Finding' )->set ( 'threatLevel', '?', '' )->where ( 'threatLevel = ? or threatLevel = ?', array ('null', 'NONE' ) )->execute ();
-		$this->changeColumn ( 'finding', 'threatLevel', null, 'enum', array ('values' => array ('LOW', 'MODERATE', 'HIGH' ), 'notnull' => true ) );
+		$q = Doctrine_Query::create ()->update ( 'Finding' )
+									  ->set ( 'threatLevel', '?', '' )
+									  ->where ( 'threatLevel = ? or threatLevel = ?', array ('null', 'NONE' ) )
+									  ->execute ();
+		$this->changeColumn ( 'finding',
+							  'threatLevel',
+		                      null,
+		                      'enum',
+		                      array ('values' => array ('LOW', 'MODERATE', 'HIGH' ), 'notnull' => true ) );
 		
-		$q = Doctrine_Query::create ()->update ( 'Finding' )->set ( 'countermeasuresEffectiveness', '?', '' )->where ( 'countermeasuresEffectiveness = ? or countermeasuresEffectiveness = ?', array ('null', 'NONE' ) )->execute ();
-		$this->changeColumn ( 'finding', 'countermeasuresEffectiveness', null, 'enum', array ('values' => array ('LOW', 'MODERATE', 'HIGH' ), 'notnull' => true ) );
+		$q = Doctrine_Query::create ()->update ( 'Finding' )
+									  ->set ( 'countermeasuresEffectiveness', '?', '' )
+									  ->where ( 'countermeasuresEffectiveness = ? or countermeasuresEffectiveness = ?',
+									  			array ('null', 'NONE' ) )
+									  ->execute ();
+		$this->changeColumn ( 'finding',
+							  'countermeasuresEffectiveness',
+		   					  null,
+		   					  'enum', 
+		   					  array ('values' => array ('LOW', 'MODERATE', 'HIGH' ), 'notnull' => true ) );
 		
 		//restore status of record listener.
 		Doctrine::getTable ( 'Finding' )->getRecordListener ()->setOption ( 'disabled', $disabled );
 		
-	//generate models from yaml right now after yaml upgraded.
-	//Doctrine::generateModelsFromYaml ( Fisma::getPath ( 'schema' ), Fisma::getPath ( 'model' ) );
+		//generate models from yaml right now after yaml upgraded.
+		Doctrine::generateModelsFromYaml ( Fisma::getPath ( 'schema' ), Fisma::getPath ( 'model' ) );
 	}
 	
 	/**
@@ -67,18 +82,35 @@ class RemoveNullFromThreatLevel extends Doctrine_Migration_Base {
 	 */
 	public function down() {
 		//generate models from yaml right now after yaml downgraded.
-		//Doctrine::generateModelsFromYaml ( Fisma::getPath ( 'schema' ), Fisma::getPath ( 'model' ) );
+		Doctrine::generateModelsFromYaml ( Fisma::getPath ( 'schema' ), Fisma::getPath ( 'model' ) );
 		
-
 		//disable record listener after backup it.
 		$disabled = Doctrine::getTable ( 'Finding' )->getRecordListener ()->getOption ( 'disabled' );
 		Doctrine::getTable ( 'Finding' )->getRecordListener ()->setOption ( 'disabled', true );
 		
-		$this->changeColumn ( 'finding', 'threatLevel', null, 'enum', array ('values' => array ('NONE', 'LOW', 'MODERATE', 'HIGH' ), 'default' => 'NONE', 'notnull' => false ) );
-		$q = Doctrine_Query::create ()->update ( 'Finding' )->set ( 'threatLevel', '?', 'NONE' )->where ( 'threatLevel = ?', array ('' ) )->execute ();
+		$this->changeColumn ( 'finding',
+							  'threatLevel',
+							   null,
+							  'enum',
+							  array ('values'  => array ('NONE', 'LOW', 'MODERATE', 'HIGH' ), 
+							  		 'default' => 'NONE', 
+							  		 'notnull' => false ) );
+		$q = Doctrine_Query::create ()->update ( 'Finding' )
+									  ->set ( 'threatLevel', '?', 'NONE' )
+									  ->where ( 'threatLevel = ?', array ('' ) )
+									  ->execute ();
 		
-		$this->changeColumn ( 'finding', 'countermeasuresEffectiveness', null, 'enum', array ('values' => array ('NONE', 'LOW', 'MODERATE', 'HIGH' ), 'default' => 'NONE', 'notnull' => false ) );
-		$q = Doctrine_Query::create ()->update ( 'Finding' )->set ( 'countermeasuresEffectiveness', '?', 'NONE' )->where ( 'countermeasuresEffectiveness = ?', array ('' ) )->execute ();
+		$this->changeColumn ( 'finding', 
+							  'countermeasuresEffectiveness', 
+							  null, 
+							  'enum', 
+							  array ('values'  => array ('NONE', 'LOW', 'MODERATE', 'HIGH' ), 
+							  		 'default' => 'NONE', 
+							  		 'notnull' => false ) );
+		$q = Doctrine_Query::create ()->update ( 'Finding' )
+									  ->set ( 'countermeasuresEffectiveness', '?', 'NONE' )
+									  ->where ( 'countermeasuresEffectiveness = ?', array ('' ) )
+									  ->execute ();
 		
 		//restore status of record listener.
 		Doctrine::getTable ( 'Finding' )->getRecordListener ()->setOption ( 'disabled', $disabled );
