@@ -797,3 +797,80 @@ function showCalendar(block, trigger) {
     }
     dialog.show();
 }
+
+/**
+ * Check whether email configration right or not
+ */
+function test_emailConfig(){
+    var container = document.getElementById('tabContainer');
+    if(document.getElementById("panel_c")){
+        container.removeChild(document.getElementById("panel_c"));
+    }
+ 
+    var content = document.createElement('div');
+    var p = document.createElement('p');
+    var c_title = document.createTextNode('* Target E-mail Address:');
+    p.appendChild(c_title);
+    content.appendChild(p);
+    var email = document.createElement('input');
+    email.id = 'dialog_addto';
+    email.style.height='21px';
+    email.style.width='240px';
+    email.style.marginLeft='10px';
+    email.name = 'addto';
+    content.appendChild(email);
+    var div = document.createElement('div');
+    div.style.height = '10px';
+    content.appendChild(div);
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.id = 'dialog_send';
+    button.style.marginLeft = '10px';
+    button.value = 'Send';
+    content.appendChild(button);
+    //Load panel
+    panel('Test E-mail Configuration', container, '', content.innerHTML);
+    document.getElementById('dialog_send').onclick = function (){
+        if (document.getElementById('dialog_addto').value == ''){
+            alert("you must enter Target E-mail Address before send.");
+            document.getElementById('dialog_addto').focus();
+            return false;
+        }
+        var addto = document.getElementById('dialog_addto').value;
+        var form  = document.getElementById('email_config');
+        form.elements['addto'].value = addto;
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/html', {
+            success:function (o){testEmailResult(o.responseText, o.statusText)},
+            failure: handleFailure});
+        //remove panel
+        var panel_mask = document.getElementById("panel_mask");
+		panel_mask.style.visibility = "hidden";
+        container.removeChild(document.getElementById("panel_c"));
+    }
+	function testEmailResult(responseText, statusText)
+    {
+        showMessage(responseText, statusText);
+    }
+}
+
+/* Show testEmailResult message */
+function showMessage( msg, model ){
+    if (document.getElementById('msgbar')) {
+        var msgbar = document.getElementById('msgbar');
+    } else {
+        return;
+    }
+    msgbar.innerHTML = msg;
+    msgbar.style.fontWeight = 'bold';
+    if( msg.indexOf("test successfully !") > 0 ) {
+        msgbar.style.color = 'green';
+        msgbar.style.borderColor = 'green';
+        msgbar.style.backgroundColor = 'lightgreen';
+    } else {
+        msgbar.style.color = 'red';
+        msgbar.style.borderColor = 'red';
+        msgbar.style.backgroundColor = 'pink';
+    }
+    msgbar.style.display = 'block';
+}

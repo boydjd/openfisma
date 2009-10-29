@@ -1,5 +1,25 @@
-<?php Fisma_Format_Section::startSection("Notification Policies"); ?>
+<?php
+$validateEmail = new Fisma_Yui_Form_Button('columnOptions',
+                                           array('label' => 'Test Configuration',
+                                                 'onClickFunction' => 'test_emailConfig'));
+Fisma_Format_Section::startSection("E-mail Configuration ". $validateEmail); ?>
 
-<div class="block"> <?php echo $this->form->setAttrib('class','cform'); ?> </div>
-
+<div class="block">
+<?php
+    $this->form->setAttrib('id', 'email_config');
+    echo $this->form;
+?>
+</div>
+<script type="text/javascript">
+    /* hidden label AddTo */
+    var labels =document.getElementsByTagName("label");
+    for(k = 0; k < labels.length; k ++){
+        if(labels[k].getAttribute("htmlfor") == "addto"){// for ie6 and ie7
+            labels[k].style.display = "none";
+        }
+        if(labels[k].getAttribute("for") == "addto"){
+            labels[k].setAttribute('style','display: none;');
+        }
+    }
+</script>
 <?php Fisma_Format_Section::stopSection(); ?>

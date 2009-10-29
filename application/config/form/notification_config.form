@@ -13,6 +13,11 @@
 method = "post"
 action = "/panel/config/type/notification"
 
+elements.addto.type = "hidden"
+elements.addto.options.label = "Target Email Address"
+elements.addto.options.validators.alnum.validator = "EmailAddress"
+displayGroups.general.elements.addto = "addto"
+
 elements.sender.type = "text"
 elements.sender.options.label = "From Email Address"
 elements.sender.options.size = 30

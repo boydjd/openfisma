@@ -47,6 +47,7 @@ class ConfigController extends SecurityController
         parent::init();
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('ldapvalid', 'html')
+                    ->addActionContext('test-email-config', 'html')
                     ->initContext();
     }
 
@@ -260,6 +261,81 @@ class ConfigController extends SecurityController
         $this->view->form = $form;
     }
 
+    /**
+     * Validate the email configuration
+     *
+     * This is only happens in ajax context
+     */
+    public function testEmailConfigAction()
+    {
+        Fisma_Acl::requirePrivilege('area', 'configuration');
+        
+        $form = $this->getConfigForm('notification_config');
+        if ($this->_request->isPost()) {
+            $data = $this->_request->getPost();
+            if ($form->isValid($data)) {
+                try{
+                    $data = $form->getValues();
+                    unset($data['id']);
+                    unset($data['saveEmailConfig']);
+                    unset($data['Reset']);
+                    if (empty($data['smtp_password'])) {
+                        $password = Doctrine::getTable('Configuration')
+                                         ->findByDql('name = ?','smtp_password');
+                        if (!empty($password[0])) {
+                            $data['smtp_password'] = $password[0]->value;
+                        }
+                    }
+                    if (empty($data['smtp_tls'])) {
+                        $tls = Doctrine::getTable('Configuration')
+                                    ->findByDql('name = ?','smtp_tls');
+                        if (!empty($tls[0])) {
+                            $data['smtp_tls'] = $tls[0]->value;
+                        }
+                    }                    
+                    $mailContent="This is a test e-mail from OpenFISMA. This is sent by the" 
+                                ." administrator to determine if the e-mail configuration is" 
+                                ." working correctly. There is no need to reply to this e-mail.";
+                    
+                    if($data['send_type'] == 'sendmail') {
+                        $mail = new Zend_Mail();
+                        $mail->setBodyText($mailContent)
+                             ->setFrom($data['sender'])
+                             ->addTo($data['addto'])
+                             ->setSubject($data['subject'])
+                             ->send();
+                    } elseif ($data['send_type'] == 'smtp') {
+                        $emailconfig = array('auth' => 'login',
+                                             'username' => $data['smtp_username'],
+                                             'password' => $data['smtp_password'],
+                                             'port' => $data['smtp_port']);
+                       if ($data['smtp_tls'] == 1) {
+                           $emailconfig['ssl'] = 'tls';
+                       }
+                        $transport = new Zend_Mail_Transport_Smtp($data['smtp_host'],$emailconfig);
+                        
+                        // send messages
+                        $mail = new Zend_Mail();
+                        $mail->addTo($data['addto']);
+                        $mail->setFrom($data['sender']);
+                        $mail->setSubject($data['subject']);
+                        $mail->setBodyText($mailContent);
+                        $mail->send($transport);
+                    }
+                    echo "Sent to '".$data['addto']."' test successfully !";
+                } catch (Zend_Mail_Exception $e) {
+                    echo $e->getMessage();
+                }
+            } else {
+                $errorString = Fisma_Form_Manager::getErrors($form);
+                echo $errorString;
+            }
+        } else {
+            echo "<b>Invalid Parameters</b>";
+        }
+        $this->_helper->viewRenderer->setNoRender();
+    }
+    
     /**
      *  Add/Update Privacy Policy configurations
      */
