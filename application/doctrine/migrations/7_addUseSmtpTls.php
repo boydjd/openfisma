@@ -38,18 +38,11 @@ class AddUseSmtpTls extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $query = Doctrine_Query::create()
-                    ->from('Configuration c')
-                    ->where('c.name = ?', 'smtp_tls'); 
-        $config = $query->fetchOne();
-
-        if (empty($config)) {
-            $config = new Configuration();
-            $config->name        = 'smtp_tls';
-            $config->value       = 0;
-            $config->description = 'Use Transport Layer Security (TLS)';
-            $config->save();
-        }
+        $config = new Configuration();
+        $config->name        = 'smtp_tls';
+        $config->value       = 0;
+        $config->description = 'Use Transport Layer Security (TLS)';
+        $config->save();
     }
 
     /**
