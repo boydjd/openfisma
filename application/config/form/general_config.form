@@ -26,13 +26,17 @@ displayGroups.general.elements.system_name = "system_name"
 
 elements.account_inactivity_period.type = "text"
 elements.account_inactivity_period.options.label = "Inactive Account Expiration (days)"
-elements.account_inactivity_period.options.validators.alnum.validator = "Digits"
+elements.account_inactivity_period.options.validators.digits.validator = "Digits"
+elements.account_inactivity_period.options.validators.greaterThan.validator = "GreaterThan"
+elements.account_inactivity_period.options.validators.greaterThan.options.value = 0
 elements.account_inactivity_period.options.required = true
 displayGroups.general.elements.account_inactivity_period = "account_inactivity_period"
 
 elements.session_inactivity_period.type = "text"
 elements.session_inactivity_period.options.label = "Session Timeout (minutes)"
-elements.session_inactivity_period.options.validators.alnum.validator = "Digits"
+elements.session_inactivity_period.options.validators.digits.validator = "Digits"
+elements.session_inactivity_period.options.validators.greaterThan.validator = "GreaterThan"
+elements.session_inactivity_period.options.validators.greaterThan.options.value = 0
 elements.session_inactivity_period.options.required = true
 displayGroups.general.elements.session_inactivity_period = "session_inactivity_period"
 
@@ -40,19 +44,21 @@ elements.auth_type.type = "select"
 elements.auth_type.options.label = "Authentication Method"
 elements.auth_type.options.multiOptions.database = "database"
 elements.auth_type.options.multiOptions.ldap = "ldap"
-elements.auth_type.options.validators.alnum.validator = "NotEmpty"
+elements.auth_type.options.validators.notEmpty.validator = "NotEmpty"
 elements.auth_type.options.required = true
 displayGroups.general.elements.auth_type = "auth_type"
 
 elements.rob_duration.type = "text"
 elements.rob_duration.options.label = "Rules Of Behavior Period (days)"
-elements.rob_duration.options.validators.alnum.validator = "Digits"
+elements.rob_duration.options.validators.digits.validator = "Digits"
+elements.rob_duration.options.validators.greaterThan.validator = "GreaterThan"
+elements.rob_duration.options.validators.greaterThan.options.value = 0
 elements.rob_duration.options.required = true
 displayGroups.general.elements.rob_duration = "rob_duration"
 
 elements.use_notification.type = "textarea"
 elements.use_notification.options.label = "Warning Banner"
-elements.use_notification.options.validators.mce.validator = "MceNotEmpty"
+elements.use_notification.options.validators.mceNotEmpty.validator = "MceNotEmpty"
 elements.use_notification.options.cols = "70%"
 elements.use_notification.options.rows = "7"
 elements.use_notification.options.required = true
@@ -60,7 +66,7 @@ displayGroups.general.elements.use_notification = "use_notification"
 
 elements.behavior_rule.type = "textarea"
 elements.behavior_rule.options.label = "Rules Of Behavior"
-elements.behavior_rule.options.validators.strlen.validator = "MceNotEmpty"
+elements.behavior_rule.options.validators.mceNotEmpty.validator = "MceNotEmpty"
 elements.behavior_rule.options.cols = "70%"
 elements.behavior_rule.options.rows = "7"
 elements.behavior_rule.options.required = true

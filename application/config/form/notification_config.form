@@ -16,7 +16,7 @@ action = "/panel/config/type/notification"
 elements.sender.type = "text"
 elements.sender.options.label = "Send Email Address"
 elements.sender.options.size = 30
-elements.sender.options.validators.alnum.validator = "EmailAddress"
+elements.sender.options.validators.emailAddress.validator = "EmailAddress"
 elements.sender.options.required = true
 displayGroups.general.elements.sender = "sender"
 
@@ -34,24 +34,27 @@ elements.send_type.options.required = true
 displayGroups.general.elements.send_type = "send_type"
 
 elements.smtp_host.type = "text"
-elements.smtp_host.options.label = "Smtp server name"
-elements.smtp_host.options.validators.alnum.validator = "Hostname"
+elements.smtp_host.options.label = "SMTP Hostname"
+elements.smtp_host.options.validators.hostname.validator = "Hostname"
+elements.smtp_host.options.validators.hostname.options.allow = 7 
 elements.smtp_host.options.size = 30
 displayGroups.general.elements.smtp_host = "smtp_host"
 
 elements.smtp_port.type = "text"
-elements.smtp_port.options.label = "Smtp server port"
+elements.smtp_port.options.label = "SMTP Port"
 elements.smtp_port.options.validators.int.validator = "Int"
+elements.smtp_port.options.validators.greaterThan.validator = "GreaterThan"
+elements.smtp_port.options.validators.greaterThan.options.value = 0
 elements.smtp_port.options.size = 30
 displayGroups.general.elements.smtp_port = "smtp_port"
 
 elements.smtp_username.type = "text"
-elements.smtp_username.options.label = "Username for smtp Authenticate"
+elements.smtp_username.options.label = "SMTP Username"
 elements.smtp_username.options.size = 30
 displayGroups.general.elements.smtp_username = "smtp_username"
 
 elements.smtp_password.type = "password"
-elements.smtp_password.options.label = "Password for smtp Authenticate"
+elements.smtp_password.options.label = "SMTP Password"
 elements.smtp_password.options.size = 30
 displayGroups.general.elements.smtp_password = "smtp_password"
 
