@@ -733,8 +733,8 @@ class RemediationController extends SecurityController
         Fisma_Acl::requirePrivilege('finding', 'read', $finding->ResponsibleOrganization->nickname);
 
         try {
-            if ($finding->threat == '' ||                
-                $finding->countermeasuresEffectiveness == '') {
+            if ($finding->threatLevel == '' || $finding->threat == '' ||             
+                $finding->countermeasuresEffectiveness == '' || $finding->countermeasures == '') {
                 throw new Fisma_Exception("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
