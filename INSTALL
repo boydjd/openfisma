@@ -146,10 +146,22 @@ the installation steps.
 2.1 Email Notification Setting
 ----------------------------------------------------------------------------
 To enable the capability of automated email notification, it's necessary to 
-create a cronjob to the /scripts/cronjobs/FismaNotify.php and ECDNotifier.php. 
+create a cronjob to the /scripts/cronjobs/Notify.php and ECDNotifier.php. 
 
 For example:
 # Enable OpenFISMA Email alerts and run the script every 5 minutes
-* * * * *  /opt/openfisma/scripts/cronjobs/FismaNotify.php >> /tmp/out 2>&1
+*/5 * * * *  /opt/openfisma/scripts/cronjobs/Notify.php >> /tmp/out 2>&1
 # Enable OpenFISMA Overdue alerts and run the script every 5 minutes
-* * * * *  /opt/openfisma/scripts/cronjobs/ECDNotifier.php >> /tmp/out 2>&1
+*/5 * * * *  /opt/openfisma/scripts/cronjobs/ECDNotifier.php >> /tmp/out 2>&1
+
+2.2 Daily Cache Refresh Setting
+----------------------------------------------------------------------------
+OpenFISMA caches certain information about due dates for action items. When the calendar day advances
+forward, these caches become invalid and need to be refreshed for the current day.
+ 
+This script invalidates all cache items which need to be refreshed on a daily basis and then rebuilds
+the cache. This script should be run early in the day so that no user sees the outdated cache entries.
+
+For example:
+# Enable OpenFISMA Cache Refresh and run the script nightly at midnight
+0 0 * * * /opt/openfisma/scripts/cronjobs/DailyCacheRefresh.php >> /tmp/out 2>&1
