@@ -113,7 +113,6 @@ Finding:
             extra:
                 logicalName: Threat Level
                 searchIndex: unstored
-                notify: true
             comment: A subjective assessment of the probability and impact of exploiting this finding
         countermeasures:
             type: string
@@ -128,7 +127,6 @@ Finding:
             values: [LOW, MODERATE, HIGH]
             extra:
                 logicalName: Effectiveness of Countermeasures
-                notify: true
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
 
         duplicateFindingId:
