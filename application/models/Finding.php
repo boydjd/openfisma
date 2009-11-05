@@ -343,10 +343,12 @@ class Finding extends BaseFinding
      */
     public function threatLevelMutator($value)
     {
-        if($value != $this->_get("threatLevel"))
+        //trigger the notification event if there is anything changed after created.
+        if($this->_get("id") != null && $value != $this->_get("threatLevel"))
         {
             Notification::notify("UPDATE_THREAT_LEVEL", $this, User::currentUser());
         }
+        
         $this->_set("threatLevel", $value);
     }
     
@@ -357,11 +359,13 @@ class Finding extends BaseFinding
      */
     public function countermeasuresEffectivenessMutator($value)
     {
-        if($value != $this->_get("countermeasuresEffectiveness"))
+        //trigger the notification event if there is anything changed after created.
+        if($this->_get("id") != null && $value != $this->_get("countermeasuresEffectiveness"))
         {
             Notification::notify("UPDATE_COUNTERMEASURES_EFFECTIVENESS", $this, User::currentUser());
         }
+        
         $this->_set("countermeasuresEffectiveness", $value);
     }
-
+    
 }
