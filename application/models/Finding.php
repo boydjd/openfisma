@@ -74,32 +74,7 @@ class Finding extends BaseFinding
 
         return $allStatuses;
     }
-    
-    /**
-     * overidden setTableDefinition() for this model.
-     *
-     */
-     public function setTableDefinition()
-     {
-        //Disable auto generated overridden accessor and mutator.
-        //You can enable this attribution if you make sure there is not conflict about naming and referencing.        
-        //Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_AUTO_ACCESSOR_OVERRIDE,false);
-        //$this->setAttribute(Doctrine::ATTR_AUTO_ACCESSOR_OVERRIDE,false);
-        return parent::setTableDefinition();
-     }
-    
-    /**
-     * overidden setUp() for this model.
-     *
-     */
-    public function setUp()
-    {
-        //register user customized accessor or mutator when ATTR_AUTO_ACCESSOR_OVERRIDE disabled.
-        $this->hasMutator("threatLevel", "threatLevelMutator");
-        $this->hasMutator("countermeasuresEffectiveness", "countermeasuresEffectivenessMutator");
-        return parent::setUp();
-    }
-    
+
     /**
      * get the detailed status of a Finding
      *
@@ -335,37 +310,5 @@ class Finding extends BaseFinding
         $auditLog->description = html_entity_decode($description);
         $this->AuditLogs[]     = $auditLog;
     }
-    
-    /**
-     * user customized threat level setter or mutator.
-     *
-     * @param $value a specific new value
-     */
-    public function threatLevelMutator($value)
-    {
-        //trigger the notification event if there is anything changed after created.
-        if($this->_get("id") != null && $value != $this->_get("threatLevel"))
-        {
-            Notification::notify("UPDATE_THREAT_LEVEL", $this, User::currentUser());
-        }
-        
-        $this->_set("threatLevel", $value);
-    }
-    
-    /**
-     * user customized countermeasures effectiveness setter or mutator.
-     *
-     * @param $value a specific new value
-     */
-    public function countermeasuresEffectivenessMutator($value)
-    {
-        //trigger the notification event if there is anything changed after created.
-        if($this->_get("id") != null && $value != $this->_get("countermeasuresEffectiveness"))
-        {
-            Notification::notify("UPDATE_COUNTERMEASURES_EFFECTIVENESS", $this, User::currentUser());
-        }
-        
-        $this->_set("countermeasuresEffectiveness", $value);
-    }
-    
+
 }

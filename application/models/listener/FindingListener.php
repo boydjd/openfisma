@@ -100,7 +100,6 @@ class FindingListener extends Doctrine_Record_Listener
         } else {
             $finding->status           = 'NEW';
         }
-        $finding->countermeasuresEffectiveness = "";
         $finding->CreatedBy       = User::currentUser();
         $finding->updateNextDueDate();
         $finding->log('New Finding Created');

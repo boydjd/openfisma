@@ -58,20 +58,10 @@ Event:
         name: UPDATE_COUNTERMEASURES
         description: Countermeasures Assessment For Finding Updated
         Privilege: notification_finding
-        
-    UPDATE_COUNTERMEASURES_EFFECTIVENESS:
-        name: UPDATE_COUNTERMEASURES_EFFECTIVENESS
-        description: Countermeasures Effectiveness For Finding Updated
-        Privilege: notification_finding
 
     UPDATE_THREAT:
         name: UPDATE_THREAT
         description: Threat Assessment For Finding Updated
-        Privilege: notification_finding
-        
-    UPDATE_THREAT_LEVEL:
-        name: UPDATE_THREAT_LEVEL
-        description: Threat Level For Finding Updated
         Privilege: notification_finding
 
     UPDATE_RECOMMENDATION:
