@@ -75,7 +75,7 @@ class MetainfoController extends SecurityController
             }
         } elseif (in_array($module, array('threat_level', 'countermeasures-effectiveness'))) {
             $list = array(
-                "NONE"     => "NONE",
+                ""         => null,
                 "LOW"      => "LOW",
                 "MODERATE" => "MODERATE",
                 "HIGH"     => "HIGH"

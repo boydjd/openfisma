@@ -87,7 +87,10 @@ class FindingController extends BaseController
     public function getForm($formName = null)
     {
         $form = Fisma_Form_Manager::loadForm('finding');
-        
+
+        $threatLevelOptions = $form->getElement('threatLevel')->getMultiOptions();
+        $form->getElement('threatLevel')->setMultiOptions(array_merge(array('' => null), $threatLevelOptions));
+
         $form->getElement('discoveredDate')->setValue(date('Y-m-d'));
         
         $sources = Doctrine::getTable('Source')->findAll()->toArray();

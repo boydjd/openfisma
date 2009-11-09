@@ -715,9 +715,9 @@ class RemediationController extends SecurityController
 
         try {
             if ($finding->threat == '' ||
-                $finding->threatLevel == 'NONE' ||
+                empty($finding->threatLevel) ||
                 $finding->countermeasures == '' ||
-                $finding->countermeasuresEffectiveness == 'NONE') {
+                empty($finding->countermeasuresEffectiveness)) {
                 throw new Fisma_Exception("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
