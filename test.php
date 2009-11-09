@@ -1,0 +1,5 @@
+<?php 
+hello();
+echo 'hi';
+
+?>
