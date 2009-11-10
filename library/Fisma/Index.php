@@ -300,7 +300,14 @@ class Fisma_Index
                     // Get data from this foreign field
                     $foreignTable = $record->$foreignModel->getTable();
                     $foreignColumnDef = $foreignTable->getColumnDefinition($foreignFieldName);
-                    $indexData = $record->$foreignModel->$foreignFieldName;
+
+                    // If the foreign field is set in the record, then use the value defined in the record.
+                    // If the field isn't set in the record, then we pull the value from the foreign model
+                    if (isset($record->$foreignFieldName)) {
+                        $indexData = $record->$foreignFieldName;
+                    } else {
+                        $indexData = $record->$foreignModel->$foreignFieldName;
+                    }
 
                     // If the field is marked as HTML, then strip the HTML from the data (presumably, this
                     // has already been filtered by HtmlPurifier)
