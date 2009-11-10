@@ -184,7 +184,7 @@ class DashboardController extends SecurityController
         foreach ($results as $result) {
             if (in_array($result['status'], array_keys($arrTotal))) {
                 $arrTotal[$result['status']] = $result['statusCount'];
-            } else {
+            } elseif (!empty($result['CurrentEvaluation']['nickname'])) {
                 $arrTotal[$result['CurrentEvaluation']['nickname']] = $result['subStatusCount'];
             }
         }
