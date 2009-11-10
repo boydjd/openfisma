@@ -36,6 +36,7 @@ displayGroups.general.elements.send_type = "send_type"
 elements.smtp_host.type = "text"
 elements.smtp_host.options.label = "SMTP Hostname"
 elements.smtp_host.options.validators.hostname.validator = "Hostname"
+; const ALLOW_ALL = 7, but the constant isn't in scope here
 elements.smtp_host.options.validators.hostname.options.allow = 7 
 elements.smtp_host.options.size = 30
 displayGroups.general.elements.smtp_host = "smtp_host"
