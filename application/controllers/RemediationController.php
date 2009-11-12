@@ -429,10 +429,7 @@ class RemediationController extends SecurityController
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/remediation/search2' . $link);
-        call_user_func_array("setcookie", Fisma_Cookie::prepare('lastSearchUrl',
-            "/panel/remediation/sub/searchbox$link" 
-            )
-        );
+        Fisma_Cookie::set('lastSearchUrl', "/panel/remediation/sub/searchbox$link");
         $this->view->assign('columns', $this->_getColumns());
         $this->view->assign('pageInfo', $this->_paging);
         $this->render();
