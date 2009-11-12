@@ -222,7 +222,10 @@ class User extends BaseUser
      */
     public function hash($password, $hashType = null) 
     {
-        $hashType   = (empty($hashType)) ? $this->hash : $hashType;
+        if (empty($hashType)) {
+            $hashType = Configuration::getConfig('hash_type');
+        }
+
         $hashString = $this->passwordSalt . $password;
         
         if ('sha1' == $hashType) {
