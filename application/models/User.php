@@ -88,7 +88,18 @@ class User extends BaseUser
             return new User();
         }
     }
-    
+
+    /**
+     * construct 
+     * 
+     * @access public
+     * @return void
+     */
+    public function construct() {
+        // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
+        $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
+    }
+
     /**
      * Lock an account, which will prevent a user from logging in.
      * 
@@ -232,7 +243,7 @@ class User extends BaseUser
         } elseif ('sha256' == $hashType) {
             return mhash(MHASH_SHA256, $hashString);
         } else {
-            throw new Fisma_Exception("Unsupported hash type: {$hashType}");
+            throw new Fisma_Exception("Unsupported hash type: {$hashType} {$this->hashType}");
         }
     }
 
