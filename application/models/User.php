@@ -243,7 +243,7 @@ class User extends BaseUser
         } elseif ('sha256' == $hashType) {
             return mhash(MHASH_SHA256, $hashString);
         } else {
-            throw new Fisma_Exception("Unsupported hash type: {$hashType} {$this->hashType}");
+            throw new Fisma_Exception("Unsupported hash type: {$hashType}");
         }
     }
 
