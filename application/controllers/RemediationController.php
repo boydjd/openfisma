@@ -612,7 +612,10 @@ class RemediationController extends SecurityController
                 if (move_uploaded_file($file['tmp_name'], $absFile)) {
                     chmod($absFile, 0755);
                 } else {
-                    $message = 'Failed in move_uploaded_file(). ' . $absFile . "\n" . $file['error'];
+                    $message = 'The file upload failed due to a server configuration error.' 
+                             . ' Please contact the administrator.';
+                    $logger = Fisma::getLogInstance();
+                    $logger->log('Failed in move_uploaded_file(). ' . $absFile . "\n" . $file['error'], Zend_Log::ERR);
                     throw new Fisma_Exception($message);
                 }
             } else {
