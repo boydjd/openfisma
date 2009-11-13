@@ -642,12 +642,9 @@ function form_confirm (check_form, action) {
     }
 
     if(changed) {
-        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these'
+        if (!confirm('WARNING: You have unsaved changes on the page. If you continue, these'
                   + ' changes will be lost. If you want to save your changes, click "Cancel"' 
                   + ' now and then click "Save Changes".')) {
-            return true;
-        }
-        else {
             return false;
         }
     }
