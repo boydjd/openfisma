@@ -44,6 +44,9 @@ Organization:
             local: organizationId
             foreign: userId
             refClass: UserOrganization
+        Finding:
+            local: id
+            foreign: responsibleOrganizationId
 
     actAs:
         NestedSet:

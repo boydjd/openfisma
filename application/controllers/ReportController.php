@@ -216,14 +216,24 @@ class ReportController extends SecurityController
         $this->view->assign('params', $params);
         $this->view->assign('url', '/report/overdue' . $this->_helper->makeUrlParams($params));
         $isExport = $req->getParam('format');
-        
+
         if ('search' == $req->getParam('s') || isset($isExport)) {
-            // Search for overdue items according to the criteria
             $q = Doctrine_Query::create()
-                    ->select('f.*')
-                    ->addSelect('DATEDIFF(NOW(), f.nextDueDate) diffDay')
-                    ->from('Finding f')
-                    ->where('DATEDIFF(NOW(), f.nextDueDate) > 0');
+                 ->select('o.id')
+                 ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) orgSystemName")
+                 ->addSelect('f.type type')
+                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 29, 1, 0)) lessThan30')
+                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 30 AND 59, 1, 0)) moreThan30')
+                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 89, 1, 0)) moreThan60')
+                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 90 AND 119, 1, 0)) moreThan90')
+                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) >= 120, 1, 0)) moreThan120')
+                 ->addSelect('COUNT(f.id) total')
+                 ->addSelect('ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))) average')
+                 ->addSelect('MAX(DATEDIFF(NOW(), f.nextduedate)) max')
+                 ->from('Organization o')
+                 ->leftJoin('o.Finding f ON f.responsibleorganizationid = o.id')
+                 ->where('f.nextduedate < NOW()');
+
             if (!empty($params['orgSystemId'])) {
                 $q->andWhere('f.responsibleOrganizationId = ?', $params['orgSystemId']);
             }
@@ -237,11 +247,15 @@ class ReportController extends SecurityController
             } else {
                 $q->whereIn('f.status', array('NEW', 'DRAFT', 'MSA', 'EN', 'EA'));
             }
+
+            $q->groupBy('orgSystemName, type');
+            $q->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $list = $q->execute();
+
             // Assign view outputs
-            $this->view->assign('poam_list', $this->_helper->overdueStatistic($list));
+            $this->view->assign('poam_list', $list);
             $this->view->criteria = $params;
-            $this->view->columns = array('orgSystemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '<30 Days',
+            $this->view->columns = array('orgSystemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '< 30 Days',
                                          'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
                                          'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
                                          'max' => 'Maximum (days)');
