@@ -51,8 +51,8 @@ class AddUseSmtpTls extends Doctrine_Migration_Base
     public function down()
     {
         $query = Doctrine_Query::create()
-                    ->from('Configuration c')
-                    ->where('c.name = ?', 'smtp_tls'); 
+               ->from('Configuration c')
+               ->where('c.name = ?', 'smtp_tls'); 
         $config = $query->fetchOne();
         if ($config) {
             $config->delete();

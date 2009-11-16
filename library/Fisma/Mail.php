@@ -165,7 +165,7 @@ class Fisma_Mail extends Zend_Mail
                                 'port'     => $port,
                                 'username' => $username,
                                 'password' => $password);
-                if ($tls == 1){
+                if ($tls) {
                     $config['ssl'] = 'tls';
                 }
             }

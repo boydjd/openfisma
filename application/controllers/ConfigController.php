@@ -253,7 +253,8 @@ class ConfigController extends SecurityController
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('notification_config');
-        $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port', 'smtp_tls', 'smtp_username', 'smtp_password');
+        $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port',
+                         'smtp_tls', 'smtp_username', 'smtp_password');
         foreach ($columns as $column) {
             $configs[$column] = Configuration::getConfig($column);
         }

@@ -56,6 +56,10 @@ displayGroups.general.elements.smtp_port = "smtp_port"
 
 elements.smtp_tls.type = "checkbox"
 elements.smtp_tls.options.label = "Use Transport Layer Security (TLS)"
+elements.smtp_tls.options.validators.alnum.validator = "Digits"
+elements.smtp_tls.options.validators.between.validator = "between"
+elements.smtp_tls.options.validators.between.options.min = "0"
+elements.smtp_tls.options.validators.between.options.max = "1"
 displayGroups.general.elements.smtp_tls = "smtp_tls"
 
 elements.smtp_username.type = "text"
