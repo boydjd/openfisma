@@ -269,6 +269,7 @@ function ev_deny(formname){
             var comment = document.getElementById('dialog_comment').value;
         }
         if (comment.length <= 0) {
+            alert('Comments are required in order to deny.');
             return;
         }
         form2.elements['comment'].value = comment;
@@ -344,7 +345,6 @@ function ms_deny(formname){
     content.appendChild(textarea);
     var div = document.createElement('div');
     div.style.height = '20px';
-    div.id = 'ms_deny_div';
     content.appendChild(div);
     var button = document.createElement('input');
     button.type = 'button';
@@ -361,9 +361,7 @@ function ms_deny(formname){
             var comment = document.getElementById('dialog_comment').value;
         }
         if (comment.length <= 0) {
-            var msDenyDiv = document.getElementById('ms_deny_div');
-            var warning = document.createTextNode('* Comments are required to continue.');
-            msDenyDiv.appendChild(warning);
+            alert('Comments are required in order to submit.');
             return;
         }
         form2.elements['comment'].value = comment;
