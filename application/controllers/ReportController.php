@@ -221,7 +221,7 @@ class ReportController extends SecurityController
             $q = Doctrine_Query::create()
                  ->select('o.id')
                  ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) orgSystemName")
-                 ->addSelect('f.type type')
+                 ->addSelect('f.type')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 29, 1, 0)) lessThan30')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 30 AND 59, 1, 0)) moreThan30')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 89, 1, 0)) moreThan60')
@@ -230,8 +230,8 @@ class ReportController extends SecurityController
                  ->addSelect('COUNT(f.id) total')
                  ->addSelect('ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))) average')
                  ->addSelect('MAX(DATEDIFF(NOW(), f.nextduedate)) max')
-                 ->from('Organization o')
-                 ->leftJoin('o.Finding f ON f.responsibleorganizationid = o.id')
+                 ->from('Finding f')
+                 ->leftJoin('f.ResponsibleOrganization o')
                  ->where('f.nextduedate < NOW()');
 
             if (!empty($params['orgSystemId'])) {
