@@ -251,7 +251,7 @@ class InstallController extends Zend_Controller_Action
         // Overwrite the default host_url value. Can't use the Configuration class b/c that requires authentication.
         $setHostUrlQuery = Doctrine_Query::create()
                            ->update('Configuration c')
-                           ->set('value', '?', $_SERVER['SERVER_NAME'])
+                           ->set('value', '?', Zend_Controller_Front::getInstance()->getRequest()->getHttpHost())
                            ->where('name LIKE ?', 'host_url');
         if (!$setHostUrlQuery->execute()) {
             throw new Exception("Unable to set the host_url value in the configuration table.");
