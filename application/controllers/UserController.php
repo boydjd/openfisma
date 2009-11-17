@@ -168,8 +168,7 @@ class UserController extends BaseController
     public function profileAction()
     {
         $form = $this->_getProfileForm();
-        //$user = Doctrine::getTable('User')->find($this->_me->id);
-        $user = $this->_me;
+        $user = Doctrine::getTable('User')->find($this->_me->id);
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {

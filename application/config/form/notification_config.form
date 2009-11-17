@@ -21,7 +21,7 @@ displayGroups.general.elements.addto = "addto"
 elements.sender.type = "text"
 elements.sender.options.label = "From Email Address"
 elements.sender.options.size = 30
-elements.sender.options.validators.alnum.validator = "EmailAddress"
+elements.sender.options.validators.emailAddress.validator = "EmailAddress"
 elements.sender.options.required = true
 elements.sender.options.tooltip = "<p><b>From Email Address</b></p><p>The From Email Address will be used by OpenFISMA to identify itself when it sends emails to end users. For example, if you input openfisma@agency.gov, then users will receive email messages from openfisma@agency.gov.</p>"
 displayGroups.general.elements.sender = "sender"
@@ -42,15 +42,19 @@ elements.send_type.options.tooltip = "<p><b>Email Configuration Type</b></p><p>T
 displayGroups.general.elements.send_type = "send_type"
 
 elements.smtp_host.type = "text"
-elements.smtp_host.options.label = "SMTP Host Name"
-elements.smtp_host.options.validators.alnum.validator = "Hostname"
+elements.smtp_host.options.label = "SMTP Hostname"
+elements.smtp_host.options.validators.hostname.validator = "Hostname"
+; const ALLOW_ALL = 7, but the constant isn't in scope here
+elements.smtp_host.options.validators.hostname.options.allow = 7 
 elements.smtp_host.options.size = 30
 elements.smtp_host.options.tooltip = "<p><b>SMTP Host Name</b></p><p>The Host IP address or DNS name of the SMTP server to be used for sending mail. If you choose <b>sendmail</b> you will be able to leave this blank. If you choose <b>SMTP</b>, you will need to enter an IP address or dns name. Example: 192.168.0.23 or smtp.agency.gov</p>"
 displayGroups.general.elements.smtp_host = "smtp_host"
 
 elements.smtp_port.type = "text"
-elements.smtp_port.options.label = "SMTP Port Number"
+elements.smtp_port.options.label = "SMTP Port"
 elements.smtp_port.options.validators.int.validator = "Int"
+elements.smtp_port.options.validators.greaterThan.validator = "GreaterThan"
+elements.smtp_port.options.validators.greaterThan.options.value = 0
 elements.smtp_port.options.size = 30
 displayGroups.general.elements.smtp_port = "smtp_port"
 
@@ -63,12 +67,12 @@ elements.smtp_tls.options.validators.between.options.max = "1"
 displayGroups.general.elements.smtp_tls = "smtp_tls"
 
 elements.smtp_username.type = "text"
-elements.smtp_username.options.label = "Username for SMTP Authentication"
+elements.smtp_username.options.label = "SMTP Username"
 elements.smtp_username.options.size = 30
 displayGroups.general.elements.smtp_username = "smtp_username"
 
 elements.smtp_password.type = "password"
-elements.smtp_password.options.label = "Password for SMTP Authentication"
+elements.smtp_password.options.label = "SMTP Password"
 elements.smtp_password.options.size = 30
 displayGroups.general.elements.smtp_password = "smtp_password"
 

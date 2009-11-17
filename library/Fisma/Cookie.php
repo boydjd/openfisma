@@ -79,4 +79,17 @@ class Fisma_Cookie
 
         return $cookie;
     }
+
+   /**
+    * set - Sets a cookie by calling prepare to build the cookie.
+    *
+    * @param string $name
+    * @param string $value
+    * @static
+    * @access public
+    * @return void
+    */
+    public static function set($name, $value) {
+        call_user_func_array("setcookie", self::prepare($name,$value));
+    }
 }

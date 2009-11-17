@@ -4,7 +4,7 @@
         foreach ($this->messages as $severity=>$messages) {
             if (count($messages)) {
                 foreach ($messages as $message) { ?>
-                    message('<?php echo $message; ?>', '<?php echo $severity; ?>');
+                    message('<?php echo addslashes($message); ?>', '<?php echo $severity; ?>');
 <?php           }
             }
         } ?>

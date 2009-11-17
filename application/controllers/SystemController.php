@@ -309,7 +309,7 @@ class SystemController extends BaseController
         $this->_helper->layout()->disableLayout();
 
         $this->view->organizationId = $id;        
-        $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();
+        $this->view->documentTypes  = Doctrine_Query::create()->from('DocumentType')->orderBy('name')->execute();
     }
   
     /**
@@ -443,6 +443,6 @@ class SystemController extends BaseController
         }
 
         $this->view->organizationId = $id;        
-        $this->view->documentTypes = Doctrine::getTable('DocumentType')->findAll();        
+        $this->view->documentTypes  = Doctrine_Query::create()->from('DocumentType')->orderBy('name')->execute();
     }
 }

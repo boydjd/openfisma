@@ -40,7 +40,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license {@link http://www.openfisma.org/content/license}
  */
-class Test_Fisma_Cookie_Test extends Test_FismaUnitTest
+class Test_Fisma_Cookie extends Test_FismaUnitTest
 {
     /**
      * testPrepareSecureCookie 

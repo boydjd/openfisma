@@ -88,7 +88,18 @@ class User extends BaseUser
             return new User();
         }
     }
-    
+
+    /**
+     * construct 
+     * 
+     * @access public
+     * @return void
+     */
+    public function construct() {
+        // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
+        $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
+    }
+
     /**
      * Lock an account, which will prevent a user from logging in.
      * 
@@ -222,10 +233,7 @@ class User extends BaseUser
      */
     public function hash($password, $hashType = null) 
     {
-        if (empty($hashType)) {
-            $hashType = Configuration::getConfig('hash_type');
-        }
-
+        $hashType   = (empty($hashType)) ? $this->hashType : $hashType;
         $hashString = $this->passwordSalt . $password;
         
         if ('sha1' == $hashType) {

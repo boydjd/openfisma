@@ -88,7 +88,6 @@ class UserListener extends Doctrine_Record_Listener
         $user = $event->getInvoker();
         
         $user->passwordTs = Fisma::now();
-        $user->hashType = Configuration::getConfig('hash_type');
         $user->log(User::CREATE_USER, "create user: $user->nameFirst $user->nameLast");
     }
 

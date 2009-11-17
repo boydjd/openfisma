@@ -647,6 +647,9 @@ function form_confirm (check_form, action) {
                   + ' now and then click "Save Changes".')) {
             return true;
         }
+        else {
+            return false;
+        }
     }
     
     if (confirm('WARNING: You are about to ' + action + '. This action cannot be undone.'
