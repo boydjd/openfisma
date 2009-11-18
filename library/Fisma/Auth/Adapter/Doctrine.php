@@ -25,7 +25,7 @@
  */
 
 /**
- * Adapte the authentication to Doctrine model 
+ * An authentication adapter for Doctrine (aka database) 
  * 
  * @category   Fisma
  * @copyright  Copyright (c) 2005-2008
@@ -36,182 +36,74 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
 {
 
     /**
-     * The model to be authenticated
+     * The user to be authenticated
      *
-     * @var Doctrine_Record
+     * @var User
      */
-    protected $_identity = null;
+    private $_user = null;
 
     /**
-     * $_credential - Credential values
+     * Constructor
      *
-     * @var string
+     * @param User $user
+     * @param string $password
      */
-
-    /**
-     * Sets configuration options
-     *
-     * @param  Doctrine_Record          $identity
-     * @param  string                   $credential
-     */
-    public function __construct(Doctrine_Record $identity, $credential = null) 
+    public function __construct(User $user, $password) 
     {
-        $this->_identity = $identity;
-        $this->setCredential($credential);
-    }
-
-
-    /**
-     *  set the credential value to be used, 
-     *
-     * @param  string $credential
-     * @return Fisma_Auth_Adapter_Doctrine Provides a fluent interface
-     */
-    public function setCredential($credential)
-    {
-        $this->_credential = $credential;
-        return $this;
+        $this->_user = $user;
+        $this->_credential = $password;
     }
 
     /**
-     * defined by Zend_Auth_Adapter_Interface.  This method is called to 
-     * attempt an authenication.  Previous to this call, this adapter would have already
-     * been configured with all nessissary information to successfully connect to a database
-     * table and attempt to find a record matching the provided identity.
+     * Implements the required interface
      *
-     * @throws Zend_Auth_Adapter_Exception if answering the authentication query is impossible
      * @return Zend_Auth_Result
      */
     public function authenticate()
     {
-        $this->_authenticateSetup();
-        $this->_authenticatePolicyCheck();
-        if ($this->_identity->login($this->_credential)) {
-            $authResult = new Zend_Auth_Result(
-                Zend_Auth_Result::SUCCESS, 
-                $this->_identity,
-                array('Authentication successful.')
-            );
-        } else {
-            $authResult = new Zend_Auth_Result(
-                Zend_Auth_Result::FAILURE,
-                $this->_identity,
-                array('Supplied credential is invalid.')
-            );
+        // If password has expired, then the user cannot be authenticated
+        if ($this->_passwordIsExpired()
+            && !$this->_user->locked) {
+
+            $this->_user->lockAccount(User::LOCK_TYPE_EXPIRED);
+            $reason = $this->_user->getLockReason();
+            throw new Fisma_Exception_AccountLocked("Account is locked ($reason)");
         }
+
+        // Check password
+        if ($this->_user->hash($this->_credential) == $this->_user->password) {
+            $authResult = new Zend_Auth_Result(Zend_Auth_Result::SUCCESS, $this->_user);
+        } else {
+            $authResult = new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID, $this->_user);
+        }
+        
+        // If password is wrong, determine whether the account needs to be locked due to password failures
+        if (!$authResult->isValid()) {
+            $this->_user->failureCount++;
+            if ($this->_user->failureCount >= Configuration::getConfig('failure_threshold')) {
+                $this->_user->lockAccount(User::LOCK_TYPE_PASSWORD);
+                $reason = $this->_user->getLockReason();
+                throw new Fisma_Exception_AccountLocked("Account is locked ($reason)");
+            }
+            $this->_user->save();
+        }
+        
         return $authResult;
     }
 
     /**
-     * This method abstracts the steps involved with making sure
-     * that this adapter was indeed setup properly with all required peices of information.
-     *
-     * @throws Zend_Auth_Adapter_Exception - in the event that setup was not done properly
-     * @return true
-     */
-    protected function _authenticateSetup()
-    {
-        $exception = null;
-
-        if (!$this->_identity instanceof Doctrine_Record) {
-            $exception = 'An identity/model must be supplied for '
-                    . 'the Fisma_Auth_Adapter_Doctrine authentication adapter.';
-        } elseif (is_null($this->_credential) ) {
-            $exception = 'A credential value was not provided prior to '
-                    . 'authentication with Fisma_Auth_Adapter_Doctrine.';
-        }
-
-        if (null !== $exception) {
-            throw new Zend_Auth_Adapter_Exception($exception);
-        }
-        
-        return true;
-    }
-
-    /**
-     * Check all the login policies 
+     * Check if the password has expired
      * 
-     * it throws if any violation is identified.
+     * @return boolean
      */
-    protected function _authenticatePolicyCheck()
+    private function _passwordIsExpired()
     {
-        $user = $this->_identity;
-        // If the account is locked, then check to see
-        // what the reason for the lock was and whether it can be unlocked automatically.
-        $lockMessage = '';
-        $contactEmail = Configuration::getConfig('contact_email');
-        $inactivePeriod = new Zend_Date();
-        $inactivePeriod->subDay(Configuration::getConfig('account_inactivity_period'));
-        $lastLogin = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
-
-        if (!is_null($user->lastLoginTs)
-                && $inactivePeriod->isLater($lastLogin)) {
-            $user->lockAccount(User::LOCK_TYPE_INACTIVE);
-        } 
-
-        // Check password expiration (for database authentication only)
+        $passExpireTs = new Zend_Date($this->_user->passwordTs, Zend_Date::ISO_8601);
         $passExpirePeriod = Configuration::getConfig('pass_expire');
-        $passExpireTs = new Zend_Date($user->passwordTs, 'Y-m-d');
         $passExpireTs->add($passExpirePeriod, Zend_Date::DAY);
-        if ($passExpireTs->isEarlier(new Zend_Date())) {
-            $user->lockAccount(User::LOCK_TYPE_EXPIRED);
-        }
+        $expired = $passExpireTs->isEarlier(Zend_Date::now());
 
-        if ($user->locked) {
-            switch ($user->lockType) {
-            case User::LOCK_TYPE_MANUAL:
-                $lockMessage = 'Your account has been locked by an Administrator. '
-                         . 'Please contact the '
-                         . "<a href=\"mailto:$contactEmail\">Administrator</a>.";
-                break;
-            case User::LOCK_TYPE_PASSWORD:
-            // If this system is configured to let accounts unlock automatically,
-            // then check whether it can be unlocked now
-                if (Configuration::getConfig('unlock_enabled') == 1) {
-                    $unlockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
-                    $unlockTs->add(Configuration::getConfig('unlock_duration'), 
-                                    Zend_Date::SECOND);
-                    $now = new Zend_Date();
-                    if ($now->isEarlier($unlockTs)) {
-                        $unlockTs->sub($now);
-                        $lockMessage = 'Your user account has been locked due to '
-                                     . Configuration::getConfig('failure_threshold')
-                                     . ' or more unsuccessful login attempts. Your '
-                                     . 'account will be unlocked in '
-                                     . ceil($unlockTs->getTimestamp()/60)
-                                     . ' minutes. Please try again at that time.<br>'
-                                     . ' You may also contact the Administrator for '
-                                     . 'further assistance.';
-                    } else {
-                        $user->unlockAccount();
-                    }
-                } else {
-                    $lockMessage = 'Your user account has been locked due to '
-                        . Configuration::getConfig('failure_threshold')
-                        . ' or more unsuccessful login attempts. Please '
-                        . "contact the <a href=\"mailto:$contactEmail\">Administrator</a>.";
-                }
-                break;
-            case User::LOCK_TYPE_INACTIVE:
-                $lockMessage = 'Your account has been locked automatically '
-                     .' because you have not logged in over '
-                     . Configuration::getConfig('account_inactivity_period') . ' days.';
-                break;
-            case User::LOCK_TYPE_EXPIRED:
-                $lockMessage = 'Your account has been locked automatically '
-                     . 'because you have not changed your password in over '
-                     . Configuration::getConfig('pass_expire') . ' days.';
-                break;
-            default:
-                $lockMessage = 'Your user account has been locked due to '
-                             . Configuration::getConfig('failure_threshold')
-                             . ' or more unsuccessful login attempts. Please'
-                             . ' contact the <a href="mailto:$contactEmail">Administrator</a>.';
-            }
-        }
-        if (!empty($lockMessage)) {
-            throw new Zend_Auth_Adapter_Exception($lockMessage);
-        }
+        return $expired;
     }
 }
 

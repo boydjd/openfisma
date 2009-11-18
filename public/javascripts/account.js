@@ -48,7 +48,7 @@ function GeneratePassword () {
 var check_account = function () {
     var account = document.getElementById('username').value;
     account = encodeURIComponent(account);
-    var url = "/user/check-account/format/html/account/"+account;
+    var url = "/user/check-account/format/json/account/" + account;
     YAHOO.util.Connect.asyncRequest('GET',
                                     url,
                                     {

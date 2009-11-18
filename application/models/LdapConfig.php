@@ -38,9 +38,9 @@ class LdapConfig extends BaseLdapConfig
     /**
      *  Retrive the ldap configuration(s)
      *
-     *  @return array all the configurations of LDAP servers. One configuration if the $id is specified.
+     *  @return array All the configurations of LDAP servers
      */
-    public function getLdaps()
+    public static function getConfig()
     {
         $ldapConfigs = Doctrine::getTable('LdapConfig')->findAll()->toArray();
         

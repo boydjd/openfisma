@@ -43,9 +43,10 @@ class UserController extends BaseController
     {
         parent::init();
         $this->_user = new User();
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('checkaccount', 'html')
-                    ->initContext();
+        $this->_helper->contextSwitch()
+                      ->setAutoJsonSerialization(false)
+                      ->addActionContext('check-account', 'json')
+                      ->initContext();
     }
     
     /**
@@ -220,7 +221,7 @@ class UserController extends BaseController
         $this->view->requirements =  $this->_getPasswordRequirements();
         $post   = $this->_request->getPost();
 
-        if ($post['oldPassword']) {
+        if (isset($post['oldPassword'])) {
 
             if ($form->isValid($post)) {
                 $user = Doctrine::getTable('User')->find($this->_me->id);
@@ -392,15 +393,14 @@ class UserController extends BaseController
     public function checkAccountAction()
     {
         Fisma_Acl::requirePrivilege('user', 'read');
-        $ldapConfig = new LdapConfig();
-        $data = $ldapConfig->getLdaps();
+        $data = LdapConfig::getConfig();
         $account = $this->_request->getParam('account');
         $msg = '';
         if (count($data) == 0) {
             $type = 'warning';
-            // to do Engilish
-            $msg .= "Ldap doesn't exist or no data";
+            $msg .= "No LDAP providers defined";
         }
+
         foreach ($data as $opt) {
             $srv = new Zend_Ldap($opt);
             try {
@@ -421,8 +421,8 @@ class UserController extends BaseController
                 }
             }
         }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_helper->layout->setLayout('ajax');
+
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
         $this->_helper->viewRenderer->setNoRender();
     }
 }
