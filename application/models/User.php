@@ -96,7 +96,6 @@ class User extends BaseUser
      * @return void
      */
     public function construct() {
-        // This is a hack. Since 
         try {
             // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
             $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
