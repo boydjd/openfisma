@@ -231,6 +231,7 @@ class InstallController extends Zend_Controller_Action
             
             $root = Doctrine::getTable('User')->find(1);
             $root->password = $dsn['adminpwd'];
+            $root->hashType = $dsn['encrypt'];
             $root->save();
             
             $checklist['schema'] = 'ok';

@@ -96,8 +96,17 @@ class User extends BaseUser
      * @return void
      */
     public function construct() {
-        // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
-        $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
+        // This is a hack. Since 
+        try {
+            // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
+            $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
+        } catch (Exception $e) {
+            /* This is an ugly Doctrine hack. If the tables aren't yet created for the models, then we can't get the
+             * hash_type configuration option from the Configuration model. This bug creeps up when installing and 
+             * when doing a build-all from the CLI. See OFJ-321 for details. 
+             */
+            $this->hashType = 'sha1';
+        }
     }
 
     /**
