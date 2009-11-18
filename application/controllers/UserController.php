@@ -88,6 +88,20 @@ class UserController extends BaseController
             $form->removeElement('generate_password');
         }
         
+        // Show lock explanation if account is locked. Hide explanation otherwise.
+        $userId = $this->getRequest()->getParam('id');
+        $user = Doctrine::getTable('User')->find($userId);
+        if ($user->locked) {
+            $reason = $user->getLockReason();
+            $form->getElement('lockReason')->setValue($reason);
+
+            $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
+            $form->getElement('lockTs')->setValue($lockTs->get('YYYY-MM-DD HH:mm:ss '));
+        } else {
+            $form->removeElement('lockReason');
+            $form->removeElement('lockTs');
+        }
+        
         $form = Fisma_Form_Manager::prepareForm($form);
         return $form;
     }
@@ -133,6 +147,17 @@ class UserController extends BaseController
         if (empty($values['password'])) {
             unset($values['password']);
         }
+
+        if ($values['locked'] && !$subject->locked) {
+            $subject->lockAccount(User::LOCK_TYPE_MANUAL);
+            unset($values['locked']);
+            unset($values['lockTs']);
+        } elseif (!$values['locked'] && $subject->locked) {
+            $subject->unlockAccount();
+            unset($values['locked']);
+            unset($values['lockTs']);
+        }
+        
         $subject->merge($values);
         $subject->unlink('Roles');
         $subject->link('Roles', $values['role']);

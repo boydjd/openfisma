@@ -76,7 +76,6 @@ class User extends BaseUser
 
     /**
      * Returns an object which represents the current, authenticated user
-     * If the $user is current User, then return this object instead of create a new one.
      * 
      * @return User
      */
@@ -86,6 +85,7 @@ class User extends BaseUser
             $auth->setStorage(new Fisma_Auth_Storage_Session());
             return $auth->getIdentity();
         } else {
+            /** @todo remove this, should either throw an excp.. or just return null */
             return new User();
         }
     }

@@ -213,6 +213,9 @@ abstract class BaseController extends SecurityController
                     $result = $this->saveValue($form, $subject);
                     $msg   = "{$this->_modelName} updated successfully";
                     $model = 'notice';
+
+                    // Refresh the form, in case the changes to the model affect the form
+                    $form   = $this->getForm();
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
@@ -227,6 +230,7 @@ abstract class BaseController extends SecurityController
                 $this->view->priorityMessenger("Error while trying to save: {$this->_modelName}:<br>$errorString", 'warning');
             }
         }
+        
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
