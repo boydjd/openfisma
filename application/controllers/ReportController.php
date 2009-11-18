@@ -221,7 +221,7 @@ class ReportController extends SecurityController
             $q = Doctrine_Query::create()
                  ->select('f.id') // unused, but Doctrine requires a field to be selected from the parent object
                  ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) orgSystemName")
-                 ->addSelect("IF(f.status IN ('NEW', 'DRAFT', 'MSA'), 'Mitigation Strategy', IF(f.status IN ('EN', 'EA'), 'Corrective Action', NULL)) type")
+                 ->addSelect("QUOTE(IF(f.status IN ('NEW', 'DRAFT', 'MSA'), 'Mitigation Strategy', IF(f.status IN ('EN', 'EA'), 'Corrective Action', NULL))) actionType")
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 29, 1, 0)) lessThan30')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 30 AND 59, 1, 0)) moreThan30')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 89, 1, 0)) moreThan60')
@@ -248,14 +248,14 @@ class ReportController extends SecurityController
                 $q->whereIn('f.status', array('NEW', 'DRAFT', 'MSA', 'EN', 'EA'));
             }
 
-            $q->groupBy('orgSystemName, type');
+            $q->groupBy('orgSystemName, actionType');
             $q->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $list = $q->execute();
 
             // Assign view outputs
             $this->view->assign('poam_list', $list);
             $this->view->criteria = $params;
-            $this->view->columns = array('orgSystemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '< 30 Days',
+            $this->view->columns = array('orgSystemName' => 'System', 'actionType' => 'Overdue Action Type', 'lessThan30' => '< 30 Days',
                                          'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
                                          'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
                                          'max' => 'Maximum (days)');
