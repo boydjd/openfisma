@@ -14,20 +14,16 @@
  *
  * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
  * <http://www.gnu.org/licenses/>.
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: index.php 1793 2009-06-19 17:49:33Z mehaase $
- * @package   Listener
  */
- 
+
 /**
  * A listener for the User model
  *
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/license.php
- * @package   Listener
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/content/license
+ * @package    Listener
+ * @version    $Id$
  */
 class UserListener extends Doctrine_Record_Listener
 {

@@ -14,20 +14,16 @@
  *
  * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
  * <http://www.gnu.org/licenses/>.
- *
- * @author    Ryan yang <ryanyang@users.sorceforge.net>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: $
- * @package   Listener
  */
- 
+
 /**
  * A listener for the Config model
  *
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/license.php
- * @package   Listener
+ * @author     Ryan Yang <ryan@users.sourceforge.net>
+ * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/content/license
+ * @package    Listener
+ * @version    $Id$
  */
 class ConfigListener extends Doctrine_Record_Listener
 {
