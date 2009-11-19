@@ -4,32 +4,26 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: IsOnTime.php 1797 2009-06-19 22:27:35Z mehaase $
- * @package   View_Helper
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * <http://www.gnu.org/licenses/>.
  */
- 
+
 /**
  * Turn a Doctrine Collection which represents a tree into an HTML select box
- *  
- * @package   View_Helper
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
+ *
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/content/license
+ * @package    View_Helper
+ * @version    $Id$
  */
 class View_Helper_TreeToSelect extends Zend_View_Helper_Abstract
 {
