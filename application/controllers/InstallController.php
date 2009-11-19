@@ -39,6 +39,10 @@ class InstallController extends Zend_Controller_Action
      */
     public function preDispatch()
     {
+        if (Fisma::isInstall()) {
+           $this->_redirect('/', array('prependBase' => 'true'));
+        }
+
         $this->_helper->layout->setLayout('install');
     }
 
