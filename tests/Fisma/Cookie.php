@@ -27,7 +27,7 @@
  * @package   Test
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 
 /**
  * Test_Fisma_Cookie_Test 
