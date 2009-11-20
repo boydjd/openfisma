@@ -3,7 +3,7 @@
         <?php 
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'Organization List', 
-                                                     'imageSrc' => '/images/view_list.png',                                            
+                                                     'imageSrc' => '/images/view_list.png',
                                                      'href' => '/panel/organization/sub/list'));
         echo $listButton;
         ?>
@@ -16,12 +16,13 @@
         echo $listButton;
         ?>
 
-        <?php if(Fisma_Acl::hasPrivilege('organization', 'create')) {
-        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
-                                               array('value' => 'Add Organization', 
-                                                     'imageSrc' => '/images/add.png',
-                                                     'href' => '/panel/organization/sub/create'));
-        echo $createButton;
+        <?php 
+        if (Fisma_Acl::hasPrivilege('organization', 'create')) {
+            $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                                   array('value' => 'Add Organization', 
+                                                         'imageSrc' => '/images/add.png',
+                                                         'href' => '/panel/organization/sub/create'));
+            echo $createButton;
         } 
         ?>
     </div>
@@ -29,7 +30,13 @@
         <form name="query" method="post" action="/panel/organization/sub/list" style="display:inline">
         <span class="searchField">
             <b>Search:&nbsp;</b>
-            <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
+            <input id="keywords" 
+                   name="keywords" 
+                   value="<?php echo $this->keywords;?>" 
+                   title="Input your query value" 
+                   size="20" 
+                   maxlength="40" 
+                   type="text">
         </span>
         <span id="searchContainer"></span>
         <script type='text/javascript'>

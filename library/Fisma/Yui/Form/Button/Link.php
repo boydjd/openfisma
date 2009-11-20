@@ -27,7 +27,7 @@
  * @version    $Id$
  */
 class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
-{  
+{
     /**
      * Instead of overriding render(), renderSelf() can be called by the decorator to build the input.
      * This saves the trouble of creating a separate view helper and allows the element to simply draw

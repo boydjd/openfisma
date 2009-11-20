@@ -44,7 +44,9 @@ var myColumnDefs = [
     
     // DataTable configuration
     var myConfigs = {
-        initialRequest: "<?php echo $this->link; ?>/sortby/name/dir/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        initialRequest: "<?php echo $this->link; ?>"
+                      + "/sortby/name/dir/asc/startIndex/0/count/"
+                      + "<?php echo $this->pageInfo['count']?>",
         dynamicData: true, 
         sortedBy : {key:"o_name", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(

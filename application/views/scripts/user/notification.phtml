@@ -51,10 +51,19 @@
         </tr>
         <tr>
             <td><b>Notify Frequency (hours):</b></td>
-            <td><input name="notify_frequency" type="text" value="<?php echo round($this->me->notifyFrequency, 2);?>" size="30"/></td>
+            <td>
+                <input name="notify_frequency" 
+                       type="text" 
+                       value="<?php echo round($this->me->notifyFrequency, 2);?>" 
+                       size="30"/>
+            </td>
         </tr>
         <tr>
-            <td colspan="2"><i>If you would like to receive e-mail notifications at an alternate address, enter that address below:</i></td>
+            <td colspan="2">
+                <i>
+                    If you would like to receive e-mail notifications at an alternate address, enter that address below:
+                </i>
+            </td>
         </tr>
         <tr>
             <td><b>Notify E-mail:</b></td>
@@ -63,7 +72,18 @@
         <tr>
             <td colspan="2"><p>
         <div class="left"><b>Available events:</b><br/>
-            <?php echo $this->formSelect('availableEvents',null, array('multiple'=>"multiple", 'size' => '20'), $this->me->getAvailableEvents())?>        </div>
+            <?php 
+            echo $this->formSelect(
+                'availableEvents',
+                null, 
+                array(
+                    'multiple' => 'multiple', 
+                    'size' => '20'
+                ), 
+                $this->me->getAvailableEvents()
+            );
+            ?>
+        </div>
         <div class="left" id="move">
             <p>
                 <?php 
@@ -85,7 +105,18 @@
             </p>
         </div>
         <div class="left" id="enable"><b>Selected events:</b><br />
-        <?php echo $this->formSelect('existEvents',null, array('multiple' => 'multiple', 'size' => '20'), $this->me->getExistEvents())?></div>
+        <?php 
+            echo $this->formSelect(
+                'existEvents',
+                null, 
+                array(
+                    'multiple' => 'multiple', 
+                    'size' => '20'
+                ), 
+                $this->me->getExistEvents()
+            );
+        ?>
+        </div>
         </td></tr>
         <tr>
             <td colspan="2" align="center">

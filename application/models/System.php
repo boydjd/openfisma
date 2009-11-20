@@ -156,7 +156,8 @@ class System extends BaseSystem
     /**
      * Return the English version of the orgType field
      */
-    public function getTypeLabel() {
+    public function getTypeLabel() 
+    {
         return $this->_typeMap[$this->type];
     }
     

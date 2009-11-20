@@ -37,9 +37,9 @@ class Fisma_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
      * @param  string $password The password of the account being authenticated
      * @return void
      */
-    public function __construct(array $options = array(), 
+    public function __construct(array $options, 
                                 Doctrine_Record $identity,
-                                $password = null)
+                                $password)
     {
         $this->_identity = $identity;
         parent::__construct($options, $identity->username, $password);
@@ -52,9 +52,10 @@ class Fisma_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
     {
         $result = parent::authenticate();
         return new Zend_Auth_Result(
-                    $result->getCode(),
-                    $this->_identity ,
-                    $result->getMessages());
+            $result->getCode(),
+            $this->_identity ,
+            $result->getMessages()
+        );
     }
 
     public function setUsername($username)

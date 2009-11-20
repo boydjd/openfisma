@@ -67,7 +67,8 @@ class Configuration extends BaseConfiguration
      * @param string $name
      * @return string|int $value
      */
-    public static function getConfig($name) {
+    public static function getConfig($name) 
+    {
         $config = Doctrine::getTable('Configuration')->findOneByName($name);
         if (!empty($config)) {
             return $config->value;
@@ -85,7 +86,8 @@ class Configuration extends BaseConfiguration
      * @param string $name
      * @param string|int $value
      */
-    public static function setConfig($name, $value) {
+    public static function setConfig($name, $value) 
+    {
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $config = Doctrine::getTable('Configuration')->findOneByName($name);

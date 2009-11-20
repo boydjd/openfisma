@@ -39,7 +39,9 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         //dynamicData: false
-        initialRequest: "<?php echo $this->link; ?>/sortby/name/order/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        initialRequest: "<?php echo $this->link; ?>"
+                      + "/sortby/name/order/asc/startIndex/0/count/"
+                      + "<?php echo $this->pageInfo['count']?>",
         dynamicData: true, 
         sortedBy : {key:"name", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
@@ -66,7 +68,9 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('organization','read')) { ?>
+    <?php 
+    if (Fisma_Acl::hasPrivilege('organization', 'read')) { 
+    ?>
             myDataTable.subscribe("rowClickEvent", 
                 function (oArgs) {
                     var elTarget = oArgs.target;
@@ -74,6 +78,8 @@ var myColumnDefs = [
                     document.location = "/panel/organization/sub/view/v/view/id/" + oRecord.getData("id");
                 }
             );
-    <?php } ?>
+    <?php 
+    }
+    ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>

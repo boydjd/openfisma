@@ -42,7 +42,7 @@ class Fisma_Cookie
     public static function get(array $cookie, $key) {
         // If the cookie is available, return it. Otherwise,  throw an 
         // exception to be handled by the caller.
-        if(isset($cookie[$key])) {
+        if (isset($cookie[$key])) {
             return $cookie[$key];
         } else {
             throw new Fisma_Exception("Cookie $key not found.");
@@ -60,7 +60,7 @@ class Fisma_Cookie
     * @return array 
     */
     public static function prepare($name, $value, $secure = null) {
-        if(is_null($secure)) {
+        if (is_null($secure)) {
             $secure = Zend_Session::getOptions('cookie_secure');
         }
 
@@ -84,6 +84,6 @@ class Fisma_Cookie
     * @return void
     */
     public static function set($name, $value) {
-        call_user_func_array("setcookie", self::prepare($name,$value));
+        call_user_func_array("setcookie", self::prepare($name, $value));
     }
 }

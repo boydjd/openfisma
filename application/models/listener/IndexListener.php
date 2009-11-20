@@ -25,7 +25,7 @@
  * @package    Listener
  * @version    $Id$
  */
-class IndexListener extends Doctrine_Record_Listener 
+class IndexListener extends Doctrine_Record_Listener
 {
     /**
      * New records always get indexed

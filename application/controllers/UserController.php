@@ -29,7 +29,6 @@ class UserController extends BaseController
 {
     protected $_modelName = 'User';
 
-
     /**
      * init() - Initialize internal members.
      */
@@ -67,9 +66,7 @@ class UserController extends BaseController
         if ($organizationTree) {
             $orgs = $form->getElement('organizations');
             foreach ($organizationTree as $organization) {
-                $orgs->addCheckbox($organization['id'], 
-                                             $organization['name'],
-                                             $organization['level']);
+                $orgs->addCheckbox($organization['id'], $organization['name'], $organization['level']);
             }
         }
         if ('database' == Configuration::getConfig('auth_type')) {
@@ -106,7 +103,6 @@ class UserController extends BaseController
         $form->removeElement('organizations');
         return $form;
     }
-
 
     /** 
      * Set the Roles, organization relation before save the model
@@ -281,7 +277,6 @@ class UserController extends BaseController
         $this->view->me = $user;
     }
 
-
     /**
      * Get the password complex requirements
      *
@@ -323,7 +318,8 @@ class UserController extends BaseController
      * store user last accept rob
      * create a audit event
      */
-    public function acceptRobAction() {
+    public function acceptRobAction()
+    {
         $user = User::currentUser();
         $user->lastRob = Fisma::now();
         $user->save();
@@ -399,8 +395,7 @@ class UserController extends BaseController
             $srv = new Zend_Ldap($opt);
             try {
                 $type = 'message';
-                $dn = $srv->getCanonicalAccountName($account,
-                            Zend_Ldap::ACCTNAME_FORM_DN); 
+                $dn = $srv->getCanonicalAccountName($account, Zend_Ldap::ACCTNAME_FORM_DN); 
                 $msg = "$account exists, the dn is: $dn";
             } catch (Zend_Ldap_Exception $e) {
                 $type = 'warning';

@@ -126,7 +126,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      * @return string
      */
     private function _getSubContent($str, $start, $end){
-        if ($start == '' || $end == ''){
+        if ($start == '' || $end == '') {
                return;
         }
         $str = explode($start, $str);

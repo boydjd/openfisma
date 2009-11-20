@@ -193,10 +193,25 @@ class InstallController extends Zend_Controller_Action
         $method = 'connection';
         // create config file
         $configInfo = file_get_contents(Fisma::getPath('config') . '/app.conf.template');
-        $configInfo = str_replace(array('##DB_ADAPTER##', '##DB_HOST##', '##DB_PORT##',
-                                        '##DB_USER##', '##DB_PASS##', '##DB_NAME##'), 
-                                  array($dsn['type'], $dsn['host'], $dsn['port'], $dsn['uname'],
-                                        $dsn['upass'], $dsn['dbname']), $configInfo);
+        $configInfo = str_replace(
+            array(
+                '##DB_ADAPTER##', 
+                '##DB_HOST##', 
+                '##DB_PORT##',
+                '##DB_USER##', 
+                '##DB_PASS##', 
+                '##DB_NAME##'
+            ), 
+            array(
+                $dsn['type'], 
+                $dsn['host'], 
+                $dsn['port'], 
+                $dsn['uname'],
+                $dsn['upass'], 
+                $dsn['dbname']
+            ), 
+            $configInfo
+        );
         file_put_contents(Fisma::getPath('config') . '/app.conf', $configInfo);
         
         // test the connection of database
@@ -232,8 +247,7 @@ class InstallController extends Zend_Controller_Action
             $this->view->next = '/install/complete';
         } catch (Exception $e) {
             @unlink(Fisma::getPath('config') . '/app.conf');
-            $this->view->next = '/install/dbsetting';
-            $this->view->message = $e->getMessage();
+            throw $e;
         }
 
         $this->view->dsn = $dsn;

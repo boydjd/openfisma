@@ -1,8 +1,8 @@
 <?php
     $currentYear = date('Y');
-    $year_list[0] = 'All Fiscal Year';
+    $yearList[0] = 'All Fiscal Year';
     for ($year=2005; $year<=$currentYear; $year++) {
-        $year_list[$year] = $year;
+        $yearList[$year] = $year;
     }
     $overdue['type'] = array('0' => '--Any--',
                          'sso' => 'Mitigation Strategy',
@@ -12,8 +12,8 @@
                             '3' => '60-89 days',
                             '4' => '90-119 days',
                             '5' => '120+ days');
-    if (!empty($this->system_list)) {$this->system_list[0] = '--Any--'; ksort($this->system_list);}
-    if (!empty($this->source_list)) {$this->source_list[0] = '--Any--'; ksort($this->source_list);}
+    if (!empty($this->systemList)) {$this->systemList[0] = '--Any--'; ksort($this->systemList);}
+    if (!empty($this->sourceList)) {$this->sourceList[0] = '--Any--'; ksort($this->sourceList);}
     $url = "/panel/report/sub/overdue/s/search";
 ?>
 
@@ -24,7 +24,7 @@
             <?php 
                 echo $this->formSelect('orgSystemId',
                                      isset($this->params['orgSystemId'])?$this->params['orgSystemId']:0, 
-                                     null,$this->system_list);
+                                     null,$this->systemList);
                 if( !empty($this->params['orgSystemId']) ) {
                     $url .= '/system_id/'.$this->params['orgSystemId'];
                 }
@@ -43,7 +43,7 @@
             <b>Source</b>
             <?php echo $this->formSelect('sourceId',
                                          isset($this->params['sourceId'])?$this->params['sourceId']:0, 
-                                         null,$this->source_list);
+                                         null,$this->sourceList);
                   if( !empty($this->params['sourceId']) ) {
                       $url .= '/sourceId/'.$this->params['sourceId'];
                   }
@@ -52,7 +52,7 @@
     </div>
 </form>
 
-<?php if( !empty($this->poam_list) ) { ?>
+<?php if( !empty($this->poamList) ) { ?>
 <?php Fisma_Format_Section::startSection("Poam Search Results"); ?>
     <div class="toolbar">
         <?php echo $this->links['all']; ?>
@@ -75,7 +75,7 @@ var myColumnDefs = [
     <?php if (!isset($i)) { $i = true; } else { echo ','; } ?>{key:"<?php echo $key; ?>", label:"<?php echo $val; ?>", sortable: true, hidden: false}
 <?php } unset($i); ?>];
     var dataSource = { rows: [
-    <?php foreach ($this->poam_list as $row) { 
+    <?php foreach ($this->poamList as $row) { 
           if (!isset($i)) { $i = true; } else { echo ','; } ?>
           {<?php  foreach ($this->columns as $key => $val) { 
                     if (!isset($n)) { $n = true; } else { echo ','; }

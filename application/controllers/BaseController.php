@@ -61,7 +61,8 @@ abstract class BaseController extends SecurityController
         parent::init();
         if (is_null($this->_modelName)) {
             //Actually user should not be able to see this error message
-            throw new Fisma_Exception('Internal error. Subclasses of the BaseController must specify the _modelName field');
+            throw new Fisma_Exception('Internal error. Subclasses of the BaseController'
+                                    . ' must specify the _modelName field');
         } else {
             // Covert UpperCamelCase to lower_underscore_format to get the aclResource name
             $aclResource = preg_replace('/([A-Z])/', '_$1', $this->_modelName);
@@ -218,7 +219,8 @@ abstract class BaseController extends SecurityController
                 $this->view->priorityMessenger($msg, $model);
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
-                $this->view->priorityMessenger("Error while trying to save: {$this->_modelName}:<br>$errorString", 'warning');
+                $error = "Error while trying to save: {$this->_modelName}: <br>$errorString";
+                $this->view->priorityMessenger($error, 'warning');
             }
         }
         $form = $this->setForm($subject, $form);

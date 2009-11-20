@@ -260,7 +260,7 @@ class Fisma_Index
                 
                 // Create a Lucene field with a type that corresponds to this column
                 $fieldName = $this->_getIndexFieldName($columnName, $columnDefinition);
-                $field = $this->_getIndexField($columnDefinition['extra']['searchIndex'], $fieldName, $indexData);                
+                $field = $this->_getIndexField($columnDefinition['extra']['searchIndex'], $fieldName, $indexData);
                 $document->addField($field);
             }
         }

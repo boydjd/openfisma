@@ -61,18 +61,24 @@ class AssetController extends BaseController
         
         $swCtx = $this->_helper->contextSwitch();
         if (!$swCtx->hasContext('pdf')) {
-            $swCtx->addContext('pdf', array(
-                'suffix' => 'pdf',
-                'headers' => array(
-                    'Content-Disposition' =>'attachement;filename="export.pdf"',
-                    'Content-Type' => 'application/pdf'
+            $swCtx->addContext(
+                'pdf', 
+                array(
+                    'suffix' => 'pdf',
+                    'headers' => array(
+                        'Content-Disposition' =>'attachement;filename="export.pdf"',
+                        'Content-Type' => 'application/pdf'
+                    )
                 )
-            ));
+            );
         }
         if (!$swCtx->hasContext('xls')) {
-            $swCtx->addContext('xls', array(
-                'suffix' => 'xls'
-            ));
+            $swCtx->addContext(
+                'xls', 
+                array(
+                    'suffix' => 'xls'
+                )
+            );
         }
     }
 
@@ -84,10 +90,14 @@ class AssetController extends BaseController
         parent::preDispatch();
         $this->req = $this->getRequest();
         $swCtx = $this->_helper->contextSwitch();
-        $swCtx->addActionContext('search', array(
-            'pdf',
-            'xls'
-        ))->initContext();
+        $swCtx->addActionContext(
+            'search', 
+            array(
+                'pdf',
+                'xls'
+            )
+        );
+        $swCtx->initContext();
     }
     
     /**
@@ -151,7 +161,8 @@ class AssetController extends BaseController
      * Enter description here...
      *
      */
-    private function parseCriteria(){
+    private function parseCriteria()
+    {
         static $params;
         if ($params == null) {
             $req = $this->getRequest();
@@ -295,10 +306,9 @@ class AssetController extends BaseController
             $this->_helper->json($tableData);
         } else {
             $this->view->assetColumns = $this->_assetColumns;
-            $this->view->asset_list = $assetArray;
+            $this->view->assetList = $assetArray;
         }
     }
-    
 
     /**
      * View detail information of the subject model

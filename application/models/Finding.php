@@ -49,7 +49,8 @@ class Finding extends BaseFinding
      * 
      * @return array
      */
-    public static function getAllStatuses() {
+    public static function getAllStatuses() 
+    {
         $allStatuses = array('NEW', 'DRAFT');
         
         $mitigationStatuses = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = ?', array('action'));
@@ -251,6 +252,7 @@ class Finding extends BaseFinding
             $this->nextDueDate = null;
             return;
         }
+        
         switch ($this->status) {
             case 'NEW':
             case 'DRAFT':
@@ -265,6 +267,7 @@ class Finding extends BaseFinding
                 throw new Fisma_Exception('Cannot update the next due date because the finding has an'
                                         . " invalid status: '$this->status'");
         }
+
         $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
         $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
         $this->nextDueDate = $nextDueDate->toString('Y-m-d');

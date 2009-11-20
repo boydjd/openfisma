@@ -39,23 +39,28 @@ class ReportController extends SecurityController
         parent::init();
         $swCtx = $this->_helper->contextSwitch();
         if (!$swCtx->hasContext('pdf')) {
-            $swCtx->addContext('pdf', array(
-                'suffix' => 'pdf',
-                'headers' => array(
-                    'Content-Disposition' => 
-                        'attachement;filename="export.pdf"',
-                    'Content-Type' => 'application/pdf'
+            $swCtx->addContext(
+                'pdf', 
+                array(
+                    'suffix' => 'pdf',
+                    'headers' => array(
+                        'Content-Disposition' => 'attachement;filename="export.pdf"',
+                        'Content-Type' => 'application/pdf'
+                    )
                 )
-            ));
+            );
         }
         if (!$swCtx->hasContext('xls')) {
-            $swCtx->addContext('xls', array(
-                'suffix' => 'xls',
-                'headers' => array(
-                    'Content-type' => 'application/vnd.ms-excel',
-                    'Content-Disposition' => 'filename=Fisma_Report.xls'
+            $swCtx->addContext(
+                'xls', 
+                array(
+                    'suffix' => 'xls',
+                    'headers' => array(
+                        'Content-type' => 'application/vnd.ms-excel',
+                        'Content-Disposition' => 'filename=Fisma_Report.xls'
+                    )
                 )
-            ));
+            );
         }
     }
     
@@ -204,9 +209,9 @@ class ReportController extends SecurityController
         $params['overdueDay'] = $req->getParam('overdueDay');
         $params['year'] = $req->getParam('year');
 
-        $this->view->assign('source_list', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
-        $this->view->assign('system_list', $this->_me->getOrganizations()->toKeyValueArray('id', 'name'));
-        $this->view->assign('network_list', Doctrine::getTable('Network')->findAll()->toKeyValueArray('id', 'name'));
+        $this->view->assign('sourceList', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
+        $this->view->assign('systemList', $this->_me->getOrganizations()->toKeyValueArray('id', 'name'));
+        $this->view->assign('networkList', Doctrine::getTable('Network')->findAll()->toKeyValueArray('id', 'name'));
         $this->view->assign('params', $params);
         $this->view->assign('url', '/report/overdue' . $this->_helper->makeUrlParams($params));
         $isExport = $req->getParam('format');
@@ -233,11 +238,17 @@ class ReportController extends SecurityController
             }
             $list = $q->execute();
             // Assign view outputs
-            $this->view->assign('poam_list', $this->_helper->overdueStatistic($list));
+            $this->view->assign('poamList', $this->_helper->overdueStatistic($list));
             $this->view->criteria = $params;
-            $this->view->columns = array('orgSystemName' => 'System', 'type' => 'Overdue Action Type', 'lessThan30' => '<30 Days',
-                                         'moreThan30' => '30-59 Days', 'moreThan60' => '60-89 Days', 'moreThan90' => '90-119 Days',
-                                         'moreThan120' => '120+ Days', 'total' => 'Total Overdue', 'average' => 'Average (days)',
+            $this->view->columns = array('orgSystemName' => 'System', 
+                                         'type' => 'Overdue Action Type', 
+                                         'lessThan30' => '<30 Days',
+                                         'moreThan30' => '30-59 Days', 
+                                         'moreThan60' => '60-89 Days', 
+                                         'moreThan90' => '90-119 Days',
+                                         'moreThan120' => '120+ Days', 
+                                         'total' => 'Total Overdue', 
+                                         'average' => 'Average (days)',
                                          'max' => 'Maximum (days)');
         }
     }
@@ -263,19 +274,20 @@ class ReportController extends SecurityController
                 $fname = tempnam('/tmp/', "RAFs");
                 @unlink($fname);
                 $rafs = new Archive_Tar($fname, true);
-                $path = $this->_helper->viewRenderer
-                        ->getViewScript('raf', array(
-                                        'controller' => 'remediation',
-                                        'suffix' => 'pdf.phtml'));
+                $path = $this->_helper
+                             ->viewRenderer
+                             ->getViewScript('raf', array('controller' => 'remediation', 'suffix' => 'pdf.phtml'));
                 try {
                     foreach ($findings as $finding) {
                         $poamDetail = & $this->_poam->getDetail($id);
                         $this->view->assign('poam', $poamDetail);
                         $ret = $system->find($poamDetail['system_id']);
                         $actOwner = $ret->current()->toArray();
-                        $securityCategorization = $system->calcSecurityCategory($actOwner['confidentiality'],
-                                                                                $actOwner['integrity'],
-                                                                                $actOwner['availability']);
+                        $securityCategorization = $system->calcSecurityCategory(
+                            $actOwner['confidentiality'],
+                            $actOwner['integrity'],
+                            $actOwner['availability']
+                        );
                         if (NULL == $securityCategorization) {
                             throw new Fisma_Exception('The security categorization for ('.$actOwner['id'].')'.
                                 $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
@@ -291,8 +303,7 @@ class ReportController extends SecurityController
                     header("Content-Disposition: attachment; filename=RAFs.tgz");
                     header("Content-Transfer-Encoding: binary");
                     header("Expires: 0");
-                    header("Cache-Control: must-revalidate, post-check=0,".
-                        " pre-check=0");
+                    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                     header("Pragma: public");
                     echo file_get_contents($fname);
                     @unlink($fname);

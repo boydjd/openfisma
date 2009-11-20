@@ -15,15 +15,26 @@ Fisma_Format_Section::startSection("Rights Assignment"); ?>
         </tr>
         <tr>
             <td width="254">
-                <select size="20" id="function_screen" name="function_screen" style="width:200px" url="/role/right/id/<?php echo $this->role['id'];?>">
-                <?php foreach($this->screen_list as $row){ ?>
+                <select size="20" 
+                        id="function_screen" 
+                        name="function_screen" 
+                        style="width:200px" 
+                        url="/role/right/id/<?php echo $this->role['id'];?>">
+                <?php 
+                foreach ($this->screenList as $row) { 
+                ?>
                     <option value="<?php echo $row['resource'];?>" title="<?php echo $row['resource'];?>">
                         <?php echo $row['resource'];?>
                     </option>
-                <?php } ?>
+                <?php 
+                } 
+                ?>
                 </select>
             </td>
-            <td><select multiple size="20" id="available_functions" name="available_functions" style="width:250px"></select></td>
+            <td>
+                <select multiple size="20" id="available_functions" name="available_functions" style="width:250px">
+                </select>
+            </td>
             <td width="54" valign="top">
                 <br>
                 <input type="button" value="   ->   "  id="add_function">
@@ -31,11 +42,15 @@ Fisma_Format_Section::startSection("Rights Assignment"); ?>
                 <input type="button" value="   <-   " id="remove_function">
             </td>
             <td><select multiple size="20" id="exist_functions" name="exist_functions[]" style="width:250px">
-                <?php foreach($this->exist_functions as $row){ ?>
+                <?php 
+                foreach ($this->exist_functions as $row) {
+                ?>
                     <option value="<?php echo $row['id'];?>" title="<?php echo $row['action'];?>">
                         <?php echo $row['description'];?>
                     </option>
-                <?php } ?>
+                <?php 
+                } 
+                ?>
             </select></td>
         </tr>
     </table>

@@ -99,7 +99,8 @@ class Fisma_Inject_Excel
      * @param string $filePath
      * @return int The number of findings processed in the file
      */
-    function inject($filePath, $uploadId) {
+    function inject($filePath, $uploadId) 
+    {
         // Parse the file using SimpleXML. The finding data is located on the first worksheet.
         $spreadsheet = @simplexml_load_file($filePath);
         if ($spreadsheet === false) {
@@ -192,11 +193,12 @@ class Fisma_Inject_Excel
             }
             $poam['sourceId'] = $sourceTable->id;
             if (!empty($finding['securityControl'])) {
-                $securityControlTable = Doctrine::getTable('SecurityControl')->findOneByCode($finding['securityControl']);
+                $securityControlTable = Doctrine::getTable('SecurityControl');
+                $securityControlTable = $securityControlTable->findOneByCode($finding['securityControl']);
                 if (!$securityControlTable) {
-                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid security control selected. Your
-                                                          template may
-                                                          be out of date. Please try downloading it again.");
+                    $error = "Row $rowNumber: Invalid security control selected. Your template may be out of date."
+                           . 'Please try downloading it again.';
+                    throw new Fisma_Exception_InvalidFileFormat($error);
                 }
                 $poam['securityControlId'] = $securityControlTable->id;
             } else {

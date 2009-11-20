@@ -89,8 +89,9 @@ class Fisma_Mail extends Zend_Mail
             $this->send($this->_getTransport());    
             print(Fisma::now() . " Email was sent to $receiveEmail\n");
         } catch (Exception $e) {
+            /** @todo how did this come to be? probably need to remove the catch block */
             print($e->getMessage() . "\n");
-            exit();
+            throw $e;
         }
     }
 

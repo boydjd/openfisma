@@ -16,7 +16,7 @@
                                       array('value' => 'Export Excel', 
                                             'href' => "$this->url/format/xls", 
                                             'imageSrc' => '/images/xls.gif'));
-        if(Fisma_Acl::hasPrivilege('asset','delete')) {
+        if (Fisma_Acl::hasPrivilege('asset', 'delete')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('label' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
@@ -32,7 +32,7 @@
                                                       'onClickFunction' => 'deleteSelectedAssets'));
             echo $deleteButton;
         }
-        if(Fisma_Acl::hasPrivilege('asset','create')) {
+        if (Fisma_Acl::hasPrivilege('asset', 'create')) {
             echo new Fisma_Yui_Form_Button_Link('createAsset', 
                                           array('value' => 'Create Asset', 
                                                 'href' => '/asset/create'));
@@ -109,7 +109,9 @@
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('asset','read')) { ?>
+    <?php 
+    if (Fisma_Acl::hasPrivilege('asset', 'read')) { 
+    ?>
     myDataTable.subscribe("rowClickEvent", 
         function (oArgs) {
             var elTarget = oArgs.target;
@@ -117,6 +119,8 @@
             document.location = "/panel/asset/sub/view/id/" + oRecord.getData("id");
         }
     );
-    <?php }?>
+    <?php 
+    }
+    ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>

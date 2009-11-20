@@ -4,11 +4,15 @@
         <th>User</th>
         <th>Description</th>
     </tr>
-    <?php foreach ($this->auditLogs as $log) { ?>
+    <?php 
+    foreach ($this->auditLogs as $log) { 
+    ?>
         <tr>
             <td><?php echo $log['a_createdTs']; ?></td>
             <td><?php echo $log['u_username']; ?></td>
             <td><?php echo str_replace("\n", "<br>", $log['a_description']); ?></td>
         </tr>
-    <?php } ?>
+    <?php 
+    } 
+    ?>
 </table>

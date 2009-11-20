@@ -1,13 +1,16 @@
 <?php
 echo $this->partial('source/searchbox.phtml');
 $operation = '';
-if (Fisma_Acl::hasPrivilege('source','update')) {
+
+if (Fisma_Acl::hasPrivilege('source', 'update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Acl::hasPrivilege('source','delete')) {
+
+if (Fisma_Acl::hasPrivilege('source', 'delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
-Fisma_Format_Section::startSection("Finding Source Information $operation"); ?>
+Fisma_Format_Section::startSection("Finding Source Information $operation"); 
+?>
 
 <div>
     <?php echo $this->form ?>

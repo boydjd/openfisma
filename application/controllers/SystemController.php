@@ -103,7 +103,16 @@ class SystemController extends BaseController
         
         $q = User::currentUser()
              ->getOrganizationsQuery()
-             ->select('o.id, o.name, o.nickname, s.type, s.confidentiality, s.integrity, s.availability, s.fipsCategory')
+             ->select(
+                 'o.id, 
+                  o.name, 
+                  o.nickname, 
+                  s.type, 
+                  s.confidentiality, 
+                  s.integrity, 
+                  s.availability, 
+                  s.fipsCategory'
+             )
              ->innerJoin('o.System s')
              ->addWhere('o.orgType = ?', 'system')
              ->orderBy("$sortBy $order")
@@ -323,8 +332,10 @@ class SystemController extends BaseController
             // Get the existing document
             $documentQuery = Doctrine_Query::create()
                              ->from('SystemDocument sd')
-                             ->where('sd.systemId = ? AND sd.documentTypeId = ?',
-                                     array($organization->System->id, $documentTypeId))
+                             ->where(
+                                 'sd.systemId = ? AND sd.documentTypeId = ?',
+                                 array($organization->System->id, $documentTypeId)
+                             )
                              ->limit(1);
             $documents = $documentQuery->execute();
     

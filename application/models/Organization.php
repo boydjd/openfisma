@@ -53,7 +53,8 @@ class Organization extends BaseOrganization
      * 
      * @return string
      */
-    public function getType() {
+    public function getType() 
+    {
         if ('system' == $this->orgType) {
             return $this->System->type;
         } else {
@@ -66,7 +67,8 @@ class Organization extends BaseOrganization
      * 
      * @return string
      */
-    public function getOrgTypeLabel() {
+    public function getOrgTypeLabel() 
+    {
         if ('system' == $this->orgType) {
             return $this->System->getTypeLabel();
         } else {
@@ -100,7 +102,8 @@ class Organization extends BaseOrganization
      * 
      * @return array 
      */
-    public function getSummaryCounts($type = null, $source = null) {
+    public function getSummaryCounts($type = null, $source = null) 
+    {
         $cache = Fisma::getCacheInstance('finding_summary');
         $cacheId = $this->getCacheId(array('type' => $type, 'source' => $source));
                      
@@ -219,8 +222,7 @@ class Organization extends BaseOrganization
     {
         $cache = Fisma::getCacheInstance($identify = 'finding_summary');
         
-        $cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG,
-                      array($this->getCacheTag()));
+        $cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array($this->getCacheTag()));
                       
         $parent = $this->getNode()->getParent();
         if ($parent) {
@@ -250,7 +252,6 @@ class Organization extends BaseOrganization
             
         return $cacheId;
     }
-
 
     /**
      * Returns a cache tag that is unique to this organization
@@ -393,7 +394,10 @@ class Organization extends BaseOrganization
                 // Was the system C&A'ed in the last 3 years? 
                 $currentCaDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
                 $nextCaDate = $currentCaDate->addYear(3);
-                /** @todo should have used isEarlier and isLater() instead of compare() -- compare is not very readable */
+                /** 
+                 * @todo should have used isEarlier and isLater() instead of compare()
+                 * compare is not very readable 
+                 */
                 if (1 == $nextCaDate->compare($today)) {
                     $securityStats[$fipsCategory]['TOTAL_CERTIFIED']++;
                 }

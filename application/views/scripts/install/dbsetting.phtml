@@ -10,16 +10,34 @@
                             <td class='even'>
                                 <select size='1' name='dsn[encrypt]' id='encrypt'>
                                     <option value='sha1'>sha1</option>
-                                    <?php if (extension_loaded('php_mcrypt')) { ?>
-                                    <option value='sha256' selected='selected'>sha-256</option>
-                                    <?php } ?>
+                                    <?php 
+                                    if (extension_loaded('php_mcrypt')) { 
+                                    ?>
+                                        <option value='sha256' selected='selected'>sha-256</option>
+                                    <?php 
+                                    } 
+                                    ?>
                                 </select>
                             </td>
                         </tr>
 
                         <tr valign='top' align='left' id="encryptKey" style="display:none">
                             <td class='head'><b>Encrypt Key</b></td>
-                            <td class='even'><input type='text' name='dsn[encryptKey]' size='30' maxlength='100' value="<?php echo isset($this->dsn['encryptKey'])?$this->dsn['encryptKey']:''?>" /> <?php if(isset($this->message['encryptKey'])) {echo " <span class='notice'>*</span>";}?></td>
+                            <td class='even'>
+                                <input type='text' 
+                                       name='dsn[encryptKey]' 
+                                       size='30' 
+                                       maxlength='100' 
+                                       value="
+                                           <?php
+                                           echo isset($this->dsn['encryptKey']) ? $this->dsn['encryptKey'] : ''
+                                           ?>"/> 
+                                <?php 
+                                if (isset($this->message['encryptKey'])) {
+                                    echo " <span class='notice'>*</span>";
+                                }
+                                ?>
+                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Database Product</b></td>
@@ -30,44 +48,105 @@
                         <tr valign='top' align='left'>
                             <td class='head'><b> Host Address/Name</b><br />
                                 <span style='font-size:85%;'>i.e localhost or 192.168.1.1</span> </td>
-                            <td class='even'><input type='text' name='dsn[host]' id='host' size='30' maxlength='100' value="<?php echo $this->dsn['host']?>" />
-                            <?php if(isset($this->message['host'])) {echo " <span class='notice'>*</span>";}?></td>
+                            <td class='even'>
+                                <input type='text' 
+                                       name='dsn[host]' 
+                                       id='host'
+                                       size='30' 
+                                       maxlength='100' 
+                                       value="<?php echo $this->dsn['host']?>" />
+                                <?php 
+                                if (isset($this->message['host'])) {
+                                    echo " <span class='notice'>*</span>";
+                                }
+                                ?>
+                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b> Database Port</b></td>
-                            <td class='even'><input type='text' name='dsn[port]' id='port' size='30' maxlength='100' value="<?php echo $this->dsn['port']?>" /> <?php if(isset($this->message['port'])) {echo " <span class='notice'>*</span>";}?></td>
+                            <td class='even'>
+                                <input type='text' 
+                                       name='dsn[port]' 
+                                       id='port' 
+                                       size='30' 
+                                       maxlength='100' 
+                                       value="<?php echo $this->dsn['port']?>" /> 
+                                <?php 
+                                if (isset($this->message['port'])) {
+                                    echo " <span class='notice'>*</span>";
+                                }
+                                ?>
+                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Database Username</b><br />
                                 <span style='font-size:85%;'>User account must be able to create databases.</span> </td>
-                            <td class='even'><input type='text' name='dsn[uname]' id='uname' size='30' maxlength='100' value="<?php echo isset($this->dsn['uname'])? $this->dsn['uname']:''?>" />
-                            <?php if(isset($this->message['uname'])) {echo " <span class='notice'>*</span>";}?></td>
+                                <td class='even'>
+                                    <input type='text' 
+                                           name='dsn[uname]' 
+                                           id='uname' 
+                                           size='30' 
+                                           maxlength='100' 
+                                           value="<?php echo isset($this->dsn['uname'])? $this->dsn['uname']:''?>" />
+                                <?php 
+                                if (isset($this->message['uname'])) {
+                                    echo " <span class='notice'>*</span>";
+                                }
+                                ?>
+                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Database Password</b><br />
                                 <span style='font-size:85%;'>Password for user account above.</span> </td>
-                            <td class='even'><input type='password' name='dsn[upass]' id='upass' size='30' maxlength='100'  value="<?php echo isset($this->dsn['upass'])? $this->dsn['upass']:''?>"/>
-                            <?php if(isset($this->message['upass'])) {echo " <span class='notice'>*</span>";}?></td>
+                            <td class='even'>
+                                <input type='password' 
+                                       name='dsn[upass]' 
+                                       id='upass' 
+                                       size='30' 
+                                       maxlength='100'  
+                                       value="<?php echo isset($this->dsn['upass'])? $this->dsn['upass']:''?>"/>
+                                <?php 
+                                if (isset($this->message['upass'])) {
+                                    echo " <span class='notice'>*</span>";
+                                }
+                                ?>
+                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Database Name</b><br />
                                 <span style='font-size:85%;'> Name of database, the installer will
                                 attempt to create the database if it does not exist</span> </td>
-                            <td class='even'><input type='text' name='dsn[dbname]' id='dbname' size='30' maxlength='100'  value="<?php echo isset($this->dsn['dbname'])?$this->dsn['dbname']:'';?>" />
-                                <?php if(isset($this->message['dbname'])) {echo " <span class='notice'>*</span>";}?>                            </td>
+                            <td class='even'>
+                                <input type='text' 
+                                       name='dsn[dbname]' 
+                                       id='dbname' 
+                                       size='30' 
+                                       maxlength='100'  
+                                       value="<?php echo isset($this->dsn['dbname'])?$this->dsn['dbname']:'';?>" />
+                                <?php 
+                                if (isset($this->message['dbname'])) {
+                                    echo " <span class='notice'>*</span>";
+                                }
+                                ?>                            
+                            </td>
                         </tr>
                         <tr valign='top' align='left'>
                             <td class='head'><b>Admin(Root) Pwd</b><br />
                                 <span style='font-size:85%;'> Pwd of administrator</span> </td>
                             <td class='even'>
-                                <input type='password' name='dsn[adminpwd]' id='adminpwd' size='30' maxlength='100'  value="" />
+                                <input type='password' 
+                                       name='dsn[adminpwd]' 
+                                       id='adminpwd' 
+                                       size='30' 
+                                       maxlength='100'  
+                                       value="" />
                             </td>
                         </tr>
                     </table>
                 </div>
         </tr>
         <tr>
-            <td width='50%'><div class="back"><a class="button" href="<?php echo $this->back; ?>" >Back</a></div></td>
+            <td width='50%'><div class="back"><a class="button" href="<?php echo $this->back; ?>">Back</a></div></td>
             <td width="50%"><div class="next">
                     <input class="button" type='submit' name='submit' value='Next' />
                 </div></td>

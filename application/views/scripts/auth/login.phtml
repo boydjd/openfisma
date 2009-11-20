@@ -7,7 +7,7 @@
     
     <p class="message">
         <?php 
-            if(isset($this->error) ) {
+            if (isset($this->error)) {
                 $dateString = date('H:i:s');
                 echo "$dateString $this->error"; 
             }
@@ -16,13 +16,30 @@
 
     <form id='loginForm' method="post" action="/auth/login">
         <table>
-            <tr><td>Username:</td><td><input type="text" name="username" 
-            <?php if (!Fisma::debug()) {echo ' autocomplete="off" ';} ?>
-            value="<?php echo isset($this->username)?$this->username:'';?>" ></td></tr>
-            <tr><td>Password:</td><td><input type="password" name="userpass" autocomplete="off"
-            <?php if (!Fisma::debug()) {echo ' autocomplete="off" ';} ?>
-            value="<?php echo isset($this->password)?$this->password:'';?>" ></td></tr>
-            <tr><td>&nbsp;</td><td><?php echo new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); ?></td>
+            <tr>
+                <td>Username:</td>
+                <td>
+                    <input type="text" 
+                           name="username" 
+                           autocomplete="off"
+                           value="<?php echo isset($this->username) ? $this->username : ''; ?>">
+                </td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input type="password" 
+                           name="userpass" 
+                           autocomplete="off"
+                           value="<?php echo isset($this->password)?$this->password:'';?>">
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <?php echo new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); ?>
+                </td>
+            </tr>
         </table>
     </form>
 </div>

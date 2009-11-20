@@ -54,7 +54,6 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         $this->setCredential($credential);
     }
 
-
     /**
      *  set the credential value to be used, 
      *

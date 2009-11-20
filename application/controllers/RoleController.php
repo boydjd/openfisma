@@ -28,7 +28,6 @@
 class RoleController extends BaseController
 {
     protected $_modelName = 'Role';
-
     
     public function viewAction()
     {
@@ -133,8 +132,8 @@ class RoleController extends BaseController
                           ->groupBy('resource');
             $screenList = $q->execute()->toArray();
             $this->view->assign('role', $role);
-            $this->view->assign('screen_list', $screenList);
-            $this->view->assign('exist_functions', $existFunctions);
+            $this->view->assign('screenList', $screenList);
+            $this->view->assign('existFunctions', $existFunctions);
             $this->render('right');
         }
     }

@@ -1,8 +1,12 @@
 <form method="post" action="<?php echo $this->next;?>">
     <input type='hidden' name='dsn[encrypt]' value="<?php echo $this->dsn['encrypt'];?>" />
-    <?php if (!empty($this->dsn['encryptKey'])) { ?>
+    <?php 
+    if (!empty($this->dsn['encryptKey'])) { 
+    ?>
         <input type='hidden' name='dsn[encryptKey]' value="<?php echo $this->dsn['encryptKey'];?>" />
-    <?php } ?>
+    <?php 
+    } 
+    ?>
     <input type='hidden' name='dsn[type]' value="<?php echo $this->dsn['type'];?>" />
     <input type='hidden' name='dsn[host]' value="<?php echo $this->dsn['host'];?>" />
     <input type='hidden' name='dsn[port]' value="<?php echo $this->dsn['port'];?>" />
@@ -18,39 +22,64 @@
                     <h4>General settings</h4>
                     <table border='0' cellpadding='0' cellspacing='0' valign='top' width='100%'>
                         <tr>
-                            <td class='bg2'><table width='100%' border='0' cellpadding='4' cellspacing='1' style="TABLE-LAYOUT:fixed;word-break:break-all;word-wrap:break-word;">
+                            <td class='bg2'>
+                                <table width='100%' 
+                                       border='0' 
+                                       cellpadding='4' 
+                                       cellspacing='1' 
+                                       style="TABLE-LAYOUT:fixed;word-break:break-all;word-wrap:break-word;">
                                     <tr>
                                         <td width="50%" class='bg3'><b>Encrypt Type</b></td>
                                         <td width="50%" class='bg1'><?php echo $this->dsn['encrypt']; ?></td>
                                     </tr>
-                                    <?php if (!empty($this->dsn['encryptKey'])) { ?>
-                                    <tr>
-                                        <td width="50%" class='bg3'><b>Encrypt Key</b></td>
-                                        <td width="50%" class='bg1'><?php echo $this->dsn['encryptKey']; ?></td>
-                                    </tr>
-                                    <?php } ?>
+                                    <?php 
+                                    if (!empty($this->dsn['encryptKey'])) { 
+                                    ?>
+                                        <tr>
+                                            <td width="50%" class='bg3'><b>Encrypt Key</b></td>
+                                            <td width="50%" class='bg1'><?php echo $this->dsn['encryptKey']; ?></td>
+                                        </tr>
+                                    <?php 
+                                    } 
+                                    ?>
                                     <tr>
                                         <td width="50%" class='bg3'><b>Database</b></td>
                                         <td width="50%" class='bg1'><?php echo $this->dsn['type']; ?></td>
                                     </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Hostname</b></td>
-                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['host']; ?>                                    </tr>
+                                        <td class='bg1' style="word-break:break-all;">
+                                            <?php echo $this->dsn['host']; ?>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Service Port</b></td>
-                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['port']; ?>                                    </tr>
+                                        <td class='bg1' style="word-break:break-all;">
+                                            <?php echo $this->dsn['port']; ?>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Username</b></td>
-                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['uname']; ?>                                    </tr>
+                                        <td class='bg1' style="word-break:break-all;">
+                                            <?php echo $this->dsn['uname']; ?>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Password</b></td>
-                                    <td class='bg1' style="word-break:break-all;"> ******                                    </tr>
+                                        <td class='bg1' style="word-break:break-all;"> ******     </td>
+                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Name</b></td>
-                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['dbname']; ?>                                    </tr>
+                                        <td class='bg1' style="word-break:break-all;">
+                                            <?php echo $this->dsn['dbname']; ?>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td class='bg3'><b>Create User for new Database</b></td>
-                                    <td class='bg1' style="word-break:break-all;"><?php echo $this->dsn['name_c']; ?>                                    </tr>
+                                        <td class='bg1' style="word-break:break-all;">
+                                            <?php echo $this->dsn['name_c']; ?>
+                                        </td>
+                                    </tr>
                             </table></td>
                         </tr>
                     </table>

@@ -1,7 +1,7 @@
 <?php
 
 if (Fisma::debug()) {
-    var_dump($this->findings);die;
+    var_dump($this->findings);
 } else {
     throw new Fisma_Exception("This view is only allowed in development mode");
 }

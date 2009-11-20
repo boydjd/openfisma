@@ -13,7 +13,8 @@ YAHOO.util.Event.onDOMReady(function () {
                                     {
                                         success: function(o) {
                                             var menuData = YAHOO.lang.JSON.parse(o.responseText);
-                                            var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", { autosubmenudisplay: true });
+                                            var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", 
+                                                                                    {autosubmenudisplay: true});
                                             YAHOO.util.Dom.addClass(oMenuBar.element, "yuimenubarnav");
                                             oMenuBar.addItems(menuData.menubar);
                                             oMenuBar.render('menubar');                                            
@@ -31,8 +32,22 @@ YAHOO.util.Event.onDOMReady(function () {
     <img alt="Logo" src="/images/logo.png">
 </div>
 <div id="logout">
-    <?php echo new Fisma_Yui_Form_Button_Link('logoutButton', array('value' => 'Log Out', 'imageSrc' => '/images/logout.png', 'href' => '/auth/logout')); ?>
-    <p><b><?php echo User::currentUser()->nameFirst . ' ' . User::currentUser()->nameLast; ?></b> is currently logged in</p>
+    <?php 
+    echo new Fisma_Yui_Form_Button_Link(
+        'logoutButton', 
+        array(
+            'value' => 'Log Out',
+            'imageSrc' => '/images/logout.png',
+            'href' => '/auth/logout'
+        )
+    ); 
+    ?>
+    <p>
+        <b>
+            <?php echo User::currentUser()->nameFirst . ' ' . User::currentUser()->nameLast; ?>
+        </b>
+        is currently logged in
+    </p>
 </div>
 
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>

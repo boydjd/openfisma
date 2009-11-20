@@ -1,12 +1,17 @@
-<?php if (count($this->messages)) { ?>
-<script type="text/javascript">
-<?php
-        foreach ($this->messages as $severity=>$messages) {
-            if (count($messages)) {
-                foreach ($messages as $message) { ?>
-                    message('<?php echo addslashes($message); ?>', '<?php echo $severity; ?>');
-<?php           }
+<?php 
+if (count($this->messages)) { 
+?>
+    <script type="text/javascript">
+    <?php
+    foreach ($this->messages as $severity=>$messages) {
+        if (count($messages)) {
+            foreach ($messages as $message) {
+                print("message('<?php echo addslashes($message); ?>', '<?php echo $severity; ?>');");
             }
-        } ?>
-</script>
-<?php } ?>
+        }
+    } 
+    ?>
+    </script>
+<?php 
+} 
+?>

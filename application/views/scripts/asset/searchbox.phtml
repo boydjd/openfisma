@@ -3,7 +3,9 @@
         <table width="100%" style="text-align:left">
         <tr>
             <td><b>System:</b></td>
-            <td><?php echo $this->formSelect('system_id', $this->criteria['system_id'], null, $this->systemList); ?></td>
+            <td>
+                <?php echo $this->formSelect('system_id', $this->criteria['system_id'], null, $this->systemList); ?>
+            </td>
             <td><b>Vendor:</b></td>
             <td><input name="vendor" type="text" id="vendor" value="<?php echo $this->criteria['vendor'];?>"></td>
             <td><b>Product Name:</b></td>

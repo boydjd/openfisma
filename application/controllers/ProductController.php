@@ -66,10 +66,10 @@ class ProductController extends BaseController
         $this->_helper->layout->setLayout('ajax');
         $product = new Product();
         $req = $this->getRequest();
-        $prodId = $req->getParam('prod_list', '');
-        $prodName = $req->getParam('prod_name', '');
-        $prodVendor = $req->getParam('prod_vendor', '');
-        $prodVersion = $req->getParam('prod_version', '');
+        $prodId = $req->getParam('prodList', '');
+        $prodName = $req->getParam('prodName', '');
+        $prodVendor = $req->getParam('prodVendor', '');
+        $prodVersion = $req->getParam('prodVersion', '');
         $qry = Doctrine_Query::create()
                ->select()
                ->from('Product');
@@ -87,6 +87,6 @@ class ProductController extends BaseController
         }
         $qry->limit(100)
             ->offset(0);
-        $this->view->prod_list = $qry->execute()->toArray();
+        $this->view->prodList = $qry->execute()->toArray();
     }
 }

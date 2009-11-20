@@ -6,7 +6,7 @@
                                                      'href' => '/panel/account/sub/list'));
         echo $listButton;
 
-        if(Fisma_Acl::hasPrivilege('user', 'create')) {
+        if (Fisma_Acl::hasPrivilege('user', 'create')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Account', 
                                                          'href' => '/panel/account/sub/create'));
@@ -23,7 +23,13 @@
         <form name="query" method="post" action="/panel/user/sub/list" style="display:inline">
         <span class="searchField">
             <b>Search:&nbsp;</b>
-            <input id="keywords" name="keywords" value="<?php echo $this->keywords;?>" title="Input your query value" size="20" maxlength="40" type="text">
+            <input id="keywords"
+                   name="keywords" 
+                   value="<?php echo $this->keywords;?>" 
+                   title="Input your query value" 
+                   size="20" 
+                   maxlength="40" 
+                   type="text">
         </span>
         <span id="searchContainer"></span>
         <script type='text/javascript'>

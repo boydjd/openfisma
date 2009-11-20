@@ -120,13 +120,21 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
             $render .= "</tr>\n";
         }
 
-        $selectAllButton = new Fisma_Yui_Form_Button('SelectAll',
-											   array('value' => 'Select All',
-											    	 'onClickFunction' => 'selectAllUnsafe'));
+        $selectAllButton = new Fisma_Yui_Form_Button(
+            'SelectAll',
+            array(
+                'value' => 'Select All',
+                'onClickFunction' => 'selectAllUnsafe'
+            )
+        );
 
-        $selectNoneButton = new Fisma_Yui_Form_Button('SelectNone',
-												array('value' => 'Select None',
-												      'onClickFunction' => 'selectNoneUnsafe'));
+        $selectNoneButton = new Fisma_Yui_Form_Button(
+            'SelectNone',
+            array(
+                'value' => 'Select None',
+                'onClickFunction' => 'selectNoneUnsafe'
+            )
+        );
         
         $render .= "<tr><td colspan='$columnCount'>"
                  . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'

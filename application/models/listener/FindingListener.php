@@ -30,7 +30,7 @@ class FindingListener extends Doctrine_Record_Listener
     /**
      * these keys don't catch logs
      */
-    private static $unLogKeys = array(
+    private static $_excludeLogKeys = array(
         'currentEvaluationId',
         'status',
         'ecdLocked',
@@ -62,7 +62,7 @@ class FindingListener extends Doctrine_Record_Listener
      * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
      * Threat & countermeasures are also handled separately.
      */
-    private static $notificationKeys = array(
+    private static $_notificationKeys = array(
         'mitigationStrategy'        => 'UPDATE_COURSE_OF_ACTION',
         'securityControlId'         => 'UPDATE_SECURITY_CONTROL',
         'responsibleOrganizationId' => 'UPDATE_RESPONSIBLE_SYSTEM',
@@ -113,14 +113,16 @@ class FindingListener extends Doctrine_Record_Listener
             foreach ($modified as $key => $value) {
                 // Check whether the user has the privilege to update this column
                 if (isset(self::$_requiredPrivileges[$key])) {
-                    Fisma_Acl::requirePrivilege('finding', 
-                                                self::$_requiredPrivileges[$key], 
-                                                $finding->ResponsibleOrganization->nickname);
+                    Fisma_Acl::requirePrivilege(
+                        'finding', 
+                        self::$_requiredPrivileges[$key], 
+                        $finding->ResponsibleOrganization->nickname
+                    );
                 }
             
                 // Check whether this field generates any notification events
-                if (array_key_exists($key, self::$notificationKeys)) {
-                    $type = self::$notificationKeys[$key];
+                if (array_key_exists($key, self::$_notificationKeys)) {
+                    $type = self::$_notificationKeys[$key];
                 }
 
                 if (isset($type)) {
@@ -152,42 +154,56 @@ class FindingListener extends Doctrine_Record_Listener
                         break;
                     case 'securityControlId':
                         $key      = 'Security Control';
-                        $value    = isset(Doctrine::getTable('SecurityControl')->find($value)->code) ? Doctrine::getTable('SecurityControl')->find($value)->code : null;
+                        $value    = isset(Doctrine::getTable('SecurityControl')->find($value)->code) 
+                                  ? Doctrine::getTable('SecurityControl')->find($value)->code 
+                                  : null;
                         $newValue = $finding->SecurityControl->code;
                         break;
                     case 'responsibleOrganizationId':
                         $key      = 'Responsible Organization';
-                        $value    = isset(Doctrine::getTable('Organization')->find($value)->name) ? Doctrine::getTable('Organization')->find($value)->name : null;
+                        $value    = isset(Doctrine::getTable('Organization')->find($value)->name) 
+                                  ? Doctrine::getTable('Organization')->find($value)->name 
+                                  : null;
                         $newValue = $finding->ResponsibleOrganization->name;
                         break;
                     case 'status':
                         if ('MSA' == $value && 'EN' == $newValue) {
-                            Notification::notify('MITIGATION_APPROVED', 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Notification::notify(
+                                'MITIGATION_APPROVED', 
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
+                            );
                         } elseif ('EN' == $value && 'DRAFT' == $newValue) {
-                            Notification::notify('MITIGATION_REVISE', 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Notification::notify(
+                                'MITIGATION_REVISE', 
+                                 $finding, 
+                                 User::currentUser(), 
+                                 $finding->responsibleOrganizationId
+                            );
                         } elseif ('EA' == $newValue) {
-                            Notification::notify('EVIDENCE_UPLOADED', 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Notification::notify(
+                                'EVIDENCE_UPLOADED', 
+                                 $finding, 
+                                 User::currentUser(), 
+                                 $finding->responsibleOrganizationId
+                            );
                             $finding->actualCompletionDate = Fisma::now();
                         } elseif ( ('EA' == $value && 'EN' == $newValue)
                              || ('MSA' == $value && 'DRAFT' == $newValue) ) {
-                            Notification::notify('APPROVAL_DENIED', 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Notification::notify(
+                                'APPROVAL_DENIED', 
+                                 $finding, 
+                                 User::currentUser(), 
+                                 $finding->responsibleOrganizationId
+                            );
                         } elseif ('EA' == $value && 'CLOSED' == $newValue) {
-                            Notification::notify('FINDING_CLOSED', 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Notification::notify(
+                                'FINDING_CLOSED', 
+                                 $finding, 
+                                 User::currentUser(), 
+                                 $finding->responsibleOrganizationId
+                            );
                             $finding->closedTs = Fisma::now();
                             $finding->log('Finding closed');
                         }
@@ -199,14 +215,18 @@ class FindingListener extends Doctrine_Record_Listener
                         }
                         break;
                     case 'currentEvaluationId':
-                        $event = isset($finding->CurrentEvaluation->Event->name) ? $finding->CurrentEvaluation->Event->name : null;
+                        $event = isset($finding->CurrentEvaluation->Event->name) 
+                               ? $finding->CurrentEvaluation->Event->name 
+                               : null;
                         // If the event is null, then that indicates this was the last evaluation within its approval
                         // process. That condition is handled above.
                         if (isset($event)) {
-                            Notification::notify($event, 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Notification::notify(
+                                $event, 
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
+                            );
                         }
                         break;
                     case 'originalEcd':
@@ -214,32 +234,41 @@ class FindingListener extends Doctrine_Record_Listener
                         break;
                     case 'currentEcd':
                         if ($finding->ecdLocked && empty($finding->ecdChangeDescription)) {
-                            throw new Fisma_Exception('When the ECD is locked, the user must provide a change description
-                                                       in order to modify the ECD.');
+                            $error = 'When the ECD is locked, the user must provide a change description'
+                                   . ' in order to modify the ECD.';
+                            throw new Fisma_Exception($error);
                         }
                         if (!$finding->ecdLocked) {
-                            Fisma_Acl::requirePrivilege('finding', 
-                                                        'update_ecd', 
-                                                        $finding->ResponsibleOrganization->nickname);
+                            Fisma_Acl::requirePrivilege(
+                                'finding', 
+                                'update_ecd', 
+                                $finding->ResponsibleOrganization->nickname
+                            );
                             $finding->originalEcd = $finding->currentEcd;
-                            Notification::notify('UPDATE_ECD', 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Notification::notify(
+                                'UPDATE_ECD', 
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
+                            );
                         } else {
-                            Fisma_Acl::requirePrivilege('finding', 
-                                                        'update_locked_ecd', 
-                                                        $finding->ResponsibleOrganization->nickname);
-                            Notification::notify('UPDATE_LOCKED_ECD', 
-                                                 $finding, 
-                                                 User::currentUser(), 
-                                                 $finding->responsibleOrganizationId);
+                            Fisma_Acl::requirePrivilege(
+                                'finding', 
+                                'update_locked_ecd', 
+                                $finding->ResponsibleOrganization->nickname
+                            );
+                            Notification::notify(
+                                'UPDATE_LOCKED_ECD', 
+                                 $finding, 
+                                 User::currentUser(), 
+                                 $finding->responsibleOrganizationId
+                            );
                         }
                         break;
                     default:
                         break;
                 }
-                if (in_array($key, self::$unLogKeys)) {
+                if (in_array($key, self::$_excludeLogKeys)) {
                     continue;
                 }
 
@@ -252,8 +281,8 @@ class FindingListener extends Doctrine_Record_Listener
                 if ( (!(is_null($value) || empty($value) || $value == 'NONE') && 
                       !(is_null($newValue) || empty($newValue) || $newValue == 'NONE'))
                       || ($value != $newValue)) {
-                    // See if you can look up a logical name for this column in the schema definition. If its not defined,
-                    // then use the physical name instead
+                    // See if you can look up a logical name for this column in the schema definition. 
+                    // If its not defined, then use the physical name instead
                     $column = $finding->getTable()->getColumnDefinition(strtolower($key));
                     $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
                                  ? $column['extra']['logicalName']
@@ -272,7 +301,7 @@ class FindingListener extends Doctrine_Record_Listener
     public function postSave(Doctrine_Event $event)
     {
         $finding  = $event->getInvoker();
-        $modified = $finding->getModified($old=false, $last=true);
+        $modified = $finding->getModified($old = false, $last = true);
         $index = new Fisma_Index('Finding');
         $index->update($finding);
         

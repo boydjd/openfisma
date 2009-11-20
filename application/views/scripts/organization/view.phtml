@@ -1,9 +1,9 @@
 <?php
 $operation = '';
-if (Fisma_Acl::hasPrivilege('organization','update')) {
+if (Fisma_Acl::hasPrivilege('organization', 'update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Acl::hasPrivilege('organization','delete')) {
+if (Fisma_Acl::hasPrivilege('organization', 'delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Organization Information</b> $operation"); ?>

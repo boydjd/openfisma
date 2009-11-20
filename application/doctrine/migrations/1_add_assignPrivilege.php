@@ -50,7 +50,7 @@ class AddPrivilege extends Doctrine_Migration_Base
             /** @todo english */
             print ("Role 'ADMIN' is not exist. Migration can't be executed until the 'ADMIN' is back."
                    ." Please revert the nickname of 'administrator' to 'ADMIN' \n");
-            exit();
+            return;
         }
 
         $query = Doctrine_Query::create()

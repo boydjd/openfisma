@@ -23,18 +23,24 @@
 </div>
 <div class="panel">
     <p><em>Last Login</em></p>
-    <?php if(!empty($this->lastLoginIp)) { ?>
+    <?php 
+    if (!empty($this->lastLoginIp)) { 
+    ?>
         <ul>
             <li>Last Logged in at <b><?php echo $this->lastLoginTs; ?></b></li>
             <li>From IP address <b><?php echo $this->lastLoginIp; ?></b></li>
             <li>There were <b><?php echo $this->oldFailureCount; ?></b> bad login attempts since your last login.</li>
         </ul>
-    <?php } else { ?>
+    <?php 
+    } else { 
+    ?>
         <p>
             This is the first time you have logged into <?php echo Configuration::getConfig('system_name') ?>. 
             We will begin tracking your login attempts moving forward.
         </p>
-    <?php } ?>
+    <?php 
+    } 
+    ?>
 </div>
 
 <?php
@@ -48,9 +54,15 @@ if (isset($this->notifications)) {
         </p>
         <ol>
             <?php
-            foreach($this->notifications as $notification) {
+            foreach ($this->notifications as $notification) {
             ?>
-                <li><b><?php echo $notification['eventText']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['createdTs']; ?></b></li>
+                <li>
+                    <b>
+                        <?php 
+                        echo $notification['eventText']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['createdTs'];
+                        ?>
+                    </b>
+                </li>
             <?php
             }
             ?>
@@ -71,34 +83,47 @@ if (isset($this->notifications)) {
         document.location = "/panel/remediation/sub/searchbox/type/" + type;
     }
 </script>
-<?php if ( !empty( $this->alert['TOTAL'] ) ) { ?>
+<?php 
+if ( !empty( $this->alert['TOTAL'] ) ) { 
+?>
     <div class="panel clear">
         <table width="100%">
             <tr><td colspan="2"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
             <tr>
-              <td align="center">
-                <?php echo $this->partial('/dashboard/chart.phtml', array(
-                            'source_url'=> urlencode(
-                                '/dashboard/totalstatus/format/xml'),
-                            'width'=>380,
-                            'height'=>275) );
+                <td align="center">
+                <?php 
+                echo $this->partial(
+                    '/dashboard/chart.phtml', 
+                    array(
+                        'sourceUrl'=> urlencode('/dashboard/totalstatus/format/xml'),
+                        'width'=>380,
+                        'height'=>275
+                    )
+                );
                 ?>
-              </td>
-              <td align="center">
-                <?php echo $this->partial('/dashboard/chart.phtml', array(
-                            'source_url'=> '/dashboard/totaltype/format/xml',
-                            'width'=>380,
-                            'height'=>275 ));
+                </td>
+                <td align="center">
+                <?php 
+                echo $this->partial(
+                    '/dashboard/chart.phtml', 
+                    array(
+                        'sourceUrl'=> '/dashboard/totaltype/format/xml',
+                        'width'=>380,
+                        'height'=>275
+                    )
+                );
                 ?>
-              </td>
+                </td>
             </tr>
             <tr>
-              <td align="center"><b>Finding Status<br>Distribution</b></td>
-              <td align="center"><b>Mitigation Strategy<br>Distribution</b></td>
+                <td align="center"><b>Finding Status<br>Distribution</b></td>
+                <td align="center"><b>Mitigation Strategy<br>Distribution</b></td>
             </tr>
         </table>
     </div>
-<?php } ?>
+<?php 
+} 
+?>
 
 <div class="clear"></div>
 

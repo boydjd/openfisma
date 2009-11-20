@@ -25,8 +25,8 @@
  * @package    Model
  * @version    $Id$
  */
- class PrivilegeTable extends Doctrine_Table
- {
+class PrivilegeTable extends Doctrine_Table
+{
     /**
      * findByResourceAndActionAndOrgSpecific 
      * 
@@ -36,7 +36,8 @@
      * @access public
      * @return array 
      */
-    public function findByResourceAndActionAndOrgSpecific($resource, $action, $orgSpecific) {
+    public function findByResourceAndActionAndOrgSpecific($resource, $action, $orgSpecific) 
+    {
         return Doctrine_Query::create()
                ->from('Privilege p')
                ->where('p.resource = ?', $resource)

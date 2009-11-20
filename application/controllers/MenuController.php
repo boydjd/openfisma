@@ -97,7 +97,7 @@ class MenuController extends SecurityController
             $menubar->add($systems);
         }
         
-        if (Fisma_Acl::hasPrivilege('area','reports')) {
+        if (Fisma_Acl::hasPrivilege('area', 'reports')) {
             $reports = new Fisma_Yui_Menu('Reports');
             
             $reports->add(new Fisma_Yui_MenuItem('FISMA Report', '/panel/report/sub/fisma'));
@@ -108,7 +108,7 @@ class MenuController extends SecurityController
             $menubar->add($reports);
         }
         
-        if (Fisma_Acl::hasPrivilege('area','admin')) {
+        if (Fisma_Acl::hasPrivilege('area', 'admin')) {
             $admin = new Fisma_Yui_Menu('Administration');
             
             if (Fisma_Acl::hasPrivilege('area', 'configuration')) {

@@ -1,10 +1,10 @@
 <?php
 echo $this->partial('network/searchbox.phtml');
 $operation = '';
-if (Fisma_Acl::hasPrivilege('network','update')) {
+if (Fisma_Acl::hasPrivilege('network', 'update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Acl::hasPrivilege('network','delete')) {
+if (Fisma_Acl::hasPrivilege('network', 'delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Network Information $operation"); ?>

@@ -107,7 +107,6 @@ class Fisma_Form_Manager
         return $form;
     }
 
-
     /**
      * Get form errors if form validate false
      *

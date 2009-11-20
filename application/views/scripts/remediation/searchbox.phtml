@@ -1,5 +1,5 @@
 <?php
-    $filter_type = array(0  =>'--Any--',
+    $filterType = array(0  =>'--Any--',
                     'NONE'  =>'NONE',
                     'CAP'  =>'(CAP) Corrective Action Plan',
                     'AR'   =>'(AR) Accepted Risk',
@@ -19,17 +19,17 @@
         $epStatus[$row->nickname] = '(' . $row->nickname . ')' . $row->name;
     }
 
-    $filter_status = array(  0   =>'--Any--',
+    $filterStatus = array(  0   =>'--Any--',
                            'NEW' =>'(NEW) Awaiting Mitigation Type and Approval',
                            'DRAFT'=>'(DRAFT) Awaiting Mitigation Approval');
-    $filter_status = array_merge($filter_status, $mpStatus);
-    $filter_status['EN'] = '(EN) Evidence Needed';
-    $filter_status = array_merge($filter_status, $epStatus);
-    $filter_status['CLOSED'] = '(CLOSED) Officially Closed';
-    $filter_status['NOT-CLOSED'] = '(NOT-CLOSED) Not Closed';
-    $filter_status['NOUP-30']   = '(NOUP-30) 30+ Days Since Last Update';
-    $filter_status['NOUP-60']   = '(NOUP-60) 60+ Days Since Last Update';
-    $filter_status['NOUP-90']   = '(NOUP-90) 90+ Days Since Last Update';
+    $filterStatus = array_merge($filterStatus, $mpStatus);
+    $filterStatus['EN'] = '(EN) Evidence Needed';
+    $filterStatus = array_merge($filterStatus, $epStatus);
+    $filterStatus['CLOSED'] = '(CLOSED) Officially Closed';
+    $filterStatus['NOT-CLOSED'] = '(NOT-CLOSED) Not Closed';
+    $filterStatus['NOUP-30']   = '(NOUP-30) 30+ Days Since Last Update';
+    $filterStatus['NOUP-60']   = '(NOUP-60) 60+ Days Since Last Update';
+    $filterStatus['NOUP-90']   = '(NOUP-90) 90+ Days Since Last Update';
 
     $this->systems = array('--Any--') + (array)$this->systems;
     $this->sources = array('--Any--') + (array)$this->sources;
@@ -64,20 +64,35 @@
                                                 'onClickFunction' => 'showHelp',
                                                 'onClickArgument' => 'search'));
         echo $helpButton; 
-        echo new Fisma_Yui_Form_Button('bookmark', array('label' => 'Bookmark', 'onClickFunction' => 'addBookmark', 'onClickArgument' => array('title' => 'OpenFISMA Search Results', 'href' => $bookmarkUrl)));
-        
+        echo new Fisma_Yui_Form_Button(
+            'bookmark', 
+            array(
+                'label' => 'Bookmark', 
+                'onClickFunction' => 'addBookmark', 
+                'onClickArgument' => array('title' => 'OpenFISMA Search Results', 'href' => $bookmarkUrl)
+            )
+        );
     ?>
 </div>
 
-<div id="advanced_searchbox" class="searchFilters" <?php if ($flag == '') { ?>style="display:none" <?php } ?>>
+<?php
+$style = $flag == ''
+       ? 'style="display:none"'
+       : '';
+?>
+<div id="advanced_searchbox" class="searchFilters" <?php echo $style; ?>>
 <!-- Begin Filter Table -->
 <table style="text-align:left">
     <tr>
         <td><b>Finding Source: </b><br>
-            <?php echo $this->formSelect('sourceId',
-                                         $this->params['sourceId'],
-                                         null,
-                                         $this->sources);?>
+            <?php 
+            echo $this->formSelect(
+                'sourceId',
+                 $this->params['sourceId'],
+                 null,
+                 $this->sources
+            );
+            ?>
         </td>
         <td>
         <b>ID: </b><i>(You may select multiple IDs by using a comma separated list - x,y,z)</i><br>
@@ -86,30 +101,46 @@
     </tr>
     <tr>
         <td ><b> Mitigation Strategy:</b><br>
-        <?php echo $this->formSelect('type',
-                                     $this->params['type'],
-                                     null,
-                                     $filter_type);?>
+        <?php 
+        echo $this->formSelect(
+            'type',
+             $this->params['type'],
+             null,
+             $filterType
+        );
+        ?>
         </td>
         <td width="318" valign="top"><b> Finding Status:</b><br>
-        <?php echo $this->formSelect('status', 
-                                     $this->params['status'], 
-                                     array('id'=>'poamSearchStatus'),
-                                     $filter_status);?>
+        <?php 
+        echo $this->formSelect(
+            'status', 
+             $this->params['status'], 
+             array('id'=>'poamSearchStatus'),
+             $filterStatus
+        );
+        ?>
         </td>
     </tr>
     <tr>
         <td><b>Responsible System: </b><br>
-            <?php echo $this->formSelect('responsibleOrganizationId',
-                                         $this->params['responsibleOrganizationId'],
-                                         null,
-                                         $this->systems);?>
+            <?php 
+            echo $this->formSelect(
+                'responsibleOrganizationId',
+                 $this->params['responsibleOrganizationId'],
+                 null,
+                 $this->systems
+            );
+            ?>
         </td>
         <td ><b>On Time:</b><br>
-            <?php echo $this->formSelect('ontime',
-                                         $this->params['ontime'],
-                                         array('id'=>'poamSearchOnTime'),
-                                         $onTimes);?>
+            <?php 
+            echo $this->formSelect(
+                'ontime',
+                 $this->params['ontime'],
+                 array('id'=>'poamSearchOnTime'),
+                 $onTimes
+            );
+            ?>
         </td>
     </tr>
     <tr>
@@ -134,16 +165,47 @@
                         
                     <td > To: <input type="text" class="date" id="estDateEnd" name="estDateEnd" value="<?php
                         echo !empty($this->params['estDateEnd'])?$this->params['estDateEnd']->toString('Y-m-d'):'';
-                        ?>" size="12" maxlength="10"><img id="estDateEnd_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></td>
+                        ?>" size="12" maxlength="10">
+                        <img id="estDateEnd_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar" >
+                    </td>
                         
-                    <td ><b>Date Created: </b></td>
-                    <td > From: <input type="text" class="date" id="createdDateBegin" name="createdDateBegin" value="<?php
-                       echo !empty($this->params['createdDateBegin'])?$this->params['createdDateBegin']->toString('Y-m-d'):'';
-                        ?>" size="12" maxlength="10"><img id="createdDateBegin_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></td>
+                    <td><b>Date Created: </b></td>
+                    <td>
+                        From: 
+                        <input type="text" 
+                               class="date" 
+                               id="createdDateBegin" 
+                               name="createdDateBegin" 
+                               value="<?php 
+                                   echo !empty($this->params['createdDateBegin']) 
+                                        ? $this->params['createdDateBegin']->toString('Y-m-d')
+                                        : '';
+                                   ?>" 
+                               size="12" 
+                               maxlength="10">
+                        <img id="createdDateBegin_show" 
+                             src="/images/calendar.gif" 
+                             width="18" 
+                             height="18" 
+                             alt="Calendar">
+                    </td>
                         
-                    <td > To: <input type="text" class="date" id="createdDateEnd" name="createdDateEnd" value="<?php
-                        echo !empty($this->params['createdDateEnd'])?$this->params['createdDateEnd']->toString('Y-m-d'):'';
-                        ?>" size="12" maxlength="10"><img id="createdDateEnd_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar" ></td>
+                    <td>
+                        To: 
+                        <input type="text" 
+                               class="date" 
+                               id="createdDateEnd" 
+                               name="createdDateEnd" 
+                               value="
+                                   <?php
+                                   echo !empty($this->params['createdDateEnd'])
+                                        ? $this->params['createdDateEnd']->toString('Y-m-d')
+                                        : '';
+                                   ?>" 
+                               size="12" 
+                               maxlength="10">
+                        <img id="createdDateEnd_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar">
+                    </td>
                 </tr>
             </table>
         </td>

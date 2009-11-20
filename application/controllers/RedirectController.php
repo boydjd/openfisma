@@ -27,7 +27,8 @@
  */
 class RedirectController extends Zend_Controller_Action
 {
-    public function redirectAction() {
+    public function redirectAction() 
+    {
         $this->_helper->layout->setLayout('layout');
         $this->_helper->actionStack('header', 'panel');
         $this->view->url = urldecode($this->getRequest()->getParam('url'));

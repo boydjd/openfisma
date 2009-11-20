@@ -73,7 +73,8 @@ class User extends BaseUser
      * 
      * @return User
      */
-    public static function currentUser() {
+    public static function currentUser() 
+    {
         if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
             $auth = Zend_Auth::getInstance();
             $auth->setStorage(new Fisma_Auth_Storage_Session());
@@ -89,9 +90,10 @@ class User extends BaseUser
      * @access public
      * @return void
      */
-    public function construct() {
+    public function construct() 
+    {
         // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
-        $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
+        //$this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
     }
 
     /**
@@ -327,7 +329,7 @@ class User extends BaseUser
         $accountLog->message = $message;
         // Assigning the ID instead of the user object prevents doctrine from calling the preSave hook on the 
         // User object
-        if(isset(self::currentUser()->id)) {
+        if (isset(self::currentUser()->id)) {
             $operator = self::currentUser()->id;
         } else {
             //if the currentUser has not been set yet during login
@@ -387,7 +389,8 @@ class User extends BaseUser
     /**
      * Generate a random password salt for this user
      */
-    public function generateSalt() {
+    public function generateSalt() 
+    {
         /** @todo remove contstant value 10, which is the length of the salt. */
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
         $length = strlen($chars) - 1;

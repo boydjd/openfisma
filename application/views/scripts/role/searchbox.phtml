@@ -7,12 +7,14 @@
         echo $listButton;
         ?>
 
-        <?php if(Fisma_Acl::hasPrivilege('role', 'create')) {
+        <?php 
+        if (Fisma_Acl::hasPrivilege('role', 'create')) {
         $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                array('value' => 'Add Role', 
                                                      'href' => '/panel/role/sub/create'));
         echo $createButton;
-        } ?>
+        } 
+        ?>
     </div>
     <div class="right">
         <form name="query" method="post" action="/panel/role/sub/list" style="display:inline">

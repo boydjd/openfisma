@@ -47,7 +47,6 @@ if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
     }
 }
 
-
 /**
  * This class is the controller which executes all of the Selenium Tests.
  *

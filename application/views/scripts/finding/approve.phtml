@@ -7,11 +7,19 @@
     };
     
     var link1 = function(elCell, oRecord, oColumn, sData) {
-        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"+oRecord.getData("nId")+"'>"+oRecord.getData("nId")+"</a>";
+        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"
+                         + oRecord.getData("nId")
+                         + "'>"
+                         + oRecord.getData("nId")
+                         + "</a>";
     };
     
     var link2 = function(elCell, oRecord, oColumn, sData) {
-        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"+oRecord.getData("oId")+"'>"+oRecord.getData("oId")+"</a>";
+        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"
+                         + oRecord.getData("oId")
+                         + "'>"
+                         + oRecord.getData("oId")
+                         + "</a>";
     };
     // Column definitions
     var myColumnDefs = [
@@ -64,7 +72,7 @@
                                                                   'onClickFunction' => 'selectNoneUnsafe'));
                     echo $selectNoneButton;
                     
-                    echo new Fisma_Yui_Form_Button_Submit('delete_selected', array('label' => 'Delete Selected'));                    
+                    echo new Fisma_Yui_Form_Button_Submit('delete_selected', array('label' => 'Delete Selected'));
                     echo new Fisma_Yui_Form_Button_Submit('approve_selected', array('label' => 'Approve Selected'));
                 ?>
             </td>

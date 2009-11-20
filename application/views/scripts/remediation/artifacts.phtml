@@ -8,19 +8,25 @@
 ?>
         <div class="approvalHeader">
             <b>File: </b>
-            <a href='/remediation/downloadevidence/id/<?php echo $evidence->id;?>' target='_blank'><?php echo $evidence->filename; ?></a>
-            (submitted by <?php echo $evidence->User->nameFirst . ' ' . $evidence->User->nameLast; ?> on <?php echo $evidence->createdTs; ?>)
+            <a href='/remediation/downloadevidence/id/<?php echo $evidence->id;?>' target='_blank'>
+                <?php echo $evidence->filename; ?>
+                </a>
+            (submitted by 
+            <?php echo $evidence->User->nameFirst . ' ' . $evidence->User->nameLast; ?> 
+            on 
+            <?php echo $evidence->createdTs; ?>)
         </div>
         <div class="approval">
         <?php
-        foreach($evidence->FindingEvaluations as $findingEvaluation) {
+        foreach ($evidence->FindingEvaluations as $findingEvaluation) {
             $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
             $decision = $findingEvaluation->decision;
             echo '<div class="approvalStep"><p><b>' 
                . html_entity_decode($findingEvaluation->Evaluation->name) 
                . ':</b>';
             if ('APPROVED' == $decision) {
-                echo "<span class=\"approved\"><b>$decision</b> ($userName at $findingEvaluation->createdTs)</span></p>";
+                echo "<span class=\"approved\"><b>$decision</b>"
+                   . " ($userName at $findingEvaluation->createdTs)</span></p>";
                 if (!empty($findingEvaluation->comment)) {
                     echo $this->textToHtml($findingEvaluation->comment);
                 }
@@ -55,7 +61,7 @@
     $disableEvaluations = array();
     $currentEvaluation  = $this->finding->CurrentEvaluation;
     if ($currentEvaluation->approvalGroup == 'evidence') {
-        while (null != $currentEvaluation->nextId)  {
+        while (null != $currentEvaluation->nextId) {
             $currentEvaluation = $currentEvaluation->NextEvaluation;
             $disableEvaluations[] = $currentEvaluation;
         }
@@ -68,7 +74,7 @@
     $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
                                                 array('label' => 'Upload Evidence', 
                                                       'onClickFunction' => 'upload_evidence'));
-    if('EN' != $this->finding->status || !Fisma_Acl::hasPrivilege('finding', 'upload_evidence', $organization)) {
+    if ('EN' != $this->finding->status || !Fisma_Acl::hasPrivilege('finding', 'upload_evidence', $organization)) {
         $uploadEvidenceButton->readOnly = true;
     }
     echo "<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>

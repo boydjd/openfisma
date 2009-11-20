@@ -35,7 +35,7 @@
 <p>
     <b
         <?php
-            if(in_array($finding->status, array('NEW', 'DRAFT'))
+            if (in_array($finding->status, array('NEW', 'DRAFT'))
                 && Fisma_Acl::hasPrivilege('finding', 'update_resources', $organization)) {
                 echo 'class="editable" target="resources_required"';
             } 
@@ -183,10 +183,12 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
 }
 
 if ('EN' == $finding->status && Fisma_Acl::hasPrivilege('finding', 'mitigation_strategy_revise', $organization)) {
+    $message = 'The revised mitigation strategy must be fully approved before evidence can be re-submitted.'
+             . 'Are you sure that you want to continue?';
     echo "<script language=\"javascript\">
             function reviseMitigationStrategy()
             {
-                var str = \"The revised mitigation strategy must be fully approved before evidence can be re-submitted. Are you sure that you want to continue?\";
+                var str = \"$message\";
                 if(confirm(str) == true){
                     location.href = \"$postAction/do/revisemitigation\";
                 }
@@ -246,7 +248,7 @@ if ($finding->status != 'NEW'
     $disableEvaluations = array();
     $currentEvaluation  = $finding->CurrentEvaluation;
     if ($currentEvaluation->approvalGroup == 'action') {
-        while ($currentEvaluation->nextId != null)  {
+        while ($currentEvaluation->nextId != null) {
             $currentEvaluation    = $currentEvaluation->NextEvaluation;
             $disableEvaluations[] = $currentEvaluation;
         }

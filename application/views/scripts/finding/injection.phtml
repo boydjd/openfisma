@@ -1,10 +1,14 @@
-<?php Fisma_Format_Section::startSection("Spreadsheet Upload"); ?>
+<?php 
+Fisma_Format_Section::startSection("Spreadsheet Upload"); 
+$microsoftUrl = 'http://www.microsoft.com/downloads/details.aspx?'
+              . 'FamilyID=941b3470-3ae9-4aee-8f43-c6bb74cd1466&displaylang=en';
+?>
     <form action="/panel/finding/sub/injection" method="POST" enctype="multipart/form-data">
         <ol>
             <li>Download the Excel <a href="/finding/template">template file</a>.
             <p>(The template file requires Excel 2007 or
             the Office Compatibility Pack, which can be downloaded for free from
-            <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=941b3470-3ae9-4aee-8f43-c6bb74cd1466&displaylang=en">Microsoft</a>.)</p>
+            <a href="<?php echo $microsoftUrl; ?>">Microsoft</a>.)</p>
             <li>Complete the template, following the instructions included in the template header.
             <li>Upload the completed spreadsheet here: <br>
             <input type="file" name="excelFile">
@@ -14,4 +18,3 @@
         </p>
     </form>
 <?php Fisma_Format_Section::stopSection(); ?>
-

@@ -216,16 +216,14 @@ class OrganizationController extends SecurityController
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink',
-                                "/panel/organization/sub/view/id/$id");
+            $this->view->assign('viewLink', "/panel/organization/sub/view/id/$id");
             $form->setAction("/panel/organization/sub/update/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink',
-                                "/panel/organization/sub/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/panel/organization/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink',"/panel/organization/sub/delete/id/$id");
+        $this->view->assign('deleteLink', "/panel/organization/sub/delete/id/$id");
         $form->setDefaults($organization);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -259,7 +257,8 @@ class OrganizationController extends SecurityController
                     // the organization which has parent
                     } else {
                         // insert as a child to a specify parent organization
-                        $organization->getNode()->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
+                        $organization->getNode()
+                                     ->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                     }
                     $msg = "The organization is created";
                     $model = 'notice';

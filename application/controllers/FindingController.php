@@ -111,10 +111,12 @@ class FindingController extends BaseController
             $form->getElement('assetId')->addMultiOptions(array($asset['id'] => $asset['name']));
         }
         
-        $form->setDisplayGroupDecorators(array(
-            new Zend_Form_Decorator_FormElements(),
-            new Fisma_Form_CreateFindingDecorator()
-        ));
+        $form->setDisplayGroupDecorators(
+            array(
+                new Zend_Form_Decorator_FormElements(),
+                new Fisma_Form_CreateFindingDecorator()
+            )
+        );
         
         // Check if the user is allowed to read assets.
         if (!Fisma_Acl::hasPrivilege('asset', 'read', '*')) {
@@ -193,8 +195,8 @@ class FindingController extends BaseController
             $this->view->priorityMessenger("The file upload failed.", 'warning');
             return;
         } elseif (empty($file['name'])) {
-            $this->view->priorityMessenger('You did not select a file to upload. Please select a file and try again.', 
-                           'warning');
+            $error = 'You did not select a file to upload. Please select a file and try again.';
+            $this->view->priorityMessenger($error, 'warning');
         } else {
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
@@ -225,8 +227,8 @@ class FindingController extends BaseController
                 $this->view->priorityMessenger("$rowsProcessed findings were created.", 'notice');
             } catch (Fisma_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
-                $this->view->priorityMessenger("The file cannot be processed due to an error.<br>{$e->getMessage()}",
-                               'warning');
+                $error = "The file cannot be processed due to an error.<br>{$e->getMessage()}";
+                $this->view->priorityMessenger($error, 'warning');
             }
         }
         $this->render();
@@ -243,14 +245,18 @@ class FindingController extends BaseController
         Fisma_Acl::requirePrivilege('finding', 'inject', '*');
         
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
-        $contextSwitch->addContext('xls', array(
-            'suffix' => 'xls',
-            'headers' => array(
-                'Content-type' => 'application/vnd.ms-excel',
-                'Content-Disposition' => 'filename=' . Fisma_Inject_Excel::TEMPLATE_NAME
+        $contextSwitch->addContext(
+            'xls', 
+            array(
+                'suffix' => 'xls',
+                'headers' => array(
+                    'Content-type' => 'application/vnd.ms-excel',
+                    'Content-Disposition' => 'filename=' . Fisma_Inject_Excel::TEMPLATE_NAME
+                )
             )
-        ));
+        );
         $contextSwitch->addActionContext('template', 'xls');
+        
         /* The spreadsheet won't open in Excel if any of these tables are 
          * empty. So we explicitly check for that condition, and if it 
          * exists then we show the user an error message explaining why 
@@ -416,17 +422,17 @@ class FindingController extends BaseController
                     // rename the file by ts
                     rename($filePath, dirname($filePath) . '/' . $newName);
 
-                    $this->view->priorityMessenger("Your scan report was successfully uploaded.<br>"
-                                   . "{$plugin->created} findings were created.<br>"
-                                   . "{$plugin->reviewed} findings need review.<br>"
-                                   . "{$plugin->deleted} findings were suppressed.",
-                                   'notice');
+                    $message = "Your scan report was successfully uploaded.<br>"
+                             . "{$plugin->created} findings were created.<br>"
+                             . "{$plugin->reviewed} findings need review.<br>"
+                             . "{$plugin->deleted} findings were suppressed.";
+                    $this->view->priorityMessenger($message, 'notice');
                     if (($plugin->created + $plugin->reviewed) == 0) {
                         $upload->delete();
                     }
                 } catch (Fisma_Exception_InvalidFileFormat $e) {
-                    $this->view->priorityMessenger("The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}",
-                                   'warning');
+                    $error = "The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}";
+                    $this->view->priorityMessenger($error, 'warning');
                 }
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($uploadForm);
@@ -464,7 +470,8 @@ class FindingController extends BaseController
     /**
      *  Process the form submitted from the approveAction()
      */
-    public function processApprovalAction() {
+    public function processApprovalAction() 
+    {
         Fisma_Acl::requirePrivilege('finding', 'approve', '*');
 
         $findings = $this->_request->getPost('findings', array());

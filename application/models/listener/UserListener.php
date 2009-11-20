@@ -50,8 +50,8 @@ class UserListener extends Doctrine_Record_Listener
             if (empty($user->passwordSalt)) {
                 $user->generateSalt();
             }
-            $user->password        = $user->hash($modified['password']);
-            $user->passwordTs      = Fisma::now();
+            //$user->password        = $user->hash($modified['password']);
+            //$user->passwordTs      = Fisma::now();
 
             // Check password history
             if (strpos($user->passwordHistory, $user->password)) {
@@ -80,7 +80,8 @@ class UserListener extends Doctrine_Record_Listener
 
     }
 
-    public function preInsert(Doctrine_Event $event) {
+    public function preInsert(Doctrine_Event $event) 
+    {
         $user = $event->getInvoker();
         
         $user->passwordTs = Fisma::now();
@@ -94,7 +95,7 @@ class UserListener extends Doctrine_Record_Listener
     public function postInsert(Doctrine_Event $event) 
     {
         $user     = $event->getInvoker();
-        $modified = $user->getModified($old=true, $last=true);
+        $modified = $user->getModified($old = true, $last = true);
         $user->password = $modified['password'];
         $mail = new Fisma_Mail();
         $mail->sendAccountInfo($user);
@@ -107,7 +108,7 @@ class UserListener extends Doctrine_Record_Listener
     public function postUpdate(Doctrine_Event $event)
     {
         $user     = $event->getInvoker();
-        $modified = $user->getModified($old=true, $last=true);
+        $modified = $user->getModified($old = true, $last = true);
         if (isset($modified['password']) && $modified['password']) {
             $user->password = $modified['password'];
             $mail = new Fisma_Mail();

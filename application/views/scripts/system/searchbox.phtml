@@ -7,12 +7,14 @@
         echo $listButton;
         ?>
 
-        <?php if(Fisma_Acl::hasPrivilege('system', 'create')) {
-        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
-                                               array('value' => 'Add System', 
-                                                     'href' => '/panel/system/sub/create'));
-        echo $createButton;
-        } ?>
+        <?php 
+        if(Fisma_Acl::hasPrivilege('system', 'create')) {
+            $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                                   array('value' => 'Add System', 
+                                                         'href' => '/panel/system/sub/create'));
+            echo $createButton;
+        } 
+        ?>
     </div>
         <div class="right">
             <form name="query" method="post" action="/panel/system/sub/list" style="display:inline">

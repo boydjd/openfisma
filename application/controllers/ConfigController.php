@@ -51,7 +51,8 @@ class ConfigController extends SecurityController
      * @param string $formName The name of the form to load
      * @return Zend_Form
      */
-    public function getConfigForm($formName) {
+    public function getConfigForm($formName)
+    {
         // Load the form and populate the dynamic pull downs
         $form = Fisma_Form_Manager::loadForm($formName);
         $form = Fisma_Form_Manager::prepareForm($form);
@@ -139,7 +140,6 @@ class ConfigController extends SecurityController
         $this->view->form = $form;
     }
 
-
     /**
      *  Add/Update LDAP configurations
      */
@@ -213,9 +213,10 @@ class ConfigController extends SecurityController
                     unset($data['SaveLdap']);
                     unset($data['Reset']);
                     if (empty($data['password'])) {
+                        $dql = 'host = ? AND port = ? AND username = ?';
+                        $params = array($data['host'], $data['port'], $data['username']);
                         $ldap = Doctrine::getTable('LdapConfig')
-                                ->findByDql('host = ? AND port = ? AND username = ?',
-                                        array($data['host'], $data['port'], $data['username']));
+                                ->findByDql($dql, $params);
                         if (!empty($ldap[0])) {
                             $data['password'] = $ldap[0]->password;
                         }
@@ -276,14 +277,14 @@ class ConfigController extends SecurityController
                     unset($data['Reset']);
                     if (empty($data['smtp_password'])) {
                         $password = Doctrine::getTable('Configuration')
-                                         ->findByDql('name = ?','smtp_password');
+                                         ->findByDql('name = ?', 'smtp_password');
                         if (!empty($password[0])) {
                             $data['smtp_password'] = $password[0]->value;
                         }
                     }
                     if (empty($data['smtp_tls'])) {
                         $tls = Doctrine::getTable('Configuration')
-                                    ->findByDql('name = ?','smtp_tls');
+                                    ->findByDql('name = ?', 'smtp_tls');
                         if (!empty($tls[0])) {
                             $data['smtp_tls'] = $tls[0]->value;
                         }
@@ -292,7 +293,7 @@ class ConfigController extends SecurityController
                                 ." administrator to determine if the e-mail configuration is" 
                                 ." working correctly. There is no need to reply to this e-mail.";
                     
-                    if($data['send_type'] == 'sendmail') {
+                    if ($data['send_type'] == 'sendmail') {
                         $mail = new Zend_Mail();
                         $mail->setBodyText($mailContent)
                              ->setFrom($data['sender'])
@@ -307,7 +308,7 @@ class ConfigController extends SecurityController
                        if ($data['smtp_tls'] == 1) {
                            $emailconfig['ssl'] = 'tls';
                        }
-                        $transport = new Zend_Mail_Transport_Smtp($data['smtp_host'],$emailconfig);
+                        $transport = new Zend_Mail_Transport_Smtp($data['smtp_host'], $emailconfig);
                         
                         // send messages
                         $mail = new Zend_Mail();

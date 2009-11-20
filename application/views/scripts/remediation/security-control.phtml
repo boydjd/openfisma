@@ -10,13 +10,16 @@
             </div>
         </td>
         <td>
-            <span id="security_control" type="select" name="finding[securityControlId]" href="/metainfo/list/o/security_control/format/html/"
-                <?php
-                if (Fisma_Acl::hasPrivilege('finding', 'update_control_assignment', $organization)
-                    && ('NEW' == $this->finding->status || 'DRAFT' == $this->finding->status)) {
-                    echo "class='editable' target='security_control'";
-                }
-                ?>>
+            <span id="security_control" 
+                  type="select" 
+                  name="finding[securityControlId]" 
+                  href="/metainfo/list/o/security_control/format/html/"
+                    <?php
+                    if (Fisma_Acl::hasPrivilege('finding', 'update_control_assignment', $organization)
+                        && ('NEW' == $this->finding->status || 'DRAFT' == $this->finding->status)) {
+                        echo "class='editable' target='security_control'";
+                    }
+                    ?>>
 
                 <?php
                 if (!empty($this->finding->securityControlId)) {
@@ -29,7 +32,8 @@
             </span>
         </td>
     </tr>
-    <?php if(!empty($this->finding->securityControlId)) {
+    <?php 
+    if (!empty($this->finding->securityControlId)) {
         $securityControl = $this->finding->SecurityControl; 
     ?>
         <tr>
@@ -94,6 +98,8 @@
                 <?php echo $securityControl->supplement; ?>
             </td>
         </tr>
-    <?php } ?>
+    <?php 
+    } 
+    ?>
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>

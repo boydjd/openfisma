@@ -26,7 +26,8 @@
  * @subpackage Fisma_Format
  * @version    $Id$
  */
-class Fisma_Format_Section {
+class Fisma_Format_Section 
+{
     /** @yui document this class */
     static function startSection($title, $editableTarget = null) {
         if (isset($editableTarget)) {

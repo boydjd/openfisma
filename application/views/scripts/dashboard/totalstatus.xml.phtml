@@ -2,41 +2,45 @@
     <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
     <link_data url="javascript:barChartClick(_series_)" target="javascript" />
     <chart_data>
-		<row>
-			<null/>
-			<string></string>
-		</row>	
-		<?php foreach ($this->summary AS $status=>$statusCount) { ?>
-		<row>
-			<string><?php echo $status; ?></string>
-			<number tooltip='<?php echo $statusCount; ?> <?php echo $status; ?>'><?php echo $statusCount; ?></number>
-		</row>
-		<?php } ?>
-	</chart_data>
+        <row>
+            <null/>
+            <string></string>
+        </row>    
+        <?php 
+        foreach ($this->summary AS $status=>$statusCount) { 
+        ?>
+        <row>
+            <string><?php echo $status; ?></string>
+            <number tooltip='<?php echo "$statusCount $status"; ?>'><?php echo $statusCount; ?></number>
+        </row>
+        <?php 
+        } 
+        ?>
+    </chart_data>
 
-	<chart_type>3d column</chart_type>
+    <chart_type>3d column</chart_type>
 
     <chart_grid_h thickness='0' />
 
-	<axis_value alpha='0' />
+    <axis_value alpha='0' />
 
-	<chart_label font='arial'
+    <chart_label font='arial'
                  bold='true'
                  size='12'
                  position='over' />
 
-	<chart_pref rotation_x='30'
+    <chart_pref rotation_x='30'
                 rotation_y='40'
                 min_x='20'
                 max_x='70'
                 min_y='30'
                 max_y='80' />
 
-	<chart_rect x='0' y='0' width='480' height='240' positive_alpha='0' negative_alpha='25' />
+    <chart_rect x='0' y='0' width='480' height='240' positive_alpha='0' negative_alpha='25' />
 
-	<filter>
-		<shadow id='low' distance='2' angle='45' alpha='50' blurX='2' blurY='2' />
-	</filter>
+    <filter>
+        <shadow id='low' distance='2' angle='45' alpha='50' blurX='2' blurY='2' />
+    </filter>
 
     <legend layout='vertical'
             bullet='square'
@@ -49,7 +53,7 @@
             height='150' />
 
 
-	<series_color>
+    <series_color>
 <?php
     // Figure out which colors are MSA colors and which are EA colors
     unset($this->summary['NEW']);
@@ -80,24 +84,24 @@
     } else {
         $colorStep = (STOP_COLOR - START_COLOR) / 2;
     }
-	for ($i = 0; $i < count($msaColors); $i++) {
+    for ($i = 0; $i < count($msaColors); $i++) {
         $hex = dechex(START_COLOR + ($colorStep * $i));
         print "<color>ff{$hex}{$hex}</color>";
-	}
-	
-	// Color for EN
-	print '<color>ff9933</color>';
-	
-	// Colors for EA
+    }
+    
+    // Color for EN
+    print '<color>ff9933</color>';
+    
+    // Colors for EA
     if (count($epColors) > 1) {
         $colorStep = (STOP_COLOR - START_COLOR) / (count($epColors) - 1);
     } else {
         $colorStep = (STOP_COLOR - START_COLOR) / 2;
     }
-	for ($i = 0; $i < count($epColors); $i++) {
+    for ($i = 0; $i < count($epColors); $i++) {
         $hex = dechex(START_COLOR + ($colorStep * $i));
         print "<color>{$hex}{$hex}ff</color>";
-	}
+    }
 ?>
-	</series_color>
+    </series_color>
 </chart>

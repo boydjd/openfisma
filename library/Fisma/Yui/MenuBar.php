@@ -26,7 +26,7 @@
  * @subpackage Fisma_Yui
  * @version    $Id$
  */
-class Fisma_Yui_MenuBar 
+class Fisma_Yui_MenuBar
 {
     /**
      * Internal representation of the items in this menu bar

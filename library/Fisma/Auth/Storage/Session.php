@@ -26,7 +26,7 @@
  * @subpackage Fisma_Auth
  * @version    $Id$
  */
-class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session 
+class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session
 {
     /**
      * Default session namespace

@@ -4,9 +4,12 @@ to modify your notification preferences, please log in to the system and select
 "User Preferences".
 
 <?php
-foreach( $this->notifyData as $row ){ ?>
+foreach ( $this->notifyData as $row ) { 
+?>
 ---------------------------------------
 Event: <?php echo "{$row->eventText}\n"; ?>
 Time:  <?php echo "{$row->createdTs}\n"; ?>
-<?php } ?>
+<?php 
+} 
+?>
 ---------------------------------------

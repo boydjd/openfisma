@@ -44,7 +44,9 @@
             <td>Status:</td>
             <td><?php echo $status;?></td>
         </tr>
-        <?php if ($status != 'CLOSED') { ?>
+        <?php 
+        if ($status != 'CLOSED') { 
+        ?>
         <tr>
             <td>On Time:</td>
             <td>
@@ -57,7 +59,9 @@
             ?>
             </td>
         </tr>
-        <?php } ?>
+        <?php 
+        } 
+        ?>
         <tr>
             <td>
                 <div>
@@ -70,12 +74,13 @@
                      type="select" 
                      href="/metainfo/list/o/organization/format/html/"
                      <?php
-                     if('NEW' == $status || 'DRAFT' == $status
+                     if ('NEW' == $status || 'DRAFT' == $status
                          && Fisma_Acl::hasPrivilege('finding', 'update_assignment', $orgId)) {
                          echo 'class="editable" target="organization"'; 
                      }
                      ?>>
-                    <?php echo $finding->ResponsibleOrganization->nickname;?> - <?php echo $finding->ResponsibleOrganization->name;?>
+                    <?php echo $finding->ResponsibleOrganization->nickname;?> 
+                    - <?php echo $finding->ResponsibleOrganization->name;?>
                 </div>
             </td>
         </tr>
@@ -118,7 +123,8 @@
                 IP Address:
             </td>
             <td>
-                <?php echo isset($finding->Asset->Network->name) ? ($finding->Asset->addressIp . ':' . $finding->Asset->addressPort) : 'n/a'; ?>
+                <?php echo isset($finding->Asset->Network->name) 
+                      ? ($finding->Asset->addressIp . ':' . $finding->Asset->addressPort) : 'n/a'; ?>
             </td>
         </tr>
         <tr>
@@ -127,7 +133,7 @@
             </td>
             <td>
                 <?php  
-                    if(!empty($finding->Asset->Product->name)) {
+                    if (!empty($finding->Asset->Product->name)) {
                         echo $finding->Asset->Product->vendor . ' ' .
                              $finding->Asset->Product->name . ' ' .
                              $finding->Asset->Product->version;

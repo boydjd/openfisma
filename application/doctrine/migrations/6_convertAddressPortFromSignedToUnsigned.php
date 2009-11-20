@@ -34,9 +34,12 @@ class ConvertAddressPortFromSignedToUnsigned extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $this->changeColumn('asset', 'addressPort', 2, 'integer', array(
-                'unsigned' => false
-            )
+        $this->changeColumn(
+            'asset', 
+            'addressPort', 
+            2, 
+            'integer', 
+            array('unsigned' => false)
         );
 
         Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
@@ -49,9 +52,12 @@ class ConvertAddressPortFromSignedToUnsigned extends Doctrine_Migration_Base
      */
     public function down()
     {
-        $this->changeColumn('asset', 'addressPort', 2, 'integer', array(
-                'unsigned' => true
-            )
+        $this->changeColumn(
+            'asset', 
+            'addressPort', 
+            2, 
+            'integer', 
+            array('unsigned' => true)
         );
 
         Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));

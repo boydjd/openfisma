@@ -86,7 +86,8 @@ class SecurityController extends Zend_Controller_Action
     {
         parent::preDispatch();
         if (empty($this->_me)) {
-            throw new Fisma_Exception_InvalidAuthentication('Your session has expired. Please log in again to begin a new session.');
+            $error = 'Your session has expired. Please log in again to begin a new session.';
+            throw new Fisma_Exception_InvalidAuthentication($error);
         }
     }
 }

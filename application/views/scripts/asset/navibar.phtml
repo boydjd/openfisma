@@ -1,17 +1,26 @@
 <div class="searchFilters">
     <div class="left">
         <?php
-        $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
-                                               array('value' => 'Asset List', 
-                                                     'href' => '/panel/asset/sub/list'));
+        $listButton = new Fisma_Yui_Form_Button_Link(
+            'listButton', 
+            array(
+                'value' => 'Asset List', 
+                'href' => '/panel/asset/sub/list'
+            )
+        );
         echo $listButton;
         ?>
 
-        <?php if(Fisma_Acl::hasPrivilege('asset', 'create')) {
-        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
-                                               array('value' => 'Add Asset', 
-                                                     'href' => '/panel/asset/sub/create'));
-        echo $createButton;
+        <?php 
+        if (Fisma_Acl::hasPrivilege('asset', 'create')) {
+            $createButton = new Fisma_Yui_Form_Button_Link(
+                'createButton', 
+                array(
+                    'value' => 'Add Asset', 
+                    'href' => '/panel/asset/sub/create'
+                )
+            );
+            echo $createButton;
         } 
         ?>
     </div>

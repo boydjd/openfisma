@@ -63,7 +63,8 @@ class AuthController extends Zend_Controller_Action
             if ( Zend_Session::getOptions('cookie_secure') && 
                 !$this->_request->isSecure() 
             ) {
-                throw new Zend_Auth_Exception("You must access this application via HTTPS, since secure cookies are enabled.");
+                throw new Zend_Auth_Exception("You must access this application via HTTPS,"
+                                            . " since secure cookies are enabled.");
             }
 
             $user = Doctrine::getTable('User')->findOneByUsername($username);
@@ -168,7 +169,8 @@ class AuthController extends Zend_Controller_Action
     /**
      * Close out the current user's session.
      */
-    public function logoutAction() {
+    public function logoutAction() 
+    {
         $user = User::currentUser();
         if (!empty($user)) {
             $user->logout();
@@ -198,7 +200,6 @@ class AuthController extends Zend_Controller_Action
     public function robAction()
     {
     }
-
 
     /**
      * Validate the user's e-mail change.
