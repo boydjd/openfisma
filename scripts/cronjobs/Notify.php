@@ -4,44 +4,32 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Jim Chen <xhorse@users.sourceforge.net>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
- * @package    Cron_Job
- */
-
-/**
- * This static class is responsible for scanning for notifications which need to
- * be delivered, delivering the notifications, and then removing the sent
- * notifications from the queue.
- *
- * @package    Cron_Job
- * @subpackage Controller_Subpackage
- * @copyright  (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/mw/index.php?title=License
- *
- * @todo Needs cleanup
- * @todo need to adjust for timezone difference between DB and application when
- * displaying timestamps
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * <http://www.gnu.org/licenses/>.
  */
 
 $notify = new Notify();
 $notify->processNotificationQueue();
 
+/**
+ * This static class is responsible for scanning for notifications which need to
+ * be delivered, delivering the notifications, and then removing the sent
+ * notifications from the queue.
+ * 
+ * @author     Jim Chen <xhorse@users.sourceforge.net>
+ * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @license    http://www.openfisma.org/content/license
+ * @package    Cron_Job
+ * @version    $Id$
+ */
 class Notify
 {
     public function __construct()
