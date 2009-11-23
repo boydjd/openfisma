@@ -120,8 +120,35 @@ class ConfigController extends SecurityController
         // @see http://jira.openfisma.org/browse/OFJ-30
         foreach ($ldaps as $ldap) {
             $ldap->password = '********';
+            $ldap->url = $this->_makeLdapUrl($ldap);
         }
         $this->view->assign('ldaps', $ldaps->toArray());
+    }
+
+    /**
+     * Just removed this from the view script and threw it in here so we could finish standards
+     * 
+     * @todo cleanup
+     * 
+     * @param LdapConfig $value An LdapConfig object to convert to URL form
+     * @return string
+     */
+    private function makeLdapUrl($value)
+    {
+        $url = $value['useSsl'] ? "ldaps://" : "ldap://";
+        if (!empty($value['username'])) {
+            $url .= $value['username'];
+            if (!empty($value['password'])) {
+                $url .= ':' . $value['password'];
+            }
+            $url .= '@';
+        }
+        $url .= $value['host'];
+
+        if (!empty($value['port'])) {
+            $url .= ':' .$value['port'];
+        }
+        return $url;
     }
 
     /**

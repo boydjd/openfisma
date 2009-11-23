@@ -13,27 +13,10 @@ Fisma_Format_Section::startSection('LDAP Configurations</b>&nbsp;[<a href="/pane
     <th>Del</th>
 </tr>
 <?php 
-function makeLdapUrl($value)
-{
-    $url = $value['useSsl'] ? "ldaps://" : "ldap://";
-    if (!empty($value['username'])) {
-        $url .= $value['username'];
-        if (!empty($value['password'])) {
-            $url .= ':' . $value['password'];
-        }
-        $url .= '@';
-    }
-    $url .= $value['host'];
-
-    if (!empty($value['port'])) {
-        $url .= ':' .$value['port'];
-    }
-    return $url;
-}
 
 foreach ($this->ldaps as $opt) { 
     echo '<tr>
-           <td class="tdc">', makeLdapUrl($opt), '</td>';
+           <td class="tdc">', $opt['url'], '</td>';
     echo '<td class="tdc">', $opt['accountDomainName'], '</td>';
     echo '<td class="tdc">', $opt['bindRequiresDn']?'yes':'no', '</td>';
     echo '<td class="tdc">', $opt['accountFilterFormat'], '</td>';
