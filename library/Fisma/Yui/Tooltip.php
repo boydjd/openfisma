@@ -39,7 +39,8 @@ class Fisma_Yui_Tooltip
      * @param string $title The label for the tooltip
      * @param string $content The content displayed when the tooltip is displayed
      */
-    function __construct($id, $title, $content) {
+    function __construct($id, $title, $content) 
+    {
         $this->_id = $id;
         $this->_title = $title;
         $this->_content = $content;
@@ -48,7 +49,8 @@ class Fisma_Yui_Tooltip
     /**
      * @return string An HTML rendering of the tooltip
      */
-    function __toString() {
+    function __toString() 
+    {
         $render = "<span id='{$this->_id}Tooltip' class='tooltip'>$this->_title</span><script type='text/javascript'>"
                 . "var {$this->_id}TooltipVar = new YAHOO.widget.Tooltip("
                 . "\"{$this->_id}TooltipObj\", { context:\"{$this->_id}Tooltip\", "

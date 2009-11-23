@@ -59,14 +59,9 @@ class Fisma_Cpe
         $urc = self::UNRESERVED_CHARACTERS;
 
         // Parse out the components of the CPE name
-        $components = array();
-        if (!preg_match("/cpe:\/($urc*):?($urc*):?($urc*):?($urc*):?($urc*):?($urc*):?($urc*)/",
-                        $cpeName,
-                        $components)) {
-            throw new Fisma_Exception_InvalidFileFormat("CPE item is not formatted correctly: \"$cpeName\"");
-        }
+        $components = $this->parseCpe($cpeName);
 
-        // Name the components (see CPE specification)
+        // Name the components and decode reserved characters (see CPE specification)
         $this->_cpeDetails['part']     = urldecode($components[1]);
         $this->_cpeDetails['vendor']   = urldecode($components[2]);
         $this->_cpeDetails['product']  = urldecode($components[3]);
@@ -98,5 +93,28 @@ class Fisma_Cpe
         } else {
             return null;
         }
+    }
+    
+    /**
+     * Validate that a CPE identifier is in a valid format
+     * 
+     * @param string $cpeName
+     * @return array All CPE components parsed from this CPE
+     */
+    private function _parseCpe($cpeName)
+    {
+        $components = array();
+        
+        $result = preg_match(
+            "/cpe:\/($urc*):?($urc*):?($urc*):?($urc*):?($urc*):?($urc*):?($urc*)/",
+            $cpeName,
+            $components
+        );
+        
+        if (!$result) {
+            throw new Fisma_Exception_InvalidFileFormat("CPE item is not formatted correctly: \"$cpeName\"");
+        }
+        
+        return $components;
     }
 }

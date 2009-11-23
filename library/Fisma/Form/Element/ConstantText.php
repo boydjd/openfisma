@@ -32,14 +32,15 @@
  * @package   Fisma_Form
  */
 class Fisma_Form_Element_ConstantText extends Zend_Form_Element
-{   
+{
     /**
      * Render the form element
      *
      * @param Zend_View_Interface $view Provided for compatibility
      * @return string The rendered element
      */
-    function render(Zend_View_Interface $view = null) {
+    function render(Zend_View_Interface $view = null) 
+    {
         $label = $this->getLabel();
         
         $render = '<tr><td>'
@@ -57,7 +58,8 @@ class Fisma_Form_Element_ConstantText extends Zend_Form_Element
      * @param mixed $ignored This parameter is not used
      * @return boolean Always returns true
      */
-    public function isValid($ignored) {
+    public function isValid($ignored) 
+    {
         return true;
     }
 }

@@ -38,7 +38,8 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      * the form)
      * @param string $label The label that is placed next to the checkbox
      */
-    function addCheckbox($name, $label, $level) {
+    function addCheckbox($name, $label, $level) 
+    {
         $this->_checkboxes[] = array('name' => $name, 'label' => $label, 'level'=>$level);
     }
     
@@ -47,7 +48,8 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      *
      * @param array $value
      */
-    function setValue($value) {
+    function setValue($value) 
+    {
         $this->_defaults = (array)$value;
     }
 
@@ -57,7 +59,8 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      *
      * @return array The checked checkboxes
      */
-    function getValue() {
+    function getValue() 
+    {
         return $this->_defaults;
     }
 
@@ -67,7 +70,8 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      *
      * @return boolean Always returns true
      */
-    function isValid($value, $context=null) {
+    function isValid($value, $context=null) 
+    {
         $this->setValue($value);
         return true;
     }
@@ -77,7 +81,8 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      *
      * @return string The rendered matrix
      */
-    function render(Zend_View_Interface $view = null) {
+    function render(Zend_View_Interface $view = null) 
+    {
         $render = '';
         
         // Setup the tooltip

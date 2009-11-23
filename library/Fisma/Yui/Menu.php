@@ -31,13 +31,15 @@ class Fisma_Yui_Menu
     public $text;
     public $submenu = array();
     
-    function __construct($title) {
+    function __construct($title) 
+    {
         $this->text = $title;
         $this->submenu['id'] = $title;
         $this->submenu['itemdata'] = array();
     }
     
-    function add($item) {
+    function add($item) 
+    {
         $this->submenu['itemdata'][] = $item;
     }
 }

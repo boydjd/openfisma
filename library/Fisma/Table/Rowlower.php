@@ -33,7 +33,8 @@ class Fisma_Table_Rowlower extends Zend_Db_Table_Row_Abstract
      *
      * @param string $columnName 
      */
-    protected function _transformColumn($columnName) { 
+    protected function _transformColumn($columnName) 
+    { 
         if (!is_string($columnName)) { 
             require_once 'Zend/Db/Table/Row/Exception.php'; 
             throw new Zend_Db_Table_Row_Exception('Specified column is not a string'); 

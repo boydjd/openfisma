@@ -43,7 +43,7 @@ class AddProductReadToNeededRoles extends Doctrine_Migration_Base
         $privilege = $this->_getPrivilege();
         $role      = $this->_getRole();
 
-        foreach($role as $r) {
+        foreach ($role as $r) {
             $this->_deleteRolePrivilege($r['id'], $privilege[0]['id']);
 
             $rolePrivilege = new RolePrivilege();
@@ -63,7 +63,7 @@ class AddProductReadToNeededRoles extends Doctrine_Migration_Base
         $privilege = $this->_getPrivilege();
         $role      = $this->_getRole();
 
-        foreach($role as $r) {
+        foreach ($role as $r) {
             $this->_deleteRolePrivilege($r['id'], $privilege[0]['id']);
         }
     }
@@ -74,7 +74,8 @@ class AddProductReadToNeededRoles extends Doctrine_Migration_Base
      * @access private
      * @return array
      */
-    private function _getPrivilege() {
+    private function _getPrivilege() 
+    {
         $privilege = Doctrine_Query::create()
                      ->from('Privilege')
                      ->where('resource = ?', 'product')
@@ -90,7 +91,8 @@ class AddProductReadToNeededRoles extends Doctrine_Migration_Base
      * @access private
      * @return array 
      */
-    private function _getRole() {
+    private function _getRole() 
+    {
         $role = Doctrine_Query::create()
                 ->from('Role')
                 ->whereIn('nickname', array('SAISO', 'IV&amp;V'))
@@ -107,7 +109,8 @@ class AddProductReadToNeededRoles extends Doctrine_Migration_Base
      * @access private
      * @return void
      */
-    private function _deleteRolePrivilege($role, $privilege) {
+    private function _deleteRolePrivilege($role, $privilege) 
+    {
         $q = Doctrine_Query::create()
              ->delete('RolePrivilege')
              ->where('roleId = ?', $role)

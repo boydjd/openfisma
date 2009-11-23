@@ -102,7 +102,8 @@ abstract class Fisma_Inject_Abstract
      * @param array $findingData Column data for the new finding object
      * action was taken.
      */
-    protected function _commit($findingData) {
+    protected function _commit($findingData) 
+    {
         Doctrine_Manager::connection()->beginTransaction();
         $finding = new Finding();
         $finding->merge($findingData);
@@ -147,7 +148,8 @@ abstract class Fisma_Inject_Abstract
      * @param string $field
      * @return mixed
      */
-    public function __get($field) {
+    public function __get($field) 
+    {
         if (array_key_exists($field, $this->_totalFindings)) {
             return $this->_totalFindings[$field];
         } else {
@@ -236,7 +238,8 @@ abstract class Fisma_Inject_Abstract
      * @param string $plainText Plain text that needs to be marked up
      * @return string HTML version of $plainText
      */
-    protected function textToHtml($plainText) {
+    protected function textToHtml($plainText) 
+    {
         $html = '<p>' . trim($plainText) . '</p>';
         $html = str_replace("\\n\\n", '</p><p>', $html);
         $html = str_replace("\\n", '<br>', $html);

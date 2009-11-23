@@ -177,32 +177,32 @@ class FindingListener extends Doctrine_Record_Listener
                         } elseif ('EN' == $value && 'DRAFT' == $newValue) {
                             Notification::notify(
                                 'MITIGATION_REVISE', 
-                                 $finding, 
-                                 User::currentUser(), 
-                                 $finding->responsibleOrganizationId
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
                             );
                         } elseif ('EA' == $newValue) {
                             Notification::notify(
                                 'EVIDENCE_UPLOADED', 
-                                 $finding, 
-                                 User::currentUser(), 
-                                 $finding->responsibleOrganizationId
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
                             );
                             $finding->actualCompletionDate = Fisma::now();
                         } elseif ( ('EA' == $value && 'EN' == $newValue)
                              || ('MSA' == $value && 'DRAFT' == $newValue) ) {
                             Notification::notify(
                                 'APPROVAL_DENIED', 
-                                 $finding, 
-                                 User::currentUser(), 
-                                 $finding->responsibleOrganizationId
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
                             );
                         } elseif ('EA' == $value && 'CLOSED' == $newValue) {
                             Notification::notify(
                                 'FINDING_CLOSED', 
-                                 $finding, 
-                                 User::currentUser(), 
-                                 $finding->responsibleOrganizationId
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
                             );
                             $finding->closedTs = Fisma::now();
                             $finding->log('Finding closed');
@@ -259,9 +259,9 @@ class FindingListener extends Doctrine_Record_Listener
                             );
                             Notification::notify(
                                 'UPDATE_LOCKED_ECD', 
-                                 $finding, 
-                                 User::currentUser(), 
-                                 $finding->responsibleOrganizationId
+                                $finding, 
+                                User::currentUser(), 
+                                $finding->responsibleOrganizationId
                             );
                         }
                         break;

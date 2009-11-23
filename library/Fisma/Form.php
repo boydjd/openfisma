@@ -40,7 +40,8 @@ class Fisma_Form extends Zend_Form
      * 
      * @param Zend_View_Interface $view
      */
-    function render(Zend_View_Interface $view = null) {
+    function render(Zend_View_Interface $view = null) 
+    {
         if ($this->isReadOnly()) {
             foreach ($this->getElements() as $element) {
                 $element->readOnly = true;
@@ -55,7 +56,8 @@ class Fisma_Form extends Zend_Form
      * 
      * @return bool
      */ 
-    function isReadOnly() {
+    function isReadOnly() 
+    {
         return $this->_readOnly;
     }
 
@@ -64,7 +66,8 @@ class Fisma_Form extends Zend_Form
      * 
      * @param bool $value
      */
-    function setReadOnly($value) {
+    function setReadOnly($value) 
+    {
         if (is_bool($value)) {
             $this->_readOnly = $value;
         } else {

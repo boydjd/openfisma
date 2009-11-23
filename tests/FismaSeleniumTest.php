@@ -156,18 +156,23 @@ abstract class Test_FismaSeleniumTest extends
 
         // Create the user
         $userTable = new User($this->_db);
-        $userId = $userTable->insert(array(
+        $userId = $userTable->insert(
+            array(
                 'account' => self::USER_NAME,
                 'password' => $userTable->digest(self::PASSWORD),
                 'is_active' => 1,
                 'password_ts' => new Zend_Db_Expr('now()'),
-                'last_rob' => new Zend_Db_Expr('now()')));
+                'last_rob' => new Zend_Db_Expr('now()')
+            )
+        );
 
         // Give the new user the specified role
-        $grantRole = $this->_db->prepare("INSERT INTO user_roles
+        $grantRole = $this->_db->prepare(
+            "INSERT INTO user_roles
                   SELECT $userId, r.id
                     FROM roles r
-                   WHERE r.nickname like '$role'");
+                   WHERE r.nickname like '$role'"
+        );
         $grantRole->execute();
     }
 
@@ -198,7 +203,8 @@ abstract class Test_FismaSeleniumTest extends
      * @param string $name A name for the screenshot
      * (use lower_case_underscore naming format, without file extension)
      */
-    public function screenshot($name) {
+    public function screenshot($name) 
+    {
         $sequenceNumber = sprintf('%03d', $this->_remoteScreenshotSequence++);
         $screenshotPath = $this->_remoteScreenshotDir .
             "\\{$sequenceNumber}_{$name}.png";

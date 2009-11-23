@@ -125,7 +125,8 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      * @param string $end
      * @return string
      */
-    private function _getSubContent($str, $start, $end){
+    private function _getSubContent($str, $start, $end)
+    {
         if ($start == '' || $end == '') {
                return;
         }

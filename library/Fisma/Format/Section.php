@@ -26,10 +26,11 @@
  * @subpackage Fisma_Format
  * @version    $Id$
  */
-class Fisma_Format_Section 
+class Fisma_Format_Section
 {
     /** @yui document this class */
-    static function startSection($title, $editableTarget = null) {
+    static function startSection($title, $editableTarget = null) 
+    {
         if (isset($editableTarget)) {
             print "<div class='sectionHeader'><span class='editable' target='$editableTarget'>$title</span></div>\n"
                 . "<div class='section'>";
@@ -38,7 +39,8 @@ class Fisma_Format_Section
         } 
     }
     
-    static function stopSection() {
+    static function stopSection() 
+    {
         print "<div class='clear'></div></div>\n";
     }
 }

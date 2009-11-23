@@ -36,7 +36,7 @@ class Fisma_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
         $result = parent::authenticate();
         return new Zend_Auth_Result(
             $result->getCode(),
-            $this->_identity ,
+            $this->_identity,
             $result->getMessages()
         );
     }

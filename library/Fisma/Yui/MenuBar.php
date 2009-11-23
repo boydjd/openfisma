@@ -39,7 +39,8 @@ class Fisma_Yui_MenuBar
      * 
      * @param Fisma_Yui_Menu|Fisma_Yui_MenuItem $item
      */
-    function add($item) {
+    function add($item) 
+    {
         if ($item instanceof Fisma_Yui_Menu || $item instanceof Fisma_Yui_MenuItem) {
             $this->_menus[] = $item;
         } else {
@@ -52,7 +53,8 @@ class Fisma_Yui_MenuBar
      * 
      * @return array
      */
-    function getMenus() {
+    function getMenus() 
+    {
         return $this->_menus;
     }
 }

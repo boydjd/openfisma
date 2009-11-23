@@ -38,7 +38,8 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
      * the form)
      * @param string $label The label that is placed next to the checkbox
      */
-    function addCheckbox($name, $label) {
+    function addCheckbox($name, $label) 
+    {
         $this->_checkboxes[] = array('name' => $name, 'label' => $label);
     }
     
@@ -47,7 +48,8 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
      *
      * @param array $value
      */
-    function setValue($value) {
+    function setValue($value) 
+    {
         $this->_defaults = $value;
     }
 
@@ -57,7 +59,8 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
      *
      * @return array The checked checkboxes
      */
-    function getValue() {
+    function getValue() 
+    {
         return $this->_defaults;
     }
 
@@ -67,7 +70,8 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
      *
      * @return boolean Always returns true
      */
-    function isValid($dataItem) {
+    function isValid($dataItem) 
+    {
         $this->_defaults = $dataItem;
         return true;
     }
@@ -77,7 +81,8 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
      *
      * @return string The rendered matrix
      */
-    function render() {
+    function render() 
+    {
         $render = '';
         // @todo ideally this would be configurable in the constructor
         $columnCount = 4;

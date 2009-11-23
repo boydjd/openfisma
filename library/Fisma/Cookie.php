@@ -39,7 +39,8 @@ class Fisma_Cookie
     * @access public
     * @return string The value of the requested cookie
     */
-    public static function get(array $cookie, $key) {
+    public static function get(array $cookie, $key) 
+    {
         // If the cookie is available, return it. Otherwise,  throw an 
         // exception to be handled by the caller.
         if (isset($cookie[$key])) {
@@ -59,7 +60,8 @@ class Fisma_Cookie
     * @access public
     * @return array 
     */
-    public static function prepare($name, $value, $secure = null) {
+    public static function prepare($name, $value, $secure = null) 
+    {
         if (is_null($secure)) {
             $secure = Zend_Session::getOptions('cookie_secure');
         }
@@ -83,7 +85,8 @@ class Fisma_Cookie
     * @access public
     * @return void
     */
-    public static function set($name, $value) {
+    public static function set($name, $value) 
+    {
         call_user_func_array("setcookie", self::prepare($name, $value));
     }
 }

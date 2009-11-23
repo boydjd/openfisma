@@ -34,7 +34,8 @@ class Fisma_Yui_MenuItem
     public $text;
     public $url;
     
-    function __construct($itemTitle, $itemUrl) {
+    function __construct($itemTitle, $itemUrl) 
+    {
         $this->text = $itemTitle;
         $this->url = $itemUrl;
     }

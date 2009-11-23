@@ -118,9 +118,13 @@ class AllTests
                     // implode with '_' in order to form the class name.
                     // Example: ./admin/ContactInfo.php becomes
                     // 'Test_Admin_ContactInfo'
-                    $className = implode('_',
-                                         array_map('ucfirst',
-                                                   explode('/', $className)));
+                    $className = implode(
+                        '_',
+                        array_map(
+                            'ucfirst',
+                            explode('/', $className)
+                        )
+                    );
                                                    
                     // Now include the file, and check to see if the expected
                     // class name exists. If so, then add that class to the test
@@ -129,9 +133,8 @@ class AllTests
                     if (class_exists($className)) {
                         $suite->addTestSuite($className);
                     } else {
-                        throw new Exception("The file $fullPath does not" .
-                                            " contain a class called" .
-                                            " $className");
+                        $error = "The file $fullPath does not contain a class called $className";
+                        throw new Fisma_Exception($error);
                     }
                 }
             }
