@@ -91,6 +91,7 @@ class UserController extends BaseController
         // Show lock explanation if account is locked. Hide explanation otherwise.
         $userId = $this->getRequest()->getParam('id');
         $user = Doctrine::getTable('User')->find($userId);
+
         if ($user->locked) {
             $reason = $user->getLockReason();
             $form->getElement('lockReason')->setValue($reason);

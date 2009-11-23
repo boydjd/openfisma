@@ -189,6 +189,7 @@ class AuthController extends Zend_Controller_Action
         // Determine authentication method (based on system configuration, except root is always authenticated against
         // the database)
         $method = Configuration::getConfig('auth_type');
+
         if ('root' == $user->username) {
             $method = 'database';
         }
@@ -215,6 +216,7 @@ class AuthController extends Zend_Controller_Action
      */
     public function logoutAction() {
         $currentUser = User::currentUser();
+
         if ($currentUser) {
             Notification::notify('LOGOUT', $currentUser, $currentUser);
             $currentUser->log(User::LOGOUT, 'Log out');
