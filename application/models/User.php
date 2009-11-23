@@ -67,9 +67,9 @@ class User extends BaseUser
     const ACCEPT_ROB    = 'accept rob';
     const CHANGE_PASSWORD = 'change password';
     const VALIDATE_EMAIL  = 'validate email';
+
     /**
      * Returns an object which represents the current, authenticated user
-     * If the $user is current User, then return this object instead of create a new one.
      * 
      * @return User
      */
@@ -80,6 +80,7 @@ class User extends BaseUser
             $auth->setStorage(new Fisma_Auth_Storage_Session());
             return $auth->getIdentity();
         } else {
+            /** @todo remove this, should either throw an excp.. or just return null */
             return new User();
         }
     }
@@ -87,13 +88,20 @@ class User extends BaseUser
     /**
      * construct 
      * 
-     * @access public
      * @return void
      */
     public function construct() 
     {
-        // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
-        //$this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
+        try {
+            // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
+            $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
+        } catch (Exception $e) {
+            /* This is an ugly Doctrine hack. If the tables aren't yet created for the models, then we can't get the
+             * hash_type configuration option from the Configuration model. This bug creeps up when installing and 
+             * when doing a build-all from the CLI. See OFJ-321 for details. 
+             */
+            $this->hashType = 'sha1';
+        }
     }
 
     /**
@@ -125,9 +133,96 @@ class User extends BaseUser
         $this->failureCount = 0;
         $this->save();
         $this->log(self::UNLOCK_USER, "Account unlocked");
+    }
+        
+    /**
+     * Verifies that this account is not locked. If it is locked, then this throws an authentication exception.
+     */
+    public function checkAccountLock()
+    {
+        if ($this->locked) {
+            // Check if this is a lock which should be released
+            if (self::LOCK_TYPE_PASSWORD == $this->lockType && Configuration::getConfig('unlock_enabled')) {
+                $lockRemainingMinutes = $this->getLockRemainingMinutes();
+                // A negative or zero value indicates the lock has expired
+                if ($lockRemainingMinutes <= 0) {
+                    $this->unlockAccount();
+                }
+            }
+            
+            // Construct an error message based on the lock type
+            $reason = $this->getLockReason();
+            throw new Fisma_Exception_AccountLocked("Account is locked ($reason)");
+        }
+    }
+    
+    /**
+     * Returns the number of minutes until this account is automatically unlocked. Could be negative if the lock already
+     * expired but has not actually been removed yet.
+     * 
+     * Throws an exception if the account is not eligible for automatic unlock (due to system configuration, or the
+     * lock type on the account).
+     * 
+     * @return int
+     */
+    public function getLockRemainingMinutes()
+    {
+        if ($this->locked 
+            && self::LOCK_TYPE_PASSWORD == $this->lockType
+            && Configuration::getConfig('unlock_enabled')) {
 
+            $lockTs = new Zend_Date($this->lockTs, Zend_Date::ISO_8601);
+            $lockTs->addSecond(Configuration::getConfig('unlock_duration'));
+            $now = Zend_Date::now();            
+            $lockTs->sub($now);
+            // ceil() so that 1 second remaining is rounded up to 1 minute, rather than rounded down to 0 minute
+            // (otherwise the lock would be released early)
+            $lockMinutesRemaining = ceil($lockTs->getTimestamp() / 60);
+        } else {
+            throw new Fisma_Exception('This account is not eligible for automatic unlock');
+        }
+
+        return $lockMinutesRemaining;
     }
 
+    /**
+     * Returns a human-readable explanation of why the account was locked
+     * 
+     * @return string
+     */
+    public function getLockReason()
+    {
+        switch ($this->lockType) {
+            case self::LOCK_TYPE_MANUAL:
+                $reason = 'by administrator';
+                break;
+            case self::LOCK_TYPE_PASSWORD:
+                $reason = Configuration::getConfig('failure_threshold')
+                        . ' failed login attempts';
+                if (Configuration::getConfig('unlock_enabled')) {
+                    $reason .= ', will be unlocked in '
+                             . $this->getLockRemainingMinutes()
+                             . ' minutes';
+                }
+                break;
+            case self::LOCK_TYPE_INACTIVE:
+                $reason = 'exceeded '
+                        . Configuration::getConfig('account_inactivity_period')
+                        . ' days of inactivity';
+                break;
+            case self::LOCK_TYPE_EXPIRED:
+                $reason = 'password is more than '
+                        . Configuration::getConfig('pass_expire')
+                        . ' days old';
+                break;
+            default:
+                throw new Fisma_Exception("Unexpected lock type ($this->lockType)");
+                break;
+        }
+        
+        return $reason;
+    }
+    
     /**
      * Returns this user's access control list (ACL) object. It will initialize the ACL first,
      * if necessary.
@@ -267,49 +362,21 @@ class User extends BaseUser
     }
 
     /**
-     * Validate the credential
-     *
-     * @param string $password 
-     * @return bool
+     * Performs house keeping that needs to run at log in
      */
-    public function login($password)
+    public function login()
     {
-        if (Fisma::RUN_MODE_COMMAND_LINE == Fisma::mode()) {
-            throw new Fisma_Exception("Login is not allowed in command line mode");
-        }
-        
-        $loginRet = false;
         $this->getTable()->getRecordListener()->setOption('disabled', true);
-        if ($this->password == $this->hash($password)) {
-            $this->lastLoginTs = Fisma::now();
-            $this->lastLoginIp = $this->currentLoginIp;
-            $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
-            $this->oldFailureCount = $this->failureCount;
-            $this->failureCount = 0;
-            Notification::notify('LOGIN_SUCCESS', $this, $this);
-            $loginRet = true;
-        } else {
-            $this->failureCount++;
-            if ($this->failureCount >= Configuration::getConfig('failure_threshold')) {
-                $this->lockAccount(User::LOCK_TYPE_PASSWORD);
-            }
-            Notification::notify('LOGIN_FAILURE', $this, $this);
-        }
-        $this->save();
-        return $loginRet;
-    }
 
-    /**
-     * Close out the current user's session
-     */
-    public function logout()
-    {
-        if (Fisma::RUN_MODE_COMMAND_LINE == Fisma::mode()) {
-            throw new Fisma_Exception("Logout is not allowed in command line mode");
-        }
+        $this->lastLoginTs = Fisma::now();
         
-        Notification::notify('LOGOUT', $this, User::currentUser());
-        $this->log(self::LOGOUT, 'Log out');
+        $this->lastLoginIp = $this->currentLoginIp;
+        $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
+        
+        $this->oldFailureCount = $this->failureCount;
+        $this->failureCount = 0;
+
+        $this->save();
     }
 
     /** 

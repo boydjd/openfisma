@@ -5,3 +5,4 @@ User:
         email: openfisma@agency.gov
         nameFirst: Super
         nameLast: User
+        hashType: sha1

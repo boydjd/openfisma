@@ -70,7 +70,7 @@ Role:
             - system_read
             - notification_asset
             - notification_finding
-
+            - product_read
     SAISO:
         name: Senior Agency Information Security Officer
         nickname: SAISO
@@ -103,6 +103,7 @@ Role:
             - notification_admin
             - notification_asset
             - notification_finding
+            - product_read
     ADMIN:
         name: Application Administrator
         nickname: ADMIN

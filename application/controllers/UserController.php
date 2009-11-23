@@ -36,9 +36,10 @@ class UserController extends BaseController
     {
         parent::init();
         $this->_user = new User();
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('checkaccount', 'html')
-                    ->initContext();
+        $this->_helper->contextSwitch()
+                      ->setAutoJsonSerialization(false)
+                      ->addActionContext('check-account', 'json')
+                      ->initContext();
     }
     
     /**
@@ -76,6 +77,21 @@ class UserController extends BaseController
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
             $form->removeElement('generate_password');
+        }
+        
+        // Show lock explanation if account is locked. Hide explanation otherwise.
+        $userId = $this->getRequest()->getParam('id');
+        $user = Doctrine::getTable('User')->find($userId);
+
+        if ($user->locked) {
+            $reason = $user->getLockReason();
+            $form->getElement('lockReason')->setValue($reason);
+
+            $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
+            $form->getElement('lockTs')->setValue($lockTs->get('YYYY-MM-DD HH:mm:ss '));
+        } else {
+            $form->removeElement('lockReason');
+            $form->removeElement('lockTs');
         }
         
         $form = Fisma_Form_Manager::prepareForm($form);
@@ -122,6 +138,17 @@ class UserController extends BaseController
         if (empty($values['password'])) {
             unset($values['password']);
         }
+
+        if ($values['locked'] && !$subject->locked) {
+            $subject->lockAccount(User::LOCK_TYPE_MANUAL);
+            unset($values['locked']);
+            unset($values['lockTs']);
+        } elseif (!$values['locked'] && $subject->locked) {
+            $subject->unlockAccount();
+            unset($values['locked']);
+            unset($values['lockTs']);
+        }
+        
         $subject->merge($values);
         $subject->unlink('Roles');
         $subject->link('Roles', $values['role']);
@@ -210,7 +237,7 @@ class UserController extends BaseController
         $this->view->requirements =  $this->_getPasswordRequirements();
         $post   = $this->_request->getPost();
 
-        if ($post['oldPassword']) {
+        if (isset($post['oldPassword'])) {
 
             if ($form->isValid($post)) {
                 $user = Doctrine::getTable('User')->find($this->_me->id);
@@ -382,15 +409,14 @@ class UserController extends BaseController
     public function checkAccountAction()
     {
         Fisma_Acl::requirePrivilege('user', 'read');
-        $ldapConfig = new LdapConfig();
-        $data = $ldapConfig->getLdaps();
+        $data = LdapConfig::getConfig();
         $account = $this->_request->getParam('account');
         $msg = '';
         if (count($data) == 0) {
             $type = 'warning';
-            // to do Engilish
-            $msg .= "Ldap doesn't exist or no data";
+            $msg .= "No LDAP providers defined";
         }
+
         foreach ($data as $opt) {
             $srv = new Zend_Ldap($opt);
             try {
@@ -410,8 +436,8 @@ class UserController extends BaseController
                 }
             }
         }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_helper->layout->setLayout('ajax');
+
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
         $this->_helper->viewRenderer->setNoRender();
     }
 }

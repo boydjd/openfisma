@@ -269,6 +269,7 @@ function ev_deny(formname){
             var comment = document.getElementById('dialog_comment').value;
         }
         if (comment.length <= 0) {
+            alert('Comments are required in order to deny.');
             return;
         }
         form2.elements['comment'].value = comment;
@@ -360,6 +361,7 @@ function ms_deny(formname){
             var comment = document.getElementById('dialog_comment').value;
         }
         if (comment.length <= 0) {
+            alert('Comments are required in order to submit.');
             return;
         }
         form2.elements['comment'].value = comment;

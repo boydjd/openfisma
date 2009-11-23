@@ -17,7 +17,7 @@
  */
 
 /**
- * Adapte the authentication to Ldap and return a Doctrine Record object as identity
+ * A thin wrapper for the Zend LDAP adapter which returns a User object as its identity
  * 
  * @author     Jim Chen <xhorse@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
@@ -28,23 +28,6 @@
  */
 class Fisma_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
 {
-    protected $_identity = null;
-    /**
-     * Constructor
-     *
-     * @param  array  $options  An array of arrays of Zend_Ldap options
-     * @param  Doctrine_Record $identity The identity of the account being authenticated
-     * @param  string $password The password of the account being authenticated
-     * @return void
-     */
-    public function __construct(array $options, 
-                                Doctrine_Record $identity,
-                                $password)
-    {
-        $this->_identity = $identity;
-        parent::__construct($options, $identity->username, $password);
-    }
-
     /**
      * Override the authentication to return a Doctrine_Record instead of string as identity.
      */
@@ -56,12 +39,5 @@ class Fisma_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
             $this->_identity ,
             $result->getMessages()
         );
-    }
-
-    public function setUsername($username)
-    {
-        $this->_identity = Doctrine::getTable('User')->findOneByUsername($username);
-        $this->_username = (string) $this->_identity->username;
-        return $this;
     }
 }

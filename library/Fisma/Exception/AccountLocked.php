@@ -17,30 +17,15 @@
  */
 
 /**
- * LdapConfig
- * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
+ * An exception which represents a failed authentication due to an account lock
+ *
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * @license    http://www.openfisma.org/content/license
- * @package    Model
+ * @package    Fisma
+ * @subpackage Fisma_Exception
  * @version    $Id$
  */
-class LdapConfig extends BaseLdapConfig
+class Fisma_Exception_AccountLocked extends Zend_Auth_Exception
 {
-    /**
-     *  Retrive the ldap configuration(s)
-     *
-     *  @return array All the configurations of LDAP servers
-     */
-    public static function getConfig()
-    {
-        $ldapConfigs = Doctrine::getTable('LdapConfig')->findAll()->toArray();
-        
-        //Remove the id field from each LDAP configuration item
-        foreach ($ldapConfigs as &$ldapConfig) {
-            unset($ldapConfig['id']);
-        }
-
-        return $ldapConfigs;
-    }
 }

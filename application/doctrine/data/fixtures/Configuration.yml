@@ -67,7 +67,7 @@ Configuration:
     unlock_duration:
         name: unlock_duration
         value: 5
-        description: Automated Account Unlock Duration (In Seconds)
+        description: Automated Account Unlock Duration (In Minutes)
 
     contact_name:
         name: contact_name

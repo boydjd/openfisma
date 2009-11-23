@@ -490,14 +490,22 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $findingData = $this->_request->getPost('finding', array());
 
-        if (isset($findingData['currentEcd'])) {
-            $date = new Zend_Date();
-            $ecd = new Zend_Date($findingData['currentEcd']);
+        $this->_forward('view', null, null, array('id' => $id));
 
-            if ($ecd->isEarlier($date)) {
-                $error = 'Expected completion date has been set before the current date.'
-                       . 'Make sure that this is correct.';
-                $this->view->priorityMessenger($error, 'notice');
+        if (isset($findingData['currentEcd'])) {
+            if (Zend_Validate::is($findingData['currentEcd'], 'Date')) {
+                $date = new Zend_Date();
+                $ecd  = new Zend_Date($findingData['currentEcd']);
+
+                if ($ecd->isEarlier($date)) {
+                    $error = 'Expected completion date has been set before the current date.'
+                             . 'Make sure that this is correct.';
+                    $this->view->priorityMessenger($error, 'notice');
+                }
+            } else {
+                $error = 'Expected completion date provided is not a valid date. Unable to update finding.';
+                $this->view->priorityMessenger($error, 'warning');
+                return;
             }
         }
 
@@ -517,7 +525,6 @@ class RemediationController extends SecurityController
             $model = 'warning';
             $this->view->priorityMessenger($message, $model);
         }
-        $this->_forward('view', null, null, array('id' => $id));
     }
 
     /**

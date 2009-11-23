@@ -98,6 +98,14 @@ elements.locked.options.multioptions.1 = Locked
 elements.locked.options.value = "0"
 displayGroups.accountInfo.elements.locked = "locked"
 
+elements.lockReason.type = "Element_ConstantText"
+elements.lockReason.options.label = "Lock Reason"
+displayGroups.accountInfo.elements.lockReason = "lockReason"
+
+elements.lockTs.type = "Element_ConstantText"
+elements.lockTs.options.label = "Lock Timestamp"
+displayGroups.accountInfo.elements.lockTs = "lockTs"
+
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
 displayGroups.accountInfo.elements.save = "save"

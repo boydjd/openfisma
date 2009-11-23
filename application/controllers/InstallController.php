@@ -33,6 +33,10 @@ class InstallController extends Zend_Controller_Action
      */
     public function preDispatch()
     {
+        if (Fisma::isInstall()) {
+           $this->_redirect('/', array('prependBase' => 'true'));
+        }
+
         $this->_helper->layout->setLayout('install');
     }
 
@@ -240,6 +244,7 @@ class InstallController extends Zend_Controller_Action
             
             $root = Doctrine::getTable('User')->find(1);
             $root->password = $dsn['adminpwd'];
+            $root->hashType = $dsn['encrypt'];
             $root->save();
             
             $checklist['schema'] = 'ok';
