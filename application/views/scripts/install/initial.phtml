@@ -10,7 +10,7 @@ $class = ($this->checklist['connection']=='ok' || $this->checklist['creation']==
                         Database <?php echo $this->dbname; ?>'s <?php echo $this->method; ?> 
                     </li>
                     <?php 
-                    if( $this->dsn['name_c'] != $this->dsn['uname'] ) { 
+                    if ( $this->dsn['name_c'] != $this->dsn['uname'] ) { 
                     ?>
                     <li class="<?php echo $this->checklist['grant']?>"> 
                         Create account <?php echo $this->dsn['name_c']; ?> and grant all privilege

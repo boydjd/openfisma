@@ -74,7 +74,7 @@
                      type="select" 
                      href="/metainfo/list/o/organization/format/html/"
                      <?php
-                     if(('NEW' == $status || 'DRAFT' == $status)
+                     if (('NEW' == $status || 'DRAFT' == $status)
                          && Fisma_Acl::hasPrivilege('finding', 'update_assignment', $orgId)) {
                          echo 'class="editable" target="organization"'; 
                      }

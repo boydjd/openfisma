@@ -88,9 +88,9 @@ $style = $flag == ''
             <?php 
             echo $this->formSelect(
                 'sourceId',
-                 $this->params['sourceId'],
-                 null,
-                 $this->sources
+                $this->params['sourceId'],
+                null,
+                $this->sources
             );
             ?>
         </td>
@@ -104,9 +104,9 @@ $style = $flag == ''
         <?php 
         echo $this->formSelect(
             'type',
-             $this->params['type'],
-             null,
-             $filterType
+            $this->params['type'],
+            null,
+            $filterType
         );
         ?>
         </td>
@@ -114,9 +114,9 @@ $style = $flag == ''
         <?php 
         echo $this->formSelect(
             'status', 
-             $this->params['status'], 
-             array('id'=>'poamSearchStatus'),
-             $filterStatus
+            $this->params['status'], 
+            array('id'=>'poamSearchStatus'),
+            $filterStatus
         );
         ?>
         </td>
@@ -126,9 +126,9 @@ $style = $flag == ''
             <?php 
             echo $this->formSelect(
                 'responsibleOrganizationId',
-                 $this->params['responsibleOrganizationId'],
-                 null,
-                 $this->systems
+                $this->params['responsibleOrganizationId'],
+                null,
+                $this->systems
             );
             ?>
         </td>
@@ -136,9 +136,9 @@ $style = $flag == ''
             <?php 
             echo $this->formSelect(
                 'ontime',
-                 $this->params['ontime'],
-                 array('id'=>'poamSearchOnTime'),
-                 $onTimes
+                $this->params['ontime'],
+                array('id'=>'poamSearchOnTime'),
+                $onTimes
             );
             ?>
         </td>

@@ -41,9 +41,9 @@ Fisma_Format_Section::startSection("Rights Assignment"); ?>
                 <br><br>
                 <input type="button" value="   <-   " id="remove_function">
             </td>
-            <td><select multiple size="20" id="exist_functions" name="exist_functions[]" style="width:250px">
+            <td><select multiple size="20" id="existFunctions" name="existFunctions []" style="width:250px">
                 <?php 
-                foreach ($this->exist_functions as $row) {
+                foreach ($this->existFunctions as $row) {
                 ?>
                     <option value="<?php echo $row['id'];?>" title="<?php echo $row['action'];?>">
                         <?php echo $row['description'];?>
