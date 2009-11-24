@@ -12,11 +12,13 @@
 [notification_config]
 method = "post"
 action = "/panel/config/type/notification"
+id     = "email_config"
 
-elements.addto.type = "hidden"
-elements.addto.options.label = "Target Email Address"
-elements.addto.options.validators.alnum.validator = "EmailAddress"
-displayGroups.general.elements.addto = "addto"
+elements.recipient.type = "hidden"
+elements.recipient.options.label = "Target Email Address"
+elements.recipient.options.validators.emailAddress.validator = "EmailAddress"
+elements.recipient.options.displaynone = true
+displayGroups.general.elements.recipient = "recipient"
 
 elements.sender.type = "text"
 elements.sender.options.label = "From Email Address"

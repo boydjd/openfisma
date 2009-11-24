@@ -52,8 +52,11 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             $label .= ':';
             
             $attrib = array();
+            if ($element->displaynone) {
+                $attrib['style'] = 'display:none';
+            }
             $render = $element->getView()
-                              ->formLabel($element->getName(), $label);
+                              ->formLabel($element->getName(), $label, $attrib);
             if (isset($element->tooltip)) {
                 $render = "<span id='{$element->getName()}Tooltip' class='tooltip'>$render</span>"
                         . '<script type="text/javascript">'

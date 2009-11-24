@@ -501,3 +501,9 @@ table.systemDocuments td img {
 	margin-right: 10px;
 }
 
+.dialogRecipientInput {
+    /* Styles for displaying the element of email recipinent */
+    height:20px;
+    width:220px;
+    margin-left:10px;
+}
