@@ -32,6 +32,8 @@ ConvertCpeDictionary::run($argv);
  * @license    http://www.openfisma.org/content/license
  * @package    Scripts
  * @version    $Id$
+ * 
+ * @see        http://nvd.nist.gov/cpe.cfm
  */
 class ConvertCpeDictionary 
 {

@@ -25,6 +25,8 @@
  * @package    Fisma
  * @subpackage Fisma_Form
  * @version    $Id$
+ * 
+ * @uses       Zend_Validate_Abstract
  */
 class Fisma_Form_Validate_NotBlank extends Zend_Validate_Abstract
 {

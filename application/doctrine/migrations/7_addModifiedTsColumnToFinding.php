@@ -24,6 +24,8 @@
  * @license    http://www.openfisma.org/content/license
  * @package    Migration
  * @version    $Id$
+ * 
+ * @uses       Doctrine_Migration_Base
  */
 class AddModifiedTsColumnToFinding extends Doctrine_Migration_Base
 {

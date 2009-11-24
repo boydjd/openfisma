@@ -29,6 +29,9 @@ $notify->processNotificationQueue();
  * @license    http://www.openfisma.org/content/license
  * @package    Cron_Job
  * @version    $Id$
+ * 
+ * @todo       Needs cleanup
+ * @todo       Needs to be adjusted for timezone difference between DB and application when displaying timestamps
  */
 class Notify
 {

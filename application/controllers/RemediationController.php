@@ -24,6 +24,8 @@
  * @license    http://www.openfisma.org/content/license
  * @package    Controller
  * @version    $Id$
+ * 
+ * @todo       As part of the ongoing refactoring, this class should probably be merged with the FindingController.
  */
 class RemediationController extends SecurityController
 {
