@@ -6,7 +6,7 @@
                     <h4>General Settings</h4>
                     <table cellspacing='5' >
                         <tr valign='top' align='left'>
-                            <td class='head'><b>Encrypt Type</b></td>
+                            <td class='head'><b><label for="encrypt">Encrypt Type</label></b></td>
                             <td class='even'>
                                 <select size='1' name='dsn[encrypt]' id='encrypt'>
                                     <option value='sha1'>sha1</option>
@@ -22,10 +22,11 @@
                         </tr>
 
                         <tr valign='top' align='left' id="encryptKey" style="display:none">
-                            <td class='head'><b>Encrypt Key</b></td>
+                            <td class='head'><b><label for="dsn[encryptKey]">Encrypt Key</label></b></td>
                             <td class='even'>
                                 <input type='text' 
                                        name='dsn[encryptKey]' 
+                                       id='dsn[encryptKey]'
                                        size='30' 
                                        maxlength='100' 
                                        value="
@@ -40,13 +41,13 @@
                             </td>
                         </tr>
                         <tr valign='top' align='left'>
-                            <td class='head'><b>Database Product</b></td>
+                            <td class='head'><b><label for="database">Database Product</label></b></td>
                             <td class='even'><select  size='1' name='dsn[type]' id='database'>
                                     <option value='mysql' selected='selected'>mysql</option>
                                 </select>                            </td>
                         </tr>
                         <tr valign='top' align='left'>
-                            <td class='head'><b> Host Address/Name</b><br />
+                            <td class='head'><b> <label for="host">Host Address/Name</label></b><br />
                                 <span style='font-size:85%;'>i.e localhost or 192.168.1.1</span> </td>
                             <td class='even'>
                                 <input type='text' 
@@ -63,7 +64,7 @@
                             </td>
                         </tr>
                         <tr valign='top' align='left'>
-                            <td class='head'><b> Database Port</b></td>
+                            <td class='head'><b> <label for="port">Database Port</label></b></td>
                             <td class='even'>
                                 <input type='text' 
                                        name='dsn[port]' 
@@ -79,7 +80,7 @@
                             </td>
                         </tr>
                         <tr valign='top' align='left'>
-                            <td class='head'><b>Database Username</b><br />
+                            <td class='head'><b><label for="uname">Database Username</label></b><br />
                                 <span style='font-size:85%;'>User account must be able to create databases.</span> </td>
                                 <td class='even'>
                                     <input type='text' 
@@ -96,7 +97,7 @@
                             </td>
                         </tr>
                         <tr valign='top' align='left'>
-                            <td class='head'><b>Database Password</b><br />
+                            <td class='head'><b><label for="upass">Database Password</label></b><br />
                                 <span style='font-size:85%;'>Password for user account above.</span> </td>
                             <td class='even'>
                                 <input type='password' 
@@ -113,7 +114,7 @@
                             </td>
                         </tr>
                         <tr valign='top' align='left'>
-                            <td class='head'><b>Database Name</b><br />
+                            <td class='head'><b><label for="dbname">Database Name</label></b><br />
                                 <span style='font-size:85%;'> Name of database, the installer will
                                 attempt to create the database if it does not exist</span> </td>
                             <td class='even'>
@@ -131,7 +132,7 @@
                             </td>
                         </tr>
                         <tr valign='top' align='left'>
-                            <td class='head'><b>Admin(Root) Pwd</b><br />
+                            <td class='head'><b><label for="adminpwd">Admin(Root) Pwd</label></b><br />
                                 <span style='font-size:85%;'> Pwd of administrator</span> </td>
                             <td class='even'>
                                 <input type='password' 

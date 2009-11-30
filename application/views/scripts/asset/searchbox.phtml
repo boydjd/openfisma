@@ -2,22 +2,22 @@
     <div class="searchFilters" >
         <table width="100%" style="text-align:left">
         <tr>
-            <td><b>System:</b></td>
+            <td><b><label for="system_id">System:</label></b></td>
             <td>
                 <?php echo $this->formSelect('system_id', $this->criteria['system_id'], null, $this->systemList); ?>
             </td>
-            <td><b>Vendor:</b></td>
+            <td><b><label for="vendor">Vendor:</label></b></td>
             <td><input name="vendor" type="text" id="vendor" value="<?php echo $this->criteria['vendor'];?>"></td>
-            <td><b>Product Name:</b></td>
-            <td><input type="text" name="product" value="<?php echo $this->criteria['product'];?>"></td>
+            <td><b><label for="product">Product Name:</label></b></td>
+            <td><input type="text" name="product" id="product" value="<?php echo $this->criteria['product'];?>"></td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <td><b>IP Address:</b></td>
-            <td><input type="text" name="ip" value="<?php echo $this->criteria['ip'];?>" maxlength="23"></td>
-            <td><b>Port:</b></td>
-            <td><input type="text" name="port" value="<?php echo $this->criteria['port'];?>" size="10"></td>
-            <td><b>Version:</b></td>
+            <td><b><label for="ip">IP Address:</label></b></td>
+            <td><input type="text" name="ip" id="ip" value="<?php echo $this->criteria['ip'];?>" maxlength="23"></td>
+            <td><b><label for="port">Port:</label></b></td>
+            <td><input type="text" name="port" id="port" value="<?php echo $this->criteria['port'];?>" size="10"></td>
+            <td><b><label for="version">Version:</label></b></td>
             <td><input type="text" id="version" name="version" value="<?php echo $this->criteria['version'];?>"/></td>
             <td><?php echo new Fisma_Yui_Form_Button_Submit('assetSearchSubmit', array('label' => 'Search')); ?></td>
         </tr>

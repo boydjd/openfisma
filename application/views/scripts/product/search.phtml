@@ -17,9 +17,10 @@
         ?>
     </tr>
     <tr>
-        <td width="161"><b> Product:</b></td>
+        <td width="161"><b> <label for="prodName">Product:</label></b></td>
         <td width="167">
-            <input type="text" class="product" name="prodName" value="<?php echo $this->prodName; ?>" size="20" />
+            <input type="text" class="product" name="prodName" id="prodName" value="<?php echo $this->prodName; ?>" 
+                size="20" />
         </td>
         <td colspan="2" rowspan="4">
             <div style="width:400px">
@@ -44,15 +45,17 @@
         </td>
     </tr>
     <tr>
-        <td><b>Vendor:</b></td>
+        <td><b><label for="prodVendor">Vendor:</label></b></td>
         <td>
-            <input type="text" class="product" name="prodVendor" value="<?php echo $this->prodVendor?>" size="20" />
+            <input type="text" class="product" name="prodVendor" id="prodVendor" value="<?php echo $this->prodVendor?>"
+                size="20" />
         </td>
     </tr>
     <tr>
-        <td><b>Version:</b></td>
+        <td><b><label for="prodVersion">Version:</label></b></td>
         <td>
-            <input type="text" class="product" name="prodVersion" value="<?php echo $this->prodVersion?>" size="20" />
+            <input type="text" class="product" name="prodVersion" id="prodVersion" 
+                value="<?php echo $this->prodVersion?>" size="20" />
         </td>
     </tr>
     <tr>

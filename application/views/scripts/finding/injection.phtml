@@ -10,8 +10,8 @@ $microsoftUrl = 'http://www.microsoft.com/downloads/details.aspx?'
             the Office Compatibility Pack, which can be downloaded for free from
             <a href="<?php echo $microsoftUrl; ?>">Microsoft</a>.)</p>
             <li>Complete the template, following the instructions included in the template header.
-            <li>Upload the completed spreadsheet here: <br>
-            <input type="file" name="excelFile">
+            <li><label for="excelFile">Upload the completed spreadsheet here:</label> <br>
+            <input type="file" name="excelFile" id="excelFile">
         </ol>
         <p>
             <?php echo new Fisma_Yui_Form_Button_Submit('uploadExcelSubmit', array('label' => 'Upload')); ?>

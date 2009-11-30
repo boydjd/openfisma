@@ -8,7 +8,7 @@
       action="/system/upload-document/id/<?php echo $this->organizationId; ?>/browser/ie"
       enctype="multipart/form-data">
 	<div>
-	    <p><b>*Document Type:</b></p>
+	    <p><b><label for="documentType">*Document Type:</label></b></p>
 		<p>
 		    <select id="documentType" name='documentTypeId'>
                 <?php
@@ -20,12 +20,12 @@
 		</p>
 	</div>
 	<div>
-	    <p><b>*Version Notes:</b></p>
+	    <p><b><label for="versionNotes">*Version Notes:</label></b></p>
 	    <p><input type="text" id="versionNotes" name='description' size="80"></textarea></p>
 	</div>
 	<div>
-	    <p><b>*Select a File:</b></p>
-	    <p><input type="file" name="systemdoc" size="40"></p>
+	    <p><b><label for="systemdoc">*Select a File:</label></b></p>
+	    <p><input type="file" name="systemdoc" id="systemdoc" size="40"></p>
 	    <p><input type="submit" value="Upload"></p>
 	</div>
 </form>

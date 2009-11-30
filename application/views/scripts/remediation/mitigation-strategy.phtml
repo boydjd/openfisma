@@ -69,10 +69,11 @@ if ($finding->originalEcd == $finding->currentEcd) {
     </span>
 </p>
 <p style="display: none;" id='ecdChangeDescription'>
-    <b>Enter a justification for the date change: </b>
+    <b><label for="finding[ecdChangeDescription]">Enter a justification for the date change:</label> </b>
     <input type="text" 
            style="visibility:none" 
            name="finding[ecdChangeDescription]"
+           id="finding[ecdChangeDescription]"
            size="80">
 </p>
 <?php
@@ -112,10 +113,10 @@ if ($finding->originalEcd == $finding->currentEcd) {
            value="<?php echo $finding->ecdChangeDescription; ?>">
 </p>
 <p>
-    <b>Justification for changing the ECD: </b>
+    <b><label for="finding[ecdChangeDescription]">Justification for changing the ECD:</label> </b>
     <span id="currentChangeDescription"><?php echo $finding->ecdChangeDescription; ?></span>
     <input type="text" style="display:none" 
-           id='ecdChangeDescription'
+           id='finding[ecdChangeDescription]'
            name="finding[ecdChangeDescription]"
            value="<?php echo $finding->ecdChangeDescription; ?>">
     
