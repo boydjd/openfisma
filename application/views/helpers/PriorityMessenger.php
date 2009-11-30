@@ -21,7 +21,7 @@
  * 
  * @author     Sean P. O. MacCath-Moran <zendcode@emanaton.com>
  * @author     Josh Boyd <joshua.boyd@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    View_Helper
  * @version    $Id$

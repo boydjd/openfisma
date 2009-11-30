@@ -13,7 +13,7 @@
  * details.
  *
  * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * <http://www.gnu.org/licenses/>.
+ * {@link http://www.gnu.org/licenses/}.
  */
 
 require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
@@ -22,7 +22,7 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
  * A stub test just so we can get through CI.
  *
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @version    $Id$

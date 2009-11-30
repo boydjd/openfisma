@@ -13,7 +13,7 @@
  * details.
  *
  * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * <http://www.gnu.org/licenses/>.
+ * {@link http://www.gnu.org/licenses/}.
  */
 
 // Bootstrap the application's CLI mode if it has not already been done
@@ -40,7 +40,7 @@ if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
  * including it is to execute the application bootstrap logic contained in this same file.
  * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @version    $Id$

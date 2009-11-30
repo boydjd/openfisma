@@ -15,10 +15,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com 
- * @copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://openfisma.org/content/license
  * @version   $Id$
  * @package   Migration
@@ -28,7 +28,7 @@
  * Add product read privilege to IV&V and SAISO 
  *
  * @package    Migration
- * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/mw/index.php?title=License
  */
 class AddProductReadToNeededRoles extends Doctrine_Migration_Base
