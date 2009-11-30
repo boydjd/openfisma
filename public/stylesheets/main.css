@@ -33,6 +33,21 @@
  *******************************************************************************
  */
 
+#skip a, #skip a:hover, #skip a:visited {
+    position: absolute;
+    left: 0px;
+    top: -500px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+#skip a:active, #skip a:focus {
+    position: static;
+    width: auto;
+    height: auto;
+}
+
 /* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
  * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
  * when this style sheet is loaded.
