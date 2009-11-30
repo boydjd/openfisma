@@ -1,202 +1,24 @@
-============================================================================
-Overview
-============================================================================
 The OpenFISMA project is an open source application designed to reduce the 
 complexity and automate the regulatory requirements of the Federal Information 
 Security Management Act (FISMA) and the National Institute of Standards and 
-Technology (NIST) Risk Management Framework (RMF). While many security managers 
-are eager to demonstrate their best practices for incident response, patch 
-management, and configuration management, they are overwhelmed with the 
-reporting and documentation requirements of FISMA. You can download our 
-released software right away or peruse the current documentation.
+Technology (NIST) Risk Management Framework (RMF). 
 
-OpenFISMA is built on the Zend Framework which is an open source, object 
-oriented, web application framework with a flexible architecture. ZF is 
-often referred to as a 'component library' because it has many loosely 
-coupled components that you can use more or less independently. However, 
-Zend Framework also provides a core model-view-controller (MVC) 
-implementation that you can use to provide basic 'best practices' 
-structure to web applications.
+Please see the following resources for more information:
 
-You may also visit the OpenFISMA website for more information at 
-http://www.openfisma.org.
+Website:
+http://www.openfisma.org
 
-============================================================================
-Table of Contents
-============================================================================
-1.0 Installation Instructions
-2.0 Troubleshooting
-3.0 Copyright and Licensing Information
-4.0 Credits and Acknowledgments
-5.0 Changelog
-6.0 Directory Layout
+License: 
+http://www.openfisma.org/content/license
 
-============================================================================
-1.0 Installation Instructions
-============================================================================
-Please reference the INSTALL guide for instructions on installing OpenFISMA.
+Documentation: 
+http://documentation.openfisma.org
+http://api.openfisma.org
 
-============================================================================
-2.0 Troubleshooting
-============================================================================
-General user documentation and detailed information on OpenFISMA is 
-distributed, stored, and edited on the OpenFISMA website available at
-www.openfisma.org. 
+Issue Tracking/Build Status:
+http://jira.openfisma.org
+http://crucible.openfisma.org
+http://ci.openfisma.org
 
-============================================================================
-3.0 Copyright and Licensing Information
-============================================================================
-OpenFISMA is free software: you can redistribute it and/or modify it under 
-the terms of the GNU General Public License as published by the Free 
-Software Foundation, either version 3 of the License, or (at your option) 
-any later version.
-
-OpenFISMA is distributed in the hope that it will be useful, but WITHOUT 
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
-more details.
-
-You should have received a copy of the GNU General Public License along 
-with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
-
-============================================================================
-4.0 Credits and Acknowledgements
-============================================================================
-OpenFISMA was sponsored by Endeavor Systems, Inc. built on the blood, 
-sweat, and tears of the security professionals and developers who strive
-to protect the Confidentiality, Integrity, and Availability of the 
-Federal Government.
-
-Special Thanks to the following individuals:
-James Ford
-Trevor Hogan
-Brian Gant
-Mark Haase
-Jim Chen
-
-============================================================================
-5.0 Changelog
-============================================================================
-Please reference the CHANGELOG for detailed changes and features added
-to OpenFISMA.
-
-============================================================================
-6.0 Directory Layout
-============================================================================
-application/ - This directory is the meat and bones of OpenFISMA. It houses
-the MVC system, as well as conifgurations, api's used, and the bootstrap 
-file. 
-
-application/config/ - The application wide configuration directory. This 
-directory contains the small amount of configuration code that your application 
-will need, including the database configuration, the environment structure, and 
-routing of incoming web requests. 
-
-application/controllers/ - Default controller directory. The controllers 
-subdirectory is where Zend looks to find controller classes. A controller handles 
-a web request from the user.
-
-application/models/ - Default models directory. The models subdirectory holds the 
-classes that model and wrap the data stored in our application's database. 
-
-application/views/ - Default views directory. The views subdirectory holds the 
-display templates to fill in with data from our application, convert to HTML, 
-and return to the user's browser.
-
-application/views/scripts - The view script is what actually contains the display
-logic necessary to output the data prepared by your controller action and/or your
-model. The first thing the view will do upon render() is find the appropriate
-script. The view looks at the controller name, the action name and merges that with
-the location of the scripts to create a URI for the view script. For example, if 
-you are calling the URL http://example.com/member/login, then it will combine the
-default location of the view scripts application/view/scripts, with the controller
-name, "member" and the action name "login" with the default extenstion ".phtml" to 
-create the URI application/views/scripts/member/login.phtml. 
-
-application/views/helpers - In addition to scripts, the view has helpers. These
-helpers assist you in performing complex functions repeatedly. Instead of writing
-code over and over, for example, properly formatting a date, you can simply use a
-view helper. Zend Framework comes with several view helpers by default. View
-helpers are used to reduce the code that is in the view scripts. 
-
-application/layouts -  - This layout directory is for MCV based layouts. 
-Since Zend_Layout is capable of MVC and non-mvc layouts, this location 
-choice for this directory signifies that layouts are not on a 1-to-1 
-relationship with controllers and are independent of templates within views/. 
-
-application/layouts/scripts - TODO fill in description
-
-application/bootstrap.php - This file represents the entry point into your
-application. This first could be procedural php or could contain a Bootstrap class. 
-Either way, the purpose for this file is to bootstrap the application – not 
-PHP settings – and make components aware of their comsumption by starting 
-or configuring them. This file would not call dispatch() on the front controller. 
-
-data/ - The goal of this directory is to provide a place to store application 
-data that is volatile and rumtime. The interruption of some data inside this 
-directory might cause the application to fail on any one request. Also, the 
-information in this directory may or may not make its way from/into a 
-subversion repository. Examples of things contained in this directory 
-are session files, cache files, sqlite databases, logs and indexes to name a few. 
-
-data/cache - TODO fill in description
-
-data/sessions - TODO fill in description
-
-data/uploads - TODO fill in description
-
-data/uploads/evidence - TODO fill in description
-
-data/uploads/scanreports - TODO fill in description
-
-data/logs - Application error logs are stored here.
-
-data/temp - The temp folder (typically set in php.ini as /tmp on unix), is set aside 
-for non- or semi- volatile application data. Roughly speaking, the contents of temp 
-would typically be generated by an application and used during its lifetime of requests. 
-This information (typically), would not be seen inside the applications svn repository. 
-Also, it should be noted that usually, if temp/ were cleared out, the application should 
-be able to continue running without much of a hiccup. 
-
-library/ - This directory houses the library/Zend/* folder which is the Zend 
-Framework. In theory, you could also use other include_path-able not named Zend/* 
-in here 
-
-library/local - TODO fill in description
-
-scripts/ - This directory is intended for maintenance, and/or build scripts. 
-Typically, these might include command line, cron, or phing build scripts that 
-are executed independently of the web application itself. 
-
-scripts/cronjobs - Scripts that need to be run from cron.
-
-scripts/bin - Collection of scripts used to facilitate maintenance of the application,
-which are usually run in an interactive fashion from the command line.
-
-scripts/templates
-
-tests/ - This directory serves as a purpose for containing application tests. These 
-could be hand written, phpunit tests, selenium based tests or (insert your testing 
-framework here). By default, library code could be tested my mimicing the directory 
-structure of your library/ directory. Additionally, functional tests for your 
-application could be written mimicing the application/ directory structure (including 
-the application subdirectory). This directory would contain a PHPUnit configuration 
-file to assure all functional tests would work correctly. 
-
-public/ - This directory would contain all public files for your application, including 
-index.php. index.php would setup the PHP environment, include the bootstrap.php file 
-from your application/ directory, and finally dispatch() the front controller. Like the 
-public directory for a web server, this directory has web files that don't change, 
-such as JavaScript files (public/javascripts), graphics (public/images), stylesheets 
-(public/stylesheets), and HTML files (public).
-
-public/images - Holds image files for the application
-
-public/stylesheets - Holds css sylesheet files for the application
-
-public/javascripts - Holds javascript files for the application
-
-public/flash - Holds swf flash files for the application
-
-
-
+Help:
+Please visit the forums at http://www.openfisma.org/forum or email openfisma@endeavorsystems.com
