@@ -51,7 +51,7 @@ define('SELENIUM_CONFIG_FILE', Fisma::getPath('config') . '/selenium.conf');
  * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/content/license
+ * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @version    $Id$
  */

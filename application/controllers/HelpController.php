@@ -21,7 +21,7 @@
  *
  * @author     Woody Li <woody712@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/content/license
+ * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  * @version    $Id$
  */

@@ -41,7 +41,7 @@ if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
  * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
- * @license    http://www.openfisma.org/content/license
+ * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @version    $Id$
  */
