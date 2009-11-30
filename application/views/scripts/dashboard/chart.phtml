@@ -1,18 +1,17 @@
-<embed scale="noscale"
-       salign="TL"
-       bgcolor="#ffffff"
-       wmode="opaque"
-       src="/flash/charts.swf"
-       flashvars="library_path=/flash/charts_library&amp;xml_source=<?php echo $this->sourceUrl; ?>"
-       name="my_chart"
-       menu="true"
-       allowfullscreen="true"
-       allowscriptaccess="sameDomain"
-       quality="high"
-       pluginspage="http://www.macromedia.com/go/getflashplayer"
-       play="true"
-       devicefont="false"
-       type="application/x-shockwave-flash"
-       width="<?php echo $this->width; ?>"
-       height="<?php echo $this->height; ?>"
-       align="middle">
+<object type="application/x-shockwave-flash" data="/flash/charts.swf" height="<?php echo $this->height; ?>" 
+    width="<?php echo $this->width; ?>">
+    <param name="bgcolor" value="#FFFFFF"/>
+    <param name="quality" value="high"/>
+    <param name="salign" value="TL"/>
+    <param name="wmode" value="opaque"/>
+    <param name="flashvars" value="library_path=/flash/charts_library&amp;xml_source=<?php echo $this->sourceUrl; ?>"/>
+    <param name="name" value="my_chart"/>
+    <param name="menu" value="true"/>
+    <param name="play" value="true"/>
+    <param name="align" value="middle"/>
+    <param name="allowfullscreen" value="true"/>
+    <param name="allowscriptaccess" value="sameDomain"/>
+    <param name="devicefont" value="false"/>
+    <param name="pluginspage" value="http://www.macromedia.com/go/getflashplayer"/>
+    This chart requires Flash to properly render.
+</object>
