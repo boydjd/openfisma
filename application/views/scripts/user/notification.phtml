@@ -50,12 +50,10 @@
             <td colspan="2" width="700px"><i>You can limit how often the system sends you e-mails:</i></td>
         </tr>
         <tr>
-            <td><b>Notify Frequency (hours):</b></td>
+            <td><b><label for="notify_frequency">Notify Frequency (hours):</label></b></td>
             <td>
-                <input name="notify_frequency" 
-                       type="text" 
-                       value="<?php echo round($this->me->notifyFrequency, 2);?>" 
-                       size="30"/>
+                <input name="notify_frequency" id="notify_frequency" type="text" 
+                    value="<?php echo round($this->me->notifyFrequency, 2);?>" size="30"/>
             </td>
         </tr>
         <tr>
@@ -66,12 +64,15 @@
             </td>
         </tr>
         <tr>
-            <td><b>Notify E-mail:</b></td>
-            <td><input name="notify_email" type="text" value="<?php echo $this->me->notifyEmail;?>" size="30" /></td>
+            <td><b><label for="notify_email">Notify E-mail:</label></b></td>
+            <td>
+                <input name="notify_email" id="notify_email" type="text" 
+                    value="<?php echo $this->me->notifyEmail;?>" size="30" />
+            </td>
         </tr>
         <tr>
             <td colspan="2"><p>
-        <div class="left"><b>Available events:</b><br/>
+        <div class="left"><b><label for="availableEvents">Available events:</label></b><br/>
             <?php 
             echo $this->formSelect(
                 'availableEvents',
@@ -104,7 +105,7 @@
                 ?>
             </p>
         </div>
-        <div class="left" id="enable"><b>Selected events:</b><br />
+        <div class="left" id="enable"><b><label for="existEvents">Selected events:</label></b><br />
         <?php 
             echo $this->formSelect(
                 'existEvents',
