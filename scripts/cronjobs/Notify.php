@@ -49,7 +49,8 @@ class Notify
      *
      * @todo log the email send results
      */
-    function processNotificationQueue() {
+    function processNotificationQueue() 
+    {
         // Get all notifications grouped by user_id
         /**
          * @todo can't find a way to do this in DQL... substituting a mysql raw connection for now.
@@ -68,7 +69,10 @@ class Notify
               ->addComponent('n', 'Notification n')
               ->addComponent('u', 'n.User u')
               ->from('user u INNER JOIN notification n on u.id = n.userid')
-              ->where('u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR)')
+              ->where(
+                  'u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
+                  INTERVAL u.notifyFrequency HOUR)'
+              )
               ->orderBy('u.id');
         $notifications = $query->execute();
 
@@ -107,7 +111,8 @@ class Notify
      *
      * @param array $notifications A group of rows from the notification table
      */
-    static function sendNotificationEmail($notifications) {
+    static function sendNotificationEmail($notifications) 
+    {
         $mail = new Fisma_Mail();
         // Send the e-mail
         $mail->sendNotification($notifications);
@@ -118,7 +123,8 @@ class Notify
      *
      * @param array $notifications A group of rows from the notifications table
      */
-    static function purgeNotifications($notifications) {
+    static function purgeNotifications($notifications) 
+    {
         $notificationIds = array();
         foreach ($notifications as $notification) {
             $notificationIds[] = $notification['id'];
@@ -138,7 +144,8 @@ class Notify
      *
      * @param integer $userId The Id of the user to update
      */
-    static function updateUserNotificationTimestamp($userId) {
+    static function updateUserNotificationTimestamp($userId) 
+    {
         $user = new User();
         $user = $user->getTable()->find($userId);
         $user->mostRecentNotifyTs = Fisma::now();

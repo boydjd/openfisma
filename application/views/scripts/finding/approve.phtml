@@ -41,7 +41,7 @@
         $records[$i] .= "nId: " . $finding->id . ",";
         $records[$i] .= "nId: " . $finding->id . ",";
         $records[$i] .= "nNickname: '" . $finding->ResponsibleOrganization->nickname . "',";
-        $records[$i] .= "nDesc: '" . addslashes(strip_tags($finding->description)) . "',";
+        $records[$i] .= "nDesc: '" . preg_replace('/\s+/', ' ', addslashes(strip_tags($finding->description))) . "',";
         $records[$i] .= "oId: " . $finding->DuplicateFinding->id . ",";
         $records[$i] .= "oNickname: '" . $finding->DuplicateFinding->ResponsibleOrganization->nickname . "',";
         $records[$i] .= "oType: '" . $finding->DuplicateFinding->type . "',";

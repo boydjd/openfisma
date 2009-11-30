@@ -55,7 +55,8 @@ class ECDNotifier
      * Iterate through all findings in the system and create
      * notifications for those which have ECDs expiring today,
      */
-    static function run() {
+    static function run() 
+    {
         // Get all findings which expire today, or 7/14/21 days from now
         $query = Doctrine_Query::create()
                     ->select('f.id, f.currentEcd, f.responsibleOrganizationId')
@@ -69,7 +70,7 @@ class ECDNotifier
         // Now iterate through the findings and create the appropriate
         // notifications
         $notification = new Notification();
-        foreach($expiringFindings as $finding) {
+        foreach ($expiringFindings as $finding) {
             $daysRemaining = ceil((strtotime($finding->currentEcd) - time()) / (3600 * 24));
             switch($daysRemaining) {
                 case 0:
