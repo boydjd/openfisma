@@ -113,7 +113,7 @@ class ConfigController extends SecurityController
 
         $configArray = array();
         foreach ($configs as $config) {
-            if (in_array($config->name, array(Configuration::EXPIRING_TS, Configuration::UNLOCK_DURATION))) {
+            if (in_array($config->name, array('session_inactivity_period', 'unlock_duration'))) {
                 $config->value /= 60; //convert to minute from second
             }
             $configArray[$config->name] = $config->value;
@@ -408,7 +408,7 @@ class ConfigController extends SecurityController
         foreach ($columns as $column) {
             $configs[$column] = Configuration::getConfig($column);
         }
-        $configs[Configuration::UNLOCK_DURATION] /= 60 ;//Convert to minutes
+        $configs['unlock_duration'] /= 60 ;//Convert to minutes
         $form->setDefaults($configs);
         $this->view->form = $form;
     }
