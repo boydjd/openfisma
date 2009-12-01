@@ -28,7 +28,6 @@ elements.productId.type = "select"
 elements.productId.options.label = "Product"
 elements.productId.options.size = "10"
 elements.productId.options.style = "width:400px;"
-elements.productId.options.required = true
 displayGroups.assetInfo.elements.productId = "productId"
 
 elements.orgSystemId.type = "select"
