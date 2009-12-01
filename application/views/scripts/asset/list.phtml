@@ -51,7 +51,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
     };
     var operation = function(elCell, oRecord, oColumn, sData) {
         elCell.innerHTML = "<a href='/panel/asset/sub/view/id/"+oRecord.getData("id")+"'>"
-                         . "<img src='/images/view.gif' /></a>";
+                         + "<img src='/images/view.gif' /></a>";
     };
     // Column definitions
     var myColumnDefs = [{key: 'id', label:'', formatter: checkboxList}
