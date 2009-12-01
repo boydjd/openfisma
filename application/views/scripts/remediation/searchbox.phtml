@@ -38,7 +38,7 @@
 
     $flag = '';
     foreach ($this->params as $k => $value) {
-        if (!empty($value) && $k != 'keywords' && $k != 'evidence_include') {
+        if (!empty($value) && $k != 'evidence_include') {
             $flag = 'true';
             $bookmarkUrl .= $k . '/' . $value . '/';
         }
