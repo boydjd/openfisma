@@ -310,19 +310,25 @@ class AssetController extends BaseController
         $i = 0;
         foreach ($assets as $asset) {
             $assetArray[$i] = $asset->toArray();
-            foreach ($asset->Organization as $k => $v) {
-                if ($v instanceof Doctrine_Null) {
-                    $v = '';
+
+            if ($asset->Organization) {
+                foreach ($asset->Organization as $k => $v) {
+                    if ($v instanceof Doctrine_Null) {
+                        $v = '';
+                    }
+                    $assetArray[$i]['orgsys_'.$k] = $v;
                 }
-                $assetArray[$i]['orgsys_'.$k] = $v;
             }
-            foreach ($asset->Product as $k => $v) {
-                if ($v instanceof Doctrine_Null) {
-                    $v = '';
+
+            if ($asset->Product) {
+                foreach ($asset->Product as $k => $v) {
+                    if ($v instanceof Doctrine_Null) {
+                        $v = '';
+                    }
+                    $assetArray[$i]['pro_'.$k] = $v;
                 }
-                $assetArray[$i]['pro_'.$k] = $v;
             }
-            $i ++;
+            $i++;
         }
         if ($this->_request->getParam('format') == null) {
             $tableData = array('table' => array(
