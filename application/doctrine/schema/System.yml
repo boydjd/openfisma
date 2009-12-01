@@ -1,5 +1,5 @@
 System:
-    listeners: [XssListener, SystemListener, IndexListener]
+    listeners: [XssListener, IndexListener]
     
     columns:    
         type:

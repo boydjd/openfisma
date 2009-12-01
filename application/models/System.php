@@ -28,6 +28,26 @@
 class System extends BaseSystem
 {
     /**
+     * Confidentiality, Integrity, Availability
+     */
+    const CIA_HIGH = 'HIGH';
+    
+    /**
+     * Confidentiality, Integrity, Availability
+     */
+    const CIA_MODERATE = 'MODERATE';
+    
+    /**
+     * Confidentiality, Integrity, Availability
+     */
+    const CIA_LOW = 'LOW';
+    
+    /**
+     * Only confidentiality can have 'NA'
+     */
+    const CIA_NA = 'NA';
+
+    /**
      * Defines the way counter measure effectiveness and threat level combine to produce the threat likelihood. This
      * array is indexed as: $_threatLikelihoodMatrix[THREAT_LEVEL][COUNTERMEASURE_EFFECTIVENESS] == THREAT_LIKELIHOOD
      *
@@ -50,101 +70,6 @@ class System extends BaseSystem
     );
 
     /**
-     * Map the values to Organization table
-     */
-    public function construct()
-    {
-        $this->mapValue('organizationId');
-        $this->mapValue('name');
-        $this->mapValue('nickname');
-        $this->mapValue('description');
-    }
-
-    /**
-     * set the mapping value 'organizationid'
-     *
-     * @param int $id
-     */
-    public function setOrganizationId($id)
-    {
-        $this->set('organizationId', $id);
-    }
-
-    /**
-     * set the mapping value 'name'
-     *
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->set('name', $name);
-        // if the object hasn't identity,
-        // then we think it is under the insert status.
-        // otherwise it is update status
-        if (empty($this->Organization->id)) {
-            $this->state(Doctrine_Record::STATE_TDIRTY);
-        } else {
-            $this->state(Doctrine_Record::STATE_DIRTY);
-        }
-    }
-    
-    /**
-     * set the mapping value 'nickname'
-     *
-     * @param string $nickname
-     */
-    public function setNickname($nickname)
-    {
-        $this->set('nickname', $nickname);
-        // if the object hasn't identity,
-        // then we think it is under the insert status.
-        // otherwise it is update status
-        if (empty($this->Organization->id)) {
-            $this->state(Doctrine_Record::STATE_TDIRTY);
-        } else {
-            $this->state(Doctrine_Record::STATE_DIRTY);
-        }
-    }
-    
-    /**
-     * set the map value 'description'
-     *
-     * @param string $description
-     */
-    public function setDescription($description)
-    {
-        $this->set('description', $description);
-        // if the object hasn't identity,
-        // then we think it is under the insert status.
-        // otherwise it is update status
-        if (empty($this->Organization->id)) {
-            $this->state(Doctrine_Record::STATE_TDIRTY);
-        } else {
-            $this->state(Doctrine_Record::STATE_DIRTY);
-        }
-    }
-
-    /**
-     * Confidentiality, Integrity, Availability
-     */
-    const CIA_HIGH = 'high';
-    
-    /**
-     * Confidentiality, Integrity, Availability
-     */
-    const CIA_MODERATE = 'moderate';
-    
-    /**
-     * Confidentiality, Integrity, Availability
-     */
-    const CIA_LOW = 'low';
-    
-    /**
-     * Only confidentiality can have 'NA'
-     */
-    const CIA_NA = 'na';
-
-    /**
      * A mapping from the physical system types to proper English terms
      */
     private $_typeMap = array(
@@ -152,6 +77,20 @@ class System extends BaseSystem
         'major' => 'Major Application',
         'minor' => 'Minor Application'
     );
+
+    /**
+     * Doctrine hook which is used to set up mutators
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        
+        $this->hasMutator('availability', 'setAvailability');
+        $this->hasMutator('confidentiality', 'setConfidentiality');
+        $this->hasMutator('fipsCategory', 'setFipsCategory');
+        $this->hasMutator('integrity', 'setIntegrity');
+        $this->hasMutator('uniqueProjectId', 'setUniqueProjectId');
+    }
     
     /**
      * Return the English version of the orgType field
@@ -164,31 +103,37 @@ class System extends BaseSystem
     /**
      * Calculate FIPS-199 Security categorization.
      *
-     * The calculation over enumeration fields {LOW, MODERATE, HIGH} is tricky here. The algorithm 
-     * is up to their mapping value, which is decided by the appear consequence in TABLE definition.
-     * For example, in case `confidentiality` ENUM('NA','LOW','MODERATE','HIGH') it turns out the 
-     * mapping value: LOW=0, MODERATE=1, HIGH=2. The value calculated is the maximum of C, I, A. And 
-     * is transferred back to enumeration name again.
+     * This is based on the NIST definition, which is the "high water mark" for the components C, I, and A. If some
+     * parts of the CIA are null but at least one part is defined, then the FIPS category will take the high water mark
+     * of all the defined parts.
      * 
      * @return string
      */
-    public function fipsSecurityCategory()
+    private function _fipsCategory()
     {
-        $confidentiality = $this->confidentiality;
-        $integrity = $this->integrity;
-        $availability = $this->availability;
+        $fipsCategory = null;
         
-        $array = $this->getTable()->getEnumValues('confidentiality');
-        $confidentiality = array_search($confidentiality, $array) - 1;
-        
-        $array = $this->getTable()->getEnumValues('integrity');
-        $integrity = array_search($integrity, $array);
-        
-        $array = $this->getTable()->getEnumValues('availability');
-        $availability = array_search($availability, $array);
+        if (   $this->confidentiality == self::CIA_HIGH 
+            || $this->integrity == self::CIA_HIGH 
+            || $this->availability == self::CIA_HIGH) {
+            
+            $fipsCategory = self::CIA_HIGH;    
 
-        $index = max((int)$confidentiality, (int)$integrity, (int)$availability);
-        return $array[$index];
+        } elseif (   $this->confidentiality == self::CIA_MODERATE 
+                  || $this->integrity == self::CIA_MODERATE 
+                  || $this->availability == self::CIA_MODERATE) {
+
+            $fipsCategory = self::CIA_MODERATE;
+
+        } elseif (   $this->confidentiality == self::CIA_LOW 
+                  || $this->integrity == self::CIA_LOW 
+                  || $this->availability == self::CIA_LOW) {
+
+            $fipsCategory = self::CIA_LOW;
+
+        }
+
+        return $fipsCategory;
     }
 
     /**
@@ -250,15 +195,6 @@ class System extends BaseSystem
         $this->_threatLikelihoodMatrix['LOW']['MODERATE'] = 'LOW';
         $this->_threatLikelihoodMatrix['LOW']['HIGH']     = 'LOW';
     }
-
-    /**
-     * Delegate the delete to organization delete
-     */
-    public function delete(Doctrine_Connection $conn = null)
-    {
-        $org = $this->Organization;
-        return $org->delete($conn);
-    }
     
     /**
      * Return system name with proper formatting
@@ -276,5 +212,73 @@ class System extends BaseSystem
     public function postUpdate($event)
     {
         Notification::notify('SYSTEM_UPDATED', $this->Organization, User::currentUser(), $this->Organization->id);
+    }
+    
+    /**
+     * Mutator for availability. Updates the FIPS 199 automatically.
+     * 
+     * @param string $value
+     */
+    public function setAvailability($value)
+    {
+        $this->_set('availability', $value);
+        $this->_set('fipsCategory', $this->_fipsCategory());
+    }
+
+    /**
+     * Mutator for confidentiality. Updates the FIPS 199 automatically.
+     * 
+     * @param string $value
+     */
+    public function setConfidentiality($value)
+    {
+        $this->_set('confidentiality', $value);
+        $this->_set('fipsCategory', $this->_fipsCategory());
+    }
+    
+    /**
+     * FIPS category is not directly settable.
+     * 
+     * @throws Fisma_Exception
+     * @param string $value
+     */
+    public function setFipsCategory($value)
+    {
+        throw new Fisma_Exception('Cannot set FIPS Security category directly. It is derived from CIA.');
+    }
+
+    /**
+     * Mutator for integrity. Updates the FIPS 199 automatically.
+     * 
+     * @param string $value
+     */
+    public function setIntegrity($value)
+    {
+        $this->_set('integrity', $value);
+        $this->_set('fipsCategory', $this->_fipsCategory());
+    }
+    
+    /**
+     * Set the exhibit 53 Unique Project Id (UPI) which has a special format like xxx-xx-xx-xx-xx-xxxx-xx
+     * 
+     * To help the user out, we reformat the string automatically if required
+     * 
+     * @param string $value
+     */
+    public function setUniqueProjectId($value)
+    {
+        // Remove any existing hyphens and pad out to 17 chars
+        $raw = str_pad(str_replace('-', '', $value), 17, '0');
+        
+        // Now reinsert hypens in the appropriate places
+        $upi = substr($raw, 0, 3) . '-'
+             . substr($raw, 3, 2) . '-'
+             . substr($raw, 5, 2) . '-'
+             . substr($raw, 7, 2) . '-'
+             . substr($raw, 9, 2) . '-'
+             . substr($raw, 11, 4) . '-'
+             . substr($raw, 15, 2);
+             
+        $this->_set('uniqueProjectId', $upi);
     }
 }
