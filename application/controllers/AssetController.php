@@ -167,8 +167,12 @@ class AssetController extends BaseController
             throw new Fisma_Exception('Invalid parameter: Expected a Doctrine_Record');
         }
         $values = $form->getValues();
-        $product = Doctrine::getTable('Product')->find($values['productId']);
-        $form->getElement('productId')->addMultiOptions(array($product->id => $product->name));
+
+        if (!empty($values['productId'])) {
+            $product = Doctrine::getTable('Product')->find($values['productId']);
+            $form->getElement('productId')->addMultiOptions(array($product->id => $product->name));
+        }
+
         $subject->merge($values);
         $subject->save();
     }
