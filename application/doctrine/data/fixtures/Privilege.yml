@@ -341,3 +341,10 @@ Privilege:
         action: finding
         description: Finding Notifications
         orgSpecific: true
+
+    # Account Audit Logs
+    account_log_read:
+        resource: account_log
+        action: read
+        description: Account Audit Logs
+        orgSpecific: false

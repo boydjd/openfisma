@@ -172,6 +172,7 @@ Role:
             - notification_admin
             - notification_asset
             - notification_finding
+            - account_log_read
 
     CERTAGENT:
         name: Certification Agent
