@@ -29,12 +29,16 @@
 class ConfigController extends SecurityController
 {
     /**
-     * The Config module 
+     * The Config module
+     * 
+     * @var Configuration
      */
     private $_config = null;
 
     /**
      * init() - Initialize internal members.
+     * 
+     * @return void
      */
     public function init()
     {
@@ -49,10 +53,10 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * getConfigForm() - Returns the standard form for system configuration.
+     * getConfigForm() - Returns the standard form for system configuration
      *
      * @param string $formName The name of the form to load
-     * @return Zend_Form
+     * @return Zend_Form The loaded form
      */
     public function getConfigForm($formName)
     {
@@ -64,7 +68,9 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * The default Action, handle the configuration updating.
+     * The default Action, handle the configuration updating
+     * 
+     * @return void
      */
     public function indexAction()
     {
@@ -95,6 +101,8 @@ class ConfigController extends SecurityController
 
     /**
      * Display and update the persistent configurations
+     * 
+     * @return void
      */
     public function generalAction()
     {
@@ -116,6 +124,8 @@ class ConfigController extends SecurityController
 
     /**
      * Get Ldap configuration list
+     * 
+     * @return void
      */
     public function ldaplistAction()
     {
@@ -131,10 +141,9 @@ class ConfigController extends SecurityController
     /**
      * Just removed this from the view script and threw it in here so we could finish standards
      * 
-     * @todo cleanup
-     * 
      * @param LdapConfig $value An LdapConfig object to convert to URL form
-     * @return string
+     * @return string The assembled Ldap URL
+     * @todo cleanup
      */
     private function makeLdapUrl($value)
     {
@@ -155,7 +164,9 @@ class ConfigController extends SecurityController
     }
 
     /**
-     *  Add/Update Technical Contact Information configurations
+     * Add/Update Technical Contact Information configurations
+     * 
+     * @return void
      */
     public function contactAction()
     {
@@ -171,7 +182,9 @@ class ConfigController extends SecurityController
     }
 
     /**
-     *  Add/Update LDAP configurations
+     * Add/Update LDAP configurations
+     * 
+     * @return void
      */
     public function ldapupdateAction()
     {
@@ -212,6 +225,8 @@ class ConfigController extends SecurityController
 
     /**
      * Delete a Ldap configuration
+     * 
+     * @return void
      */
     public function ldapdelAction()
     {
@@ -226,8 +241,10 @@ class ConfigController extends SecurityController
 
     /**
      * Validate the configuration
-     *
+     * 
      * This is only happens in ajax context
+     * 
+     * @return void
      */
     public function ldapvalidAction()
     {
@@ -271,7 +288,8 @@ class ConfigController extends SecurityController
 
     /**
      * Notification event system base setting
-     *
+     * 
+     * @return void
      */
     public function notificationAction()
     {
@@ -290,6 +308,8 @@ class ConfigController extends SecurityController
 
     /**
      * Validate the email configuration
+     * 
+     * @return void
      */
     public function testEmailConfigAction()
     {
@@ -359,7 +379,9 @@ class ConfigController extends SecurityController
     }
 
     /**
-     *  Add/Update Privacy Policy configurations
+     * Add/Update Privacy Policy configurations
+     * 
+     * @return void
      */
     public function privacyAction()
     {
@@ -371,7 +393,9 @@ class ConfigController extends SecurityController
     }
      
     /**
-     *  Password Complexity Policy configurations
+     * Password Complexity Policy configurations
+     * 
+     * @return void
      */
     public function passwordAction()
     {

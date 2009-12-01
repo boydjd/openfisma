@@ -36,6 +36,11 @@ class DashboardController extends SecurityController
      */
     private $_myOrgSystemIds = null;
     
+    /**
+     * init() - Initialize internal members.
+     * 
+     * @return void
+     */
     public function init()
     {
         parent::init();
@@ -49,6 +54,8 @@ class DashboardController extends SecurityController
     
     /**
      * preDispatch() - invoked before each Actions
+     * 
+     * @return void
      */
     function preDispatch()
     {
@@ -64,6 +71,8 @@ class DashboardController extends SecurityController
 
     /**
      * The user dashboard displays important system-wide metrics, charts, and graphs
+     * 
+     * @return void
      */
     public function indexAction()
     {
@@ -141,7 +150,9 @@ class DashboardController extends SecurityController
     }
     
     /**
-     * statistics per status 
+     * statistics per status
+     * 
+     * @return void
      */
     public function totalstatusAction()
     {
@@ -191,7 +202,9 @@ class DashboardController extends SecurityController
     }
 
     /**
-     * statitics per type 
+     * statitics per type
+     * 
+     * @return void
      */
     public function totaltypeAction()
     {

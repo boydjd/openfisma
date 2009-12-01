@@ -29,7 +29,9 @@
 class MetainfoController extends SecurityController
 {
     /**
-     * Initialize 
+     * Initialization
+     * 
+     * @return void
      */
     public function init()
     {
@@ -40,6 +42,8 @@ class MetainfoController extends SecurityController
 
     /**
      * List meta data on the remediation detail page
+     * 
+     * @return void
      */
     public function listAction()
     {

@@ -28,12 +28,12 @@
 class HelpController extends Zend_Controller_Action
 {
     /**
-     * apply the help document for different tips
+     * Apply the help document for different tips
      * 
-     * get the parameter from request 
-     * and decide to use which template,
-     * if the template is not existed, 
+     * Get the parameter from request and decide which template will be used. If the template is not existed 
      * use a default template.
+     * 
+     * @return void
      */
     public function helpAction()
     {

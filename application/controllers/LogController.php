@@ -27,13 +27,20 @@
  */
 class LogController extends BaseController
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
     protected $_modelName = 'AccountLog';
     
     /**
-     * handle the records from searchAction if necessary
+     * Handle the records from searchAction if necessary
      *
-     * @param Doctrine_Collections $logs
-     * @return array $array
+     * @param Doctrine_Collections $logs The specific Doctrine_Collections object of logs
+     * @return array The array representation of the specific Doctrine_Collections object of logs
      */
     public function handleCollection($logs)
     {
@@ -49,6 +56,8 @@ class LogController extends BaseController
      * Search the subject 
      *
      * This outputs a json object. Allowing fulltext search from each record enpowered by lucene
+     * 
+     * @return string The json encoded table data
      */
     public function searchAction()
     {

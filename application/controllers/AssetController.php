@@ -33,11 +33,15 @@ class AssetController extends BaseController
      * The main name of the model.
      * 
      * This model is the main subject which the controller operates on.
+     * 
+     * @var string
      */
     protected $_modelName = 'Asset';
 
     /**
      * asset columns which need to displayed on the list page, PDF and Excel
+     * 
+     * @var array
      */
     protected $_assetColumns = array('name'  => 'Asset Name',
                                      'orgsys_name' => 'System',
@@ -48,14 +52,17 @@ class AssetController extends BaseController
                                      'pro_version'=> 'Version');
 
     /**
-     * Invokes a contract with BaseController regarding privileges. 
-     * @link http://jira.openfisma.org/browse/OFJ-24
+     * Invokes a contract with BaseController regarding privileges.
+     * 
      * @var string
+     * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
 
     /**
      * init() - Initialize internal members.
+     * 
+     * @return void
      */
     function init()
     {
@@ -86,6 +93,8 @@ class AssetController extends BaseController
 
     /**
      * preDispatch() - invoked before each Actions
+     * 
+     * @return void
      */
     public function preDispatch()
     {
@@ -104,6 +113,9 @@ class AssetController extends BaseController
     
     /**
      * Get the specific form of the subject model
+     * 
+     * @param string|null $formName The name of the specific form
+     * @return Zend_Form The specific form of the subject model
      */
     public function getForm($formName=null)
     {
@@ -124,12 +136,12 @@ class AssetController extends BaseController
         return $form;
     }
     
-    /** 
+    /**
      * Hooks for manipulating the values before setting to a form
      *
-     * @param Zend_Form $form
-     * @param Doctrine_Record|null $subject
-     * @return Zend_Form
+     * @param Doctrine_Record $subject The specific subject model
+     * @param Zend_Form $form The specific form
+     * @return Zend_Form The manipulated form
      */
     protected function setForm($subject, $form)
     {
@@ -139,11 +151,13 @@ class AssetController extends BaseController
         return $form;
     }
     
-    /** 
-     * Hooks for manipulating and saveing the values retrieved by Forms
+    /**
+     * Hooks for manipulating and saving the values retrieved by Forms
      *
-     * @param Zend_Form $form
-     * @param Doctrine_Record|null $subject
+     * @param Zend_Form $form The specific form
+     * @param Doctrine_Record|null $subject The specific subject model
+     * @return void
+     * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
     {
@@ -160,8 +174,9 @@ class AssetController extends BaseController
     }
     
     /**
-     * Enter description here...
-     *
+     * Extract specific criteria parameters from request and assemble them
+     * 
+     * @return array The array of criteria parameters
      */
     private function parseCriteria()
     {
@@ -180,10 +195,12 @@ class AssetController extends BaseController
     }
     
     /**
-     *  Searching the asset and list them.
-     *
-     *  it is the ajax version of searchbox action
-     *  @todo merge the two actions into one
+     * Searching the asset and list them
+     * 
+     * It is the ajax version of searchbox action
+     * 
+     * @return void
+     * @todo merge the two actions into one
      */
     public function listAction()
     {
@@ -201,7 +218,9 @@ class AssetController extends BaseController
     }
     
     /**
-     *  Create an asset
+     * Create an asset
+     * 
+     * @return void
      */
     public function createAction()
     {
@@ -212,6 +231,8 @@ class AssetController extends BaseController
     
     /**
      * Search assets and list them
+     * 
+     * @return void
      */
     public function searchboxAction()
     {
@@ -229,10 +250,12 @@ class AssetController extends BaseController
     }
     
     /**
-     *  Searching the asset and list them.
-     *
-     *  it is the ajax version of searchbox action
-     *  @todo merge the two actions into one
+     * Searching the asset and list them.
+     * 
+     * It is the ajax version of searchbox action
+     * 
+     * @return void
+     * @todo merge the two actions into one
      */
     public function searchAction()
     {
@@ -314,7 +337,9 @@ class AssetController extends BaseController
 
     /**
      * View detail information of the subject model
-     *
+     * 
+     * @return void
+     * @throws Fisma_Exception if the asset id is invalid
      */
     public function viewAction()
     {
@@ -341,6 +366,8 @@ class AssetController extends BaseController
     
     /**
      * Delete a asset
+     * 
+     * @return void
      */
     public function deleteAction()
     {
@@ -376,7 +403,9 @@ class AssetController extends BaseController
     }
     
     /**
-     *  Delete assets
+     * Delete assets
+     * 
+     * @return void
      */
     public function multideleteAction()
     {

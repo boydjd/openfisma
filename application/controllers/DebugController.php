@@ -29,6 +29,9 @@ class DebugController extends Zend_Controller_Action
 {
     /**
      * Display phpinfo()
+     * 
+     * @return void
+     * @throws Fisma_Exception if PhpInfo() is not called in debug mode
      */
     public function phpinfoAction()
     {

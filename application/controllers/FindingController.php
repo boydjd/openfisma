@@ -32,6 +32,8 @@ class FindingController extends BaseController
      * The main name of the model.
      * 
      * This model is the main subject which the controller operates on.
+     * 
+     * @var string
      */
     protected $_modelName = 'Finding';
 
@@ -50,15 +52,17 @@ class FindingController extends BaseController
     private $_myOrgSystemIds = null;
     
     /**
-     * Invokes a contract with BaseController regarding privileges. 
-     * @link http://jira.openfisma.org/browse/OFJ-24
+     * Invokes a contract with BaseController regarding privileges
+     * 
      * @var string
+     * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
     
     /**
      * initialize the basic information, my orgSystems
-     *
+     * 
+     * @return void
      */
     public function init()
     {
@@ -75,8 +79,9 @@ class FindingController extends BaseController
     
     /**
      * Returns the standard form for creating finding
-     *
-     * @return Zend_Form
+     * 
+     * @param string|null $formName The specific form name to load
+     * @return Zend_Form The assembled form
      */
     public function getForm($formName = null)
     {
@@ -137,9 +142,12 @@ class FindingController extends BaseController
 
     /** 
      * Overriding Hooks
-     *
-     * @param Zend_Form $form
-     * @param Doctrine_Record|null $subject
+     * 
+     * @param Zend_Form $form The specific form to save
+     * @param Doctrine_Record|null $subject The subject model related to the form
+     * @return void
+     * @throws Fisma_Exception if the subject is not null or the organization of the finding associated
+     * to the subject doesn`t exist
      */
     protected function saveValue($form, $subject=null)
     {
@@ -178,6 +186,8 @@ class FindingController extends BaseController
     
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
+     * 
+     * @return void
      */
     public function injectionAction()
     {
@@ -235,10 +245,11 @@ class FindingController extends BaseController
     }
 
     /** 
-     * Downloading a excel file which is used as a template 
-     * for uploading findings.
-     * systems, networks and sources are extracted from the
-     * database dynamically.
+     * Downloading a excel file which is used as a template for uploading findings.
+     * 
+     * Systems, networks and sources are extracted from the database dynamically.
+     * 
+     * @return void
      */
     public function templateAction()
     {
@@ -334,6 +345,8 @@ class FindingController extends BaseController
 
     /** 
      * pluginAction() - Import scan results via a plug-in
+     * 
+     * @return void
      */
     public function pluginAction()
     {       
@@ -452,7 +465,8 @@ class FindingController extends BaseController
 
     /** 
      * approveAction() - Allows a user to approve or delete pending findings
-     *
+     * 
+     * @return void
      * @todo Use YUI pager
      */
     public function approveAction()
@@ -469,6 +483,8 @@ class FindingController extends BaseController
     
     /**
      *  Process the form submitted from the approveAction()
+     *  
+     *  @return void
      */
     public function processApprovalAction() 
     {

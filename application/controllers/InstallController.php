@@ -30,6 +30,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Invoked before each Action
+     * 
+     * @return void
      */
     public function preDispatch()
     {
@@ -42,6 +44,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Default Action
+     * 
+     * @return void
      */
     public function indexAction()
     {
@@ -51,6 +55,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Check the current environment for installing system
+     * 
+     * @return void
      */
     public function envcheckAction()
     {
@@ -71,6 +77,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Check the the dir whether is writable
+     * 
+     * @return void
      */
     public function checkingAction()
     {
@@ -105,6 +113,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Configure the database
+     * 
+     * @return void
      */
     public function dbsettingAction()
     {
@@ -120,6 +130,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Review the database's configuration
+     * 
+     * @return void
      */
     public function dbreviewAction()
     {
@@ -183,6 +195,9 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Initilize the system
+     * 
+     * @return void
+     * @throws Exception if unable to set the host_url value in the configuration table
      */
     public function initialAction()
     {
@@ -275,6 +290,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Completing the installation
+     * 
+     * @return void
      */
     public function completeAction()
     {
@@ -284,6 +301,8 @@ class InstallController extends Zend_Controller_Action
 
     /**
      * Handling the error
+     * 
+     * @return void
      */
     public function errorAction()
     {

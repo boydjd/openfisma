@@ -46,6 +46,8 @@ class AuthController extends Zend_Controller_Action
      * be performed against the database or LDAP provider, according to the application's 
      * configuration. Also, it enforces the security policies set by the
      * application.
+     * 
+     * @return void
      */
     public function loginAction()
     {
@@ -175,8 +177,8 @@ class AuthController extends Zend_Controller_Action
      * Returns a suitable authentication adapter based on system configuration and current user
      * 
      * @param User $user Authentication adapters may be different for different users
-     * @param string $password
-     * @return Zend_Auth_Adapter_Interface
+     * @param string $password The corresponding password of the specific user
+     * @return Zend_Auth_Adapter_Interface The suitable authentication adapter
      */
     public function getAuthAdapter(User $user, $password)
     {
@@ -206,7 +208,9 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Close out the current user's session.
+     * Close out the current user's session
+     * 
+     * @return void
      */
     public function logoutAction() 
     {
@@ -225,7 +229,8 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * privacyAction() - Display the system's privacy policy.
-     *
+     * 
+     * @return void
      * @todo the business logic is stored in the view instead of the controller
      */
     public function privacyAction()
@@ -234,7 +239,8 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * robAction() - Display the system's Rules Of Behavior.
-     *
+     * 
+     * @return void
      * @todo the business logic is stored in the view instead of the controller
      * @todo rename this function to rulesOfBehaviorAction -- that name is
      * easier to understand
@@ -245,7 +251,8 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Validate the user's e-mail change.
-     *
+     * 
+     * @return void
      * @todo Cleanup this method: comments and formatting
      */
     public function emailvalidateAction()

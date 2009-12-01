@@ -29,6 +29,8 @@ class MenuController extends SecurityController
 {
     /**
      * Setup contexts for this controller
+     * 
+     * @return void
      */
     function init() 
     {
@@ -41,6 +43,8 @@ class MenuController extends SecurityController
     /**
      * Creates the main menu. Render the menu bar to a JSON object. This action is called
      * asynchronously by YUI.
+     * 
+     * @return void
      */
     function mainAction()
     {

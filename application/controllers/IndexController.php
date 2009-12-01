@@ -30,6 +30,8 @@ class IndexController extends SecurityController
 {
     /**
      * The default action - show the home page
+     * 
+     * @return void
      */
     public function indexAction()
     {

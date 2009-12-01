@@ -29,6 +29,8 @@ abstract class BaseController extends SecurityController
 {
     /**
      * Default paginate parameters
+     * 
+     * @var array
      */
     protected $_paging = array(
         'startIndex' => 0,
@@ -39,6 +41,8 @@ abstract class BaseController extends SecurityController
      * The main name of the model.
      * 
      * This model is the main subject which the controller operates on.
+     * 
+     * @var string
      */
     protected $_modelName = null;
 
@@ -51,12 +55,20 @@ abstract class BaseController extends SecurityController
      */
     protected $_organizations = null;
     
-    private $_aclResource; // which ACL resources this controller corresponds to
+    /**
+     * The name of the ACL resources related to this controller
+     * 
+     * @var string
+     */
+    private $_aclResource;
 
     /**
      * Make sure the model has been properly set
+     * 
+     * @return void
+     * @throws Fisma_Exception if model name is null
      */
-    public function init() 
+    public function init()
     {
         parent::init();
         if (is_null($this->_modelName)) {
@@ -70,7 +82,12 @@ abstract class BaseController extends SecurityController
             $this->_aclResource = $aclResource;
         }
     }
-
+    
+    /**
+     * preDispatch() - invoked before each Actions
+     * 
+     * @return void
+     */
     public function preDispatch()
     {
         /* Setting the first index of the page/table */
@@ -80,8 +97,9 @@ abstract class BaseController extends SecurityController
 
     /**
      * Get the specific form of the subject model
-     *
-     * @param string $formName
+     * 
+     * @param string|null $formName The name of the specific form
+     * @return Zend_Form The specific form of the subject model
      */
     public function getForm($formName=null)
     {
@@ -96,12 +114,12 @@ abstract class BaseController extends SecurityController
         return $form;
     }
 
-    /** 
+    /**
      * Hooks for manipulating the values before setting to a form
      *
-     * @param Zend_Form $form
-     * @param Doctrine_Record|null $subject
-     * @return Zend_Form
+     * @param Doctrine_Record $subject The specific subject model
+     * @param Zend_Form $form The specific form
+     * @return Zend_Form The manipulated form
      */
     protected function setForm($subject, $form)
     {
@@ -109,11 +127,13 @@ abstract class BaseController extends SecurityController
         return $form;
     }
 
-    /** 
-     * Hooks for manipulating and saveing the values retrieved by Forms
+    /**
+     * Hooks for manipulating and saving the values retrieved by Forms
      *
-     * @param Zend_Form $form
-     * @param Doctrine_Record|null $subject
+     * @param Zend_Form $form The specific form
+     * @param Doctrine_Record|null $subject The specific subject model
+     * @return void
+     * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
     {
@@ -128,6 +148,9 @@ abstract class BaseController extends SecurityController
 
     /**
      * View detail information of the subject model
+     * 
+     * @return void
+     * @throws Fisma_Exception if the model id is invalid
      */
     public function viewAction()
     {
@@ -150,6 +173,8 @@ abstract class BaseController extends SecurityController
 
     /**
      * Create a subject model/record
+     * 
+     * @return void
      */
     public function createAction()
     {
@@ -186,6 +211,9 @@ abstract class BaseController extends SecurityController
 
     /**
      * Edit a subject model
+     * 
+     * @return void
+     * @throws Fisma_Exception if the model id is invalid
      */
     public function editAction()
     {
@@ -235,6 +263,8 @@ abstract class BaseController extends SecurityController
 
     /**
      * Delete a subject model
+     * 
+     * @return void
      */
     public function deleteAction()
     {
@@ -265,6 +295,8 @@ abstract class BaseController extends SecurityController
 
     /**
      * List the subjects
+     * 
+     * @return void
      */
     public function listAction()
     {
@@ -278,9 +310,11 @@ abstract class BaseController extends SecurityController
     }
 
     /** 
-     * Search the subject 
+     * Search the subject
      *
      * This outputs a json object. Allowing fulltext search from each record enpowered by lucene
+     * 
+     * @return string The encoded table data in json format
      */
     public function searchAction()
     {
@@ -339,11 +373,12 @@ abstract class BaseController extends SecurityController
 
     /**
      * Return array of the collection.
+     * 
      * If an collection need to change its keys to some other value, please override it
-     *    in the controller which is inherited from this Controller
-     *
-     * @param Doctrine_Collections $rows
-     * @return array()
+     * in the controller which is inherited from this Controller
+     * 
+     * @param Doctrine_Collections $rows The spepcific Doctrine_Collections object
+     * @return array The array representation of the spepcific Doctrine_Collections object
      */
     public function handleCollection($rows)
     {
