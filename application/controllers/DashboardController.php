@@ -30,14 +30,14 @@
 class DashboardController extends SecurityController
 {
     /**
-     * my OrgSystem ids
+     * My OrgSystem ids
      *
      * @var array
      */
     private $_myOrgSystemIds = null;
     
     /**
-     * init() - Initialize internal members.
+     * Initialize internal members.
      * 
      * @return void
      */
@@ -53,7 +53,7 @@ class DashboardController extends SecurityController
     }
     
     /**
-     * preDispatch() - invoked before each Actions
+     * Invoked before each Actions
      * 
      * @return void
      */
@@ -150,7 +150,7 @@ class DashboardController extends SecurityController
     }
     
     /**
-     * statistics per status
+     * Calculate the statistics by status
      * 
      * @return void
      */
@@ -202,7 +202,7 @@ class DashboardController extends SecurityController
     }
 
     /**
-     * statitics per type
+     * Calculate the statistics by type
      * 
      * @return void
      */

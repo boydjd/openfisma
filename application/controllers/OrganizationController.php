@@ -28,12 +28,28 @@
 class OrganizationController extends SecurityController
 {
     /**
-     * A set of constants which is used during drag and drop operations to re-order organization nodes.
+     * A type constant of drag operation of organization tree which defines the operation that move 
+     * the specified organization node as previous of the target organization node among their siblings.
      */
     const DRAG_ABOVE = 0;
+    
+    /**
+     * A type constant of drag operation of organization tree which defines the operation that move 
+     * the specified organization node as child of the target organization node in organization tree.
+     */
     const DRAG_ONTO = 1;
+    
+    /**
+     * A type constant of drag operation of organization tree which defines the operation that move 
+     * the specified organization node as next of the target node among their siblings.
+     */
     const DRAG_BELOW = 2;
     
+    /**
+     *  Default pagination parameters
+     * 
+     * @var array
+     */
     private $_paging = array(
         'startIndex' => 0,
         'count' => 20,
@@ -41,6 +57,8 @@ class OrganizationController extends SecurityController
     
     /**
      * Invoked before each Action
+     * 
+     * @return void
      */
     public function preDispatch()
     {
@@ -49,6 +67,11 @@ class OrganizationController extends SecurityController
         $this->_paging['startIndex'] = $req->getParam('startIndex', 0);
     }
     
+    /**
+     * Initialize internal members.
+     * 
+     * @return void
+     */
     public function init()
     {
         parent::init();
@@ -61,8 +84,8 @@ class OrganizationController extends SecurityController
      * Returns the standard form for creating, reading, and
      * updating organizations.
      * 
-     * @param Object $currOrg current recode of organization
-     * @return Zend_Form
+     * @param Organization|null $currOrg The current record of organization
+     * @return Zend_Form The standard form for organization operations
      */
     private function _getOrganizationForm($currOrg = null)
     {
@@ -113,7 +136,9 @@ class OrganizationController extends SecurityController
     }
 
     /**
-     *  Render the form for searching the organizations.
+     * Render the form for searching the organizations.
+     * 
+     * @return void
      */
     public function searchbox()
     {
@@ -124,8 +149,10 @@ class OrganizationController extends SecurityController
     }
 
     /**
-     * show the list page, not for data
-     */     
+     * Show the list page, not for data
+     * 
+     * @return void
+     */
     public function listAction()
     {
         Fisma_Acl::requirePrivilege('organization', 'read', '*'); 
@@ -138,9 +165,10 @@ class OrganizationController extends SecurityController
     }
 
     /**
-     * list the organizations from the search, 
-     * if search none, it list all organizations
+     * List the organizations from the search. If search none, it list all organizations
      * 
+     * @return void
+     * @throws Fisma_Exception if the 'sortBy' parameter is invalid
      */
     public function searchAction()
     {
@@ -197,6 +225,9 @@ class OrganizationController extends SecurityController
     
     /**
      * Display a single organization record with all details.
+     * 
+     * @return void
+     * @throws Fisma_Exception if organization id is invalid
      */
     public function viewAction()
     {
@@ -232,6 +263,8 @@ class OrganizationController extends SecurityController
     
     /**
      * Display the form for creating a new organization.
+     * 
+     * @return void
      */
     public function createAction()
     {
@@ -284,6 +317,7 @@ class OrganizationController extends SecurityController
     /**
      * Delete a specified organization.
      * 
+     * @return void
      */
     public function deleteAction()
     {
@@ -305,7 +339,9 @@ class OrganizationController extends SecurityController
 
     /**
      * Update organization information after submitting an edit form.
-     *
+     * 
+     * @return void
+     * @throws Exception_General if organization id is invalid
      * @todo cleanup this function
      */
     public function updateAction()
@@ -362,18 +398,22 @@ class OrganizationController extends SecurityController
     /**
      * Display organizations and systems in tree mode for quick restructuring of the
      * organizational hiearchy.
+     * 
+     * @return void
      */
     public function treeAction() 
     {
         Fisma_Acl::requirePrivilege('organization', 'read', '*');
         $this->searchbox();
-        $this->render('tree');        
+        $this->render('tree');
     }
 
     /**
      * Gets the organization tree for the current user. 
      * 
      * This should be refactored into the user class, but I'm in a hurry.
+     * 
+     * @return array The array representation of organization tree
      */
     public function getOrganizationTree() 
     {
@@ -399,11 +439,13 @@ class OrganizationController extends SecurityController
         
         $organizations = $this->toHierarchy($organizations);
         
-        return $organizations;    
+        return $organizations;
     }
     
     /**
      * Returns a JSON object that describes the organization tree, including systems
+     * 
+     * @return void
      */
     public function treeDataAction() 
     {
@@ -417,6 +459,8 @@ class OrganizationController extends SecurityController
      * 
      * Doctrine should provide this functionality in a future
      * 
+     * @param Doctrine_Collection $collection The collection of organization record to hierarchy
+     * @return array The array representation of organization tree
      * @todo review the need for this function in the future
      */
     public function toHierarchy($collection) 
@@ -457,12 +501,14 @@ class OrganizationController extends SecurityController
                 } 
             } 
         } 
-        return $trees; 
+        return $trees;
     }    
     
     /**
      * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
      * of organization nodes. It replies with a JSON object.
+     * 
+     * @return void
      */
     public function moveNodeAction() 
     {

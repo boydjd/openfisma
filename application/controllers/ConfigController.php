@@ -36,7 +36,7 @@ class ConfigController extends SecurityController
     private $_config = null;
 
     /**
-     * init() - Initialize internal members.
+     * Initialize internal members.
      * 
      * @return void
      */
@@ -53,7 +53,7 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * getConfigForm() - Returns the standard form for system configuration
+     * Returns the standard form for system configuration
      *
      * @param string $formName The name of the form to load
      * @return Zend_Form The loaded form
@@ -68,7 +68,7 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * The default Action, handle the configuration updating
+     * The default Action which handles the configuration updating
      * 
      * @return void
      */

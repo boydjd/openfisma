@@ -32,11 +32,14 @@ class RemediationController extends SecurityController
     /**
      * The orgSystems which are belongs to current user.
      * 
+     * @var Doctrine_Collection
      */
     protected $_organizations = null;
     
     /**
-     * Default paginate parameters
+     * Default pagination parameters
+     * 
+     * @var array
      */
     protected $_paging = array(
         'startIndex' => 0,
@@ -47,8 +50,8 @@ class RemediationController extends SecurityController
      * The preDispatch hook is used to split off poam modify actions, mitigation approval actions, and evidence
      * approval actions into separate controller actions.
      * 
-     * @param Zend_Controller_Request_Abstract $request          
-     */              
+     * @return void
+     */
     public function preDispatch() 
     {
         $request = $this->getRequest();
@@ -71,8 +74,9 @@ class RemediationController extends SecurityController
     }
               
     /**
-    * init() - Create the additional PDF, XLS and RSS contexts for this class.
-    *
+    * Create the additional PDF, XLS and RSS contexts for this class.
+    * 
+    * @return void
     */
     public function init()
     {
@@ -119,11 +123,12 @@ class RemediationController extends SecurityController
     }
     
     /**
-     *  Default action.
-     *
-     *  It combines the searching and summary into one page.
+     * Default action.
+     * 
+     * It combines the searching and summary into one page.
+     * 
+     * @return void
      */
-    
     public function indexAction()
     {
         Fisma_Acl::requirePrivilege('finding', 'read', '*');
@@ -135,7 +140,9 @@ class RemediationController extends SecurityController
     /**
      * Presents the view which contains the summary table. The summary table loads summary data
      * asynchronously by invoking the summaryDataAction().
-     */    
+     * 
+     * @return void
+     */
     public function summaryAction()
     {
         Fisma_Acl::requirePrivilege('finding', 'read', '*');
@@ -157,6 +164,8 @@ class RemediationController extends SecurityController
     
     /**
      * Invoked asynchronously to load data for the summary table.
+     * 
+     * @return void
      */
     public function summaryDataAction() 
     {
@@ -248,6 +257,10 @@ class RemediationController extends SecurityController
      * this into the organization class. Doctrine should do this at v2.0, but if not, we 
      * should do it ourselves.
      * 
+     * @param Doctrine_Collection $collection The collection of organization to process
+     * @param string $type The mitigation strategy type to filter for
+     * @param int $source The id of the finding source to filter for
+     * @return array The array representation of organization hierarchy
      * @todo see if the organization model's function can be used instead
      */
     public function toHierarchy($collection, $type, $source) 
@@ -303,10 +316,10 @@ class RemediationController extends SecurityController
     }    
     
     /**
-     * parse and translate the URL to criterias
+     * Parse and translate the URL to criterias
      * which can be used by searchBoxAction method and searchAction method.
      *
-     * @return array $params the criterias dealt
+     * @return array The criterias dealt
      */
     private function _parseCriteria()
     {
@@ -347,8 +360,10 @@ class RemediationController extends SecurityController
     }
     
     /**
-     * get the columns(title) which were displayed on page, PDF, Excel
-     *
+     * Get the columns(title) which were displayed on page, PDF, Excel
+     * 
+     * @return array The two dimension array which includes column id in index and the label, sortable and 
+     * hidden of the column in value.
      */
     private function _getColumns()
     {
@@ -424,8 +439,9 @@ class RemediationController extends SecurityController
     }
     
     /**
-    * Do the real searching work. It's a thin wrapper
-    * of poam model's search method.
+    * Do the real searching work. It's a thin wrapper of poam model's search method.
+    * 
+    * @return void
     */
     public function searchAction()
     {
@@ -452,7 +468,8 @@ class RemediationController extends SecurityController
      * Advanced search url would be /panel/remediation/sub/searchbox/s/search/keywords/firewal
      * User use advanced search to search the basic search results,the url would be 
      *  /panel/remediation/sub/searchbox/s/search/keywords/firewal/responsibleOrganizationId/1/type/CAP...
-     *
+     * 
+     * @return void
      */
     public function searchboxAction()
     {
@@ -473,6 +490,8 @@ class RemediationController extends SecurityController
     
     /**
      * Get remediation detail info
+     * 
+     * @return void
      */
     public function viewAction()
     {
@@ -482,7 +501,8 @@ class RemediationController extends SecurityController
     
     /**
      * Modify the finding
-     *
+     * 
+     * @return void
      */
     public function modifyAction()
     {
@@ -531,6 +551,8 @@ class RemediationController extends SecurityController
 
     /**
      * Mitigation Strategy Approval Process
+     * 
+     * @return void
      */
     public function msaAction()
     {
@@ -594,7 +616,9 @@ class RemediationController extends SecurityController
     }
 
     /**
-     * Upload evidence 
+     * Upload evidence
+     * 
+     * @return void
      */
     public function uploadevidenceAction()
     {
@@ -652,6 +676,8 @@ class RemediationController extends SecurityController
     
     /**
      * Download evidence
+     * 
+     * @return void
      */
     public function downloadevidenceAction()
     {
@@ -687,7 +713,9 @@ class RemediationController extends SecurityController
     }
     
     /**
-     *  Handle the evidence evaluations
+     * Handle the evidence evaluations
+     * 
+     * @return void
      */
     public function evidenceAction()
     {
@@ -729,9 +757,11 @@ class RemediationController extends SecurityController
     }
 
     /**
-     *  Generate RAF report
+     * Generate RAF report
      *
-     *  It can handle different format of RAF report.
+     * It can handle different format of RAF report.
+     * 
+     * @return void
      */
     public function rafAction()
     {
@@ -774,6 +804,8 @@ class RemediationController extends SecurityController
     
     /**
      * Display basic data about the finding and the affected asset
+     * 
+     * @return void
      */
     function findingAction() 
     {
@@ -784,6 +816,8 @@ class RemediationController extends SecurityController
 
     /**
      * Fields for defining the mitigation strategy
+     * 
+     * @return void
      */
     function mitigationStrategyAction() 
     {
@@ -793,6 +827,8 @@ class RemediationController extends SecurityController
 
     /**
      * Display fields related to risk analysis such as threats and countermeasures
+     * 
+     * @return void
      */
     function riskAnalysisAction() 
     {
@@ -803,6 +839,8 @@ class RemediationController extends SecurityController
 
     /**
      * Display fields related to risk analysis such as threats and countermeasures
+     * 
+     * @return void
      */
     function artifactsAction() 
     {
@@ -812,6 +850,8 @@ class RemediationController extends SecurityController
         
     /**
      * Display the audit log associated with a finding
+     * 
+     * @return void
      */
     function auditLogAction() 
     {
@@ -831,6 +871,8 @@ class RemediationController extends SecurityController
     
     /**
      * Real searching worker, to return searching results for page, PDF, Excel
+     * 
+     * @return void
      */
     public function search2Action() 
     {
@@ -958,11 +1000,12 @@ class RemediationController extends SecurityController
     }
     
     /**
-     * analyze the criterias and merge the DQL query for getting results
+     * Analyze the criterias and merge the DQL query for getting results
      * 
-     * @param array $params criterias
-     * @param string $format json xls pdf
-     * @return array $list results
+     * @param array $params The specified filter criterias
+     * @param string $format The specified output format which is json or xls or pdf
+     * @param int $total The total number of found rows
+     * @return array $list The corresponding results
      */
     private function _getResults($params, $format, &$total)
     {
@@ -1117,6 +1160,8 @@ class RemediationController extends SecurityController
     
     /**
      * Display the NIST SP 800-53 control mapping and related information
+     * 
+     * @return void
      */
     function securityControlAction() 
     {
@@ -1126,6 +1171,8 @@ class RemediationController extends SecurityController
     
     /** 
      * Renders the form for uploading artifacts.
+     * 
+     * @return void
      */
     function uploadFormAction() 
     {
@@ -1134,7 +1181,8 @@ class RemediationController extends SecurityController
 
     /**
      * Get the finding and assign it to view
-     *
+     * 
+     * @return void
      */
     private function _viewFinding()
     {
@@ -1149,11 +1197,11 @@ class RemediationController extends SecurityController
     }
 
     /**
-     * Check and get a specific finding
+     * Check and get a specified finding
      *
-     * @param int $id
-     * @param return Zend_Record $finding
-     * @throw 
+     * @param int $id The specified finding id
+     * @return Finding The found finding
+     * @throws Fisma_Exception if the specified finding id is not found
      */
     private function _getFinding($id)
     {
@@ -1162,7 +1210,7 @@ class RemediationController extends SecurityController
         if (false == $finding) {
              throw new Fisma_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
         }
-
+        
         return $finding;
     }
 }

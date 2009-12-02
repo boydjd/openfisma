@@ -27,17 +27,27 @@
  */
 class SystemController extends BaseController
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
     protected $_modelName = 'System';
 
     /**
-     * Invokes a contract with BaseController regarding privileges. 
-     * @link http://jira.openfisma.org/browse/OFJ-24
+     * Invokes a contract with BaseController regarding privileges.
+     * 
      * @var string
+     * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
 
     /**
      * Setup the _organization member so that the base controller knows how to query the ACL
+     * 
+     * @return void
      */
     public function init() 
     {
@@ -46,8 +56,9 @@ class SystemController extends BaseController
 
     /**
      * Returns the standard form for creating, reading, and updating systems.
-     *
-     * @return Zend_Form
+     * 
+     * @param string|null $formName The specified form name
+     * @return Zend_Form The assembled from
      */
     public function getForm($formName = null)
     {
@@ -82,9 +93,10 @@ class SystemController extends BaseController
     }
     
     /**
-     * list the systems from the search, 
-     * if search none, it list all systems
-     *
+     * List the systems from the search. If search none, it list all systems
+     * 
+     * @return void
+     * @throws Fisma_Exception if the order parameter invalid
      */
     public function searchAction()
     {
@@ -146,6 +158,11 @@ class SystemController extends BaseController
         $this->_helper->json($tableData);
     }
     
+    /**
+     * View the specified system
+     * 
+     * @return void
+     */
     public function viewAction() 
     {
         $id = $this->getRequest()->getParam('id');
@@ -161,6 +178,8 @@ class SystemController extends BaseController
     
     /**
      * Display basic system properties such as name, creation date, etc.
+     * 
+     * @return void
      */
     public function systemAction() 
     {
@@ -201,6 +220,8 @@ class SystemController extends BaseController
     
     /**
      * Display CIA criteria and FIPS-199 categorization
+     * 
+     * @return void
      */
     public function fipsAction() 
     {
@@ -217,6 +238,8 @@ class SystemController extends BaseController
     
     /**
      * Display FISMA attributes for the system
+     * 
+     * @return void
      */
     public function fismaAction() 
     {
@@ -228,11 +251,13 @@ class SystemController extends BaseController
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
         
-        $this->render();        
+        $this->render();
     }
 
     /**
      * Display FISMA attributes for the system
+     * 
+     * @return void
      */
     public function artifactsAction() 
     {
@@ -260,6 +285,8 @@ class SystemController extends BaseController
 
     /**
      * Edit the system data
+     * 
+     * @return void
      */
     public function editAction()
     {
@@ -287,6 +314,8 @@ class SystemController extends BaseController
 
     /**
      * Upload file artifacts for a system
+     * 
+     * @return void
      */
     public function attachFileAction() 
     {
@@ -303,6 +332,8 @@ class SystemController extends BaseController
      * Display a form inside a panel for uploading a document
      * 
      * Notice that IE has its own method, since it does not support the flash uploader
+     * 
+     * @return void
      */
     public function uploadDocumentFormAction()
     {
@@ -317,6 +348,8 @@ class SystemController extends BaseController
   
     /**
      * Display a form inside a panel for uploading a document
+     * 
+     * @return void
      */
     public function uploadDocumentAction()
     {
@@ -399,6 +432,9 @@ class SystemController extends BaseController
     
     /**
      * Download the specified system document
+     * 
+     * @return void
+     * @throws Fisma_Exception if requested file doesn`t exist
      */
     public function downloadDocumentAction()
     {
@@ -435,6 +471,8 @@ class SystemController extends BaseController
      * A special upload page just for IE.
      * 
      * IE doesn't work with the flash uploader, so it uses a static upload page.
+     * 
+     * @return void
      */
     public function uploadForIeAction() 
     {

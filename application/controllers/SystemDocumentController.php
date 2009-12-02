@@ -29,12 +29,19 @@ class SystemDocumentController extends SecurityController
 {
     /**
      * Default pagination parameters
+     * 
+     * @var array
      */
     protected $_paging = array(
         'startIndex' => 0,
         'count' => 20
     );
 
+    /**
+     * Invoked before each Actions
+     * 
+     * @return void
+     */
     public function preDispatch()
     {
         /* Setting the first index of the page/table */
@@ -44,6 +51,8 @@ class SystemDocumentController extends SecurityController
 
     /**
      * View detail information of the subject model
+     * 
+     * @return void
      */
     public function viewAction()
     {
@@ -63,6 +72,8 @@ class SystemDocumentController extends SecurityController
 
     /**
      * List the subjects
+     * 
+     * @return void
      */
     public function listAction()
     {
@@ -77,9 +88,11 @@ class SystemDocumentController extends SecurityController
     }
 
     /** 
-     * Search the subject 
+     * Search the subject
      *
      * This outputs a json object. Allowing fulltext search from each record enpowered by lucene
+     * 
+     * @return string The json encoded table data
      */
     public function searchAction()
     {

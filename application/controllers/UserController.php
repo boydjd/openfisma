@@ -27,10 +27,19 @@
  */
 class UserController extends BaseController
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
     protected $_modelName = 'User';
 
     /**
-     * init() - Initialize internal members.
+     * Initialize internal members.
+     * 
+     * @return void
      */
     public function init()
     {
@@ -43,7 +52,10 @@ class UserController extends BaseController
     }
     
     /**
-     * Get the specific form of the subject model
+     * Get the specified form of the subject model
+     * 
+     * @param string $formName The specified form name to fill
+     * @return Zend_Form The assembled form
      */
     public function getForm($formName = null) 
     {
@@ -102,8 +114,7 @@ class UserController extends BaseController
      * Returns the standard form for reading, and updating
      * the current user's profile.
      *
-     * @return Zend_Form
-     *
+     * @return Zend_Form The loaded user profile from
      * @todo This function is not named correctly
      */
     private function _getProfileForm()
@@ -123,9 +134,10 @@ class UserController extends BaseController
     /** 
      * Set the Roles, organization relation before save the model
      *
-     * @param Zend_Form $form
-     * @param Doctrine_Record|null $subject
-     * @return Doctrine_Record
+     * @param Zend_Form $form The specified form to save
+     * @param Doctrine_Record|null $subject The specified subject related to the form
+     * @return void
+     * @throws Fisma_Exception if the related subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
     {
@@ -161,9 +173,9 @@ class UserController extends BaseController
     /**
      * Get the Roles and the organization from the model and assign them to the form
      *
-     * @param Doctrine_Record|null $subject
-     * @param Zend_Form $form
-     * @return Doctrine_Record
+     * @param Doctrine_Record|null $subject The specified subject
+     * @param Zend_Form $form The specified form to set
+     * @return Zend_Form The processed form
      */
     protected function setForm($subject, $form)
     {
@@ -181,6 +193,8 @@ class UserController extends BaseController
 
     /**
      * Display the user's "Edit Profile" page and handle its updating
+     * 
+     * @return void
      */
     public function profileAction()
     {
@@ -222,6 +236,8 @@ class UserController extends BaseController
 
     /**
      * Change user's password
+     * 
+     * @return void
      */
     public function passwordAction()
     {
@@ -261,7 +277,9 @@ class UserController extends BaseController
     }
 
     /**
-     *  Set user's notification policy
+     * Set user's notification policy
+     * 
+     * @return void
      */
     public function notificationAction()
     {
@@ -307,7 +325,7 @@ class UserController extends BaseController
     /**
      * Get the password complex requirements
      *
-     * @return array 
+     * @return array The password requirement messages in array
      */
     private function _getPasswordRequirements()
     {
@@ -331,6 +349,11 @@ class UserController extends BaseController
         return $requirements;
     }
 
+    /**
+     * Set cloumn preference
+     * 
+     * @return void
+     */
     public function setColumnPreferenceAction()
     {
         $me = Doctrine::getTable('User')->find($this->_me->id);
@@ -342,8 +365,9 @@ class UserController extends BaseController
     }
     
     /**
-     * store user last accept rob
-     * create a audit event
+     * Store user last accept rob and create a audit event
+     * 
+     * @return void
      */
     public function acceptRobAction()
     {
@@ -354,7 +378,9 @@ class UserController extends BaseController
     }
     
     /**
-     * generate a password that meet the application's password complexity requirements.
+     * Generate a password that meet the application's password complexity requirements.
+     * 
+     * @return void
      */
     public function generatePasswordAction()
     {
@@ -402,8 +428,9 @@ class UserController extends BaseController
     }
     
     /**
-     * checkaccountAction() - Check to see if the specified LDAP
-     * distinguished name (Account) exists in the system's specified LDAP directory.
+     * Check if the specified LDAP distinguished name (Account) exists in the system's specified LDAP directory.
+     * 
+     * @return void
      * @todo code finish this function later
      */
     public function checkAccountAction()

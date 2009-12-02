@@ -27,6 +27,11 @@
  */
 class RedirectController extends Zend_Controller_Action
 {
+    /**
+     * Redirect to the specified URL
+     * 
+     * @return void
+     */
     public function redirectAction() 
     {
         $this->_helper->layout->setLayout('layout');

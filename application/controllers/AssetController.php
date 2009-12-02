@@ -39,7 +39,7 @@ class AssetController extends BaseController
     protected $_modelName = 'Asset';
 
     /**
-     * asset columns which need to displayed on the list page, PDF and Excel
+     * Asset columns which need to displayed on the list page, PDF and Excel
      * 
      * @var array
      */
@@ -60,7 +60,7 @@ class AssetController extends BaseController
     protected $_organizations = '*';
 
     /**
-     * init() - Initialize internal members.
+     * Initialize internal members.
      * 
      * @return void
      */
@@ -92,7 +92,7 @@ class AssetController extends BaseController
     }
 
     /**
-     * preDispatch() - invoked before each Actions
+     * Invoked before each Actions
      * 
      * @return void
      */
@@ -112,10 +112,10 @@ class AssetController extends BaseController
     }
     
     /**
-     * Get the specific form of the subject model
+     * Get the specified form of the subject model
      * 
-     * @param string|null $formName The name of the specific form
-     * @return Zend_Form The specific form of the subject model
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
      */
     public function getForm($formName=null)
     {
@@ -138,9 +138,9 @@ class AssetController extends BaseController
     
     /**
      * Hooks for manipulating the values before setting to a form
-     *
-     * @param Doctrine_Record $subject The specific subject model
-     * @param Zend_Form $form The specific form
+     * 
+     * @param Doctrine_Record $subject The specified subject model
+     * @param Zend_Form $form The specified form
      * @return Zend_Form The manipulated form
      */
     protected function setForm($subject, $form)
@@ -154,8 +154,8 @@ class AssetController extends BaseController
     /**
      * Hooks for manipulating and saving the values retrieved by Forms
      *
-     * @param Zend_Form $form The specific form
-     * @param Doctrine_Record|null $subject The specific subject model
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
      * @return void
      * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
      */
@@ -178,7 +178,7 @@ class AssetController extends BaseController
     }
     
     /**
-     * Extract specific criteria parameters from request and assemble them
+     * Extract specified criteria parameters from request and assemble them
      * 
      * @return array The array of criteria parameters
      */
@@ -375,7 +375,7 @@ class AssetController extends BaseController
     }
     
     /**
-     * Delete a asset
+     * Delete an asset
      * 
      * @return void
      */

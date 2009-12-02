@@ -27,10 +27,19 @@
  */
 class SourceController extends BaseController
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
     protected $_modelName = 'Source';
     
     /**
      * Delete a subject model
+     * 
+     * @return void
      */
     public function deleteAction()
     {

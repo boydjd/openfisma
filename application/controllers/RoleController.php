@@ -27,8 +27,20 @@
  */
 class RoleController extends BaseController
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
     protected $_modelName = 'Role';
     
+    /**
+     * View a role
+     * 
+     * @return void
+     */
     public function viewAction()
     {
         $id = $this->_request->getParam('id');
@@ -38,6 +50,8 @@ class RoleController extends BaseController
     
     /**
      * Delete a role
+     * 
+     * @return void
      */
     public function deleteAction()
     {
@@ -69,7 +83,9 @@ class RoleController extends BaseController
     }
 
     /**
-     * assign privileges to a single role
+     * Assign privileges to a single role
+     * 
+     * @return void
      */
     public function rightAction()
     {

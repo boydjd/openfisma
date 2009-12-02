@@ -177,7 +177,7 @@ class AuthController extends Zend_Controller_Action
      * Returns a suitable authentication adapter based on system configuration and current user
      * 
      * @param User $user Authentication adapters may be different for different users
-     * @param string $password The corresponding password of the specific user
+     * @param string $password The corresponding password of the specified user
      * @return Zend_Auth_Adapter_Interface The suitable authentication adapter
      */
     public function getAuthAdapter(User $user, $password)
@@ -228,7 +228,7 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * privacyAction() - Display the system's privacy policy.
+     * Display the system's privacy policy.
      * 
      * @return void
      * @todo the business logic is stored in the view instead of the controller
@@ -238,7 +238,7 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * robAction() - Display the system's Rules Of Behavior.
+     * Display the system's Rules Of Behavior.
      * 
      * @return void
      * @todo the business logic is stored in the view instead of the controller

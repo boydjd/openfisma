@@ -28,7 +28,7 @@
 abstract class BaseController extends SecurityController
 {
     /**
-     * Default paginate parameters
+     * Default pagination parameters
      * 
      * @var array
      */
@@ -63,7 +63,7 @@ abstract class BaseController extends SecurityController
     private $_aclResource;
 
     /**
-     * Make sure the model has been properly set
+     *  Initialize model and make sure the model has been properly set
      * 
      * @return void
      * @throws Fisma_Exception if model name is null
@@ -84,7 +84,7 @@ abstract class BaseController extends SecurityController
     }
     
     /**
-     * preDispatch() - invoked before each Actions
+     * Invoked before each Actions
      * 
      * @return void
      */
@@ -96,10 +96,10 @@ abstract class BaseController extends SecurityController
     }
 
     /**
-     * Get the specific form of the subject model
+     * Get the specified form of the subject model
      * 
-     * @param string|null $formName The name of the specific form
-     * @return Zend_Form The specific form of the subject model
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
      */
     public function getForm($formName=null)
     {
@@ -117,8 +117,8 @@ abstract class BaseController extends SecurityController
     /**
      * Hooks for manipulating the values before setting to a form
      *
-     * @param Doctrine_Record $subject The specific subject model
-     * @param Zend_Form $form The specific form
+     * @param Doctrine_Record $subject The specified subject model
+     * @param Zend_Form $form The specified form
      * @return Zend_Form The manipulated form
      */
     protected function setForm($subject, $form)
@@ -130,8 +130,8 @@ abstract class BaseController extends SecurityController
     /**
      * Hooks for manipulating and saving the values retrieved by Forms
      *
-     * @param Zend_Form $form The specific form
-     * @param Doctrine_Record|null $subject The specific subject model
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
      * @return void
      * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
      */
@@ -378,7 +378,7 @@ abstract class BaseController extends SecurityController
      * in the controller which is inherited from this Controller
      * 
      * @param Doctrine_Collections $rows The spepcific Doctrine_Collections object
-     * @return array The array representation of the spepcific Doctrine_Collections object
+     * @return array The array representation of the specified Doctrine_Collections object
      */
     public function handleCollection($rows)
     {

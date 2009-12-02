@@ -27,10 +27,19 @@
  */
 class ProductController extends BaseController
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
     protected $_modelName = 'Product';
     
     /**
      * Delete a product
+     * 
+     * @return void
      */
     public function deleteAction()
     {
@@ -59,6 +68,8 @@ class ProductController extends BaseController
     
     /**
      * Render the form for searching the products
+     * 
+     * @return void
      */
     public function advancesearchAction()
     {

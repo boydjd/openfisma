@@ -29,10 +29,19 @@
 class NetworkController extends BaseController
 {
     
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
     protected $_modelName = 'Network';
 
     /**
      * Delete a network
+     * 
+     * @return void
      */
     public function deleteAction()
     {

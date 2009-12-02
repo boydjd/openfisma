@@ -38,14 +38,14 @@ class FindingController extends BaseController
     protected $_modelName = 'Finding';
 
     /**
-     * my OrgSystems
+     * My OrgSystems
      *
      * @var array
      */
     private $_myOrgSystems = null;
     
     /**
-     * my OrgSystem ids
+     * My OrgSystem ids
      *
      * @var array
      */
@@ -60,7 +60,7 @@ class FindingController extends BaseController
     protected $_organizations = '*';
     
     /**
-     * initialize the basic information, my orgSystems
+     * Initialize the basic information, my orgSystems
      * 
      * @return void
      */
@@ -80,7 +80,7 @@ class FindingController extends BaseController
     /**
      * Returns the standard form for creating finding
      * 
-     * @param string|null $formName The specific form name to load
+     * @param string|null $formName The specified form name to load
      * @return Zend_Form The assembled form
      */
     public function getForm($formName = null)
@@ -143,7 +143,7 @@ class FindingController extends BaseController
     /** 
      * Overriding Hooks
      * 
-     * @param Zend_Form $form The specific form to save
+     * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The subject model related to the form
      * @return void
      * @throws Fisma_Exception if the subject is not null or the organization of the finding associated
@@ -344,7 +344,7 @@ class FindingController extends BaseController
     }
 
     /** 
-     * pluginAction() - Import scan results via a plug-in
+     * Import scan results via a plug-in
      * 
      * @return void
      */
@@ -464,7 +464,7 @@ class FindingController extends BaseController
     }
 
     /** 
-     * approveAction() - Allows a user to approve or delete pending findings
+     * Allows a user to approve or delete pending findings
      * 
      * @return void
      * @todo Use YUI pager

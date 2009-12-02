@@ -29,8 +29,9 @@
 class ReportController extends SecurityController
 {
     /**
-     * init() - Create the additional pdf and xls contexts for this class.
-     *
+     * Create the additional pdf and xls contexts for this class.
+     * 
+     * @return void
      * @todo Why are the contexts duplicated in init() and predispatch()? I think the init() method is the right place
      * for it.
      */
@@ -65,7 +66,9 @@ class ReportController extends SecurityController
     }
     
     /**
-     * preDispatch() - Add the action contexts for this controller.
+     * Add the action contexts for this controller.
+     * 
+     * @return void
      */
     public function preDispatch()
     {
@@ -82,7 +85,7 @@ class ReportController extends SecurityController
     /**
      * Returns the due date for the next quarterly FISMA report
      * 
-     * @return Zend_Date
+     * @return Zend_Date The next quarterly OpenFISMA report date
      */
     public function getNextQuarterlyFismaReportDate()
     {
@@ -121,7 +124,7 @@ class ReportController extends SecurityController
     /**
      * Returns the due date for the next annual FISMA report
      * 
-     * @return Zend_Date
+     * @return Zend_Date The next annual OpenFISMA report date
      */
     public function getNextAnnualFismaReportDate()
     {
@@ -136,7 +139,9 @@ class ReportController extends SecurityController
     }
 
     /**
-     * fismaAction() - Genenerate fisma report
+     * Genenerate fisma report
+     * 
+     * @return void
      */
     public function fismaAction()
     {
@@ -150,6 +155,8 @@ class ReportController extends SecurityController
      * Generate the quarterly FISMA report
      * 
      * The data in this action is calculated in roughly the same order as it is laid out in the report itself.
+     * 
+     * @return void
      */
     public function fismaQuarterlyAction()
     {
@@ -173,6 +180,8 @@ class ReportController extends SecurityController
     
     /**
      * Generate the annual FISMA report
+     * 
+     * @return void
      */
     public function fismaAnnualAction()
     {
@@ -195,7 +204,9 @@ class ReportController extends SecurityController
     }
         
     /**
-     * overdueAction() - Overdue report
+     * Overdue report
+     * 
+     * @return void
      */
     public function overdueAction()
     {
@@ -281,6 +292,8 @@ class ReportController extends SecurityController
 
     /**
      * Batch generate RAFs for each system
+     * 
+     * @return void
      */
     public function rafsAction()
     {
@@ -348,8 +361,9 @@ class ReportController extends SecurityController
     }
     
     /**
-     * pluginAction() - Display the available plugin reports
-     *
+     * Display the available plugin reports
+     * 
+     * @return void
      * @todo Use Zend_Cache for the report menu
      */         
     public function pluginAction() 
@@ -363,8 +377,10 @@ class ReportController extends SecurityController
     }
 
     /**
-     * pluginReportAction() - Execute and display the specified plug-in report
-     */         
+     * Execute and display the specified plug-in report
+     * 
+     * @return void
+     */
     public function pluginReportAction()
     {
         // Verify a plugin report name was passed to this action

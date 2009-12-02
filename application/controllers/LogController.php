@@ -39,8 +39,8 @@ class LogController extends BaseController
     /**
      * Handle the records from searchAction if necessary
      *
-     * @param Doctrine_Collections $logs The specific Doctrine_Collections object of logs
-     * @return array The array representation of the specific Doctrine_Collections object of logs
+     * @param Doctrine_Collections $logs The specified Doctrine_Collections object of logs
+     * @return array The array representation of the specified Doctrine_Collections object of logs
      */
     public function handleCollection($logs)
     {
