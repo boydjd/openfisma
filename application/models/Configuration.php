@@ -78,7 +78,7 @@ class Configuration extends BaseConfiguration
                 //convert to second
                 $value *= 60;
             }
-            $config->value = $value;
+            $this->value = $value;
         }
     }
 }

@@ -193,7 +193,7 @@ abstract class BaseController extends SecurityController
                     $model = 'notice';
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
-                    $msg   = "Could not create the object ";
+                    $msg   = "Could not create the object";
                     if (Fisma::debug()) {
                         $msg .= $e->getMessage();
                     }

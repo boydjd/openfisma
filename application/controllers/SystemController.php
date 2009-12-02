@@ -71,7 +71,7 @@ class SystemController extends BaseController
             foreach ($organizationTree as $organization) {
                 $value = $organization['id'];
                 $text = str_repeat('--', $organization['level']) . $organization['name'];
-                $form->getElement('organizationId')->addMultiOptions(array($value => $text));
+                $form->getElement('parentOrganizationId')->addMultiOptions(array($value => $text));
             }
         }
         
@@ -327,7 +327,41 @@ class SystemController extends BaseController
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
     }
-    
+
+    /**
+     * Override the base class to handle the saving of attributes into the Organization AND System models
+     *
+     * @param Zend_Form $form
+     * @param Doctrine_Record $system
+     * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
+     */
+    protected function saveValue($form, $system=null)
+    {
+        // Create a new object if one is not provided (this indicates a "create" action rather than an "update")
+        if (is_null($system)) {            
+            $system = new System();
+            $system->Organization = new Organization();
+            $system->Organization->orgType = 'system';
+        } elseif (!$subject instanceof Doctrine_Record) {
+            throw new Fisma_Exception('Expected a Doctrine_Record object');
+        }
+
+        // Merge form data into the organization model and system model. The variables are named such that each model
+        // will merge the values it needs automatically.
+        $systemData = $form->getValues();
+        $system->Organization->merge($systemData);
+        $system->merge($systemData);
+        $system->save();
+
+        // Create the tree structure for this system
+        $parentNode = Doctrine::getTable('Organization')->find($systemData['parentOrganizationId']);
+        if (!$parentNode) {
+            throw new Fisma_Exception("No parent organization with id={$systemData['parentOrganizationId']}ß");
+        }
+        $system->Organization->getNode()->insertAsLastChildOf($parentNode);
+        $system->Organization->save();
+    }
+
     /**
      * Display a form inside a panel for uploading a document
      * 

@@ -24,14 +24,14 @@ elements.nickname.options.required = true
 elements.nickname.options.tooltip = "<p><b>Acronym or Nickname</b></p><p>Please select a short unique identifier for the information system. The short nickname will be used on reports and other areas of OpenFISMA to display large amounts of data in short column space.</p>"
 displayGroups.system.elements.nickname = "nickname"
 
-elements.organizationId.type = "select"
-elements.organizationId.options.label = "Organization"
-elements.organizationId.options.validators.alnum.validator = "NotEmpty"
-elements.organizationId.options.validators.strlen.validator = "StringLength"
-elements.organizationId.options.validators.strlen.options.min = "1"
-elements.organizationId.options.validators.strlen.options.max = "10"
-elements.organizationId.options.required = true
-displayGroups.system.elements.organizationId = "organizationId"
+elements.parentOrganizationId.type = "select"
+elements.parentOrganizationId.options.label = "Organization"
+elements.parentOrganizationId.options.validators.alnum.validator = "NotEmpty"
+elements.parentOrganizationId.options.validators.strlen.validator = "StringLength"
+elements.parentOrganizationId.options.validators.strlen.options.min = "1"
+elements.parentOrganizationId.options.validators.strlen.options.max = "10"
+elements.parentOrganizationId.options.required = true
+displayGroups.system.elements.parentOrganizationId = "parentOrganizationId"
 
 elements.type.type = "select"
 elements.type.options.label = "Type"
