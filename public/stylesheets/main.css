@@ -522,3 +522,13 @@ table.systemDocuments td img {
     width:220px;
     margin-left:10px;
 }
+
+input#product.yui-ac-input {
+    position: relative;
+}
+
+div#product_ac_container {
+  position: relative;
+  top: 0px;
+  width: 234px;
+}

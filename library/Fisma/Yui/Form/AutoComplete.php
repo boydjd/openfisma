@@ -38,29 +38,13 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
     }
     
     /**
-     * A default implementation of render() that creates a standard button. This is overridden in subclasses to 
-     * implement more unique button types.
+     * A default implementation of render() that creates an autocomplete text field 
      * 
      * @return string
      */              
     function renderSelf() 
     {
         $render  = "
-        <style type=\"text/css\">
-          #{$this->getAttrib('containerId')} {
-            width: 234px;
-            position: relative;
-            top: 0;
-          }
-          #{$this->getName()} {
-            color: #404040;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 3px 5px;
-            font-family: 'Verdana','Arial','Helvetica';
-            position: relative;
-          }
-        </style>
         <div id=\"{$this->getAttrib('containerId')}\">
         <input type=\"text\" id=\"{$this->getName()}\" />
         </div>
