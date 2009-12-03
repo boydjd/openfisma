@@ -29,6 +29,8 @@ class AddFindingDeleteEvent extends Doctrine_Migration_Base
 {
     /**
      * Insert new event
+     * 
+     * @return void
      */
     public function up()
     {
@@ -49,6 +51,8 @@ class AddFindingDeleteEvent extends Doctrine_Migration_Base
     
     /**
      * Remove new event
+     * 
+     * @return void
      */
     public function down()
     {

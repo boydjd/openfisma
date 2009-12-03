@@ -30,9 +30,8 @@
 class InsertUpdatedTsIntoFindingsFromAuditLog extends Doctrine_Migration_Base
 {
     /**
-     * up - Insert correct timestamps from auditlog into findings 
+     * Insert correct timestamps from auditlog into findings
      * 
-     * @access public
      * @return void
      */
     public function up()
@@ -42,9 +41,8 @@ class InsertUpdatedTsIntoFindingsFromAuditLog extends Doctrine_Migration_Base
     }
 
     /**
-     * _insertLastUpdateTimes - Load data into modifiedts column from auditlog 
+     * Load data into modifiedts column from auditlog
      * 
-     * @access private
      * @return void
      */
     private function _insertLastUpdateTimes()
@@ -66,9 +64,8 @@ class InsertUpdatedTsIntoFindingsFromAuditLog extends Doctrine_Migration_Base
     }
     
     /**
-     * down - Set modifiedTs to null 
+     * Set modifiedTs to null
      * 
-     * @access public
      * @return void
      */
     public function down()

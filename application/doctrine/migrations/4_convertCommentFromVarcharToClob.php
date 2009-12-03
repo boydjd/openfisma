@@ -32,7 +32,7 @@ class ConvertCommentFromVarcharToClob extends Doctrine_Migration_Base
      * 
      * In the native DB, this will result in a change from VARCHAR to TEXT or CLOB
      * 
-     * @param $direction either 'up' or 'down'
+     * @return void
      */
     public function up()
     {
@@ -44,7 +44,7 @@ class ConvertCommentFromVarcharToClob extends Doctrine_Migration_Base
     /**
      * Convert from string to string(255). 
      * 
-     * @param $direction either 'up' or 'down'
+     * @return void
      */
     public function down()
     {

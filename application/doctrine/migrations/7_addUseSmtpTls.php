@@ -29,6 +29,8 @@ class AddUseSmtpTls extends Doctrine_Migration_Base
 {
     /**
      * Insert new configuration
+     * 
+     * @return void
      */
     public function up()
     {
@@ -41,6 +43,8 @@ class AddUseSmtpTls extends Doctrine_Migration_Base
 
     /**
      * Remove new configuration
+     * 
+     * @return void
      */
     public function down()
     {

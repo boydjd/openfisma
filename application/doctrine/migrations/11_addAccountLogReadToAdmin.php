@@ -34,7 +34,9 @@
 class AddAccountLogReadToAdmin extends Doctrine_Migration_Base
 {
     /**
-     * Add privileges 
+     * Add privileges
+     * 
+     * @return void
      */
     public function up()
     {
@@ -58,7 +60,9 @@ class AddAccountLogReadToAdmin extends Doctrine_Migration_Base
     }
     
     /**
-     * Remove privileges 
+     * Remove privileges
+     * 
+     * @return void
      */
     public function down()
     {
@@ -74,10 +78,9 @@ class AddAccountLogReadToAdmin extends Doctrine_Migration_Base
     }
 
     /**
-     * _getPrivilege 
+     * Retrieve privileges with the specified resource and action condition
      * 
-     * @access private
-     * @return array
+     * @return array The array of the condition matched privileges
      */
     private function _getPrivilege() 
     {
@@ -91,10 +94,9 @@ class AddAccountLogReadToAdmin extends Doctrine_Migration_Base
     }
 
     /**
-     * _getRole 
+     * Retrieve roles with the specified nickname condition
      * 
-     * @access private
-     * @return array 
+     * @return array The array of the condition matched roles
      */
     private function _getRole() 
     {
@@ -107,11 +109,10 @@ class AddAccountLogReadToAdmin extends Doctrine_Migration_Base
     }
 
     /**
-     * _deleteRolePrivilege 
+     * Delete the relation of between the specified role and privilege
      * 
-     * @param mixed $role 
-     * @param mixed $privilege 
-     * @access private
+     * @param int $role The specified role id
+     * @param int $privilege The specified privilege id
      * @return void
      */
     private function _deleteRolePrivilege($role, $privilege) 

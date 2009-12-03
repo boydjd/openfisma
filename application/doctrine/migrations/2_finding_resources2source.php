@@ -29,6 +29,8 @@ class ModifyResource extends Doctrine_Migration_Base
 {
     /**
      * Implement the doing changes, replace "finding_sources" with "source"
+     * 
+     * @return void
      */
     public function up()
     {
@@ -41,6 +43,8 @@ class ModifyResource extends Doctrine_Migration_Base
 
     /**
      * Implement the undoing changes, replace "source" with "finding_source"
+     * 
+     * @return void
      */
     public function down()
     {

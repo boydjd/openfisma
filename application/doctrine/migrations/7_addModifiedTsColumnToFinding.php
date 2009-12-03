@@ -30,9 +30,8 @@
 class AddModifiedTsColumnToFinding extends Doctrine_Migration_Base
 {
     /**
-     * up - Add ModifiedTs Column to Finding
+     * Add ModifiedTs Column to Finding
      * 
-     * @access public
      * @return void
      */
     public function up()
@@ -42,9 +41,8 @@ class AddModifiedTsColumnToFinding extends Doctrine_Migration_Base
     }
 
     /**
-     * down - Remove ModifiedTs column from Finding 
+     * Remove ModifiedTs column from Finding 
      * 
-     * @access public
      * @return void
      */
     public function down()

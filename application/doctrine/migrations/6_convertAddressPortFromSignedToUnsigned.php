@@ -30,7 +30,7 @@ class ConvertAddressPortFromSignedToUnsigned extends Doctrine_Migration_Base
     /**
      * Convert from signed to unsigned. 
      * 
-     * @param $direction either 'up' or 'down'
+     * @return void
      */
     public function up()
     {
@@ -48,7 +48,7 @@ class ConvertAddressPortFromSignedToUnsigned extends Doctrine_Migration_Base
     /**
      * Convert from unsigned to signed. 
      * 
-     * @param $direction either 'up' or 'down'
+     * @return void
      */
     public function down()
     {

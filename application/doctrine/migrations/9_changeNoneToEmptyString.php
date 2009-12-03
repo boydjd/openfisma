@@ -30,7 +30,7 @@ class ChangeNoneToEmptyString extends Doctrine_Migration_Base
     /**
      * Convert from NONE to empty
      * 
-     * @param $direction either 'up' or 'down'
+     * @return void
      */
     public function up()
     {
@@ -54,7 +54,7 @@ class ChangeNoneToEmptyString extends Doctrine_Migration_Base
     /**
      * Convert from empty to NONE
      * 
-     * @param $direction either 'up' or 'down'
+     * @return void
      */
     public function down()
     {

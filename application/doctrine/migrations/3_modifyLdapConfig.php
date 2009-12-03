@@ -29,6 +29,8 @@ class ModifyLdapConfig extends Doctrine_Migration_Base
 {
     /**
      * Implement the doing changes, modify the LDAP schemas to standard and generate a new models
+     * 
+     * @return void
      */
     public function up()
     {
@@ -44,6 +46,8 @@ class ModifyLdapConfig extends Doctrine_Migration_Base
 
     /**
      * Implement the undoing changes, modify the LDAP schemas to original and generate a new models
+     * 
+     * @return void
      */
     public function down()
     {

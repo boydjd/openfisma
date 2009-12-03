@@ -29,6 +29,8 @@ class AddPrivilege extends Doctrine_Migration_Base
 {
     /**
      * Implement the doing changes, create the privilege "assignPrivileges" and assign ti to ADMIN
+     * 
+     * @return void
      */
     public function up()
     {
@@ -66,6 +68,8 @@ class AddPrivilege extends Doctrine_Migration_Base
     /**
      * Implement the undoing changes, Remove the privilege "assignPrivileges" from ADMIN
      * and delete it from privileges table
+     * 
+     * @return void
      */
     public function down()
     {
