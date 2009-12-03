@@ -24,11 +24,20 @@ elements.addressPort.options.label = "Address Port"
 elements.addressPort.options.validators.alnum.validator = "Digits"
 displayGroups.assetInfo.elements.addressPort = "addressPort"
 
-elements.productId.type = "select"
-elements.productId.options.label = "Product"
-elements.productId.options.size = "10"
-elements.productId.options.style = "width:400px;"
-displayGroups.assetInfo.elements.productId = "productId"
+elements.product.type = "Form_AutoComplete"
+elements.product.options.label = "Product"
+elements.product.options.style = "width:400px;"
+elements.product.options.attribs.resultsList = "table.records"
+elements.product.options.attribs.fields = "name"
+elements.product.options.attribs.xhr = "/product/search/format/json"
+elements.product.options.attribs.hiddenField = "productId"
+elements.product.options.attribs.queryPrepend = "/keywords/"
+elements.product.options.attribs.containerId = "product_ac_container"
+displayGroups.assetInfo.elements.product = "product"
+
+elements.productId.type = "hidden"
+elements.productId.label = null
+elements.productId.options.displaynone = true;
 
 elements.orgSystemId.type = "select"
 elements.orgSystemId.options.label = "System"

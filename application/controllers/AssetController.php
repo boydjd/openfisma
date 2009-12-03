@@ -120,7 +120,6 @@ class AssetController extends BaseController
     public function getForm($formName=null)
     {
         $form = Fisma_Form_Manager::loadForm($this->_modelName);
-        
         $systems = $this->_me->getOrganizations();
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
@@ -131,7 +130,6 @@ class AssetController extends BaseController
             $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
         }
         $form->getElement('networkId')->addMultiOptions($networkList);
-        $form->getElement('productId')->setRegisterInArrayValidator(false);
         $form = Fisma_Form_Manager::prepareForm($form);
         return $form;
     }
