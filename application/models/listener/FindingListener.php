@@ -28,7 +28,9 @@
 class FindingListener extends Doctrine_Record_Listener
 {
     /**
-     * these keys don't catch logs
+     * These keys don't catch logs
+     * 
+     * @var array
      */
     private static $_excludeLogKeys = array(
         'currentEvaluationId',
@@ -42,6 +44,8 @@ class FindingListener extends Doctrine_Record_Listener
     /**
      * Maps fields to their corresponding privileges. This is kind of ugly. A better solution would be to store this
      * information in the model itself, and then include it in a global listener.
+     * 
+     * @var array
      */
     private static $_requiredPrivileges = array(
         'type' => 'update_type',
@@ -61,6 +65,8 @@ class FindingListener extends Doctrine_Record_Listener
     /**
      * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
      * Threat & countermeasures are also handled separately.
+     * 
+     * @var array
      */
     private static $_notificationKeys = array(
         'mitigationStrategy'        => 'UPDATE_COURSE_OF_ACTION',
@@ -79,7 +85,8 @@ class FindingListener extends Doctrine_Record_Listener
      * marked as closed.
      * write the audit log
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function preInsert(Doctrine_Event $event)
     {
@@ -102,7 +109,8 @@ class FindingListener extends Doctrine_Record_Listener
     /**
      * Check ACL before updating a record. See if any notifications need to be sent.
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function preUpdate(Doctrine_Event $event) 
     {
@@ -134,8 +142,10 @@ class FindingListener extends Doctrine_Record_Listener
 
     /**
      * Write the audit logs
+     * 
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      * @todo the log need to get the user who did it
-     * @param Doctrine_Event $event
      */
     public function preSave(Doctrine_Event $event)
     {
@@ -297,6 +307,9 @@ class FindingListener extends Doctrine_Record_Listener
 
     /**
      * Insert or Update finding lucene index
+     * 
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function postSave(Doctrine_Event $event)
     {

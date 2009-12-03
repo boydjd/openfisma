@@ -30,7 +30,8 @@ class IndexListener extends Doctrine_Record_Listener
     /**
      * New records always get indexed
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function postInsert(Doctrine_Event $event)
     {
@@ -43,7 +44,8 @@ class IndexListener extends Doctrine_Record_Listener
     /**
      * Updated records are only indexed if one of its indexable fields was modified
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function postUpdate(Doctrine_Event $event)
     {
@@ -76,7 +78,8 @@ class IndexListener extends Doctrine_Record_Listener
     /**
      * Remove deleted records from the keyword index
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function postDelete(Doctrine_Event $event)
     {

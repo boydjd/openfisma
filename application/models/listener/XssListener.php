@@ -44,7 +44,8 @@ class XssListener extends Doctrine_Record_Listener
     /**
      * Purify any fields which have been marked in the schema as needing purification
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function preSave(Doctrine_Event $event) 
     {
@@ -75,10 +76,9 @@ class XssListener extends Doctrine_Record_Listener
     
     /**
      * Return the purifier instance for this class, initializing it first if necessary
-     *
-     * @see http://htmlpurifier.org/live/configdoc/plain.htm
      * 
-     * @return HTMLPurifier
+     * @return HTMLPurifier Initialized instance of HTMLPurifier
+     * @see http://htmlpurifier.org/live/configdoc/plain.htm
      */
     public function getPurifier() 
     {

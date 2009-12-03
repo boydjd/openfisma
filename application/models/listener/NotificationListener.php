@@ -37,7 +37,8 @@ class NotificationListener extends Doctrine_Record_Listener
     /**
      * Send notifications for object creation
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function postInsert(Doctrine_Event $event)
     {
@@ -52,7 +53,8 @@ class NotificationListener extends Doctrine_Record_Listener
      * These notifications are only sent if the model has defined columns with an extra attribute called 
      * 'notify' with a boolean value 'true' AND one of those columns has been modified.
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function postUpdate(Doctrine_Event $event)
     {
@@ -76,7 +78,8 @@ class NotificationListener extends Doctrine_Record_Listener
     /**
      * Send notifications for object deletions
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
      */
     public function postDelete(Doctrine_Event $event)
     {
