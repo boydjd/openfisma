@@ -30,7 +30,7 @@ class SystemDocument extends BaseSystemDocument
     /**
      * Return the physical path to this document
      * 
-     * @return string
+     * @return string The physical path of the systemDocument
      */
     public function getPath() 
     {
@@ -43,6 +43,11 @@ class SystemDocument extends BaseSystemDocument
         return $path;
     }
     
+    /**
+     * Calculate and return size of systemDocument in KB
+     * 
+     * @return string The file size in KB
+     */
     public function getSizeKb()
     {
         return round($this->size / 1024, 0) . " KB";
@@ -51,7 +56,7 @@ class SystemDocument extends BaseSystemDocument
     /**
      * Returns a URL for an icon which represents this document
      * 
-     * @return string
+     * @return string The file icon URL related to the file extension name
      */
     public function getIconUrl()
     {

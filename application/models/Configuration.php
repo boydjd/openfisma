@@ -31,8 +31,9 @@ class Configuration extends BaseConfiguration
      * Get a configuration item from the configuration table. This static function is merely a convenience
      * function to make this common task easier to perform.
      * 
-     * @param string $name
-     * @return string|int $value
+     * @param string $name The specified configuration item name to obtain
+     * @return string|int $value The value of the configuration item
+     * @throws Fisma_Exception_Config if the specified configuration item name is invalid
      */
     public static function getConfig($name) 
     {
@@ -50,8 +51,9 @@ class Configuration extends BaseConfiguration
      * Set a configuration item in the configuration table. This static function is merely a convenience
      * function to make this common task easier to perform.
      * 
-     * @param string $name
-     * @param string|int $value
+     * @param string $name The specified configuration item name to set
+     * @param string|int $value The value of the configuration item to set
+     * @return void
      */
     public static function setConfig($name, $value) 
     {
@@ -65,7 +67,8 @@ class Configuration extends BaseConfiguration
     /**
      * Handle conversion from minutes to seconds for certain configuration items
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function preSave($event)
     {

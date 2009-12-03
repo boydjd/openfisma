@@ -30,6 +30,7 @@ class AccountLog extends BaseAccountLog
     /**
      * Declares fields stored in related records that should be indexed along with records in this table
      * 
+     * @var array
      * @see Asset.php
      * @todo Doctrine 2.0 might provide a nicer approach for this
      */

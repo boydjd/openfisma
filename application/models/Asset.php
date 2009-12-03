@@ -36,6 +36,7 @@ class Asset extends BaseAsset
      * 
      * Each class that takes advantage of this must declare a public array called $relationIndex
      * 
+     * @var array
      * @todo Doctrine 2.0 might provide a nicer approach for this
      */
     public $relationIndex = array(

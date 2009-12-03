@@ -31,6 +31,8 @@ class Organization extends BaseOrganization
 {
     /**
      * Implements the interface for Zend_Acl_Role_Interface
+     * 
+     * @return int The role id
      */
     public function getRoleId()
     {
@@ -40,6 +42,8 @@ class Organization extends BaseOrganization
     /**
      * A mapping from the physical organization types to proper English terms.
      * Notice that for 'system' types, the label is returned from the System class instead.
+     * 
+     * @var array
      */
     private $_orgTypeMap = array(
         'agency' => 'Agency',
@@ -48,10 +52,10 @@ class Organization extends BaseOrganization
     );
 
     /**
-     * Return the the type of this organization.  Unlike $this->type, this resolves
+     * Return the type of this organization.  Unlike $this->type, this resolves
      * system organizations down to their subtype, such as gss, major or minor
      * 
-     * @return string
+     * @return string The type of organization
      */
     public function getType() 
     {
@@ -65,7 +69,7 @@ class Organization extends BaseOrganization
     /**
      * Return the English version of the orgType field
      * 
-     * @return string
+     * @return string The English version of the orgType field
      */
     public function getOrgTypeLabel() 
     {
@@ -99,8 +103,7 @@ class Organization extends BaseOrganization
      * 
      * @param string $type The mitigation strategy type to filter for
      * @param int $source The id of the finding source to filter for
-     * 
-     * @return array 
+     * @return array The statistics of finding of organizations in array
      */
     public function getSummaryCounts($type = null, $source = null) 
     {
@@ -217,6 +220,8 @@ class Organization extends BaseOrganization
      * Since the summary counts are cached, other classes need a way of telling the Organization class to 
      * clear the cache and recalculate the summary counts. This method will recursively invalidate the
      * cache all the way up the tree so that parent node caches get recalculated, too.
+     * 
+     * @return void
      */
     public function invalidateCache() 
     {
@@ -233,8 +238,8 @@ class Organization extends BaseOrganization
     /**
      * Generate a unique cache id based on the query parameters
      * 
-     * @param array Query parameters
-     * @return string
+     * @param array The query parameters in array
+     * @return string The unique cache id
      */
     public function getCacheId($parameters)
     {
@@ -256,7 +261,7 @@ class Organization extends BaseOrganization
     /**
      * Returns a cache tag that is unique to this organization
      * 
-     * @return string
+     * @return string The unique cache tag of the organization
      */
     public function getCacheTag()
     {
@@ -266,7 +271,7 @@ class Organization extends BaseOrganization
     /**
      * Return the agency for this organization tree
      *
-     * @return Doctrine_Node
+     * @return Doctrine_Node The agency tree node
      */
     public static function getAgency()
     {
@@ -278,7 +283,7 @@ class Organization extends BaseOrganization
     /**
      * Return a collection of bureaus for this agency
      *
-     * @return Doctrine_Collection
+     * @return Doctrine_Collection The collection of bureau node
      */
     public static function getBureaus()
     {
@@ -296,10 +301,10 @@ class Organization extends BaseOrganization
      * This calculates data for both the quarterly and annual reports. I think this is a simpler design than having
      * separate methods for each report since most of the data is the same; but it is less efficient because some data
      * will be generated and thrown away.
-     *
-     * @todo refactor... this turned into a huge method really quickly, but no time to fix it now
      * 
-     * @return array
+     * @return array The matrix of statistics which corresponds to the FISMA report in array
+     * @throws Fisma_Exception if this method is called when the type of organziation is not bureau
+     * @todo refactor... this turned into a huge method really quickly, but no time to fix it now
      */
     public function getFismaStatistics()
     {
@@ -483,7 +488,8 @@ class Organization extends BaseOrganization
     /**
      * A post-insert hook to send notifications
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postInsert($event)
     {    
@@ -500,7 +506,8 @@ class Organization extends BaseOrganization
     /**
      * A post-update hook to send notifications
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postUpdate($event)
     {        
@@ -515,7 +522,8 @@ class Organization extends BaseOrganization
     /**
      * A post-delete hook to send notifications
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postDelete($event)
     {        

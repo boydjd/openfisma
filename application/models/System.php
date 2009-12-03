@@ -50,7 +50,8 @@ class System extends BaseSystem
     /**
      * Defines the way counter measure effectiveness and threat level combine to produce the threat likelihood. This
      * array is indexed as: $_threatLikelihoodMatrix[THREAT_LEVEL][COUNTERMEASURE_EFFECTIVENESS] == THREAT_LIKELIHOOD
-     *
+     * 
+     * @var array
      * @see _initThreatLikelihoodMatrix()
      */
     private $_threatLikelihoodMatrix;
@@ -58,6 +59,7 @@ class System extends BaseSystem
     /**
      * Declares fields stored in related records that should be indexed along with records in this table
      * 
+     * @var array
      * @see Asset.php
      * @todo Doctrine 2.0 might provide a nicer approach for this
      */
@@ -71,6 +73,8 @@ class System extends BaseSystem
 
     /**
      * A mapping from the physical system types to proper English terms
+     * 
+     * @var array
      */
     private $_typeMap = array(
         'gss' => 'General Support System',
@@ -80,6 +84,8 @@ class System extends BaseSystem
 
     /**
      * Doctrine hook which is used to set up mutators
+     * 
+     * @return void
      */
     public function setUp()
     {
@@ -94,6 +100,8 @@ class System extends BaseSystem
     
     /**
      * Return the English version of the orgType field
+     * 
+     * @return string The English version of the orgType field
      */
     public function getTypeLabel() 
     {
@@ -107,7 +115,7 @@ class System extends BaseSystem
      * parts of the CIA are null but at least one part is defined, then the FIPS category will take the high water mark
      * of all the defined parts.
      * 
-     * @return string
+     * @return string The fips category
      */
     private function _fipsCategory()
     {
@@ -138,12 +146,11 @@ class System extends BaseSystem
 
     /**
      * Calculate min level
-     *
+     * 
+     * @param string $levelA The specified level A
+     * @param string $levelB The specified level B
+     * @return string The min level of bewteen $levelA and $levelB
      * @see calcSecurityCategory
-     *
-     * @param string $levelA
-     * @param string $levelB
-     * @param return string min of $levelA and $levelB
      */
     public function calcMin($levelA, $levelB)
     {
@@ -157,12 +164,11 @@ class System extends BaseSystem
     
     /**
      * Calcuate overall threat level
-     *
-     * @see calcSecurityCategory
-     *
+     * 
      * @param string $threat threat level
      * @param string $countermeasure countermeasure level
      * @return string overall threat
+     * @see calcSecurityCategory
      */
     public function calculateThreatLikelihood($threat, $countermeasure)
     {
@@ -179,6 +185,7 @@ class System extends BaseSystem
      * Initializes the threat likelihood matrix. This is hardcoded because these values are defined in NIST SP 800-30
      * and are not likely to change very often.
      *
+     * @return void
      * @link http://csrc.nist.gov/publications/nistpubs/800-30/sp800-30.pdf
      */
     private function _initThreatLikelihoodMatrix()
@@ -198,6 +205,8 @@ class System extends BaseSystem
     
     /**
      * Return system name with proper formatting
+     * 
+     * @return string The sysyem name with proper formatting
      */
     public function getName() 
     {
@@ -207,7 +216,8 @@ class System extends BaseSystem
     /**
      * A post-update hook to send notifications
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postUpdate($event)
     {
@@ -217,7 +227,8 @@ class System extends BaseSystem
     /**
      * Mutator for availability. Updates the FIPS 199 automatically.
      * 
-     * @param string $value
+     * @param string $value The value of availability to set
+     * @return void
      */
     public function setAvailability($value)
     {
@@ -228,7 +239,8 @@ class System extends BaseSystem
     /**
      * Mutator for confidentiality. Updates the FIPS 199 automatically.
      * 
-     * @param string $value
+     * @param string $value The value of confidentiality to set
+     * @return void
      */
     public function setConfidentiality($value)
     {
@@ -239,8 +251,9 @@ class System extends BaseSystem
     /**
      * FIPS category is not directly settable.
      * 
-     * @throws Fisma_Exception
-     * @param string $value
+     * @param string $value The value of FIPS category to set
+     * @return void
+     * @throws Fisma_Exception if this mutator is called anytime and anywhere
      */
     public function setFipsCategory($value)
     {
@@ -250,7 +263,8 @@ class System extends BaseSystem
     /**
      * Mutator for integrity. Updates the FIPS 199 automatically.
      * 
-     * @param string $value
+     * @param string $value The value of integrity to set
+     * @return void
      */
     public function setIntegrity($value)
     {
@@ -263,7 +277,8 @@ class System extends BaseSystem
      * 
      * To help the user out, we reformat the string automatically if required
      * 
-     * @param string $value
+     * @param string $value The value of UPI to reformat and set
+     * @return void
      */
     public function setUniqueProjectId($value)
     {

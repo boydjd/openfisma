@@ -28,13 +28,12 @@
 class PrivilegeTable extends Doctrine_Table
 {
     /**
-     * findByResourceAndActionAndOrgSpecific 
+     * Find the specified resoure, action and organization condition matched provileges
      * 
-     * @param string $resource 
-     * @param string $action 
-     * @param boolean $orgSpecific 
-     * @access public
-     * @return array 
+     * @param string $resource The specific resource to filter
+     * @param string $action The specified action to filter
+     * @param boolean $orgSpecific The specific organization to filter
+     * @return array The matched privileges in array
      */
     public function findByResourceAndActionAndOrgSpecific($resource, $action, $orgSpecific) 
     {

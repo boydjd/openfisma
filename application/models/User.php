@@ -35,7 +35,7 @@ class User extends BaseUser
 
     /**
      * Account was manually locked by an administrator
-     */    
+     */
     const LOCK_TYPE_MANUAL = 'manual';
 
     /**
@@ -58,25 +58,65 @@ class User extends BaseUser
      */
     const PASSWORD_HISTORY_LIMIT = 3;
 
-    /** 
-     * Account logs event type
+    /**
+     * Account logs event type for the action 'create user'
      */
     const CREATE_USER = 'create user';
+
+    /**
+     * Account logs event type for the action 'modify user'
+     */
     const MODIFY_USER = 'modify user';
+
+    /**
+     * Account logs event type for the action 'delete user'
+     */
     const DELETE_USER = 'delete user';
+
+    /**
+     * Account logs event type for the action 'lock user'
+     */
     const LOCK_USER   = 'lock user';
+
+    /**
+     * Account logs event type for the action 'unlock user'
+     */
     const UNLOCK_USER   = 'unlock user';
+
+    /**
+     * Account logs event type for the action 'login failure'
+     */
     const LOGIN_FAILURE = 'login failure';
+
+    /**
+     * Account logs event type for the action 'login'
+     */
     const LOGIN         = 'login';
+
+    /**
+     * Account logs event type for the action 'logout'
+     */
     const LOGOUT        = 'logout';
+
+    /**
+     * Account logs event type for the action 'accept rob'
+     */
     const ACCEPT_ROB    = 'accept rob';
+
+    /**
+     * Account logs event type for the action 'change password'
+     */
     const CHANGE_PASSWORD = 'change password';
+
+    /**
+     * Account logs event type for the action 'validate email'
+     */
     const VALIDATE_EMAIL  = 'validate email';
 
     /**
      * Returns an object which represents the current, authenticated user
      * 
-     * @return User
+     * @return User The current authenticated user
      */
     public static function currentUser() 
     {
@@ -92,6 +132,8 @@ class User extends BaseUser
 
     /**
      * Doctrine hook which is used to set up mutators
+     * 
+     * @return void
      */
     public function setUp()
     {
@@ -103,7 +145,8 @@ class User extends BaseUser
     /**
      * Lock an account, which will prevent a user from logging in.
      * 
-     * @param string $lockType manual, password, inactive, or expired
+     * @param string $lockType One specified lock type from manual, password, inactive, or expired
+     * @return void
      */
     public function lockAccount($lockType)
     {
@@ -120,6 +163,8 @@ class User extends BaseUser
     
     /**
      * Unlock this account, which will allow a user to login again.
+     * 
+     * @return void
      */
     public function unlockAccount()
     {
@@ -133,6 +178,9 @@ class User extends BaseUser
         
     /**
      * Verifies that this account is not locked. If it is locked, then this throws an authentication exception.
+     * 
+     * @return void
+     * @throws Fisma_Exception_AccountLocked if the account is locked
      */
     public function checkAccountLock()
     {
@@ -159,7 +207,8 @@ class User extends BaseUser
      * Throws an exception if the account is not eligible for automatic unlock (due to system configuration, or the
      * lock type on the account).
      * 
-     * @return int
+     * @return int The remaining minutes to be unlocked automatically
+     * @throws Fisma_Exception if the account is not eligible for automatic unlock
      */
     public function getLockRemainingMinutes()
     {
@@ -184,7 +233,8 @@ class User extends BaseUser
     /**
      * Returns a human-readable explanation of why the account was locked
      * 
-     * @return string
+     * @return string The human-readable explanation of why the account was locked
+     * @throws Fisma_Exception if the lock type is unexcepted
      */
     public function getLockReason()
     {
@@ -228,6 +278,7 @@ class User extends BaseUser
      * cartesian join between the roles and systems table. In the future, roles will be assigned
      * to individual systems.
      * 
+     * @return Zend_Acl The Fisma ACL
      * @todo Create separate roles for separate systems. This requires the user interface to be 
      * upgraded to make it possible to configure this.
      * 
@@ -250,8 +301,6 @@ class User extends BaseUser
      *       finding
      *         delete
      * </pre>
-     * 
-     * @return Zend_Acl
      */
     public function acl()
     {
@@ -313,11 +362,11 @@ class User extends BaseUser
     
     /**
      * Validate the user's e-mail change.
+     * 
+     * @param string $validateCode The validate code
+     * @return bool If validation successful
      * @todo an user has multiple emails(email, notifyEmail), current database can't give the correct 
      * way to show which email is validated
-     * 
-     * @param string $validateCode validate code
-     * @return bool
      */
     public function validateEmail($validateCode)
     {
@@ -336,6 +385,8 @@ class User extends BaseUser
 
     /**
      * Performs house keeping that needs to run at log in
+     * 
+     * @return void
      */
     public function login()
     {
@@ -352,11 +403,12 @@ class User extends BaseUser
         $this->save();
     }
 
-    /** 
+    /**
      * Log any creation, modification, disabling and termination of account.
-     *
-     * @param string $event log event type
-     * @param string $message log message
+     * 
+     * @param string $event The specified log event type
+     * @param string $message The specified log message
+     * @return void
      */
     public function log($event, $message)
     {
@@ -382,7 +434,7 @@ class User extends BaseUser
     /**
      * Get user's exist events
      *
-     * @return array
+     * @return array User's exist events in array
      */
     public function getExistEvents()
     {
@@ -396,7 +448,7 @@ class User extends BaseUser
     /**
      * Get user's available events for received notifications
      *
-     * @return array
+     * @return array User's available events in array
      */
     public function getAvailableEvents()
     {
@@ -433,7 +485,7 @@ class User extends BaseUser
      * who won't have any joins in the UserOrganization model, but should still have access to all organizations
      * anyway.
      * 
-     * @return Doctrine_Collection
+     * @return Doctrine_Collection The collection of user`s organizations
      */
     public function getOrganizations() 
     {
@@ -450,7 +502,7 @@ class User extends BaseUser
      * such as using aggregation functions or joining to another model. You can extend the query returned
      * by this function to do so.
      * 
-     * @return Doctrine_Query
+     * @return Doctrine_Query The doctrine query object which selects this user's organizations
      */
     public function getOrganizationsQuery()
     {
@@ -467,15 +519,15 @@ class User extends BaseUser
                   ->where('u.id = ?', $this->id);
         } 
         
-        return $query;      
+        return $query;
     }
 
     /**
      * Doctrine hook for pre-save
      * 
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      * @todo This currently contains logging items which should be removed and placed into an observer class
-     * 
-     * @param Doctrine_Event $event
      */
     public function preSave($event)
     {
@@ -493,7 +545,8 @@ class User extends BaseUser
     /**
      * Doctrine hook for post-save
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postSave($event)
     {
@@ -516,9 +569,9 @@ class User extends BaseUser
     /**
      * Doctrine hook for pre-insert
      * 
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      * @todo remove this when logging observer is implemented
-     * 
-     * @param Doctrine_Event $event
      */
     public function preInsert($event) 
     {
@@ -531,9 +584,9 @@ class User extends BaseUser
     /**
      * Doctrine hook for post-insert
      * 
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      * @todo this needs to go into some sort of observer class
-     * 
-     * @param Doctrine_Event $event
      */
     public function postInsert($event) 
     {
@@ -547,9 +600,9 @@ class User extends BaseUser
     /**
      * Doctrine hook for post-update
      * 
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      * @todo this needs to go into some sort of observer class
-     * 
-     * @param Doctrine_Event $event
      */
     public function postUpdate($event)
     {
@@ -565,9 +618,9 @@ class User extends BaseUser
     /**
      * Doctrine hook for pre-delete
      * 
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      * @todo this needs to go into some sort of observer class
-     * 
-     * @param Doctrine_Event $event
      */
     public function preDelete($event)
     {
@@ -578,7 +631,9 @@ class User extends BaseUser
     /**
      * Password mutator to handle password management
      * 
-     * @param string $value
+     * @param string $value The value of password to encrypt and set
+     * @return void
+     * @throws Doctrine_Exception if your password is in password history
      */
     public function setPassword($value)
     {

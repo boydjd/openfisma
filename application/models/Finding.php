@@ -31,6 +31,7 @@ class Finding extends BaseFinding
     /**
      * Declares fields stored in related records that should be indexed along with records in this table
      * 
+     * @var array
      * @see Asset.php
      * @todo Doctrine 2.0 might provide a nicer approach for this
      */
@@ -41,13 +42,17 @@ class Finding extends BaseFinding
         'SecurityControl' => array('code' => array('type' => 'keyword', 'alias' => 'securitycontrol'))
     );
 
-    //Threshold of overdue for various status
+    /**
+     * Threshold of overdue for various status
+     * 
+     * @var array
+     */
     private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
 
     /**
-     * Returns an ordered list of all business possible statuses
+     * Returns an ordered list of all possible business statuses
      * 
-     * @return array
+     * @return array The ordered list of all possible business statuses
      */
     public static function getAllStatuses() 
     {
@@ -71,9 +76,9 @@ class Finding extends BaseFinding
     }
 
     /**
-     * get the detailed status of a Finding
+     * Get the detailed status of a Finding
      *
-     * @return string
+     * @return string The detailed status of current finding
      */
     public function getStatus()
     {
@@ -87,6 +92,10 @@ class Finding extends BaseFinding
     /**
      * Submit Mitigation Strategy
      * Set the status as "MSA" and the currentEvaluationId as the first mitigation evaluation id
+     * 
+     * @param User $user The specified user to submit the mitigation strategy
+     * @return void
+     * @throws Fisma_Exception if the mitigation strategy is submitted when the finding is not in NEW or DRAFT status
      */
     public function submitMitigation(User $user)
     {
@@ -106,6 +115,10 @@ class Finding extends BaseFinding
     /**
      * Revise the Mitigation Strategy
      * Set the status as "DRAFT" and the currentEvaluationId as null
+     * 
+     * @param User $user The specified user to revise the mitigation strategy
+     * @return void
+     * @throws Fisma_Exception if the mitigation strategy is revised when the finding is not in EN status
      */
     public function reviseMitigation(User $user)
     {
@@ -126,8 +139,10 @@ class Finding extends BaseFinding
      * a new Evaluation or else to change the status to DRAFT, EN,
      * or CLOSED as appropriate
      * 
-     * @param Object $user a specific user object
-     * @param string $comment The user can comment on why they are approving it
+     * @param Object $user The specified user to approve the current evaluation
+     * @param string $comment The user comment why they accept the current evaluation
+     * @return void
+     * @throws Fisma_Exception if the findings is approved when the finding is not in MSA or EA status
      */
     public function approve(User $user, $comment)
     {
@@ -174,8 +189,11 @@ class Finding extends BaseFinding
     /**
      * Deny the current evaluation
      *
-     * @param $user a specific user
-     * @param string $comment deny comment
+     * @param $user The specified user to deny the current evaluation
+     * @param string $comment The deny comment of user
+     * @return void
+     * @throws Fisma_Exception if the findings is denined 
+     * when the finding is not in MSA or EA status or the deny comment missed
      */
     public function deny(User $user, $comment)
     {
@@ -218,8 +236,10 @@ class Finding extends BaseFinding
      * Upload Evidence
      * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
      *
-     * @param string $fileName evidence file name
-     * @param $user
+     * @param string $fileName The uploaded evidence file name
+     * @param User $user The specified user to upload the evidence
+     * @return void
+     * @throws Fisma_Exception if the evidence is updated when the finding is not in EN status
      */
     public function uploadEvidence($fileName, User $user)
     {
@@ -244,6 +264,9 @@ class Finding extends BaseFinding
 
     /**
      * Set the nextduedate when the status has changed except 'CLOSED'
+     * 
+     * @return void
+     * @throws Fisma_Exception if cannot update the next due dates since of the an invalid finding status
      * @todo why the 'Y-m-d' is a wrong date
      */
     public function updateNextDueDate()
@@ -276,8 +299,9 @@ class Finding extends BaseFinding
     /**
      * Get the finding evaluations by approval group
      *
-     * @param string $approvalGroup evaluation approval group
-     * @return array
+     * @param string $approvalGroup The specified evaluation approval group to search
+     * @return array The matched finding evaluations in array
+     * @throws Fisma_Exception if the specified approval group for evaluations is neither 'action' nor 'evidence'
      */
     public function getFindingEvaluations($approvalGroup)
     {
@@ -295,10 +319,10 @@ class Finding extends BaseFinding
     }
 
     /**
-     * write the audit log
+     * Write the audit log
      * 
-     * @param string $description log message
-     * @return this
+     * @param string $description The specified audit log message to write
+     * @return void
      */
     public function log($description)
     {

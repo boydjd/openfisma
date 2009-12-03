@@ -30,10 +30,12 @@ class Notification extends BaseNotification
     /**
      * Add notifications for the specified event.
      *
-     * @param string $eventName The name of the event which generated the notification
-     * @param object $record  the model which is changed
-     * @param User $user  the user object
-     * @param int $organizationId The organization id.
+     * @param string $eventName The triggered event name which will be included in the notification
+     * @param Doctrine_Record $record  The notification applied model
+     * @param User $user  The user which triggers the notification event
+     * @param int|null $organizationId The organization id that the triggered event is limited to in scope
+     * @return void
+     * @throws Fisma_Exception if the specified event name is not found
      */
     public static function notify($eventName, $record, $user, $organizationId = null)
     {

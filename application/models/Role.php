@@ -29,6 +29,8 @@ class Role extends BaseRole
 {
     /**
      * Implements the interface for Zend_Acl_Role_Interface
+     * 
+     * @return int The role id
      */
     public function getRoleId()
     {
