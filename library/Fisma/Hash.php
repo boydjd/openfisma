@@ -17,38 +17,42 @@
  */
 
 /**
- * Match the provided old password with the one in form
+ * Produces a variety of hashes
  * 
- * @todo rename this class to a proper name, like Fisma_Form_Validate_PasswordMatch
- * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
+ * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Form
+ * @subpackage Fisma_Hash
  * @version    $Id$
  */
-class Fisma_Form_Validate_PasswdMatch extends Zend_Validate_Abstract
+class Fisma_Hash
 {
-    const PASS_MISMATCH = 'mismatch'; 
-
-    protected $_messageTemplates = array(self::PASS_MISMATCH=>"is incorrect");
-
-    /** 
-     * Validate the password
-     * @param string $pass password
-     * @return true|false
+    /**
+     * This is a static class that cannot be instantiated
      */
-    public function isValid($pass)
+    private function __construct()
     {
-        //it seemed that currentUser() is an old user
-        $user = Doctrine::getTable('User')->find(User::currentUser()->id);
-        $this->_setValue($pass);
-
-        if (Fisma_Hash::hash($pass . $user->passwordSalt, $user->hashType) != $user->password) {
-            $this->_error(self::PASS_MISMATCH);
-            return false;
+        ;
+    }
+    
+    /**
+     * Return the requested hash
+     * 
+     * @param string $data
+     * @param string $hashType
+     * @return string
+     */
+    static public function hash($data, $hashType)
+    {
+        if ('sha1' == $hashType) {
+            return sha1($data);
+        } elseif ('md5' == $hashType) {
+            return md5($data);
+        } elseif ('sha256' == $hashType) {
+            return mhash(MHASH_SHA256, $data);
+        } else {
+            throw new Fisma_Exception("Unsupported hash type: {$hashType}");
         }
-        return true;
     }
 }

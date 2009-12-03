@@ -53,6 +53,11 @@ class User extends BaseUser
      */
     const LOCK_TYPE_EXPIRED = 'expired';
 
+    /**
+     * The mininum number of unique passwords required before an old password can be reused
+     */
+    const PASSWORD_HISTORY_LIMIT = 3;
+
     /** 
      * Account logs event type
      */
@@ -86,22 +91,13 @@ class User extends BaseUser
     }
 
     /**
-     * construct 
-     * 
-     * @return void
+     * Doctrine hook which is used to set up mutators
      */
-    public function construct() 
+    public function setUp()
     {
-        try {
-            // If the user hashType is already set, leave it alone. If not set, set the user hashType to system hashType
-            $this->hashType = (empty($this->hashType)) ? Configuration::getConfig('hash_type') : $this->hashType;
-        } catch (Exception $e) {
-            /* This is an ugly Doctrine hack. If the tables aren't yet created for the models, then we can't get the
-             * hash_type configuration option from the Configuration model. This bug creeps up when installing and 
-             * when doing a build-all from the CLI. See OFJ-321 for details. 
-             */
-            $this->hashType = 'sha1';
-        }
+        parent::setUp();
+        
+        $this->hasMutator('password', 'setPassword');
     }
 
     /**
@@ -316,29 +312,6 @@ class User extends BaseUser
     }
     
     /**
-     * Generate the hash of a password
-     *
-     * @param string $password
-     * @param string $hashType The hash type to use. If null, then use the user's existing password hash type.
-     * @return string
-     */
-    public function hash($password, $hashType = null) 
-    {
-        $hashType   = (empty($hashType)) ? $this->hashType : $hashType;
-        $hashString = $this->passwordSalt . $password;
-        
-        if ('sha1' == $hashType) {
-            return sha1($hashString);
-        } elseif ('md5' == $hashType) {
-            return md5($hashString);
-        } elseif ('sha256' == $hashType) {
-            return mhash(MHASH_SHA256, $hashString);
-        } else {
-            throw new Fisma_Exception("Unsupported hash type: {$hashType}");
-        }
-    }
-
-    /**
      * Validate the user's e-mail change.
      * @todo an user has multiple emails(email, notifyEmail), current database can't give the correct 
      * way to show which email is validated
@@ -454,21 +427,6 @@ class User extends BaseUser
     }
     
     /**
-     * Generate a random password salt for this user
-     */
-    public function generateSalt() 
-    {
-        /** @todo remove contstant value 10, which is the length of the salt. */
-        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-        $length = strlen($chars) - 1;
-        $salt = '';
-        for ($i = 1; $i <= 10; $i++) {
-            $salt .= $chars{rand(0, $length)};
-        }
-        $this->passwordSalt = $salt;
-    }
-
-    /**
      * Get the user's organizations.
      * 
      * Unlike using $this->Organizations, this method implements the correct business logic for the root user,
@@ -510,5 +468,158 @@ class User extends BaseUser
         } 
         
         return $query;      
+    }
+
+    /**
+     * Doctrine hook for pre-save
+     * 
+     * @todo This currently contains logging items which should be removed and placed into an observer class
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function preSave($event)
+    {
+        $modified = $this->getModified();
+
+        if (isset($modified['password'])) {
+            $this->log(User::CHANGE_PASSWORD, "Password changed");
+        }
+        
+        if (isset($modified['lastRob'])) {
+            $this->log(User::ACCEPT_ROB, "Accepted Rules of Behavior");
+        }
+    }
+ 
+    /**
+     * Doctrine hook for post-save
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postSave($event)
+    {
+        $modified = $this->getModified();
+
+        // Send validation email if required
+        if (isset($modified['email']) || isset($modified['notifyEmail'])) {
+            $this->emailValidate = false;
+            $emailValidation  = new EmailValidation();
+            if (!empty($modified['email'])) {
+                $emailValidation->email = $modified['email'];
+            } elseif (!empty($modified['notifyEmail'])) {
+                $emailValidation->email = $modified['notifyEmail'];
+            }
+            $emailValidation->validationCode = md5(rand());
+            $this->EmailValidation[]         = $emailValidation;
+        }
+    }
+
+    /**
+     * Doctrine hook for pre-insert
+     * 
+     * @todo remove this when logging observer is implemented
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function preInsert($event) 
+    {
+        $user = $event->getInvoker();
+        
+        $user->passwordTs = Fisma::now();
+        $user->log(User::CREATE_USER, "create user: $user->nameFirst $user->nameLast");
+    }
+
+    /**
+     * Doctrine hook for post-insert
+     * 
+     * @todo this needs to go into some sort of observer class
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postInsert($event) 
+    {
+        $user     = $event->getInvoker();
+        $modified = $user->getModified($old = true, $last = true);
+        $user->password = $modified['password'];
+        $mail = new Fisma_Mail();
+        $mail->sendAccountInfo($user);
+    }
+    
+    /**
+     * Doctrine hook for post-update
+     * 
+     * @todo this needs to go into some sort of observer class
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postUpdate($event)
+    {
+        $user     = $event->getInvoker();
+        $modified = $user->getModified($old = true, $last = true);
+        if (isset($modified['password']) && $modified['password']) {
+            $user->password = $modified['password'];
+            $mail = new Fisma_Mail();
+            $mail->sendPassword($user);
+        }
+    }
+
+    /**
+     * Doctrine hook for pre-delete
+     * 
+     * @todo this needs to go into some sort of observer class
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function preDelete($event)
+    {
+        $user    = $event->getInvoker();
+        $user->log(User::DELETE_USER, "delete user: $user->nameFirst $user->nameLast");
+    }
+
+    /**
+     * Password mutator to handle password management
+     * 
+     * @param string $value
+     */
+    public function setPassword($value)
+    {
+        // Generate a salt if one does not exist
+        if (!$this->passwordSalt) {
+            $saltColumn = Doctrine::getTable('User')->getColumnDefinition('passwordsalt');
+            $this->passwordSalt = Fisma_String::random($saltColumn['length']);
+        }
+        
+        // Set the user's hash type if it is not set already
+        if (!$this->hashType) {
+            try {
+                $this->hashType = Configuration::getConfig('hash_type');
+            } catch (Exception $e) {
+                /* This is an ugly Doctrine hack. If the tables aren't yet created for the models, then we can't get the
+                 * hash_type configuration option from the Configuration model. This bug creeps up when installing and 
+                 * when doing a build-all from the CLI. See OFJ-321 for details. 
+                 */
+                $this->hashType = 'sha1';
+            }
+        }
+
+        // Password is hashed with salt to make rainbow table attacks less feasible
+        $password = Fisma_Hash::hash($value . $this->passwordSalt, $this->hashType);
+
+        // Check password history
+        if (strpos($this->passwordHistory, $password) !== false) {
+            /**
+             * @todo Throw a doctrine exception... not enough time to fix the exception handlers right now
+             */
+            throw new Doctrine_Exception('Your password cannot be the same as any of your previous'
+                                       . ' 3 passwords.');
+        }
+
+        $this->_set('password', $password);
+        
+        // Generate password history. Colons are used to delimit passwords and can be used to count how many old
+        // passwords are currently stored.
+        $oldPasswords = explode(':', $this->passwordHistory);
+        array_unshift($oldPasswords, $this->password);
+        $oldPasswords = array_slice($oldPasswords, 0, self::PASSWORD_HISTORY_LIMIT);        
+        $this->passwordHistory = implode(':', $oldPasswords);
     }
 }

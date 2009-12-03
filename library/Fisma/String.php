@@ -17,38 +17,40 @@
  */
 
 /**
- * Match the provided old password with the one in form
+ * String functions for OpenFISMA
  * 
- * @todo rename this class to a proper name, like Fisma_Form_Validate_PasswordMatch
- * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
+ * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Form
+ * @subpackage Fisma_String
  * @version    $Id$
  */
-class Fisma_Form_Validate_PasswdMatch extends Zend_Validate_Abstract
+class Fisma_String
 {
-    const PASS_MISMATCH = 'mismatch'; 
-
-    protected $_messageTemplates = array(self::PASS_MISMATCH=>"is incorrect");
-
-    /** 
-     * Validate the password
-     * @param string $pass password
-     * @return true|false
+    /**
+     * The default character set used when generating a random string
+     * 
+     * @var string
      */
-    public function isValid($pass)
+    const RANDOM_ALLOWED_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+    
+    /**
+     * Return a random string of the requested length
+     * 
+     * @param int $length
+     * @param string $allowedCharacters
+     * @return string
+     */
+    static function random($length, $allowedCharacters = self::RANDOM_ALLOWED_CHARACTERS)
     {
-        //it seemed that currentUser() is an old user
-        $user = Doctrine::getTable('User')->find(User::currentUser()->id);
-        $this->_setValue($pass);
+        $setSize = strlen($allowedCharacters) - 1;
 
-        if (Fisma_Hash::hash($pass . $user->passwordSalt, $user->hashType) != $user->password) {
-            $this->_error(self::PASS_MISMATCH);
-            return false;
+        $random = '';
+        for ($i = 1; $i <= $length; $i++) {
+            $random .= $allowedCharacters{rand(0, $setSize)};
         }
-        return true;
+        
+        return $random;
     }
 }

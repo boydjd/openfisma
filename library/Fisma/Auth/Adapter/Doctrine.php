@@ -65,7 +65,8 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         }
 
         // Check password
-        if ($this->_user->hash($this->_credential) == $this->_user->password) {
+        $hash = Fisma_Hash::hash($this->_credential . $this->_user->passwordSalt, $this->_user->hashType);
+        if ($hash == $this->_user->password) {
             $authResult = new Zend_Auth_Result(Zend_Auth_Result::SUCCESS, $this->_user);
         } else {
             $authResult = new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID, $this->_user);

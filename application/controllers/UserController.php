@@ -95,7 +95,7 @@ class UserController extends BaseController
         $userId = $this->getRequest()->getParam('id');
         $user = Doctrine::getTable('User')->find($userId);
 
-        if ($user->locked) {
+        if ($user && $user->locked) {
             $reason = $user->getLockReason();
             $form->getElement('lockReason')->setValue($reason);
 
@@ -243,7 +243,7 @@ class UserController extends BaseController
     {
         // This action isn't allowed unless the system's authorization is based on the database
         if ('database' != Configuration::getConfig('auth_type') && 'root' != User::currentUser()->username) {
-            throw new Fisma_Exception('Password action is not allowed when the authentication type is not "database"');
+            throw new Fisma_Exception('Password change is not allowed when the authentication type is not "database"');
         }
         
         // Load the change password file
@@ -256,8 +256,8 @@ class UserController extends BaseController
         if (isset($post['oldPassword'])) {
 
             if ($form->isValid($post)) {
-                $user = Doctrine::getTable('User')->find($this->_me->id);
-                $user->password = $post['newPassword'];
+                $user = User::currentUser();
+                $user->merge($post);
                 try {
                     $user->save();
                     $message = "Password updated successfully."; 

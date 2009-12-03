@@ -1,5 +1,5 @@
 User:
-    listeners: [XssListener, UserListener, IndexListener, NotificationListener]
+    listeners: [XssListener, IndexListener, NotificationListener]
     
     columns:
         createdTs: timestamp

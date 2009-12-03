@@ -235,7 +235,7 @@ abstract class BaseController extends SecurityController
                 try {
                     $result = $this->saveValue($form, $subject);
                     $msg   = "{$this->_modelName} updated successfully";
-                    $model = 'notice';
+                    $type = 'notice';
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form   = $this->getForm();
@@ -247,7 +247,7 @@ abstract class BaseController extends SecurityController
                     }
                     $type = 'warning';
                 }
-                $this->view->priorityMessenger($msg, $model);
+                $this->view->priorityMessenger($msg, $type);
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
                 $error = "Error while trying to save: {$this->_modelName}: <br>$errorString";
