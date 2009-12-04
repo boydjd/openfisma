@@ -30,14 +30,15 @@ require_once 'Zend/View/Helper/Abstract.php';
 class View_Helper_ShowLongText extends Zend_View_Helper_Abstract
 {
     /**
-     * A helper which intercept 120 characters from a long text
+     * A helper which abstracts 120 characters from a long text
      * 
      * If the text contain keywords, then target the keywords
      * and output the words around the keywords.
      *
-     * @param string $text
-     * @param string $keywords split with ',' only deal the first keywords
-     * @return string $result the text intercepted
+     * @param string $text The specified long text to limit
+     * @param Array $keywords The keyword which need to be reserved specially
+     * @return string The trimmed brief text
+     * @todo rename the method name to showLongText or something else.
      */
     public function ShowLongText($text, $keywords = null)
     {

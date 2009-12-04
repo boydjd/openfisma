@@ -31,8 +31,8 @@ class View_Helper_TextToHtml extends Zend_View_Helper_Abstract
     /**
      * Render plain text to HTML
      *
-     * @param string $text Plain text
-     * @return string HTML
+     * @param string $text The specified plain text to convert
+     * @return string The converted HTML code
      */
     public function TextToHtml($text)
     {

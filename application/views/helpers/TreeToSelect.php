@@ -30,7 +30,7 @@ class View_Helper_TreeToSelect extends Zend_View_Helper_Abstract
     /**
      * Turn a Doctrine Collection which represents a tree into an HTML select box
      *
-     * @param Doctrine_Collection $collection
+     * @param Doctrine_Collection $collection The doctrine collection which represents a tree
      * @param string $nameField The field inside each object which should be displayed
      * @return array An array where the key/values mirror the select element's key/values
      */

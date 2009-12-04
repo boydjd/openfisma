@@ -28,12 +28,17 @@
  */
  class View_Helper_PriorityMessenger extends Zend_View_Helper_Abstract {
 
-    // @var Zend_Session Zend_Session storage object
+    /**
+     * Zend_Session storage object
+     * 
+     * @var Zend_Session_Namespace
+     */
     static protected $_session = null;
 
     /**
-     * priorityMessenger 
-     *
+     * To execute different operation to the page messages array in the session storage object 
+     * based on the specified message and severity
+     * 
      * Add a message to the collection of priority messages or retrieve the
      * priority messages. If $messages is left null then all the messages are
      * returned, unless $severity is set (as a string or array), causing just
@@ -45,10 +50,9 @@
      * if $severity is not set but message is, then 'info' is the assumed
      * default.
      * 
-     * @param mixed $message 
-     * @param mixed $severity 
-     * @access public
-     * @return Zend_Session_Namespace 
+     * @param string|array|null $message  The specified message
+     * @param string|array|null $severity  The specified severity
+     * @return array The message array
      */
     public function priorityMessenger($message = null, $severity = null) {
         $session = $this->_getSession();
@@ -82,15 +86,14 @@
     }
 
     /**
-     * _resetMessageArray 
-     *
+     * To initialize, obtain or set the message array with the specified severity 
+     * 
      * Reset the session object's collection of messages. If severity provided, then return that severity and clear
      * only that severity. If an array of severities are provided, then return an array in the form of 
      * $severity=>$messages.
      * 
-     * @param mixed $severity 
-     * @access private
-     * @return void
+     * @param string|array $severity The specified severity to obtain or set
+     * @return array The returned messages in array
      */
     private function _resetMessageArray($severity = null) {
         $messages = array();
@@ -111,10 +114,9 @@
     }
 
     /**
-     * _getSession - Return the static session object, initiating it if needs be. 
+     * Return the static session object, initiating it if necessary
      * 
-     * @access private
-     * @return Zend_Session_Namespace
+     * @return Zend_Session_Namespace The initialized static session object
      */
     private function _getSession() {
         if (!self::$_session instanceof Zend_Session_Namespace) {
