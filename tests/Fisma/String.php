@@ -36,9 +36,6 @@ class Test_Fisma_String extends Test_FismaUnitTest
      * This isn't a good test case, since it assumes that srand() affects the results. For example, if the
      * implementation was switched to use mt_rand() instead of rand(), then this test would break. I can't think of a 
      * better way to do this, though, and I would like *some* coverage of this.
-     * 
-     * @return void
-     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testRandomStringCollisions()
     {        
@@ -64,9 +61,6 @@ class Test_Fisma_String extends Test_FismaUnitTest
      
      /**
       * Test random string only uses allowed characters
-      * 
-     * @return void
-     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
       */   
     public function testRandomStringAllowedCharacters()
     {
