@@ -36,6 +36,7 @@ class LoadSampleData
      * Run the command line application
      * 
      * @param array $argv PHP's command line arguments
+     * @return void
      */
     public static function run($argv) 
     {

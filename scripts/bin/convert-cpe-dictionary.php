@@ -41,6 +41,8 @@ class ConvertCpeDictionary
      * Run the command line application
      * 
      * @param array $argv PHP's command line arguments
+     * @return void
+     * @throws Exception if fail to initialize SimpleXMLElement
      */
     public static function run($argv) 
     {

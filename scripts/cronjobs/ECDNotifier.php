@@ -43,6 +43,11 @@ try {
  */
 class ECDNotifier
 {
+    /**
+     * Default constructor
+     * 
+     * @return void
+     */
     public function __construct()
     {
         require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
@@ -54,6 +59,8 @@ class ECDNotifier
     /**
      * Iterate through all findings in the system and create
      * notifications for those which have ECDs expiring today,
+     * 
+     * @return void
      */
     static function run() 
     {

@@ -34,6 +34,11 @@ $dailyCacheRefresh->run();
  */
 class DailyCacheRefresh
 {
+    /**
+     * Default constructor
+     * 
+     * @return void
+     */
     public function __construct()
     {
         require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
@@ -47,6 +52,8 @@ class DailyCacheRefresh
      * (such as Mitigation Type and Finding Source) which are not re-built automatically. Those will
      * be build on-demand when a user requests them. Building all of the different permutations here
      * would probably be wasteful.
+     * 
+     * @return void
      */
     function run() 
     {

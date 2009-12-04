@@ -35,6 +35,11 @@ $notify->processNotificationQueue();
  */
 class Notify
 {
+    /**
+     * Default constructor
+     * 
+     * @return void
+     */
     public function __construct()
     {
         require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
@@ -44,9 +49,9 @@ class Notify
     }
     
     /**
-     * Iterate through the users and check who has
-     * notifications pending.
-     *
+     * Iterate through the users and check who has notifications pending.
+     * 
+     * @return void
      * @todo log the email send results
      */
     function processNotificationQueue() 
@@ -103,13 +108,13 @@ class Notify
     }
 
     /**
-     * Compose and send the notification email for
-     * this user.
-     *
+     * Compose and send the notification email for this user.
+     * 
      * Notice that there is a bit of a hack -- the addressing information is
      * stored in the 0 row of $notifications.
-     *
+     * 
      * @param array $notifications A group of rows from the notification table
+     * @return void
      */
     static function sendNotificationEmail($notifications) 
     {
@@ -120,8 +125,9 @@ class Notify
 
     /**
      * Remove notifications from the queue table.
-     *
+     * 
      * @param array $notifications A group of rows from the notifications table
+     * @return void
      */
     static function purgeNotifications($notifications) 
     {
@@ -138,11 +144,11 @@ class Notify
     }
 
     /**
-     * Updates the timestamp for the
-     * specified user so that he will not receieve too many e-mail in too short
-     * of a time period.
+     * Update the timestamp for the specified user so that he will not receieve too many e-mail in too 
+     * short of a time period.
      *
      * @param integer $userId The Id of the user to update
+     * @return void
      */
     static function updateUserNotificationTimestamp($userId) 
     {
