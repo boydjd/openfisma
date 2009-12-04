@@ -31,7 +31,10 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 class Test_Model_System extends Test_FismaUnitTest
 {
     /**
-     * FIPS category is the high water mark of CIA
+     * To test the method FipsCategoryIsHighWaterMarkOfCia
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryIsHighWaterMarkOfCia()
     {
@@ -50,7 +53,10 @@ class Test_Model_System extends Test_FismaUnitTest
     }
 
     /**
-     * If one, but not all, CIA values are set, then FIPS security category should still be defined
+     * To test the method FipsCategoryDefinedIfAnyCiaDefined
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryDefinedIfAnyCiaDefined()
     {
@@ -61,7 +67,10 @@ class Test_Model_System extends Test_FismaUnitTest
     }
     
     /**
-     * Confidentiality can be N/A but FIPS category is still defined
+     * To test the method FipsCategoryWhenConfidentialityIsNa
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryWhenConfidentialityIsNa()
     {
@@ -74,7 +83,10 @@ class Test_Model_System extends Test_FismaUnitTest
     }
     
     /**
-     * If all CIA values are null, than FIPS category is null
+     * To test the method FipsCategoryIsNullWhenCiaIsNull
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryIsNullWhenCiaIsNull()
     {
@@ -84,9 +96,9 @@ class Test_Model_System extends Test_FismaUnitTest
     }
     
     /**
-     * FIPS category cannot be set directly
+     * To test the method CannotSetFipsCategoryDirectly
      * 
-     * @expectedException Fisma_Exception
+     * @return void
      */
     public function testCannotSetFipsCategoryDirectly()
     {
@@ -96,7 +108,10 @@ class Test_Model_System extends Test_FismaUnitTest
     }
     
     /**
-     * Exhibit 53 Unique Project Id has automatic formatting
+     * To test the method UpiFormatting
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testUpiFormatting()
     {

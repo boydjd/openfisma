@@ -60,25 +60,44 @@ abstract class Test_FismaSeleniumTest extends
 {
     /**
      * Handle for the database connection.
+     * 
+     * @var string
      */
     protected $_db;
     
     /**
      * Directory on the selenium RC server in which to store screenshots
+     * 
+     * @var string
      */
     protected $_remoteScreenshotDir;
     
     /**
      * Used to uniquely name screenshots
+     * 
+     * @var int
      */
     protected $_remoteScreenshotSequence = 0;
     
-    const USER_NAME = 'root';
-    const PASSWORD = '0p3nfism@';
-
     /**
-     * setUp() - Set up access to the Selenium server based on the contents of
+     * The user name of root account
+     * 
+     * @var string
+     */
+    const USER_NAME = 'root';
+    
+    /**
+     * The user password of root account
+     * 
+     * @var string
+     */
+    const PASSWORD = '0p3nfism@';
+    
+    /**
+     * Set up access to the Selenium server based on the contents of
      * the selenium.conf configuration file.
+     * 
+     * @return void
      */
     protected function setUp()
     {
@@ -101,6 +120,8 @@ abstract class Test_FismaSeleniumTest extends
     /**
      * When a test fails, take a screenshot of the failure during tear down.
      * This greatly helps to diagnose errors in Selenium test cases.
+     * 
+     * @return void
      */
     protected function tearDown()
     {
@@ -112,9 +133,10 @@ abstract class Test_FismaSeleniumTest extends
     }
 
     /**
-     * truncateTables() - Truncate one or more tables.
+     * Truncate one or more tables.
      *
      * @param string|array $tables The name[s] of the table[s] to truncate
+     * @return void
      */
     protected function truncateTables($tables)
     {
@@ -128,11 +150,12 @@ abstract class Test_FismaSeleniumTest extends
     }
     
     /**
-     * truncateTable() - Truncate a single table.
+     * Truncate a single table.
      *
      * This is a helper function to truncateTables() and is private.
      *
      * @param string $table The name of the table to truncate
+     * @return void
      */
     private function truncateTable($table)
     {
@@ -141,14 +164,15 @@ abstract class Test_FismaSeleniumTest extends
     }
 
     /**
-     * createDefaultUser() - Create a user with the default name and password
+     * Create a user with the default name and password
      * (self::USER_NAME and self::PASSWORD) and give that the user the specified
      * role.
      *
      * Notice: this function will truncate the users and user_roles tables, so
      * be sure to call it <i>before</i> creating test data in those tables.
      *
-     * @param string $role Nickname of role to assign to this user.
+     * @param string $role Nickname of role to assign to this user
+     * @return void
      */
     protected function createDefaultUser($role)
     {
@@ -177,7 +201,11 @@ abstract class Test_FismaSeleniumTest extends
     }
 
     /**
-     * login() - Login to OpenFISMA
+     * Login to OpenFISMA
+     * 
+     * @param string $username The specified username to login
+     * @param string $password The specified password to login
+     * @return void
      */
     protected function login($username = '', $password = '')
     {
@@ -197,11 +225,11 @@ abstract class Test_FismaSeleniumTest extends
     
     /**
      * Take a Selenium RC screenshot.
-     *
+     * 
      * This assumes that the Selenium RC server is running on Windows
-     *
-     * @param string $name A name for the screenshot
-     * (use lower_case_underscore naming format, without file extension)
+     * 
+     * @param string $name A name for the screenshot (use lower_case_underscore naming format, without file extension)
+     * @return void
      */
     public function screenshot($name) 
     {
