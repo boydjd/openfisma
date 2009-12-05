@@ -51,9 +51,8 @@ class Test_Fisma_String extends Test_FismaUnitTest
         $this->assertEquals($stringLength, strlen($random1));
         
         // Now test that different seeds produce different strings
-        srand(0);
+        srand();
         $random3 = Fisma_String::random($stringLength);
-        srand(1);
         $random4 = Fisma_String::random($stringLength);
         
         $this->assertNotEquals($random3, $random4); 
