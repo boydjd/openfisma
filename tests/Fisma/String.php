@@ -31,29 +31,6 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 class Test_Fisma_String extends Test_FismaUnitTest
 {
     /**
-     * Test random string generation
-     * 
-     * This isn't a good test case, since it assumes that srand() affects the results. For example, if the
-     * implementation was switched to use mt_rand() instead of rand(), then this test would break. I can't think of a 
-     * better way to do this, though, and I would like *some* coverage of this.
-     */
-    public function testRandomStringCollisions()
-    {        
-        $stringLength = 10;
-        
-        // Test an intentional collision
-        srand(0);
-        $random1 = Fisma_String::random($stringLength);
-        srand(0);
-        $random2 = Fisma_String::random($stringLength);
-        
-        $this->assertEquals($random1, $random2);
-
-        // Reset srand(), just in case this bleeds over into the other tests
-        srand();
-    }
-    
-    /**
      * Test randomness of string generation
      */
     public function testRandomStringRandomness()
