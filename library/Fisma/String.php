@@ -45,6 +45,9 @@ class Fisma_String
     static function random($length, $allowedCharacters = self::RANDOM_ALLOWED_CHARACTERS)
     {
         $setSize = strlen($allowedCharacters) - 1;
+        
+        // Reset the seed, just in case rand has been seeded elsewhere during execution of the request.
+        srand();
 
         $random = '';
         for ($i = 1; $i <= $length; $i++) {
