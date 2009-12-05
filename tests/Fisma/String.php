@@ -48,22 +48,40 @@ class Test_Fisma_String extends Test_FismaUnitTest
         $random2 = Fisma_String::random($stringLength);
         
         $this->assertEquals($random1, $random2);
-        $this->assertEquals($stringLength, strlen($random1));
-        
-        // Now test that different seeds produce different strings
+
+        // Reset srand(), just in case this bleeds over into the other tests
         srand();
-        $random3 = Fisma_String::random($stringLength);
-        $random4 = Fisma_String::random($stringLength);
-        
-        $this->assertNotEquals($random3, $random4); 
     }
-     
-     /**
-      * Test random string only uses allowed characters
-      */   
+    
+    /**
+     * Test randomness of string generation
+     */
+    public function testRandomStringRandomness()
+    {
+        $this->assertNotEquals(Fisma_String::random(10), Fisma_String::random(10));
+    }
+
+    /**
+     * Test random string only uses default allowed characters
+     */   
+    public function testRandomStringDefaultAllowedCharacters()
+    {
+        $this->assertRegExp('([A-Z,a-z,0-9]*)', Fisma_String::random(10));
+    }
+
+    /**
+     * Test random string only uses allow characters
+     */
     public function testRandomStringAllowedCharacters()
     {
-        $random5 = Fisma_String::random(2, 'A');
-        $this->assertEquals('AA', $random5);
+        $this->assertEquals(Fisma_String::random(2, 'AA'), 'AA');
+    }
+
+    /**
+     * Test random string is the requested length
+     */
+    public function testRandomStringLength()
+    {
+        $this->assertEquals(strlen(Fisma_String::random(22)), 22);
     }
 }
