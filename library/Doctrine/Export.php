@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Export.php 5676 2009-04-22 19:35:17Z jwage $
+ *  $Id: Export.php 5798 2009-06-02 15:10:46Z piccoloprincipe $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,7 +29,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
- * @version     $Revision: 5676 $
+ * @version     $Revision: 5798 $
  */
 class Doctrine_Export extends Doctrine_Connection_Module
 {

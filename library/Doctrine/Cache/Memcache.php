@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Memcache.php 5620 2009-03-25 11:57:00Z guilhermeblanco $
+ *  $Id: Memcache.php 5798 2009-06-02 15:10:46Z piccoloprincipe $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -27,7 +27,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
- * @version     $Revision: 5620 $
+ * @version     $Revision: 5798 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver

@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Mssql.php 5689 2009-04-30 01:20:10Z guilhermeblanco $
+ *  $Id: Mssql.php 5876 2009-06-10 18:43:12Z piccoloprincipe $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -27,7 +27,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
- * @version     $Revision: 5689 $
+ * @version     $Revision: 5876 $
  * @link        www.phpdoctrine.org
  * @since       1.0
  */
@@ -147,33 +147,33 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection_Common
             if ($offset < 0) {
                 throw new Doctrine_Connection_Exception("LIMIT argument offset=$offset is not valid");
             }
-    
+
             $orderby = stristr($query, 'ORDER BY');
 
             if ($orderby !== false) {
                 // Ticket #1835: Fix for ORDER BY alias
-				// Ticket #2050: Fix for multiple ORDER BY clause 
+                // Ticket #2050: Fix for multiple ORDER BY clause
                 $order = str_ireplace('ORDER BY', '', $orderby);
-                $orders = explode(',', $order); 
- 
-                for ($i = 0; $i < count($orders); $i++) { 
-                    $sorts[$i] = (stripos($orders[$i], ' desc') !== false) ? 'desc' : 'asc'; 
-                    $orders[$i] = trim(preg_replace('/\s+(ASC|DESC)$/i', '', $orders[$i])); 
-	 
-                    // find alias in query string 
-                    $helper_string = stristr($query, $orders[$i]); 
+                $orders = explode(',', $order);
 
-                    $from_clause_pos = strpos($helper_string, ' FROM '); 
-                    $fields_string = substr($helper_string, 0, $from_clause_pos + 1); 
-	 
-                    $field_array = explode(',', $fields_string); 
-                    $field_array = array_shift($field_array); 
-                    $aux2 = spliti(' as ', $field_array); 
+                for ($i = 0; $i < count($orders); $i++) {
+                    $sorts[$i] = (stripos($orders[$i], ' desc') !== false) ? 'desc' : 'asc';
+                    $orders[$i] = trim(preg_replace('/\s+(ASC|DESC)$/i', '', $orders[$i]));
 
-                    $aliases[$i] = trim(end($aux2)); 
+                    // find alias in query string
+                    $helper_string = stristr($query, $orders[$i]);
+
+                    $from_clause_pos = strpos($helper_string, ' FROM ');
+                    $fields_string = substr($helper_string, 0, $from_clause_pos + 1);
+
+                    $field_array = explode(',', $fields_string);
+                    $field_array = array_shift($field_array);
+                    $aux2 = spliti(' as ', $field_array);
+
+                    $aliases[$i] = trim(end($aux2));
                 }
             }
-    
+
             // Ticket #1259: Fix for limit-subquery in MSSQL
             $selectRegExp = 'SELECT\s+';
             $selectReplace = 'SELECT ';
@@ -209,8 +209,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection_Common
                         $query .= ', '; 
                     } 
 
-                    $query .= $this->quoteIdentifier('outer_tbl') . '.' . $aliases[$i] . ' '; 
-                    $query .= (stripos($sorts[$i], 'asc') !== false) ? 'DESC' : 'ASC';
+                    $query .= $this->quoteIdentifier('outer_tbl') . '.' . $aliases[$i] . ' ' . $sorts[$i];
                 }
             }
         }
@@ -222,7 +221,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection_Common
      * return version information about the server
      *
      * @param bool   $native  determines if the raw version string should be returned
-     * @return mixed array/string with version information or MDB2 error object
+     * @return array    version information
      */
     public function getServerVersion($native = false)
     {

@@ -188,10 +188,20 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
 	        $softDelete = $record->getTable()->getTemplate('Doctrine_Template_SoftDelete');
 	
 	        // we have to consider both situations here
-            $query->addWhere('(r.' . $softDelete->getOption('name') . ' = true OR r.' . $softDelete->getOption('name') . ' IS NOT NULL OR r.' . $softDelete->getOption('name') . ' = false OR r.' . $softDelete->getOption('name') . ' IS NULL)');
+            if ($softDelete->getOption('type') == 'boolean') {
+                $conn = $query->getConnection();
+
+                $query->addWhere(
+                    '(r.' . $softDelete->getOption('name') . ' = ' . $conn->convertBooleans(true) .
+                    ' OR r.' . $softDelete->getOption('name') . ' = ' . $conn->convertBooleans(false) . ')'
+                );
+            } else {
+                $query->addWhere('(r.' . $softDelete->getOption('name') . ' IS NOT NULL OR r.' . $softDelete->getOption('name') . ' IS NULL)');
+            }
         }
 
         $similarSlugResult = $query->execute();
+        $query->free();
 
         // Change indexby back
         $record->getTable()->bindQueryPart('indexBy', $originalIndexBy);
@@ -205,6 +215,14 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
         while (in_array($slug, $similarSlugs)) {
             $slug = call_user_func_array($this->_options['builder'], array($proposal.'-'.$i, $record)); 
             $i++;
+        }
+
+        // If slug is longer then the column length then we need to trim it
+        // and try to generate a unique slug again
+        $length = $record->getTable()->getFieldLength($this->_options['name']);
+        if (strlen($slug) > $length) {
+            $slug = substr($slug, 0, $length - (strlen($i) + 1));
+            $slug = $this->getUniqueSlug($record, $slug);
         }
 
         return  $slug;

@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Sqlite.php 5676 2009-04-22 19:35:17Z jwage $
+ *  $Id: Sqlite.php 5798 2009-06-02 15:10:46Z piccoloprincipe $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,7 +29,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
- * @version     $Revision: 5676 $
+ * @version     $Revision: 5798 $
  */
 class Doctrine_Export_Sqlite extends Doctrine_Export
 {
@@ -104,7 +104,8 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
     {
         $name  = $this->conn->formatter->getIndexName($name);
         $name  = $this->conn->quoteIdentifier($name);
-        $type   = '';
+        $type  = '';
+
         if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
                 case 'unique':
@@ -116,6 +117,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                     );
             }
         }
+
         $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
         $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
 

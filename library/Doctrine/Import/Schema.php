@@ -58,7 +58,7 @@ class Doctrine_Import_Schema
                                 'generateBaseClasses'   =>  true,
                                 'generateTableClasses'  =>  false,
                                 'generateAccessors'     =>  false,
-                                'baseClassesPrefix'     =>  'Base',
+                                'baseClassPrefix'       =>  'Base',
                                 'baseClassesDirectory'  =>  'generated',
                                 'baseClassName'         =>  'Doctrine_Record');
 
@@ -234,6 +234,7 @@ class Doctrine_Import_Schema
      */
     public function importSchema($schema, $format = 'yml', $directory = null, $models = array())
     {
+        $schema = (array) $schema;
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
         $builder->setOptions($this->getOptions());
@@ -489,9 +490,13 @@ class Doctrine_Import_Schema
                     $superClass = $definition['inheritance']['extends']; 
                     $multiInheritanceDef = $array[$superClass]; 
 
-                    while (count($multiInheritanceDef['inheritance']) > 0 && array_key_exists('extends', $multiInheritanceDef['inheritance'])) { 
-                        $superClass = $multiInheritanceDef['inheritance']['extends']; 
-                        $inheritanceFields[$multiInheritanceDef['inheritance']['keyField']] = $multiInheritanceDef['inheritance']['keyValue']; 
+                    while (count($multiInheritanceDef['inheritance']) > 0 && array_key_exists('extends', $multiInheritanceDef['inheritance']) && $multiInheritanceDef['inheritance']['type'] == 'column_aggregation') { 
+                        $superClass = $multiInheritanceDef['inheritance']['extends'];
+                        
+                        // keep original keyField with it's keyValue
+                        if ( ! isset($inheritanceFields[$multiInheritanceDef['inheritance']['keyField']])) { 
+                            $inheritanceFields[$multiInheritanceDef['inheritance']['keyField']] = $multiInheritanceDef['inheritance']['keyValue'];
+                        } 
                         $multiInheritanceDef = $array[$superClass]; 
                     } 
 
