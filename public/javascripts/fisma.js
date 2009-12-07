@@ -480,17 +480,22 @@ function showJustification(){
 }
 
 function addBookmark(obj, url){
-    if(window.sidebar){ // Firefox
+    if (window.sidebar) { 
+        // Firefox
         window.sidebar.addPanel(url.title, url.href,'');
-    }else if(window.opera){ //Opera
+    } else if (window.opera) {
+        // Opera
         var a = document.createElement("A");
         a.rel = "sidebar";
         a.target = "_search";
         a.title = url.title;
         a.href = url.href;
         a.click();
-    } else if(document.all){ //IE
+    } else if (document.all) { 
+        // IE
         window.external.AddFavorite(url.href, url.title);
+    } else {
+        alert("Your browser does not support automatic bookmarks. Please try to bookmark this page manually instead.");
     }
 }
 
