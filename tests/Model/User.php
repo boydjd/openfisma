@@ -31,7 +31,10 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 class Test_Model_User extends Test_FismaUnitTest
 {
     /**
-     * If salt and hash type are undefined, setting the password should define them automatically
+     * To test the method SaltAndHashAreDefinedIfPasswordIsDefined
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testSaltAndHashAreDefinedIfPasswordIsDefined()
     {
@@ -47,7 +50,10 @@ class Test_Model_User extends Test_FismaUnitTest
     }
     
     /**
-     * Ensure that passwords are not stored in plain text
+     * To test the method PasswordNotInPlainText
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testPasswordNotInPlainText()
     {
@@ -60,8 +66,10 @@ class Test_Model_User extends Test_FismaUnitTest
     }
 
     /**
-     * A user is not allowed to reuse any of the three previous passwords
+     * To test the method PasswordHistoryFailure
      * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      * @expectedException Doctrine_Exception
      */
     public function testPasswordHistoryFailure()
@@ -74,13 +82,10 @@ class Test_Model_User extends Test_FismaUnitTest
     }
     
     /**
-     * Test password history success
+     * To test the method PasswordHistorySuccess
      * 
-     * Generate a series of passwords and then try reusing an old one
-     * 
-     * This isn't a great test because it is relies on the User::PASSWORD_HISTORY_LIMIT constant. It would probably be
-     * better to have some API to get that value, but this is all going to change anyway so I'm not going to do that 
-     * now.
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testPasswordHistorySuccess()
     {

@@ -49,7 +49,9 @@ if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
 class AllUnitTests
 {
     /**
-     * main() - Test controller main method
+     * Test controller main method
+     * 
+     * @return void
      */
     public static function main()
     {
@@ -57,14 +59,14 @@ class AllUnitTests
     }
 
     /**
-     * suite() - Creates a phpunit test suite for all unit tests in the project.
+     * Creates a phpunit test suite for all unit tests in the project.
      * The controller recurses through all directories and loads all of the .php
      * files found.
      *
      * Notice that each test file should be named following the ZF standards in
      * order for this to work.
      *
-     * @return PHPUnit_Framework_TestSuite
+     * @return PHPUnit_Framework_TestSuite The  assembled test suite
      */
     public static function suite()
     {
@@ -87,12 +89,14 @@ class AllUnitTests
     }
 
     /**
-     * loadAllTests() - Load all of the PHP files in the specified directory,
+     * Load all of the PHP files in the specified directory,
      * and add them to the test suite.
      *
      * @param string $path The parent path containing the directory
      * @param string $directory The name of the directory
-     * @param PHPUnit2_Framework_TestSuite $suite Which suite to add these to
+     * @param PHPUnit_Framework_TestSuite $suite The test suite to assemble test case
+     * @return void
+     * @throws Exception if the class doesn`t exist in the file
      */
     public static function loadAllTests($path, $directory, $suite)
     {

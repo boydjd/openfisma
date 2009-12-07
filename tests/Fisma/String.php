@@ -31,34 +31,46 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 class Test_Fisma_String extends Test_FismaUnitTest
 {
     /**
-     * Test randomness of string generation
+     * Test random string generation
+     * 
+     * This isn't a good test case, since it assumes that srand() affects the results. For example, if the
+     * implementation was switched to use mt_rand() instead of rand(), then this test would break. I can't think of a 
+     * better way to do this, though, and I would like *some* coverage of this.
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
-    public function testRandomStringRandomness()
-    {
-        $this->assertNotEquals(Fisma_String::random(10), Fisma_String::random(10));
+    public function testRandomStringCollisions()
+    {        
+        $stringLength = 10;
+        
+        // Test an intentional collision
+        srand(0);
+        $random1 = Fisma_String::random($stringLength);
+        srand(0);
+        $random2 = Fisma_String::random($stringLength);
+        
+        $this->assertEquals($random1, $random2);
+        $this->assertEquals($stringLength, strlen($random1));
+        
+        // Now test that different seeds produce different strings
+        srand(0);
+        $random3 = Fisma_String::random($stringLength);
+        srand(1);
+        $random4 = Fisma_String::random($stringLength);
+        
+        $this->assertNotEquals($random3, $random4); 
     }
-
-    /**
-     * Test random string only uses default allowed characters
-     */   
-    public function testRandomStringDefaultAllowedCharacters()
-    {
-        $this->assertRegExp('([A-Z,a-z,0-9]*)', Fisma_String::random(10));
-    }
-
-    /**
-     * Test random string only uses allow characters
-     */
+     
+     /**
+      * Test random string only uses allowed characters
+      * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
+      */   
     public function testRandomStringAllowedCharacters()
     {
-        $this->assertEquals(Fisma_String::random(2, 'AA'), 'AA');
-    }
-
-    /**
-     * Test random string is the requested length
-     */
-    public function testRandomStringLength()
-    {
-        $this->assertEquals(strlen(Fisma_String::random(22)), 22);
+        $random5 = Fisma_String::random(2, 'A');
+        $this->assertEquals('AA', $random5);
     }
 }
