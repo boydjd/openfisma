@@ -52,6 +52,8 @@ class Fisma
     /**
      * The run mode the application is currently using. This must be set to one of the 
      * RUN_MODE constants above.
+     * 
+     * @var int
      */
     private static $_mode;
     
@@ -76,6 +78,8 @@ class Fisma
      * True if doctrine listeners (preSave, postInsert, etc.) are enabled. False otherwise.
      * 
      * This is useful when running the doctrine CLI script to disable listeners which are not needed.
+     * 
+     * @var boolean
      */
     private static $_listenerEnabled = true;
     
@@ -113,16 +117,22 @@ class Fisma
     
     /**
      * A single instance of Zend_Log which the application components share
+     * 
+     * @var Zend_Log
      */
     private static $_log;
 
     /**
      * A single instance of Zend_Cache which the application components share
+     * 
+     * @var Zend_Cache
      */
     private static $_cache;
     
     /**
      * A flag that indicates whether the Fisma system has been installed yet
+     * 
+     * @var boolean
      */
     private static $_isInstall = false;
     
@@ -133,6 +143,8 @@ class Fisma
      * This can be considered a bootrap of sorts.
      * 
      * @param int $mode One of the run modes specified as constants in this class
+     * @return void
+     * @throws Fisma_Exception if neither the environment parameter in app.conf is 'production' nor 'development'
      */
     public static function initialize($mode) 
     {
@@ -248,7 +260,7 @@ class Fisma
     /**
      * To determine whether the Openfisma is installed
      *
-     * @return boolean $isInstall 
+     * @return boolean Ture if Openfisma is installed, false otherwise
      */
     public static function isInstall()
     {
@@ -257,6 +269,8 @@ class Fisma
     
     /**
      * Connect to the database
+     * 
+     * @return void
      */
     public static function connectDb()
     {
@@ -285,6 +299,7 @@ class Fisma
     /**
      * Configure the front controller and then dispatch it
      * 
+     * @return void
      * @todo this is a bit ugly, it's got some unrelated stuff in it
      */
     public static function dispatch() 
@@ -336,6 +351,8 @@ class Fisma
     
     /**
      * Returns the current execution mode.
+     * 
+     * @return int The current execution mode
      */
     public static function mode() 
     {
@@ -343,9 +360,9 @@ class Fisma
     }
     
     /**
-     * Returns whether notifications are enabled
+     * Retrieve the property notificationEnabled value
      * 
-     * @return boolean
+     * @return boolean Ture if notifications are enabled, false otherwise
      */
     public static function getNotificationEnabled() 
     {
@@ -355,7 +372,8 @@ class Fisma
     /**
      * Sets whether notifications are enabled or not.
      * 
-     * @param boolean $enabled
+     * @param boolean $enabled The specified boolean value which indicates if enable notifications
+     * @return void
      */
     public static function setNotificationEnabled($enabled) 
     {
@@ -365,7 +383,7 @@ class Fisma
     /**
      * Returns whether listeners are enabled
      * 
-     * @return boolean
+     * @return boolean Ture if listener is enabled, false otherwise
      */
     public static function getListenerEnabled() 
     {
@@ -375,7 +393,8 @@ class Fisma
     /**
      * Sets whether listeners are enabled or not.
      * 
-     * @param boolean $enabled
+     * @param boolean $enabled The specified boolean value which indicates if enable listener
+     * @return void
      */
     public static function setListenerEnabled($enabled) 
     {
@@ -400,7 +419,8 @@ class Fisma
     /**
      * Returns true if in debug mode, false otherwise.
      * 
-     * @return bool
+     * @return bool Ture if in debug mode, false otherwise
+     * @throws Fisma_Exception if the Fisma object has not been initialized
      */
     public static function debug() 
     {
@@ -421,10 +441,10 @@ class Fisma
      * This is just a shortcut to find common paths, and allows us to move things around without needing
      * to rewrite a bunch of classes. To see what keys are valid, look at the initialize function.
      * 
+     * @param string $key The specified key to obtain
+     * @return string The application path of the key
+     * @throws Fisma_Exception if no path found for the key
      * @see Fisma::initialize()
-     * 
-     * @param string $key
-     * @return string
      */
     public static function getPath($key) 
     {
@@ -447,7 +467,7 @@ class Fisma
      * As the log requires the authente information, the log should be only initialized 
      * after the successfully login.
      *
-     * @return Zend_Log
+     * @return Zend_Log The instance of Zend_Log
      */
     public static function getLogInstance()
     {
@@ -474,8 +494,8 @@ class Fisma
      *
      * make the directory "/path/to/data/cache" writable
      * 
-     * @param string $identify
-     * @return Zend_Cache
+     * @param string $identify The specified file name prefix
+     * @return Zend_Cache The instance of Zend_Cache
      */
     public static function getCacheInstance($identify = null)
     {
@@ -508,8 +528,8 @@ class Fisma
      * into the database without needing to know the database's format for datetime strings. The
      * timestamp is captured during initialization and frozen throughout execution of the script.
      * 
-     * @todo this is designed to work with Mysql... would it work with Oracle? Db2? Dunno...
      * @return string A database friendly representation of the current time
+     * @todo this is designed to work with Mysql... would it work with Oracle? Db2? Dunno...
      */
     public static function now() 
     {

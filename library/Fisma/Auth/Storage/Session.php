@@ -46,8 +46,8 @@ class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session
     /**
      * Sets session storage options and initializes session namespace object
      *
-     * @param  mixed $namespace
-     * @param  mixed $member
+     * @param  string $namespace The specified session namescape
+     * @param  string $member The specified session object member name
      * @return void
      */
     public function __construct($namespace = self::NAMESPACE_DEFAULT, $member = self::MEMBER_DEFAULT)

@@ -39,8 +39,9 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
     /**
      * Constructor
      *
-     * @param User $user
-     * @param string $password
+     * @param User $user The user name of the account to authenticate
+     * @param string $password The user password of the account to authenticate
+     * @return void
      */
     public function __construct(User $user, $password) 
     {
@@ -51,7 +52,8 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
     /**
      * Implements the required interface
      *
-     * @return Zend_Auth_Result
+     * @return Zend_Auth_Result The instance of Zend_Auth_Result
+     * @throws Fisma_Exception_AccountLocked if the account is locked
      */
     public function authenticate()
     {
@@ -89,7 +91,7 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
     /**
      * Check if the password has expired
      * 
-     * @return boolean
+     * @return boolean Ture if the password has expired, false otherwise
      */
     private function _passwordIsExpired()
     {

@@ -34,8 +34,8 @@ class Fisma_Controller_Action_Helper_MakeUrlParams extends Zend_Controller_Actio
      *
      * The string can be parsed by the application to form the criteria again later.
      *
-     * @param array $criteria
-     * @return string
+     * @param array $criteria The criteria array to transform
+     * @return string The string which includes corresponding criterias and can be used in an URL
      */
     public function makeUrlParams($criteria)
     {

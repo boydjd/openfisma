@@ -30,6 +30,8 @@ class Fisma_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
 {
     /**
      * Override the authentication to return a Doctrine_Record instead of string as identity.
+     * 
+     * @return Zend_Auth_Result The instance of Zend_Auth_Result
      */
     public function authenticate()
     {
