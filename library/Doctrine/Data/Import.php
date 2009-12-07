@@ -328,6 +328,8 @@ class Doctrine_Data_Import extends Doctrine_Data
         foreach ($manager as $connection) {
             $tree = $connection->unitOfWork->buildFlushTree($objects);
 
+            sort($tree);
+
             foreach ($tree as $model) {
                 foreach ($this->_importedObjects as $obj) {
 
