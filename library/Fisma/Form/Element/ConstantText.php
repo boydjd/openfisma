@@ -30,7 +30,7 @@ class Fisma_Form_Element_ConstantText extends Zend_Form_Element
 {
     /**
      * Render the form element
-     *
+     * 
      * @param Zend_View_Interface $view Provided for compatibility
      * @return string The rendered element
      */

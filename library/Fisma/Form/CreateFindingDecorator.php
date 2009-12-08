@@ -30,6 +30,8 @@ class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
 {
     /**
      * Display product detail information on the create finding page
+     * 
+     * @return string The redenred product detail information HTML snippet
      */
     public function buildProduct()
     {
@@ -44,8 +46,10 @@ class Fisma_Form_CreateFindingDecorator extends Fisma_Form_FismaDecorator
 
     /**
      * Decorates the specified content with HTML table markup
-     *
+     * 
+     * @param The specified content to be decorated and rendered
      * @return The element rendered in HTML.
+     * @throws Exception_General if the element to be rendered is an unknown class
      */
     public function render($content) 
     {

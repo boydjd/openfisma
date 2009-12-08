@@ -28,15 +28,26 @@
  */
 class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
 {
+    /**
+     * Checkbox matrix container which holds all available checkboxes in maxtrix
+     * 
+     * @var array
+     */
     protected $_checkboxes = array();
+    
+    /**
+     * Default value array which indicates which of them checked
+     * 
+     * @var array
+     */
     protected $_defaults = array();
     
     /**
-     * addCheckbox() - Add a checkbox to this matrix.
+     * Add a checkbox to this matrix.
      *
-     * @param string $name The name of the checkbox (this will be returned in
-     * the form)
+     * @param string $name The name of the checkbox (this will be returned in the form)
      * @param string $label The label that is placed next to the checkbox
+     * @return void
      */
     function addCheckbox($name, $label) 
     {
@@ -44,9 +55,10 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
     }
     
     /**
-     * setValue() - Sets the default value for the checkbox matrix.
+     * Sets the default value for the checkbox matrix.
      *
-     * @param array $value
+     * @param array $value The specified value to be checked by default
+     * @return void
      */
     function setValue($value) 
     {
@@ -54,7 +66,7 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
     }
 
     /**
-     * getValue() - Gets the current value for the checkbox matrix. This is only
+     * Gets the current value for the checkbox matrix. This is only
      * populated after isValid is called(). I believe that is the ZF convention.
      *
      * @return array The checked checkboxes
@@ -65,7 +77,7 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
     }
 
     /**
-     * isValid() - A stub function which always returns true. The main reason
+     * A stub function which always returns true. The main reason
      * for overriding here is to capture the data which is being validated.
      *
      * @return boolean Always returns true
@@ -77,9 +89,9 @@ class Fisma_Form_Element_CheckboxMatrix extends Zend_Form_Element
     }
 
     /**
-     * render() - Renders the checkbox matrix into a table.
+     * Renders the checkbox matrix into a table.
      *
-     * @return string The rendered matrix
+     * @return string The rendered matrix in HTML
      */
     function render() 
     {

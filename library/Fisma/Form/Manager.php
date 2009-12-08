@@ -31,13 +31,13 @@
 class Fisma_Form_Manager
 {
     /**
-     * loadForm() - Loads a specified form by looking in the standard forms
+     * Loads a specified form by looking in the standard forms
      * directory.
-     *
+     * 
      * @param string $formName The name of the form to load. This form should
      * exist inside the forms directory. (Do not include the '.form' file
      * extension.)
-     * @return Zend_Form
+     * @return Zend_Form The loaded zend form
      */
     static function loadForm($formName) 
     {
@@ -55,10 +55,9 @@ class Fisma_Form_Manager
     }
 
    /**
-     * prepareForm() - Adds the standard decorators and filters to the specified
-     * form.
-     *
-     * @param Zend_Form $form
+     * Adds the standard decorators and filters to the specified form.
+     * 
+     * @param Zend_Form $form The specifed zend form to be decorated
      * @return Zend_Form The modified form
      */
     static function prepareForm($form) 
@@ -93,8 +92,8 @@ class Fisma_Form_Manager
 
    /**
      * Adds the standard decorators and filters to the create finding form
-	 *
-     * @param Zend_Form $form
+	 * 
+     * @param Zend_Form $form The specified zend form to be decorated
      * @return Zend_Form The modified form
      */
     static function prepareCreateFindingForm($form) 
@@ -118,9 +117,9 @@ class Fisma_Form_Manager
 
     /**
      * Get form errors if form validate false
-     *
-     * @param Zend_From $form
-     * @return string form errors
+     * 
+     * @param Zend_From $form The zend form which fails to be validated and includes error messages
+     * @return string The form errors
      * @todo this error display code needs to go into the decorator,
      */
     static function getErrors($form)

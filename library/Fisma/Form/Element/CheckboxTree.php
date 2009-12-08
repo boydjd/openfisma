@@ -28,15 +28,26 @@
  */
 class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
 {
+    /**
+     * A array container which keeps all available checkboxes in tree
+     * 
+     * @var array
+     */
     protected $_checkboxes = array();
+    
+    /**
+     * A array container which holds values of all checked chechboxes in tree
+     * 
+     * @var array
+     */
     protected $_defaults = array();
     
     /**
-     * addCheckbox() - Add a checkbox to this matrix.
-     *
-     * @param string $name The name of the checkbox (this will be returned in
-     * the form)
+     * Add a checkbox to this checkbox tree.
+     * 
+     * @param string $name The name of the checkbox (this will be returned in the form)
      * @param string $label The label that is placed next to the checkbox
+     * @return void
      */
     function addCheckbox($name, $label, $level) 
     {
@@ -44,9 +55,10 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
     }
     
     /**
-     * setValue() - Sets the default value for the checkbox matrix.
+     * Sets the default value for the checkbox tree.
      *
-     * @param array $value
+     * @param array $value The specifed value of checkbox to be checked by default in tree 
+     * @return void
      */
     function setValue($value) 
     {
@@ -54,9 +66,9 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
     }
 
     /**
-     * getValue() - Gets the current value for the checkbox matrix. This is only
+     * Gets the current value for the checkbox matrix. This is only
      * populated after isValid is called(). I believe that is the ZF convention.
-     *
+     * 
      * @return array The checked checkboxes
      */
     function getValue() 
@@ -65,9 +77,9 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
     }
 
     /**
-     * isValid() - A stub function which always returns true. The main reason
+     * A stub function which always returns true. The main reason
      * for overriding here is to capture the data which is being validated.
-     *
+     * 
      * @return boolean Always returns true
      */
     function isValid($value, $context=null) 
@@ -77,9 +89,10 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
     }
     
     /**
-     * render() - Renders the checkbox matrix into a table.
-     *
-     * @return string The rendered matrix
+     * Renders the checkbox tree into a table.
+     * 
+     * @param Zend_View_Interface $view Provided for compatibility
+     * @return string The rendered checkbox tree in HTML
      */
     function render(Zend_View_Interface $view = null) 
     {

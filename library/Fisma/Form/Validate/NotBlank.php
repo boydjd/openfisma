@@ -30,18 +30,25 @@
  */
 class Fisma_Form_Validate_NotBlank extends Zend_Validate_Abstract
 {
+    /**
+     * Constant error message key 'blank'
+     */
     const NOTBLANK = 'blank';
 
+    /**
+     * Error message templates
+     * 
+     * @var array
+     */
     protected $_messageTemplates = array(
         self::NOTBLANK => "cannot be blank."
     );
 
     /**
-     * isValid 
+     * Check if the specified value is blank
      * 
-     * @param string $value 
-     * @access public
-     * @return boolean 
+     * @param string $value The specified to be validated
+     * @return boolean True if not blank, false otherwise
      */
     public function isValid($value)
     {

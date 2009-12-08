@@ -33,9 +33,9 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
                                 implements Zend_Form_Decorator_Marker_File_Interface
 {
     /**
-     * buildLabel() - Create the label for this element.
+     * Create the label for this element.
      *
-     * @return The label rendered in HTML.
+     * @return string The label rendered in HTML.
      */
     public function buildLabel() 
     {
@@ -75,9 +75,9 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
     }
 
     /**
-     * buildInput() - Create the input control for this element.
+     * Create the input control for this element.
      *
-     * @return The input control rendered in HTML.
+     * @return string The input control rendered in HTML.
      */
     public function buildInput() 
     {
@@ -123,10 +123,9 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
     }
 
     /**
-     * buildErrors() - Create the error message for this element (if
-     * applicable).
+     * Create the error message for this element (if applicable).
      *
-     * @return The error message rendered in HTML.
+     * @return string The error message rendered in HTML.
      */
     public function buildErrors() 
     {
@@ -141,9 +140,10 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
     }
 
     /**
-     * render() - Decorates the specified content with HTML table markup
+     * Decorates the specified content with HTML table markup
      *
-     * @return The element rendered in HTML.
+     * @return string The element rendered in HTML.
+     * @throws Fisma_Exception if the element to be rendered is an unknown class
      */
     public function render($content) 
     {

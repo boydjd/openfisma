@@ -28,8 +28,16 @@
  */
 class Fisma_Form_Validate_MceNotEmpty extends Fisma_Form_Validate_NotBlank
 {
+    /**
+     * Constance error message key 'notempty'
+     */
     const NOTEMPTY = "notempty";
 
+    /**
+     * Error message templates
+     * 
+     * @var array
+     */
     protected $_messageTemplates = array(
         self::NOTEMPTY => "cannot be empty."
     );
@@ -37,8 +45,8 @@ class Fisma_Form_Validate_MceNotEmpty extends Fisma_Form_Validate_NotBlank
     /** 
      * Returns true if the mce editor has none empty value after removing the wrapper tags
      *
-     * @param string $value
-     * @return true|false
+     * @param string $value The specified value to be validated
+     * @return boolean True if not empty, false otherwise
      */
     public function isValid($value)
     {

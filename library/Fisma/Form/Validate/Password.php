@@ -28,23 +28,67 @@
  */
 class Fisma_Form_Validate_Password extends Zend_Validate_Abstract
 {
+    /**
+     * Constant message key 'pass_min'
+     */
     const PASS_MIN = "pass_min";
+    
+    /**
+     * Constant message key 'pass_max'
+     */
     const PASS_MAX = "pass_max";
+    
+    /**
+     * Constant message key 'pass_uppercase'
+     */
     const PASS_UPPERCASE = "pass_uppercase";
+    
+    /**
+     * Constant message key 'pass_lowercase'
+     */
     const PASS_LOWERCASE = "pass_lowercase";
+    
+    /**
+     * Constant message key 'pass_numerical'
+     */
     const PASS_NUMERICAL = "pass_numerical";
+    
+    /**
+     * Constant message key 'pass_special'
+     */
     const PASS_SPECIAL   = "pass_special";
+    
+    /**
+     * Constant message key 'pass_include'
+     */
     const PASS_INCLUDE   = "pass_include";
+    
+    /**
+     * Constant message key 'pass_history'
+     */
     const PASS_HISTORY   = "pass_history";
+    
+    /**
+     * Constant message key 'pass_notsameold'
+     */
     const PASS_NOTSAMEOLD = "pass_notsameold";
+    
+    /**
+     * Constant message key 'pass_notconfirm'
+     */
     const PASS_NOTCONFIRM = "pass_notconfirm";
+    
+    /**
+     * Constant message key 'pass_notincorrect'
+     */
     const PASS_NOTINCORRECT = "pass_notincorrect";
     
     /** 
-     * Check the password whether is suited for complex
-     * @param string $pass password
-     * @param array $context post data from client's form
-     * @return true|false
+     * Check whether the password matchs the specified password complexity criterias
+     * 
+     * @param string $pass The password to be validate
+     * @param array|null $context The specified password complexity criterias
+     * @return boolean True if match, false otherwise
      */
     public function isValid($pass, $context=null)
     {

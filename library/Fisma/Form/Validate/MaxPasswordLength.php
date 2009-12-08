@@ -28,19 +28,28 @@
  */
 class Fisma_Form_Validate_MaxPasswordLength extends Zend_Validate_Abstract
 {
+    /**
+     * Constant error message key 'invalid'
+     */
     const MSG_INVALID = 'invalid';
 
+    /**
+     * Error message templates
+     * 
+     * @var array
+     */
     protected $_messageTemplates = array(
         self::MSG_INVALID => "'%value%' is not greater than the minimum password length."
     );
 
     /**
-     * isValid - Check if the maximum password length is valid 
+     * Check if the maximum password length is valid
      * 
-     * @param mixed $value
-     * @param mixed $context 
-     * @access public
-     * @return boolean 
+     * @param string $value The specified to be validated
+     * @param array $context The context array which includes some password complexity requirements
+     * @return boolean Ture if not greater than the minimum password length, false otherwise
+     * @todo suggest rename class name to Fisma_Form_Validate_MinPasswordLength 
+     * since actually following snippet involves 'pass_min_length' but 'pass_max_length'
      */
     public function isValid($value, $context = null)
     {

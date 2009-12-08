@@ -30,14 +30,24 @@
  */
 class Fisma_Form_Validate_PasswdMatch extends Zend_Validate_Abstract
 {
+    /**
+     * Constant error message key 'mismatch'
+     */
     const PASS_MISMATCH = 'mismatch'; 
 
+    /**
+     * Error message templates
+     * 
+     * @var array
+     * @todo improve using of the message templates
+     */
     protected $_messageTemplates = array(self::PASS_MISMATCH=>"is incorrect");
 
     /** 
-     * Validate the password
-     * @param string $pass password
-     * @return true|false
+     * Check if the specified password matchs with the password of current user on hash
+     * 
+     * @param string $pass The specified password to be matched
+     * @return boolean True if match, false otherwise
      */
     public function isValid($pass)
     {
