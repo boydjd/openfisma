@@ -145,7 +145,7 @@ class ConfigController extends SecurityController
      * @return string The assembled Ldap URL
      * @todo cleanup
      */
-    private function makeLdapUrl($value)
+    private function _makeLdapUrl($value)
     {
         $url = $value['useSsl'] ? "ldaps://" : "ldap://";
         if (!empty($value['username'])) {
