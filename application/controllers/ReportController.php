@@ -268,7 +268,7 @@ class ReportController extends SecurityController
             $list = $q->execute();
 
             // Assign view outputs
-            $this->view->assign('poam_list', $list);
+            $this->view->assign('poamList', $list);
             $this->view->criteria = $params;
             $this->view->columns = array('orgSystemName' => 'System', 
                                          'actionType' => 'Overdue Action Type', 
