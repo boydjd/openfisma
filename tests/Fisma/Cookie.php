@@ -33,16 +33,15 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 class Test_Fisma_Cookie extends Test_FismaUnitTest
 {
     /**
-     * testPrepareSecureCookie 
-     *
-     * @dataProvider prepareProvider
-     *
-     * @param string $name 
-     * @param string $value 
-     * @param boolean $secure
-     * @param array $expected 
-     * @access public
+     * To test the method PrapareCookie
+     * 
+     * @param string $name The specified cookie name
+     * @param string $value The specified cookie value
+     * @param boolean $secure Indicates if needs to secure cookie
+     * @param array $expected The expected result
      * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
+     * @dataProvider prepareProvider
      */
     public function testPrepareCookie($name, $value, $secure, array $expected)
     {
@@ -51,15 +50,14 @@ class Test_Fisma_Cookie extends Test_FismaUnitTest
     }
 
     /**
-     * testGetCookie 
-     *
-     * @dataProvider cookieProvider
-     *
-     * @param array $cookie 
-     * @param string $key 
-     * @param string $expected 
-     * @access public
+     * To test the method GetCookie
+     * 
+     * @param array $cookie The cookie array to search
+     * @param string $key The specified cookie key to found
+     * @param string $expected The expected result
      * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
+     * @dataProvider cookieProvider
      */
     public function testGetCookie(array $cookie, $key, $expected)
     {
@@ -68,16 +66,14 @@ class Test_Fisma_Cookie extends Test_FismaUnitTest
     }
 
     /**
-     * testGetUnavailableCookie 
-     *
+     * To test the method GetUnavailableCookie
+     * 
+     * @param array $cookie The cookie array to search
+     * @param string $key The specified cookie key to found
+     * @param string $expected The expected result
+     * @return void
      * @dataProvider badCookieProvider
      * @expectedException Fisma_Exception
-     *
-     * @param array $cookie 
-     * @param mixed $key 
-     * @param mixed $expected 
-     * @access public
-     * @return void
      */
     public function testGetUnavailableCookie(array $cookie, $key, $expected)
     {
@@ -85,11 +81,9 @@ class Test_Fisma_Cookie extends Test_FismaUnitTest
     }
 
     /**
-     * secureProvider 
-     *
-     * @static
-     * @access public
-     * @return array
+     * Create cookie data in array
+     * 
+     * @return array The cookie array which provides test data to test method
      */
     static public function prepareProvider()
     {
@@ -110,11 +104,9 @@ class Test_Fisma_Cookie extends Test_FismaUnitTest
     }
 
     /**
-     * cookieProvider 
+     * Create cookie data in array
      * 
-     * @static
-     * @access public
-     * @return void
+     * @return array The cookie array which provides test data to test method
      */
     static public function cookieProvider()
     {
@@ -125,11 +117,9 @@ class Test_Fisma_Cookie extends Test_FismaUnitTest
     }
 
     /**
-     * badCookieProvider 
+     * Create bad cookie data in array
      * 
-     * @static
-     * @access public
-     * @return void
+     * @return array The bad cookie array which provides test data to test method
      */
     static public function badCookieProvider()
     {

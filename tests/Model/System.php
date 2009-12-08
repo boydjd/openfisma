@@ -32,6 +32,9 @@ class Test_Model_System extends Test_FismaUnitTest
 {
     /**
      * FIPS category is the high water mark of CIA
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryIsHighWaterMarkOfCia()
     {
@@ -51,6 +54,9 @@ class Test_Model_System extends Test_FismaUnitTest
 
     /**
      * If one, but not all, CIA values are set, then FIPS security category should still be defined
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryDefinedIfAnyCiaDefined()
     {
@@ -62,6 +68,9 @@ class Test_Model_System extends Test_FismaUnitTest
     
     /**
      * Confidentiality can be N/A but FIPS category is still defined
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryWhenConfidentialityIsNa()
     {
@@ -75,6 +84,9 @@ class Test_Model_System extends Test_FismaUnitTest
     
     /**
      * If all CIA values are null, than FIPS category is null
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryIsNullWhenCiaIsNull()
     {
@@ -86,6 +98,7 @@ class Test_Model_System extends Test_FismaUnitTest
     /**
      * FIPS category cannot be set directly
      * 
+     * @return void
      * @expectedException Fisma_Exception
      */
     public function testCannotSetFipsCategoryDirectly()
@@ -97,6 +110,9 @@ class Test_Model_System extends Test_FismaUnitTest
     
     /**
      * Exhibit 53 Unique Project Id has automatic formatting
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testUpiFormatting()
     {

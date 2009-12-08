@@ -32,6 +32,9 @@ class Test_Model_User extends Test_FismaUnitTest
 {
     /**
      * If salt and hash type are undefined, setting the password should define them automatically
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testSaltAndHashAreDefinedIfPasswordIsDefined()
     {
@@ -48,6 +51,9 @@ class Test_Model_User extends Test_FismaUnitTest
     
     /**
      * Ensure that passwords are not stored in plain text
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testPasswordNotInPlainText()
     {
@@ -62,6 +68,7 @@ class Test_Model_User extends Test_FismaUnitTest
     /**
      * A user is not allowed to reuse any of the three previous passwords
      * 
+     * @return void
      * @expectedException Doctrine_Exception
      */
     public function testPasswordHistoryFailure()
@@ -81,6 +88,9 @@ class Test_Model_User extends Test_FismaUnitTest
      * This isn't a great test because it is relies on the User::PASSWORD_HISTORY_LIMIT constant. It would probably be
      * better to have some API to get that value, but this is all going to change anyway so I'm not going to do that 
      * now.
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_AssertionFailedError if not able to reuse old passwords
      */
     public function testPasswordHistorySuccess()
     {

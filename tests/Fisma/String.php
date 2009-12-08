@@ -32,6 +32,9 @@ class Test_Fisma_String extends Test_FismaUnitTest
 {
     /**
      * Test randomness of string generation
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testRandomStringRandomness()
     {
@@ -40,7 +43,11 @@ class Test_Fisma_String extends Test_FismaUnitTest
 
     /**
      * Test random string only uses default allowed characters
-     */   
+     * 
+     * @return void
+     * @throws PHPUnit_Util_InvalidArgumentHelper if the specified regular expression or random string argument fails
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
+     */
     public function testRandomStringDefaultAllowedCharacters()
     {
         $this->assertRegExp('([A-Z,a-z,0-9]*)', Fisma_String::random(10));
@@ -48,6 +55,9 @@ class Test_Fisma_String extends Test_FismaUnitTest
 
     /**
      * Test random string only uses allow characters
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testRandomStringAllowedCharacters()
     {
@@ -56,6 +66,9 @@ class Test_Fisma_String extends Test_FismaUnitTest
 
     /**
      * Test random string is the requested length
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testRandomStringLength()
     {
