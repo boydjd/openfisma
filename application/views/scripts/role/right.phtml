@@ -9,9 +9,9 @@ Fisma_Format_Section::startSection("Rights Assignment"); ?>
     <table height="250" border="0" style="margin-left:80px">
         <tr>
             <td><b><label for="function_screen">Screen Names</label></b></td>
-            <td><b><label for="available_functions">Available Functions</label></b></td>
+            <td><b><label for="availableFunctions">Available Functions</label></b></td>
             <td></td>
-            <td><b><label for="exist_functions">Assigned Functions</label></b></td>
+            <td><b><label for="existFunctions">Assigned Functions</label></b></td>
         </tr>
         <tr>
             <td width="254">
@@ -32,7 +32,7 @@ Fisma_Format_Section::startSection("Rights Assignment"); ?>
                 </select>
             </td>
             <td>
-                <select multiple size="20" id="available_functions" name="available_functions" style="width:250px">
+                <select multiple size="20" id="availableFunctions" name="availableFunctions" style="width:250px">
                 </select>
             </td>
             <td width="54" valign="top">
@@ -41,7 +41,7 @@ Fisma_Format_Section::startSection("Rights Assignment"); ?>
                 <br><br>
                 <input type="button" value="   <-   " id="remove_function">
             </td>
-            <td><select multiple size="20" id="existFunctions" name="existFunctions []" style="width:250px">
+            <td><select multiple size="20" id="existFunctions" name="existFunctions[]" style="width:250px">
                 <?php 
                 foreach ($this->existFunctions as $row) {
                 ?>

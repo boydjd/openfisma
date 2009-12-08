@@ -97,8 +97,8 @@ class RoleController extends BaseController
         
         $role = Doctrine::getTable('Role')->find($roleId);
         $existFunctions = $role->Privileges->toArray();
-        if ('available_functions' == $do) {
-            $existFunctionIds = explode(',', $req->getParam('exist_functions'));
+        if ('availableFunctions' == $do) {
+            $existFunctionIds = explode(',', $req->getParam('existFunctions'));
             $q = Doctrine_Query::create()
                  ->from('Privilege');
             if (!empty($screenName)) {
@@ -114,12 +114,12 @@ class RoleController extends BaseController
             $this->_helper->layout->setLayout('ajax');
             $this->view->assign('functions', $availableFunctions);
             $this->render('funcoptions');
-        } elseif ('exist_functions' == $do) {
+        } elseif ('existFunctions' == $do) {
             $this->_helper->layout->setLayout('ajax');
             $this->view->assign('functions', $existFunctions);
             $this->render('funcoptions');
         } elseif ('update' == $do) {
-            $functionIds = $req->getParam('exist_functions');
+            $functionIds = $req->getParam('existFunctions');
             $errno = 0;
             if (!Doctrine::getTable('RolePrivilege')->findByRoleId($roleId)->delete()) {
                 $errno++;

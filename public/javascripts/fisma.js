@@ -108,20 +108,20 @@ var readyFunc = function () {
     search_function();
     //
     YAHOO.util.Event.on('add_function', 'click', function() {
-        var options = new YAHOO.util.Selector.query('#available_functions option');
+        var options = new YAHOO.util.Selector.query('#availableFunctions option');
         for (var i = 0; i < options.length; i ++) {
             if (options[i].selected == true) {
-                document.getElementById('exist_functions').appendChild(options[i]);
+                document.getElementById('existFunctions').appendChild(options[i]);
             }
         }
         return false;  
     });
     //
     YAHOO.util.Event.on('remove_function', 'click', function() {
-        var options = YAHOO.util.Selector.query('#exist_functions option');
+        var options = YAHOO.util.Selector.query('#existFunctions option');
         for (var i = 0; i < options.length; i ++) {
             if (options[i].selected == true) {
-                document.getElementById('available_functions').appendChild(options[i]);
+                document.getElementById('availableFunctions').appendChild(options[i]);
             }
         }
         return false;
@@ -129,7 +129,7 @@ var readyFunc = function () {
     //
     YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=assign_right]'), 'submit', 
     function (){
-        var options = YAHOO.util.Selector.query('#exist_functions option');
+        var options = YAHOO.util.Selector.query('#existFunctions option');
         for (var i = 0; i < options.length; i ++) {
             options[i].selected = true;
         }
@@ -166,20 +166,20 @@ function search_function() {
     if('' != name){
         param += '/screen_name/'+name;
     }
-    var kids = YAHOO.util.Selector.query('#exist_functions option');
-    var exist_functions = '';
+    var kids = YAHOO.util.Selector.query('#existFunctions option');
+    var existFunctions = '';
     for (var i=0;i < kids.length;i++) {
         if (i == 0) {
-            exist_functions += kids[i].value;
+            existFunctions += kids[i].value;
         } else {
-            exist_functions += ',' + kids[i].value;
+            existFunctions += ',' + kids[i].value;
         }
     }
     var url = document.getElementById('function_screen').getAttribute('url')
-              + '/do/available_functions' + param + '/exist_functions/'+exist_functions;
+              + '/do/availableFunctions' + param + '/existFunctions/'+existFunctions;
     var request = YAHOO.util.Connect.asyncRequest('GET', url, 
         {success: function(o){
-                   document.getElementById('available_functions').parentNode.innerHTML = '<select style="width: 250px;" name="available_functions" id="available_functions" size="20" multiple="">'+o.responseText+'</select>';
+                   document.getElementById('availableFunctions').parentNode.innerHTML = '<select style="width: 250px;" name="availableFunctions" id="availableFunctions" size="20" multiple="">'+o.responseText+'</select>';
                 },
         failure: handleFailure});
 }
