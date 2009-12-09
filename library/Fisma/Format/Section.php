@@ -28,7 +28,14 @@
  */
 class Fisma_Format_Section
 {
-    /** @yui document this class */
+    /**
+     * Renders start part of a HTMl panel section
+     * 
+     * @param string $title The speicifed panel title
+     * @param string|null $editableTarget The specified editable target element name
+     * @return void
+     * @yui document this class
+     */
     static function startSection($title, $editableTarget = null) 
     {
         if (isset($editableTarget)) {
@@ -39,6 +46,11 @@ class Fisma_Format_Section
         } 
     }
     
+    /**
+     * Renders stop part of a HTMl panel section
+     * 
+     * @return void
+     */
     static function stopSection() 
     {
         print "<div class='clear'></div></div>\n";

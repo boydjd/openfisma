@@ -31,6 +31,10 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
     /**
      * Implements the required function in the Inject_Abstract interface.
      * This parses the report and commits all data to the database.
+     * 
+     * @param string $uploadId The id of upload Nessus xml file
+     * @return void
+     * @throws Fisma_Exception_InvalidFileFormat if the file is not a Nessus report
      */
     public function parse($uploadId)
     {
@@ -49,7 +53,9 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      * Save assets and findings which are recorded in the report.
      *
      * @param SimpleXMLElement $report The full Nessus report
-     * @param int $uploadId the specific scanner file id
+     * @param int $uploadId The specific scanner file id
+     * @return void
+     * @throws Fisma_Exception_InvalidFileFormat if not found expected fields
      */
     private function _persist($report, $uploadId)
     {
@@ -119,11 +125,12 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
     
     /**
      * Get the content from a start string to end string
-     *
-     * @param string $str orginal content 
-     * @param string $start
-     * @param string $end
-     * @return string
+     * 
+     * @param string $str The specifed orginal content to be exploded
+     * @param string $start The specified start mark
+     * @param string $end The specifed end mark
+     * @return string The extracted sub content
+     * @todo suggest make this method reusable
      */
     private function _getSubContent($str, $start, $end)
     {

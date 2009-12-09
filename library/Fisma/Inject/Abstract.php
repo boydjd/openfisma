@@ -28,36 +28,80 @@
  */
 abstract class Fisma_Inject_Abstract
 {
+    /**
+     * The full xml file path to be used to the injection plugin
+     * 
+     * @var string
+     */
     protected $_file;
+    
+    /**
+     * The network id to be used for injection
+     * 
+     * @var string
+     */
     protected $_networkId;
+    
+    /**
+     * The organization id to be used for injection
+     * 
+     * @var string
+     */
     protected $_orgSystemId;
+    
+    /**
+     * The finding source id to be used for injection
+     * 
+     * @var string
+     */
     protected $_findingSourceId;
+    
+    /**
+     * The asset id to be used for injection
+     * 
+     * @var string
+     */
     protected $_assetId;
     
     /**
      * insert finding ids
+     * 
+     * @var array
      */
     private $_findingIds = array();
     
+    /**
+     * The summary counts array
+     * 
+     * @var array
+     */
     private $_totalFindings = array('created' => 0,
                                     'deleted' => 0,
                                     'reviewed' => 0);
     
     /**
-     * These constants define possible actions to take on a specific finding.
-     *
-     * CREATE_FINDING means that the finding should be created and set to NEW status.
-     * DELETE_FINDING means that the finding should be deleted (aka "surpressed").
-     * REVIEW_FINDING means that the finding should be created and set to PEND status.
+     * The constant defines the possible specific finding action the finding should be created and set to NEW status.
      */
     const CREATE_FINDING = 1;
+    
+    /**
+     * The constant defines the possible specific finding action the finding should be deleted.
+     */
     const DELETE_FINDING = 2;
+    
+    /**
+     * The constant defines the possible specific finding action the finding should be created and set to PEND status.
+     */
     const REVIEW_FINDING = 3;
     
     /**
-     * __construct() - Create a new plug-in instance for the specified file
-     *
-     * @param string $file
+     * Create and initialize a new plug-in instance for the specified file
+     * 
+     * @param string $file The specified xml file path
+     * @param string $networkId The specified network id
+     * @param string $systemId The specified organization id
+     * @param string $findingSourceId The specified finding source id
+     * @return void
      */
     public function __construct($file, $networkId, $systemId, $findingSourceId) 
     {
@@ -69,9 +113,10 @@ abstract class Fisma_Inject_Abstract
     }
 
     /**
-     * Check errors for the upload file
-     *
-     * @throw errors
+     * Check errors for the upload file and verify if the upload file is valid xml format
+     * 
+     * @return void
+     * @throws Fisma_Exception_InvalidFileFormat if the upload file is not a valid XML format
      */
     protected function _checkFile()
     {
@@ -92,15 +137,15 @@ abstract class Fisma_Inject_Abstract
     }
 
     /**
-     * _commit() - Conditionally commit the specific finding.
-     *
+     * Conditionally commit the specific finding.
+     * 
      * The finding is evaluated with respect to the Injection Filtering rules. The finding may be committed or it may be
      * deleted based on the filter rules.
-     *
+     * 
      * Subclasses must call this function to commit findings rather than committing new findings directly.
-     *
-     * @param array $findingData Column data for the new finding object
-     * action was taken.
+     * 
+     * @param array $findingData Column data for the new finding object action was taken.
+     * @return void
      */
     protected function _commit($findingData) 
     {
@@ -140,13 +185,13 @@ abstract class Fisma_Inject_Abstract
     }
     
     /**
-     * __get() - The get handler method is overridden in order to provide read-only access to the summary counts for
+     * The get handler method is overridden in order to provide read-only access to the summary counts for
      * this plug-in.
      *
      * Example: echo "Created {$plugin->created} findings";
-     *
-     * @param string $field
-     * @return mixed
+     * 
+     * @param string $field The specified summary counts key
+     * @return int|null The summary count value of the specified key
      */
     public function __get($field) 
     {
@@ -158,12 +203,13 @@ abstract class Fisma_Inject_Abstract
     }
 
     /** 
-     * parse() - Parse all the data from the specified file, and load it into the database.
+     * Parse all the data from the specified file, and load it into the database.
      *
      * Throws an exception if the file is an invalid format.
      *
-     * @param string $uploadId The id of this uploading.
-     * @return Return the number of findings created.
+     * @param string $uploadId The id of the upload file.
+     * @return void
+     * @throws Fisma_Exception_InvalidFileFormat if the file is an invalid format
      */
     abstract public function parse($uploadId);
 
@@ -171,7 +217,8 @@ abstract class Fisma_Inject_Abstract
      * Save or get the asset id which is associated with the address ip and port
      * If there has the same ip, port and network, get the exist asset id, else create a new one
      *
-     * @param array $assetData asset data
+     * @param array $assetData The asset data to save
+     * @return void
      */
     protected function _saveAsset($assetData)
     {
@@ -200,7 +247,8 @@ abstract class Fisma_Inject_Abstract
     /**
      * Save product and update asset's product
      *
-     * @param array $productData product data
+     * @param array $productData The product data to save
+     * @return void
      */
     protected function _saveProduct($productData)
     {
@@ -234,9 +282,9 @@ abstract class Fisma_Inject_Abstract
     /**
      * Convert plain text into a similar HTML representation.
      * 
-     * @todo refactor, put this into a class that is available system-wide
-     * @param string $plainText Plain text that needs to be marked up
-     * @return string HTML version of $plainText
+     * @param string $plainText The plain text that needs to be marked up
+     * @return string The rendered HTML snippet of the plain text
+     * @todo refactor, put this into a class that is available system-wide, that means make this method reusable
      */
     protected function textToHtml($plainText) 
     {

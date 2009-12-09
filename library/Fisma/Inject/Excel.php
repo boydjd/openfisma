@@ -36,18 +36,19 @@ class Fisma_Inject_Excel
      * The name of the template file which gets sent to the client
      */
     const TEMPLATE_NAME = 'Finding_Upload_Template.xls';
-
+    
     /**
      * The template version is used to make sure that we don't try to process a template which was produced by a
      * previous version of OpenFISMA. This number should be incremented whenever the template file or processing code
      * is modified.
      */
     const TEMPLATE_VERSION = 1;
-                  
+    
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
      * column's logical names. Excel starts indexes at 1 instead of 0.
-     *
+     * 
+     * @var array
      * @todo Move this definition and related items into a separate classs... this is too much stuff to put into the
      * controller
      */
@@ -78,6 +79,8 @@ class Fisma_Inject_Excel
     /**
      * Indicates which columns are required in the excel template. Human readable names are included so that meaningful
      * error messages can be provided for missing columns.
+     * 
+     * @var array
      */
     private $_requiredExcelTemplateColumns = array (
         'systemNickname' => 'System',
@@ -89,6 +92,8 @@ class Fisma_Inject_Excel
 
     /**
      * The row to start on in the excel template. The template has 3 header rows, so start at the 4th row.
+     * 
+     * @var int
      */
     private $_excelTemplateStartRow = 4;
     
@@ -96,8 +101,12 @@ class Fisma_Inject_Excel
      * Parses and loads the findings in the specified excel file. Expects XML spreadsheet format from Excel 2007.
      * Compatible with older versions of Excel through the Office Compatibility Pack.
      *
-     * @param string $filePath
+     * @param string $filePath The specified excel file path
+     * @param string $uploadId The id of upload excel
      * @return int The number of findings processed in the file
+     * @throws Fisma_Exception_InvalidFileFormat if the file is not a valid Excel spreadsheet, 
+     * or the excel template is out-of-date or imcompatible, 
+     * or the some required or used columns are empty or invalid
      */
     function inject($filePath, $uploadId) 
     {
