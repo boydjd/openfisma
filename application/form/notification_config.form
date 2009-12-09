@@ -17,7 +17,8 @@ id     = "email_config"
 elements.recipient.type = "hidden"
 elements.recipient.options.label = "Target Email Address"
 elements.recipient.options.validators.emailAddress.validator = "EmailAddress"
-elements.recipient.options.displaynone = true
+; Define boolean property to decide if the label 'Target Email Address' is visible.
+elements.recipient.options.hideLabel = true
 displayGroups.general.elements.recipient = "recipient"
 
 elements.sender.type = "text"

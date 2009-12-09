@@ -318,17 +318,17 @@ class ConfigController extends SecurityController
         // Load the form from notification_config.form file
         $form = $this->getConfigForm('notification_config');
         if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if ($form->isValid($data)) {
+            $postEmailConfigValues = $this->_request->getPost();
+            if ($form->isValid($postEmailConfigValues)) {
                 try{
-                    $data = $form->getValues();
+                    $postEmailConfigValues = $form->getValues();
                     // Because user may not specified password for test on UI page,
                     // so have retrieve the saved one before if possible. 
-                    if (empty($data['smtp_password'])) {
+                    if (empty($postEmailConfigValues['smtp_password'])) {
                         $password = Doctrine::getTable('Configuration')
                                     ->findByDql('name = ?', 'smtp_password');
                         if (!empty($password[0])) {
-                            $data['smtp_password'] = $password[0]->value;
+                            $postEmailConfigValues['smtp_password'] = $password[0]->value;
                         }
                     }
                     // The test e-mail template content
@@ -338,29 +338,29 @@ class ConfigController extends SecurityController
 
                     // Define Zend_Mail() for sending test email
                     $mail = new Zend_Mail();
-                    $mail->addTo($data['recipient']);
-                    $mail->setFrom($data['sender']);
-                    $mail->setSubject($data['subject']);
+                    $mail->addTo($postEmailConfigValues['recipient']);
+                    $mail->setFrom($postEmailConfigValues['sender']);
+                    $mail->setSubject($postEmailConfigValues['subject']);
                     $mail->setBodyText($mailContent);
 
                     // Sendmail transport
-                    if ($data['send_type'] == 'sendmail') {
+                    if ($postEmailConfigValues['send_type'] == 'sendmail') {
                         $mail->send();
-                    } elseif ($data['send_type'] == 'smtp') {
+                    } elseif ($postEmailConfigValues['send_type'] == 'smtp') {
                         // SMTP transport
                         $emailConfig = array('auth'     => 'login',
-                                             'username' => $data['smtp_username'],
-                                             'password' => $data['smtp_password'],
-                                             'port'     => $data['smtp_port']);
-                        if (1 == $data['smtp_tls']) {
+                                             'username' => $postEmailConfigValues['smtp_username'],
+                                             'password' => $postEmailConfigValues['smtp_password'],
+                                             'port'     => $postEmailConfigValues['smtp_port']);
+                        if (1 == $postEmailConfigValues['smtp_tls']) {
                             $emailConfig['ssl'] = 'tls';
                         }
-                        $transport = new Zend_Mail_Transport_Smtp($data['smtp_host'], $emailConfig);
+                        $transport = new Zend_Mail_Transport_Smtp($postEmailConfigValues['smtp_host'], $emailConfig);
                         $mail->send($transport);
                     }
                     $type = 'message';
                     /** @todo english */
-                    $msg  = 'Sent test email to ' . $data['recipient'] . ' successfully !';
+                    $msg  = 'Sent test email to ' . $postEmailConfigValues['recipient'] . ' successfully !';
                 } catch (Zend_Mail_Exception $e) {
                     $type = 'warning';
                     $msg  = $e->getMessage();

@@ -52,8 +52,8 @@ class Fisma_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             $label .= ':';
             
             $attrib = array();
-            if ($element->displaynone) {
-                $attrib['style'] = 'display:none';
+            if ($element->hideLabel) {
+                $attrib['style'] = 'display: none';
             }
             $render = $element->getView()
                               ->formLabel($element->getName(), $label, $attrib);
