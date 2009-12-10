@@ -17,15 +17,30 @@
  */
 
 /**
- * System configuration items, such as authentication policy, account management policy, etc.
- *
- * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * Interface for a system configuration object
+ * 
+ * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Model
+ * @package    Fisma
+ * @subpackage Fisma_Configuration
  * @version    $Id$
  */
-class Configuration extends BaseConfiguration
+interface Fisma_Configuration_Interface
 {
-
+    /**
+     * Get a configuration item by name
+     * 
+     * @param string $name
+     * @return mixed
+     */
+    public function getConfig($name);
+    
+    /**
+     * Set a configuration item by name
+     * 
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setConfig($name, $value);
 }

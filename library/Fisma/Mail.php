@@ -35,7 +35,7 @@ class Fisma_Mail extends Zend_Mail
         $view       = new Zend_View();
         $contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
         $this->_contentTpl = $contentTpl;
-        $this->setFrom(Configuration::getConfig('sender'), Configuration::getConfig('system_name'));
+        $this->setFrom(Fisma::configuration()->getConfig('sender'), Fisma::configuration()->getConfig('system_name'));
     }
 
    /**
@@ -79,7 +79,7 @@ class Fisma_Mail extends Zend_Mail
                       : $user->notifyEmail;
 
         $this->addTo($receiveEmail, $user->nameFirst . $user->nameLast);
-        $this->setSubject("Your notifications for " . Configuration::getConfig('system_name'));
+        $this->setSubject("Your notifications for " . Fisma::configuration()->getConfig('system_name'));
         $this->_contentTpl->notifyData = $notifications;
         $this->_contentTpl->user       = $user;
         $content = $this->_contentTpl->render('notification.phtml');
@@ -103,11 +103,11 @@ class Fisma_Mail extends Zend_Mail
      */
     public function sendAccountInfo(User $user)
     {
-        $systemName = Configuration::getConfig('system_name');
+        $systemName = Fisma::configuration()->getConfig('system_name');
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
         $this->setSubject("Your new account for $systemName has been created");
         $this->_contentTpl->user = $user;
-        $this->_contentTpl->host = Configuration::getConfig('host_url');
+        $this->_contentTpl->host = Fisma::configuration()->getConfig('host_url');
         $content = $this->_contentTpl->render('sendaccountinfo.phtml');
         $this->setBodyText($content);
 
@@ -125,7 +125,7 @@ class Fisma_Mail extends Zend_Mail
      */
     public function sendPassword(User $user)
     {
-        $systemName = Configuration::getConfig('system_name');
+        $systemName = Fisma::configuration()->getConfig('system_name');
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
         $this->setSubject("Your password for $systemName has been changed");
         $this->_contentTpl->user = $user;
@@ -148,11 +148,11 @@ class Fisma_Mail extends Zend_Mail
     private function _getTransport()
     {
         $transport = null;
-        if ( 'smtp' == Configuration::getConfig('send_type')) {
-            $username = Configuration::getConfig('smtp_username');
-            $password = Configuration::getConfig('smtp_password');
-            $port     = Configuration::getConfig('smtp_port');
-            $tls      = Configuration::getConfig('smtp_tls');
+        if ( 'smtp' == Fisma::configuration()->getConfig('send_type')) {
+            $username = Fisma::configuration()->getConfig('smtp_username');
+            $password = Fisma::configuration()->getConfig('smtp_password');
+            $port     = Fisma::configuration()->getConfig('smtp_port');
+            $tls      = Fisma::configuration()->getConfig('smtp_tls');
             if (empty($username) && empty($password)) {
                 //Un-authenticated SMTP configuration
                 $config = array('port' => $port);
@@ -165,7 +165,7 @@ class Fisma_Mail extends Zend_Mail
                     $config['ssl'] = 'tls';
                 }
             }
-            $transport = new Zend_Mail_Transport_Smtp(Configuration::getConfig('smtp_host'), $config);
+            $transport = new Zend_Mail_Transport_Smtp(Fisma::configuration()->getConfig('smtp_host'), $config);
         } else {
             $transport = new Zend_Mail_Transport_Sendmail();
         }

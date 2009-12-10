@@ -29,7 +29,7 @@
         <ul>
             <li>Last Logged in at <b><?php echo $this->lastLoginTs; ?></b></li>
             <li>From IP address <b><?php echo $this->lastLoginIp; ?></b></li>
-            <?php if ('database' == Configuration::getConfig('auth_type')): ?>
+            <?php if ('database' == Fisma::configuration()->getConfig('auth_type')): ?>
                 <li>
                     There were 
                     <b><?php echo $this->oldFailureCount; ?></b>
@@ -41,7 +41,7 @@
     } else { 
     ?>
         <p>
-            This is the first time you have logged into <?php echo Configuration::getConfig('system_name') ?>. 
+            This is the first time you have logged into <?php echo Fisma::configuration()->getConfig('system_name') ?>. 
             We will begin tracking your login attempts moving forward.
         </p>
     <?php 

@@ -137,6 +137,13 @@ class Fisma
     private static $_isInstall = false;
     
     /**
+     * A system-wide configuration object
+     * 
+     * @var Fisma_Configuration_Interface
+     */
+    private static $_configuration;
+    
+    /**
      * Initialize the FISMA object
      * 
      * This sets up the root path, include paths, application paths, and then loads the application configuration.
@@ -267,6 +274,20 @@ class Fisma
         return self::$_isInstall;
     }
     
+    /**
+     * Return the system configuration object
+     * 
+     * @return Fisma_Configuration_Interface
+     */
+    public static function configuration()
+    {
+        if (self::$_configuration) {
+            return self::$_configuration;
+        } else {
+            throw new Fisma_Exception('System has no configuration object');
+        }
+    }
+
     /**
      * Connect to the database
      * 
@@ -503,7 +524,7 @@ class Fisma
             $frontendOptions = array(
                 'caching'                 => true,
                 // cache life same as system expiring period
-                'lifetime'                => Configuration::getConfig('session_inactivity_period'), 
+                'lifetime'                => Fisma::configuration()->getConfig('session_inactivity_period'), 
                 'automatic_serialization' => true
             );
 
@@ -534,5 +555,20 @@ class Fisma
     public static function now() 
     {
         return date('Y-m-d H:i:s');
+    }
+    
+    /**
+     * Set the system configuration object
+     * 
+     * @param Fisma_Configuration_Interface $config
+     * @param bool $replace Whether to replace any existing configuration
+     */
+    public static function setConfiguration(Fisma_Configuration_Interface $config, $replace = false)
+    {
+        if (self::$_configuration && !$replace) {
+            throw new Fisma_Exception('Configuration already exists');
+        } else {
+            self::$_configuration = $config;
+        }
     }
 }

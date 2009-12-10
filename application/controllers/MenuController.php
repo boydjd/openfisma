@@ -145,7 +145,7 @@ class MenuController extends SecurityController
         $preferences = new Fisma_Yui_Menu('User Preferences');
         
         $preferences->add(new Fisma_Yui_MenuItem('Profile', '/panel/user/sub/profile'));
-        if ('database' == Configuration::getConfig('auth_type')
+        if ('database' == Fisma::configuration()->getConfig('auth_type')
             || 'root' == User::currentUser()->username) {
             $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/panel/user/sub/password'));
         }

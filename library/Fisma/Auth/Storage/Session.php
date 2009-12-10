@@ -57,7 +57,7 @@ class Fisma_Auth_Storage_Session extends Zend_Auth_Storage_Session
         $this->_session   = new Zend_Session_Namespace($this->_namespace);
         try {
             // Set up the session timeout for the authentication token
-            $refreshSeconds = Configuration::getConfig('session_inactivity_period');
+            $refreshSeconds = Fisma::configuration()->getConfig('session_inactivity_period');
         } catch (Exception $e) {
             // in any case such as the database is not available during installation
             $refreshSeconds = self::INACTIVITY_SECONDS;

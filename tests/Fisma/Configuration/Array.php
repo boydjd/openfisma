@@ -16,16 +16,29 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+
 /**
- * System configuration items, such as authentication policy, account management policy, etc.
- *
- * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * Tests the array implementation of the configuration interface
+ * 
+ * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Model
+ * @package    Test
+ * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Configuration extends BaseConfiguration
+class Test_Fisma_Configuration_Array extends Test_FismaUnitTest
 {
-
+    /**
+     * Test basic operation of the configuration object
+     */
+    public function testConfigurationArray()
+    {
+        $configuration = new Fisma_Configuration_Array();
+        
+        $configuration->setConfig('test_name', 'test_value');
+        
+        $this->assertEquals('test_value', $configuration->getConfig('test_name'));
+    }
 }

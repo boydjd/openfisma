@@ -1,5 +1,5 @@
 <?php 
-    Fisma_Format_Section::startSection(Configuration::getConfig('system_name') . ' Privacy Policy');
-    print(Configuration::getConfig('privacy_policy'));
+    Fisma_Format_Section::startSection(Fisma::configuration()->getConfig('system_name') . ' Privacy Policy');
+    print(Fisma::configuration()->getConfig('privacy_policy'));
     Fisma_Format_Section::stopSection(); 
 ?>

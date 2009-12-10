@@ -1,15 +1,15 @@
 <div>
     <i>
         System policy states that you must review and accept the Rules of Behavior
-        for <?php echo Configuration::getConfig('system_name');?> every
-        <?php echo Configuration::getConfig('rob_duration');?> days. If you do not accept these
+        for <?php echo Fisma::configuration()->getConfig('system_name');?> every
+        <?php echo Fisma::configuration()->getConfig('rob_duration');?> days. If you do not accept these
         rules then you will be logged off.
     </i>
 </div>
 
-<?php Fisma_Format_Section::startSection(Configuration::getConfig('system_name') . ' Rules of Behavior'); ?>
+<?php Fisma_Format_Section::startSection(Fisma::configuration()->getConfig('system_name') . ' Rules of Behavior'); ?>
 <div>
-    <?php print(Configuration::getConfig('behavior_rule')); ?>
+    <?php print(Fisma::configuration()->getConfig('behavior_rule')); ?>
 </div>
 
 <div>

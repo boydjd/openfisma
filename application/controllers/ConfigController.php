@@ -175,7 +175,7 @@ class ConfigController extends SecurityController
         $form = $this->getConfigForm('contact_config');
         $columns = array('contact_name', 'contact_phone', 'contact_email', 'contact_subject');
         foreach ($columns as $column) {
-            $configs[$column] = Configuration::getConfig($column);
+            $configs[$column] = Fisma::configuration()->getConfig($column);
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
@@ -299,7 +299,7 @@ class ConfigController extends SecurityController
         $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port',
                          'smtp_tls', 'smtp_username', 'smtp_password');
         foreach ($columns as $column) {
-            $configs[$column] = Configuration::getConfig($column);
+            $configs[$column] = Fisma::configuration()->getConfig($column);
         }
         $form->setDefaults($configs);
         $this->view->form = $form;
@@ -388,7 +388,7 @@ class ConfigController extends SecurityController
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         $form = $this->getConfigForm('privacy_policy_config');
-        $form->setDefaults(array('privacy_policy' => Configuration::getConfig('privacy_policy')));
+        $form->setDefaults(array('privacy_policy' => Fisma::configuration()->getConfig('privacy_policy')));
         $this->view->form = $form;
     }
      
@@ -406,7 +406,7 @@ class ConfigController extends SecurityController
                          'pass_warning', 'pass_uppercase', 'pass_lowercase',
                          'pass_numerical', 'pass_special', 'pass_min_length', 'pass_max_length');
         foreach ($columns as $column) {
-            $configs[$column] = Configuration::getConfig($column);
+            $configs[$column] = Fisma::configuration()->getConfig($column);
         }
         $configs['unlock_duration'] /= 60 ;//Convert to minutes
         $form->setDefaults($configs);

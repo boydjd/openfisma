@@ -140,7 +140,7 @@ class DashboardController extends SecurityController
             $this->view->lastLoginIp = $this->_me->lastLoginIp;
             $this->view->oldFailureCount = $this->_me->oldFailureCount;
         } else {
-            $this->view->applicationName = Configuration::getConfig('system_name');
+            $this->view->applicationName = Fisma::configuration()->getConfig('system_name');
         }
         
         if ($user->Notifications->count() > 0) {

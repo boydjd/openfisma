@@ -63,7 +63,7 @@ class Notification extends BaseNotification
         if (!is_null($user)) {
             $eventText .= " by $user->nameFirst $user->nameLast";
         } else {
-            $eventText .= ' by ' . Configuration::getConfig('system_name');
+            $eventText .= ' by ' . Fisma::configuration()->getConfig('system_name');
         }
 
         // Figure out which users are listening for this event

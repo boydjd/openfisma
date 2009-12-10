@@ -25,6 +25,7 @@ require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
 
 try {
     Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
+    Fisma::setConfiguration(new Fisma_Configuration_Database());
     if (Fisma::isInstall()) {
         Fisma::connectDb();
     }

@@ -92,7 +92,7 @@ function discardChanges(event) {
         tabView.addTab(passwordTab);
 
         <?php 
-        if ('ldap' == Configuration::getConfig('auth_type', true)) { 
+        if ('ldap' == Fisma::configuration()->getConfig('auth_type', true)) { 
         ?>
             var ldapTab = new YAHOO.widget.Tab({
                 label: 'LDAP Configurations',

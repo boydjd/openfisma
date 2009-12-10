@@ -77,7 +77,7 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
         // If password is wrong, determine whether the account needs to be locked due to password failures
         if (!$authResult->isValid()) {
             $this->_user->failureCount++;
-            if ($this->_user->failureCount >= Configuration::getConfig('failure_threshold')) {
+            if ($this->_user->failureCount >= Fisma::configuration()->getConfig('failure_threshold')) {
                 $this->_user->lockAccount(User::LOCK_TYPE_PASSWORD);
                 $reason = $this->_user->getLockReason();
                 throw new Fisma_Exception_AccountLocked("Account is locked ($reason)");
@@ -96,7 +96,7 @@ class Fisma_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
     private function _passwordIsExpired()
     {
         $passExpireTs = new Zend_Date($this->_user->passwordTs, Zend_Date::ISO_8601);
-        $passExpirePeriod = Configuration::getConfig('pass_expire');
+        $passExpirePeriod = Fisma::configuration()->getConfig('pass_expire');
         $passExpireTs->add($passExpirePeriod, Zend_Date::DAY);
         $expired = $passExpireTs->isEarlier(Zend_Date::now());
 

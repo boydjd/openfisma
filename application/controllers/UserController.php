@@ -82,7 +82,7 @@ class UserController extends BaseController
                 $orgs->addCheckbox($organization['id'], $organization['name'], $organization['level']);
             }
         }
-        if ('database' == Configuration::getConfig('auth_type')) {
+        if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('checkAccount');
             $this->view->requirements =  $this->_getPasswordRequirements();
         } else {
@@ -242,7 +242,7 @@ class UserController extends BaseController
     public function passwordAction()
     {
         // This action isn't allowed unless the system's authorization is based on the database
-        if ('database' != Configuration::getConfig('auth_type') && 'root' != User::currentUser()->username) {
+        if ('database' != Fisma::configuration()->getConfig('auth_type') && 'root' != User::currentUser()->username) {
             throw new Fisma_Exception('Password change is not allowed when the authentication type is not "database"');
         }
         
@@ -330,20 +330,20 @@ class UserController extends BaseController
     private function _getPasswordRequirements()
     {
         $requirements[] = "Length must be between "
-        . Configuration::getConfig('pass_min_length')
+        . Fisma::configuration()->getConfig('pass_min_length')
         . " and "
-        . Configuration::getConfig('pass_max_length')
+        . Fisma::configuration()->getConfig('pass_max_length')
         . " characters long.";
-        if (Configuration::getConfig('pass_uppercase') == 1) {
+        if (Fisma::configuration()->getConfig('pass_uppercase') == 1) {
             $requirements[] = "Must contain at least 1 upper case character (A-Z)";
         }
-        if (Configuration::getConfig('pass_lowercase') == 1) {
+        if (Fisma::configuration()->getConfig('pass_lowercase') == 1) {
             $requirements[] = "Must contain at least 1 lower case character (a-z)";
         }
-        if (Configuration::getConfig('pass_numerical') == 1) {
+        if (Fisma::configuration()->getConfig('pass_numerical') == 1) {
             $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
-        if (Configuration::getConfig('pass_special') == 1) {
+        if (Fisma::configuration()->getConfig('pass_special') == 1) {
             $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
         }
         return $requirements;
@@ -384,12 +384,12 @@ class UserController extends BaseController
      */
     public function generatePasswordAction()
     {
-        $passLengthMin = Configuration::getConfig('pass_min_length');
-        $passLengthMax = Configuration::getConfig('pass_max_length');
-        $passNum = Configuration::getConfig('pass_numerical');
-        $passUpper = Configuration::getConfig('pass_uppercase');
-        $passLower = Configuration::getConfig('pass_lowercase');
-        $passSpecial = Configuration::getConfig('pass_special');
+        $passLengthMin = Fisma::configuration()->getConfig('pass_min_length');
+        $passLengthMax = Fisma::configuration()->getConfig('pass_max_length');
+        $passNum = Fisma::configuration()->getConfig('pass_numerical');
+        $passUpper = Fisma::configuration()->getConfig('pass_uppercase');
+        $passLower = Fisma::configuration()->getConfig('pass_lowercase');
+        $passSpecial = Fisma::configuration()->getConfig('pass_special');
         
         $flag = 0;
         $password = "";

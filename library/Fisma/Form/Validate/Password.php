@@ -93,8 +93,12 @@ class Fisma_Form_Validate_Password extends Zend_Validate_Abstract
     public function isValid($pass, $context=null)
     {
         $this->_messageTemplates = array(
-            self::PASS_MIN => 'must be at least ' . Configuration::getConfig('pass_min_length') . ' characters long',
-            self::PASS_MAX=>'must not be more than ' . Configuration::getConfig('pass_max_length') . ' characters long',
+            self::PASS_MIN => 'must be at least ' 
+                            . Fisma::configuration()->getConfig('pass_min_length') 
+                            . ' characters long',
+            self::PASS_MAX => 'must not be more than ' 
+                            . Fisma::configuration()->getConfig('pass_max_length') 
+                            . ' characters long',
             self::PASS_UPPERCASE=>'must contain at least 1 uppercase letter (A-Z)',
             self::PASS_LOWERCASE=>'must contain at least 1 lowercase letter (a-z)',
             self::PASS_NUMERICAL=>'must contain at least 1 numeric digit (0-9)',
@@ -113,33 +117,33 @@ class Fisma_Form_Validate_Password extends Zend_Validate_Abstract
             $errno++;
             $this->_error(self::PASS_NOTCONFIRM);
         }
-        if (strlen($pass) < Configuration::getConfig('pass_min_length')) {
+        if (strlen($pass) < Fisma::configuration()->getConfig('pass_min_length')) {
             $errno++;
             $this->_error(self::PASS_MIN);
         }
-        if (strlen($pass) > Configuration::getConfig('pass_max_length')) {
+        if (strlen($pass) > Fisma::configuration()->getConfig('pass_max_length')) {
             $errno++;
             $this->_error(self::PASS_MAX);
         }
-        if (true == Configuration::getConfig('pass_uppercase')) {
+        if (true == Fisma::configuration()->getConfig('pass_uppercase')) {
             if ( false == preg_match("/[A-Z]+/", $pass)) {
                 $errno++;
                 $this->_error(self::PASS_UPPERCASE);
             }
         }
-        if (true == Configuration::getConfig('pass_lowercase')) {
+        if (true == Fisma::configuration()->getConfig('pass_lowercase')) {
             if ( false == preg_match("/[a-z]+/", $pass) ) {
                 $errno++;
                 $this->_error(self::PASS_LOWERCASE);
             }
         }
-        if ( true == Configuration::getConfig('pass_numerical')) {
+        if ( true == Fisma::configuration()->getConfig('pass_numerical')) {
             if ( false == preg_match("/[0-9]+/", $pass) ) {
                 $errno++;
                 $this->_error(self::PASS_NUMERICAL);
             }
         }
-        if ( true == Configuration::getConfig('pass_special')) {
+        if ( true == Fisma::configuration()->getConfig('pass_special')) {
             if ( false == preg_match("/[^0-9a-zA-Z]+/", $pass) ) {
                 $errno++;
                 $this->_error(self::PASS_SPECIAL);

@@ -34,7 +34,7 @@
     $this->systems = array('--Any--') + (array)$this->systems;
     $this->sources = array('--Any--') + (array)$this->sources;
 
-    $bookmarkUrl = 'http://' . Configuration::getConfig('host_url') . '/panel/remediation/sub/searchbox/';
+    $bookmarkUrl = 'http://' . Fisma::configuration()->getConfig('host_url') . '/panel/remediation/sub/searchbox/';
 
     $flag = '';
     foreach ($this->params as $k => $value) {

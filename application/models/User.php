@@ -186,7 +186,7 @@ class User extends BaseUser
     {
         if ($this->locked) {
             // Check if this is a lock which should be released
-            if (self::LOCK_TYPE_PASSWORD == $this->lockType && Configuration::getConfig('unlock_enabled')) {
+            if (self::LOCK_TYPE_PASSWORD == $this->lockType && Fisma::configuration()->getConfig('unlock_enabled')) {
                 $lockRemainingMinutes = $this->getLockRemainingMinutes();
                 // A negative or zero value indicates the lock has expired
                 if ($lockRemainingMinutes <= 0) {
@@ -214,10 +214,10 @@ class User extends BaseUser
     {
         if ($this->locked 
             && self::LOCK_TYPE_PASSWORD == $this->lockType
-            && Configuration::getConfig('unlock_enabled')) {
+            && Fisma::configuration()->getConfig('unlock_enabled')) {
 
             $lockTs = new Zend_Date($this->lockTs, Zend_Date::ISO_8601);
-            $lockTs->addSecond(Configuration::getConfig('unlock_duration'));
+            $lockTs->addSecond(Fisma::configuration()->getConfig('unlock_duration'));
             $now = Zend_Date::now();            
             $lockTs->sub($now);
             // ceil() so that 1 second remaining is rounded up to 1 minute, rather than rounded down to 0 minute
@@ -243,9 +243,9 @@ class User extends BaseUser
                 $reason = 'by administrator';
                 break;
             case self::LOCK_TYPE_PASSWORD:
-                $reason = Configuration::getConfig('failure_threshold')
+                $reason = Fisma::configuration()->getConfig('failure_threshold')
                         . ' failed login attempts';
-                if (Configuration::getConfig('unlock_enabled')) {
+                if (Fisma::configuration()->getConfig('unlock_enabled')) {
                     $reason .= ', will be unlocked in '
                              . $this->getLockRemainingMinutes()
                              . ' minutes';
@@ -253,12 +253,12 @@ class User extends BaseUser
                 break;
             case self::LOCK_TYPE_INACTIVE:
                 $reason = 'exceeded '
-                        . Configuration::getConfig('account_inactivity_period')
+                        . Fisma::configuration()->getConfig('account_inactivity_period')
                         . ' days of inactivity';
                 break;
             case self::LOCK_TYPE_EXPIRED:
                 $reason = 'password is more than '
-                        . Configuration::getConfig('pass_expire')
+                        . Fisma::configuration()->getConfig('pass_expire')
                         . ' days old';
                 break;
             default:
@@ -646,7 +646,7 @@ class User extends BaseUser
         // Set the user's hash type if it is not set already
         if (!$this->hashType) {
             try {
-                $this->hashType = Configuration::getConfig('hash_type');
+                $this->hashType = Fisma::configuration()->getConfig('hash_type');
             } catch (Exception $e) {
                 /* This is an ugly Doctrine hack. If the tables aren't yet created for the models, then we can't get the
                  * hash_type configuration option from the Configuration model. This bug creeps up when installing and 

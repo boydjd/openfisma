@@ -85,7 +85,7 @@ class AuthController extends Zend_Controller_Action
 
             // Check if account has expired
             $accountExpiration = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
-            $expirationPeriod = Configuration::getConfig('account_inactivity_period');
+            $expirationPeriod = Fisma::configuration()->getConfig('account_inactivity_period');
             $accountExpiration->addDay($expirationPeriod);
             $now = Zend_Date::now();
             if ($accountExpiration->isEarlier($now)) {
@@ -119,9 +119,9 @@ class AuthController extends Zend_Controller_Action
             Fisma_Cookie::set(User::SEARCH_PREF_COOKIE, $user->searchColumnsPref);
 
             // Check whether the user's password is about to expire (for database authentication only)
-            if ('database' == Configuration::getConfig('auth_type')) {
-                $passExpirePeriod = Configuration::getConfig('pass_expire');
-                $passWarningPeriod = Configuration::getConfig('pass_warning');
+            if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+                $passExpirePeriod = Fisma::configuration()->getConfig('pass_expire');
+                $passWarningPeriod = Fisma::configuration()->getConfig('pass_warning');
                 $passWarningTs = new Zend_Date($user->passwordTs, 'Y-m-d');
                 $passWarningTs->add($passExpirePeriod - $passWarningPeriod, Zend_Date::DAY);
                 $now = Zend_Date::now();
@@ -137,7 +137,7 @@ class AuthController extends Zend_Controller_Action
             }
             
             // Check if the user is using the system standard hash function
-            if (Configuration::getConfig('hash_type') != $user->hashType) {
+            if (Fisma::configuration()->getConfig('hash_type') != $user->hashType) {
                 $message = 'This version of the application uses an improved password storage scheme.'
                          . ' You will need to change your password in order to upgrade your account.';
                 $this->view->priorityMessenger($message, 'warning');
@@ -150,7 +150,7 @@ class AuthController extends Zend_Controller_Action
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
             $nextRobReview = new Zend_Date($user->lastRob);
-            $nextRobReview->add(Configuration::getConfig('rob_duration'), Zend_Date::DAY);
+            $nextRobReview->add(Fisma::configuration()->getConfig('rob_duration'), Zend_Date::DAY);
             if (is_null($user->lastRob) || $nextRobReview->isEarlier(new Zend_Date())) {
                 $this->_helper->layout->setLayout('notice');
                 return $this->render('rule');
@@ -184,7 +184,7 @@ class AuthController extends Zend_Controller_Action
     {
         // Determine authentication method (based on system configuration, except root is always authenticated against
         // the database)
-        $method = Configuration::getConfig('auth_type');
+        $method = Fisma::configuration()->getConfig('auth_type');
 
         if ('root' == $user->username) {
             $method = 'database';
@@ -265,7 +265,7 @@ class AuthController extends Zend_Controller_Action
         if (!empty($user)) {
             if ($user->validateEmail($code)) {
                 $message =  'Your e-mail address has been validated. You may close this window ' .
-                  'or click <a href="/">here</a> to enter ' . Configuration::getConfig('system_name');
+                  'or click <a href="/">here</a> to enter ' . Fisma::configuration()->getConfig('system_name');
                 $error = false;
             }
         }
