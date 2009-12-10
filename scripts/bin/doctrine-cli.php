@@ -32,6 +32,7 @@ try {
     $startTime = time();
     
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+    Fisma::setConfiguration(new Fisma_Configuration_Database());
     Fisma::connectDb();
     Fisma::setNotificationEnabled(false);
 
