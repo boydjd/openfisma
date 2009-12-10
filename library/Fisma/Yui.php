@@ -31,12 +31,17 @@
 class Fisma_Yui
 {
     /**
-     * @var array The YUI libraries to include, used as a set
+     * The YUI libraries to include, used as a set
+     * 
+     * @var array
      */
     static private $_includes = array();
 
     /**
      * Prevent instantiation
+     * 
+     * @return void
+     * @throws Fisma_Exception if the class is instantiated
      */
     function __construct() 
     {
@@ -51,6 +56,7 @@ class Fisma_Yui
      * library, and the value is just a placeholder.
      * 
      * @param string $library Name of YUI library, e.g. "yahoo-dom-event"
+     * @return void
      */
     static function includeLibrary($library) 
     {
@@ -69,7 +75,7 @@ class Fisma_Yui
     /**
      * Renders script tags to include the specified YUI libraries
      * 
-     * @return string
+     * @return string The javascript include snippet to included libraries
      */
     static function printIncludes() 
     {

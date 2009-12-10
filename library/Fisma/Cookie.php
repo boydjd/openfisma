@@ -31,13 +31,12 @@
 class Fisma_Cookie
 {
    /**
-    * get - Returns the specified cookie from the specified array of cookies
+    * Returns the specified cookie from the specified array of cookies
     * 
-    * @param array $cookie The $_COOKIE array, or some other collection of cookies
-    * @param string $key The name of the cookie to retrieve from $cookie
-    * @static
-    * @access public
+    * @param array $cookie The cookie array, or some other collection of cookies
+    * @param string $key The name of the cookie to retrieve from the cookie array
     * @return string The value of the requested cookie
+    * @throws Fisma_Exception if not found the requested cookie key
     */
     public static function get(array $cookie, $key) 
     {
@@ -51,14 +50,12 @@ class Fisma_Cookie
     }
 
    /**
-    * prepare - Prepares a cookie for sending to the client. 
+    * Prepares a cookie for sending to the client.
     * 
-    * @param string $name 
-    * @param string $value
-    * @param boolean $secure
-    * @static
-    * @access public
-    * @return array 
+    * @param string $name The cookie name to be prepared
+    * @param string $value The cookie value to be prepared
+    * @param boolean|null $secure The secure flag to be prepared
+    * @return array The prepared cookie
     */
     public static function prepare($name, $value, $secure = null) 
     {
@@ -77,12 +74,10 @@ class Fisma_Cookie
     }
 
    /**
-    * set - Sets a cookie by calling prepare to build the cookie.
-    *
-    * @param string $name
-    * @param string $value
-    * @static
-    * @access public
+    * Sets a cookie by calling prepare to build the cookie.
+    * 
+    * @param string $name The specified cookie name to be set
+    * @param string $value The specified cookie value to be set
     * @return void
     */
     public static function set($name, $value) 

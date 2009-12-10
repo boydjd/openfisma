@@ -36,12 +36,12 @@ class Fisma_Acl extends Zend_Acl
      * Determine whether the current user has permission to perform $privilege
      * on $resource (if $organization is not null, then $resource belongs to $organization)
      * 
+     * @param string $resource The specific resource to check
+     * @param string $privilege The specific privilege to check
+     * @param string $organization|null The specific organization to check
+     * @return boolean True if the current user has permission to perform the specified privilege, false otherwise
+     * @throws Zend_Acl_Exception if fails to check
      * @see User::acl()
-     * 
-     * @param $resource
-     * @param $privilege
-     * @param $organization 
-     * @return bool
      */
     static function hasPrivilege($resource, $privilege, $organization = null)
     {
@@ -80,13 +80,14 @@ class Fisma_Acl extends Zend_Acl
     
     /**
      * A convenience method to ensure a user has a required privilege. This would only fail due to program
-     * bugs or malicious users. 
-     *  
-     * @see Fisma_Acl::hasPrivilege()
+     * bugs or malicious users.
      * 
-     * @param $resource
-     * @param $privilege
-     * @param $organization
+     * @param string $resource The specific resource to check
+     * @param string $privilege The specific privilege to check
+     * @param string $organization|null The specific organization to check
+     * @return void
+     * @throws Zend_Acl_Exception if user does not have the privilege
+     * @see Fisma_Acl::hasPrivilege()
      */
     static function requirePrivilege($resource, $privilege, $organization = null)
     {

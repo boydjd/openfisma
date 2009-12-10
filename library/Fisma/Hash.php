@@ -30,6 +30,8 @@ class Fisma_Hash
 {
     /**
      * This is a static class that cannot be instantiated
+     * 
+     * @return void
      */
     private function __construct()
     {
@@ -39,9 +41,10 @@ class Fisma_Hash
     /**
      * Return the requested hash
      * 
-     * @param string $data
-     * @param string $hashType
-     * @return string
+     * @param string $data The specified data to be hashed
+     * @param string $hashType The specified hash algorithm
+     * @return string The hash code of the requested data
+     * @throws Fisma_Exception if the hash type is not supported
      */
     static public function hash($data, $hashType)
     {

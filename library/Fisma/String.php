@@ -30,17 +30,15 @@ class Fisma_String
 {
     /**
      * The default character set used when generating a random string
-     * 
-     * @var string
      */
     const RANDOM_ALLOWED_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
     
     /**
      * Return a random string of the requested length
      * 
-     * @param int $length
-     * @param string $allowedCharacters
-     * @return string
+     * @param int $length The length of string to be generated
+     * @param string $allowedCharacters The allowed characters during generation
+     * @return string The generated random string
      */
     static function random($length, $allowedCharacters = self::RANDOM_ALLOWED_CHARACTERS)
     {

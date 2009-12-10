@@ -31,27 +31,32 @@ class Fisma_Index
 {
     /**
      * Zend_Search_Lucene optimization tuning
-     * @see http://framework.zend.com/manual/en/zend.search.lucene.index-creation.html
+     * 
      * @var int
+     * @see http://framework.zend.com/manual/en/zend.search.lucene.index-creation.html
      */
     const MAX_BUFFERED_DOCS = 10;
     
     /**
      * Zend_Search_Lucene optimization tuning
-     * @see http://framework.zend.com/manual/en/zend.search.lucene.index-creation.html
+     * 
      * @var int
+     * @see http://framework.zend.com/manual/en/zend.search.lucene.index-creation.html
      */
     const MAX_MERGE_DOCS = 100;
-
+    
     /**
      * Zend_Search_Lucene optimization tuning
-     * @see http://framework.zend.com/manual/en/zend.search.lucene.index-creation.html
+     * 
      * @var int
+     * @see http://framework.zend.com/manual/en/zend.search.lucene.index-creation.html
      */
     const MERGE_FACTOR = 5;
     
     /**
      * The maximum number of terms which can be highlighted.
+     * 
+     * @var int
      */
     const MAX_HIGHLIGHT_WORDS = 25;
     
@@ -74,6 +79,8 @@ class Fisma_Index
      * 
      * This seems to be necessary due to a bug in Zend Search Lucene where the directory sometimes gets closed 
      * prematurely when deleting a document. In that case, we need to reopen it.
+     * 
+     * @var string
      */
     private $_indexPath;
 
@@ -82,7 +89,9 @@ class Fisma_Index
      * 
      * This also tunes some of the configuration parameters.
      * 
-     * @param $class string The name of the class which this record should go in
+     * @param string $class The name of the class which this record should go in
+     * @return void
+     * @throws Zend_Search_Lucene_Exception if it is under debug mode
      */
     public function __construct($class) 
     {        
@@ -117,7 +126,10 @@ class Fisma_Index
     /**
      * Add or update a record in the index
      *
-     * @param Doctrine_Record
+     * @param Doctrine_Record $record The doctrine record to be indexed
+     * @return void
+     * @throws Fisma_Index_Exception if the class related to the record does not contain an id field
+     * @throws Zend_Search_Lucene_Exception if it is under debug mode
      */
     public function update(Doctrine_Record $record)
     {
@@ -161,8 +173,8 @@ class Fisma_Index
     /**
      * Executes a Lucene query and returns an array of the matched IDs
      * 
-     * @param string $queryString
-     * @return array
+     * @param string $queryString The specified query string
+     * @return array The query result
      */
     public function findIds($queryString)
     {
@@ -183,6 +195,10 @@ class Fisma_Index
      * Delete a record from the index
      * 
      * If the record hasn't been indexed yet, then nothing happens
+     * 
+     * @param Doctrine_Record $record The specified doctrine record to be deleted
+     * @return void
+     * @throws Zend_Search_Lucene_Exception if it is under debug mode
      */
     public function delete(Doctrine_Record $record)
     {
@@ -205,6 +221,10 @@ class Fisma_Index
 
     /**
      * Get an array of the words which should be highlighted (Based on the last execute query)
+     * 
+     * @return array The array of the words which should be highlighted
+     * @throws Fisma_Index_Exception if not executed the required query befor calling 'getHighlightWords()'
+     * @throws Zend_Search_Lucene_Exception if it is under debug mode
      */
     public function getHighlightWords()
     {
@@ -227,6 +247,8 @@ class Fisma_Index
 
     /**
      * Defragment the index
+     * 
+     * @return void
      */
     public function optimize()
     {
@@ -238,8 +260,9 @@ class Fisma_Index
      * 
      * Notice that the document is passed by reference and will be modified by this method
      * 
-     * @param Zend_Search_Lucene_Document $document
-     * @param Doctrine_Record $record
+     * @param Zend_Search_Lucene_Document $document The lucene document
+     * @param Doctrine_Record $record The doctrine record to be indexed
+     * @return void
      */
     private function _indexRecordColumns(Zend_Search_Lucene_Document &$document, Doctrine_Record $record)
     {    
@@ -280,10 +303,11 @@ class Fisma_Index
      * This method might be slow if it has to fetch many relations. One way to speed this up would be to pre-fetch
      * a bunch of objects with their relations before you index them.
      * 
+     * @param Zend_Search_Lucene_Document $document The lucene document
+     * @param Doctrine_Record $record The doctrine record to be indexed
+     * @return void
+     * @throws Fisma_Index_Exception if the relation index is malformed
      * @todo This is limited because if a related record changes, then the index does not get recreated automatically
-     * 
-     * @param Zend_Search_Lucene_Document $document
-     * @param Doctrine_Record $record
      */
     private function _indexRecordRelations(Zend_Search_Lucene_Document &$document, Doctrine_Record $record)
     {
@@ -333,7 +357,10 @@ class Fisma_Index
     /**
      * Returns a Lucene field object based on the specified type, field name, and data
      * 
-     * @param 
+     * @param string $type The specified field type
+     * @param string $fieldName The specified field name
+     * @param string $indexData The specified index data
+     * @return Zend_Search_Lucene_Field The corresponding lucene field object
      */
     private function _getIndexField($type, $fieldName, $indexData) 
     {
@@ -366,8 +393,9 @@ class Fisma_Index
      * The name defaults to the column name, but it can be overridden by the attribute 'searchAlias'.
      * This can be used to make it easier for users to write Lucene query strings
      * 
-     * @param string $columnName
-     * @param array $columnDefinition
+     * @param string $columnName The specified column name
+     * @param array $columnDefinition The specified column definition
+     * @return string The index field name
      */
     private function _getIndexFieldName($columnName, $columnDefinition)
     {
@@ -384,8 +412,8 @@ class Fisma_Index
      * Some queries, such as '*', would match so many terms that highlighting would become absurd.
      * Therefore, a maximum limit is imposed.
      * 
-     * @param Zend_Search_Lucene_Search_Query $query
-     * @return array
+     * @param Zend_Search_Lucene_Search_Query $query The lucene query object
+     * @return array The array of the search terms which should be highlighted
      */
     private function _extractHighlightWordsFromQuery($query)
     {

@@ -28,8 +28,18 @@
  */
 class Fisma_Mail extends Zend_Mail
 {
+    /**
+     * The email content template
+     * 
+     * @var string
+     */
     protected $_contentTpl = null;
 
+    /**
+     * Default constructor
+     * 
+     * @return void
+     */
     public function __construct()
     {
         $view       = new Zend_View();
@@ -41,9 +51,9 @@ class Fisma_Mail extends Zend_Mail
    /**
      * Validate the user's e-mail change.
      *
-     * @param object @user User
-     * @param string $email the email need to validate
-     * @return true|false
+     * @param User $user The specified user
+     * @param string $email The email to be validated
+     * @return boolean True if the changed email is valid, false otherwise
      */
     public function validateEmail($user, $email)
     {
@@ -66,10 +76,11 @@ class Fisma_Mail extends Zend_Mail
 
     /**
      * Compose and send the notification email for user.
-     *
-     * @todo hostUrl can't be get in the CLI script
-     *
+     * 
      * @param array $notifications A group of rows from the notification table
+     * @return void
+     * @throws Exception if fails to send
+     * @todo hostUrl can't be get in the CLI script
      */
     public function sendNotification($notifications)
     {
@@ -98,8 +109,10 @@ class Fisma_Mail extends Zend_Mail
     /**
      * Send email to a new created user to tell user what the username and password is.
      *
-     * @param object $user include the unencrypt password
-     * @throw
+     * @param User $user The specified newly created user to send email
+     * @return void
+     * @throws Exception if fails to send
+     * @todo exception handling missed
      */
     public function sendAccountInfo(User $user)
     {
@@ -119,9 +132,11 @@ class Fisma_Mail extends Zend_Mail
 
     /**
      * Send the new password to the user
-     *
-     * @param object $user include the unencrypt password
-     * @return bool
+     * 
+     * @param User $user The specified user to send the new password
+     * @return void
+     * @throws Exception if fails to send
+     * @todo exception handling missed
      */
     public function sendPassword(User $user)
     {
@@ -142,8 +157,8 @@ class Fisma_Mail extends Zend_Mail
     /**
      * Return the appropriate Zend_Mail_Transport subclass,
      * based on the system's configuration.
-     *
-     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail
+     * 
+     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail The initialized email sender
      */
     private function _getTransport()
     {

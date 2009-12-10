@@ -32,11 +32,15 @@ class Fisma_Cpe
 {
     /**
      * Raw CPE data
+     * 
+     * @var string
      */
     private $_cpeName;
 
     /**
      * Data parsed from the CPE.
+     * 
+     * @var array
      */
     private $_cpeDetails = array();
 
@@ -47,9 +51,10 @@ class Fisma_Cpe
     const UNRESERVED_CHARACTERS = '[-A-Za-z0-9~\_.]';
     
     /**
-     * __construct() - Create a new instance
-     *
-     * @param string $cpeName The raw cpe-item text.
+     * Create a new instance
+     * 
+     * @param string $cpeName The raw cpe-item text
+     * @return void
      */
     public function __construct($cpeName)
     {
@@ -79,9 +84,11 @@ class Fisma_Cpe
     }
 
     /**
-     * __get() - Return the raw CPE name or one of the parsed CPE components
-     *
-     * @param string field's name
+     * Return the raw CPE name or one of the parsed CPE components
+     * 
+     * @param string $fieldName The field's name to obtain
+     * @return string|null The value of the specified field, 
+     * value of the field 'cepname' if the specified field name is 'cpename', null otherwise 
      */
     public function __get($fieldName)
     {
@@ -96,10 +103,11 @@ class Fisma_Cpe
     }
     
     /**
-     * Validate that a CPE identifier is in a valid format
+     * Validate if a CPE identifier is in a valid format and return found CPE components
      * 
-     * @param string $cpeName
+     * @param string $cpeName The specified cep name to be validated
      * @return array All CPE components parsed from this CPE
+     * @throws Fisma_Exception_InvalidFileFormat if the CPE item is not formatted correctly
      */
     private function _parseCpe($cpeName)
     {
