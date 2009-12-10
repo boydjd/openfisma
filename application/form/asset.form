@@ -37,7 +37,7 @@ displayGroups.assetInfo.elements.product = "product"
 
 elements.productId.type = "hidden"
 elements.productId.label = null
-elements.productId.options.displaynone = true;
+elements.productId.options.hideLabel = true;
 
 elements.orgSystemId.type = "select"
 elements.orgSystemId.options.label = "System"
