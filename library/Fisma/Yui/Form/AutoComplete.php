@@ -31,7 +31,9 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
     /**
      * When this element is expressed as a string, it renders itself as a convenience. This allows the element to
      * be used as a parameter to echo, print, or string interpolation expressions.
-     */              
+     * 
+     * @return string The string presentation of the YUI Autocomplete box element
+     */
     function __toString() 
     {
         return $this->renderSelf();
@@ -40,8 +42,8 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
     /**
      * A default implementation of render() that creates an autocomplete text field 
      * 
-     * @return string
-     */              
+     * @return string The HTML snippet of the YUI Autocomplete box rendered
+     */
     function renderSelf() 
     {
         $render  = "

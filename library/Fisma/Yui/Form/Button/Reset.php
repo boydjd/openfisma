@@ -33,7 +33,7 @@ class Fisma_Yui_Form_Button_Reset extends Fisma_Yui_Form_Button
      * This saves the trouble of creating a separate view helper and allows the element to simply draw
      * itself.
      * 
-     * @return string
+     * @return string The HTML snippet of the rendered YUI reset button
      */
      function renderSelf() 
      {

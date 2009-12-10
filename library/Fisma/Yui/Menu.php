@@ -28,9 +28,26 @@
  */
 class Fisma_Yui_Menu
 {
+    /**
+     * Holds menu title
+     * 
+     * @var string
+     */
     public $text;
+    
+    /**
+     * Stores submenu id and submenu items
+     * 
+     * @var array
+     */
     public $submenu = array();
     
+    /**
+     * To perform initialization as a default constructor
+     * 
+     * @param string $title The specified menu title
+     * @return void
+     */
     function __construct($title) 
     {
         $this->text = $title;
@@ -38,6 +55,13 @@ class Fisma_Yui_Menu
         $this->submenu['itemdata'] = array();
     }
     
+    /**
+     * Append a specified submenu item to the submenu data array of the menu
+     * 
+     * @param Fisma_Yui_MenuItem $item The specified submenu item
+     * @return void
+     * @todo is it necessary to support Fisma_Yui_Menu based cascading menu in the future?
+     */
     function add($item) 
     {
         $this->submenu['itemdata'][] = $item;

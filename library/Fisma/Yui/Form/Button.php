@@ -31,7 +31,9 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
     /**
      * When this element is expressed as a string, it renders itself as a convenience. This allows the element to
      * be used as a parameter to echo, print, or string interpolation expressions.
-     */              
+     * 
+     * @return string The string expressed YUI button element
+     */
     function __toString() 
     {
         return $this->renderSelf();
@@ -41,8 +43,8 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
      * A default implementation of render() that creates a standard button. This is overridden in subclasses to 
      * implement more unique button types.
      * 
-     * @return string
-     */              
+     * @return string The HTML expressed YUI button element
+     */
     function renderSelf() 
     {
         $disabled = $this->readOnly ? 'disabled' : '';

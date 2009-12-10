@@ -29,11 +29,28 @@
 class Fisma_Yui_MenuItem
 {
     /**
-     * These attributes are named according to the format expected by YUI. For simplicity, they are declared public.
+     * The title of menu item which is named according to the YUI expected format. 
+     * For simplicity, it is declared public.
+     * 
+     * @var string
      */
+    
     public $text;
+    
+    /**
+     * The URL of menu item
+     * 
+     * @var string
+     */
     public $url;
     
+    /**
+     * Performs initialization as default constructor
+     * 
+     * @param string $itemTitle The specified title of menu item
+     * @param string $itemUrl The specified URL of menu item
+     * @return void
+     */
     function __construct($itemTitle, $itemUrl) 
     {
         $this->text = $itemTitle;
