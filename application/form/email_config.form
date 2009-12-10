@@ -9,9 +9,9 @@
 ; License   http://www.openfisma.org/mw/index.php?title=License
 ; Version   $Id: notification_config.form 2140 2009-08-25 21:06:30Z nathanrharris $
 
-[notification_config]
+[email_config]
 method = "post"
-action = "/panel/config/type/notification"
+action = "/panel/config/type/email"
 id     = "email_config"
 
 elements.recipient.type = "hidden"

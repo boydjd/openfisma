@@ -287,15 +287,15 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * Notification event system base setting
+     * Email event system base setting
      * 
      * @return void
      */
-    public function notificationAction()
+    public function emailAction()
     {
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
-        $form = $this->getConfigForm('notification_config');
+        $form = $this->getConfigForm('email_config');
         $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port',
                          'smtp_tls', 'smtp_username', 'smtp_password');
         foreach ($columns as $column) {
@@ -316,7 +316,7 @@ class ConfigController extends SecurityController
         Fisma_Acl::requirePrivilege('area', 'configuration');
         
         // Load the form from notification_config.form file
-        $form = $this->getConfigForm('notification_config');
+        $form = $this->getConfigForm('email_config');
         if ($this->_request->isPost()) {
             $postEmailConfigValues = $this->_request->getPost();
             if ($form->isValid($postEmailConfigValues)) {
