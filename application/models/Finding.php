@@ -29,6 +29,70 @@
 class Finding extends BaseFinding
 {
     /**
+     * Changes to these fields do not get logged
+     * 
+     * @todo This will go away when we rewrite the logging as a behavior
+     * 
+     * @var array
+     */
+    private static $_excludeLogKeys = array(
+        'currentEvaluationId',
+        'duplicateFindingId',
+        'assetId',
+        'responsibleOrganizationId',
+        'sourceId',
+        'securityControlId',
+        'createdByUserId',
+        'assignedToUserId',
+        'currentEvaluationId',
+        'uploadId',
+        'status',
+        'ecdLocked',
+        'legacyFindingKey',
+        'modifiedTs',
+        'closedTs'
+    );
+
+    /**
+     * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
+     * Threat & countermeasures are also handled separately.
+     * 
+     * @var array
+     */
+    private static $_notificationKeys = array(
+        'mitigationStrategy'        => 'UPDATE_COURSE_OF_ACTION',
+        'securityControlId'         => 'UPDATE_SECURITY_CONTROL',
+        'responsibleOrganizationId' => 'UPDATE_RESPONSIBLE_SYSTEM',
+        'countermeasures'           => 'UPDATE_COUNTERMEASURES',
+        'threat'                    => 'UPDATE_THREAT',
+        'resourcesRequired'         => 'UPDATE_RESOURCES_REQUIRED',
+        'description'               => 'UPDATE_DESCRIPTION',
+        'recommendation'            => 'UPDATE_RECOMMENDATION',
+        'type'                      => 'UPDATE_MITIGATION_TYPE'
+    );
+
+    /**
+     * Maps fields to their corresponding privileges. This is kind of ugly. A better solution would be to store this
+     * information in the model itself, and then include it in a global listener.
+     * 
+     * @var array
+     */
+    private static $_requiredPrivileges = array(
+        'type' => 'update_type',
+        'description' => 'update_description',
+        'recommendation' => 'update_recommendation',
+        'mitigationStrategy' => 'update_course_of_action',
+        'responsibleOrganizationId' => 'update_assignment',
+        'securityControl' => 'update_control_assignment',
+        'threatLevel' => 'update_threat',
+        'threat' => 'update_threat',
+        'countermeasures' => 'update_countermeasures',
+        'countermeasuresEffectiveness' => 'update_countermeasures',
+        'recommendation' => 'update_recommendation',
+        'resourcesRequired' => 'update_resources'
+    );
+
+    /**
      * Declares fields stored in related records that should be indexed along with records in this table
      * 
      * @var array
@@ -48,6 +112,28 @@ class Finding extends BaseFinding
      * @var array
      */
     private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
+
+    /**
+     * Override the Doctrine hook to initialize new finding objects
+     */
+    public function construct()
+    {
+        $this->status = 'NEW';
+    }
+    
+    /**
+     * Set custom mutators
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        
+        $this->hasMutator('currentEcd', 'setCurrentEcd');
+        $this->hasMutator('nextDueDate', 'setNextDueDate');
+        $this->hasMutator('originalEcd', 'setOriginalEcd');
+        $this->hasMutator('status', 'setStatus');
+        $this->hasMutator('type', 'setType');
+    }
 
     /**
      * Returns an ordered list of all possible business statuses
@@ -103,7 +189,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
         }
         $this->status = 'MSA';
-        $this->updateNextDueDate();
+        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                       ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
@@ -126,7 +212,7 @@ class Finding extends BaseFinding
             throw new Fisma_Exception("The mitigation strategy can only be revised in EN status");
         }
         $this->status = 'DRAFT';
-        $this->updateNextDueDate();
+        $this->_updateNextDueDate();
         $this->CurrentEvaluation = null;
         $this->log('Revise mitigation strategy');
 
@@ -171,7 +257,7 @@ class Finding extends BaseFinding
                 break;
             case 'EA':
                 if ($this->CurrentEvaluation->nextId == null) {
-                    $this->status   = 'CLOSED';
+                    $this->status = 'CLOSED';
                     $this->closedTs = date('Y-m-d');
                 }
                 break;
@@ -182,7 +268,7 @@ class Finding extends BaseFinding
         } else {
             $this->CurrentEvaluation = null;
         }
-        $this->updateNextDueDate();
+        $this->_updateNextDueDate();
         $this->save();
     }
 
@@ -220,15 +306,15 @@ class Finding extends BaseFinding
 
         switch ($this->status) {
             case 'MSA':
-                $this->status              = 'DRAFT';
-                $this->CurrentEvaluation   = null;
+                $this->status = 'DRAFT';
+                $this->CurrentEvaluation = null;
                 break;
             case 'EA':
-                $this->status              = 'EN';
-                $this->CurrentEvaluation   = null;
+                $this->status = 'EN';
+                $this->CurrentEvaluation = null;
                 break;
         }
-        $this->updateNextDueDate();
+        $this->_updateNextDueDate();
         $this->save();
     }
 
@@ -246,9 +332,9 @@ class Finding extends BaseFinding
         if ('EN' != $this->status) {
             throw new Fisma_Exception("Evidence can only be updated when the finding is in EN status");
         }
-        $this->status    = 'EA';
+        $this->status = 'EA';
         $this->ecdLocked = true;
-        $this->updateNextDueDate();
+        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
@@ -269,10 +355,10 @@ class Finding extends BaseFinding
      * @throws Fisma_Exception if cannot update the next due dates since of the an invalid finding status
      * @todo why the 'Y-m-d' is a wrong date
      */
-    public function updateNextDueDate()
+    private function _updateNextDueDate()
     {
         if (in_array($this->status, array('PEND', 'CLOSED'))) {
-            $this->nextDueDate = null;
+            $this->_set('nextDueDate', null);
             return;
         }
         
@@ -293,7 +379,7 @@ class Finding extends BaseFinding
 
         $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
         $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
-        $this->nextDueDate = $nextDueDate->toString('Y-m-d');
+        $this->_set('nextDueDate', $nextDueDate->toString('Y-m-d'));
     }
 
     /**
@@ -332,4 +418,277 @@ class Finding extends BaseFinding
         $this->AuditLogs[]     = $auditLog;
     }
 
+    /**
+     * Update logs after object insert
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function postInsert($event)
+    {
+        $finding = $event->getInvoker();
+
+        $finding->log('New Finding Created');
+    }
+
+    /**
+     * Invalidate the caches that contain this finding. 
+     * 
+     * This will ensure that users always see accurate summary counts on the finding summary screen.
+     * 
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
+     */
+    public function postSave($event)
+    {
+        // Invalidate the caches that contain this finding. This will ensure that users always see
+        // accurate summary counts on the finding summary screen.
+        $this->ResponsibleOrganization->invalidateCache();
+    }
+
+    /**
+     * Doctrine hook
+     * 
+     * @todo this is copied from the former FindingListener and will be removed when the logging & notifications
+     * are refactored
+     * 
+     * @param Doctrine_Event $event
+     */
+    public function preSave($event)
+    {
+        $modifyValues = $this->getModified(true);
+
+        if (!empty($modifyValues)) {
+            foreach ($modifyValues as $key => $value) {
+                $newValue = $this->$key;
+
+                switch ($key) {
+                    case 'status':
+                        if ('MSA' == $value && 'EN' == $newValue) {
+                            Notification::notify(
+                                'MITIGATION_APPROVED', 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                        } elseif ('EN' == $value && 'DRAFT' == $newValue) {
+                            Notification::notify(
+                                'MITIGATION_REVISE', 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                        } elseif ('EA' == $newValue) {
+                            Notification::notify(
+                                'EVIDENCE_UPLOADED', 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                        } elseif ( ('EA' == $value && 'EN' == $newValue)
+                             || ('MSA' == $value && 'DRAFT' == $newValue) ) {
+                            Notification::notify(
+                                'APPROVAL_DENIED', 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                        } elseif ('EA' == $value && 'CLOSED' == $newValue) {
+                            Notification::notify(
+                                'FINDING_CLOSED', 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                            $this->log('Finding closed');
+                        }
+                        break;
+                    case 'currentEvaluationId':
+                        $event = isset($this->CurrentEvaluation->Event->name) 
+                               ? $this->CurrentEvaluation->Event->name 
+                               : null;
+                        // If the event is null, then that indicates this was the last evaluation within its approval
+                        // process. That condition is handled above.
+                        if (isset($event)) {
+                            Notification::notify(
+                                $event, 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                        }
+                        break;
+                    case 'currentEcd':
+                        if ($this->ecdLocked && empty($this->ecdChangeDescription)) {
+                            $error = 'When the ECD is locked, the user must provide a change description'
+                                   . ' in order to modify the ECD.';
+                            throw new Fisma_Exception($error);
+                        }
+                        if (!$this->ecdLocked) {
+                            Fisma_Acl::requirePrivilege(
+                                'finding', 
+                                'update_ecd', 
+                                $this->ResponsibleOrganization->nickname
+                            );
+                            Notification::notify(
+                                'UPDATE_ECD', 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                        } else {
+                            Fisma_Acl::requirePrivilege(
+                                'finding', 
+                                'update_locked_ecd', 
+                                $this->ResponsibleOrganization->nickname
+                            );
+                            Notification::notify(
+                                'UPDATE_LOCKED_ECD', 
+                                $this, 
+                                User::currentUser(), 
+                                $this->responsibleOrganizationId
+                            );
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                
+                if (in_array($key, self::$_excludeLogKeys)) {
+                    continue;
+                }
+
+                $value    = $value ? html_entity_decode(strip_tags($value)) : 'NULL';
+                $newValue = html_entity_decode(strip_tags($newValue));
+
+                // Only log if $newValue is actually different from $value. 
+                // Ignore changes to NULL/""/NONE if one of these was present 
+                // in the original $value.
+                if ( (!(is_null($value) || empty($value) || $value == 'NONE') && 
+                      !(is_null($newValue) || empty($newValue) || $newValue == 'NONE'))
+                      || ($value != $newValue)) {
+                    // See if you can look up a logical name for this column in the schema definition. 
+                    // If its not defined, then use the physical name instead
+                    $column = $this->getTable()->getColumnDefinition(strtolower($key));
+                    $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
+                                 ? $column['extra']['logicalName']
+                                 : $key;
+ 
+                    $message = "UPDATE: $logicalName\n ORIGINAL: $value\nNEW: $newValue";
+                    $this->log($message);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Check ACL before updating a record. See if any notifications need to be sent.
+     * 
+     * @param Doctrine_Event $event The listened doctrine event to process
+     * @return void
+     */
+    public function preUpdate($event) 
+    {
+        $modified = $this->getModified(true);
+
+        if (!empty($modified)) {
+            foreach ($modified as $key => $value) {
+                // Check whether the user has the privilege to update this column
+                if (isset(self::$_requiredPrivileges[$key])) {
+                    Fisma_Acl::requirePrivilege(
+                        'finding', 
+                        self::$_requiredPrivileges[$key], 
+                        $this->ResponsibleOrganization->nickname
+                    );
+                }
+            
+                // Check whether this field generates any notification events
+                if (array_key_exists($key, self::$_notificationKeys)) {
+                    $type = self::$_notificationKeys[$key];
+                }
+
+                if (isset($type)) {
+                    Notification::notify($type, $this, User::currentUser(), $this->responsibleOrganizationId);
+                }
+            }
+        }       
+    }
+    
+    /**
+     * Logic for updating the current expected completion date
+     * 
+     * @param string $value
+     */
+    public function setCurrentEcd($value)
+    {
+        $this->_set('currentEcd', $value);
+        
+        // If the original ECD is not locked, then keep it synchronized with this ECD
+        if (!$this->ecdLocked) {
+            $this->_set('originalEcd', $value);
+        }
+    }
+
+    /**
+     * Throws an exception if you try to set next due date directly
+     * 
+     * @param string $value
+     */
+    public function setNextDueDate($value)
+    {
+        throw new Fisma_Exception('Next due date cannot be set directly');
+    }
+
+    /**
+     * Original ECD cannot be set directly
+     * 
+     * @param string $value
+     */
+    public function setOriginalEcd($value)
+    {
+        throw new Fisma_Exception('Original ECD cannot be set directly');
+    }
+
+    /**
+     * Mutator for status
+     * 
+     * @param string $value
+     */
+    public function setStatus($value)
+    {
+        // Business rules for status changes
+        switch ($value) {
+            case 'EN':
+                if (!$this->ecdLocked) {
+                    $this->ecdLocked = true;
+                }
+                break;
+            case 'EA':
+                $this->actualCompletionDate = Fisma::now();
+                break;
+            case 'CLOSED':
+                $this->closedTs = Fisma::now();
+                break;
+        }
+
+        // Update the value
+        $this->_set('status', $value);
+        
+        // Next due date is always affected by status changes
+        $this->_updateNextDueDate();
+    }
+    
+    /**
+     * Mutator for type
+     * 
+     * @param string $value
+     */
+    public function setType($value)
+    {
+        // If this is a NEW finding and the type is being set, then move it to DRAFT status
+        if ('NEW' == $this->status) {
+            $this->status = 'DRAFT';
+        }
+        
+        $this->_set('type', $value);
+    }
 }

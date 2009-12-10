@@ -137,51 +137,103 @@ abstract class Fisma_Inject_Abstract
     }
 
     /**
-     * Conditionally commit the specific finding.
-     * 
+     * Conditionally commit the specified finding data
+     *
      * The finding is evaluated with respect to the Injection Filtering rules. The finding may be committed or it may be
      * deleted based on the filter rules.
      * 
-     * Subclasses must call this function to commit findings rather than committing new findings directly.
-     * 
-     * @param array $findingData Column data for the new finding object action was taken.
+     * Subclasses should call this function to commit findings rather than committing new findings directly.
+     *
+     * @param array $findingData Column data for the new finding object
      * @return void
      */
     protected function _commit($findingData) 
     {
-        Doctrine_Manager::connection()->beginTransaction();
         $finding = new Finding();
         $finding->merge($findingData);
-        $finding->save();
-        if ($finding->status == 'PEND') {
-            $duplicate = $finding->DuplicateFinding;
-            // If a duplicate exists, then run the Injection Filtering rules
-            if ($duplicate->type == 'NONE' || $duplicate->type == 'CAP' || $duplicate->type == 'FP') {
-                if ($finding->responsibleOrganizationId == $duplicate->responsibleOrganizationId) {
-                    if ($duplicate->status == 'CLOSED') {
-                        $this->_totalFindings['created']++;
-                        Doctrine_Manager::connection()->commit();
-                    } else {
-                        $this->_totalFindings['deleted']++;
-                        Doctrine_Manager::connection()->rollback();
-                    }
+        
+        // Handle duplicated findings
+        $duplicateFinding = $this->_getDuplicateFinding($finding);
+        
+        if ($duplicateFinding) {
+            $action = $this->_getDuplicateAction($finding, $duplicateFinding);
+        } else {
+            $action = self::CREATE_FINDING;
+        }
+        
+        // Take the specified action on the current finding
+        switch ($action) {
+            case self::CREATE_FINDING:
+                $this->_totalFindings['created']++;
+                $finding->save();
+                break;
+            case self::DELETE_FINDING:
+                $this->_totalFindings['deleted']++;
+                // Deleted findings are not saved
+                break;
+            case self::REVIEW_FINDING:
+                $this->_totalFindings['reviewed']++;
+                $finding->status = 'PEND';
+                $finding->save();
+                break;
+        }
+        
+    }
+
+    /**
+     * Get a duplicate of the specified finding
+     * 
+     * @param $finding A finding to check for duplicates
+     * @return bool|Finding Return a duplicate finding or FALSE if none exists
+     */
+    private function _getDuplicateFinding($finding)
+    {
+        $duplicateFindings = Doctrine::getTable('Finding')->findByDql('description LIKE ?', $finding->description);
+        
+        if ($duplicateFindings) {
+            $duplicateFinding = $duplicateFindings->getLast();
+        } else {
+            $duplicateFinding = FALSE;
+        }
+        
+        return $duplicateFinding;
+    }
+    
+    /**
+     * Evaluate duplication rules for two findings
+     * 
+     * @param Finding $newFinding
+     * @param Finding $duplicateFinding
+     * @return int One of the constants: CREATE_FINDING, DELETE_FINDING, or REVIEW_FINDING
+     */
+    private function _getDuplicateAction(Finding $newFinding, Finding $duplicateFinding)
+    {
+        $action = null;
+        
+        // Rules for non-AR findings:
+        if (in_array($duplicateFinding->type, array('CAP', 'FP', 'NONE'))) {
+            if ($newFinding->ResponsibleOrganization == $duplicateFinding->ResponsibleOrganization) {
+                if ('CLOSED' == $duplicateFinding->status) {
+                    $action = self::CREATE_FINDING;
                 } else {
-                    $this->_totalFindings['reviewed']++;
-                    Doctrine_Manager::connection()->commit();
+                    $action = self::DELETE_FINDING;
                 }
-            } elseif ($duplicate->type == 'AR') {
-                if ($duplicate->responsibleOrganizationId == $finding->responsibleOrganizationId) {
-                    $this->_totalFindings['deleted']++;
-                    Doctrine_Manager::connection()->rollback();
-                } else {
-                    $this->_totalFindings['reviewed']++;
-                    Doctrine_Manager::connection()->commit();
-                }
+            } else {
+                $action = self::REVIEW_FINDING;
+            }
+        } elseif ($duplicateFinding->type == 'AR') {
+            // Rules for AR findings:
+            if ($newFinding->ResponsibleOrganization == $duplicateFinding->ResponsibleOrganization) {
+                $action = self::DELETE_FINDING;
+            } else {
+                $action = self::REVIEW_FINDING;
             }
         } else {
-            $this->_totalFindings['created']++;
-            Doctrine_Manager::connection()->commit();
+            throw new Fisma_Exception('No duplicate finding action defined for mitigation type: '
+                                    . $duplicateFinding->type);
         }
+
+        return $action;
     }
     
     /**
@@ -207,7 +259,7 @@ abstract class Fisma_Inject_Abstract
      *
      * Throws an exception if the file is an invalid format.
      *
-     * @param string $uploadId The id of the upload file.
+     * @param string $uploadId The primary key for the upload object associated with this file
      * @return void
      * @throws Fisma_Exception_InvalidFileFormat if the file is an invalid format
      */

@@ -667,9 +667,8 @@ class User extends BaseUser
             throw new Doctrine_Exception('Your password cannot be the same as any of your previous'
                                        . ' 3 passwords.');
         }
-
         $this->_set('password', $password);
-        
+
         // Generate password history. Colons are used to delimit passwords and can be used to count how many old
         // passwords are currently stored.
         $oldPasswords = explode(':', $this->passwordHistory);

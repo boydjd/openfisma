@@ -58,10 +58,10 @@ class Test_Model_User extends Test_FismaUnitTest
     public function testPasswordNotInPlainText()
     {
         $user = new User();
+
         $secretPassword = 'password1';
-        print "XXXXXXXXX\n";
         $user->password = $secretPassword; // This should be hashed before it is stored
-        print "XXXXXXXXX\n";
+
         $this->assertNotEquals($secretPassword, $user->password);
     }
 
