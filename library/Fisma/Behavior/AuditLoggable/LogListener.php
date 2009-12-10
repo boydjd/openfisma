@@ -17,23 +17,23 @@
  */
 
 /**
- * Listener class for the audit loggable behavior
+ * Listener for generated audit log classes
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Behavior
+ * @subpackage Fisma_Behavior_AuditLoggable
  * @version    $Id$
  */
-class Fisma_Behavior_AuditLoggable_Listener extends Doctrine_Record_Listener
+class Fisma_Behavior_AuditLoggable_LogListener extends Doctrine_Record_Listener
 {
     /**
-     * Before inserts, update the record timestamp
+     * Before inserts, update the log record timestamp
      * 
      * @param Doctrine_Event $event
      */
-    public function preInsert($event)
+    public function preInsert(Doctrine_Event $event)
     {
         $event->getInvoker()->createdTs = Fisma::now();
     }

@@ -23,7 +23,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Behavior
+ * @subpackage Fisma_Behavior_AuditLoggable
  * @version    $Id$
  */
 class Fisma_Behavior_AuditLoggable extends Doctrine_Template
@@ -41,11 +41,12 @@ class Fisma_Behavior_AuditLoggable extends Doctrine_Template
     }
     
     /**
-     * Define fields that are added to the class which uses this behavior
+     * Define fields and listeners that are added to the class which uses this behavior
      */
     public function setTableDefinition()
     {
-        // No fields to define for this behavior
+        // This listener creates log entries automatically when objects are created, updated, or deleted
+        $this->addListener(new Fisma_Behavior_AuditLoggable_ObjectListener($this->_options));
     }
     
     /**
@@ -66,5 +67,17 @@ class Fisma_Behavior_AuditLoggable extends Doctrine_Template
         );
         
         $this->_plugin->initialize($this->getTable());
+    }
+    
+    /**
+     * Return a log instance
+     * 
+     * The instance acts as glue between the instance itself and the generator which needs to act on it
+     * 
+     * @return Fisma_Behavior_AuditLoggable_Generator
+     */
+    public function getAuditLog()
+    {
+        return new Fisma_Behavior_AuditLoggable_AuditLog($this->getInvoker(), $this->_plugin);
     }
 }

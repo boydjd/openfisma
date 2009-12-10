@@ -23,7 +23,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Behavior
+ * @subpackage Fisma_Behavior_AuditLoggable
  * @version    $Id$
  */
 class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
@@ -91,6 +91,9 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
             null, 
             array('comment' => 'The user who created this log entry')
         );
+        
+        // Add the listener for the timestamp field
+        $this->addListener(new Fisma_Behavior_AuditLoggable_LogListener);
     }
     
     /**
@@ -119,4 +122,30 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
             )
         );
     }
+    
+    /**
+     * Write a log message programmatically
+     * 
+     * You only need to use this if you want to log something that isn't logged automatically. Create/Update/Delete can
+     * all be logged automatically.
+     * 
+     * @param Doctrine_Record $instance
+     * @param string $message
+     */
+    public function write(Doctrine_Record $instance, $message)
+    {
+        // Create a new audit log entry
+        $logClass = $this->_options['className'];
+        $instanceClass = $this->getOption('table')->getComponentName();
+
+        $auditLogEntry = new $logClass;        
+        $auditLogEntry->message = $message;
+        $auditLogEntry->User = User::currentUser();
+        $auditLogEntry->$instanceClass = $instance;
+
+        // Logs must be saved directly because this is frequently called from a listener, and Doctrine will not be able
+        // to auto-save related records in that context
+        $auditLogEntry->save();
+    }
+    
 }

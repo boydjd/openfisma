@@ -18,6 +18,7 @@ Asset:
             values: [manual, scan]
             default: manual
             extra:
+                logicalName: Asset Source
                 searchIndex: keyword
                 notify: true
             comment: Whether this asset was created manually or by an automated scanner
@@ -35,7 +36,7 @@ Asset:
             unsigned: false
             unsigned: false
             extra:
-                logicalName: Port Number
+                logicalName: IP Port Number
                 searchIndex: unstored
                 searchAlias: port
                 notify: true
@@ -44,12 +45,18 @@ Asset:
         productId:
             type: integer
             comment: Foreign key to product table
+            extra:
+                logicalName: Product
         orgSystemId:
             type: integer
-            comment: Foreign key to organization table
+            comment: Foreign key to a system object in the organization table
+            extra:
+                logicalName: System
         networkId:
             type: integer
             comment: Foreign key to network table
+            extra:
+                logicalName: Network
 
     relations:
         Product:
@@ -77,3 +84,4 @@ Asset:
             logCreateObject: true
             logUpdateObject: true
             logDeleteObject: true
+        SoftDelete: true
