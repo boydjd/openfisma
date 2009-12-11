@@ -11,7 +11,7 @@ Configuration:
 
     session_inactivity_period:
         name: session_inactivity_period
-        value: 90
+        value: 5400
         description: Session Timeout (seconds)
 
     auth_type:

@@ -62,5 +62,6 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
         }
         
         $config->value = $value;
+        $config->save();
     }
 }

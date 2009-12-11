@@ -81,7 +81,10 @@ class ConfigController extends SecurityController
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
                 $values = $form->getValues();
-                foreach ($values as $k => $v) {
+                foreach ($values as $k => &$v) {
+                    if (in_array($k, array('session_inactivity_period', 'unlock_duration'))) {
+                        $v *= 60; // convert minutes to seconds
+                    }
                     $config = Doctrine::getTable('Configuration')->findOneByName($k);
                     if ($config) {
                         $config->value = $v;
