@@ -48,6 +48,8 @@ class Fisma_Behavior_AuditLoggable_AuditLog
     
     /**
      * The constructor sets up the two pieces of data needed: the instance and the generator
+     * 
+     * @return void
      */
     public function __construct(Doctrine_Record $instance, Fisma_Behavior_AuditLoggable_Generator $generator)
     {
@@ -58,7 +60,8 @@ class Fisma_Behavior_AuditLoggable_AuditLog
     /**
      * Proxy method for writing a log programatically
      * 
-     * @param string $message
+     * @param string $message The specified message to be written
+     * @return void
      */
     public function write($message)
     {
@@ -69,9 +72,9 @@ class Fisma_Behavior_AuditLoggable_AuditLog
      * Proxy method for listing log entries related to an object
      * 
      * @param int $hydrationMode A valid Doctrine hydration mode, e.g. Doctrine::HYDRATE_ARRAY
-     * @param int $limit SQL style limit and offset
-     * @param int $offset
-     * @return mixed Returns a query result. The type depends on which hydration mode you choose.
+     * @param int $limit SQL style limit
+     * @param int $offset SQL style offset
+     * @return mixed A query result whose type depends on which hydration mode you choose.
      */
     public function fetch($hydrationMode, $limit = null, $offset = null)
     {
@@ -81,7 +84,7 @@ class Fisma_Behavior_AuditLoggable_AuditLog
     /**
      * Proxy method for getting an audit log base query relative to an object
      * 
-     * @return Doctrine_Query
+     * @return Doctrine_Query The audio log base query related to the instance
      */
     public function query()
     {

@@ -30,6 +30,8 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
 {
     /**
      * Default options for the listener
+     * 
+     * @var array
      */
     protected $_options = array(
         'logCreateObject' => true,
@@ -41,7 +43,8 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
     /**
      * Create and configure a new listener
      * 
-     * @param array $options
+     * @param array $options The object listener options
+     * @return void
      */
     public function __construct($options)
     {
@@ -51,7 +54,8 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
     /**
      * Audit log behavior for created objects
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postInsert(Doctrine_Event $event)
     {
@@ -66,7 +70,8 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
     /**
      * Audit log behavior for updated objects
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postUpdate(Doctrine_Event $event)
     {
@@ -120,7 +125,8 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
      * This only makes sense for objects which have a soft delete behavior. Otherwise there is no object to create
      * logs for.
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function postDelete(Doctrine_Event $event)
     {
@@ -135,9 +141,9 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
     /**
      * Determine whether a particular field on a particular table should be logged individually
      * 
-     * @param Doctrine_Table $table
-     * @param string $field
-     * @return bool
+     * @param Doctrine_Table $table The specified doctrine table object to be checked
+     * @param string $field The specified field of table to be checked
+     * @return boolean True if found extra property 'auditLog' in the table definition, false otherwise
      */
     private function _fieldIsLoggable(Doctrine_Table $table, $field)
     {
@@ -153,9 +159,9 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
     /**
      * A helper to derive a logical name from a physical field name in a particular table
      * 
-     * @param Doctrine_Table $table
-     * @param string $field 
-     * @return string Returns null if no such logical name exists
+     * @param Doctrine_Table $table The specified doctrine table object to be checked
+     * @param string $field The specified field of table to be checked
+     * @return string|null The defined value of the extra property 'logicalName', null if is not set
      */
     private function _getLogicalNameForField(Doctrine_Table $table, $field)
     {

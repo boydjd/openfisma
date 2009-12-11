@@ -30,6 +30,8 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
 {
     /**
      * Set up the generated class name
+     * 
+     * @return void
      */
     public function initOptions()
     {
@@ -39,6 +41,8 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
     
     /**
      * Set up relations
+     * 
+     * @return void
      */
     public function buildRelation()
     {
@@ -48,6 +52,8 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
     
     /**
      * Table definition
+     * 
+     * @return void
      */
     public function setTableDefinition()
     {
@@ -98,6 +104,8 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
     
     /**
      * Set up parent object and user relations
+     * 
+     * @return void
      */
     public function setUp()
     {
@@ -129,8 +137,9 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
      * You only need to use this if you want to log something that isn't logged automatically. Create/Update/Delete can
      * all be logged automatically.
      * 
-     * @param Doctrine_Record $instance
-     * @param string $message
+     * @param Doctrine_Record $instance The instance to be logged
+     * @param string $message The message to be written
+     * @return void
      */
     public function write(Doctrine_Record $instance, $message)
     {

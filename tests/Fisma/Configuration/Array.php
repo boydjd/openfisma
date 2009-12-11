@@ -32,6 +32,9 @@ class Test_Fisma_Configuration_Array extends Test_FismaUnitTest
 {
     /**
      * Test basic operation of the configuration object
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testConfigurationArray()
     {

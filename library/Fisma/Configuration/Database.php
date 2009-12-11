@@ -31,8 +31,9 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
     /**
      * Get a configuration item from the configuration table
      * 
-     * @param string $name
-     * @return mixed
+     * @param string $name The requested configuration item name
+     * @return mixed The returned configuration item value
+     * @throws Fisma_Exception_Config if the requested configuration item name is invalid
      */
     public function getConfig($name) 
     {
@@ -50,6 +51,7 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      * 
      * @param string $name The specified configuration item name to set
      * @param mixed $value The value of the configuration item to set
+     * @return void
      */
     public function setConfig($name, $value) 
     {

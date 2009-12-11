@@ -44,8 +44,11 @@ class Fisma_Configuration_Array implements Fisma_Configuration_Interface
     /**
      * Get a configuration item by name
      * 
-     * @param string $name
-     * @return mixed
+     * @param string $name The specified configuration item name to obtain
+     * @return mixed The value of the requested configuration item name
+     * @throws Fisma_Exception_Config if the requested configuration item name is invalid
+     * @todo suggest to handle the exception that the requested configuration item name is invalid 
+     * since programmers maybe use a undefined configuration item name in test case 
      */
     public function getConfig($name) 
     {
@@ -55,8 +58,9 @@ class Fisma_Configuration_Array implements Fisma_Configuration_Interface
     /**
      * Set a configuration item by name
      * 
-     * @param string $name
-     * @param mixed $value
+     * @param string $name The specified configuration item name to set
+     * @param mixed $value The specified value of the configuration item name to set
+     * @return void
      */
     public function setConfig($name, $value) 
     {

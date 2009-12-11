@@ -33,6 +33,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
     /**
      * Cannot set next due date directly
      * 
+     * @return void
      * @expectedException Fisma_Exception
      */
     public function testCannotSetDueDateDirectly()
@@ -44,6 +45,9 @@ class Test_Model_Finding extends Test_FismaUnitTest
     
     /**
      * New findings should be NEW status and setting the type should move the finding to DRAFT
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFindingStatus()
     {
@@ -58,6 +62,9 @@ class Test_Model_Finding extends Test_FismaUnitTest
     
     /**
      * Test due dates being set automatically based on status
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testDueDates()
     {
@@ -78,6 +85,7 @@ class Test_Model_Finding extends Test_FismaUnitTest
     /**
      * Original ECD cannot be set directly
      * 
+     * @return void
      * @expectedException Fisma_Exception
      */
     public function testOriginalEcdCannotBeSet()
@@ -89,6 +97,9 @@ class Test_Model_Finding extends Test_FismaUnitTest
     
     /**
      * Test if the ECD lock affects synchronization of the original and current ECD correctly
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testEcdLockSyncsEcds()
     {
@@ -114,6 +125,9 @@ class Test_Model_Finding extends Test_FismaUnitTest
     
     /**
      * When the status goes to EN, the ecd should be locked
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testEcdLockEnStatus()
     {

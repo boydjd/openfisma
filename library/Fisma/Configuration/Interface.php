@@ -31,16 +31,18 @@ interface Fisma_Configuration_Interface
     /**
      * Get a configuration item by name
      * 
-     * @param string $name
-     * @return mixed
+     * @param string $name The configuration item name to obtain
+     * @return mixed The value of the requested configuration item name
+     * @throws Fisma_Exception_Config if not found the requested configuration item name
      */
     public function getConfig($name);
     
     /**
      * Set a configuration item by name
      * 
-     * @param string $name
-     * @param mixed $value
+     * @param string $name The configuration item name to set
+     * @param mixed $value The corresponding value of the configuration item name
+     * @return void
      */
     public function setConfig($name, $value);
 }

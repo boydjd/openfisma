@@ -31,9 +31,8 @@ class Finding extends BaseFinding
     /**
      * Changes to these fields do not get logged
      * 
-     * @todo This will go away when we rewrite the logging as a behavior
-     * 
      * @var array
+     * @todo This will go away when we rewrite the logging as a behavior
      */
     private static $_excludeLogKeys = array(
         'currentEvaluationId',
@@ -115,6 +114,8 @@ class Finding extends BaseFinding
 
     /**
      * Override the Doctrine hook to initialize new finding objects
+     * 
+     * @return void
      */
     public function construct()
     {
@@ -123,6 +124,8 @@ class Finding extends BaseFinding
     
     /**
      * Set custom mutators
+     * 
+     * @return void
      */
     public function setUp()
     {
@@ -421,7 +424,8 @@ class Finding extends BaseFinding
     /**
      * Update logs after object insert
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The listened doctrine event to be processed
+     * @return void
      */
     public function postInsert($event)
     {
@@ -435,7 +439,7 @@ class Finding extends BaseFinding
      * 
      * This will ensure that users always see accurate summary counts on the finding summary screen.
      * 
-     * @param Doctrine_Event $event The listened doctrine event to process
+     * @param Doctrine_Event $event The listened doctrine event to be processed
      * @return void
      */
     public function postSave($event)
@@ -448,10 +452,10 @@ class Finding extends BaseFinding
     /**
      * Doctrine hook
      * 
+     * @param Doctrine_Event $event The listened doctrine event to be processed
+     * @return void
      * @todo this is copied from the former FindingListener and will be removed when the logging & notifications
      * are refactored
-     * 
-     * @param Doctrine_Event $event
      */
     public function preSave($event)
     {
@@ -583,7 +587,7 @@ class Finding extends BaseFinding
     /**
      * Check ACL before updating a record. See if any notifications need to be sent.
      * 
-     * @param Doctrine_Event $event The listened doctrine event to process
+     * @param Doctrine_Event $event The listened doctrine event to be processed
      * @return void
      */
     public function preUpdate($event) 
@@ -616,7 +620,8 @@ class Finding extends BaseFinding
     /**
      * Logic for updating the current expected completion date
      * 
-     * @param string $value
+     * @param string $value The specified value of current ECD to set
+     * @return void
      */
     public function setCurrentEcd($value)
     {
@@ -631,7 +636,8 @@ class Finding extends BaseFinding
     /**
      * Throws an exception if you try to set next due date directly
      * 
-     * @param string $value
+     * @param string $value The specified valud of next due date to set
+     * @throws Fisma_Exception if the method is called
      */
     public function setNextDueDate($value)
     {
@@ -641,7 +647,8 @@ class Finding extends BaseFinding
     /**
      * Original ECD cannot be set directly
      * 
-     * @param string $value
+     * @param string $value The specofoed value of original ECD to set
+     * @throws Fisma_Exception if the method is called
      */
     public function setOriginalEcd($value)
     {
@@ -651,7 +658,8 @@ class Finding extends BaseFinding
     /**
      * Mutator for status
      * 
-     * @param string $value
+     * @param string $value The value of status to set
+     * @return void
      */
     public function setStatus($value)
     {
@@ -680,7 +688,8 @@ class Finding extends BaseFinding
     /**
      * Mutator for type
      * 
-     * @param string $value
+     * @param string $value The specified value of type to set
+     * @return void
      */
     public function setType($value)
     {

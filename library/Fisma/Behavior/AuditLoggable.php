@@ -31,7 +31,8 @@ class Fisma_Behavior_AuditLoggable extends Doctrine_Template
     /**
      * Overload constructor to plug in the record generator
      * 
-     * @param array $options
+     * @param array $options The template options
+     * @return void
      */
     public function __construct(array $options = array())
     {
@@ -42,6 +43,8 @@ class Fisma_Behavior_AuditLoggable extends Doctrine_Template
     
     /**
      * Define fields and listeners that are added to the class which uses this behavior
+     * 
+     * @return void
      */
     public function setTableDefinition()
     {
@@ -51,6 +54,8 @@ class Fisma_Behavior_AuditLoggable extends Doctrine_Template
     
     /**
      * Define a relation to the generated audit log class
+     * 
+     * @return void
      */
     public function setUp()
     {
@@ -74,7 +79,7 @@ class Fisma_Behavior_AuditLoggable extends Doctrine_Template
      * 
      * The instance acts as glue between the instance itself and the generator which needs to act on it
      * 
-     * @return Fisma_Behavior_AuditLoggable_Generator
+     * @return Fisma_Behavior_AuditLoggable_AuditLog The newly instantiated auditlog instance
      */
     public function getAuditLog()
     {

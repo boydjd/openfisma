@@ -31,7 +31,8 @@ class Fisma_Behavior_AuditLoggable_LogListener extends Doctrine_Record_Listener
     /**
      * Before inserts, update the log record timestamp
      * 
-     * @param Doctrine_Event $event
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
      */
     public function preInsert(Doctrine_Event $event)
     {
