@@ -27,37 +27,37 @@
 /**
  * Show recipient dialog and validate inputed email address
  */
-Fisma.ShowRecipientDialog = function() {
+Fisma.Email = function() {
     return {
         /**
          * Initializes the ShowRecipientDialog widget
-         */ 
-        init : function() {
+         */
+        showRecipientDialog : function() {
             // If someone opens the dialog, and then just closes the dialog, but leave pannel_c div there, 
             // it can be display two pannel_c div when open again, so we need remove it.
             var tabContainer = document.getElementById('tabContainer');
             if (document.getElementById("panel_c")) {
                 tabContainer.removeChild(document.getElementById("panel_c"));
             }
-        
+
             // Create a dialog
             var content = document.createElement('div');
             var p = document.createElement('p');
             var contentTitle = document.createTextNode('* Target E-mail Address:');
             p.appendChild(contentTitle);
             content.appendChild(p);
-            
+
             // Add email address input to dialog
             var emailAddress = document.createElement('input');
             emailAddress.id = 'testEmailRecipient';
             emailAddress.name = 'recipient';
             content.appendChild(emailAddress);
-            
+
             // Add line spacing to dialog
             var lineSpacingDiv = document.createElement('div');
             lineSpacingDiv.style.height = '10px';
             content.appendChild(lineSpacingDiv);
-            
+
             // Add submmit button to dialog
             var sendBtn = document.createElement('input');
             sendBtn.type = 'button';
@@ -65,12 +65,12 @@ Fisma.ShowRecipientDialog = function() {
             sendBtn.style.marginLeft = '10px';
             sendBtn.value = 'Send';
             content.appendChild(sendBtn);
-        
+
             // Load panel
             panel('Test E-mail Configuration', tabContainer, '', content.innerHTML);
-        
+
             // Set onclick handler to handle dialog_recipient 
-            document.getElementById('dialogRecipientSendBtn').onclick = Fisma.ShowRecipientDialog.sendTestEmail;
+            document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
         },
 
         /**
@@ -83,12 +83,12 @@ Fisma.ShowRecipientDialog = function() {
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
-            
+
             // Get dialog_recipient value to recipient
             var recipient = document.getElementById('testEmailRecipient').value;
             var form  = document.getElementById('email_config');
             form.elements['recipient'].value = recipient;
-            
+
             // Post data through YUI
             YAHOO.util.Connect.setForm(form);
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json',
@@ -101,7 +101,7 @@ Fisma.ShowRecipientDialog = function() {
                                                 failure: function(o) {alert('Failed to send mail: ' + o.statusText);}
                                             },
                                             null);
-                                            
+
             // Remove panel
             var panelMask = document.getElementById("panel_mask");
             panelMask.style.visibility = "hidden";

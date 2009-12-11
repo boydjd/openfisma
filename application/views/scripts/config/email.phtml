@@ -1,7 +1,7 @@
 <?php
 $sendTestEmailBtn = new Fisma_Yui_Form_Button('columnOptions',
                                            array('label' => 'Test Configuration',
-                                                 'onClickFunction' => 'Fisma.ShowRecipientDialog.init'));
+                                                 'onClickFunction' => 'Fisma.Email.showRecipientDialog'));
 Fisma_Format_Section::startSection("E-mail Configuration " . $sendTestEmailBtn); ?>
 
 <div class="block">
