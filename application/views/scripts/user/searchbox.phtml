@@ -12,13 +12,6 @@
                                                          'href' => '/panel/account/sub/create'));
             echo $createButton;
         } 
-
-        if (Fisma_Acl::hasPrivilege('account_log', 'read')) {
-            $logsButton = new Fisma_Yui_Form_Button_Link('logsButton', 
-                                                   array('value' => 'Audit Logs', 
-                                                         'href' => '/panel/log/sub/list'));
-            echo $logsButton;
-        }
         ?>
     </div>
     <div class="right">

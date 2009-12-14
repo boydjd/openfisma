@@ -57,66 +57,14 @@ class User extends BaseUser
      * The mininum number of unique passwords required before an old password can be reused
      */
     const PASSWORD_HISTORY_LIMIT = 3;
-
-    /**
-     * Account logs event type for the action 'create user'
-     */
-    const CREATE_USER = 'create user';
-
-    /**
-     * Account logs event type for the action 'modify user'
-     */
-    const MODIFY_USER = 'modify user';
-
-    /**
-     * Account logs event type for the action 'delete user'
-     */
-    const DELETE_USER = 'delete user';
-
-    /**
-     * Account logs event type for the action 'lock user'
-     */
-    const LOCK_USER   = 'lock user';
-
-    /**
-     * Account logs event type for the action 'unlock user'
-     */
-    const UNLOCK_USER   = 'unlock user';
-
-    /**
-     * Account logs event type for the action 'login failure'
-     */
-    const LOGIN_FAILURE = 'login failure';
-
-    /**
-     * Account logs event type for the action 'login'
-     */
-    const LOGIN         = 'login';
-
-    /**
-     * Account logs event type for the action 'logout'
-     */
-    const LOGOUT        = 'logout';
-
-    /**
-     * Account logs event type for the action 'accept rob'
-     */
-    const ACCEPT_ROB    = 'accept rob';
-
-    /**
-     * Account logs event type for the action 'change password'
-     */
-    const CHANGE_PASSWORD = 'change password';
-
-    /**
-     * Account logs event type for the action 'validate email'
-     */
-    const VALIDATE_EMAIL  = 'validate email';
-
+    
     /**
      * Returns an object which represents the current, authenticated user
      * 
-     * @return User The current authenticated user
+     * In certain contexts there is no current user, such as before login or when running from a command line. In those
+     * cases, this method returns null.
+     * 
+     * @return User The current authenticated user or null if none exists
      */
     public static function currentUser() 
     {
@@ -125,8 +73,7 @@ class User extends BaseUser
             $auth->setStorage(new Fisma_Auth_Storage_Session());
             return $auth->getIdentity();
         } else {
-            /** @todo remove this, should either throw an excp.. or just return null */
-            return new User();
+            return null;
         }
     }
 
@@ -139,6 +86,7 @@ class User extends BaseUser
     {
         parent::setUp();
         
+        $this->hasMutator('lastRob', 'setLastRob');
         $this->hasMutator('password', 'setPassword');
     }
 
@@ -153,11 +101,25 @@ class User extends BaseUser
         if (empty($lockType)) {
             throw new Fisma_Exception("Lock type cannot be blank");
         }
+        
         $this->locked = true;
         $this->lockTs = date('Y-m-d H:i:s');
         $this->lockType = $lockType;
         $this->save();
-        $this->log(self::LOCK_USER, "Account locked: $lockType");
+
+        // If the account is locked due to password failure, etc., then there is no current user. In that case, we log
+        // with a null user and include the remote IP address in the log entry instead.
+        if (User::currentUser()) {
+            $message = 'Locked: ' . $this->getLockReason();
+            $this->getAuditLog()->write($message);
+        } else {
+            $message = 'Locked by unknown user (' 
+                     . $_SERVER['REMOTE_ADDR']
+                     . '): '
+                     . $this->getLockReason();
+            $this->getAuditLog()->write($message);
+        }
+        
         Notification::notify('USER_LOCKED', $this, self::currentUser());
     }
     
@@ -173,7 +135,18 @@ class User extends BaseUser
         $this->lockType = null;
         $this->failureCount = 0;
         $this->save();
-        $this->log(self::UNLOCK_USER, "Account unlocked");
+        
+        // If the account is unlocked automatically (such as an expired lock), then there may not be an authenticated
+        // user. In that case, the user is null and the IP address is included
+        if (User::currentUser()) {
+            $this->getAuditLog()->write('Unlocked');
+        } else {
+            $message = 'Unlocked by unknown user (' 
+                     . $_SERVER['REMOTE_ADDR']
+                     . '): '
+                     . $this->getLockReason();
+            $this->getAuditLog()->write($message);
+        }
     }
         
     /**
@@ -375,10 +348,13 @@ class User extends BaseUser
             $this->emailValidate = true;
             $emailValidation->delete();
             $this->save();
-            $this->log(self::VALIDATE_EMAIL, 'Email validation successful');
+            
+            $this->getAuditLog()->write('Validated e-mail address');
+
             return true;
         } else {
-            $this->log(self::VALIDATE_EMAIL, 'Email validation failed');
+            $this->getAuditLog()->write('E-mail validation failed');
+
             return false;
         }
     }
@@ -401,34 +377,6 @@ class User extends BaseUser
         $this->failureCount = 0;
 
         $this->save();
-    }
-
-    /**
-     * Log any creation, modification, disabling and termination of account.
-     * 
-     * @param string $event The specified log event type
-     * @param string $message The specified log message
-     * @return void
-     */
-    public function log($event, $message)
-    {
-        $accountLog = new AccountLog();
-        if (!in_array($event, $accountLog->getTable()->getEnumValues('event'))) {
-            throw new Fisma_Exception("Invalid account log event type");
-        }
-        $accountLog->ip      = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : null;
-        $accountLog->event   = $event;
-        $accountLog->message = $message;
-        // Assigning the ID instead of the user object prevents doctrine from calling the preSave hook on the 
-        // User object
-        if (isset(self::currentUser()->id)) {
-            $operator = self::currentUser()->id;
-        } else {
-            //if the currentUser has not been set yet during login
-            $operator = $this->id;
-        }
-        $accountLog->userId = $operator;
-        $accountLog->save();
     }
 
     /**
@@ -521,26 +469,6 @@ class User extends BaseUser
         
         return $query;
     }
-
-    /**
-     * Doctrine hook for pre-save
-     * 
-     * @param Doctrine_Event $event The triggered doctrine event
-     * @return void
-     * @todo This currently contains logging items which should be removed and placed into an observer class
-     */
-    public function preSave($event)
-    {
-        $modified = $this->getModified();
-
-        if (isset($modified['password'])) {
-            $this->log(User::CHANGE_PASSWORD, "Password changed");
-        }
-        
-        if (isset($modified['lastRob'])) {
-            $this->log(User::ACCEPT_ROB, "Accepted Rules of Behavior");
-        }
-    }
  
     /**
      * Doctrine hook for post-save
@@ -565,37 +493,6 @@ class User extends BaseUser
             $this->EmailValidation[]         = $emailValidation;
         }
     }
-
-    /**
-     * Doctrine hook for pre-insert
-     * 
-     * @param Doctrine_Event $event The triggered doctrine event
-     * @return void
-     * @todo remove this when logging observer is implemented
-     */
-    public function preInsert($event) 
-    {
-        $user = $event->getInvoker();
-        
-        $user->passwordTs = Fisma::now();
-        $user->log(User::CREATE_USER, "create user: $user->nameFirst $user->nameLast");
-    }
-
-    /**
-     * Doctrine hook for post-insert
-     * 
-     * @param Doctrine_Event $event The triggered doctrine event
-     * @return void
-     * @todo this needs to go into some sort of observer class
-     */
-    public function postInsert($event) 
-    {
-        $user     = $event->getInvoker();
-        $modified = $user->getModified($old = true, $last = true);
-        $user->password = $modified['password'];
-        $mail = new Fisma_Mail();
-        $mail->sendAccountInfo($user);
-    }
     
     /**
      * Doctrine hook for post-update
@@ -616,16 +513,15 @@ class User extends BaseUser
     }
 
     /**
-     * Doctrine hook for pre-delete
+     * Set the last rules of behavior acceptance timestamp
      * 
-     * @param Doctrine_Event $event The triggered doctrine event
-     * @return void
-     * @todo this needs to go into some sort of observer class
+     * @params string $value
      */
-    public function preDelete($event)
+    public function setLastRob($value)
     {
-        $user    = $event->getInvoker();
-        $user->log(User::DELETE_USER, "delete user: $user->nameFirst $user->nameLast");
+        $this->_set('lastRob', $value);
+        
+        $this->getAuditLog()->write('Accepted Rules of Behavior');
     }
 
     /**
@@ -655,6 +551,9 @@ class User extends BaseUser
                 $this->hashType = 'sha1';
             }
         }
+
+        // Update password timestamp
+        $this->passwordTs = Fisma::now();
 
         // Password is hashed with salt to make rainbow table attacks less feasible
         $password = Fisma_Hash::hash($value . $this->passwordSalt, $this->hashType);

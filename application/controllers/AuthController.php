@@ -102,7 +102,7 @@ class AuthController extends Zend_Controller_Action
 
             // Generate log entries and notifications
             if (!$authResult->isValid()) {
-                $user->log(User::LOGIN_FAILURE, "Login failure");
+                $user->getAuditLog()->write("Failed login ({$_SERVER['REMOTE_ADDR']})");
                 Notification::notify('LOGIN_FAILURE', $user, $user);
                 throw new Zend_Auth_Exception(self::CREDENTIAL_ERROR_MESSAGE);
             }
@@ -111,7 +111,7 @@ class AuthController extends Zend_Controller_Action
             // etc.
             $user->login();
             Notification::notify('LOGIN_SUCCESS', $user, $user);
-            $user->log(User::LOGIN, "Successful Login");
+            $user->getAuditLog()->write("Logged in ({$_SERVER['REMOTE_ADDR']})");
             
             // Set cookie for 'column manager' to control the columns visible on the search page
             // Persistent cookies are prohibited on U.S. government web servers by federal law. 
@@ -217,8 +217,8 @@ class AuthController extends Zend_Controller_Action
         $currentUser = User::currentUser();
 
         if ($currentUser) {
+            $currentUser->getAuditLog()->write('Logged out');
             Notification::notify('LOGOUT', $currentUser, $currentUser);
-            $currentUser->log(User::LOGOUT, 'Log out');
         }
 
         $auth = Zend_Auth::getInstance();

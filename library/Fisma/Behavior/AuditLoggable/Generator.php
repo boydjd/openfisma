@@ -29,6 +29,11 @@
 class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
 {
     /**
+     * Indicates whether logging is enabled
+     */
+    private $_enabled = true;
+    
+    /**
      * Set up the generated class name
      * 
      * @return void
@@ -132,6 +137,18 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
     }
     
     /**
+     * Set whether logging is enabled for this class
+     * 
+     * Logging is enabled by default
+     * 
+     * @param bool $enabled
+     */
+    public function setEnabled($enabled)
+    {
+        $this->_enabled = true;
+    }
+    
+    /**
      * Write a log message programmatically
      * 
      * You only need to use this if you want to log something that isn't logged automatically. Create/Update/Delete can
@@ -140,21 +157,73 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
      * @param Doctrine_Record $instance The instance to be logged
      * @param string $message The message to be written
      * @return void
+     * @param User $user The user who performed the logged action
      */
     public function write(Doctrine_Record $instance, $message)
     {
-        // Create a new audit log entry
-        $logClass = $this->_options['className'];
-        $instanceClass = $this->getOption('table')->getComponentName();
+        // Normally logs are written by the current user, but current user can be null if the session is 
+        // unauthenticated (for example, failed login attempt)
+        $user = User::currentUser();
+        $userId = $user ? $user->id : null;
+        
+        if ($this->_enabled) {
+            // Create a new audit log entry
+            $logClass = $this->_options['className'];
+            $instanceClass = $this->getOption('table')->getComponentName();
 
-        $auditLogEntry = new $logClass;        
-        $auditLogEntry->message = $message;
-        $auditLogEntry->User = User::currentUser();
-        $auditLogEntry->$instanceClass = $instance;
+            $auditLogEntry = new $logClass;        
+            $auditLogEntry->message = $message;
+            $auditLogEntry->userId = $userId;
+            $auditLogEntry->objectId = $instance->id;
 
-        // Logs must be saved directly because this is frequently called from a listener, and Doctrine will not be able
-        // to auto-save related records in that context
-        $auditLogEntry->save();
+            // Logs must be saved directly because this is frequently called from a listener, and Doctrine will not be 
+            // able to auto-save related records in that context
+            $auditLogEntry->save();
+        }
     }
     
+    /**
+     * List log entries for this object, optionally providing a SQL-style limit and offset to get a subset of the 
+     * entire log
+     * 
+     * @param mixed $instance The object to get logs for
+     * @param int $hydrationMode A valid Doctrine hydration mode, e.g. Doctrine::HYDRATE_ARRAY
+     * @param int $limit SQL style limit
+     * @param int $offset SQL style offset
+     * @return mixed A query result whose type depends on which hydration mode you choose.
+     */
+    public function fetch($instance, $hydrationMode, $limit = null, $offset = null)
+    {
+        $query = $this->query($instance);
+        $query->setHydrationMode($hydrationMode)
+              ->select('o.createdTs, o.message, u.username');
+        
+        if ($limit) {
+            $query->limit($limit);
+        }
+        
+        if ($offset) {
+            $query->offset($offset);
+        }
+        
+        $results = $query->execute();
+        
+        return $results;
+    }
+    
+    /**
+     * Get a base query which will return all logs for the current object
+     * 
+     * @param mixed $instance The object to get logs for
+     * @return Doctrine_Query The audio log base query related to the instance
+     */
+    public function query($instance)
+    {
+        $query = Doctrine_Query::create()->from("{$this->_options['className']} o")
+                                         ->leftJoin('o.User u')
+                                         ->where('o.objectId = ?', $instance->id)
+                                         ->orderBy('o.createdTs desc');
+        
+        return $query;
+    }
 }

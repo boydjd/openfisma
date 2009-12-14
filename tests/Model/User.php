@@ -31,6 +31,17 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 class Test_Model_User extends Test_FismaUnitTest
 {
     /**
+     * Disable listeners for the User model
+     * 
+     * This improves test quality by removing coupling, but some tests may selectively re-enable listeners to test the
+     * functionality inside them.
+     */
+    public function setUp()
+    {
+        Doctrine::getTable('User')->getRecordListener()->setOption('disabled', true);
+    }
+    
+    /**
      * If salt and hash type are undefined, setting the password should define them automatically
      * 
      * @return void

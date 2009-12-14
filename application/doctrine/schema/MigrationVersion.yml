@@ -1,0 +1,3 @@
+MigrationVersion:
+    columns:
+        version: int

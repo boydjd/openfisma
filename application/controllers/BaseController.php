@@ -224,7 +224,7 @@ abstract class BaseController extends SecurityController
             throw new Fisma_Exception("Invalid {$this->_modelName} ID");
         }
         $form   = $this->getForm();
-        
+
         $this->view->assign('viewLink', "/panel/{$this->_modelName}/sub/view/id/$id");
         $form->setAction("/panel/{$this->_modelName}/sub/edit/id/$id");
         $this->view->assign('deleteLink', "/panel/{$this->_modelName}/sub/delete/id/$id");

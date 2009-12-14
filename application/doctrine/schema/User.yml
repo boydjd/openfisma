@@ -155,3 +155,7 @@ User:
             updated:
                 name: modifiedTs
                 type: timestamp
+        Fisma_Behavior_AuditLoggable:
+            logCreateObject: true
+            logUpdateObject: true
+            logDeleteObject: true

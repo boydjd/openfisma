@@ -58,14 +58,25 @@ class Fisma_Behavior_AuditLoggable_AuditLog
     }
     
     /**
+     * Set whether logging is enabled
+     * 
+     * @param bool $enabled
+     */
+    public function setEnabled($enabled)
+    {
+        $this->_generator->setEnabled($enabled);
+    }
+    
+    /**
      * Proxy method for writing a log programatically
      * 
      * @param string $message The specified message to be written
      * @return void
+     * @param User $user
      */
-    public function write($message)
+    public function write($message, User $user = null)
     {
-        $this->_generator->write($this->_instance, $message);
+        $this->_generator->write($this->_instance, $message, $user);
     }
     
     /**

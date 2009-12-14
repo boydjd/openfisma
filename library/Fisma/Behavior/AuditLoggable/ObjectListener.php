@@ -91,8 +91,10 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
                 }
             }
         
-            // Write new log
-            $invoker->getAuditLog()->write('Updated ' . implode(', ', $fields));
+            // Write new log if any loggable fields were modified
+            if (count($fields) > 0) {
+                $invoker->getAuditLog()->write('Updated ' . implode(', ', $fields));
+            }
         }
 
         // Handle field-level logging
@@ -113,7 +115,8 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
                     $newValue = $invoker->$field;
                     
                     // The log always shows the old and new values for the field
-                    $invoker->getAuditLog()->write("Updated $logicalName\n\nOLD:\n$oldValue\n\nNEW:\n$newValue");
+                    $message = "Updated $logicalName\n\nOLD:\n$oldValue\n\nNEW:\n$newValue";
+                    $invoker->getAuditLog()->write($message);
                 }
             }
         }

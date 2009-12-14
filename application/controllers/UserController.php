@@ -190,6 +190,21 @@ class UserController extends BaseController
         $form->getElement('organizations')->setValue($orgIds);
         return $form;
     }
+    
+    /**
+     * Show audit logs for a given user
+     */
+    public function logAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        
+        $user = Doctrine::getTable('User')->find($id);
+    
+        $this->view->username = $user->username;
+        $this->view->columns = array('Timestamp', 'Message', 'User');
+        $this->view->rows = $user->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
+        $this->view->viewLink = "/panel/user/sub/view/id/$id";
+    }
 
     /**
      * Display the user's "Edit Profile" page and handle its updating
@@ -374,7 +389,30 @@ class UserController extends BaseController
         $user = User::currentUser();
         $user->lastRob = Fisma::now();
         $user->save();
+        
         $this->_forward('index', 'Panel');
+    }
+
+    /**
+     * Override parent to add a link for audit logs
+     */
+    public function viewAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $this->view->auditLogLink = "/panel/user/sub/log/id/$id";
+    
+        parent::viewAction();
+    }
+    
+    /**
+     * Override parent to add a link for audit logs
+     */
+    public function editAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $this->view->auditLogLink = "/panel/user/sub/log/id/$id";
+    
+        parent::editAction();
     }
     
     /**
