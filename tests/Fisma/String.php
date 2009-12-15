@@ -74,4 +74,26 @@ class Test_Fisma_String extends Test_FismaUnitTest
     {
         $this->assertEquals(strlen(Fisma_String::random(22)), 22);
     }
+    
+    /**
+     * Test HTML to plaintext converts paragraphs and line breaks
+     */
+    public function testHtmlToPlainTextParagraphsAndLineBreaks()
+    {
+        $html = " <p attrib='value'> First \r\n paragraph.</p>  <p>This &amp; that.</p> More <br> line <br /> breaks";
+        $plaintext = "First paragraph.\n\nThis & that.\nMore\nline\nbreaks";
+        
+        $this->assertEquals($plaintext, Fisma_String::htmlToPlainText($html));
+    }
+    
+    /**
+     * Test handling of list items in the HTML to plain text converter
+     */
+    public function testHtmlToPlainTextListItems()
+    {
+        $html = "<p>I will now list things:</p> <ul><li class='stuff' />Item 1 <li> Item 2 </li> <li> Item 3 </li>";
+        $plaintext = "I will now list things:\n\n* Item 1\n* Item 2\n* Item 3";
+        
+        $this->assertEquals($plaintext, Fisma_String::htmlToPlainText($html));
+    }
 }

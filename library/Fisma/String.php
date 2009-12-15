@@ -54,4 +54,47 @@ class Fisma_String
         
         return $random;
     }
+    
+    /**
+     * A helper for converting HTML to roughly equivalent plain text
+     * 
+     * This is *NOT* intended to satisfactorily strip malicious content from HTML. This assumes the input is safe 
+     * markup which just needs to be coerced into plain text format.
+     * 
+     * @param string $html HTML input
+     * @return string Plain text output
+     */
+    static function htmlToPlainText($html)
+    {
+        // Remove whitespace around tags and remove all line feeds
+        $html = preg_replace('/(\s+)</', '<', $html);
+        $html = preg_replace('/>(\s+)/', '>', $html);
+        $html = str_replace(chr(10), '', $html);
+        $html = str_replace(chr(13), '', $html);
+
+        // Convert <p> and <br> into unix line endings
+        $html = preg_replace('/<p[^>]*?>/i', "\n", $html);
+        $html = preg_replace('/<\/p[^>]*?>/i', "\n", $html);
+        $html = preg_replace('/<br[^>]*?>/i', "\n", $html);
+        
+        // Convert list tags into plain text
+        $html = preg_replace('/<[uo]l[^>]>/i', '', $html);
+        $html = preg_replace('/<\/[uo]l[^>]>/i', "\n", $html);
+        $html = preg_replace('/<li[^>]*?>/i', "\n* ", $html);
+        $html = preg_replace('/<\/li>/i', '', $html);
+        
+        // Remove any remaining tags and decode entities
+        $html = strip_tags($html);
+        $html = html_entity_decode($html);
+        
+        // Remove excess whitespace
+        $html = preg_replace('/^\s+/', '', $html);
+        $html = preg_replace('/\s+$/', '', $html);
+        $html = preg_replace('/ +/', ' ', $html);
+
+        // Character set encoding -- input charset is a guess
+        $html = iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html);
+
+        return $html;
+    }
 }
