@@ -322,7 +322,10 @@ class Fisma
                 'models_path'         =>  self::getPath('model'),
                 'migrations_path'     =>  self::getPath('migration'),
                 'yaml_schema_path'    =>  self::getPath('schema'),
-                'generate_models_options' => array('generateTableClasses' => true)
+                'generate_models_options' => array(
+                    'generateTableClasses' => true,
+                    'baseClassName' => 'Fisma_Record'
+                )
             )
         );
     }
