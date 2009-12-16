@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
 
 /**
  * Tests the array implementation of the configuration interface
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Test_Fisma_Configuration_Array extends Test_FismaUnitTest
+class Test_Library_Fisma_Configuration_Array extends Test_FismaUnitTest
 {
     /**
      * Test basic operation of the configuration object

@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
 
 /**
  * Test_Fisma_Cookie_Test 
@@ -30,7 +30,7 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
  * 
  * @uses       Test_FismaUnitTest
  */
-class Test_Fisma_Cookie extends Test_FismaUnitTest
+class Test_Library_Fisma_Cookie extends Test_FismaUnitTest
 {
     /**
      * To test the method PrapareCookie

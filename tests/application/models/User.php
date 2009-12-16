@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
 
 /**
  * Tests for the user model
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
  * @subpackage Test_Model
  * @version    $Id$
  */
-class Test_Model_User extends Test_FismaUnitTest
+class Test_Application_Models_User extends Test_FismaUnitTest
 {
     /**
      * Disable listeners for the User model
