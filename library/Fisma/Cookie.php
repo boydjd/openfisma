@@ -82,6 +82,8 @@ class Fisma_Cookie
     */
     public static function set($name, $value) 
     {
-        call_user_func_array("setcookie", self::prepare($name, $value));
+        if (Fisma::mode() == Fisma::RUN_MODE_WEB_APP) {
+            call_user_func_array("setcookie", self::prepare($name, $value));
+        }
     }
 }

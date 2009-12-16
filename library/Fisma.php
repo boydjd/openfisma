@@ -48,6 +48,11 @@ class Fisma
      * This mode isn't used as of version 2.3, but it's placed here for future expansion
      */
     const RUN_MODE_WEB_SERVICE = 2;
+
+    /**
+     * Indicates that the application is being tested
+     */
+     const RUN_MODE_TEST = 3;
     
     /**
      * The run mode the application is currently using. This must be set to one of the 
@@ -296,10 +301,15 @@ class Fisma
     public static function connectDb()
     {
         // Connect to the database
-        $db = self::$_appConf->db;
+        if (self::mode() != self::RUN_MODE_TEST) {
+            $db = self::$_appConf->db;
+        } else {
+            $db = self::$_appConf->testdb;
+        }
         $connectString = $db->adapter . '://' . $db->username . ':' 
                          . $db->password . '@' . $db->host 
                          . ($db->port ? ':' . $db->port : '') . '/' . $db->schema;
+
         Doctrine_Manager::connection($connectString);
         $manager = Doctrine_Manager::getInstance();
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
@@ -367,7 +377,9 @@ class Fisma
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
 
-        $frontController->dispatch();
+        if (self::mode() != self::RUN_MODE_TEST) {
+            $frontController->dispatch();
+        }
     }
     
     /**
@@ -495,13 +507,15 @@ class Fisma
         if (null === self::$_log) {
             $write = new Zend_Log_Writer_Stream(self::getPath('log') . '/error.log');
             $auth = Zend_Auth::getInstance();
+            $remote = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : null;
+
             if ($auth->hasIdentity()) {
                 $user = User::currentUser();
                 $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-                    "$user->username ($user->id) from {$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+                    "$user->username ($user->id) from {$remote}" . PHP_EOL;
             } else {
                 $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-                    "{$_SERVER['REMOTE_ADDR']}" . PHP_EOL;
+                    "{$remote}" . PHP_EOL;
             }
             $formatter = new Zend_Log_Formatter_Simple($format);
             $write->setFormatter($formatter);
