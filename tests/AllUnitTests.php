@@ -18,22 +18,7 @@
 
 // Bootstrap the application's CLI mode if it has not already been done
 require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
-if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
-    try {
-        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-        Fisma::connectDb();
-        Fisma::setNotificationEnabled(false);
-    } catch (Zend_Config_Exception $zce) {
-        print "The application is not installed correctly. If you have not run the installer, you should do that now.";
-    } catch (Exception $e) {
-        print get_class($e) 
-            . "\n" 
-            . $e->getMessage() 
-            . "\n"
-            . $e->getTraceAsString()
-            . "\n";
-    }
-}
+require_once 'bootstrap.php';
 
 /**
  * This class is the controller which executes all of the Unit Test suites. This
