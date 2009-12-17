@@ -66,11 +66,10 @@ class Fisma_String
      */
     static function htmlToPlainText($html)
     {
-        // Remove whitespace around tags and remove all line feeds
-        $html = preg_replace('/(\s+)</', '<', $html);
-        $html = preg_replace('/>(\s+)/', '>', $html);
-        $html = str_replace(chr(10), '', $html);
-        $html = str_replace(chr(13), '', $html);
+        // Remove line feeds. They are replaced with spaces to prevent the next word on the next line from adjoining
+        // the last word on the previous line, but consecutive spaces are culled out later.
+        $html = str_replace(chr(10), ' ', $html);
+        $html = str_replace(chr(13), ' ', $html);
 
         // Convert <p> and <br> into unix line endings
         $html = preg_replace('/<p[^>]*?>/i', "\n", $html);

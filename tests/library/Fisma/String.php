@@ -96,4 +96,15 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
         
         $this->assertEquals($plaintext, Fisma_String::htmlToPlainText($html));
     }
+    
+    /**
+     * Test white space in between tags should be preserved
+     */
+    public function testHtmlToPlainTextWhitespaceBetweenTags()
+    {
+        $html = "<p> Spaces <b>between</b> <i>tagged</i> words.</p>";
+        $plaintext = "Spaces between tagged words.";
+        
+        $this->assertEquals($plaintext, Fisma_String::htmlToPlainText($html));
+    }
 }
