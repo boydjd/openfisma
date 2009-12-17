@@ -1,10 +1,4 @@
-<?php 
-$validateLdap = new Fisma_Yui_Form_Button('columnOptions',
-                                           array('label' => 'Test Configuration', 
-                                                 'onClickFunction' => 'validateLDAP'));
-
-Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>' . $validateLdap); ?>
-
+<?php Fisma_Format_Section::startSection('LDAP Configurations <a href="/panel/config/">[Back]</a>'); ?>
 <div class="block">
 <?php
     $this->form->setAttrib('id', 'ldapUpdate');

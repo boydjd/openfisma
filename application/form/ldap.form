@@ -89,6 +89,11 @@ elements.accountCanonicalForm.options.validators.strlen.options.min = "1"
 elements.accountCanonicalForm.options.validators.strlen.options.max = "1"
 displayGroups.general.elements.accountCanonicalForm = "accountCanonicalForm"
 
+elements.validateLdap.type = "Form_Button"
+elements.validateLdap.options.label = "Test Configuration"
+elements.validateLdap.options.onClickFunction = "validateLDAP"
+displayGroups.general.elements.validateLdap = "validateLdap"
+
 elements.SaveLdap.type = "Form_Button_Submit"
 elements.SaveLdap.options.label = "submit"
 displayGroups.general.elements.SaveLdap = "SaveLdap"
