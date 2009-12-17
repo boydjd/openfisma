@@ -34,10 +34,10 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
      * @var array
      */
     protected $_options = array(
-        'logCreateObject' => true,
-        'logUpdateObject' => true,
+        'logCreateObject' => false,
+        'logUpdateObject' => false,
         'logUpdateField' => false,
-        'logDeleteObject' => true
+        'logDeleteObject' => false
     );
     
     /**
@@ -76,7 +76,7 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
     public function postUpdate(Doctrine_Event $event)
     {
         $invoker = $event->getInvoker();
-        $modified = $invoker->getLastModified(true);
+        $modified = $invoker->getLastModified();
 
         // Handle object-level logging
         if ($this->_options['logUpdateObject']) {
@@ -111,10 +111,14 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
                         throw new Exception("Field ($field) cannot be logged because it does not have a logical name");
                     }
                     
-                    $oldValue = $value;
-                    $newValue = $invoker->$field;
+                    // The log always shows the old and new values for the field.
+                    $oldValue = Fisma_String::htmlToPlainText($invoker->getOriginalValue($field));
+                    if (empty($oldValue)) {
+                        $oldValue = "<em>No value</em>";
+                    }
                     
-                    // The log always shows the old and new values for the field
+                    $newValue = Fisma_String::htmlToPlainText($invoker->$field);
+                    
                     $message = "Updated $logicalName\n\nOLD:\n$oldValue\n\nNEW:\n$newValue";
                     $invoker->getAuditLog()->write($message);
                 }

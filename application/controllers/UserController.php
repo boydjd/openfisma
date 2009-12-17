@@ -201,7 +201,7 @@ class UserController extends BaseController
         $user = Doctrine::getTable('User')->find($id);
     
         $this->view->username = $user->username;
-        $this->view->columns = array('Timestamp', 'Message', 'User');
+        $this->view->columns = array('Timestamp', 'User', 'Message');
         $this->view->rows = $user->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
         $this->view->viewLink = "/panel/user/sub/view/id/$id";
     }

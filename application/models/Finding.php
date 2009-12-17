@@ -29,30 +29,6 @@
 class Finding extends BaseFinding
 {
     /**
-     * Changes to these fields do not get logged
-     * 
-     * @var array
-     * @todo This will go away when we rewrite the logging as a behavior
-     */
-    private static $_excludeLogKeys = array(
-        'currentEvaluationId',
-        'duplicateFindingId',
-        'assetId',
-        'responsibleOrganizationId',
-        'sourceId',
-        'securityControlId',
-        'createdByUserId',
-        'assignedToUserId',
-        'currentEvaluationId',
-        'uploadId',
-        'status',
-        'ecdLocked',
-        'legacyFindingKey',
-        'modifiedTs',
-        'closedTs'
-    );
-
-    /**
      * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
      * Threat & countermeasures are also handled separately.
      * 
@@ -196,9 +172,9 @@ class Finding extends BaseFinding
         $evaluation = Doctrine::getTable('Evaluation')
                       ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
-        $this->log('Submitted mitigation strategy');
-
         $this->save();
+
+        $this->getAuditLog()->write('Submitted Mitigation Strategy');
     }
 
     /**
@@ -217,7 +193,7 @@ class Finding extends BaseFinding
         $this->status = 'DRAFT';
         $this->_updateNextDueDate();
         $this->CurrentEvaluation = null;
-        $this->log('Revise mitigation strategy');
+        $this->getAuditLog()->write('Revise mitigation strategy');
 
         $this->save();
     }
@@ -250,7 +226,7 @@ class Finding extends BaseFinding
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]    = $findingEvaluation;
 
-        $this->log('Approved: ' . $this->getStatus());
+        $this->getAuditLog()->write('Approved: ' . $this->getStatus());
 
         switch ($this->status) {
             case 'MSA':
@@ -305,7 +281,7 @@ class Finding extends BaseFinding
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $this->log('Denied: ' . $this->getStatus() . ' &emdash; ' . $comment);
+        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . ' &emdash; ' . $comment);
 
         switch ($this->status) {
             case 'MSA':
@@ -347,7 +323,7 @@ class Finding extends BaseFinding
         $evidence->User     = $user;
         $this->Evidence[]   = $evidence;
 
-        $this->log('Upload evidence: ' . $fileName);
+        $this->getAuditLog()->write('Upload evidence: ' . $fileName);
         $this->save();
     }
 
@@ -405,33 +381,6 @@ class Finding extends BaseFinding
             }
         }
         return $findingEvaluations;
-    }
-
-    /**
-     * Write the audit log
-     * 
-     * @param string $description The specified audit log message to write
-     * @return void
-     */
-    public function log($description)
-    {
-        $auditLog = new AuditLog();
-        $auditLog->User        = User::currentUser();
-        $auditLog->description = html_entity_decode($description);
-        $this->AuditLogs[]     = $auditLog;
-    }
-
-    /**
-     * Update logs after object insert
-     * 
-     * @param Doctrine_Event $event The listened doctrine event to be processed
-     * @return void
-     */
-    public function postInsert($event)
-    {
-        $finding = $event->getInvoker();
-
-        $finding->log('New Finding Created');
     }
 
     /**
@@ -503,7 +452,7 @@ class Finding extends BaseFinding
                                 User::currentUser(), 
                                 $this->responsibleOrganizationId
                             );
-                            $this->log('Finding closed');
+                            $this->getAuditLog()->write('Finding closed');
                         }
                         break;
                     case 'currentEvaluationId':
@@ -555,30 +504,6 @@ class Finding extends BaseFinding
                         break;
                     default:
                         break;
-                }
-                
-                if (in_array($key, self::$_excludeLogKeys)) {
-                    continue;
-                }
-
-                $value    = $value ? html_entity_decode(strip_tags($value)) : 'NULL';
-                $newValue = html_entity_decode(strip_tags($newValue));
-
-                // Only log if $newValue is actually different from $value. 
-                // Ignore changes to NULL/""/NONE if one of these was present 
-                // in the original $value.
-                if ( (!(is_null($value) || empty($value) || $value == 'NONE') && 
-                      !(is_null($newValue) || empty($newValue) || $newValue == 'NONE'))
-                      || ($value != $newValue)) {
-                    // See if you can look up a logical name for this column in the schema definition. 
-                    // If its not defined, then use the physical name instead
-                    $column = $this->getTable()->getColumnDefinition(strtolower($key));
-                    $logicalName = (isset($column['extra']) && isset($column['extra']['logicalName']))
-                                 ? $column['extra']['logicalName']
-                                 : $key;
- 
-                    $message = "UPDATE: $logicalName\n ORIGINAL: $value\nNEW: $newValue";
-                    $this->log($message);
                 }
             }
         }

@@ -8,6 +8,7 @@ Finding:
             type: date
             comment: The date when the finding was discovered. This is self-reported by users
             extra:
+                auditLog: true
                 logicalName: Date Discovered
         closedTs:
             type: timestamp
@@ -25,6 +26,7 @@ Finding:
             unique: true
             extra: 
                 purify: plaintext
+                auditLog: true
                 logicalName: Legacy Finding ID
                 searchIndex: unstored
             comment: This field can be used by end clients to track findings under a legacy tracking system
@@ -35,6 +37,7 @@ Finding:
             default: NONE
             notnull: true
             extra:
+                auditLog: true
                 logicalName: Mitigation Type
                 searchIndex: unstored
             comment: The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)
@@ -52,6 +55,7 @@ Finding:
             type: string
             extra: 
                 purify: html
+                auditLog: true
                 logicalName: Finding Description
                 searchIndex: unstored
             comment: Description of the finding
@@ -59,6 +63,7 @@ Finding:
             type: string
             extra: 
                 purify: html
+                auditLog: true
                 logicalName: Recommendation
                 searchIndex: unstored
             comment: The auditors recommendation to remediate this finding
@@ -66,6 +71,7 @@ Finding:
             type: string
             extra: 
                 purify: html
+                auditLog: true
                 logicalName: Mitigation Strategy
                 searchIndex: unstored
             comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
@@ -73,17 +79,20 @@ Finding:
             type: string
             extra: 
                 purify: html
+                auditLog: true
                 logicalName: Resources Required
                 searchIndex: unstored
             comment: Any additional resources (financial) required to complete this course of action
         originalEcd:
             type: date
             extra:
+                auditLog: true
                 logicalName: Original ECD
             comment: The original date when the course of action or business case was planned to be completed
         currentEcd:
             type: date
             extra:
+                auditLog: true
                 logicalName: Current ECD
             comment: If an ECD needs to be changed, but the original ECD is locked, then the updated ECD is stored here
         ecdLocked:
@@ -94,6 +103,7 @@ Finding:
         ecdChangeDescription:
             type: string(255)
             extra:
+                auditLog: true
                 logicalName: Justification for modifying ECD
                 purify: plaintext
             comment: If the current ECD needs to be changed, then this field holds the user\'s justification for changing it
@@ -103,6 +113,7 @@ Finding:
             type: string
             extra: 
                 purify: html
+                auditLog: true
                 logicalName: Description of Threat Source
                 searchIndex: unstored
             comment: Description of the threat source which affects this finding
@@ -110,6 +121,7 @@ Finding:
             type: enum
             values: [LOW, MODERATE, HIGH]
             extra:
+                auditLog: true
                 logicalName: Threat Level
                 searchIndex: unstored
             comment: A subjective assessment of the probability and impact of exploiting this finding
@@ -117,6 +129,7 @@ Finding:
             type: string
             extra: 
                 purify: html
+                auditLog: true
                 logicalName: Description of Countermeasures
                 searchIndex: unstored
             comment: The countermeasures in place against the threat source
@@ -124,6 +137,7 @@ Finding:
             type: enum
             values: [LOW, MODERATE, HIGH]
             extra:
+                auditLog: true
                 logicalName: Effectiveness of Countermeasures            
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
 
@@ -201,3 +215,7 @@ Finding:
             updated:
                 name: modifiedTs
                 type: timestamp
+        Fisma_Behavior_AuditLoggable:
+            logCreateObject: true
+            logUpdateField: true
+            logDeleteObject: true

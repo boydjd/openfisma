@@ -858,15 +858,15 @@ class RemediationController extends SecurityController
         $this->_viewFinding();
         $this->_helper->layout->setLayout('ajax');
         
-        $auditQuery = Doctrine_Query::create()
-                      ->select('a.createdTs, u.username, a.description')
-                      ->from('AuditLog a')
-                      ->innerJoin('a.User u')
-                      ->where('a.findingId = ?', $this->getRequest()->getParam('id'))
-                      ->orderBy('a.createdTs DESC')
-                      ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        $auditLogs = $auditQuery->execute();
-        $this->view->auditLogs = $auditLogs;
+        $logs = $this->view->finding->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
+        
+        // Convert log messages from plain text to HTML
+        foreach ($logs as &$log) {
+            $log['o_message'] = $this->view->textToHtml($log['o_message']);
+        }
+
+        $this->view->columns = array('Timestamp', 'User', 'Message');
+        $this->view->rows = $logs;
     }
     
     /**
@@ -1205,8 +1205,8 @@ class RemediationController extends SecurityController
      */
     private function _getFinding($id)
     {
-        $finding = new Finding();
-        $finding = $finding->getTable()->find($id);
+        $finding = Doctrine::getTable('Finding')->find($id);
+
         if (false == $finding) {
              throw new Fisma_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
         }

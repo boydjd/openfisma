@@ -1,18 +1,51 @@
-<table class="auditLog">
-    <tr>
-        <th>Timestamp</th>
-        <th>User</th>
-        <th>Description</th>
-    </tr>
-    <?php 
-    foreach ($this->auditLogs as $log) { 
-    ?>
+<div id="findingAuditLog">
+    <table id="findingAuditLogTable">
+        <thead>
+            <tr>
+                <?php foreach ($this->columns as $column) : ?>
+                <th class="tdc"><?php echo $column; ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($this->rows as $row) : ?>
         <tr>
-            <td><?php echo $log['a_createdTs']; ?></td>
-            <td><?php echo $log['u_username']; ?></td>
-            <td><?php echo str_replace("\n", "<br>", $log['a_description']); ?></td>
+            <td><?php echo $row['o_createdTs']; ?></td>
+            <td><?php echo $row['u_username']; ?></td>
+            <td><?php echo $row['o_message']; ?></td>
         </tr>
-    <?php 
-    } 
-    ?>
-</table>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+// Convert the HTML table above into a YUI table
+YAHOO.util.Event.onContentReady('findingAuditLog', function() {
+    var myColumnDefs = [
+        <?php
+        $keys = "";
+        foreach ($this->columns as $column) {
+            $keys .= "{key:'$column', label:'$column', sortable:true},";
+        }
+        echo rtrim($keys, ',');
+        ?>
+    ];
+
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("findingAuditLogTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            <?php
+            $keys = "";
+            foreach ($this->columns as $column) {
+                $keys .= "{key:'$column'},";
+            }
+            echo rtrim($keys, ',');
+            ?>
+        ]
+    };
+
+    this.myDataTable = new YAHOO.widget.DataTable("findingAuditLog", myColumnDefs, this.myDataSource, {});
+});
+</script>
