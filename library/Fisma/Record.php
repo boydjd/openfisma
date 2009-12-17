@@ -44,10 +44,12 @@ class Fisma_Record extends Doctrine_Record
      * Get an array of modified fields with their original values
      * 
      * @param string $fieldName
+     * @return mixed May return null if no original value was captured
      */
     public function getOriginalValue($fieldName)
     {
-        return $this->_originalValues[$fieldName];
+        // Suppress any warnings about undefined indexes
+        return @$this->_originalValues[$fieldName];
     }
     
     /**
