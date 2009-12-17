@@ -16,9 +16,9 @@ Fisma_Format_Section::startSection("User Audit Log ($this->username) $operation"
         <tbody>
         <?php foreach ($this->rows as $row) : ?>
         <tr>
-            <?php foreach($row as $cell) : ?>
-                <td><?php echo $cell; ?></td>
-            <?php endforeach; ?>
+            <td><?php echo $row['o_createdTs']; ?></td>
+            <td><?php echo $row['u_username']; ?></td>
+            <td><?php echo $row['o_message']; ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
