@@ -137,6 +137,7 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         $this->assertFalse($finding->ecdLocked);
 
         // Should be locked when the status is EN
+        $finding->currentEcd = Fisma::now();
         $finding->status = 'EN';
         $this->assertTrue($finding->ecdLocked);
         
