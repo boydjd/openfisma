@@ -29,21 +29,14 @@
 class Fisma_Url
 {
     /**
-     * Return the current page URL (optionally with request URI) and only used in web, not in CLI.
+     * Return the base URL.
      * 
-     * @param  string|boolean $requestUri  [optional] if true, the request URI found in $_SERVER will be appended
-     *                                     as a path. If a string is given, it will be appended as a path. Default
-     *                                     is to not append any path.
-     * @return string url string
-     */
-    static function currentPageUrl($requestUri = null)
+     * @return string baseUrl string
+     */    
+    static function baseUrl()
     {
         // Get the scheme http or https
-        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] === true)) {
-            $scheme = 'https';
-        } else {
-            $scheme = 'http';
-        }
+        $scheme = (isset($_SERVER['HTTPS'])) ? 'https' : 'http';
 
         // Get the http host
         if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
@@ -59,16 +52,39 @@ class Fisma_Url
             }
         }
 
-        // Get the uri
-        if ($requestUri === true) {
-            $uri = $_SERVER['REQUEST_URI'];
-        } else if (is_string($requestUri)) {
-            $uri = $requestUri;
-        } else {
-            $uri = '';
+        $baseUrl = $scheme . '://' . $host;
+        return $baseUrl;
+    }
+
+    /**
+     * Return the current page URL.
+     * 
+     * @return string currentUrl string
+     */
+    static function currentUrl()
+    {
+        // Returns URI between the BaseUrl and QueryString.
+        $uri = Zend_Controller_Front::getInstance()->getRequest()->getPathInfo();
+
+        $currentUrl = self::baseUrl() . rtrim($uri, '/');
+        return $currentUrl;
+    }
+
+    /**
+     * Return the custom URL.
+     * like http://site.com/test, the $requestUri is /test.
+     * 
+     * @param  string $requestUri  The relatively request path
+     * @return string customUrl string
+     */
+    static function customUrl($requestUri)
+    {
+        // If the string of requestUri includes '/', './' or '../' will be cut off at the outset. 
+        if (!empty($requestUri) && is_string($requestUri)) {
+            $path = preg_replace('/^\.{0,2}\//', '', $requestUri);
         }
 
-        $url = $scheme . '://' . $host . $uri;
-        return $url;
+        $customUrl = self::baseUrl() . '/' . $path;
+        return $customUrl;
     }
 }
