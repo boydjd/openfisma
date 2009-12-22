@@ -36,21 +36,13 @@ class Fisma_Url
     static function baseUrl()
     {
         // Get the scheme http or https
-        $scheme = (isset($_SERVER['HTTPS'])) ? 'https' : 'http';
+        $scheme = (!empty($_SERVER['HTTPS'])) ? 'https' : 'http';
 
         // Get the http host
-        if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
-            $host = $_SERVER['HTTP_HOST'];
-        } else if (isset($_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT'])) {
-            $name = $_SERVER['SERVER_NAME'];
-            $port = $_SERVER['SERVER_PORT'];
-
-            if (($scheme == 'http' && $port == 80) || ($scheme == 'https' && $port == 443)) {
-                $host = $name;
-            } else {
-                $host = $name . ':' . $port;
-            }
-        }
+        $name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : null;
+        $port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : null;
+        $port = ($port != 80 || 443) ? $port : null;
+        $host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $name . ':' . $port;
 
         $baseUrl = $scheme . '://' . $host;
         return $baseUrl;
@@ -65,7 +57,6 @@ class Fisma_Url
     {
         // Returns URI between the BaseUrl and QueryString.
         $uri = Zend_Controller_Front::getInstance()->getRequest()->getPathInfo();
-
         $currentUrl = self::baseUrl() . rtrim($uri, '/');
         return $currentUrl;
     }
