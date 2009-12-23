@@ -41,8 +41,8 @@ class Fisma_Url
         // Get the http host
         $name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : null;
         $port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : null;
-        $port = ($port != 80 || 443) ? $port : null;
-        $host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $name . ':' . $port;
+        $port = ($port != 80 || 443) ? ':' . $port : null;
+        $host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $name . $port;
 
         $baseUrl = $scheme . '://' . $host;
         return $baseUrl;
