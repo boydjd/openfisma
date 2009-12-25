@@ -366,6 +366,29 @@ class ReportController extends SecurityController
         // Build up report menu
         $reportsConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf');
         $reports = $reportsConfig->toArray();
+        
+        // Filter unauthorized plugin report items since actually user does not have rights to visit it.
+        if ($this->_me->username != 'root') {
+            $userRolesQuery = Doctrine_Query::create()
+                              ->select('u.id, r.nickname')
+                              ->from('User u')
+                              ->innerJoin('u.Roles r')
+                              ->where('u.id = ?', User::currentUser()->id)
+                              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+            $userRolesResult = $userRolesQuery->execute();
+            $userRoles = array();
+            foreach ($userRolesResult as $key => $result) {
+                $userRoles[] = $result['r_nickname'];
+            }
+            if (!empty($userRoles)) {
+                foreach ($reports as $reportName => $report) {
+                    if (!in_array($userRoles, $report['roles'])) {
+                        unset($reports[$reportName]);
+                    }
+                }
+            }
+        }
+        
         $this->view->assign('reports', $reports);
     }
 
