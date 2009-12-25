@@ -138,7 +138,9 @@ echo '<?xml version="1.0"?>'.
  </Styles>
  <Names>
   <NamedRange ss:Name="controls" ss:RefersTo="=ControlIDs!C1"/>
-  <NamedRange ss:Name="systems" ss:RefersTo="Systems!C1"/>
+  <NamedRange ss:Name="systems"  ss:RefersTo="=Systems!C1"/>
+  <NamedRange ss:Name="networks" ss:RefersTo="=Networks!C1"/>
+  <NamedRange ss:Name="sources"  ss:RefersTo="=Sources!C1"/>
  </Names>
  <Worksheet ss:Name="Findings">
   <Table ss:ExpandedColumnCount="21" ss:ExpandedRowCount="8" x:FullColumns="1"
@@ -169,67 +171,67 @@ echo '<?xml version="1.0"?>'.
    <Row ss:AutoFitHeight="0" ss:Height="38.25">
     <Cell ss:StyleID="s39"><Data ss:Type="String">System*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The system that this finding affects.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The system that this finding affects.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s46"><Data ss:Type="String">Date Discovered*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date that this finding was discovered.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date that this finding was discovered.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Network</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The network which contains the affected asset.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The network which contains the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Asset Name</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the affected asset.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Asset IP Address</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP address of the affected asset.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP address of the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Asset Port</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP port of the affected asset.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP port of the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Product Name</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Product Vendor</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The vendor of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The vendor of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Product Version</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The version of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The version of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Finding Source*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The type of evaluation which was used to discover this finding.          </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The type of evaluation which was used to discover this finding.          </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Description*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Description of the vulnerability or weakness.          </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> Description of the vulnerability or weakness.          </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Recommendation*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Auditor's recommendation to remediate the finding.          </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> Auditor's recommendation to remediate the finding.          </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Course of Action Type</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> AR = 'Accepted Risk', CAP = 'Corrective Action Plan', FP = 'False Positive'         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> AR = 'Accepted Risk', CAP = 'Corrective Action Plan', FP = 'False Positive'         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Course of Action&#10;Description</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The course of action planned to address a CAP; the business case justifying an AR.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The course of action planned to address a CAP; the business case justifying an AR.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s46"><Data ss:Type="String">Expected Completion Date</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date by which the course of action will be completed AND evidence uploaded         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date by which the course of action will be completed AND evidence uploaded         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">NIST 800-53 Security Control</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The related NIST 800-53 security control.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The related NIST 800-53 security control.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Threat Level</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The threat imposed by an exploit of this vulnerability.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The threat imposed by an exploit of this vulnerability.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Threat Description</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe the source and nature of the threat.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe the source and nature of the threat.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Countermeasures Effectiveness</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The effectiveness of in-place countermeasures for mitigating the threat.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> The effectiveness of in-place countermeasures for mitigating the threat.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Description of Countermeasures</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Point of Contact (Name, Number, Email)</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
+        html:Face="Arial" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -253,19 +255,19 @@ echo '<?xml version="1.0"?>'.
    <Range>R4C17:R65536C17,R4C19:R65536C19</Range>
    <Type>List</Type>
    <CellRangeList/>
-   <Value>&quot;<?php echo implode(',', $this->risk) ;?>&quot;</Value>
+   <Value>&quot;<?php echo implode(',', array_values($this->risk)) ;?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C10:R65536C10</Range>
    <Type>List</Type>
    <CellRangeList/>
-   <Value>&quot;<?php echo implode(',',array_values($this->sources));?>&quot;</Value>
+   <Value>sources</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C13:R65536C13</Range>
    <Type>List</Type>
    <CellRangeList/>
-   <Value>&quot;AR,CAP,FP&quot;</Value>
+   <Value>&quot;<?php echo implode(',', array_values($this->actionType)) ;?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C16:R65536C16</Range>
@@ -276,7 +278,7 @@ echo '<?xml version="1.0"?>'.
    <Range>R4C3:R65536C3</Range>
    <Type>List</Type>
    <CellRangeList/>
-   <Value>&quot;<?php echo implode(',',array_values($this->networks));?>&quot;</Value>
+   <Value>networks</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C1:R65536C1</Range>
@@ -291,9 +293,6 @@ echo '<?xml version="1.0"?>'.
   </DataValidation>
  </Worksheet>
  <Worksheet ss:Name="ControlIDs">
-  <Names>
-   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=ControlIDs!C1" ss:Hidden="1"/>
-  </Names>
   <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
    <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
 <?php
@@ -303,7 +302,6 @@ echo '<?xml version="1.0"?>'.
 <Cell>
 <Data ss:Type="String"><?php echo $securityControl; ?></Data>
 <NamedCell ss:Name="controls"/>
-<NamedCell ss:Name="_FilterDatabase"/>
 </Cell>
 </Row>
 <?php
@@ -311,6 +309,7 @@ echo '<?xml version="1.0"?>'.
 ?>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <Visible>SheetVeryHidden</Visible>
    <Print>
     <ValidPrinterInfo/>
     <HorizontalResolution>600</HorizontalResolution>
@@ -324,7 +323,71 @@ echo '<?xml version="1.0"?>'.
    <ProtectObjects>True</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
- </Worksheet>
+ </Worksheet> 
+ <Worksheet ss:Name="Networks">
+  <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
+   <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
+<?php
+    foreach ($this->networks as $network) {
+?>
+<Row>
+<Cell>
+<Data ss:Type="String"><?php echo $network; ?></Data>
+<NamedCell ss:Name="networks"/>
+</Cell>
+</Row>
+<?php
+    }
+?>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <Visible>SheetVeryHidden</Visible>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>0</VerticalResolution>
+   </Print>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+    </Pane>
+   </Panes>
+   <ProtectObjects>True</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet> 
+ <Worksheet ss:Name="Sources">
+  <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
+   <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
+<?php
+    foreach ($this->sources as $source) {
+?>
+<Row>
+<Cell>
+<Data ss:Type="String"><?php echo $source; ?></Data>
+<NamedCell ss:Name="sources"/>
+</Cell>
+</Row>
+<?php
+    }
+?>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <Visible>SheetVeryHidden</Visible>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>0</VerticalResolution>
+   </Print>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+    </Pane>
+   </Panes>
+   <ProtectObjects>True</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet> 
  <Worksheet ss:Name="Systems">
   <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
    <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
@@ -342,6 +405,7 @@ echo '<?xml version="1.0"?>'.
 ?>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <Visible>SheetVeryHidden</Visible>
    <Print>
     <ValidPrinterInfo/>
     <HorizontalResolution>600</HorizontalResolution>
