@@ -38,12 +38,11 @@ class Fisma_Inject_Factory
     {
         try {
             $this->_validateType($type);
-            $this->_validateData($data);
 
             $pluginClass = 'Fisma_Inject_' . $type;
 
             if (class_exists($pluginClass)) {
-                return new $pluginClass($data->file, $data->networkId, $data->systemId, $data->findingSourceId);
+                return new $pluginClass($data);
             } else {
                 throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
             }
@@ -66,27 +65,6 @@ class Fisma_Inject_Factory
             throw new Fisma_Inject_Exception('Type cannot be empty.');
         } elseif (!is_string($type)) {
             throw new Fisma_Inject_Exception('Type must be a string.');
-        }
-    }
-
-    /**
-     * Do some basic sanity checking on the data the factory is called with.
-     * 
-     * @param mixed $data 
-     */
-    private function _validateData($data)
-    {
-        if (empty($data)) {
-            throw new Fisma_Inject_Exception('Data cannot be empty.');
-        } elseif (!is_object($data)) {
-            throw new Fisma_Inject_Exception('Data must be an object.');
-        } elseif (empty($data->file) || empty($data->networkId) || empty($data->systemId) 
-            || empty($data->findingSourceId)) {
-            throw new Fisma_Inject_Exception('All data fields must be populated.');
-        } elseif (!is_int($data->networkId) || !is_int($data->systemId) || !is_int($data->findingSourceId)) {
-            throw new Fisma_Inject_Exception('IDs must be integers.');
-        } elseif (!is_string($data->file)) {
-            throw new Fisma_Inject_Exception('File parameter must be a string.');
         }
     }
 }
