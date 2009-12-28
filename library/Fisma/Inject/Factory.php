@@ -41,16 +41,21 @@ class Fisma_Inject_Factory
 
             $pluginClass = 'Fisma_Inject_' . $type;
 
-            if (class_exists($pluginClass)) {
-                return new $pluginClass($data);
-            } else {
-                throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
+            /**
+             * Check to make sure that the class is a child of Fisma_Inject_Abstract. ReflectionClass will throw an
+             * exception if the class isn't found.
+             */
+            $class  = new ReflectionClass($pluginClass);
+            $parent = $class->getParentClass();
+
+            if (!empty($parent->name) && $parent->name == 'Fisma_Inject_Abstract') { 
+               return new $pluginClass($data);
             }
 
-        } catch(Fisma_Inject_Exception $e) {
-            throw new Fisma_Exception(
-                "An exception occured while instantiating a Fisma_Inject object: $e->getMessage()"
-            );
+            throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
+        } catch(Exception $e) {
+            $msg = $e->getMessage();
+            throw new Fisma_Exception("An exception occured while instantiating a Fisma_Inject object: $msg");
         }
     }
 
