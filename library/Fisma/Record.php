@@ -48,8 +48,7 @@ class Fisma_Record extends Doctrine_Record
      */
     public function getOriginalValue($fieldName)
     {
-        // Suppress any warnings about undefined indexes
-        return @$this->_originalValues[$fieldName];
+        return isset($this->_originalValues[$fieldName]) ? $this->_originalValues[$fieldName] : null;
     }
     
     /**
