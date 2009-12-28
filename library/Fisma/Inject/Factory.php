@@ -40,18 +40,14 @@ class Fisma_Inject_Factory
             $this->_validateType($type);
             $this->_validateData($data);
 
-            switch($type) {
-                case 'AppDetective' : 
-                    return new Fisma_Inject_AppDetective($data->file, $data->networkId, $data->systemId, 
-                        $data->findingSourceId);
-                    break;
-                case 'Nessus' : 
-                    return new Fisma_Inject_Nessus($data->file, $data->networkId, $data->systemId, 
-                        $data->findingSourceId);
-                    break;
-                default:
-                    throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
+            $pluginClass = 'Fisma_Inject_' . $type;
+
+            if (class_exists($pluginClass)) {
+                return new $pluginClass($data->file, $data->networkId, $data->systemId, $data->findingSourceId);
+            } else {
+                throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
             }
+
         } catch(Fisma_Inject_Exception $e) {
             throw new Fisma_Exception(
                 "An exception occured while instantiating a Fisma_Inject object: $e->getMessage()"
