@@ -174,7 +174,7 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
     {
         $definition = $table->getDefinitionOf($field);
 
-        if (@isset($definition['extra']['logicalName'])) {
+        if (isset($definition['extra']['logicalName'])) {
             return $definition['extra']['logicalName'];
         } else {
             return null;

@@ -723,7 +723,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
     {
         // find class matching $name
         $classname = $name;
-        if (@class_exists("Doctrine_Template_$name", true)) {
+        if (class_exists("Doctrine_Template_$name", true)) {
             $classname = "Doctrine_Template_$name";
         }
         return "        \$" . strtolower($name) . "$level = new $classname($option);". PHP_EOL;
