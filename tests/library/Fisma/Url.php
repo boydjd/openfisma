@@ -31,30 +31,6 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
 class Test_Library_Fisma_Url extends Test_FismaUnitTest
 {
     /**
-     * Back up of $_SERVER
-     *
-     * @var array
-     */
-    protected $_serverBackup;
-
-    /**
-     * Prepares the environment before running a test.
-     */
-    protected function setUp()
-    {
-        $this->_serverBackup = $_SERVER;
-        unset($_SERVER['HTTPS']);
-    }
-
-    /**
-     * Cleans up the environment after running a test.
-     */
-    protected function tearDown()
-    {
-        $_SERVER = $this->_serverBackup;
-    }
-
-    /**
      * Test baseUrl constructor with only HTTP_HOST
      * 
      * @return void
@@ -63,6 +39,9 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     public function testBaseUrlConstructorWithOnlyHost()
     {
         $_SERVER['HTTP_HOST'] = 'example.com';
+        unset($_SERVER['HTTPS']);
+        unset($_SERVER['SERVER_NAME']);
+        unset($_SERVER['SERVER_PORT']);
 
         $this->assertEquals('http://example.com', Fisma_Url::baseUrl());
     }
@@ -76,6 +55,9 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     public function testBaseUrlConstructorWithOnlyHostIncludingPort()
     {
         $_SERVER['HTTP_HOST'] = 'example.com:8000';
+        unset($_SERVER['HTTPS']);
+        unset($_SERVER['SERVER_NAME']);
+        unset($_SERVER['SERVER_PORT']);
 
         $this->assertEquals('http://example.com:8000', Fisma_Url::baseUrl());
     }
@@ -89,7 +71,9 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     public function testBaseUrlConstructorWithHostAndHttpsOn()
     {
         $_SERVER['HTTP_HOST'] = 'example.com';
-        $_SERVER['HTTPS'] = 'on';
+        $_SERVER['HTTPS']     = 'on';
+        unset($_SERVER['SERVER_NAME']);
+        unset($_SERVER['SERVER_PORT']);
 
         $this->assertEquals('https://example.com', Fisma_Url::baseUrl());
     }
@@ -103,7 +87,9 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     public function testBaseUrlConstructorWithHostIncludingPortAndHttpsOn()
     {
         $_SERVER['HTTP_HOST'] = 'example.com:8181';
-        $_SERVER['HTTPS'] = 'on';
+        $_SERVER['HTTPS']     = 'on';
+        unset($_SERVER['SERVER_NAME']);
+        unset($_SERVER['SERVER_PORT']);
 
         $this->assertEquals('https://example.com:8181', Fisma_Url::baseUrl());
     }
@@ -116,9 +102,10 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testBaseUrlConstructorWithHttpHostAndServerNameAndPortSet()
     {
-        $_SERVER['HTTP_HOST'] = 'example.com';
+        $_SERVER['HTTP_HOST']   = 'example.com';
         $_SERVER['SERVER_NAME'] = 'example.org';
         $_SERVER['SERVER_PORT'] = 8080;
+        unset($_SERVER['HTTPS']);
 
         $this->assertEquals('http://example.com', Fisma_Url::baseUrl());
     }
@@ -132,6 +119,7 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     public function testBaseUrlConstructorWithNoHttpHostButServerNameAndPortSet()
     {
         unset($_SERVER['HTTP_HOST']);
+        unset($_SERVER['HTTPS']);
         $_SERVER['SERVER_NAME'] = 'example.org';
         $_SERVER['SERVER_PORT'] = 8080;
 
@@ -139,35 +127,7 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     }
 
     /**
-     * Test currentUrl constructor with requestUri
-     * 
-     * @return void
-     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
-     */
-    public function testCurrentUrlConstructorWithRequestUri()
-    {
-        $_SERVER['HTTP_HOST']   = 'example.com';
-        $_SERVER['REQUEST_URI'] = '/test/this/';
-
-        $this->assertEquals('http://example.com/test/this', Fisma_Url::currentUrl());
-    }
-
-    /**
-     * Test currentUrl constructor with requestUri including params
-     * 
-     * @return void
-     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
-     */
-    public function testCurrentUrlConstructorWithRequestUriIncludingParams()
-    {
-        $_SERVER['HTTP_HOST']   = 'example.com';
-        $_SERVER['REQUEST_URI'] = '/test/this/?param=1&param2=2';
-
-        $this->assertEquals('http://example.com/test/this', Fisma_Url::currentUrl());
-    }
-
-    /**
-     * Test customUrl with requestUri start with ('/', './' and '../')
+     * Test customUrl with requestUri start with '/'
      * 
      * @return void
      * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
@@ -175,30 +135,12 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     public function testCustomUrlWithRequestUri()
     {
         $_SERVER['HTTP_HOST'] = 'example.com';
+        unset($_SERVER['HTTPS']);
+        unset($_SERVER['SERVER_NAME']);
+        unset($_SERVER['SERVER_PORT']);
 
         // The requestUri start with '/'
         $requestUri = '/test';
         $this->assertEquals('http://example.com/test', Fisma_Url::customUrl($requestUri));
-
-        // The requestUri start with './'
-        $requestUri = './test';
-        $this->assertEquals('http://example.com/test', Fisma_Url::customUrl($requestUri));
-
-        // The requestUri start with '../' 
-        $requestUri = '../test';
-        $this->assertEquals('http://example.com/test', Fisma_Url::customUrl($requestUri));
-    }
-
-    /**
-     * Test customUrl with integer
-     * 
-     * @return void
-     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
-     */
-    public function testCustomUrlWithInteger()
-    {
-        $_SERVER['HTTP_HOST'] = 'example.com';
-
-        $this->assertEquals('http://example.com', Fisma_Url::customUrl(456789));
     }
 }
