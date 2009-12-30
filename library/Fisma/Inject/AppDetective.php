@@ -237,13 +237,13 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 $finding['sourceId'] = $this->_findingSourceId;
                 $finding['responsibleOrganizationId'] = $this->_orgSystemId;
                 $finding['recommendation'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);
-                $finding['recommendation'] = $this->textToHtml($finding['recommendation']);
+                $finding['recommendation'] = Fisma_String::textToHtml($finding['recommendation']);
                 $finding['threatLevel'] = strtoupper($reportFinding->risk);
                 //todo english translate "medium" into "MODERATE" to adapt OpenFISMA
                 if ('MEDIUM' == $finding['threatLevel']) {
                     $finding['threatLevel'] = 'MODERATE';
                 }
-                $finding['threat'] = $this->textToHtml($reportFinding->overview);
+                $finding['threat'] = Fisma_String::textToHtml($reportFinding->overview);
 
                 // The mapping for finding_data is a little more complicated
                 // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
@@ -264,7 +264,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                     }
                     $findingData .= '</ul>';
                 }
-                $finding['description'] = $this->textToHtml($findingData);
+                $finding['description'] = Fisma_String::textToHtml($findingData);
                 
                 // Add this finding to the total findings array
                 $findings[] = $finding;

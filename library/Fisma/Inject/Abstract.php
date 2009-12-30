@@ -330,19 +330,4 @@ abstract class Fisma_Inject_Abstract
             }
         }
     }
-
-    /**
-     * Convert plain text into a similar HTML representation.
-     * 
-     * @param string $plainText The plain text that needs to be marked up
-     * @return string The rendered HTML snippet of the plain text
-     * @todo refactor, put this into a class that is available system-wide, that means make this method reusable
-     */
-    protected function textToHtml($plainText) 
-    {
-        $html = '<p>' . trim($plainText) . '</p>';
-        $html = str_replace("\\n\\n", '</p><p>', $html);
-        $html = str_replace("\\n", '<br>', $html);
-        return $html;
-    }
 }

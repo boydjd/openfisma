@@ -107,4 +107,37 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
         
         $this->assertEquals($plaintext, Fisma_String::htmlToPlainText($html));
     }
+
+    /**
+     * Test handling of consecutive line breaks in the text to HTML converter
+     */
+    public function testTextToHtmlConsecutiveLineBreaksChangedToParagraphs()
+    {
+        $plainText = "Lorem ipsum.\\n\\nHello.\\n\\nAnother paragraph.";
+        $html      = "<p>Lorem ipsum.</p><p>Hello.</p><p>Another paragraph.</p>";
+
+        $this->assertEquals($html, Fisma_String::textToHtml($plainText));
+    }
+
+    /**
+     * Test handling of single line breaks in the text to HTML converter
+     */
+    public function testTextToHtmlSingleLineBreaksChangedToBrTag()
+    {
+        $plainText = "Lorem ipsum.\\nHello.\\nAnother line.";
+        $html      = "<p>Lorem ipsum.<br>Hello.<br>Another line.</p>";
+
+        $this->assertEquals($html, Fisma_String::textToHtml($plainText));
+    }
+
+    /**
+     * Test handling of a combination of consecutive and single line breaks in the text to HTML converter
+     */
+    public function testTextToHtmlParagraphsAndBrTags()
+    {
+        $plainText = "Lorem ipsum.\\n\\nHello.\\nA line.";
+        $html      = "<p>Lorem ipsum.</p><p>Hello.<br>A line.</p>";
+
+        $this->assertEquals($html, Fisma_String::textToHtml($plainText));
+    }
 }

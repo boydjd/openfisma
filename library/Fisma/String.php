@@ -97,4 +97,20 @@ class Fisma_String
 
         return $html;
     }
+
+    /**
+     * Convert plain text into a similar HTML representation 
+     * 
+     * @param string $plainText The plain text that needs to be marked up
+     * @return string The rendered HTML snipped of the plain text 
+     */
+    static function textToHtml($plainText)
+    {
+        $search  = array("\\n\\n", "\\n");
+        $replace = array('</p><p>', '<br>');
+
+        $html = '<p>' . trim($plainText) . '</p>';
+        $html = str_replace($search, $replace, $html);
+        return $html;
+    }
 }
