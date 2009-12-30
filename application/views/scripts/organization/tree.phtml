@@ -69,17 +69,17 @@ function contextMenuHandler(event, eventArgs) {
 
     // To get the ID of the organization related to this event, we have to do some circuitous logic:
     // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
-    parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvcell");
+    var parentEl = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvcell");
 
     // Now the organization or system Id & type can be looked up in the treemap
-    var type = treeMap[parent.id]['type'];
+    var type = treeMap[parentEl.id]['type'];
 
     // Set to 'system' if the object is a system; set to 'organization' otherwise
     var model = (type == 'agency' || type == 'bureau' || type == 'organization') 
               ? 'organization'
               : 'system';
 
-    var organizationId = treeMap[parent.id]['id'];
+    var organizationId = treeMap[parentEl.id]['id'];
 
     // Now check which menu item was selected and redirect
     var menuItem = eventArgs[1];
