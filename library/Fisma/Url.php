@@ -55,9 +55,8 @@ class Fisma_Url
      */
     static function currentUrl()
     {
-        // Returns URI between the BaseUrl and QueryString.
-        $uri = Zend_Controller_Front::getInstance()->getRequest()->getPathInfo();
-        $currentUrl = self::baseUrl() . rtrim($uri, '/');
+        $uri        = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : null;
+        $currentUrl = self::baseUrl() . $uri;
         return $currentUrl;
     }
 

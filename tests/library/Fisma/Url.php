@@ -127,6 +127,40 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
     }
 
     /**
+     * Test currentUrl constructor with requestUri
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
+     */
+    public function testCurrentUrlConstructorWithRequestUri()
+    {
+        $_SERVER['HTTP_HOST']   = 'example.com';
+        $_SERVER['REQUEST_URI'] = '/test/this/';
+        unset($_SERVER['HTTPS']);
+        unset($_SERVER['SERVER_NAME']);
+        unset($_SERVER['SERVER_PORT']);
+
+        $this->assertEquals('http://example.com/test/this/', Fisma_Url::currentUrl());
+    }
+
+    /**
+     * Test currentUrl constructor with requestUri including params
+     * 
+     * @return void
+     * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
+     */
+    public function testCurrentUrlConstructorWithRequestUriIncludingParams()
+    {
+        $_SERVER['HTTP_HOST']   = 'example.com';
+        $_SERVER['REQUEST_URI'] = '/test/this/?param=1&param2=2';
+        unset($_SERVER['HTTPS']);
+        unset($_SERVER['SERVER_NAME']);
+        unset($_SERVER['SERVER_PORT']);
+
+        $this->assertEquals('http://example.com/test/this/?param=1&param2=2', Fisma_Url::currentUrl());
+    }
+
+    /**
      * Test customUrl with requestUri start with '/'
      * 
      * @return void
