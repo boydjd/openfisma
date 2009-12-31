@@ -28,34 +28,25 @@
 class Fisma_Inject_Grammar
 {
     // contents of grammar specification 
-    private $_grammar = FALSE;
+    private $_grammar = '';
+    private $_file    = 'grammar.rng';
 
     /**
      * Constructs a new Fisma_Inject_Grammar object. Loads the grammar into the object.
      *
-     * If $plugin is specified, then the constructor loads the contents of the grammar from the default location for the
-     * specified plugin. If $grammar is also specified with $plugin, then the contructor will attempt to load the 
-     * specified grammar from the default location.
-     *
-     * If $plugin is not specified, then $grammar is expected to be the contents of a grammar file, and will be loaded
-     * as such.
-     * 
-     * @param string $grammar
      * @param string $plugin
      */
-    public function __construct($grammar = 'grammar.rng', $plugin = NULL)
+    public function __construct($plugin)
     {
         if (!empty($plugin)) {
             $this->_grammar = file_get_contents(
-                realpath(dirname(__FILE__) . '/' . $plugin . '/' . $grammar) . '/' . $grammar
+                realpath(dirname(__FILE__) . '/' . $plugin . '/' . $this->_file) . '/' . $this->_file
             );
             if (!$this->_grammar) {
                 throw new Fisma_Inject_Exception('Grammar for ' . $plugin . ' could not be loaded!');
             }
-        } elseif ($grammar != 'grammar.rng') {
-            $this->_grammar = $grammar;
         } else {
-            throw new Fisma_Inject_Exception('No grammar was specified.');
+            throw new Fisma_Inject_Exception('No plugin was specified.');
         }
     }
 

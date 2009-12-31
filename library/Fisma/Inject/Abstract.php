@@ -121,15 +121,18 @@ abstract class Fisma_Inject_Abstract
     protected function _checkFile()
     {
         libxml_use_internal_errors(true);
-        $report = simplexml_load_file($this->_file);
-        if ($report === false) {
+
+        if (!$report = simplexml_load_file($this->_file)) {
             // libxml and simplexml are interoperable:
-            $errors = libxml_get_errors();
+            $errors    = libxml_get_errors();
             $errorHtml = '<p>Parse Errors:<br>';
+
             foreach ($errors as $error) {
                 $errorHtml .= "\"{$error->message}\" at line {$error->line}, column {$error->column}<br>"; 
             }
+
             $errorHtml .= '</p>';
+
             throw new Fisma_Exception_InvalidFileFormat('This file is not a valid XML format. 
                                                    Please ensure that you selected the correct file.'
                                                 . $errorHtml);
@@ -190,13 +193,7 @@ abstract class Fisma_Inject_Abstract
     {
         $duplicateFindings = Doctrine::getTable('Finding')->findByDql('description LIKE ?', $finding->description);
         
-        if ($duplicateFindings) {
-            $duplicateFinding = $duplicateFindings->getLast();
-        } else {
-            $duplicateFinding = FALSE;
-        }
-        
-        return $duplicateFinding;
+        return ($duplicateFindings) ? $duplicateFindings->getLast() : FALSE;
     }
     
     /**
@@ -208,29 +205,25 @@ abstract class Fisma_Inject_Abstract
      */
     private function _getDuplicateAction(Finding $newFinding, Finding $duplicateFinding)
     {
-        $action = null;
+        $action  = NULL;
+        $orgSame = ($newFinding->ResponsibleOrganization == $duplicateFinding->ResponsibleOrganization) ? TRUE : FALSE;
         
-        // Rules for non-AR findings:
-        if (in_array($duplicateFinding->type, array('CAP', 'FP', 'NONE'))) {
-            if ($newFinding->ResponsibleOrganization == $duplicateFinding->ResponsibleOrganization) {
-                if ('CLOSED' == $duplicateFinding->status) {
-                    $action = self::CREATE_FINDING;
+        switch ($duplicateFinding->type) {
+            case 'CAP':
+            case 'FP':
+            case 'NONE':
+                if ($orgSame) {
+                    $action = ($duplicateFinding->status == 'CLOSED') ? self::CREATE_FINDING : self::DELETE_FINDING;
                 } else {
-                    $action = self::DELETE_FINDING;
+                    $action = self::REVIEW_FINDING;
                 }
-            } else {
-                $action = self::REVIEW_FINDING;
-            }
-        } elseif ($duplicateFinding->type == 'AR') {
-            // Rules for AR findings:
-            if ($newFinding->ResponsibleOrganization == $duplicateFinding->ResponsibleOrganization) {
-                $action = self::DELETE_FINDING;
-            } else {
-                $action = self::REVIEW_FINDING;
-            }
-        } else {
-            throw new Fisma_Exception('No duplicate finding action defined for mitigation type: '
-                                    . $duplicateFinding->type);
+                break;
+            case 'AR':
+                $action = ($orgSame) ? self::DELETE_FINDING : self::REVIEW_FINDING;
+                break;
+            default:
+                throw new Fisma_Exception('No duplicate finding action defined for mitigation type: '
+                    . $duplicateFinding->type);
         }
 
         return $action;
@@ -247,11 +240,7 @@ abstract class Fisma_Inject_Abstract
      */
     public function __get($field) 
     {
-        if (array_key_exists($field, $this->_totalFindings)) {
-            return $this->_totalFindings[$field];
-        } else {
-            return null;
-        }
+        return (!empty($this->_totalFindings[$field])) ? $this->_totalFindings[$field] : NULL;
     }
 
     /** 
@@ -274,9 +263,10 @@ abstract class Fisma_Inject_Abstract
      */
     protected function _saveAsset($assetData)
     {
-        $assetData['networkId'] = $this->_networkId;
+        $assetData['networkId']   = $this->_networkId;
         $assetData['orgSystemId'] = $this->_orgSystemId;
-        $assetData['source'] = 'SCAN';
+        $assetData['source']      = 'SCAN';
+
         // Verify whether asset exists or not
         $assetRecord  = Doctrine_Query::create()
                          ->select()
@@ -286,12 +276,15 @@ abstract class Fisma_Inject_Abstract
                          ->andWhere('a.addressPort = ?', $assetData['addressPort'])
                          ->execute()
                          ->toArray();
+
         if ($assetRecord) {
             $this->_assetId = $assetRecord[0]['id'];
         } else {
             $asset = new Asset();
+
             $asset->merge($assetData);
             $asset->save();
+
             $this->_assetId = $asset->id;
         }
     }
@@ -307,23 +300,27 @@ abstract class Fisma_Inject_Abstract
         $product = new Product();
         $asset   = new Asset();
         $asset   = $asset->getTable()->find($this->_assetId);
+
         if (empty($asset->productId)) {
-            $existedProduct = $product->getTable('Product')->findOneByCpeName($productData['cpeName']);
-            if ($existedProduct) {
+            $existingProduct = $product->getTable()->findOneByCpeName($productData['cpeName']);
+
+            if ($existingProduct) {
                 // Use the existing product if one is found
-                $asset->productId = $existedProduct->id;
+                $asset->productId = $existingProduct->id;
             } else {
                 // If no existing product, create a new one
                 $product->merge($productData);
                 $product->save();
                 $asset->productId = $product->id;
             }
+
             $asset->getTable()->getRecordListener()->setOption('disabled', true);
             $asset->save();
         } else {
             // If the asset does have a product, then do not modify it unless the CPE name is null,
             // in which case update the CPE name.
             $product = $product->getTable()->find($asset->productId);
+
             if ($product && empty($product->cpeName)) {
                 $product->cpeName = $productData['cpeName'];
                 $product->save();
