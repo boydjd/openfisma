@@ -323,7 +323,6 @@ class FindingController extends BaseController
                                                    'prepared because there are no security controls defined.');
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
-            $this->view->actionType = array('AP', 'CAP', 'FP');
             $this->view->templateVersion = Fisma_Inject_Excel::TEMPLATE_VERSION;
 
             // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
