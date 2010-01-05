@@ -40,7 +40,7 @@ class Fisma_Inject_Grammar
     {
         if (!empty($plugin)) {
             $this->_grammar = file_get_contents(
-                realpath(dirname(__FILE__) . '/' . $plugin . '/' . $this->_file) . '/' . $this->_file
+                realpath(dirname(__FILE__) . '/' . $plugin . '/' . $this->_file)
             );
             if (!$this->_grammar) {
                 throw new Fisma_Inject_Exception('Grammar for ' . $plugin . ' could not be loaded!');

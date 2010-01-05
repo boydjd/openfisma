@@ -38,107 +38,133 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      */
     public function parse($uploadId)
     {
-        // Parse the XML file
-        $report = simplexml_load_file($this->_file);
-        
-        // Make sure that this is an Nessus report, not a Crystal report. 
-        $checkCrystalReport = $report->getNamespaces(true);
-        if (in_array('urn:crystal-reports:schemas', $checkCrystalReport)) {
-            throw new Fisma_Exception_InvalidFileFormat('This is a Crystal Report, not a Nessus report.');
+        $grammar = new Fisma_Inject_Grammar('Nessus');
+        $report  = new XMLReader();
+
+        // The third parameter is the constant LIBXML_PARSEHUGE from libxml, which is not exposed to XMLReader. 
+        // This is fixed in SVN of PHP as of 12/1/09, but until it hits a release version this hack will stay.
+        if (!$report->open($this->_file, NULL, 1<<19)) {
+            throw new Fisma_Exception('Cannot open the XML file.');
         }
-        $this->_persist($report, $uploadId);
+
+        $report->setRelaxNGSchemaSource($grammar);
+
+        try {
+            $this->_persist($report, $uploadId);
+        } catch (Exception $e) {
+            throw new Fisma_Exception('An error occured while processing the XML file.' . $e->getMessage());
+        }
+
+        $report->close();
     }
 
     /**
      * Save assets and findings which are recorded in the report.
      *
-     * @param SimpleXMLElement $report The full Nessus report
+     * @param XMLReader $report The full Nessus report
      * @param int $uploadId The specific scanner file id
      * @return void
      * @throws Fisma_Exception_InvalidFileFormat if not found expected fields
      */
-    private function _persist($report, $uploadId)
+    private function _persist(XMLReader $report, $uploadId)
     {
-        // Parse the discovered date/time out of the starttime field
-        $startTime = $report->xpath('/NessusClientData/Report/StartTime');
-        if (empty($startTime)) {
-            throw new Fisma_Exception_InvalidFileFormat('Expected StartTime field, but found none');
-        }
-        // Asset information is parsed out of the ReportHost section
-        $reportHosts = $report->xpath('/NessusClientData/Report/ReportHost');
-        if (empty($reportHosts)) {
-            throw new Fisma_Exception_InvalidFileFormat('Expected ReportHost field, but found none');
-        }
-        foreach ($reportHosts as $key => $host ) {
-            $addressIp = $host->HostName;
-            if (empty($addressIp)) {
-                throw new Fisma_Exception_InvalidFileFormat('Expected HostName field, but found none');
-            }
-            foreach ($host->ReportItem as $item) {
-                if (!isset($item->severity)) {
-                    throw new Fisma_Exception_InvalidFileFormat('Expected severity field, but found none');
-                }
-                if (empty($item->severity)) {
-                    continue;
-                } else {
-                    switch ($item->severity) {
-                        case '1':
-                            $threatLevel = 'LOW';
+        $findingList = array();
+
+        $hostCounter = 0;
+        $itemCounter = 0;
+
+        while ($report->read()) {
+            // The elements of the XML that we care about don't occur until we reach a depth of 2
+            if ($report->depth >= 2 && $report->nodeType == XMLReader::ELEMENT) {
+                if ($report->name == 'ReportHost') {
+                    $findingList[$hostCounter] = array();
+                    $findingList[$hostCounter]['findings'] = array();
+                    $findingList[$hostCounter]['ip'] = $report->getAttribute('name');
+                } elseif ($report->name == 'tag' && $report->getAttribute('name') == 'HOST_END') {
+                    $findingList[$hostCounter]['startTime'] = $report->readString();
+                } elseif ($report->name == 'ReportItem') {
+                    $findingList[$hostCounter]['findings'][$itemCounter] = array();
+                    $severity = $report->getAttribute('severity');
+                    $findingList[$hostCounter]['findings'][$itemCounter]['port'] = $report->getAttribute('port');
+
+                    switch($severity) {
+                        case '1': 
+                            $severity = 'LOW';
                             break;
                         case '2':
-                            $threatLevel = 'MODERATE';
+                            $severity = 'MODERATE';
                             break;
                         case '3':
-                            $threatLevel = 'HIGH';
+                            $severity = 'HIGH';
                             break;
                     }
-                }
-                if (!isset($item->port)) {
-                    throw new Fisma_Exception_InvalidFileFormat('Expected port field, but found none');
-                }
-                if (preg_match('/\d+/', $item->port, $port)) {
-                    $asset['addressIp']   = $addressIp;
-                    $asset['addressPort'] = $port[0];
-                    $asset['name'] = $asset['addressIp'] . ':' . $asset['addressPort'];
-                } else {
-                    continue;
-                }
-                $this->_saveAsset($asset);
 
-                $reportData = $this->textToHtml($item->data);
-                if (empty($reportData)) {
-                    throw new Fisma_Exception_InvalidFileFormat('Expected data field, but found none');
+                    $findingList[$hostCounter]['findings'][$itemCounter]['severity'] = $severity;
+                } elseif ($report->name == 'solution') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['solution'] = $report->readString();
+                } elseif ($report->name == 'description') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['description'] = $report->readString();
+                } elseif ($report->name == 'cve') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['cve'][] = $report->readString();
+                } elseif ($report->name == 'bid') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['bid'][] = $report->readString();
+                } elseif ($report->name == 'xref') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['xref'][] = $report->readString();
+                } elseif ($report->name == 'synopsis') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['synopsis'] = $report->readString();
+                } elseif ($report->name == 'cvss_base_score') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['cvss_base_score'] = $report->readString();
+                } elseif ($report->name == 'cvss_vector') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['cvss_vector'] = $report->readString();
+                } elseif ($report->name == 'plugin_output') {
+                    $findingList[$hostCounter]['findings'][$itemCounter]['plugin_output'] = $report->readString();
                 }
-                $finding['uploadId'] = $uploadId;
-                $finding['discoveredDate'] = date('Y-m-d', strtotime($startTime[$key]));
-                $finding['sourceId']       = $this->_findingSourceId;
-                $finding['responsibleOrganizationId'] = $this->_orgSystemId;
-                $finding['description']    = $this->_getSubContent($reportData, 'Synopsis :', 'Description');
-                $finding['threat']         = $this->_getSubContent($reportData, 'Description :', 'Solution');
-                $finding['recommendation'] = $this->_getSubContent($reportData, 'Solution :', 'Risk factor');
-                $finding['threatLevel']    = $threatLevel;
-                $finding['assetId']        = $this->_assetId;
-                $this->_commit($finding);
+            } elseif ($report->nodeType == XMLReader::END_ELEMENT) {
+                if ($report->name == 'ReportHost') {
+                    $hostCounter++;
+                    $itemCounter = 0;
+                } elseif ($report->name == 'ReportItem') {
+                    $itemCounter++;
+                }
             }
         }
-    }
-    
-    /**
-     * Get the content from a start string to end string
-     * 
-     * @param string $str The specifed orginal content to be exploded
-     * @param string $start The specified start mark
-     * @param string $end The specifed end mark
-     * @return string The extracted sub content
-     * @todo suggest make this method reusable
-     */
-    private function _getSubContent($str, $start, $end)
-    {
-        if ($start == '' || $end == '') {
-               return;
+
+        foreach ($findingList as $host) {
+            foreach ($host as $findings) {
+                foreach ($findings as $finding) {
+                    // Prepare asset
+                    $asset = array();
+                    $asset['name'] = $host['ip'] . ':' . $finding['port'];
+                    $asset['networkId'] = (int) $this->_networkId;
+                    $asset['addressIp'] = $host['ip'];
+                    $asset['addressPort'] = (int) $finding['port'];
+
+                    // Save asset
+                    $this->_saveAsset($asset);
+
+                    // Prepare finding
+                    $findingInstance = array();
+                    foreach ($finding as &$data) {
+                        if (!is_array($data)) {
+                            $data = Fisma_String::textToHtml($data);
+                        }
+                    }
+
+                    $findingInstance = array();
+                    $findingInstance['uploadId'] = (int) $uploadId;
+                    $findingInstance['discoveredDate'] = date('Y-m-d', strtotime($host['startTime']));
+                    $findingInstance['sourceId'] = (int) $this->_findingSourceId;
+                    $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
+                    $findingInstance['description'] = $finding['description'] . $finding['plugin_output'];
+                    $findingInstance['threat'] = $finding['synopsis'];
+                    $findingInstance['recommendation'] = $finding['solution'];
+                    $findingInstance['threatLevel'] = $finding['severity'];
+                    $findingInstance['assetId'] = (int) $this->_assetId;
+
+                    // Save finding
+                    $this->_commit($findingInstance);
+                }
+            }
         }
-        $str = explode($start, $str);
-        $str = explode($end, $str[1]);
-        return $str[0];
     }
 }

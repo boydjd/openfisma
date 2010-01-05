@@ -105,38 +105,10 @@ abstract class Fisma_Inject_Abstract
      */
     public function __construct($file, $networkId, $systemId, $findingSourceId) 
     {
-        $this->_file = $file;
-        $this->_networkId = $networkId;
-        $this->_orgSystemId = $systemId;
+        $this->_file            = $file;
+        $this->_networkId       = $networkId;
+        $this->_orgSystemId     = $systemId;
         $this->_findingSourceId = $findingSourceId;
-        $this->_checkFile();
-    }
-
-    /**
-     * Check errors for the upload file and verify if the upload file is valid xml format
-     * 
-     * @return void
-     * @throws Fisma_Exception_InvalidFileFormat if the upload file is not a valid XML format
-     */
-    protected function _checkFile()
-    {
-        libxml_use_internal_errors(true);
-
-        if (!$report = simplexml_load_file($this->_file)) {
-            // libxml and simplexml are interoperable:
-            $errors    = libxml_get_errors();
-            $errorHtml = '<p>Parse Errors:<br>';
-
-            foreach ($errors as $error) {
-                $errorHtml .= "\"{$error->message}\" at line {$error->line}, column {$error->column}<br>"; 
-            }
-
-            $errorHtml .= '</p>';
-
-            throw new Fisma_Exception_InvalidFileFormat('This file is not a valid XML format. 
-                                                   Please ensure that you selected the correct file.'
-                                                . $errorHtml);
-        }
     }
 
     /**
@@ -157,12 +129,7 @@ abstract class Fisma_Inject_Abstract
         
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
-        
-        if ($duplicateFinding) {
-            $action = $this->_getDuplicateAction($finding, $duplicateFinding);
-        } else {
-            $action = self::CREATE_FINDING;
-        }
+        $action = ($duplicateFinding) ? $this->_getDuplicateAction($finding, $duplicateFinding) : self::CREATE_FINDING;
         
         // Take the specified action on the current finding
         switch ($action) {
