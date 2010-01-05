@@ -19,7 +19,7 @@
 /**
  * A scan result injection plugin for injecting Nessus XML output directly into OpenFISMA.
  * 
- * @author     Ryan yang <ryanyang@users.sourceforge.net>
+ * @author     Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
@@ -33,8 +33,6 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      * This parses the report and commits all data to the database.
      * 
      * @param string $uploadId The id of upload Nessus xml file
-     * @return void
-     * @throws Fisma_Exception_InvalidFileFormat if the file is not a Nessus report
      */
     public function parse($uploadId)
     {
@@ -52,7 +50,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
         try {
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
-            throw new Fisma_Exception('An error occured while processing the XML file.' . $e->getMessage());
+            throw new Fisma_Exception('An error occured while processing the XML file.');
         }
 
         $report->close();
@@ -61,31 +59,29 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
     /**
      * Save assets and findings which are recorded in the report.
      *
-     * @param XMLReader $report The full Nessus report
+     * @param XMLReader $oXml The full Nessus report
      * @param int $uploadId The specific scanner file id
-     * @return void
-     * @throws Fisma_Exception_InvalidFileFormat if not found expected fields
      */
-    private function _persist(XMLReader $report, $uploadId)
+    private function _persist(XMLReader $oXml, $uploadId)
     {
-        $findingList = array();
+        $parsedData = array();
 
         $hostCounter = 0;
         $itemCounter = 0;
 
-        while ($report->read()) {
+        while ($oXml->read()) {
             // The elements of the XML that we care about don't occur until we reach a depth of 2
-            if ($report->depth >= 2 && $report->nodeType == XMLReader::ELEMENT) {
-                if ($report->name == 'ReportHost') {
-                    $findingList[$hostCounter] = array();
-                    $findingList[$hostCounter]['findings'] = array();
-                    $findingList[$hostCounter]['ip'] = $report->getAttribute('name');
-                } elseif ($report->name == 'tag' && $report->getAttribute('name') == 'HOST_END') {
-                    $findingList[$hostCounter]['startTime'] = $report->readString();
-                } elseif ($report->name == 'ReportItem') {
-                    $findingList[$hostCounter]['findings'][$itemCounter] = array();
-                    $severity = $report->getAttribute('severity');
-                    $findingList[$hostCounter]['findings'][$itemCounter]['port'] = $report->getAttribute('port');
+            if ($oXml->depth >= 2 && $oXml->nodeType == XMLReader::ELEMENT) {
+                if ($oXml->name == 'ReportHost') {
+                    $parsedData[$hostCounter] = array();
+                    $parsedData[$hostCounter]['findings'] = array();
+                    $parsedData[$hostCounter]['ip'] = $oXml->getAttribute('name');
+                } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'HOST_END') {
+                    $parsedData[$hostCounter]['startTime'] = $oXml->readString();
+                } elseif ($oXml->name == 'ReportItem' && $oXml->getAttribute('severity') > 1) {
+                    $parsedData[$hostCounter]['findings'][$itemCounter] = array();
+                    $severity = $oXml->getAttribute('severity');
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['port'] = $oXml->getAttribute('port');
 
                     switch($severity) {
                         case '1': 
@@ -99,70 +95,82 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                             break;
                     }
 
-                    $findingList[$hostCounter]['findings'][$itemCounter]['severity'] = $severity;
-                } elseif ($report->name == 'solution') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['solution'] = $report->readString();
-                } elseif ($report->name == 'description') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['description'] = $report->readString();
-                } elseif ($report->name == 'cve') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['cve'][] = $report->readString();
-                } elseif ($report->name == 'bid') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['bid'][] = $report->readString();
-                } elseif ($report->name == 'xref') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['xref'][] = $report->readString();
-                } elseif ($report->name == 'synopsis') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['synopsis'] = $report->readString();
-                } elseif ($report->name == 'cvss_base_score') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['cvss_base_score'] = $report->readString();
-                } elseif ($report->name == 'cvss_vector') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['cvss_vector'] = $report->readString();
-                } elseif ($report->name == 'plugin_output') {
-                    $findingList[$hostCounter]['findings'][$itemCounter]['plugin_output'] = $report->readString();
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['severity'] = $severity;
+                } elseif ($oXml->name == 'solution') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['solution'] = $oXml->readString();
+                } elseif ($oXml->name == 'description') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['description'] = $oXml->readString();
+                } elseif ($oXml->name == 'cve') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['cve'][] = $oXml->readString();
+                } elseif ($oXml->name == 'bid') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['bid'][] = $oXml->readString();
+                } elseif ($oXml->name == 'xref') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['xref'][] = $oXml->readString();
+                } elseif ($oXml->name == 'synopsis') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['synopsis'] = $oXml->readString();
+                } elseif ($oXml->name == 'cvss_base_score') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['cvss_base_score'] = $oXml->readString();
+                } elseif ($oXml->name == 'cvss_vector') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['cvss_vector'] = $oXml->readString();
+                } elseif ($oXml->name == 'plugin_output') {
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['plugin_output'] = $oXml->readString();
                 }
-            } elseif ($report->nodeType == XMLReader::END_ELEMENT) {
-                if ($report->name == 'ReportHost') {
+            } elseif ($oXml->nodeType == XMLReader::END_ELEMENT) {
+                if ($oXml->name == 'ReportHost') {
                     $hostCounter++;
                     $itemCounter = 0;
-                } elseif ($report->name == 'ReportItem') {
+                } elseif ($oXml->name == 'ReportItem') {
                     $itemCounter++;
                 }
             }
         }
 
-        foreach ($findingList as $host) {
+        // Make sure that the XML is valid before continuing. Since XMLReader is stream based, we can't check for
+        // validity until after the XML is completely parsed.
+        if (!$oXml->isValid()) {
+            throw new Fisma_Inject_Exception('XML is not valid.');
+        }
+
+        foreach ($parsedData as $host) {
             foreach ($host as $findings) {
-                foreach ($findings as $finding) {
-                    // Prepare asset
-                    $asset = array();
-                    $asset['name'] = $host['ip'] . ':' . $finding['port'];
-                    $asset['networkId'] = (int) $this->_networkId;
-                    $asset['addressIp'] = $host['ip'];
-                    $asset['addressPort'] = (int) $finding['port'];
+                if (is_array($findings)) {
+                    foreach ($findings as $finding) {
+                        // Prepare asset
+                        $asset = array();
+                        $asset['name'] = (!empty($finding['port'])) ? $host['ip'] . ':' . $finding['port'] : 
+                            $host['ip'];
+                        $asset['networkId'] = (int) $this->_networkId;
+                        $asset['addressIp'] = $host['ip'];
+                        $asset['addressPort'] = (!empty($finding['port'])) ? (int) $finding['port'] : NULL;
 
-                    // Save asset
-                    $this->_saveAsset($asset);
+                        // Save asset
+                        $this->_saveAsset($asset);
 
-                    // Prepare finding
-                    $findingInstance = array();
-                    foreach ($finding as &$data) {
-                        if (!is_array($data)) {
-                            $data = Fisma_String::textToHtml($data);
+                        // Prepare finding
+                        foreach ($finding as &$data) {
+                            if (!is_array($data)) {
+                                $data = Fisma_String::textToHtml($data);
+                            }
                         }
+
+                        $finding['plugin_output'] = (!empty($finding['plugin_output'])) ? $finding['plugin_output'] : 
+                            '';
+
+                        $findingInstance = array();
+                        $findingInstance['uploadId'] = (int) $uploadId;
+                        $findingInstance['discoveredDate'] = date('Y-m-d', strtotime($host['startTime']));
+                        $findingInstance['sourceId'] = (int) $this->_findingSourceId;
+                        $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
+                        $findingInstance['description'] = $finding['description'] . $finding['plugin_output'];
+                        $findingInstance['threat'] = (!empty($finding['synopsis'])) ? $finding['synopsis'] : NULL;
+                        $findingInstance['recommendation'] = (!empty($finding['solution'])) ? $finding['solution'] : 
+                            NULL;
+                        $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] : NULL;
+                        $findingInstance['assetId'] = (int) $this->_assetId;
+
+                        // Save finding
+                        $this->_commit($findingInstance);
                     }
-
-                    $findingInstance = array();
-                    $findingInstance['uploadId'] = (int) $uploadId;
-                    $findingInstance['discoveredDate'] = date('Y-m-d', strtotime($host['startTime']));
-                    $findingInstance['sourceId'] = (int) $this->_findingSourceId;
-                    $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
-                    $findingInstance['description'] = $finding['description'] . $finding['plugin_output'];
-                    $findingInstance['threat'] = $finding['synopsis'];
-                    $findingInstance['recommendation'] = $finding['solution'];
-                    $findingInstance['threatLevel'] = $finding['severity'];
-                    $findingInstance['assetId'] = (int) $this->_assetId;
-
-                    // Save finding
-                    $this->_commit($findingInstance);
                 }
             }
         }

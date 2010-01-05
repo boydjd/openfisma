@@ -147,7 +147,9 @@ abstract class Fisma_Inject_Abstract
                 $finding->save();
                 break;
         }
-        
+
+        $finding->free();
+        unset($finding);
     }
 
     /**
@@ -253,6 +255,8 @@ abstract class Fisma_Inject_Abstract
             $asset->save();
 
             $this->_assetId = $asset->id;
+            $asset->free();
+            unset($asset);
         }
     }
     
@@ -293,5 +297,10 @@ abstract class Fisma_Inject_Abstract
                 $product->save();
             }
         }
+
+        $product->free();
+        $asset->free();
+        unset($product);
+        unset($asset);
     }
 }
