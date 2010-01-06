@@ -4,19 +4,19 @@ Asset:
         source: manual
         addressIp: 10.24.9.129
         addressPort: 443
-        Organization: OF
+        Organization: OF_ORG
         Network: DN
     dctest01:
         name: dc-test-01
         source: manual
         addressIp: 10.24.9.122
         addressPort: 80
-        Organization: OF
+        Organization: OF_ORG
         Network: DN
     dcdevl01:
         name: dc-devl-01
         source: manual
         addressIp: 10.24.9.125
         addressPort: 80
-        Organization: OF
+        Organization: OF_ORG
         Network: DN

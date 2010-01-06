@@ -210,6 +210,7 @@ class Fisma
             'log' => 'data/logs',
             'migration' => 'application/doctrine/migrations',
             'sampleData' => 'application/doctrine/data/sample',
+            'sampleDataBuild' => 'application/doctrine/data/sample-build',
             'schema' => 'application/doctrine/schema',
             'systemDocument' => 'data/uploads/system-document',
             'test' => 'tests',
