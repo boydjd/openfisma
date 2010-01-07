@@ -32,7 +32,7 @@
  * @package    Listener
  * @version    $Id$
  */
-class NotificationListener extends Doctrine_Record_Listener
+class NotificationListener extends Fisma_Record_Listener
 {
     /**
      * Send notifications for object creation
@@ -42,6 +42,10 @@ class NotificationListener extends Doctrine_Record_Listener
      */
     public function postInsert(Doctrine_Event $event)
     {
+        if (!self::$_listenerEnabled) {
+            return;
+        }
+
         $record = $event->getInvoker();
         $eventName = strtoupper(get_class($record)) . '_CREATED';
         Notification::notify($eventName, $record, User::currentUser());
@@ -58,6 +62,10 @@ class NotificationListener extends Doctrine_Record_Listener
      */
     public function postUpdate(Doctrine_Event $event)
     {
+        if (!self::$_listenerEnabled) {
+            return;
+        }
+
         $record = $event->getInvoker();
         $class = get_class($record);
         $eventName = "{$class}_UPDATED";
@@ -83,6 +91,10 @@ class NotificationListener extends Doctrine_Record_Listener
      */
     public function postDelete(Doctrine_Event $event)
     {
+        if (!self::$_listenerEnabled) {
+            return;
+        }
+
         $record = $event->getInvoker();
         $eventName = strtoupper(get_class($record)) . '_DELETED';
         Notification::notify($eventName, $record, User::currentUser());    

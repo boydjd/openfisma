@@ -16,17 +16,34 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
+
 /**
- * This subclass is required to match our Fisma_Record class, but it doesn't contain any functionality
+ * Tests for the Fisma facade class
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Fisma
- * @subpackage Fisma_Record
+ * @package    Test
+ * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Fisma_RecordTable extends Doctrine_Table
+class Test_Fisma extends Test_FismaUnitTest
 {
-    
+    /**
+     * Test the ability to globally set the enabled state of a Fisma_Record_Listener.
+     * 
+     * This covers the logic for loading listeners if they haven't been loaded when the enabled state is set.
+     * 
+     * This test isn't ideal because it relies on knowledge of a known Fisma_Record_Listener subclass in order to 
+     * test the logic in the Fisma class, but it's a necessary evil to get coverage of this rather important function.
+     */
+    public function testGloballySetListenerEnabledState()
+    {
+        Fisma::setListenerEnabled(true);
+        $this->assertTrue(IndexListener::getEnabled());
+        
+        Fisma::setListenerEnabled(false);
+        $this->assertFalse(IndexListener::getEnabled());
+    }
 }

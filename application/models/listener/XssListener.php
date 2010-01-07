@@ -32,7 +32,7 @@
  * @package    Listener
  * @version    $Id$
  */
-class XssListener extends Doctrine_Record_Listener
+class XssListener extends Fisma_Record_Listener
 {
     /**
      * The HTMLPurifier instance used by the listener
@@ -49,6 +49,10 @@ class XssListener extends Doctrine_Record_Listener
      */
     public function preSave(Doctrine_Event $event) 
     {
+        if (!self::$_listenerEnabled) {
+            return;
+        }
+
         $invoker = $event->getInvoker();
         $modified = $invoker->getModified();
         $table = $invoker->getTable();

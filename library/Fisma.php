@@ -418,7 +418,7 @@ class Fisma
     }
 
     /**
-     * Returns whether listeners are enabled
+     * Returns whether Fisma_Record_Listeners are enabled
      * 
      * @return boolean Ture if listener is enabled, false otherwise
      */
@@ -428,27 +428,35 @@ class Fisma
     }
     
     /**
-     * Sets whether listeners are enabled or not.
+     * Enable or disable all Fisma_Record_Listeners
      * 
-     * @param boolean $enabled The specified boolean value which indicates if enable listener
+     * @param boolean $enabled
+     * @param boolean $loadClasses If true, attempt to load all listeners in the listeners directory first
      * @return void
      */
-    public static function setListenerEnabled($enabled) 
+    public static function setListenerEnabled($enabled, $loadClasses = true) 
     {
         self::$_listenerEnabled = $enabled;
         
-        // Enumerate the models and enable/disable the listeners for each one
-        $modelDir = opendir(Fisma::getPath('model'));
-        while ($file = readdir($modelDir)) {
-            if ($match = strpos($file, '.php')) {
-                $modelName = substr($file, 0, $match);
+        if ($loadClasses) {
+            // Load all of the listeners first
+            $listenerDir = opendir(Fisma::getPath('listener'));
 
-                if (!strstr($modelName, 'Table')) {
-                    require_once(Fisma::getPath('model') . '/' . $file);
-                    Doctrine::getTable($modelName)
-                              ->getRecordListener()
-                              ->setOption('disabled', !self::$_listenerEnabled);
+            while ($file = readdir($listenerDir)) {
+                if ('.php' == substr($file, -4)) {
+                    $className = substr($file, 0, -4);
+                    if (!class_exists($className)) {
+                        require_once(Fisma::getPath('listener') . '/' . $file);
+                    }
                 }
+            }
+        }
+        
+        // Enumerate all classes and search for ones that subclass the Fisma_Record_Listener marker class
+        $classes = get_declared_classes();
+        foreach ($classes as $class) {
+            if (is_subclass_of($class, 'Fisma_Record_Listener')) {
+                Fisma_Record_Listener::setEnabled($enabled);
             }
         }
     }

@@ -17,7 +17,10 @@
  */
 
 /**
- * This subclass is required to match our Fisma_Record class, but it doesn't contain any functionality
+ * A listener base class which enables functionality to selectively disable a particular listener
+ * 
+ * This class provides the public interface for controlling the listener's enabled state, but each child class is 
+ * ultimately responsible for applying the state correctly. In a sense, this class is actually just a marker interface.
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -26,7 +29,32 @@
  * @subpackage Fisma_Record
  * @version    $Id$
  */
-class Fisma_RecordTable extends Doctrine_Table
+class Fisma_Record_Listener extends Doctrine_Record_Listener
 {
+    /**
+     * Indicates whether the listener is enabled or not
+     * 
+     * @var bool
+     */
+    static protected $_listenerEnabled = false;
     
+    /**
+     * Get this listener's current enabled state
+     * 
+     * @return bool
+     */
+    static public function getEnabled()
+    {
+        return self::$_listenerEnabled;
+    }
+    
+    /**
+     * Set whether this listener is enabled or not
+     * 
+     * @param bool $enabled
+     */
+    static public function setEnabled($enabled)
+    {
+        self::$_listenerEnabled = $enabled;
+    }
 }

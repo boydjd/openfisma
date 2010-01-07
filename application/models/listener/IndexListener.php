@@ -25,7 +25,7 @@
  * @package    Listener
  * @version    $Id$
  */
-class IndexListener extends Doctrine_Record_Listener
+class IndexListener extends Fisma_Record_Listener
 {
     /**
      * New records always get indexed
@@ -35,6 +35,10 @@ class IndexListener extends Doctrine_Record_Listener
      */
     public function postInsert(Doctrine_Event $event)
     {
+        if (!self::$_listenerEnabled) {
+            return;
+        }
+        
         $record = $event->getInvoker();
 
         $index = new Fisma_Index(get_class($record));
@@ -49,6 +53,10 @@ class IndexListener extends Doctrine_Record_Listener
      */
     public function postUpdate(Doctrine_Event $event)
     {
+        if (!self::$_listenerEnabled) {
+            return;
+        }
+
         $record = $event->getInvoker();
         $modified = $record->getLastModified();
 
@@ -83,6 +91,10 @@ class IndexListener extends Doctrine_Record_Listener
      */
     public function postDelete(Doctrine_Event $event)
     {
+        if (!self::$_listenerEnabled) {
+            return;
+        }
+
         $record = $event->getInvoker();
 
         $index = new Fisma_Index(get_class($record));

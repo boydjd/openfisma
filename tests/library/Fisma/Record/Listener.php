@@ -16,17 +16,31 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
+
 /**
- * This subclass is required to match our Fisma_Record class, but it doesn't contain any functionality
+ * Tests for Fisma_Record_Listener
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Fisma
- * @subpackage Fisma_Record
+ * @package    Test
+ * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Fisma_RecordTable extends Doctrine_Table
+class Test_Fisma_Record_Listener extends Test_FismaUnitTest
 {
-    
+    /**
+     * Test ability to set enabled state
+     */
+    public function testSetEnabledState()
+    {
+        $listener = new Fisma_Record_Listener();
+        
+        $listener->setEnabled(false);
+        $this->assertFalse($listener->getEnabled());
+        
+        $listener->setEnabled(true);
+        $this->assertTrue($listener->getEnabled());
+    }
 }
