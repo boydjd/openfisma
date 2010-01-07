@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
  * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Test_Fisma_Record_Listener extends Test_FismaUnitTest
+class Test_Library_Fisma_Record_Listener extends Test_FismaUnitTest
 {
     /**
      * Test ability to set enabled state
