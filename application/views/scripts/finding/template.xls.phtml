@@ -138,9 +138,7 @@ echo '<?xml version="1.0"?>'.
  </Styles>
  <Names>
   <NamedRange ss:Name="controls" ss:RefersTo="=ControlIDs!C1"/>
-  <NamedRange ss:Name="systems"  ss:RefersTo="=Systems!C1"/>
-  <NamedRange ss:Name="sources"  ss:RefersTo="=Sources!C1"/>
-  <NamedRange ss:Name="networks" ss:RefersTo="=Networks!C1"/>
+  <NamedRange ss:Name="systems" ss:RefersTo="Systems!C1"/>
  </Names>
  <Worksheet ss:Name="Findings">
   <Table ss:ExpandedColumnCount="21" ss:ExpandedRowCount="8" x:FullColumns="1"
@@ -260,7 +258,8 @@ echo '<?xml version="1.0"?>'.
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C10:R65536C10</Range>
    <Type>List</Type>
-   <Value>sources</Value>
+   <CellRangeList/>
+   <Value>&quot;<?php echo implode(',',array_values($this->sources));?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C13:R65536C13</Range>
@@ -276,7 +275,8 @@ echo '<?xml version="1.0"?>'.
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C3:R65536C3</Range>
    <Type>List</Type>
-   <Value>networks</Value>
+   <CellRangeList/>
+   <Value>&quot;<?php echo implode(',',array_values($this->networks));?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C1:R65536C1</Range>
@@ -339,68 +339,6 @@ echo '<?xml version="1.0"?>'.
 </Row>
 <?php
     }
-?>
-  </Table>
-  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-   <Print>
-    <ValidPrinterInfo/>
-    <HorizontalResolution>600</HorizontalResolution>
-    <VerticalResolution>0</VerticalResolution>
-   </Print>
-   <Panes>
-    <Pane>
-     <Number>3</Number>
-    </Pane>
-   </Panes>
-   <ProtectObjects>True</ProtectObjects>
-   <ProtectScenarios>False</ProtectScenarios>
-  </WorksheetOptions>
- </Worksheet> 
- <Worksheet ss:Name="Sources">
-  <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
-   <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
-<?php
-    foreach ($this->sources as $source) :
-?>
-<Row>
-<Cell>
-<Data ss:Type="String"><?php echo $source; ?></Data>
-<NamedCell ss:Name="sources"/>
-</Cell>
-</Row>
-<?php
-    endforeach;
-?>
-  </Table>
-  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-   <Print>
-    <ValidPrinterInfo/>
-    <HorizontalResolution>600</HorizontalResolution>
-    <VerticalResolution>0</VerticalResolution>
-   </Print>
-   <Panes>
-    <Pane>
-     <Number>3</Number>
-    </Pane>
-   </Panes>
-   <ProtectObjects>True</ProtectObjects>
-   <ProtectScenarios>False</ProtectScenarios>
-  </WorksheetOptions>
- </Worksheet> 
- <Worksheet ss:Name="Networks">
-  <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
-   <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
-<?php
-    foreach ($this->networks as $network) :
-?>
-<Row>
-<Cell>
-<Data ss:Type="String"><?php echo $network; ?></Data>
-<NamedCell ss:Name="networks"/>
-</Cell>
-</Row>
-<?php
-    endforeach;
 ?>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
