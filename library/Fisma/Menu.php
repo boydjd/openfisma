@@ -17,45 +17,26 @@
  */
 
 /**
- * Creates the system menubar object in JSON format for use with YUI.
- *
- * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * Menu building for OpenFISMA
+ * 
+ * @author     Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Controller
+ * @package    Fisma
+ * @subpackage Fisma_Menu
  * @version    $Id$
  */
-class MenuController extends SecurityController
+class Fisma_Menu
 {
     /**
-     * Setup contexts for this controller
+     * Constructs Fisma menu bar and returns json-encoded menu string representation.
      * 
-     * @return void
-     */
-    function init() 
-    {
-        parent::init();
-        $this->_helper->contextSwitch()
-                      ->addActionContext('main', 'json')
-                      ->initContext();
-    }
-    
-    /**
-     * Creates the main menu. Render the menu bar to a JSON object. This action is called
-     * asynchronously by YUI.
-     * 
-     * @return void
-     */
-    function mainAction()
+     * @return string The json-encoded menu bar string
+     */    
+    public static function main()
     {
         $menubar = new Fisma_Yui_MenuBar();
-        
-        // Tell the browser to cache the menu bar
-        $this->getResponse()->setHeader('Cache-Control', 'max-age=3600', true);
-        $this->getResponse()->setHeader('Last-Modified', 'Thu, 01 Dec 1984 16:00:00 GMT', true);
-        $this->getResponse()->setHeader('Expires', 'Thu, 01 Dec 2100 16:00:00 GMT', true);
-        $this->getResponse()->setHeader('Pragma', null, true);
-        
+
         if (Fisma_Acl::hasPrivilege('area', 'dashboard')) {
             $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/panel/dashboard');
             $menubar->add($dashboard);
@@ -161,6 +142,6 @@ class MenuController extends SecurityController
             $menubar->add($debug);
         }
 
-        $this->view->menubar = $menubar->getMenus();
+        return Zend_Json_Encoder::encode($menubar->getMenus());
     }
 }

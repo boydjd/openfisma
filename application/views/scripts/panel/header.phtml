@@ -1,33 +1,3 @@
-<script type="text/javascript">
-// Create the menu bar
-YAHOO.util.Event.onDOMReady(function () {
-/** @todo mhaase: allow access to the logger from the interface when in development mode, and could logger errors go
- * to a logfile in production mode? 
- */
-// Uncomment the next section when debugging YUI components
-//var myLogReader = new YAHOO.widget.LogReader();
-//myLogReader.hideCategory('info');
-
-    YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/menu/main/format/json', 
-                                    {
-                                        success: function(o) {
-                                            var menuData = YAHOO.lang.JSON.parse(o.responseText);
-                                            var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", 
-                                                                                    {autosubmenudisplay: true});
-                                            YAHOO.util.Dom.addClass(oMenuBar.element, "yuimenubarnav");
-                                            oMenuBar.addItems(menuData.menubar);
-                                            oMenuBar.render('menubar');                                            
-                                        },
-                                        failure: function(o) {alert('Failed to load menubar: '+o.statusText);}
-                                    }, 
-                                    null);
-});
-
-
-
-</script>
-
 <div id="logo">
     <a href="/"><img alt="Logo" src="/images/logo.png"></a>
 </div>
@@ -51,4 +21,19 @@ YAHOO.util.Event.onDOMReady(function () {
 </div>
 
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>
+<script type="text/javascript">
+var jsonMenuDataString = '<?php echo $this->menuData; ?>';
+
+//Constructs menu bar
+function buildUpYuiMenuBar(jsonMenuData)
+{
+    var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
+    var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
+    YAHOO.util.Dom.addClass(oMenuBar.element, "yuimenubarnav");
+    oMenuBar.addItems(menuData);
+    oMenuBar.render('menubar');
+}
+
+buildUpYuiMenuBar(jsonMenuDataString);
+</script>
 <div id="msgbar"><!-- Any user error messages are rendered into this div --></div>
