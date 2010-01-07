@@ -95,7 +95,11 @@ class Finding extends BaseFinding
      */
     public function construct()
     {
-        $this->status = 'NEW';
+        // Set default status for new objects (i.e. objects with transient state)
+        $state = $this->state();
+        if ($state == Doctrine_Record::STATE_TCLEAN || $state == Doctrine_Record::STATE_TDIRTY) {
+            $this->status = 'NEW';            
+        }
     }
     
     /**
