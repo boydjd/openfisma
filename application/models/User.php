@@ -575,4 +575,23 @@ class User extends BaseUser
         $oldPasswords = array_slice($oldPasswords, 0, self::PASSWORD_HISTORY_LIMIT);        
         $this->passwordHistory = implode(':', $oldPasswords);
     }
+    
+    /**
+     * Retrieve user assigned roles
+     * 
+     * @param boolean $arrayType Return array if true, otherwise Doctrine_Collection
+     * @return array|Doctrine_Collection The list of roles
+     */
+    public function getRoles($arrayType = true)
+    {
+        if (!$arrayType) {
+            return $this->Roles;
+        }
+        
+        $roleNames = array();
+        foreach ($this->Roles as $role) {
+            $roleNames[$role->nickname] = $role->name;
+        }
+        return $roleNames;
+    }
 }

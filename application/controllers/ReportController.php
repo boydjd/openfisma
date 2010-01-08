@@ -369,22 +369,12 @@ class ReportController extends SecurityController
         
         // Filter unauthorized plugin report items since actually user does not have rights to visit it.
         if ($this->_me->username != 'root') {
-            $userRolesQuery = Doctrine_Query::create()
-                              ->select('u.id, r.nickname')
-                              ->from('User u')
-                              ->innerJoin('u.Roles r')
-                              ->where('u.id = ?', User::currentUser()->id)
-                              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-            $userRolesResult = $userRolesQuery->execute();
-            $userRoles = array();
-            foreach ($userRolesResult as $key => $result) {
-                $userRoles[] = $result['r_nickname'];
-            }
-            if (!empty($userRoles)) {
-                foreach ($reports as $reportName => $report) {
-                    if (!in_array($userRoles, $report['roles'])) {
-                        unset($reports[$reportName]);
-                    }
+            $userRoles = $this->_me->getRoles();
+            foreach ($reports as $reportName => $report) {
+                $roleNameIntersection = array_intersect($userRoles, $report['roles']);
+                $roleNicknameIntersection = array_intersect(array_flip($userRoles), $report['roles']);
+                if (empty($roleNameIntersection) && empty($roleNicknameIntersection)) {
+                    unset($reports[$reportName]);
                 }
             }
         }
