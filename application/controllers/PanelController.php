@@ -57,7 +57,7 @@ class PanelController extends SecurityController
      */
     public function headerAction()
     {
-        $this->view->menuData = Fisma_Menu::main();
+        $this->view->mainMenuBar = Fisma_Menu::getMainMenu();
         
         $this->_helper->layout->setLayout('layout');
         $this->_helper->actionStack('footer');

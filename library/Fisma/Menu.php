@@ -29,17 +29,17 @@
 class Fisma_Menu
 {
     /**
-     * Constructs Fisma menu bar and returns json-encoded menu string representation.
+     * Constructs a main menu for OpenFISMA.
      * 
-     * @return string The json-encoded menu bar string
-     */    
-    public static function main()
+     * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
+     */
+    public static function getMainMenu()
     {
-        $menubar = new Fisma_Yui_MenuBar();
+        $mainMenuBar = new Fisma_Yui_MenuBar();
 
         if (Fisma_Acl::hasPrivilege('area', 'dashboard')) {
             $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/panel/dashboard');
-            $menubar->add($dashboard);
+            $mainMenuBar->add($dashboard);
         }
 
         if (Fisma_Acl::hasPrivilege('finding', 'read', '*')) {
@@ -61,7 +61,7 @@ class Fisma_Menu
                 $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/panel/finding/sub/approve'));
             }
             
-            $menubar->add($findings);
+            $mainMenuBar->add($findings);
         }
 
         if (Fisma_Acl::hasPrivilege('system', 'read', '*')) {
@@ -79,7 +79,7 @@ class Fisma_Menu
 
             $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
             
-            $menubar->add($systems);
+            $mainMenuBar->add($systems);
         }
         
         if (Fisma_Acl::hasPrivilege('area', 'reports')) {
@@ -90,7 +90,7 @@ class Fisma_Menu
             $reports->add(new Fisma_Yui_MenuItem('Overdue Report', '/panel/report/sub/overdue'));
             $reports->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/panel/report/sub/plugin'));
             
-            $menubar->add($reports);
+            $mainMenuBar->add($reports);
         }
         
         if (Fisma_Acl::hasPrivilege('area', 'admin')) {
@@ -120,7 +120,7 @@ class Fisma_Menu
                 $admin->add(new Fisma_Yui_MenuItem('Users', '/panel/account/sub/list'));
             }
             
-            $menubar->add($admin);
+            $mainMenuBar->add($admin);
         }
         
         $preferences = new Fisma_Yui_Menu('User Preferences');
@@ -132,16 +132,16 @@ class Fisma_Menu
         }
         $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/panel/user/sub/notification'));
         
-        $menubar->add($preferences);
+        $mainMenuBar->add($preferences);
 
         if (Fisma::debug()) {
             $debug = new Fisma_Yui_Menu('Debug');
             
             $debug->add(new Fisma_Yui_MenuItem('PHP Info', '/debug/phpinfo'));
             
-            $menubar->add($debug);
+            $mainMenuBar->add($debug);
         }
 
-        return Zend_Json_Encoder::encode($menubar->getMenus());
+        return $mainMenuBar;
     }
 }

@@ -22,18 +22,12 @@
 
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>
 <script type="text/javascript">
-var jsonMenuDataString = '<?php echo $this->menuData; ?>';
-
-//Constructs menu bar
-function buildUpYuiMenuBar(jsonMenuData)
-{
-    var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
-    var oMenuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
-    YAHOO.util.Dom.addClass(oMenuBar.element, "yuimenubarnav");
-    oMenuBar.addItems(menuData);
-    oMenuBar.render('menubar');
-}
-
-buildUpYuiMenuBar(jsonMenuDataString);
+//Constructs the YUI menu bar for OpenFISMA
+var jsonMenuData = '<?php echo Zend_Json_Encoder::encode($this->mainMenuBar->getMenus()); ?>';
+var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
+var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
+YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");
+menuBar.addItems(menuData);
+menuBar.render('menubar');
 </script>
 <div id="msgbar"><!-- Any user error messages are rendered into this div --></div>
