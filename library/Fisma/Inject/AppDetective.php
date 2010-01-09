@@ -282,16 +282,11 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      */
     private function _persist()
     {
-        $this->_saveAsset($this->_asset);
-        $this->_saveProduct($this->_product);
-        // Commit the findings
         foreach ($this->_findings as $finding) {
-            // First set the asset ID
-            $finding['assetId'] = $this->_assetId;
-            
-            // Now commit the finding
-            $this->_commit($finding);
+            $this->_save($finding, $this->_asset, $this->_product);
         }
+
+        $this->_commit();
     }
     
 }

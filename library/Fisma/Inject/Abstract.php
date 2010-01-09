@@ -29,6 +29,21 @@
 abstract class Fisma_Inject_Abstract
 {
     /**
+     * The constant defines the possible specific finding action the finding should be created and set to NEW status.
+     */
+    const CREATE_FINDING = 1;
+    
+    /**
+     * The constant defines the possible specific finding action the finding should be deleted.
+     */
+    const DELETE_FINDING = 2;
+    
+    /**
+     * The constant defines the possible specific finding action the finding should be created and set to PEND status.
+     */
+    const REVIEW_FINDING = 3;
+
+    /**
      * The full xml file path to be used to the injection plugin
      * 
      * @var string
@@ -48,52 +63,39 @@ abstract class Fisma_Inject_Abstract
      * @var string
      */
     protected $_orgSystemId;
-    
+
     /**
-     * The finding source id to be used for injection
+     * The finding source id to be used for injected 
      * 
      * @var string
      */
     protected $_findingSourceId;
     
     /**
-     * The asset id to be used for injection
-     * 
-     * @var string
-     */
-    protected $_assetId;
-    
-    /**
-     * insert finding ids
-     * 
-     * @var array
-     */
-    private $_findingIds = array();
-    
-    /**
      * The summary counts array
      * 
      * @var array
      */
-    private $_totalFindings = array('created' => 0,
-                                    'deleted' => 0,
-                                    'reviewed' => 0);
-    
+    private $_totalFindings = array('created' => 0, 'deleted' => 0, 'reviewed' => 0);
+
     /**
-     * The constant defines the possible specific finding action the finding should be created and set to NEW status.
+     * collection of findings to be created 
+     * 
+     * @var array
      */
-    const CREATE_FINDING = 1;
-    
-    /**
-     * The constant defines the possible specific finding action the finding should be deleted.
+    private $_findings = array();
+
+    /** 
+     * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
+     * then _commit() to commit to database.
+     *
+     * Throws an exception if the file is an invalid format.
+     *
+     * @param string $uploadId The primary key for the upload object associated with this file
+     * @throws Fisma_Inject_Exception
      */
-    const DELETE_FINDING = 2;
-    
-    /**
-     * The constant defines the possible specific finding action the finding should be created and set to PEND status.
-     */
-    const REVIEW_FINDING = 3;
-    
+    abstract public function parse($uploadId);
+
     /**
      * Create and initialize a new plug-in instance for the specified file
      * 
@@ -101,7 +103,6 @@ abstract class Fisma_Inject_Abstract
      * @param string $networkId The specified network id
      * @param string $systemId The specified organization id
      * @param string $findingSourceId The specified finding source id
-     * @return void
      */
     public function __construct($file, $networkId, $systemId, $findingSourceId) 
     {
@@ -112,44 +113,108 @@ abstract class Fisma_Inject_Abstract
     }
 
     /**
-     * Conditionally commit the specified finding data
+     * The get handler method is overridden in order to provide read-only access to the summary counts for
+     * this plug-in.
      *
-     * The finding is evaluated with respect to the Injection Filtering rules. The finding may be committed or it may be
-     * deleted based on the filter rules.
+     * Example: echo "Created {$plugin->created} findings";
      * 
-     * Subclasses should call this function to commit findings rather than committing new findings directly.
-     *
-     * @param array $findingData Column data for the new finding object
-     * @return void
+     * @param string $field The specified summary counts key
+     * @return int The summary count value of the specified key
      */
-    protected function _commit($findingData) 
+    public function __get($field) 
     {
+        return (!empty($this->_totalFindings[$field])) ? $this->_totalFindings[$field] : 0;
+    }
+
+    /**
+     * Save data to instance 
+     * 
+     * @param array $findingData 
+     * @param array $assetData 
+     * @param array $productData 
+     */
+    protected function _save($findingData, $assetData = NULL, $productData = NULL)
+    {
+        if (empty($findingData)) {
+            throw new Fisma_Inject_Exception('Save cannot be called without finding data!');
+        }
+
+        // Add data to provided assetData
+        if (!empty($assetData)) {
+            $assetData['networkId'] = $this->_networkId;
+            $assetData['orgSystemId'] = $this->_orgSystemId;
+            $assetData['source'] = 'SCAN';
+
+            $assetData['id'] = $this->_prepareAsset($assetData);
+        }
+
+        // Add data to provided productData
+        if (!empty($productData)) {
+            $assetData['productId'] = $this->_prepareProduct($productData);
+        }
+
+        // Prepare finding
         $finding = new Finding();
         $finding->merge($findingData);
         
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
         $action = ($duplicateFinding) ? $this->_getDuplicateAction($finding, $duplicateFinding) : self::CREATE_FINDING;
-        
+
         // Take the specified action on the current finding
         switch ($action) {
             case self::CREATE_FINDING:
                 $this->_totalFindings['created']++;
-                $finding->save();
                 break;
             case self::DELETE_FINDING:
                 $this->_totalFindings['deleted']++;
-                // Deleted findings are not saved
+                // Deleted findings are not saved, so we exit the _save routine
+                $finding->free();
+                unset($finding);
+                return;
                 break;
             case self::REVIEW_FINDING:
                 $this->_totalFindings['reviewed']++;
                 $finding->status = 'PEND';
-                $finding->save();
                 break;
         }
 
-        $finding->free();
-        unset($finding);
+        // Store data in instance to be committed later
+        $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
+    }
+
+    /**
+     * Commit all data that has been saved 
+     *
+     * Subclasses should call this function to commit findings rather than committing new findings directly.
+     */
+    protected function _commit() 
+    {
+        Doctrine_Manager::connection()->beginTransaction();
+
+        try {
+            foreach ($this->_findings as $findingData) {
+                if (!$findingData['asset']['id']) {
+                    $findingData['asset']['id'] = $this->_saveAsset($findingData['asset']);
+                }
+
+                if (!empty($findingData['asset']['productId']) && !empty($findingData['product'])) {
+                    $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
+                }
+
+                $findingData['finding']->assetId = $findingData['asset']['id'];
+
+                $findingData['finding']->save();
+
+                $findingData['finding']->free();
+                unset($findingData['finding']);
+            }
+
+            Doctrine_Manager::connection()->commit();
+        } catch (Exception $e) {
+            Doctrine_Manager::connection()->rollBack();
+            throw $e;
+        }
     }
 
     /**
@@ -160,29 +225,35 @@ abstract class Fisma_Inject_Abstract
      */
     private function _getDuplicateFinding($finding)
     {
-        $duplicateFindings = Doctrine::getTable('Finding')->findByDql('description LIKE ?', $finding->description);
-        
-        return ($duplicateFindings) ? $duplicateFindings->getLast() : FALSE;
+        $duplicateFindings = Doctrine_Query::create()
+            ->select('f.responsibleOrganizationId, f.type, f.status')
+            ->from('Finding f')
+            ->where('description LIKE ?', $finding->description)
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+
+        return ($duplicateFindings) ? array_pop($duplicateFindings) : FALSE;
     }
     
     /**
      * Evaluate duplication rules for two findings
      * 
      * @param Finding $newFinding
-     * @param Finding $duplicateFinding
+     * @param Array $duplicateFinding
      * @return int One of the constants: CREATE_FINDING, DELETE_FINDING, or REVIEW_FINDING
      */
-    private function _getDuplicateAction(Finding $newFinding, Finding $duplicateFinding)
+    private function _getDuplicateAction(Finding $newFinding, Array $duplicateFinding)
     {
         $action  = NULL;
-        $orgSame = ($newFinding->ResponsibleOrganization == $duplicateFinding->ResponsibleOrganization) ? TRUE : FALSE;
+        $orgSame = ($newFinding->ResponsibleOrganization->id == $duplicateFinding['responsibleOrganizationId']) ? TRUE 
+            : FALSE;
         
-        switch ($duplicateFinding->type) {
+        switch ($duplicateFinding['type']) {
             case 'CAP':
             case 'FP':
             case 'NONE':
                 if ($orgSame) {
-                    $action = ($duplicateFinding->status == 'CLOSED') ? self::CREATE_FINDING : self::DELETE_FINDING;
+                    $action = ($duplicateFinding['status'] == 'CLOSED') ? self::CREATE_FINDING : self::DELETE_FINDING;
                 } else {
                     $action = self::REVIEW_FINDING;
                 }
@@ -192,72 +263,84 @@ abstract class Fisma_Inject_Abstract
                 break;
             default:
                 throw new Fisma_Exception('No duplicate finding action defined for mitigation type: '
-                    . $duplicateFinding->type);
+                    . $duplicateFinding['type']);
         }
 
         return $action;
     }
-    
+
     /**
-     * The get handler method is overridden in order to provide read-only access to the summary counts for
-     * this plug-in.
-     *
-     * Example: echo "Created {$plugin->created} findings";
+     * Get the existing asset id if it exists 
      * 
-     * @param string $field The specified summary counts key
-     * @return int|null The summary count value of the specified key
+     * @param mixed $passetData 
+     * @return int|boolean 
      */
-    public function __get($field) 
+    private function _prepareAsset($assetData)
     {
-        return (!empty($this->_totalFindings[$field])) ? $this->_totalFindings[$field] : NULL;
+        // Verify whether asset exists or not
+        $assetRecord = Doctrine_Query::create()
+                        ->select('id')
+                        ->from('Asset a')
+                        ->where('a.networkId = ?', $assetData['networkId'])
+                        ->andWhere('a.addressIp = ?', $assetData['addressIp'])
+                        ->andWhere('a.addressPort = ?', $assetData['addressPort'])
+                        ->setHydrationMode(Doctrine::HYDRATE_NONE)
+                        ->execute();
+
+        return ($assetRecord) ? $assetRecord[0][0] : FALSE;
     }
 
-    /** 
-     * Parse all the data from the specified file, and load it into the database.
-     *
-     * Throws an exception if the file is an invalid format.
-     *
-     * @param string $uploadId The primary key for the upload object associated with this file
-     * @return void
-     * @throws Fisma_Exception_InvalidFileFormat if the file is an invalid format
-     */
-    abstract public function parse($uploadId);
-
     /**
-     * Save or get the asset id which is associated with the address ip and port
-     * If there has the same ip, port and network, get the exist asset id, else create a new one
+     * Save the asset
      *
      * @param array $assetData The asset data to save
-     * @return void
+     * @return int id of saved asset 
      */
-    protected function _saveAsset($assetData)
+    private function _saveAsset($assetData)
     {
-        $assetData['networkId']   = $this->_networkId;
-        $assetData['orgSystemId'] = $this->_orgSystemId;
-        $assetData['source']      = 'SCAN';
+        $asset = new Asset();
 
-        // Verify whether asset exists or not
-        $assetRecord  = Doctrine_Query::create()
-                         ->select()
-                         ->from('Asset a')
-                         ->where('a.networkId = ?', $assetData['networkId'])
-                         ->andWhere('a.addressIp = ?', $assetData['addressIp'])
-                         ->andWhere('a.addressPort = ?', $assetData['addressPort'])
-                         ->execute()
-                         ->toArray();
+        $asset->merge($assetData);
+        $asset->save();
+        
+        $id = $asset->id;
 
-        if ($assetRecord) {
-            $this->_assetId = $assetRecord[0]['id'];
-        } else {
-            $asset = new Asset();
+        // Free object
+        $asset->free();
+        unset($asset);
 
-            $asset->merge($assetData);
-            $asset->save();
+        // Check to see if any of the pending assets are duplicates, if so, update the finding to point to the correct 
+        // asset id
+/*        foreach ($this->_findings as $findingData) {
+            if (empty($findingData['finding']['assetId']) && $findingData['asset'] == $assetData) {
+                $findingData['asset']['id'] = $id;
+                $findingData['finding']->Asset->id = (int) $id;
+            }
+        }*/
 
-            $this->_assetId = $asset->id;
-            $asset->free();
-            unset($asset);
-        }
+        return $id;
+    }
+
+    /**
+     * Get the existing product id if it exists_
+     * 
+     * @param array $productData 
+     * @return int|boolean 
+     */
+    private function _prepareProduct($productData)
+    {
+        // Verify whether product exists or not
+        $productRecord = Doctrine_Query::create()
+                            ->select('id')
+                            ->from('Product p')
+                            ->where('p.name = ?', $productData['name'])
+                            ->andWhere('p.cpename = ?', $productData['cpename'])
+                            ->andWhere('p.vendor = ?', $productData['vendor'])
+                            ->andWhere('p.version = ?', $productData['version'])
+                            ->setHydrationMode(Doctrine::HYDRATE_NONE)
+                            ->execute();
+
+        return ($productRecord) ? $productRecord[0][0] : FALSE;
     }
     
     /**
@@ -266,41 +349,25 @@ abstract class Fisma_Inject_Abstract
      * @param array $productData The product data to save
      * @return void
      */
-    protected function _saveProduct($productData)
+    private function _saveProduct($productData)
     {
         $product = new Product();
-        $asset   = new Asset();
-        $asset   = $asset->getTable()->find($this->_assetId);
+        $product->merge($productData);
+        $product->save();
 
-        if (empty($asset->productId)) {
-            $existingProduct = $product->getTable()->findOneByCpeName($productData['cpeName']);
-
-            if ($existingProduct) {
-                // Use the existing product if one is found
-                $asset->productId = $existingProduct->id;
-            } else {
-                // If no existing product, create a new one
-                $product->merge($productData);
-                $product->save();
-                $asset->productId = $product->id;
-            }
-
-            $asset->getTable()->getRecordListener()->setOption('disabled', true);
-            $asset->save();
-        } else {
-            // If the asset does have a product, then do not modify it unless the CPE name is null,
-            // in which case update the CPE name.
-            $product = $product->getTable()->find($asset->productId);
-
-            if ($product && empty($product->cpeName)) {
-                $product->cpeName = $productData['cpeName'];
-                $product->save();
-            }
-        }
+        $id = $product->id;
 
         $product->free();
-        $asset->free();
         unset($product);
-        unset($asset);
+
+        // Check to see if any of the pending products are duplicates, if so, update the finding to point to the
+        // correct product id
+     /*   foreach ($this->_findings as $findingData) {
+            if (empty($findingData['asset']['productId']) && $findingData['product'] == $productData) {
+                $findingData['asset']['productId'] = $id;
+            }
+        }*/
+
+        return $id;
     }
 }

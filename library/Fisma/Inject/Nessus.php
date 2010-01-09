@@ -41,6 +41,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 
         // The third parameter is the constant LIBXML_PARSEHUGE from libxml, which is not exposed to XMLReader. 
         // This is fixed in SVN of PHP as of 12/1/09, but until it hits a release version this hack will stay.
+        // @TODO Change 1<<19 to LIBXML_PARSEHUGE once it is visible
         if (!$report->open($this->_file, NULL, 1<<19)) {
             throw new Fisma_Exception('Cannot open the XML file.');
         }
@@ -78,20 +79,23 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                     $parsedData[$hostCounter]['ip'] = $oXml->getAttribute('name');
                 } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'HOST_END') {
                     $parsedData[$hostCounter]['startTime'] = $oXml->readString();
-                } elseif ($oXml->name == 'ReportItem' && $oXml->getAttribute('severity') > 1) {
+                } elseif ($oXml->name == 'ReportItem') {
                     $parsedData[$hostCounter]['findings'][$itemCounter] = array();
                     $severity = $oXml->getAttribute('severity');
                     $parsedData[$hostCounter]['findings'][$itemCounter]['port'] = $oXml->getAttribute('port');
 
                     switch($severity) {
-                        case '1': 
+                        case "1": 
                             $severity = 'LOW';
                             break;
-                        case '2':
+                        case "2":
                             $severity = 'MODERATE';
                             break;
-                        case '3':
+                        case "3":
                             $severity = 'HIGH';
+                            break;
+                        default:
+                            $severity = 'NONE';
                             break;
                     }
 
@@ -135,44 +139,40 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
             foreach ($host as $findings) {
                 if (is_array($findings)) {
                     foreach ($findings as $finding) {
-                        // Prepare asset
-                        $asset = array();
-                        $asset['name'] = (!empty($finding['port'])) ? $host['ip'] . ':' . $finding['port'] : 
-                            $host['ip'];
-                        $asset['networkId'] = (int) $this->_networkId;
-                        $asset['addressIp'] = $host['ip'];
-                        $asset['addressPort'] = (!empty($finding['port'])) ? (int) $finding['port'] : NULL;
+                        if (($finding['severity'] != 'NONE') && ($finding['severity'] != 'LOW')) {
+                            // Prepare asset
+                            $asset = array();
+                            $asset['name'] = (!empty($finding['port'])) ? $host['ip'] . ':' . $finding['port'] : 
+                                $host['ip'];
+                            $asset['networkId'] = (int) $this->_networkId;
+                            $asset['addressIp'] = $host['ip'];
+                            $asset['addressPort'] = (!empty($finding['port'])) ? (int) $finding['port'] : NULL;
 
-                        // Save asset
-                        $this->_saveAsset($asset);
+                            // Prepare finding
+                            $finding['plugin_output'] = (!empty($finding['plugin_output'])) ? $finding['plugin_output']
+                                : '';
 
-                        // Prepare finding
-                        foreach ($finding as &$data) {
-                            if (!is_array($data)) {
-                                $data = Fisma_String::textToHtml($data);
-                            }
+                            $findingInstance = array();
+                            $findingInstance['uploadId'] = (int) $uploadId;
+                            $findingInstance['discoveredDate'] = date('Y-m-d', strtotime($host['startTime']));
+                            $findingInstance['sourceId'] = (int) $this->_findingSourceId;
+                            $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
+                            $findingInstance['description'] = $finding['description'] . $finding['plugin_output'];
+                            $findingInstance['threat'] = (!empty($finding['synopsis'])) ? $finding['synopsis'] : NULL;
+                            $findingInstance['recommendation'] = (!empty($finding['solution'])) ? $finding['solution']
+                                : NULL;
+                            $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] 
+                                : NULL;
+    
+                            // Save finding and asset
+                            $this->_save($findingInstance, $asset);
                         }
-
-                        $finding['plugin_output'] = (!empty($finding['plugin_output'])) ? $finding['plugin_output'] : 
-                            '';
-
-                        $findingInstance = array();
-                        $findingInstance['uploadId'] = (int) $uploadId;
-                        $findingInstance['discoveredDate'] = date('Y-m-d', strtotime($host['startTime']));
-                        $findingInstance['sourceId'] = (int) $this->_findingSourceId;
-                        $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
-                        $findingInstance['description'] = $finding['description'] . $finding['plugin_output'];
-                        $findingInstance['threat'] = (!empty($finding['synopsis'])) ? $finding['synopsis'] : NULL;
-                        $findingInstance['recommendation'] = (!empty($finding['solution'])) ? $finding['solution'] : 
-                            NULL;
-                        $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] : NULL;
-                        $findingInstance['assetId'] = (int) $this->_assetId;
-
-                        // Save finding
-                        $this->_commit($findingInstance);
                     }
                 }
             }
         }
+
+        // Commit all data
+        $this->_commit();
     }
 }
