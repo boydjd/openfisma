@@ -362,12 +362,12 @@ echo '<?xml version="1.0"?>'.
 <?php
     foreach ($this->sources as $source) :
 ?>
-<Row>
-<Cell>
-<Data ss:Type="String"><?php echo $source; ?></Data>
-<NamedCell ss:Name="sources"/>
-</Cell>
-</Row>
+   <Row>
+    <Cell>
+     <Data ss:Type="String"><?php echo $source; ?></Data>
+     <NamedCell ss:Name="sources"/>
+    </Cell>
+   </Row>
 <?php
     endforeach;
 ?>
@@ -393,12 +393,12 @@ echo '<?xml version="1.0"?>'.
 <?php
     foreach ($this->networks as $network) :
 ?>
-<Row>
-<Cell>
-<Data ss:Type="String"><?php echo $network; ?></Data>
-<NamedCell ss:Name="networks"/>
-</Cell>
-</Row>
+   <Row>
+    <Cell>
+     <Data ss:Type="String"><?php echo $network; ?></Data>
+     <NamedCell ss:Name="networks"/>
+    </Cell>
+   </Row>
 <?php
     endforeach;
 ?>
