@@ -51,6 +51,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
         try {
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
+            throw $e;
             throw new Fisma_Exception('An error occured while processing the XML file.');
         }
 

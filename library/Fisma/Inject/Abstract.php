@@ -193,7 +193,7 @@ abstract class Fisma_Inject_Abstract
         Doctrine_Manager::connection()->beginTransaction();
 
         try {
-            foreach ($this->_findings as $findingData) {
+            foreach ($this->_findings as &$findingData) {
                 if (!$findingData['asset']['id']) {
                     $findingData['asset']['id'] = $this->_saveAsset($findingData['asset']);
                 }
@@ -203,9 +203,7 @@ abstract class Fisma_Inject_Abstract
                 }
 
                 $findingData['finding']->assetId = $findingData['asset']['id'];
-
                 $findingData['finding']->save();
-
                 $findingData['finding']->free();
                 unset($findingData['finding']);
             }
@@ -305,18 +303,16 @@ abstract class Fisma_Inject_Abstract
         
         $id = $asset->id;
 
+        // Check to see if any of the pending assets are duplicates, if so, update the finding to point to the correct 
+        // asset id
+        foreach ($this->_findings as &$findingData) {
+            if (empty($findingData['finding']->Asset) && $findingData['asset'] == $assetData) {
+                $findingData['asset']['id'] = $id;
+            }
+        }
         // Free object
         $asset->free();
         unset($asset);
-
-        // Check to see if any of the pending assets are duplicates, if so, update the finding to point to the correct 
-        // asset id
-/*        foreach ($this->_findings as $findingData) {
-            if (empty($findingData['finding']['assetId']) && $findingData['asset'] == $assetData) {
-                $findingData['asset']['id'] = $id;
-                $findingData['finding']->Asset->id = (int) $id;
-            }
-        }*/
 
         return $id;
     }
@@ -362,11 +358,11 @@ abstract class Fisma_Inject_Abstract
 
         // Check to see if any of the pending products are duplicates, if so, update the finding to point to the
         // correct product id
-     /*   foreach ($this->_findings as $findingData) {
+        foreach ($this->_findings as &$findingData) {
             if (empty($findingData['asset']['productId']) && $findingData['product'] == $productData) {
                 $findingData['asset']['productId'] = $id;
             }
-        }*/
+        }
 
         return $id;
     }
