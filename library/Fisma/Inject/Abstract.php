@@ -194,12 +194,12 @@ abstract class Fisma_Inject_Abstract
 
         try {
             foreach ($this->_findings as &$findingData) {
-                if (!$findingData['asset']['id']) {
-                    $findingData['asset']['id'] = $this->_saveAsset($findingData['asset']);
+                if (!$findingData['asset']['productId'] && !empty($findingData['product'])) {
+                    $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
                 }
 
-                if (!empty($findingData['asset']['productId']) && !empty($findingData['product'])) {
-                    $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
+                if (!$findingData['asset']['id']) {
+                    $findingData['asset']['id'] = $this->_saveAsset($findingData['asset']);
                 }
 
                 $findingData['finding']->assetId = $findingData['asset']['id'];
@@ -330,7 +330,7 @@ abstract class Fisma_Inject_Abstract
                             ->select('id')
                             ->from('Product p')
                             ->where('p.name = ?', $productData['name'])
-                            ->andWhere('p.cpename = ?', $productData['cpename'])
+                            ->andWhere('p.cpename = ?', $productData['cpeName'])
                             ->andWhere('p.vendor = ?', $productData['vendor'])
                             ->andWhere('p.version = ?', $productData['version'])
                             ->setHydrationMode(Doctrine::HYDRATE_NONE)
