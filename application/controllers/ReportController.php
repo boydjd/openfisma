@@ -371,9 +371,8 @@ class ReportController extends SecurityController
         if ($this->_me->username != 'root') {
             $userRoles = $this->_me->getRoles();
             foreach ($reports as $reportName => $report) {
-                $roleNameIntersection = array_intersect($userRoles, $report['roles']);
                 $roleNicknameIntersection = array_intersect(array_flip($userRoles), $report['roles']);
-                if (empty($roleNameIntersection) && empty($roleNicknameIntersection)) {
+                if (empty($roleNicknameIntersection)) {
                     unset($reports[$reportName]);
                 }
             }

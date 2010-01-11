@@ -577,14 +577,18 @@ class User extends BaseUser
     }
     
     /**
-     * Retrieve user assigned roles
+     * Retrieve user assigned roles.
      * 
-     * @param boolean $arrayType Return array if true, otherwise Doctrine_Collection
+     * The doctrine hydration constant can indicate what data type this method returns. By default or 
+     * explictly assign Doctrine::HYDRATE_ARRAY data type, it returns role nickname as key and name as
+     * value in array, otherwise the Doctrine_Collection property 'Roles'.
+     * 
+     * @param int $hydrationMode A doctrine hydrator
      * @return array|Doctrine_Collection The list of roles
      */
-    public function getRoles($arrayType = true)
+    public function getRoles($hydrationMode = Doctrine::HYDRATE_ARRAY)
     {
-        if (!$arrayType) {
+        if (!$hydrationMode == Doctrine::HYDRATE_ARRAY) {
             return $this->Roles;
         }
         
@@ -592,6 +596,7 @@ class User extends BaseUser
         foreach ($this->Roles as $role) {
             $roleNames[$role->nickname] = $role->name;
         }
+        
         return $roleNames;
     }
 }
