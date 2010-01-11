@@ -17,8 +17,8 @@
  */
 
 /**
- * An implementation of a MITRE Common Platform Enumeration (CPE) data type,
- * version 2.1
+ * An implementation of a MITRE Common Platform Enumeration (CPE) data type, version 2.1
+ * 
  * @link http://cpe.mitre.org
  * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
@@ -44,11 +44,6 @@ class Fisma_Cpe
      */
     private $_cpeDetails = array();
 
-    /**
-     * Unreserved characters that are permissible in a CPE component. All other characters must be URL encoded.
-     */
-    const UNRESERVED_CHARACTERS = '[-A-Za-z0-9~\_.]';
-    
     /**
      * Create a new instance
      * 
@@ -82,7 +77,7 @@ class Fisma_Cpe
     /**
      * Parse the instance's CPE string and create/update its CPE data
      * 
-     * @throws Fisma_Exception_InvalidFileFormat if the CPE item is not formatted correctly
+     * @throws Fisma_Cpe_Exception if the CPE item is not well-formed
      */
     private function _parseCpe()
     {
@@ -96,7 +91,7 @@ class Fisma_Cpe
             throw new Fisma_Cpe_Exception('CPE does not begin with "cpe:/"');
         }
         
-        // Parse remaining identifiers; there cannot be more than 6 of these, per the CPE spec
+        // Parse remaining identifiers; there cannot be more than 7 of these, per the CPE spec
         $tokens = explode(':', $cpeName);
         if (count($tokens) > 7) {
             throw new Fisma_Cpe_Exception("CPE has too many parts");
