@@ -45,8 +45,7 @@ class Fisma_Cpe
     private $_cpeDetails = array();
 
     /**
-     * Unreserved characters (URc) that are permissible in a CPE component. All other characters must be URL encoded.
-     * This is used in the regex to match component names.
+     * Unreserved characters that are permissible in a CPE component. All other characters must be URL encoded.
      */
     const UNRESERVED_CHARACTERS = '[-A-Za-z0-9~\_.]';
     
@@ -60,69 +59,64 @@ class Fisma_Cpe
     {
         $this->_cpeName = $cpeName;
 
-        // Rename the UNRESERVED_CHARACTERS constant to something shorter to make the regex more readable.
-        $urc = self::UNRESERVED_CHARACTERS;
-
-        // Parse out the components of the CPE name
-        $components = $this->parseCpe($cpeName);
-
-        // Name the components and decode reserved characters (see CPE specification)
-        $this->_cpeDetails['part']     = urldecode($components[1]);
-        $this->_cpeDetails['vendor']   = urldecode($components[2]);
-        $this->_cpeDetails['product']  = urldecode($components[3]);
-        $this->_cpeDetails['version']  = urldecode($components[4]);
-        $this->_cpeDetails['update']   = urldecode($components[5]);
-        $this->_cpeDetails['edition']  = urldecode($components[6]);
-        $this->_cpeDetails['language'] = urldecode($components[7]);
-        
-        // Discard any empty components
-        foreach ($this->_cpeDetails as $key => $value) {
-            if (empty($value)) {
-                unset($this->_cpeDetails[$key]);
-            }
-        }
+        $this->_parseCpe();
     }
 
     /**
      * Return the raw CPE name or one of the parsed CPE components
      * 
      * @param string $fieldName The field's name to obtain
-     * @return string|null The value of the specified field, 
-     * value of the field 'cepname' if the specified field name is 'cpename', null otherwise 
+     * @return string|null
      */
     public function __get($fieldName)
     {
         if ($fieldName == 'cpeName') {
             return $this->_cpeName;
         } elseif (isset($this->_cpeDetails[$fieldName])) {
-            // Do some pretty formatting for field values. E.g. turn "database_server" into "Database Server"
-            return ucwords(str_replace('_', ' ', $this->_cpeDetails[$fieldName]));
+            return $this->_cpeDetails[$fieldName];
         } else {
             return null;
         }
     }
     
     /**
-     * Validate if a CPE identifier is in a valid format and return found CPE components
+     * Parse the instance's CPE string and create/update its CPE data
      * 
-     * @param string $cpeName The specified cep name to be validated
-     * @return array All CPE components parsed from this CPE
      * @throws Fisma_Exception_InvalidFileFormat if the CPE item is not formatted correctly
      */
-    private function _parseCpe($cpeName)
+    private function _parseCpe()
     {
         $components = array();
         
-        $result = preg_match(
-            "/cpe:\/($urc*):?($urc*):?($urc*):?($urc*):?($urc*):?($urc*):?($urc*)/",
-            $cpeName,
-            $components
-        );
-        
-        if (!$result) {
-            throw new Fisma_Exception_InvalidFileFormat("CPE item is not formatted correctly: \"$cpeName\"");
+        // Remove the 'cpe:/' prefix
+        $cpeName = $this->_cpeName;
+        if ('cpe:/' == substr($cpeName, 0, 5)) {
+            $cpeName = substr($cpeName, 5);
+        } else {
+            throw new Fisma_Cpe_Exception('CPE does not begin with "cpe:/"');
         }
         
-        return $components;
+        // Parse remaining identifiers; there cannot be more than 6 of these, per the CPE spec
+        $tokens = explode(':', $cpeName);
+        if (count($tokens) > 7) {
+            throw new Fisma_Cpe_Exception("CPE has too many parts");
+        }
+        
+        // Validate part
+        $validParts = array('a', 'h', 'o');
+        if (in_array($tokens[0], $validParts)) {
+            $this->_cpeDetails['part'] = $tokens[0];
+            array_shift($tokens);
+        } else {
+            throw new Fisma_Cpe_Exception("CPE has an invalid part specifier: '{$tokens[0]}'");
+        }
+        
+        // Assign names to any remaining tokens which are not blank
+        $partNames = array('vendor', 'product', 'version', 'update', 'edition', 'language');
+        foreach ($tokens as $index => $token) {
+            if (!empty($token)) {
+                $this->_cpeDetails[$partNames[$index]] = urldecode($token);
+            }
+        }
     }
 }
