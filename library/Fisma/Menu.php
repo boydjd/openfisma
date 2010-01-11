@@ -73,7 +73,7 @@ class Fisma_Menu
                 $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
 
-            if (Fisma_Acl::hasPrivilege('organization', 'read')) {
+            if (Fisma_Acl::hasPrivilege('organization', 'read', '*')) {
                 $systems->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/tree'));
             }
 
