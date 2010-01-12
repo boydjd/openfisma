@@ -579,24 +579,22 @@ class User extends BaseUser
     /**
      * Retrieve user assigned roles.
      * 
-     * The doctrine hydration constant can indicate what data type this method returns. By default or 
-     * explictly assign Doctrine::HYDRATE_ARRAY data type, it returns role nickname as key and name as
-     * value in array, otherwise the Doctrine_Collection property 'Roles'.
+     * The doctrine hydration constant can indicate what data type this method returns. By default, the 
+     * hydrator is assigned as Doctrine::HYDRATE_SCALAR data type.
      * 
      * @param int $hydrationMode A doctrine hydrator
-     * @return array|Doctrine_Collection The list of roles
+     * @return mixed The roles of user
      */
-    public function getRoles($hydrationMode = Doctrine::HYDRATE_ARRAY)
+    public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR)
     {
-        if (!$hydrationMode == Doctrine::HYDRATE_ARRAY) {
-            return $this->Roles;
-        }
+        $userRolesQuery = Doctrine_Query::create()
+                          ->select('u.id, r.*')
+                          ->from('User u')
+                          ->innerJoin('u.Roles r')
+                          ->where('u.id = ?', $this->id)
+                          ->setHydrationMode($hydrationMode);
+        $userRolesResult = $userRolesQuery->execute();
         
-        $roleNames = array();
-        foreach ($this->Roles as $role) {
-            $roleNames[$role->nickname] = $role->name;
-        }
-        
-        return $roleNames;
+        return $userRolesResult;
     }
 }
