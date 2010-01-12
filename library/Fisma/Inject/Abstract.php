@@ -194,7 +194,7 @@ abstract class Fisma_Inject_Abstract
 
         try {
             foreach ($this->_findings as &$findingData) {
-                if (!$findingData['asset']['productId'] && !empty($findingData['product'])) {
+                if (@!$findingData['asset']['productId'] && !empty($findingData['product'])) {
                     $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
                 }
 

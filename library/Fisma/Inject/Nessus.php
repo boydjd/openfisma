@@ -154,7 +154,8 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 
                             $findingInstance = array();
                             $findingInstance['uploadId'] = (int) $uploadId;
-                            $findingInstance['discoveredDate'] = date('Y-m-d', strtotime($host['startTime']));
+                            $findingInstance['discoveredDate'] = (!empty($host['startTime'])) ? 
+                                date('Y-m-d', strtotime($host['startTime'])) : NULL;
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
                             $findingInstance['description'] = $finding['description'] . $finding['plugin_output'];

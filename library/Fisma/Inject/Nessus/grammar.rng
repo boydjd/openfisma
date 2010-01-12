@@ -1,236 +1,199 @@
-<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element name="NessusClientData_v2">
-      <group>
-        <element name="Policy">
-          <group>
-            <element name="policyName">
-              <text/>
-            </element>
-            <element name="policyComments">
-              <empty/>
-            </element>
-            <element name="Preferences">
-              <group>
-                <element name="ServerPreferences">
-                  <oneOrMore>
-                    <element name="preference">
-                      <group>
-                        <element name="name">
-                          <text/>
-                        </element>
-                        <element name="value">
-                          <text/>
-                        </element>
-                      </group>
-                    </element>
-                  </oneOrMore>
-                </element>
-                <element name="PluginsPreferences">
-                  <oneOrMore>
-                    <element name="item">
-                      <group>
-                        <element name="pluginName">
-                          <text/>
-                        </element>
-                        <element name="pluginId">
-                          <text/>
-                        </element>
-                        <element name="fullName">
-                          <text/>
-                        </element>
-                        <element name="preferenceName">
-                          <text/>
-                        </element>
-                        <element name="preferenceType">
-                          <text/>
-                        </element>
-                        <element name="preferenceValues">
-                          <text/>
-                        </element>
-                        <element name="selectedValue">
-                          <text/>
-                        </element>
-                      </group>
-                    </element>
-                  </oneOrMore>
-                </element>
-              </group>
-            </element>
-            <element name="FamilySelection">
-              <oneOrMore>
-                <element name="FamilyItem">
-                  <group>
-                    <element name="FamilyName">
-                      <text/>
-                    </element>
-                    <ref name="d1_Status"/>
-                  </group>
-                </element>
-              </oneOrMore>
-            </element>
-            <element name="IndividualPluginSelection">
-              <oneOrMore>
-                <element name="PluginItem">
-                  <group>
-                    <element name="PluginId">
-                      <text/>
-                    </element>
-                    <element name="PluginName">
-                      <text/>
-                    </element>
-                    <element name="Family">
-                      <text/>
-                    </element>
-                    <ref name="d1_Status"/>
-                  </group>
-                </element>
-              </oneOrMore>
-            </element>
-          </group>
+      <element name="Policy">
+        <element name="policyName">
+          <data type="NCName"/>
         </element>
-        <element name="Report">
-          <group>
-            <attribute name="name">
-              <text/>
-            </attribute>
+        <element name="policyComments">
+          <empty/>
+        </element>
+        <element name="Preferences">
+          <element name="ServerPreferences">
             <oneOrMore>
-              <element name="ReportHost">
-                <group>
-                  <attribute name="name">
-                    <text/>
-                  </attribute>
-                  <group>
-                    <element name="HostProperties">
-                      <oneOrMore>
-                        <element name="tag">
-                          <group>
-                            <attribute name="name">
-                              <text/>
-                            </attribute>
-                            <text/>
-                          </group>
-                        </element>
-                      </oneOrMore>
-                    </element>
-                    <oneOrMore>
-                      <element name="ReportItem">
-                        <group>
-                          <group>
-                            <attribute name="port">
-                              <text/>
-                            </attribute>
-                            <attribute name="pluginID">
-                              <text/>
-                            </attribute>
-                            <attribute name="protocol">
-                              <text/>
-                            </attribute>
-                            <attribute name="pluginFamily">
-                              <text/>
-                            </attribute>
-                            <attribute name="pluginName">
-                              <text/>
-                            </attribute>
-                            <attribute name="svc_name">
-                              <text/>
-                            </attribute>
-                            <attribute name="severity">
-                              <text/>
-                            </attribute>
-                          </group>
-                          <interleave>
-                            <zeroOrMore>
-                              <element name="see_also">
-                                <text/>
-                              </element>
-                            </zeroOrMore>
-                            <optional>
-                              <element name="plugin_publication_date">
-                                <text/>
-                              </element>
-                            </optional>
-                            <zeroOrMore>
-                              <element name="cve">
-                                <text/>
-                              </element>
-                            </zeroOrMore>
-                            <optional>
-                              <element name="vuln_publication_date">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="solution">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="patch_publication_date">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="risk_factor">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="plugin_version">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="description">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="cvss_base_score">
-                                <text/>
-                              </element>
-                            </optional>
-                            <zeroOrMore>
-                              <element name="xref">
-                                <text/>
-                              </element>
-                            </zeroOrMore>
-                            <optional>
-                              <element name="synopsis">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="plugin_output">
-                                <text/>
-                              </element>
-                            </optional>
-                            <optional>
-                              <element name="cvss_vector">
-                                <text/>
-                              </element>
-                            </optional>
-                            <zeroOrMore>
-                              <element name="bid">
-                                <text/>
-                              </element>
-                            </zeroOrMore>
-                          </interleave>
-                        </group>
-                      </element>
-                    </oneOrMore>
-                  </group>
-                </group>
+              <element name="preference">
+                <element name="name">
+                  <data type="NCName"/>
+                </element>
+                <element name="value">
+                  <text/>
+                </element>
               </element>
             </oneOrMore>
-          </group>
+          </element>
+          <element name="PluginsPreferences">
+            <oneOrMore>
+              <element name="item">
+                <element name="pluginName">
+                  <text/>
+                </element>
+                <element name="pluginId">
+                  <data type="integer"/>
+                </element>
+                <element name="fullName">
+                  <text/>
+                </element>
+                <element name="preferenceName">
+                  <text/>
+                </element>
+                <element name="preferenceType">
+                  <data type="NCName"/>
+                </element>
+                <element name="preferenceValues">
+                  <text/>
+                </element>
+                <element name="selectedValue">
+                  <text/>
+                </element>
+              </element>
+            </oneOrMore>
+          </element>
         </element>
-      </group>
+        <element name="FamilySelection">
+          <oneOrMore>
+            <element name="FamilyItem">
+              <element name="FamilyName">
+                <text/>
+              </element>
+              <ref name="Status"/>
+            </element>
+          </oneOrMore>
+        </element>
+        <element name="IndividualPluginSelection">
+          <zeroOrMore>
+            <element name="PluginItem">
+              <element name="PluginId">
+                <data type="integer"/>
+              </element>
+              <element name="PluginName">
+                <text/>
+              </element>
+              <element name="Family">
+                <text/>
+              </element>
+              <ref name="Status"/>
+            </element>
+          </zeroOrMore>
+        </element>
+      </element>
+      <element name="Report">
+        <attribute name="name"/>
+        <oneOrMore>
+          <element name="ReportHost">
+            <attribute name="name">
+              <data type="NMTOKEN"/>
+            </attribute>
+            <element name="HostProperties">
+              <zeroOrMore>
+                <element name="tag">
+                  <attribute name="name">
+                    <data type="NCName"/>
+                  </attribute>
+                  <text/>
+                </element>
+              </zeroOrMore>
+            </element>
+            <oneOrMore>
+              <element name="ReportItem">
+                <attribute name="pluginFamily"/>
+                <attribute name="pluginID">
+                  <data type="integer"/>
+                </attribute>
+                <attribute name="pluginName"/>
+                <attribute name="port">
+                  <data type="integer"/>
+                </attribute>
+                <attribute name="protocol">
+                  <data type="NCName"/>
+                </attribute>
+                <attribute name="severity">
+                  <data type="integer"/>
+                </attribute>
+                <attribute name="svc_name"/>
+                <optional>
+                  <element name="vuln_publication_date">
+                    <text/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="solution">
+                    <text/>
+                  </element>
+                  <element name="risk_factor">
+                    <data type="NCName"/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="description">
+                    <text/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="plugin_publication_date">
+                    <text/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="cvss_vector">
+                    <text/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="synopsis">
+                    <text/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="patch_publication_date">
+                    <text/>
+                  </element>
+                </optional>
+                <zeroOrMore>
+                  <element name="see_also">
+                    <text/>
+                  </element>
+                </zeroOrMore>
+                <optional>
+                  <element name="cvss_base_score">
+                    <data type="decimal"/>
+                  </element>
+                </optional>
+                <zeroOrMore>
+                  <element name="cve">
+                    <data type="NCName"/>
+                  </element>
+                </zeroOrMore>
+                <zeroOrMore>
+                  <element name="bid">
+                    <data type="integer"/>
+                  </element>
+                </zeroOrMore>
+                <zeroOrMore>
+                  <element name="xref">
+                    <data type="NMTOKEN"/>
+                  </element>
+                </zeroOrMore>
+                <optional>
+                  <element name="plugin_output">
+                    <text/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="plugin_version">
+                    <text/>
+                  </element>
+                </optional>
+              </element>
+            </oneOrMore>
+          </element>
+        </oneOrMore>
+      </element>
     </element>
   </start>
-  <define name="d1_Status">
+  <define name="Status">
     <element name="Status">
-      <text/>
+      <data type="NCName"/>
     </element>
   </define>
 </grammar>
