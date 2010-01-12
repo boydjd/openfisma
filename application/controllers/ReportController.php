@@ -220,7 +220,11 @@ class ReportController extends SecurityController
         $params['overdueDay'] = $req->getParam('overdueDay');
         $params['year'] = $req->getParam('year');
 
-        Fisma_Acl::requirePrivilege('system', 'read', $params['orgSystemId']);
+        if (!empty($params['orgSystemId'])) {
+            Fisma_Acl::requirePrivilege('system', 'read', $params['orgSystemId']);
+        } else {
+            Fisma_Acl::requirePrivilege('system', 'read', '*');
+        }
 
         $this->view->assign('sourceList', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
         $this->view->assign('systemList', $this->_me->getOrganizations()->toKeyValueArray('id', 'name'));
