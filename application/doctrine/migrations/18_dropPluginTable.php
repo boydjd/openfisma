@@ -17,15 +17,30 @@
  */
 
 /**
- * PluginTable
+ * Drop Plugin table
  * 
- * @author     Josh Boyd <joshua.boyd@endeavorsystems.com>
+ * @author     Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Model
+ * @package    Migration
  * @version    $Id$
  */
-class PluginTable extends Doctrine_Table
+class DropPluginTable extends Doctrine_Migration_Base
 {
-
+    /**
+     * Drop plugin table 
+     */
+    public function up()
+    {
+        // Drop old table
+        $this->dropTable('plugin');
+    }
+    
+    /**
+     * This migration can't be reversed because some data is discarded in the up() method
+     */
+    public function down()
+    {
+        throw new Doctrine_Migration_IrreversibleMigrationException('Cannot reverse migration.');
+    }
 }

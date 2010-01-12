@@ -358,14 +358,6 @@ class FindingController extends BaseController
         $uploadForm->setAttrib('id', 'injectionForm');
 
         // Populate the drop menu options
-        $uploadForm->plugin->addMultiOption('', '');
-        $plugins = Doctrine::getTable('Plugin')->findAll()->toArray();
-        $pluginList = array();
-        foreach ($plugins as $plugin) {
-            $pluginList[$plugin['id']] = $plugin['name'];
-        }
-        $uploadForm->plugin->addMultiOptions($pluginList);
-        
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
         $sourceList = array();
         foreach ($sources as $source) {
@@ -403,19 +395,10 @@ class FindingController extends BaseController
             if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
                 $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
                 $values = $uploadForm->getValues();
-                
-                // Get information about the plugin, and then create a new instance of the plugin.
-                $pluginTbl = new Plugin();
-                $pluginTbl = $pluginTbl->getTable('Plugin')->find($values['plugin']);
-                $pluginClass = $pluginTbl->class;
-                $pluginName = $pluginTbl->name;
-                                
+                $values['filepath'] = $filePath;
                 // Execute the plugin with the received file
                 try {
-                    $plugin = new $pluginClass($filePath,
-                                               $values['network'],
-                                               $values['system'],
-                                               $values['findingSource']);
+                    $plugin = Fisma_Inject_Factory::create(NULL, $values);
 
                     // get original file name
                     $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);

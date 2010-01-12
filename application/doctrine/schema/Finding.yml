@@ -165,7 +165,13 @@ Finding:
         uploadId:
             type: integer
             comment: Foreign key to the upload log
-            
+
+    indexes:
+        descriptionindex:
+            fields:
+                description:
+                    length: 20
+
     relations:
         DuplicateFinding:
             class: Finding

@@ -37,7 +37,9 @@ class Fisma_Inject_Factory
     public static function create($type, $data)
     {
         try {
-            $this->_validateType($type);
+            $type = (empty($type)) ? self::_detectType($data['filepath']) : $type;
+
+            self::_validateType($type);
 
             $pluginClass = 'Fisma_Inject_' . $type;
 
@@ -47,9 +49,9 @@ class Fisma_Inject_Factory
              */
             $class  = new ReflectionClass($pluginClass);
             $parent = $class->getParentClass();
-
+            
             if (!empty($parent->name) && $parent->name == 'Fisma_Inject_Abstract') { 
-               return new $pluginClass($data);
+                return new $pluginClass($data['filepath'], $data['network'], $data['system'], $data['findingSource']);
             }
 
             throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
@@ -64,12 +66,31 @@ class Fisma_Inject_Factory
      * 
      * @param mixed $type 
      */
-    private function _validateType($type)
+    private static function _validateType($type)
     {
-        if (empty($type)) {
-            throw new Fisma_Inject_Exception('Type cannot be empty.');
-        } elseif (!is_string($type)) {
-            throw new Fisma_Inject_Exception('Type must be a string.');
+        if (empty($type) || !is_string($type)) {
+            throw new Fisma_Exception('The uploaded file is not a supported file format.');
+        }
+    }
+
+    /**
+     * Attempt to detect the type of the file uploaded 
+     * 
+     * @param string $filename 
+     * @return string|boolean 
+     */
+    private static function _detectType($filename)
+    {
+        $handle = fopen($filename, "rb");
+        $contents = fread($handle, 128);
+        fclose($handle);
+
+        if (stristr($contents, 'Nessus')) {
+            return 'Nessus';
+        } elseif (stristr($contents, 'AppDetective')) {
+            return 'AppDetective';
+        } else {
+            return FALSE;
         }
     }
 }

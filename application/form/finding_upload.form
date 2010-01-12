@@ -6,11 +6,6 @@
 ; Version   $Id$
 
 [finding_upload]
-elements.plugin.type = "select"
-elements.plugin.options.label = "Plugin"
-elements.plugin.options.required = true
-displayGroups.finding_upload.elements.plugin = "plugin"
-
 elements.findingSource.type = "select"
 elements.findingSource.options.label = "Finding Source"
 elements.findingSource.options.required = true
