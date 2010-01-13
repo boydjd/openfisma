@@ -19,11 +19,12 @@
 /**
  * Custom exception for Fisma_Inject 
  * 
- * @package Fisma_Inject
- * @version $Id$
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
- * @license http://www.openfisma.org/content/license GPLv2
+ * @author     Josh Boyd <joshua.boyd@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Fisma
+ * @subpackage Fisma_Inject
+ * @version    $Id$
  */
 class Fisma_Inject_Exception extends Fisma_Exception
 {
