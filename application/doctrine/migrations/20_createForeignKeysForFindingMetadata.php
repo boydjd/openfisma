@@ -112,6 +112,8 @@ class CreateForiegnKeysForFindingMetadata extends Doctrine_Migration_Base
                         ),
                     )
         );
+
+        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**
@@ -164,5 +166,7 @@ class CreateForiegnKeysForFindingMetadata extends Doctrine_Migration_Base
                         ),
                     )
         );
+
+    Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }

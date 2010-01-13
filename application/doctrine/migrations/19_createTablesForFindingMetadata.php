@@ -184,6 +184,8 @@ class CreateTablesForFindingMetadata extends Doctrine_Migration_Base
                         ),
                     )
         );
+
+         Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**
@@ -199,5 +201,7 @@ class CreateTablesForFindingMetadata extends Doctrine_Migration_Base
         $this->dropTable('xref');
         $this->removeColumn('finding', 'cvssbasescore');
         $this->removeColumn('finding', 'cvssvector');
+
+        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }
