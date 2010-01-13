@@ -156,7 +156,26 @@ abstract class Fisma_Inject_Abstract
         // Prepare finding
         $finding = new Finding();
         $finding->merge($findingData);
-        
+
+        // Handle related objects, since merge doesn't
+        if (!empty($findingData['cve'])) {
+            foreach ($findingData['cve'] as $cve) {
+                $finding->Cve[]->name = $cve;
+            }
+        }
+
+        if (!empty($findingData['bugtraq'])) {
+            foreach ($findingData['bugtraq'] as $bugtraq) {
+                $finding->Bugtraq[]->name = $bugtraq;
+            }
+        }
+
+        if (!empty($findingData['xref'])) {
+            foreach ($findingData['xref'] as $xref) {
+                $finding->Xref[]->name = $xref;
+            }
+        }
+
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
         $action = ($duplicateFinding) ? $this->_getDuplicateAction($finding, $duplicateFinding) : self::CREATE_FINDING;

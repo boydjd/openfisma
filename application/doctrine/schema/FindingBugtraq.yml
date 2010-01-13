@@ -1,0 +1,8 @@
+FindingBugtraq:
+    columns:
+        finding_id:
+            type: integer
+            primary: true
+        bugtraq_id:
+            type: integer
+            primary: true

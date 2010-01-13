@@ -1,0 +1,10 @@
+Xref:
+    columns:
+        name:
+            type: string 
+    relations:
+        Findings:
+            class: Finding
+            local: xref_id
+            foreign: finding_id
+            refClass: FindingXref

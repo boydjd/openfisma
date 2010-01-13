@@ -113,9 +113,9 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                 } elseif ($oXml->name == 'synopsis') {
                     $parsedData[$hostCounter]['findings'][$itemCounter]['synopsis'] = $oXml->readString();
                 } elseif ($oXml->name == 'cvss_base_score') {
-                    $parsedData[$hostCounter]['findings'][$itemCounter]['cvss_base_score'] = $oXml->readString();
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['cvssBaseScore'] = $oXml->readString();
                 } elseif ($oXml->name == 'cvss_vector') {
-                    $parsedData[$hostCounter]['findings'][$itemCounter]['cvss_vector'] = $oXml->readString();
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['cvssVector'] = $oXml->readString();
                 } elseif ($oXml->name == 'plugin_output') {
                     $parsedData[$hostCounter]['findings'][$itemCounter]['plugin_output'] = $oXml->readString();
                 }
@@ -164,6 +164,28 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                                 : NULL;
                             $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] 
                                 : NULL;
+                            $findingInstance['cvssBaseScore'] = (!empty($finding['cvssBaseScore'])) ? 
+                                $finding['cvssBaseScore'] : NULL;
+                            $findingInstance['cvssVector'] = (!empty($finding['cvssVector'])) ? $finding['cvssVector']
+                                : NULL;
+                            
+                            if (!empty($finding['cve'])) {
+                                foreach ($finding['cve'] as $cve) {
+                                    $findingInstance['cve'][] = $cve;
+                                }
+                            }
+
+                            if (!empty($finding['bid'])) {
+                                foreach ($finding['bid'] as $bugtraq) {
+                                    $findingInstance['bugtraq'][] = $bugtraq;
+                                }
+                            }
+
+                            if (!empty($finding['xref'])) {
+                                foreach ($finding['xref'] as $xref) {
+                                    $findingInstance['xref'][] = $xref;
+                                }
+                            }
     
                             // Save finding and asset
                             $this->_save($findingInstance, $asset);

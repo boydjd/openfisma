@@ -140,6 +140,20 @@ Finding:
                 auditLog: true
                 logicalName: Effectiveness of Countermeasures            
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
+        cvssBaseScore:
+           type: float
+           comment: The CVSS Base Score of the finding
+           extra:
+                auditLog: true
+                logicalName: CVSS Base Score
+                searchIndex: unstored
+        cvssVector:
+            type: string
+            comment: The CVSS Vector of the finding
+            extra:
+                auditLog: true
+                logicalName: CVSS Vector
+                searchIndex: unstored
 
         duplicateFindingId:
             type: integer
@@ -212,7 +226,19 @@ Finding:
             local: uploadId
             foreign: id
             foreignAlias: Findings
-            
+        Cves:
+            local: id
+            foreign: cve_id
+            refClass: FindingCve
+        Bugtraqs:
+            local: id
+            foreign: bugtraq_id
+            refClass: FindingBugtraq
+        Xrefs:
+            local: id
+            foreign: xref_id
+            refClass: FindingXref
+
     actAs:
         Timestampable:
             created:

@@ -1,0 +1,11 @@
+Bugtraq:
+    columns:
+        name:
+            type: integer(4)
+            unsigned: true
+    relations:
+        Findings:
+            class: Finding
+            local: bugtraq_id
+            foreign: finding_id
+            refClass: FindingBugtraq
