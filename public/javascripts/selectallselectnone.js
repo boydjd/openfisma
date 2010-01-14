@@ -1,5 +1,4 @@
-/********************************************************************************
- *
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -17,19 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- *********************************************************************************
- *
- * This function is unsafe because it selects all checkboxes on the page, regardless
- * of what grouping they belong to.
- * @todo Write a safe version of this function called selectAll that takes some kind
- * of scope as a parameter so that it can be limited.
+ * @fileoverview This function is unsafe because it selects all checkboxes on the page,
+ *               regardless of what grouping they belong to.
  *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: $
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  *
- ***********************************************************************************
+ * @todo Write a safe version of this function called selectAll that takes some kind
+ *       of scope as a parameter so that it can be limited.
  */
 
 function selectAllUnsafe() {

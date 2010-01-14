@@ -1,5 +1,4 @@
-/*******************************************************************************
- *
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -17,19 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- ********************************************************************************
- *
- * Used to present the user an alert box asking them if they are sure they want to 
- * delete the item they selected, the entryname should be defined in the form.
- * If the user selects ok the function returns true, if the user selects cancel the 
- * function returns false
+ * @fileoverview Used to present the user an alert box asking them if they are sure they want to 
+ *               delete the item they selected, the entryname should be defined in the form.
+ *               If the user selects ok the function returns true, if the user selects cancel the 
+ *               function returns false
  *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: $
- *
- ********************************************************************************
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 function delok(entryname)

@@ -1,5 +1,4 @@
-/*******************************************************************************
- *
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -17,20 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- *******************************************************************************
- *
- * Configuration file for tiny_mce, configuration options may be found at the
- * following website
- * http://wiki.moxiecode.com/index.php/TinyMCE:Configuration
+ * @fileoverview Configuration file for tiny_mce, configuration options may be found at the following website.
+ *               http://wiki.moxiecode.com/index.php/TinyMCE:Configuration
  *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: $
- *
- *******************************************************************************
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
-
 
 tinyMCE.init({
 	theme : "advanced",

@@ -1,5 +1,4 @@
-/*************************************************************************
- *
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -17,18 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- *******************************************************************************
- *
- * When a form containing editable fields is loaded (such as the tabs on the
- * remediation detail page), this function is used to add the required click
- * handler to all of the editable fields.
+ * @fileoverview When a form containing editable fields is loaded (such as the tabs on the
+ *               remediation detail page), this function is used to add the required click
+ *               handler to all of the editable fields.
  *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id: $
- *
- *********************************************************************************
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 function setupEditFields() {

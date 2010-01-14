@@ -1,5 +1,4 @@
-/*************************************************************************
- *
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -17,18 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- ******************************************************************************* 
- *
- * Main js file
- * @todo start migrating functionality out of this file. 
- * eventually this file needs to be removed 
+ * @fileoverview Main js file
  *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/mw/index.php?title=License
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
  * @version   $Id$
  *
- *******************************************************************************
+ * @todo      Start migrating functionality out of this file. 
+ *            Eventually this file needs to be removed 
  */
 
 var Fisma = {};
