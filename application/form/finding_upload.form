@@ -1,8 +1,8 @@
 ; This is the form for uploading a scan result
 ;
 ; Author    Mark E. Haase <mhaase@endeavorsystems.com
-; Copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
-; License   {@link http://openfisma.org/content/license} GPLv3 
+; Copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+; License   http://openfisma.org/content/license
 ; Version   $Id$
 
 [finding_upload]
