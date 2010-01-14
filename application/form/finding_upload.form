@@ -1,8 +1,8 @@
 ; This is the form for uploading a scan result
 ;
 ; Author    Mark E. Haase <mhaase@endeavorsystems.com
-; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
-; License   http://www.openfisma.org/mw/index.php?title=License
+; Copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+; License   {@link http://openfisma.org/content/license} GPLv3 
 ; Version   $Id$
 
 [finding_upload]
@@ -30,9 +30,6 @@ displayGroups.finding_upload.elements.selectFile = "selectFile"
 elements.selectFile.options.validators.count.validator = "Count"
 elements.selectFile.options.validators.count.options.max = 1
 elements.selectFile.options.validators.count.options.min = 1
-; 2) Size must be less than 5MB
-elements.selectFile.options.validators.size.validator = "Size"
-elements.selectFile.options.validators.size.options.max = 5242880
 
 elements.upload.type = "Form_Button_Submit"
 elements.upload.options.label = "Upload"
