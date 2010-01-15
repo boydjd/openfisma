@@ -255,7 +255,11 @@ class ReportController extends SecurityController
 
             if (!empty($params['orgSystemId'])) {
                 $q->andWhere('f.responsibleOrganizationId = ?', $params['orgSystemId']);
+            } else {
+                $organizations = $this->_me->getOrganizations()->toKeyValueArray('id', 'id');
+                $q->whereIn('f.responsibleOrganizationId', $organizations);    
             }
+
             if (!empty($params['sourceId'])) {
                 $q->andWhere('f.sourceId = ?', $params['sourceId']);
             }
