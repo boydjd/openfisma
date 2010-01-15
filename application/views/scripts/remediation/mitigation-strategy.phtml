@@ -54,7 +54,7 @@ if ($finding->originalEcd == $finding->currentEcd) {
     <b>Expected Completion Date:</b>
     <span name="finding[currentEcd]" id="currentEcd" type="text"
         <?php 
-            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action', $organization)
+            if (Fisma_Acl::hasPrivilege('finding', 'update_ecd', $organization)
                 && in_array($finding->status, array('NEW', 'DRAFT'))) {
                 echo ' class="date editable" target="currentEcd"';
                 if ($finding->ecdLocked) {
@@ -94,8 +94,12 @@ if ($finding->originalEcd == $finding->currentEcd) {
     <b>Current ECD:</b>
     <span name="finding[currentEcd]" id="currentEcd" type="text"
         <?php 
-            if (Fisma_Acl::hasPrivilege('finding', 'update_course_of_action', $organization)
-                && in_array($finding->status, array('NEW', 'DRAFT'))) {
+            if ((Fisma_Acl::hasPrivilege('finding', 'update_ecd', $organization)
+                && in_array($finding->status, array('NEW', 'DRAFT'))
+                && !$finding->ecdLocked) || 
+                (Fisma_Acl::hasPrivilege('finding', 'update_locked_ecd', $organization)
+                && in_array($finding->status, array('NEW', 'DRAFT'))
+                && $finding->ecdLocked)) {
                 echo ' class="date editable" target="currentEcd"';
                 if ($finding->ecdLocked) {
                     echo 'onclick="document.getElementById(\'currentChangeDescription\').style.display = \'none\';
