@@ -78,7 +78,7 @@ class Notify
                   'u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
                   INTERVAL u.notifyFrequency HOUR)'
               )
-              ->orderBy('u.id');
+              ->orderBy('u.id, n.createdts');
         $notifications = $query->execute();
 
         // Loop through the groups of notifications, concatenate all messages
