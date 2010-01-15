@@ -37,13 +37,14 @@ function executeScript() {
       method="post">
     <div class="toolbar">
         <?php            
-            $discardButton = new Fisma_Yui_Form_Button('discardChanges',
-                                                 array('label' => 'Discard Changes', 
-                                                       'onClickFunction' => 'discardChanges'));
-            echo $discardButton;
+            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+                echo new Fisma_Yui_Form_Button('discardChanges',
+                                                array('label' => 'Discard Changes', 
+                                                      'onClickFunction' => 'discardChanges'));
             
-            echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
-                                            array('label' => 'Save Changes'));
+                echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
+                                                array('label' => 'Save Changes'));
+            }
         ?>
     </div>
     <div id="tabContainer">
