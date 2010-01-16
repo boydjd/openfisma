@@ -623,7 +623,7 @@ class Finding extends BaseFinding
     public function setType($value)
     {
         // If this is a NEW finding and the type is being set, then move it to DRAFT status
-        if ('NEW' == $this->status) {
+        if ('NEW' == $this->status && in_array($value, array('CAP', 'AR', 'FP'))) {
             $this->status = 'DRAFT';
         }
         
