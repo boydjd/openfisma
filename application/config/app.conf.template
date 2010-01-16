@@ -19,8 +19,8 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
-; Fileoverview: The configuration file is split into two sections, production and development.
-;               Most deployments should run in production mode.
+; The configuration file is split into two sections, production and development. Most deployments should run in 
+; production mode.
 ;
 ; Author:    Mark E. Haase <mhaase@endeavorsystems.com>
 ; Copyright: (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
