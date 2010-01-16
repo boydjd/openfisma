@@ -1,5 +1,8 @@
 <script type="text/javascript">
 
+// Holds the Fisma.FindingSummary object which is rendered on this page
+var findingSummary;
+
 YAHOO.util.Event.onDOMReady(function () {
     YAHOO.util.Connect.asyncRequest('GET', 
                                     '/remediation/summary-data/format/json', 
@@ -7,7 +10,8 @@ YAHOO.util.Event.onDOMReady(function () {
                                         success: function(o) {
                                             var summaryData = YAHOO.lang.JSON.parse(o.responseText);
                                             hideLoadingRow();
-                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', summaryData, true);
+                                            findingSummary = new Fisma.FindingSummary();
+                                            findingSummary.render('findingSummaryTable', summaryData, true);
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },
@@ -18,6 +22,21 @@ YAHOO.util.Event.onDOMReady(function () {
                                     }, 
                                     null);
 });
+
+function expandAll() {
+    findingSummary.expandAll();
+    return false;
+}
+
+function collapseAll() {
+    findingSummary.collapseAll();
+    return false;
+}
+
+function exportPdf() {
+    findingSummary.exportTable('pdf');
+    return false;
+}
 
 function reloadTable(url) {
     var loadingRow = document.getElementById('loadingRow');
@@ -38,7 +57,7 @@ function reloadTable(url) {
                                         success: function(o) {
                                             var summaryData = YAHOO.lang.JSON.parse(o.responseText);
                                             hideLoadingRow();
-                                            YAHOO.fisma.TreeTable.render('findingSummaryTable', summaryData, true);
+                                            findingSummary.render('findingSummaryTable', summaryData, true);
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },
@@ -60,10 +79,10 @@ function menuHandler(source) {
     var sourceFilterEl = document.getElementById('sources');
     
     var selectedType = typeFilterEl.options[typeFilterEl.selectedIndex];
-    YAHOO.fisma.TreeTable.filterType = (selectedType.value == 'ALL') ? '' : selectedType.value;
+    findingSummary.filterType = (selectedType.value == 'ALL') ? '' : selectedType.value;
     
     var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
-    YAHOO.fisma.TreeTable.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
+    findingSummary.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
     
     var url = '/remediation/summary-data'
             + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
@@ -97,27 +116,19 @@ function menuHandler(source) {
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
                                        array('label' => 'Expand All', 
                                              'imageSrc' => '/images/expand.png',
-                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.expandAll'));
+                                             'onClickFunction' => 'expandAll'));
 print $expandAll;
 
 $collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
                                          array('label' => 'Collapse All', 
                                              'imageSrc' => '/images/collapse.png',
-                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.collapseAll'));
+                                             'onClickFunction' => 'collapseAll'));
 print $collapseAll;
-
-/*
-$exportExcel = new Fisma_Yui_Form_Button('exportExcel', 
-                                         array('label' => 'Export to Excel', 
-                                             'imageSrc' => '/images/xls.gif',
-                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.exportExcel'));
-print $exportExcel;
-*/
 
 $exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
                                        array('label' => 'Export to PDF', 
                                              'imageSrc' => '/images/pdf.gif',
-                                             'onClickFunction' => 'YAHOO.fisma.TreeTable.exportPdf'));
+                                             'onClickFunction' => 'exportPdf'));
 print $exportPdf;
 ?>
 </div>
