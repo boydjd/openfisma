@@ -480,7 +480,7 @@ class Finding extends BaseFinding
                                    . ' in order to modify the ECD.';
                             throw new Fisma_Exception($error);
                         }
-                        if (!$this->ecdLocked) {
+                        if ($this->ecdLocked) {
                             Fisma_Acl::requirePrivilege(
                                 'finding', 
                                 'update_ecd', 
@@ -488,18 +488,6 @@ class Finding extends BaseFinding
                             );
                             Notification::notify(
                                 'UPDATE_ECD', 
-                                $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
-                            );
-                        } else {
-                            Fisma_Acl::requirePrivilege(
-                                'finding', 
-                                'update_locked_ecd', 
-                                $this->ResponsibleOrganization->nickname
-                            );
-                            Notification::notify(
-                                'UPDATE_LOCKED_ECD', 
                                 $this, 
                                 User::currentUser(), 
                                 $this->responsibleOrganizationId
@@ -628,5 +616,24 @@ class Finding extends BaseFinding
         }
         
         $this->_set('type', $value);
+    }
+    
+    /**
+     * Check if current user can edit the ECD in this model
+     * 
+     * @return boolean Ture if the ECD is editable, false otherwise
+     */
+    public function ecdEditable()
+    {
+        $editable = false;
+        
+        if ((in_array($this->status, array('NEW', 'DRAFT')) && !$this->ecdLocked) || 
+            (Fisma_Acl::hasPrivilege('finding', 'update_ecd', $this->ResponsibleOrganization->nickname)
+            && in_array($this->status, array('NEW', 'DRAFT'))
+            && $this->ecdLocked)) {
+            $editable = true;
+        }
+        
+        return $editable;
     }
 }
