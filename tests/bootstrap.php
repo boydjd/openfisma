@@ -31,7 +31,7 @@ try {
     Fisma::setListenerEnabled(false);
     $cli = new Doctrine_Cli(Zend_Registry::get('doctrine_config'));
     $cliArguments = array('doctrine-cli.php', 'build-all-reload', '--no-confirmation');
-    //$cli->run($cliArguments);
+    $cli->run($cliArguments);
     Fisma::setListenerEnabled(true);
 
     $frontController = Zend_Controller_Front::getInstance();
