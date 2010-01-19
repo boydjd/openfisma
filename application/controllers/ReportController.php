@@ -221,7 +221,8 @@ class ReportController extends SecurityController
         $params['year'] = $req->getParam('year');
 
         if (!empty($params['orgSystemId'])) {
-            Fisma_Acl::requirePrivilege('system', 'read', $params['orgSystemId']);
+            $organization = Doctrine::getTable('Organization')->find($params['orgSystemId']);
+            Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
         } else {
             Fisma_Acl::requirePrivilege('system', 'read', '*');
         }
