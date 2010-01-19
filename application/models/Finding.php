@@ -619,21 +619,31 @@ class Finding extends BaseFinding
     }
     
     /**
-     * Check if current user can edit the ECD in this model
+     * Check if current user can edit the ECD of this finding
      * 
-     * @return boolean Ture if the ECD is editable, false otherwise
+     * @return boolean True if the ECD is editable, false otherwise
      */
-    public function ecdEditable()
+    public function isEcdEditable()
     {
-        $editable = false;
+        // The ECD is only editable in NEW or DRAFT state
+        if (in_array($this->status, array('NEW', 'DRAFT'))) {
+
+            // If the ECD is unlocked, then you need the update_ecd privilege
+            if (!$this->ecdLocked 
+                && Fisma_Acl::hasPrivilege('finding', 'update_ecd', $this->ResponsibleOrganization->nickname)) {
+            
+                return true;
+            }
         
-        if ((in_array($this->status, array('NEW', 'DRAFT')) && !$this->ecdLocked) || 
-            (Fisma_Acl::hasPrivilege('finding', 'update_ecd', $this->ResponsibleOrganization->nickname)
-            && in_array($this->status, array('NEW', 'DRAFT'))
-            && $this->ecdLocked)) {
-            $editable = true;
+            // If the ECD is locked, then you need the update_locked_ecd privilege
+            if ($this->ecdLocked
+                && Fisma_Acl::hasPrivilege('finding', 'update_locked_ecd', $this->ResponsibleOrganization->nickname)) {
+        
+                return true;
+            }
         }
         
-        return $editable;
+        // If none of the above conditions match, then the default is false
+        return false;
     }
 }
