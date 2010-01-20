@@ -106,11 +106,13 @@ class Fisma_String
      */
     static function textToHtml($plainText)
     {
-        $search  = array("\\n\\n", "\\n");
+        // Replace consecutive newlines with </p><p> and single newlines with <br>
+        $search = array("\n\n", "\n");
         $replace = array('</p><p>', '<br>');
 
         $html = '<p>' . trim($plainText) . '</p>';
         $html = str_replace($search, $replace, $html);
+
         return $html;
     }
 }

@@ -113,7 +113,7 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
      */
     public function testTextToHtmlConsecutiveLineBreaksChangedToParagraphs()
     {
-        $plainText = "Lorem ipsum.\\n\\nHello.\\n\\nAnother paragraph.";
+        $plainText = "Lorem ipsum.\n\nHello.\n\nAnother paragraph.";
         $html      = "<p>Lorem ipsum.</p><p>Hello.</p><p>Another paragraph.</p>";
 
         $this->assertEquals($html, Fisma_String::textToHtml($plainText));
@@ -124,7 +124,7 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
      */
     public function testTextToHtmlSingleLineBreaksChangedToBrTag()
     {
-        $plainText = "Lorem ipsum.\\nHello.\\nAnother line.";
+        $plainText = "Lorem ipsum.\nHello.\nAnother line.";
         $html      = "<p>Lorem ipsum.<br>Hello.<br>Another line.</p>";
 
         $this->assertEquals($html, Fisma_String::textToHtml($plainText));
@@ -135,7 +135,7 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
      */
     public function testTextToHtmlParagraphsAndBrTags()
     {
-        $plainText = "Lorem ipsum.\\n\\nHello.\\nA line.";
+        $plainText = "Lorem ipsum.\n\nHello.\nA line.";
         $html      = "<p>Lorem ipsum.</p><p>Hello.<br>A line.</p>";
 
         $this->assertEquals($html, Fisma_String::textToHtml($plainText));

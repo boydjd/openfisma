@@ -36,13 +36,6 @@ class View_Helper_TextToHtml extends Zend_View_Helper_Abstract
      */
     public function TextToHtml($text)
     {
-        // Wrap in <p> tags
-        $text = "<p>$text</p>";
-        
-        // Replace consecutive newlines with </p><p> and single newlines with <br>
-        $text = str_replace("\n\n", '</p><p>', $text);
-        $text = str_replace("\n", '<br>', $text);
-        
-        return $text;
+        return Fisma_String::textToHtml($text);
     } 
 }
