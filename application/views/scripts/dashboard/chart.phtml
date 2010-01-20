@@ -1,17 +1,35 @@
-<object type="application/x-shockwave-flash" data="/flash/charts.swf" height="<?php echo $this->height; ?>" 
-    width="<?php echo $this->width; ?>">
-    <param name="bgcolor" value="#FFFFFF"/>
-    <param name="quality" value="high"/>
-    <param name="salign" value="TL"/>
-    <param name="wmode" value="opaque"/>
-    <param name="flashvars" value="library_path=/flash/charts_library&amp;xml_source=<?php echo $this->sourceUrl; ?>"/>
-    <param name="name" value="my_chart"/>
-    <param name="menu" value="true"/>
-    <param name="play" value="true"/>
-    <param name="align" value="middle"/>
-    <param name="allowfullscreen" value="true"/>
-    <param name="allowscriptaccess" value="sameDomain"/>
-    <param name="devicefont" value="false"/>
-    <param name="pluginspage" value="http://www.macromedia.com/go/getflashplayer"/>
-    This chart requires Flash to properly render.
-</object>
+<script language="JavaScript" type="text/javascript">
+    var hasRightVersion = DetectFlashVer(requiredMajorVersion, requiredMinorVersion, requiredRevision);
+
+    if(hasRightVersion) {
+        AC_FL_RunContent(
+            'codebase', 'https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9.0.45.0',
+            'width', '<?php echo $this->width; ?>',
+            'height', '<?php echo $this->height; ?>',
+            'scale', 'noscale',
+            'salign', 'TL',
+            'bgcolor', '#FFFFFF',
+            'wmode', 'opaque',
+            'movie', '/flash/charts',
+            'src', '/flash/charts',
+            'FlashVars', 'library_path=/flash/charts_library&xml_source=<?php echo $this->sourceUrl; ?>',
+            'id', 'my_chart',
+            'name', 'my_chart',
+            'menu', 'true',
+            'allowFullScreen', 'true',
+            'allowScriptAccess', 'sameDomain',
+            'quality', 'high',
+            'align', 'middle',
+            'pluginspage', 'https://www.macromedia.com/go/getflashplayer',
+            'play', 'true',
+            'devicefont', 'false'
+        );
+    } else {
+        var alternateContent = 'This content requires the Adobe Flash Player.<u>'
+            + '<a href="https://www.macromedia.com/go/getflash">Get Flash</a></u>.';
+        document.write(alternateContent);
+    }
+</script>
+<noscript>
+    <p>This content requires JavaScript.</p>
+</noscript>

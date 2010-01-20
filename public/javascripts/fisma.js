@@ -27,6 +27,15 @@
  *            Eventually this file needs to be removed 
  */
 
+// Required for AC_RunActiveContent
+// @TODO Move into own file
+
+AC_FL_RunContent = 0;
+DetectFlashVer = 0;
+var requiredMajorVersion = 9;
+var requiredMinorVersion = 0;
+var requiredRevision = 45;
+
 var Fisma = {};
 
 String.prototype.trim = function() {
