@@ -293,6 +293,11 @@ class OrganizationController extends SecurityController
                         $organization->getNode()
                                      ->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                     }
+                    
+                    // Add this organization to the user's ACL so they can see it immediately
+                    User::currentUser()->Organizations[] = $organization;
+                    User::currentUser()->save();
+                    
                     $msg = "The organization is created";
                     $model = 'notice';
                 }

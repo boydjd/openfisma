@@ -342,6 +342,12 @@ class SystemController extends BaseController
             $system = new System();
             $system->Organization = new Organization();
             $system->Organization->orgType = 'system';
+            
+            /**
+             * Set a flag indicating that this system needs to be added to the current user's ACL... this is used below.
+             * It cant't be done here because of Doctrine's Unit of Work idiosyncracies.
+             */
+            $addSystemToUserAcl = true;
         } elseif (!$subject instanceof Doctrine_Record) {
             throw new Fisma_Exception('Expected a Doctrine_Record object');
         }
@@ -360,6 +366,12 @@ class SystemController extends BaseController
         }
         $system->Organization->getNode()->insertAsLastChildOf($parentNode);
         $system->Organization->save();
+        
+        // Add the system to the user's ACL if the flag was set above
+        if ($addSystemToUserAcl) {
+            User::currentUser()->Organizations[] = $system->Organization;
+            User::currentUser()->save();
+        }
     }
 
     /**
