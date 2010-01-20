@@ -39,7 +39,6 @@ class OptimizeIndexes
      * @var array
      */
     private $_models = array(
-        'AccountLog',
         'Asset',
         'Finding',
         'Network',
