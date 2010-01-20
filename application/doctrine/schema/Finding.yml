@@ -148,7 +148,7 @@ Finding:
                 logicalName: CVSS Base Score
                 searchIndex: unstored
         cvssVector:
-            type: string
+            type: string(255)
             comment: The CVSS Vector of the finding
             extra:
                 auditLog: true
@@ -227,14 +227,17 @@ Finding:
             foreign: id
             foreignAlias: Findings
         Cves:
+            class: Cve
             local: id
             foreign: cve_id
             refClass: FindingCve
         Bugtraqs:
+            class: Bugtraq
             local: id
             foreign: bugtraq_id
             refClass: FindingBugtraq
         Xrefs:
+            class: Xref
             local: id
             foreign: xref_id
             refClass: FindingXref

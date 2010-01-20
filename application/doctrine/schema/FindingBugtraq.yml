@@ -6,3 +6,8 @@ FindingBugtraq:
         bugtraq_id:
             type: integer
             primary: true
+    relations:
+        Finding:
+            foreignAlias: FindingBugtraqs
+        Bugtraq:
+            foreignAlias: FindingBugtraqs

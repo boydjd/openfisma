@@ -1,6 +1,6 @@
 Bugtraq:
     columns:
-        name:
+        value:
             type: integer(4)
             unsigned: true
     relations:

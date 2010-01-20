@@ -28,19 +28,8 @@
  */
 abstract class Fisma_Inject_Abstract
 {
-    /**
-     * The constant defines the possible specific finding action the finding should be created and set to NEW status.
-     */
     const CREATE_FINDING = 1;
-    
-    /**
-     * The constant defines the possible specific finding action the finding should be deleted.
-     */
     const DELETE_FINDING = 2;
-    
-    /**
-     * The constant defines the possible specific finding action the finding should be created and set to PEND status.
-     */
     const REVIEW_FINDING = 3;
 
     /**
@@ -160,19 +149,19 @@ abstract class Fisma_Inject_Abstract
         // Handle related objects, since merge doesn't
         if (!empty($findingData['cve'])) {
             foreach ($findingData['cve'] as $cve) {
-                $finding->Cve[]->name = $cve;
+                $finding->Cve[]->value = $cve;
             }
         }
 
         if (!empty($findingData['bugtraq'])) {
             foreach ($findingData['bugtraq'] as $bugtraq) {
-                $finding->Bugtraq[]->name = $bugtraq;
+                $finding->Bugtraq[]->value = $bugtraq;
             }
         }
 
         if (!empty($findingData['xref'])) {
             foreach ($findingData['xref'] as $xref) {
-                $finding->Xref[]->name = $xref;
+                $finding->Xref[]->value = $xref;
             }
         }
 

@@ -32,12 +32,14 @@ class Fisma_Inject_Factory
      * Create a Fisma_Inject object of the specified type with the specified data. 
      * 
      * @param string $type 
-     * @param stdClass $data 
+     * @param stdClass $data Parameters to pass to the parameter of the selected/detected injection plugin. See 
+     * Fisma_Inject_Abstract for used params.
      * @return Fisma_Inject_AppDetective | Fisma_Inject_Nessus 
      */
     public static function create($type, $data)
     {
         try {
+            // If $type isn't defined, then attempt to detect it.
             $type = (empty($type)) ? self::_detectType($data['filepath']) : $type;
 
             self::_validateType($type);

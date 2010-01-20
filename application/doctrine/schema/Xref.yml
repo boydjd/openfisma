@@ -1,7 +1,8 @@
 Xref:
     columns:
-        name:
-            type: string 
+        value:
+            type: string(255)
+            comment: External reference provided by Nessus
     relations:
         Findings:
             class: Finding

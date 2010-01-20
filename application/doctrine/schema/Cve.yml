@@ -1,6 +1,6 @@
 Cve:
     columns:
-        name: string
+        value: string(255)
     relations:
         Findings:
             class: Finding
