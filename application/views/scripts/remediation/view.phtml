@@ -7,10 +7,6 @@ function backToSearch(event) {
         window.location = '/panel/remediation/sub/searchbox';
     }
 }
-
-function discardChanges(event) {
-    window.location.reload();
-}
 </script>
 <form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?php echo $this->finding->id;?>" 
       method="post" 
@@ -23,9 +19,9 @@ function discardChanges(event) {
                                                             'onClickFunction' => 'backToSearch'));
             echo $backToSearchButton;
             
-            $discardButton = new Fisma_Yui_Form_Button('discardChanges',
-                                                 array('label' => 'Discard Changes', 
-                                                       'onClickFunction' => 'discardChanges'));
+            $discardButton = new Fisma_Yui_Form_Button_Link('discardChanges',
+                                                 array('value' => 'Discard Changes',
+                                                       'href' => '/panel/remediation/sub/view/id/'.$this->finding->id));
             echo $discardButton;
             
             echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
