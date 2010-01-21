@@ -229,8 +229,10 @@ class Finding extends BaseFinding
         $findingEvaluation->User       = $user;
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]    = $findingEvaluation;
-
-        $this->getAuditLog()->write('Approved: ' . $this->getStatus());
+        
+        $this->getAuditLog()->write(
+            'Approved: ' . $this->getStatus() . ((empty($comment)) ? '' : '<p>Comment: <br> ' . $comment . '</p>')
+        );
 
         switch ($this->status) {
             case 'MSA':
@@ -285,7 +287,7 @@ class Finding extends BaseFinding
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . ' &emdash; ' . $comment);
+        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . '<p>Comment: <br> ' . $comment . '</p>');
 
         switch ($this->status) {
             case 'MSA':
