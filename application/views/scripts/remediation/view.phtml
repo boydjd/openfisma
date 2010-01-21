@@ -20,8 +20,9 @@ function backToSearch(event) {
             echo $backToSearchButton;
             
             $discardButton = new Fisma_Yui_Form_Button_Link('discardChanges',
-                                                 array('value' => 'Discard Changes',
-                                                       'href' => '/panel/remediation/sub/view/id/'.$this->finding->id));
+                                                      array('value' => 'Discard Changes',
+                                                            'href' => '/panel/remediation/sub/view/id/' 
+                                                                      . $this->finding->id));
             echo $discardButton;
             
             echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
