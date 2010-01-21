@@ -41,7 +41,7 @@ Fisma.FindingSummary = function() {
         /**
          * Holds the value of the status filter on the current page
          */
-        filterStatus : null, 
+        filterSource : null, 
         
         /**
          * The number of tree levels to display during the initial render
@@ -486,12 +486,12 @@ Fisma.FindingSummary = function() {
 
             // Include any filters
             var filterType = '';
-            if (!YAHOO.lang.isUndefined(this.filterType) 
+            if (!YAHOO.lang.isNull(this.filterType) 
                 && this.filterType != '') {
                 filterType = '/type/' + this.filterType;
             }
             var filterSource = '';
-            if (!YAHOO.lang.isUndefined(this.filterSource)
+            if (!YAHOO.lang.isNull(this.filterSource)
                 && this.filterSource != '') {
                 filterSource = '/sourceId/' + this.filterSource;
             }
