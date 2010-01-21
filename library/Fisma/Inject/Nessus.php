@@ -118,6 +118,10 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                     $parsedData[$hostCounter]['findings'][$itemCounter]['cvssVector'] = $oXml->readString();
                 } elseif ($oXml->name == 'plugin_output') {
                     $parsedData[$hostCounter]['findings'][$itemCounter]['plugin_output'] = $oXml->readString();
+                } elseif ($oXml->name == 'see_also') {
+                    if (filter_var($oXml->readString(), FILTER_VALIDATE_URL)) {
+                        $parsedData[$hostCounter]['findings'][$itemCounter]['see_also'][] = $oXml->readString();
+                    }
                 }
             } elseif ($oXml->nodeType == XMLReader::END_ELEMENT) {
                 if ($oXml->name == 'ReportHost') {
@@ -158,16 +162,19 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                                 date('Y-m-d', strtotime($host['startTime'])) : NULL;
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
-                            $findingInstance['description'] = $finding['description'] . $finding['plugin_output'];
-                            $findingInstance['threat'] = (!empty($finding['synopsis'])) ? $finding['synopsis'] : NULL;
-                            $findingInstance['recommendation'] = (!empty($finding['solution'])) ? $finding['solution']
-                                : NULL;
+                            $findingInstance['description'] = Fisma_String::textToHtml(
+                                $finding['description'] . $finding['plugin_output']
+                            );
+                            $findingInstance['threat'] = (!empty($finding['synopsis'])) ? 
+                                Fisma_String::textToHtml($finding['synopsis']) : NULL;
+                            $findingInstance['recommendation'] = (!empty($finding['solution'])) ? 
+                                Fisma_String::textToHtml($finding['solution']) : NULL;
                             $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] 
                                 : NULL;
                             $findingInstance['cvssBaseScore'] = (!empty($finding['cvssBaseScore'])) ? 
                                 $finding['cvssBaseScore'] : NULL;
-                            $findingInstance['cvssVector'] = (!empty($finding['cvssVector'])) ? $finding['cvssVector']
-                                : NULL;
+                            $findingInstance['cvssVector'] = (!empty($finding['cvssVector'])) ? 
+                                substr($finding['cvssVector'], 6) : NULL;
                             
                             if (!empty($finding['cve'])) {
                                 foreach ($finding['cve'] as $cve) {
@@ -185,6 +192,18 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                                 foreach ($finding['xref'] as $xref) {
                                     $findingInstance['xref'][] = $xref;
                                 }
+                            }
+
+                            if (!empty($finding['see_also'])) {
+                                $seeAlsoList = "";
+
+                                foreach ($finding['see_also'] as $seeAlso) {
+                                    $seeAlsoList = $seeAlsoList . "<li><a href=\"" . $seeAlso . "\">" . $seeAlso 
+                                        . "</a></li>";
+                                }
+
+                                $findingInstance['recommendation'] = $findingInstance['recommendation'] . "<ul>" 
+                                    . $seeAlsoList . "</ul>"; 
                             }
     
                             // Save finding and asset
