@@ -74,10 +74,10 @@ Fisma.FindingSummary = function() {
 
                 // Append two rows ('ontime' and 'overdue') to the table for this node
                 var firstRow = table.insertRow(table.rows.length);
-                firstRow.id = node.nickname;
+                firstRow.id = node.nickname + "_ontime";
                 
                 var secondRow = table.insertRow(table.rows.length);
-                secondRow.id = node.nickname + "2";
+                secondRow.id = node.nickname + "_overdue";
 
                 // The first cell of the first row is the system label
                 var firstCell = firstRow.insertCell(0);
@@ -203,7 +203,7 @@ Fisma.FindingSummary = function() {
             treeNode.hasOverdue = this.hasOverdue(treeNode.overdue);
 
             // Update the ontime row first
-            var ontimeRow = document.getElementById(treeNode.nickname);    
+            var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");    
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
@@ -212,7 +212,7 @@ Fisma.FindingSummary = function() {
             }
 
             // Then update the overdue row, or hide it if there are no overdues
-            var overdueRow = document.getElementById(treeNode.nickname + "2");
+            var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
             if (treeNode.hasOverdue) {
                 // Do not hide the overdue row. Instead, update the counts
                 var i = 0;
@@ -258,7 +258,7 @@ Fisma.FindingSummary = function() {
             treeNode.hasOverdue = this.hasOverdue(treeNode.overdue);
 
             // Update the ontime row first
-            var ontimeRow = document.getElementById(treeNode.nickname);
+            var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
@@ -267,7 +267,7 @@ Fisma.FindingSummary = function() {
             }
 
             // Update the overdue row. Display the row first if necessary.
-            var overdueRow = document.getElementById(treeNode.nickname + "2");
+            var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
             if (displayOverdue && treeNode.hasOverdue) {
                 // Show the overdue row and adjust the rowspans on the ontime row to compensate
                 ontimeRow.childNodes[0].rowSpan = "2";
@@ -305,9 +305,9 @@ Fisma.FindingSummary = function() {
                 node = nodeArray[nodeId];
 
                 // Now update this node
-                ontimeRow = document.getElementById(node.nickname);
+                ontimeRow = document.getElementById(node.nickname + "_ontime");
                 ontimeRow.style.display = 'none';
-                overdueRow = document.getElementById(node.nickname + "2");
+                overdueRow = document.getElementById(node.nickname + "_overdue");
                 overdueRow.style.display = 'none';
 
                 // Recurse through children
@@ -336,9 +336,9 @@ Fisma.FindingSummary = function() {
                 }
 
                 // Now update this node
-                ontimeRow = document.getElementById(node.nickname);
+                ontimeRow = document.getElementById(node.nickname + "_ontime");
                 ontimeRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
-                overdueRow = document.getElementById(node.nickname + "2");
+                overdueRow = document.getElementById(node.nickname + "_overdue");
                 if (node.hasOverdue) {
                     ontimeRow.childNodes[0].rowSpan = "2";
                     ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
