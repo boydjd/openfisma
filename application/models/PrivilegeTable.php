@@ -27,21 +27,5 @@
  */
 class PrivilegeTable extends Doctrine_Table
 {
-    /**
-     * Find the specified resoure, action and organization condition matched provileges
-     * 
-     * @param string $resource The specific resource to filter
-     * @param string $action The specified action to filter
-     * @param boolean $orgSpecific The specific organization to filter
-     * @return array The matched privileges in array
-     */
-    public function findByResourceAndActionAndOrgSpecific($resource, $action, $orgSpecific) 
-    {
-        return Doctrine_Query::create()
-               ->from('Privilege p')
-               ->where('p.resource = ?', $resource)
-               ->andWhere('p.action = ?', $action)
-               ->andWhere('p.orgSpecific = ?', $orgSpecific)
-               ->execute(array(), Doctrine::HYDRATE_ARRAY);
-    }
+
 }

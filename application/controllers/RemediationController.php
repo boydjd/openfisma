@@ -131,7 +131,7 @@ class RemediationController extends SecurityController
      */
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read', '*');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
         
         $this->_helper->actionStack('searchbox', 'Remediation');
         $this->_helper->actionStack('summary', 'Remediation');
@@ -145,8 +145,8 @@ class RemediationController extends SecurityController
      */
     public function summaryAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read', '*');
-        
+        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+                
         $mitigationEvaluationQuery = Doctrine_Query::create()
                                      ->from('Evaluation e')
                                      ->where('approvalGroup = \'action\'')
@@ -169,8 +169,8 @@ class RemediationController extends SecurityController
      */
     public function summaryDataAction() 
     {
-        Fisma_Acl::requirePrivilege('finding', 'read', '*');
-        
+        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+                
         // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
         // query selects all Organizations which the user has access to.
         $userOrgQuery = User::currentUser()->getOrganizationsQuery();
@@ -445,7 +445,8 @@ class RemediationController extends SecurityController
     */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read', '*');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+        
         $params = $this->_parseCriteria();
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
@@ -473,8 +474,8 @@ class RemediationController extends SecurityController
      */
     public function searchboxAction()
     {
-        Fisma_Acl::requirePrivilege('finding', 'read', '*');
-        
+        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+                
         $params = $this->_parseCriteria();
         $this->view->assign('params', $params);
         $systemList = array();
@@ -562,30 +563,18 @@ class RemediationController extends SecurityController
 
         $finding  = $this->_getFinding($id);
         if (!empty($decision)) {
-            Fisma_Acl::requirePrivilege(
-                'finding', 
-                $finding->CurrentEvaluation->Privilege->action,
-                $finding->ResponsibleOrganization->nickname
-            );
+            Fisma_Acl::requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
        
         try {
             Doctrine_Manager::connection()->beginTransaction();
 
             if ('submitmitigation' == $do) {
-                Fisma_Acl::requirePrivilege(
-                    'finding', 
-                    'mitigation_strategy_submit', 
-                    $finding->ResponsibleOrganization->nickname
-                );
+                Fisma_Acl::requirePrivilegeForObject('mitigation_strategy_submit', $finding);
                 $finding->submitMitigation(User::currentUser());
             }
             if ('revisemitigation' == $do) {
-                Fisma_Acl::requirePrivilege(
-                    'finding', 
-                    'mitigation_strategy_revise', 
-                    $finding->ResponsibleOrganization->nickname
-                );
+                Fisma_Acl::requirePrivilegeForObject('mitigation_strategy_revise', $finding);
                 $finding->reviseMitigation(User::currentUser());
             }
 
@@ -625,7 +614,7 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
 
-        Fisma_Acl::requirePrivilege('finding', 'upload_evidence', $finding->ResponsibleOrganization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('upload_evidence', $finding);
 
         define('EVIDENCE_PATH', Fisma::getPath('data') . '/uploads/evidence');
         $file = $_FILES['evidence'];
@@ -687,7 +676,8 @@ class RemediationController extends SecurityController
             throw new Fisma_Exception('Invalid evidence ID');
         }
 
-        Fisma_Acl::requirePrivilege('finding', 'read', $evidence->Finding->ResponsibleOrganization->nickname);
+        // There is no ACL defined for evidence objects, access is only based on the associated finding:
+        Fisma_Acl::requirePrivilegeForObject('read', $evidence->Finding);
 
         $fileName = $evidence->filename;
         $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $evidence->findingId . '/';
@@ -725,11 +715,7 @@ class RemediationController extends SecurityController
         $finding  = $this->_getFinding($id);
 
         if (!empty($decision)) {
-            Fisma_Acl::requirePrivilege(
-                'finding', 
-                $finding->CurrentEvaluation->Privilege->action, 
-                $finding->ResponsibleOrganization->nickname
-            );
+            Fisma_Acl::requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
 
         try {
@@ -768,7 +754,7 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
 
-        Fisma_Acl::requirePrivilege('finding', 'read', $finding->ResponsibleOrganization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('read', $finding);
 
         try {
             if ($finding->threat == '' ||
@@ -876,7 +862,7 @@ class RemediationController extends SecurityController
      */
     public function search2Action() 
     {
-        Fisma_Acl::requirePrivilege('finding', 'read', '*');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
         
         /* @todo A hack to translate column names in the data table to column names
          * which can be sorted... this could probably be done in a much better way.
@@ -1191,7 +1177,7 @@ class RemediationController extends SecurityController
         $orgNickname = $finding->ResponsibleOrganization->nickname;
 
         // Check that the user is permitted to view this finding
-        Fisma_Acl::requirePrivilege('finding', 'read', $orgNickname);
+        Fisma_Acl::requirePrivilegeForObject('read', $finding);
 
         $this->view->finding = $finding;
     }

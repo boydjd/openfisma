@@ -27,7 +27,7 @@
  * @package    Model
  * @version    $Id$
  */
-class Organization extends BaseOrganization
+class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDependency
 {
     /**
      * Implements the interface for Zend_Acl_Role_Interface
@@ -535,5 +535,15 @@ class Organization extends BaseOrganization
         }
         
         Notification::notify($eventName, $this, User::currentUser());
+    }
+
+    /**
+     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * 
+     * @return int
+     */
+    public function getOrganizationDependencyId()
+    {
+        return $this->id;
     }
 }

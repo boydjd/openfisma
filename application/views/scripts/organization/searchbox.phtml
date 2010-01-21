@@ -17,7 +17,7 @@
         ?>
 
         <?php 
-        if (Fisma_Acl::hasPrivilege('organization', 'create')) {
+        if (Fisma_Acl::hasPrivilegeForClass('create', 'Organization')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Organization', 
                                                          'imageSrc' => '/images/add.png',

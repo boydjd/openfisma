@@ -473,7 +473,8 @@ class UserController extends BaseController
      */
     public function checkAccountAction()
     {
-        Fisma_Acl::requirePrivilege('user', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'User');
+        
         $data = LdapConfig::getConfig();
         $account = $this->_request->getParam('account');
         $msg = '';

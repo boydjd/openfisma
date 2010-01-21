@@ -3,7 +3,7 @@
     $organization = $finding->ResponsibleOrganization->nickname;
 ?>
 <?php
-if (Fisma_Acl::hasPrivilege('finding', 'read', $organization)) {
+if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
     Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
 ?>
     <p>
@@ -52,7 +52,7 @@ if (Fisma_Acl::hasPrivilege('finding', 'read', $organization)) {
 
     <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
         <?php 
-        if (Fisma_Acl::hasPrivilege('finding', 'update_threat', $organization)
+        if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
             && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
             echo ' class="editable" target="threat_level"';
         }
@@ -64,7 +64,7 @@ if (Fisma_Acl::hasPrivilege('finding', 'read', $organization)) {
 <p>
     <b target="threat" 
         <?php
-        if (Fisma_Acl::hasPrivilege('finding', 'update_threat', $organization)
+        if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) { 
             echo 'class="editable"';
         } 
@@ -99,7 +99,7 @@ if (Fisma_Acl::hasPrivilege('finding', 'read', $organization)) {
           id="effectiveness" 
           href="/metainfo/list/o/countermeasures-effectiveness/format/html/"
         <?php
-        if (Fisma_Acl::hasPrivilege('finding', 'update_countermeasures', $organization)
+        if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
             echo 'class="editable" target="effectiveness"';
         }
@@ -111,7 +111,7 @@ if (Fisma_Acl::hasPrivilege('finding', 'read', $organization)) {
 <p>
     <b target="countermeasures" 
         <?php 
-            if (Fisma_Acl::hasPrivilege('finding', 'update_countermeasures', $organization)
+            if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
                && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
                 echo 'class="editable"';
             } 

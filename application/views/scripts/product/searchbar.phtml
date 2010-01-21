@@ -6,7 +6,7 @@
                     <th align="left">Product Search</th>
                     <th align="right">
                     <?php 
-                    if (Fisma_Acl::hasPrivilege('product', 'create')) { 
+                    if (Fisma_Acl::hasPrivilegeForClass('create', 'Product')) { 
                     ?>
                     [<a id="add_product" href="/panel/product/sub/create" title="Add Product">Add Product</a>]
                     <?php 

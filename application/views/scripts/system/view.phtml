@@ -37,7 +37,7 @@ function executeScript() {
       method="post">
     <div class="toolbar">
         <?php            
-            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
                 echo new Fisma_Yui_Form_Button('discardChanges',
                                                 array('label' => 'Discard Changes', 
                                                       'onClickFunction' => 'discardChanges'));

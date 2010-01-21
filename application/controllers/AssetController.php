@@ -226,7 +226,7 @@ class AssetController extends BaseController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'create', '*');
+        Fisma_Acl::requirePrivilegeForClass('create', 'Asset');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
@@ -238,7 +238,7 @@ class AssetController extends BaseController
      */
     public function searchboxAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'read', '*');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Asset');
         
         $params = $this->parseCriteria();
         $systems = $this->_me->getOrganizations();
@@ -261,7 +261,7 @@ class AssetController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('asset', 'read', '*');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Asset');
 
         $params = $this->parseCriteria();
         $q = Doctrine_Query::create()
@@ -381,7 +381,7 @@ class AssetController extends BaseController
     {
         $id = $this->_request->getParam('id');
         $asset = Doctrine::getTable($this->_modelName)->find($id);
-        Fisma_Acl::requirePrivilege($this->_modelName, 'delete', $asset->Organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('delete', $asset);
         
         if (!$asset) {
             $msg   = "Invalid {$this->_modelName} ID";
@@ -417,9 +417,6 @@ class AssetController extends BaseController
      */
     public function multideleteAction()
     {
-        /** @todo this isn't right... the delete should check each asset individually */
-        Fisma_Acl::requirePrivilege('asset', 'delete', '*');
-
         $req = $this->getRequest();
         $post = $req->getPost();
         $errno = 0;
@@ -427,14 +424,15 @@ class AssetController extends BaseController
             $aids = $post['aid'];
             foreach ($aids as $id) {
                 $assetIds[] = $id;
-                $res = Doctrine::getTable('Asset')->find($id);
-                if (!$res) {
+                $asset = Doctrine::getTable('Asset')->find($id);
+                Fisma_Acl::requirePrivilegeForObject('delete', $asset);
+                if (!$asset) {
                     $errno++;
                 } else {
-                    if (count($res->Findings)) {
+                    if (count($asset->Findings)) {
                         $errno++;
                     } else {
-                        $res->delete();
+                        $asset->delete();
                     }
                 }
             }

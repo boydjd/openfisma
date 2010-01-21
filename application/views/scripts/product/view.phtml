@@ -2,10 +2,10 @@
 echo $this->partial('product/searchbox.phtml');
 
 $operation = '';
-if (Fisma_Acl::hasPrivilege('product', 'update')) {
+if (Fisma_Acl::hasPrivilegeForObject('update', $this->subject)) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Acl::hasPrivilege('product', 'delete')) {
+if (Fisma_Acl::hasPrivilegeForObject('delete', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Product Information $operation"); ?>

@@ -26,7 +26,7 @@
  * @package    Model
  * @version    $Id$
  */
-class Finding extends BaseFinding
+class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
 {
     /**
      * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
@@ -483,11 +483,7 @@ class Finding extends BaseFinding
                             throw new Fisma_Exception($error);
                         }
                         if ($this->ecdLocked) {
-                            Fisma_Acl::requirePrivilege(
-                                'finding', 
-                                'update_ecd', 
-                                $this->ResponsibleOrganization->nickname
-                            );
+                            Fisma_Acl::requirePrivilegeForObject('update_ecd', $this);
                             Notification::notify(
                                 'UPDATE_ECD', 
                                 $this, 
@@ -517,11 +513,7 @@ class Finding extends BaseFinding
             foreach ($modified as $key => $value) {
                 // Check whether the user has the privilege to update this column
                 if (isset(self::$_requiredPrivileges[$key])) {
-                    Fisma_Acl::requirePrivilege(
-                        'finding', 
-                        self::$_requiredPrivileges[$key], 
-                        $this->ResponsibleOrganization->nickname
-                    );
+                    Fisma_Acl::requirePrivilegeForObject(self::$_requiredPrivileges[$key], $this);
                 }
             
                 // Check whether this field generates any notification events
@@ -631,15 +623,13 @@ class Finding extends BaseFinding
         if (in_array($this->status, array('NEW', 'DRAFT'))) {
 
             // If the ECD is unlocked, then you need the update_ecd privilege
-            if (!$this->ecdLocked 
-                && Fisma_Acl::hasPrivilege('finding', 'update_ecd', $this->ResponsibleOrganization->nickname)) {
+            if (!$this->ecdLocked && Fisma_Acl::hasPrivilegeForObject('update_ecd', $this)) {
             
                 return true;
             }
         
             // If the ECD is locked, then you need the update_locked_ecd privilege
-            if ($this->ecdLocked
-                && Fisma_Acl::hasPrivilege('finding', 'update_locked_ecd', $this->ResponsibleOrganization->nickname)) {
+            if ($this->ecdLocked && Fisma_Acl::hasPrivilegeForObject('update_locked_ecd', $this)) {
         
                 return true;
             }
@@ -647,5 +637,15 @@ class Finding extends BaseFinding
         
         // If none of the above conditions match, then the default is false
         return false;
+    }
+
+    /**
+     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * 
+     * @return int
+     */
+    public function getOrganizationDependencyId()
+    {
+        return $this->responsibleOrganizationId;
     }
 }

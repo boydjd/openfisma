@@ -17,11 +17,7 @@
  */
 
 /**
- * Extends Zend_Acl to tweak behavior needed for OpenFISMA.
- * 
- * 1) The role that is searched is always the current user's role.
- * 2) Ensure that the system only accesses objects within their assigned systems
- * 3) Add a requirePrivilege method, which is a convenient way to assert that a user is allowed to do something
+ * Provides access control primitives
  * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -32,80 +28,148 @@
  */
 class Fisma_Acl extends Zend_Acl
 {
-    /** 
-     * Determine whether the current user has permission to perform $privilege
-     * on $resource (if $organization is not null, then $resource belongs to $organization)
+    /**
+     * Check whether a user has access to the specified area in OpenFISMA
      * 
-     * @param string $resource The specific resource to check
-     * @param string $privilege The specific privilege to check
-     * @param string $organization|null The specific organization to check
-     * @return boolean True if the current user has permission to perform the specified privilege, false otherwise
-     * @throws Zend_Acl_Exception if fails to check
-     * @see User::acl()
+     * @param string $area
+     * @return bool
      */
-    static function hasPrivilege($resource, $privilege, $organization = null)
+    static public function hasArea($area)
     {
-        $identity = Zend_Auth::getInstance()->getIdentity()->username;
+        $username = Zend_Auth::getInstance()->getIdentity()->username;
         
         // Root can do anything
-        if ('root' == $identity) {
+        if ('root' == $username) {
             return true;
         }
-
-        $privilegeTable = Doctrine::getTable('Privilege');
-        $orgSpecific = $privilegeTable->findByResourceAndActionAndOrgSpecific($resource, $privilege, true);
-
-        if (!$orgSpecific) {
-            $organization = null;
-        }
-       
-        // Otherwise, check the ACL
-        try {
-            $resource = strtolower($resource);
-            $acl = Zend_Registry::get('acl');
-            if (isset($organization)) {
-                // See User::acl() for explanation of how $organization is used
-                return $acl->isAllowed($identity, "$organization/$resource", $privilege);
-            } else {
-                return $acl->isAllowed($identity, $resource, $privilege);
-            }
-        } catch (Zend_Acl_Exception $e) {
-            // This is an unfortunate hack. For some reason Zend_Acl throws an exception if you check permissions on 
-            // a resource which doesn't exist. We have to capture that condition here and return false, but in doing
-            // this we run the risk of swallowing up a meaningful exception.
-            /** @todo revisit... can we make this work right? */
-            return false;
+        
+        return self::_isAllowed($username, 'area', $area);
+    }
+    
+    /**
+     * Require a user to have access to the specified area, or else throw an exception
+     * 
+     * @param string $area
+     * @throws Fisma_Exception_InvalidPrivilege
+     */
+    static public function requireArea($area)
+    {
+        if (!self::hasArea($area)) {
+            throw new Fisma_Exception_InvalidPrivilege("User does not have access to this area: '$area'");
         }
     }
     
     /**
-     * A convenience method to ensure a user has a required privilege. This would only fail due to program
-     * bugs or malicious users.
+     * Check whether a user has a particular privilege on a particular object
      * 
-     * @param string $resource The specific resource to check
-     * @param string $privilege The specific privilege to check
-     * @param string $organization|null The specific organization to check
-     * @return void
-     * @throws Zend_Acl_Exception if user does not have the privilege
-     * @see Fisma_Acl::hasPrivilege()
+     * This method checks to see if the object has an ACL dependency on a particular organization, and adjusts the ACL
+     * query accordingly.
+     * 
+     * @see Fisma_Acl_OrganizationDependency
+     * 
+     * @param string $privilege
+     * @param object $object
+     * @return bool
      */
-    static function requirePrivilege($resource, $privilege, $organization = null)
+    static public function hasPrivilegeForObject($privilege, $object)
     {
-        $identity = Zend_Auth::getInstance()->getIdentity()->username;
-        
-        // Root can do anything
-        if ('root' == $identity) {
-            return ;
+        // Safety check: make sure that $object is actually an object
+        if (!is_object($object)) {
+            throw new Fisma_Exception("\$object is not an object");
         }
 
-        if (!self::hasPrivilege($resource, $privilege, $organization)) {
-            if (isset($organization)) {
-                throw new Fisma_Exception_InvalidPrivilege("User does not have the privilege for "
-                    . "($organization/$resource, $privilege)");
-            } else {
-                throw new Fisma_Exception_InvalidPrivilege("User does not have the privilege for "
-                    . "($resource, $privilege)");
-            }
+        $username = Zend_Auth::getInstance()->getIdentity()->username;
+        
+        // Root can do anything
+        if ('root' == $username) {
+            return ;
+        }
+        
+        $resourceName = Doctrine_Inflector::tableize(get_class($object));
+
+        // Handle objects with organization ACL dependency
+        if ($object instanceof Fisma_Acl_OrganizationDependency) {
+            $organizationId = $object->getOrganizationDependencyId();
+            $resourceName = "$organizationId/$resourceName";
+        }
+
+        return self::_isAllowed($username, $resourceName, $privilege);
+    }
+    
+    /**
+     * Require a user to have a particular privilege on a particular object, or else throw an exception
+     * 
+     * @param string $privilege
+     * @param object $object
+     * @throws Fisma_Exception_InvalidPrivilege
+     */
+    static public function requirePrivilegeForObject($privilege, $object)
+    {
+        if (!self::hasPrivilegeForObject($privilege, $object)) {
+            $message = "User does not have privilege '$privilege' for this object.";
+            throw new Fisma_Exception_InvalidPrivilege($message);
+        }
+    }
+    
+    /**
+     * Check whether a user has a particular privilege on a class of objects
+     * 
+     * @param string $privilege
+     * @param string $className
+     * @return bool
+     */
+    static public function hasPrivilegeForClass($privilege, $className)
+    {
+        // Safety check: make sure that $className is an actual class
+        if (!class_exists($className)) {
+            $message = "Privilege check failed for class '$className' because the class could not be found";
+            throw new Fisma_Exception($message);
+        }
+        
+        $username = Zend_Auth::getInstance()->getIdentity()->username;
+        
+        // Root can do anything
+        if ('root' == $username) {
+            return ;
+        }
+        
+        $resourceName = Doctrine_Inflector::tableize($className);
+
+        return self::_isAllowed($username, $resourceName, $privilege);
+    }
+    
+    /**
+     * Require a user to have a particular privilege on a particular class of objects, or else throw an exception
+     * 
+     * @param string $privilege
+     * @param string $className
+     * @throws Fisma_Exception_InvalidPrivilege
+     */
+    static public function requirePrivilegeForClass($privilege, $className)
+    {
+        if (!self::hasPrivilegeForClass($privilege, $className)) {
+            $message = "User does not have privilege '$privilege' for class '$className'";
+            throw new Fisma_Exception_InvalidPrivilege($message);
+        }
+    }
+    
+    /**
+     * A wrapper to the ACL isAllowed() method which catches Zend_Acl_Exception
+     * 
+     * This is an unfortunate hack, because Zend_Acl throws an exception if you query a resources that doesn't exist.
+     * 
+     * @todo is there a better way to handle this?
+     * 
+     * @param string $username
+     * @param string $resourceName
+     * @param string $privilege
+     */
+    static private function _isAllowed($username, $resourceName, $privilege)
+    {
+        try {
+            return User::currentUser()->acl()->isAllowed($username, $resourceName, $privilege);
+        } catch (Zend_Acl_Exception $e) {
+            return false;
         }
     }
 }

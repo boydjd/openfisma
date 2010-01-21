@@ -54,9 +54,7 @@ class RoleController extends BaseController
      * @return void
      */
     public function deleteAction()
-    {
-        Fisma_Acl::requirePrivilege('role', 'delete');
-        
+    {        
         $req = $this->getRequest();
         $id = $req->getParam('id');
         $role = Doctrine::getTable('Role')->find($id);
@@ -64,6 +62,8 @@ class RoleController extends BaseController
             $msg   = "Invalid Role ID";
             $type = 'warning';
         } else {
+            Fisma_Acl::requirePrivilegeForObject('delete', $role);
+            
             $users = $role->Users->toArray();
             if (!empty($users)) {
                 $msg = 'This role cannot be deleted because it is in use by one or more users';
@@ -88,14 +88,15 @@ class RoleController extends BaseController
      * @return void
      */
     public function rightAction()
-    {
-        Fisma_Acl::requirePrivilege('role', 'assignPrivileges');
+    {   
         $req = $this->getRequest();
         $do = $req->getParam('do');
         $roleId = $req->getParam('id');
         $screenName = $req->getParam('screen_name');
         
         $role = Doctrine::getTable('Role')->find($roleId);
+        Fisma_Acl::requirePrivilegeForObject('assignPrivileges', $role);
+                
         $existFunctions = $role->Privileges->toArray();
         if ('availableFunctions' == $do) {
             $existFunctionIds = explode(',', $req->getParam('existFunctions'));

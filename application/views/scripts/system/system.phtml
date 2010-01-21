@@ -6,7 +6,7 @@ Fisma_Format_Section::startSection('Details');
         <td>System Name: </td>
         <td>
             <?php
-            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <span id="name" class="editable" target="name" name="name" type="text">
                 <?php echo $this->organization->name; ?>
@@ -26,7 +26,7 @@ Fisma_Format_Section::startSection('Details');
         <td>System Nickname: </td>
         <td>
             <?php
-            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <span id="nickname" class="editable" target="nickname" name="nickname" type="text">
                 <?php echo $this->organization->nickname; ?>
@@ -46,7 +46,7 @@ Fisma_Format_Section::startSection('Details');
         <td>System Type: </td>
         <td>
             <?php
-            if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+            if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
             ?>
                 <span id="type" 
                       class="editable" 
@@ -77,7 +77,7 @@ Fisma_Format_Section::startSection('Details');
 <?php
 Fisma_Format_Section::stopSection();
 
-if (Fisma_Acl::hasPrivilege('system', 'update', $this->organization->nickname)) {
+if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
     Fisma_Format_Section::startSection('System Description', 'system_description');
 } else {
     Fisma_Format_Section::startSection('System Description');

@@ -51,6 +51,14 @@ class ConfigController extends SecurityController
                       ->addActionContext('test-email-config', 'json')
                       ->initContext();
     }
+    
+    /**
+     * Hook into the pre-dispatch to do an ACL check
+     */
+    public function preDispatch()
+    {
+        Fisma_Acl::requireArea('configuration');
+    }
 
     /**
      * Returns the standard form for system configuration
@@ -74,7 +82,6 @@ class ConfigController extends SecurityController
      */
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
         if ($this->_request->isPost()) {
             $type = $this->_request->getParam('type');
             $form = $this->getConfigForm($type . '_config');
@@ -109,8 +116,6 @@ class ConfigController extends SecurityController
      */
     public function generalAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-
         $form = $this->getConfigForm('general_config');
         $configs = Doctrine::getTable('Configuration')->findAll();
 
@@ -172,9 +177,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function contactAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         $form = $this->getConfigForm('contact_config');
         $columns = array('contact_name', 'contact_phone', 'contact_email', 'contact_subject');
         foreach ($columns as $column) {
@@ -190,9 +193,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function ldapupdateAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         $form = $this->getConfigForm('ldap');
         $id = $this->_request->getParam('id');
         
@@ -232,9 +233,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function ldapdelAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         $id = $this->_request->getParam('id');
         Doctrine::getTable('LdapConfig')->find($id)->delete();
         $msg = "Ldap Server deleted successfully.";
@@ -250,9 +249,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function ldapvalidAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         $form = $this->getConfigForm('ldap');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
@@ -295,9 +292,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function emailAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         $form = $this->getConfigForm('email_config');
         $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port',
                          'smtp_tls', 'smtp_username', 'smtp_password');
@@ -315,9 +310,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function testEmailConfigAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         // Load the form from notification_config.form file
         $form = $this->getConfigForm('email_config');
         if ($this->_request->isPost()) {
@@ -387,9 +380,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function privacyAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         $form = $this->getConfigForm('privacy_policy_config');
         $form->setDefaults(array('privacy_policy' => Fisma::configuration()->getConfig('privacy_policy')));
         $this->view->form = $form;
@@ -401,9 +392,7 @@ class ConfigController extends SecurityController
      * @return void
      */
     public function passwordAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
-        
+    {        
         $form = $this->getConfigForm('password_config');
         $columns = array('failure_threshold' ,'unlock_enabled', 'unlock_duration', 'pass_expire',
                          'pass_warning', 'pass_uppercase', 'pass_lowercase',

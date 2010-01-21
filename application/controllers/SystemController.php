@@ -100,7 +100,7 @@ class SystemController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('system', 'read', '*');
+        Fisma_Acl::requirePrivilegeForClass('read', 'System');
         
         $keywords = trim($this->_request->getParam('keywords'));
         
@@ -167,7 +167,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('read', $organization);
         
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->view->organization = $organization;
@@ -185,7 +185,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('read', $organization);
         
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
@@ -193,7 +193,7 @@ class SystemController extends BaseController
         // Assign the parent organization link
         $parentOrganization = $this->view->organization->getNode()->getParent();
         if (isset($parentOrganization)) {
-            if (Fisma_Acl::hasPrivilege('system', 'read', $parentOrganization->id)) {
+            if (Fisma_Acl::hasPrivilegeForObject('read', $parentOrganization)) {
                 if ('system' == $parentOrganization->orgType) {
                     $this->view->parentOrganization = "<a href='/panel/system/sub/view/id/"
                                                     . $parentOrganization->id
@@ -227,7 +227,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -245,7 +245,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -263,7 +263,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -292,7 +292,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'update', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -321,7 +321,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'update', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -371,6 +371,7 @@ class SystemController extends BaseController
         if ($addSystemToUserAcl) {
             User::currentUser()->Organizations[] = $system->Organization;
             User::currentUser()->save();
+            User::currentUser()->invalidateAcl();
         }
     }
 
@@ -385,7 +386,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'update', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organizationId = $id;        
@@ -401,7 +402,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'update', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('update', $organization);
                 
         $organization = Doctrine::getTable('Organization')->find($id);
         $documentTypeId = $this->getRequest()->getParam('documentTypeId');
@@ -487,7 +488,9 @@ class SystemController extends BaseController
         $id = $this->getRequest()->getParam('id');
         $version = $this->getRequest()->getParam('version');
         $document = Doctrine::getTable('SystemDocument')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'read', $document->System->Organization->nickname);
+        
+        // Documents don't have their own privileges, access control is based on the associated organization
+        Fisma_Acl::requirePrivilegeForObject('read', $document->System->Organization);
 
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
@@ -524,7 +527,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilege('system', 'update', $organization->nickname);
+        Fisma_Acl::requirePrivilegeForObject('update', $organization);
 
         $error = $this->getRequest()->getParam('error');
         if (!empty($error)) {

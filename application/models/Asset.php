@@ -25,7 +25,7 @@
  * @package    Model
  * @version    $Id$
  */
-class Asset extends BaseAsset
+class Asset extends BaseAsset implements Fisma_Acl_OrganizationDependency
 {
     /**
      * Declares fields stored in related records that should be indexed along with records in this table
@@ -44,4 +44,14 @@ class Asset extends BaseAsset
                            'name' => array('type' => 'unstored'),
                            'version' => array('type' => 'unstored'))
     );
+    
+    /**
+     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * 
+     * @return int
+     */
+    public function getOrganizationDependencyId()
+    {
+        return $this->orgSystemId;
+    }
 }

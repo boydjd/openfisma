@@ -43,13 +43,14 @@ class SourceController extends BaseController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege($this->_modelName, 'delete');
         $id = $this->_request->getParam('id');
         $source = Doctrine::getTable($this->_modelName)->find($id);
         if (!$source) {
             $msg   = "Invalid {$this->_modelName} ID";
             $type = 'warning';
         } else {
+            Fisma_Acl::requirePrivilegeForObject('delete', $source);
+            
             try {
                 if (count($source->Findings) > 0) {
                     $msg = 'This source cannot be deleted because it is already associated with one or

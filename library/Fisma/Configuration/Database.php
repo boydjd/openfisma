@@ -55,7 +55,7 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      */
     public function setConfig($name, $value) 
     {
-        Fisma_Acl::requirePrivilege('area', 'configuration');
+        Fisma_Acl::requireArea('configuration');
         
         $config = Doctrine::getTable('Configuration')->findOneByName($name);
         

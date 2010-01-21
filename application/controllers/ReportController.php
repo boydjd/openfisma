@@ -72,7 +72,8 @@ class ReportController extends SecurityController
      */
     public function preDispatch()
     {
-        parent::preDispatch();
+        Fisma_Acl::requireArea('reports');
+
         $this->req = $this->getRequest();
         $swCtx = $this->_helper->contextSwitch();
         $swCtx->addActionContext('overdue', array('pdf', 'xls'))
@@ -144,9 +145,7 @@ class ReportController extends SecurityController
      * @return void
      */
     public function fismaAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'reports');
-        
+    {        
         $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('Y-m-d');
         $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('Y-m-d');
     }
@@ -160,8 +159,6 @@ class ReportController extends SecurityController
      */
     public function fismaQuarterlyAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'reports');
-
         // Agency Name
         $agency = Organization::getAgency();
         $this->view->agencyName = $agency->name;
@@ -185,8 +182,6 @@ class ReportController extends SecurityController
      */
     public function fismaAnnualAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'reports');
-
         // Agency Name
         $agency = Organization::getAgency();
         $this->view->agencyName = $agency->name;
@@ -209,9 +204,7 @@ class ReportController extends SecurityController
      * @return void
      */
     public function overdueAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'reports');
-        
+    {        
         // Get request variables
         $req = $this->getRequest();
         $params['orgSystemId'] = $req->getParam('orgSystemId');
@@ -222,9 +215,9 @@ class ReportController extends SecurityController
 
         if (!empty($params['orgSystemId'])) {
             $organization = Doctrine::getTable('Organization')->find($params['orgSystemId']);
-            Fisma_Acl::requirePrivilege('system', 'read', $organization->nickname);
+            Fisma_Acl::requirePrivilegeForObject('read', $organization);
         } else {
-            Fisma_Acl::requirePrivilege('system', 'read', '*');
+            Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
         }
 
         $this->view->assign('sourceList', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
@@ -299,7 +292,6 @@ class ReportController extends SecurityController
      */
     public function rafsAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'reports');
         $sid = $this->getRequest()->getParam('system_id', 0);
         $organizations = User::currentUser()->getOrganizations();
         $this->view->assign('organizations', $organizations->toKeyValueArray('id', 'name'));
@@ -369,9 +361,7 @@ class ReportController extends SecurityController
      * @todo Use Zend_Cache for the report menu
      */         
     public function pluginAction() 
-    {
-        Fisma_Acl::requirePrivilege('area', 'reports');
-        
+    {        
         // Build up report menu
         $reportsConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf');
         $reports = $reportsConfig->toArray();

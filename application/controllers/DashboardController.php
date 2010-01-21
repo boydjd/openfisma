@@ -59,7 +59,8 @@ class DashboardController extends SecurityController
      */
     function preDispatch()
     {
-        parent::preDispatch();
+        Fisma_Acl::requireArea('dashboard');
+
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         // Headers Required for IE+SSL (see bug #2039290) to stream XML
         $contextSwitch->addHeader('xml', 'Pragma', 'private')
@@ -76,7 +77,6 @@ class DashboardController extends SecurityController
      */
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'dashboard');
         $user = new User();
         $user = $user->getTable()->find($this->_me->id);
         // Check to see if we got passed a "dismiss" parameter to dismiss notifications
@@ -155,9 +155,7 @@ class DashboardController extends SecurityController
      * @return void
      */
     public function totalstatusAction()
-    {
-        Fisma_Acl::requirePrivilege('area', 'dashboard');
-        
+    {        
         $q = Doctrine_Query::create()
              ->select('f.status, e.nickname')
              ->addSelect('COUNT(f.status) AS statusCount, COUNT(e.nickname) AS subStatusCount')
@@ -208,7 +206,6 @@ class DashboardController extends SecurityController
      */
     public function totaltypeAction()
     {
-        Fisma_Acl::requirePrivilege('area', 'dashboard');
         $this->view->summary = array(
             'NONE' => 0,
             'CAP' => 0,

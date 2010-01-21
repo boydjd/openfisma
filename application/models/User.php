@@ -278,6 +278,11 @@ class User extends BaseUser
     public function acl()
     {
         if (!Zend_Registry::isRegistered('acl')) {
+            // Temporarily disable class loading warnings
+            $classLoader = Zend_Loader_Autoloader::getInstance();
+            $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
+            $classLoader->suppressNotFoundWarnings(true);
+            
             $acl = new Fisma_Acl();
             
             // For each role, add its privileges to the ACL
@@ -289,16 +294,28 @@ class User extends BaseUser
                 $roleArray[] = $role->nickname;
                 
                 foreach ($role->Privileges as $privilege) {
+                    /**
+                     * Check whether this privilege corresponds to a class, and if it does, then check whether that
+                     * class has an organization dependency
+                     */
+                    $organizationDependency = false;
+                    $className = Doctrine_Inflector::classify($privilege->resource);
+
+                    if (class_exists($className)) {
+                        $reflection = new ReflectionClass($className);
+                        $organizationDependency = $reflection->implementsInterface('Fisma_Acl_OrganizationDependency');
+                    }
+                    
                     // If a privilege is organization-specific, then grant it as a nested resource within
                     // that organization, otherwise, grant it directly to that resource.
                     // e.g. Organization->Finding->Create versus Network->Create
-                    if ($privilege->orgSpecific) {
+                    if ($organizationDependency) {
                         // This is the cartesian join between roles and systems
                         foreach ($this->Organizations as $organization) {
                             // Fake hierarhical access control by storing system-specific attributes like this:
                             // If the system nickname is "ABC" and the resource is called "finding", then the
                             // resource stored in the ACL is called "ABC/finding"
-                            $systemResource = "$organization->nickname/$privilege->resource";
+                            $systemResource = "$organization->id/$privilege->resource";
                             if (!$acl->has($systemResource)) {
                                 $acl->add(new Zend_Acl_Resource($systemResource));
                             }
@@ -306,8 +323,8 @@ class User extends BaseUser
                             
                             // The wildcard resources indicates whether a user has this privilege on *any* 
                             // system. This is useful for knowing when to show certain user interface elements
-                            // like menu items. The resource is named "*/finding"
-                            $wildcardResource = "*/$privilege->resource";
+                            // like menu items.
+                            $wildcardResource = "$privilege->resource";
                             if (!$acl->has($wildcardResource)) {
                                 $acl->add(new Zend_Acl_Resource($wildcardResource));
                             }
@@ -328,9 +345,28 @@ class User extends BaseUser
             $acl->addRole($userRole, $roleArray);
 
             Zend_Registry::set('acl', $acl);
+            
+            // Reset class loader warning suppression to original setting
+            $classLoader->suppressNotFoundWarnings($suppressWarningsOriginalValue);
         }
         
         return Zend_Registry::get('acl');
+    }
+    
+    /**
+     * Mark's the user's current ACL object as "dirty", indicating that it needs to be re-generated. 
+     * 
+     * This should be called if a user's privileges are changed during a request and the effects of that change need to 
+     * be visible within the current response.
+     */
+    public function invalidateAcl()
+    {
+        /**
+         * There is only one way to unset a Zend_Registry value, and its a little hacky:
+         * http://framework.zend.com/issues/browse/ZF-2752
+         */
+        $registry = Zend_Registry::getInstance();
+        unset($registry['acl']);
     }
     
     /**

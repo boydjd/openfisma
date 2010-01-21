@@ -25,7 +25,7 @@
  * @package    Model
  * @version    $Id$
  */
-class System extends BaseSystem
+class System extends BaseSystem implements Fisma_Acl_OrganizationDependency
 {
     /**
      * Confidentiality, Integrity, Availability
@@ -295,5 +295,15 @@ class System extends BaseSystem
              . substr($raw, 15, 2);
              
         $this->_set('uniqueProjectId', $upi);
+    }
+
+    /**
+     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * 
+     * @return int
+     */
+    public function getOrganizationDependencyId()
+    {
+        return $this->Organization->id;
     }
 }

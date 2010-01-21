@@ -42,15 +42,15 @@ class ProductController extends BaseController
      * @return void
      */
     public function deleteAction()
-    {
-        Fisma_Acl::requirePrivilege('product', 'delete');
-        
+    {        
         $id = $this->_request->getParam('id');
         $product = Doctrine::getTable('Product')->find($id);
         if (!$product) {
             $msg   = "Invalid Product ID";
             $type = 'warning';
         } else {
+            Fisma_Acl::requirePrivilegeForObject('delete', $product);
+            
             $assets = $product->Assets->toArray();
             if (!empty($assets)) {
                 $msg = 'This product can not be deleted because it is already associated with one or more assets';
@@ -73,7 +73,8 @@ class ProductController extends BaseController
      */
     public function advancesearchAction()
     {
-        Fisma_Acl::requirePrivilege('product', 'read');
+        Fisma_Acl::requirePrivilegeForObject('read', 'Product');
+
         $this->_helper->layout->setLayout('ajax');
         $product = new Product();
         $req = $this->getRequest();

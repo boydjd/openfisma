@@ -15,7 +15,7 @@
                   name="finding[securityControlId]" 
                   href="/metainfo/list/o/security_control/format/html/"
                     <?php
-                    if (Fisma_Acl::hasPrivilege('finding', 'update_control_assignment', $organization)
+                    if (Fisma_Acl::hasPrivilegeForObject('update_control_assignment', $this->finding)
                         && ('NEW' == $this->finding->status || 'DRAFT' == $this->finding->status)) {
                         echo "class='editable' target='security_control'";
                     }

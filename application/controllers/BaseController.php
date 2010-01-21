@@ -154,12 +154,13 @@ abstract class BaseController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
             throw new Fisma_Exception("Invalid {$this->_modelName} ID");
         }
+        Fisma_Acl::requirePrivilegeForObject('read', $subject);
+
         $form   = $this->getForm();
         
         $this->view->assign('editLink', "/panel/{$this->_modelName}/sub/edit/id/$id");
@@ -168,6 +169,7 @@ abstract class BaseController extends SecurityController
         $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
+        $this->view->subject = $subject;
         $this->render();
     }
 
@@ -178,7 +180,8 @@ abstract class BaseController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege($this->_aclResource, 'create', $this->_organizations);
+        Fisma_Acl::requirePrivilegeForClass('create', $this->_modelName);
+        
         // Get the subject form
         $form   = $this->getForm();
         $form->setAction("/panel/{$this->_modelName}/sub/create");
@@ -217,12 +220,13 @@ abstract class BaseController extends SecurityController
      */
     public function editAction()
     {
-        Fisma_Acl::requirePrivilege($this->_aclResource, 'update', $this->_organizations);
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
             throw new Fisma_Exception("Invalid {$this->_modelName} ID");
         }
+        Fisma_Acl::requirePrivilegeForObject('update', $subject);
+        $this->view->subject = $subject;
         $form   = $this->getForm();
 
         $this->view->assign('viewLink', "/panel/{$this->_modelName}/sub/view/id/$id");
@@ -268,9 +272,10 @@ abstract class BaseController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege($this->_aclResource, 'delete', $this->_organizations);
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
+        Fisma_Acl::requirePrivilegeForObject('delete', $subject);
+
         if (!$subject) {
             $msg   = "Invalid {$this->_modelName} ID";
             $type = 'warning';
@@ -300,7 +305,7 @@ abstract class BaseController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
+        Fisma_Acl::requirePrivilegeForClass('read', $this->_modelName);
         $keywords = htmlentities(trim($this->_request->getParam('keywords')));
         $link = empty($keywords) ? '' :'/keywords/'.$keywords;
         $this->view->link     = $link;
@@ -318,7 +323,7 @@ abstract class BaseController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege($this->_aclResource, 'read', $this->_organizations);
+        Fisma_Acl::requirePrivilegeForClass('read', $this->_modelName);
         $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 

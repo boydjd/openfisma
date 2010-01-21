@@ -44,15 +44,16 @@ class NetworkController extends BaseController
      * @return void
      */
     public function deleteAction()
-    {
-        Fisma_Acl::requirePrivilege('network', 'delete');
-        
+    {        
         $id = $this->_request->getParam('id');
         $network = Doctrine::getTable('Network')->find($id);
+        
         if (!$network) {
             $msg   = "Invalid Network ID";
             $type = 'warning';
         } else {
+            Fisma_Acl::requirePrivilegeForObject('delete', $network);
+            
             $assets = $network->Assets->toArray();
             if (!empty($assets)) {
                 $msg = 'This network can not be deleted because it is'

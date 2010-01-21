@@ -57,8 +57,10 @@ class SystemDocumentController extends SecurityController
     public function viewAction()
     {
         $document = Doctrine::getTable('SystemDocument')->find($this->getRequest()->getParam('id'));
-        $organization = $document->System->Organization->nickname;
-        Fisma_Acl::requirePrivilege('system', 'read', $organization);
+        $organization = $document->System->Organization;
+        
+        // There are no access control privileges for system documents, access is based on the associated organization
+        Fisma_Acl::requirePrivilegeForObject('read', $organization);
 
         $historyQuery = Doctrine_Query::create()
                         ->from('SystemDocumentVersion v')
@@ -77,8 +79,8 @@ class SystemDocumentController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Acl::requirePrivilege('system', 'read', '*');
-
+        Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
+        
         $keywords = htmlentities(trim($this->_request->getParam('keywords')));
         $link = empty($keywords) ? '' :'/keywords/'.$keywords;
         $this->view->link     = $link;
@@ -96,7 +98,8 @@ class SystemDocumentController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('system', 'read', '*');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
+
         $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
