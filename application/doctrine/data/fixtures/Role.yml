@@ -21,8 +21,8 @@ Role:
             - finding_evidence_isso
             - notification_asset
             - notification_finding
-            - system_read
-            - system_update
+            - organization_read
+            - organization_update
             - asset_read
             - asset_update
 
@@ -67,7 +67,7 @@ Role:
             - asset_create
             - asset_read
             - asset_update
-            - system_read
+            - organization_read
             - notification_asset
             - notification_finding
             - product_read
@@ -99,7 +99,7 @@ Role:
             - asset_create
             - asset_read
             - asset_update
-            - system_read
+            - organization_read
             - notification_admin
             - notification_asset
             - notification_finding
@@ -148,10 +148,6 @@ Role:
             - organization_read
             - organization_update
             - organization_delete
-            - system_create
-            - system_read
-            - system_update
-            - system_delete
             - product_create
             - product_read
             - product_update
@@ -206,7 +202,7 @@ Role:
             - findings_upload_evidence
             - findings_mitigation_strategy_submit
             - findings_mitigation_strategy_revise
-            - system_read
+            - organization_read
             - notification_asset
             - notification_finding
 
@@ -218,7 +214,7 @@ Role:
             - areas_dashboard
             - areas_reports
             - findings_read
-            - system_read
+            - organization_read
             - notification_asset
             - notification_finding
 

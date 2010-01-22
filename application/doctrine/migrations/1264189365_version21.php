@@ -54,6 +54,9 @@ class Version21 extends Doctrine_Migration_Base
         
         // Now drop column. This is outside the transaction since the DDL will trigger an autocommit on most DBMS
         $this->removeColumn('privilege', 'orgspecific');
+        
+        // Regenerate models
+        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**
