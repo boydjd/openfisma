@@ -315,7 +315,6 @@ class Fisma
         $manager = Doctrine_Manager::getInstance();
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
         $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
-        $manager->setAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES, true);
         Zend_Registry::set(
             'doctrine_config', 
             array(
@@ -324,7 +323,6 @@ class Fisma
                 'migrations_path'     =>  self::getPath('migration'),
                 'yaml_schema_path'    =>  self::getPath('schema'),
                 'generate_models_options' => array(
-                    'generateTableClasses' => true,
                     'baseClassName' => 'Fisma_Record'
                 )
             )
