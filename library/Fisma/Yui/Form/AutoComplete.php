@@ -46,20 +46,30 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
      */
     function renderSelf() 
     {
+        $disabled = "";
+        
+        if ($this->getAttrib('readonly')) {
+            $disabled = "disabled=\"true\"";
+        }
+
         $render  = "
         <div id=\"{$this->getAttrib('containerId')}\">
-        <input type=\"text\" id=\"{$this->getName()}\" />
-        </div>
-        <script type='text/javascript'>
-        YAHOO.util.Event.onDOMReady(Fisma.AutoComplete.init,
-          { schema: [\"{$this->getAttrib('resultsList')}\", \"{$this->getAttrib('fields')}\"],
-            xhr : \"{$this->getAttrib('xhr')}\",
-            fieldId : \"{$this->getName()}\",
-            containerId: \"{$this->getAttrib('containerId')}\",
-            hiddenFieldId: \"{$this->getAttrib('hiddenField')}\",
-            queryPrepend: \"{$this->getAttrib('queryPrepend')}\"
-          } );
-        </script>";
+        <input type=\"text\" id=\"{$this->getName()}\" {$disabled} value=\"{$this->getValue()}\"/>
+        </div>";
+
+        if (!$this->getAttrib('readonly')) {
+            $render = $render . "
+                <script type='text/javascript'>
+                YAHOO.util.Event.onDOMReady(Fisma.AutoComplete.init,
+                  { schema: [\"{$this->getAttrib('resultsList')}\", \"{$this->getAttrib('fields')}\"],
+                    xhr : \"{$this->getAttrib('xhr')}\",
+                    fieldId : \"{$this->getName()}\",
+                    containerId: \"{$this->getAttrib('containerId')}\",
+                    hiddenFieldId: \"{$this->getAttrib('hiddenField')}\",
+                    queryPrepend: \"{$this->getAttrib('queryPrepend')}\"
+                  } );
+            </script>";
+        }
 
         return $render;
     } 

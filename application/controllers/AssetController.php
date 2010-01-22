@@ -144,11 +144,15 @@ class AssetController extends BaseController
     protected function setForm($subject, $form)
     {
         $product = $subject->Product;
-        $form->getElement('productId')->addMultiOptions(array($product->id => $product->name));
+        $form->getElement('product')->setValue($product->name);
+
+        if ($this->getRequest()->getParam('sub') != 'edit') 
+            $form->getElement('product')->setAttrib('readonly', true);
+    
         $form->setDefaults($subject->toArray());
         return $form;
     }
-    
+
     /**
      * Hooks for manipulating and saving the values retrieved by Forms
      *
@@ -165,11 +169,6 @@ class AssetController extends BaseController
             throw new Fisma_Exception('Invalid parameter: Expected a Doctrine_Record');
         }
         $values = $form->getValues();
-
-        if (!empty($values['productId'])) {
-            $product = Doctrine::getTable('Product')->find($values['productId']);
-            $form->getElement('productId')->addMultiOptions(array($product->id => $product->name));
-        }
 
         $subject->merge($values);
         $subject->save();
@@ -230,7 +229,7 @@ class AssetController extends BaseController
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
-    
+
     /**
      * Search assets and list them
      * 
