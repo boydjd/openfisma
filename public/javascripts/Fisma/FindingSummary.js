@@ -478,9 +478,9 @@ Fisma.FindingSummary = function() {
                 var onTimeString = '/ontime/' + ontime;
             }
 
-            // TOTAL columns should not include a 'status' criteria in the link
+            // Include any status
             var statusString = '';
-            if (status != 'TOTAL') {
+            if (status != '') {
                 statusString = '/status/' + escape(status);
             }
 

@@ -907,6 +907,8 @@ class RemediationController extends SecurityController
         if (!empty($params['status'])) {
             $now = new Zend_Date();
             switch ($params['status']) {
+                case 'TOTAL': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
+                    break;
                 case 'NOT-CLOSED': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
                     break;
                 case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
