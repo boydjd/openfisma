@@ -29,25 +29,20 @@
 class Fisma_Acl extends Zend_Acl
 {
     /**
-     * Check whether a user has access to the specified area in OpenFISMA
+     * Check whether the current user has access to the specified area in OpenFISMA
      * 
      * @param string $area
      * @return bool
      */
     static public function hasArea($area)
     {
-        $username = Zend_Auth::getInstance()->getIdentity()->username;
+        $user = Zend_Auth::getInstance()->getIdentity();
         
-        // Root can do anything
-        if ('root' == $username) {
-            return true;
-        }
-        
-        return self::_isAllowed($username, 'area', $area);
+        return self::_isAllowed($user, 'area', $area);
     }
     
     /**
-     * Require a user to have access to the specified area, or else throw an exception
+     * Require the current user to have access to the specified area, or else throw an exception
      * 
      * @param string $area
      * @throws Fisma_Exception_InvalidPrivilege
@@ -60,7 +55,7 @@ class Fisma_Acl extends Zend_Acl
     }
     
     /**
-     * Check whether a user has a particular privilege on a particular object
+     * Check whether the current user has a particular privilege on a particular object
      * 
      * This method checks to see if the object has an ACL dependency on a particular organization, and adjusts the ACL
      * query accordingly.
@@ -78,13 +73,7 @@ class Fisma_Acl extends Zend_Acl
             throw new Fisma_Exception("\$object is not an object");
         }
 
-        $username = Zend_Auth::getInstance()->getIdentity()->username;
-        
-        // Root can do anything
-        if ('root' == $username) {
-            return ;
-        }
-        
+        $user = Zend_Auth::getInstance()->getIdentity();
         $resourceName = Doctrine_Inflector::tableize(get_class($object));
 
         // Handle objects with organization ACL dependency
@@ -93,11 +82,11 @@ class Fisma_Acl extends Zend_Acl
             $resourceName = "$organizationId/$resourceName";
         }
 
-        return self::_isAllowed($username, $resourceName, $privilege);
+        return self::_isAllowed($user, $resourceName, $privilege);
     }
     
     /**
-     * Require a user to have a particular privilege on a particular object, or else throw an exception
+     * Require the current user to have a particular privilege on a particular object, or else throw an exception
      * 
      * @param string $privilege
      * @param object $object
@@ -126,20 +115,15 @@ class Fisma_Acl extends Zend_Acl
             throw new Fisma_Exception($message);
         }
         
-        $username = Zend_Auth::getInstance()->getIdentity()->username;
-        
-        // Root can do anything
-        if ('root' == $username) {
-            return ;
-        }
-        
+        $user = Zend_Auth::getInstance()->getIdentity();
         $resourceName = Doctrine_Inflector::tableize($className);
 
-        return self::_isAllowed($username, $resourceName, $privilege);
+        return self::_isAllowed($user, $resourceName, $privilege);
     }
     
     /**
-     * Require a user to have a particular privilege on a particular class of objects, or else throw an exception
+     * Require the current user to have a particular privilege on a particular class of objects, or else throw an 
+     * exception
      * 
      * @param string $privilege
      * @param string $className
@@ -160,14 +144,19 @@ class Fisma_Acl extends Zend_Acl
      * 
      * @todo is there a better way to handle this?
      * 
-     * @param string $username
+     * @param User $user
      * @param string $resourceName
      * @param string $privilege
      */
-    static private function _isAllowed($username, $resourceName, $privilege)
+    static private function _isAllowed($user, $resourceName, $privilege)
     {
+        // Root can do anything
+        if ('root' == $user->username) {
+            return true;
+        }
+        
         try {
-            return User::currentUser()->acl()->isAllowed($username, $resourceName, $privilege);
+            return User::currentUser()->acl()->isAllowed($user->username, $resourceName, $privilege);
         } catch (Zend_Acl_Exception $e) {
             return false;
         }
