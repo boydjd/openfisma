@@ -9,10 +9,6 @@ Privilege:
         description:
             type: string(255)
             comment: A human-readable description of what this privilege means.
-        orgSpecific:
-            type: boolean
-            notnull: true
-            comment: Set to true if this privilege applies to individual organizations; false means this privilege applies to an object which is not organization-specific, such as a finding source or network object
 
     relations:
         # Roles is a many-to-many relationship

@@ -4,347 +4,283 @@ Privilege:
         resource: area
         action: dashboard
         description: View Dashboard
-        orgSpecific: false
     areas_reports:
         resource: area
         action: reports
         description: View Reports
-        orgSpecific: false
     areas_admin:
         resource: area
         action: admin
         description: View Administration Menu
-        orgSpecific: false
     areas_configuration:
         resource: area
         action: configuration
         description: Configure Application
-        orgSpecific: false
 
     # Findings CRUD
     findings_create:
         resource: finding
         action: create
         description: Create Findings
-        orgSpecific: true
     findings_read:
         resource: finding
         action: read
         description: View Findings
-        orgSpecific: true
     # findings_update: 
         # ACL for findings is more fine-grained than for other objects, so there is no "update" action. See below.
     findings_delete:
         resource: finding
         action: delete
         description: Delete Findings
-        orgSpecific: true
                     
     # Granular finding privileges
     findings_inject:
         resource: finding
         action: inject
         description: Inject Findings
-        orgSpecific: true
     findings_approve:
         resource: finding
         action: approve
         description: Approve Pending Findings
-        orgSpecific: true
     findings_update_type:
         resource: finding
         action: update_type
         description: Update Mitigation Type
-        orgSpecific: true
     findings_update_description:
         resource: finding
         action: update_description
         description: Update Finding Description
-        orgSpecific: true
     findings_update_course_of_action:
         resource: finding
         action: update_course_of_action
         description: Edit Course of Action
-        orgSpecific: true
     findings_update_findings_assignment:
         resource: finding
         action: update_assignment
         description: Edit Responsible System
-        orgSpecific: true
     findings_update_control_assignment:
         resource: finding
         action: update_control_assignment
         description: Edit 800-53 Control Assignment
-        orgSpecific: true
     findings_update_countermeasures:
         resource: finding
         action: update_countermeasures
         description: Edit Countermeasures
-        orgSpecific: true
     findings_update_threat:
         resource: finding
         action: update_threat
         description: Edit Threat Source
-        orgSpecific: true
     findings_update_finding_recommendation:
         resource: finding
         action: update_recommendation
         description: Edit Finding Recommendation
-        orgSpecific: true
     findings_update_finding_resources:
         resource: finding
         action: update_resources
         description: Edit Resources Required
-        orgSpecific: true
     findings_update_ecd:
         resource: finding
         action: update_ecd
         description: Edit Expected Completion Date (Unless the ECD is Locked)
-        orgSpecific: true
     findings_update_locked_ecd:
         resource: finding
         action: update_locked_ecd
         description: Override a Locked ECD
-        orgSpecific: true
     findings_upload_evidence:
         resource: finding
         action: upload_evidence
         description: Upload Evidence Artifacts
-        orgSpecific: true
     findings_mitigation_strategy_submit:
         resource: finding
         action: mitigation_strategy_submit
         description: Submit Mitigation Strategy
-        orgSpecific: true
     findings_mitigation_strategy_revise:
         resource: finding
         action: mitigation_strategy_revise
         description: Revise Mitigation Strategy
-        orgSpecific: true
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:
         resource: finding
         action: mitigation_isso
         description: Mitigation Strategy - ISSO Approval
-        orgSpecific: true
     finding_mitigation_ivv:
         resource: finding
         action: mitigation_ivv
         description: Mitigation Strategy - IV&V Approval
-        orgSpecific: true
     finding_evidence_isso:
         resource: finding
         action: evidence_isso
         description: Evidence Artifacts - ISSO Approval
-        orgSpecific: true
     finding_evidence_ivv:
         resource: finding
         action: evidence_ivv
         description: Evidence Artifacts - IV&V Approval
-        orgSpecific: true
 
     # Assets CRUD
     asset_create:
         resource: asset
         action: create
         description: Create Assets
-        orgSpecific: true
     asset_read:
         resource: asset
         action: read
         description: View Assets
-        orgSpecific: true
     asset_update:
         resource: asset
         action: update
         description: Edit Assets
-        orgSpecific: true
     asset_delete:
         resource: asset
         action: delete
         description: Delete Assets
-        orgSpecific: true
 
     # Users CRUD
     user_create:
         resource: user
         action: create
         description: Create Users
-        orgSpecific: false
     user_read:
         resource: user
         action: read
         description: View Users
-        orgSpecific: false
     user_update:
         resource: user
         action: update
         description: Edit Users
-        orgSpecific: false
     user_delete:
         resource: user
         action: delete
         description: Delete Users
-        orgSpecific: false
     
     # Organizations CRUD
     organization_create:
         resource: organization
         action: create
         description: Create Organizations
-        orgSpecific: false
     organization_read:
         resource: organization
         action: read
         description: View Organizations
-        orgSpecific: true
     organization_update:
         resource: organization
         action: update
         description: Edit Organizations
-        orgSpecific: true
     organization_delete:
         resource: organization
         action: delete
         description: Delete Organizations
-        orgSpecific: false
 
     # Systems CRUD
     system_create:
         resource: system
         action: create
         description: Create Systems
-        orgSpecific: false
     system_read:
         resource: system
         action: read
         description: View Systems
-        orgSpecific: true
     system_update:
         resource: system
         action: update
         description: Edit Systems
-        orgSpecific: true
     system_delete:
         resource: system
         action: delete
         description: Delete Systems
-        orgSpecific: false
 
     # Products CRUD
     product_create:
         resource: product
         action: create
         description: Create Products
-        orgSpecific: false
     product_read:
         resource: product
         action: read
         description: View Products
-        orgSpecific: false
     product_update:
         resource: product
         action: update
         description: Edit Products
-        orgSpecific: false
     product_delete:
         resource: product
         action: delete
         description: Delete Products
-        orgSpecific: false
     
     # Finding Sources CRUD
     source_create:
         resource: source
         action: create
         description: Create Finding Sources
-        orgSpecific: false
     source_read:
         resource: source
         action: read
         description: View Finding Sources
-        orgSpecific: false
     source_update:
         resource: source
         action: update
         description: Edit Finding Sources
-        orgSpecific: false
     source_delete:
         resource: source
         action: delete
         description: Delete Finding Sources
-        orgSpecific: false
     
     # Roles CRUD
     roles_create:
         resource: role
         action: create
         description: Create Roles
-        orgSpecific: false
     roles_read:
         resource: role
         action: read
         description: View Roles
-        orgSpecific: false
     roles_update:
         resource: role
         action: update
         description: Edit Roles
-        orgSpecific: false
     roles_delete:
         resource: role
         action: delete
         description: Delete Roles
-        orgSpecific: false
     roles_assignPrivileges:
         resource: role
         action: assignPrivileges
         description: Assign Privileges
-        orgSpecific: false
 
     # Networks CRUD
     networks_create:
         resource: network
         action: create
         description: Create Networks
-        orgSpecific: false
     networks_read:
         resource: network
         action: read
         description: View Networks
-        orgSpecific: false
     networks_update:
         resource: network
         action: update
         description: Edit Networks
-        orgSpecific: false
     networks_delete:
         resource: network
         action: delete
         description: Delete Networks
-        orgSpecific: false
     
     # Notification privileges
     notification_admin:
         resource: notification
         action: admin
         description: Admin Notifications
-        orgSpecific: false
     notification_asset:
         resource: notification
         action: asset
         description: Asset Notifications
-        orgSpecific: true
     notification_finding:
         resource: notification
         action: finding
         description: Finding Notifications
-        orgSpecific: true
 
     # Account Audit Logs
     account_log_read:
         resource: account_log
         action: read
         description: Account Audit Logs
-        orgSpecific: false
