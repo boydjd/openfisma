@@ -221,7 +221,7 @@ class System extends BaseSystem implements Fisma_Acl_OrganizationDependency
      */
     public function postUpdate($event)
     {
-        Notification::notify('SYSTEM_UPDATED', $this->Organization, User::currentUser(), $this->Organization->id);
+        Notification::notify('SYSTEM_UPDATED', $this->Organization, User::currentUser());
     }
     
     /**

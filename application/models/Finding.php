@@ -426,37 +426,32 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
                             Notification::notify(
                                 'MITIGATION_APPROVED', 
                                 $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
+                                User::currentUser()
                             );
                         } elseif ('EN' == $value && 'DRAFT' == $newValue) {
                             Notification::notify(
                                 'MITIGATION_REVISE', 
                                 $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
+                                User::currentUser()
                             );
                         } elseif ('EA' == $newValue) {
                             Notification::notify(
                                 'EVIDENCE_UPLOADED', 
                                 $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
+                                User::currentUser()
                             );
                         } elseif ( ('EA' == $value && 'EN' == $newValue)
                              || ('MSA' == $value && 'DRAFT' == $newValue) ) {
                             Notification::notify(
                                 'APPROVAL_DENIED', 
                                 $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
+                                User::currentUser()
                             );
                         } elseif ('EA' == $value && 'CLOSED' == $newValue) {
                             Notification::notify(
                                 'FINDING_CLOSED', 
-                                $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
+                                $this,
+                                User::currentUser()
                             );
                             $this->getAuditLog()->write('Finding closed');
                         }
@@ -471,8 +466,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
                             Notification::notify(
                                 $event, 
                                 $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
+                                User::currentUser()
                             );
                         }
                         break;
@@ -487,8 +481,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
                             Notification::notify(
                                 'UPDATE_ECD', 
                                 $this, 
-                                User::currentUser(), 
-                                $this->responsibleOrganizationId
+                                User::currentUser()
                             );
                         }
                         break;
@@ -522,7 +515,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
                 }
 
                 if (isset($type)) {
-                    Notification::notify($type, $this, User::currentUser(), $this->responsibleOrganizationId);
+                    Notification::notify($type, $this, User::currentUser());
                 }
             }
         }       

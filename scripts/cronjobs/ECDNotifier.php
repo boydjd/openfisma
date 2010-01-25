@@ -97,7 +97,7 @@ class ECDNotifier
                     // to exclude it.
                     throw new Exception("ECD Notifier has an internal error.");
             }
-            Notification::notify($notificationType, $finding, null, $finding->responsibleOrganizationId);
+            Notification::notify($notificationType, $finding, null);
         }
     }
 }

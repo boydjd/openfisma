@@ -33,11 +33,10 @@ class Notification extends BaseNotification
      * @param string $eventName The triggered event name which will be included in the notification
      * @param Doctrine_Record $record  The notification applied model
      * @param User $user  The user which triggers the notification event
-     * @param int|null $organizationId The organization id that the triggered event is limited to in scope
      * @return void
      * @throws Fisma_Exception if the specified event name is not found
      */
-    public static function notify($eventName, $record, $user, $organizationId = null)
+    public static function notify($eventName, $record, $user)
     {
         if (!Fisma::getNotificationEnabled()) {
             return;
@@ -74,11 +73,10 @@ class Notification extends BaseNotification
             ->where('e.id = ?', $event->id)
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
-        // If the event is limited in scope to a specific organization, then filter for users who are allowed
-        // access to that organization
-        if ($organizationId != null) {
+        // If the object has an ACL dependency on Organization, then extend the query for that condition
+        if ($record instanceof Fisma_Acl_OrganizationDependency) {
             $eventsQuery->innerJoin('u.Organizations o')
-                        ->andWhere('o.id = ?', $organizationId);
+                        ->andWhere('o.id = ?', $record->getOrganizationDependencyId());
         }
 
         $userEvents = $eventsQuery->execute();

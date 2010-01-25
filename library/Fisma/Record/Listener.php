@@ -36,7 +36,7 @@ class Fisma_Record_Listener extends Doctrine_Record_Listener
      * 
      * @var bool
      */
-    static protected $_listenerEnabled = false;
+    static protected $_listenerEnabled = true;
     
     /**
      * Get this listener's current enabled state
