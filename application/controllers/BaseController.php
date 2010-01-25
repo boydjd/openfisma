@@ -46,21 +46,18 @@ abstract class BaseController extends SecurityController
      */
     protected $_modelName = null;
 
-    /** 
-     * This field is used to query the ACL, since some objects are tied to organizations and other objects
-     * are not. It is null by default, but subclasses should set it to '*' to indicate that those objects
-     * are tied to specific organizations.
-     * 
-     * @var string
-     */
-    protected $_organizations = null;
-    
     /**
-     * The name of the ACL resources related to this controller
+     * The name of the class which this class's ACL is based off of. 
+     * 
+     * For example, system document objects don't have their own ACL items, instead they are based on the privileges 
+     * the user has to the parent system objects which own those documents.
+     * 
+     * If null, then the ACL resource is based on the _modelName
      * 
      * @var string
+     * @see getAclResourceName
      */
-    private $_aclResource;
+    protected $_aclResource;
 
     /**
      *  Initialize model and make sure the model has been properly set
@@ -71,15 +68,11 @@ abstract class BaseController extends SecurityController
     public function init()
     {
         parent::init();
+        
         if (is_null($this->_modelName)) {
             //Actually user should not be able to see this error message
             throw new Fisma_Exception('Internal error. Subclasses of the BaseController'
                                     . ' must specify the _modelName field');
-        } else {
-            // Covert UpperCamelCase to lower_underscore_format to get the aclResource name
-            $aclResource = preg_replace('/([A-Z])/', '_$1', $this->_modelName);
-            $aclResource = strtolower(substr($aclResource, 1));
-            $this->_aclResource = $aclResource;
         }
     }
     
@@ -180,7 +173,7 @@ abstract class BaseController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', $this->_modelName);
+        Fisma_Acl::requirePrivilegeForClass('create', $this->getAclResourceName());
         
         // Get the subject form
         $form   = $this->getForm();
@@ -305,7 +298,7 @@ abstract class BaseController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', $this->_modelName);
+        Fisma_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
         $keywords = htmlentities(trim($this->_request->getParam('keywords')));
         $link = empty($keywords) ? '' :'/keywords/'.$keywords;
         $this->view->link     = $link;
@@ -323,7 +316,7 @@ abstract class BaseController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', $this->_modelName);
+        Fisma_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
         $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
@@ -390,4 +383,15 @@ abstract class BaseController extends SecurityController
         return $rows->toArray();
     }
 
+    /**
+     * Returns the ACL class name for this controller.
+     * 
+     * This is based on the _modelName and _aclResource variables defined by child classes.
+     * 
+     * @return string
+     */
+    public function getAclResourceName()
+    {
+        return is_null($this->_aclResource) ? $this->_modelName : $this->_aclResource;
+    }
 }

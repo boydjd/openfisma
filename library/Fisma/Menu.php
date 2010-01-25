@@ -64,7 +64,7 @@ class Fisma_Menu
             $mainMenuBar->add($findings);
         }
 
-        if (Fisma_Acl::hasPrivilegeForClass('read', 'System')) {
+        if (Fisma_Acl::hasPrivilegeForClass('read', 'Organization')) {
             $systems = new Fisma_Yui_Menu('System Inventory');
 
             $systems->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
@@ -73,9 +73,7 @@ class Fisma_Menu
                 $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
 
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'Organization')) {
-                $systems->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/tree'));
-            }
+            $systems->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/tree'));
 
             $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
             
@@ -86,7 +84,11 @@ class Fisma_Menu
             $reports = new Fisma_Yui_Menu('Reports');
             
             $reports->add(new Fisma_Yui_MenuItem('FISMA Report', '/panel/report/sub/fisma'));
-            $reports->add(new Fisma_Yui_MenuItem('Overdue Report', '/panel/report/sub/overdue'));
+            
+            if (Fisma_Acl::hasPrivilegeForClass('read', 'Organization')) {
+                $reports->add(new Fisma_Yui_MenuItem('Overdue Report', '/panel/report/sub/overdue'));    
+            }
+            
             $reports->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/panel/report/sub/plugin'));
             
             $mainMenuBar->add($reports);

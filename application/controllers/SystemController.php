@@ -37,22 +37,9 @@ class SystemController extends BaseController
     protected $_modelName = 'System';
 
     /**
-     * Invokes a contract with BaseController regarding privileges.
-     * 
-     * @var string
-     * @link http://jira.openfisma.org/browse/OFJ-24
+     * All privileges to system objects are based on the parent 'Organization' objects
      */
-    protected $_organizations = '*';
-
-    /**
-     * Setup the _organization member so that the base controller knows how to query the ACL
-     * 
-     * @return void
-     */
-    public function init() 
-    {
-        parent::init();
-    }
+    protected $_aclResource = 'Organization';
 
     /**
      * Returns the standard form for creating, reading, and updating systems.
@@ -100,7 +87,7 @@ class SystemController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'System');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
         
         $keywords = trim($this->_request->getParam('keywords'));
         
