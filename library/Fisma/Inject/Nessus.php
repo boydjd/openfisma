@@ -43,7 +43,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
         // This is fixed in SVN of PHP as of 12/1/09, but until it hits a release version this hack will stay.
         // @TODO Change 1<<19 to LIBXML_PARSEHUGE once it is visible
         if (!$report->open($this->_file, NULL, 1<<19)) {
-            throw new Fisma_Exception('Cannot open the XML file.');
+            throw new Fisma_Exception_InvalidFileFormat('Cannot open the XML file.');
         }
 
         $report->setRelaxNGSchemaSource($grammar);

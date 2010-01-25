@@ -427,8 +427,7 @@ class FindingController extends BaseController
                         $upload->delete();
                     }
                 } catch (Fisma_Exception_InvalidFileFormat $e) {
-                    $error = "The uploaded file is not a valid format for {$pluginName}: {$e->getMessage()}";
-                    $this->view->priorityMessenger($error, 'warning');
+                    $this->view->priorityMessenger($e->getMessage(), 'warning');
                 }
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($uploadForm);
