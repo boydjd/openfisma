@@ -168,6 +168,7 @@ abstract class Fisma_Inject_Abstract
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
         $action = ($duplicateFinding) ? $this->_getDuplicateAction($finding, $duplicateFinding) : self::CREATE_FINDING;
+        $finding->duplicateFindingId = ($duplicateFinding) ? $duplicateFinding['id']: NULL;
 
         // Take the specified action on the current finding
         switch ($action) {
@@ -232,7 +233,7 @@ abstract class Fisma_Inject_Abstract
     private function _getDuplicateFinding($finding)
     {
         $duplicateFindings = Doctrine_Query::create()
-            ->select('f.responsibleOrganizationId, f.type, f.status')
+            ->select('f.id, f.responsibleOrganizationId, f.type, f.status')
             ->from('Finding f')
             ->where('description LIKE ?', $finding->description)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
