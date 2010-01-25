@@ -349,7 +349,6 @@ class RemediationController extends SecurityController
         if (!empty($params['estDateBegin']) && Zend_Date::isDate($params['estDateBegin'], 'Y-m-d')) {
             $params['estDateBegin'] = new Zend_Date($params['estDateBegin'], 'Y-m-d');
         } else if (!empty($params['estDateBegin'])) {
-            /** @todo english */
             $message = 'Estimated Completion Date From: ' . $params['estDateBegin']
                      . ' is not of the format YYYY-MM-DD.<br>';
             $params['estDateBegin'] = '';
@@ -360,7 +359,6 @@ class RemediationController extends SecurityController
         if (!empty($params['estDateEnd']) && Zend_Date::isDate($params['estDateEnd'], 'Y-m-d')) {
             $params['estDateEnd'] = new Zend_Date($params['estDateEnd'], 'Y-m-d');
         } else if (!empty($params['estDateEnd'])) {
-            /** @todo english */
             $message = $message . 'Estimated Completion Date To: ' . $params['estDateEnd']
                      . ' is not of the format YYYY-MM-DD.<br>';
             $params['estDateEnd'] = '';
@@ -371,7 +369,6 @@ class RemediationController extends SecurityController
         if (!empty($params['createdDateBegin']) && Zend_Date::isDate($params['createdDateBegin'], 'Y-m-d')) {
             $params['createdDateBegin'] = new Zend_Date($params['createdDateBegin'], 'Y-m-d');
         } else if (!empty($params['createdDateBegin'])) {
-            /** @todo english */
             $message = $message . 'Date Created From: ' . $params['createdDateBegin']
                      . ' is not of the format YYYY-MM-DD.<br>';
             $params['createdDateBegin'] = '';
@@ -382,7 +379,6 @@ class RemediationController extends SecurityController
         if (!empty($params['createdDateEnd']) && Zend_Date::isDate($params['createdDateEnd'], 'Y-m-d')) {
             $params['createdDateEnd'] = new Zend_Date($params['createdDateEnd'], 'Y-m-d');
         } else if (!empty($params['createdDateEnd'])) {
-            /** @todo english */
             $message = $message . 'Date Created To: ' . $params['createdDateEnd']
                      . 'is not of the format YYYY-MM-DD.';
             $params['createdDateEnd'] = '';
