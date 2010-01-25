@@ -247,7 +247,7 @@ class Fisma
 
             // Timezone configuration
             if (isset(self::$_appConf->timezone)) {
-                ini_set("date.timzeone", self::$_appConf->timezone);
+                ini_set("date.timezone", self::$_appConf->timezone);
             } else {
                 ini_set("date.timezone", "America/New_York");
             }
