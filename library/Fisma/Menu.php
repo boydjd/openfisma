@@ -138,7 +138,9 @@ class Fisma_Menu
         if (Fisma::debug()) {
             $debug = new Fisma_Yui_Menu('Debug');
             
+            $debug->add(new Fisma_Yui_MenuItem('Error log', '/debug/errorlog'));
             $debug->add(new Fisma_Yui_MenuItem('PHP Info', '/debug/phpinfo'));
+            $debug->add(new Fisma_Yui_MenuItem('PHP log', '/debug/phplog'));
             
             $mainMenuBar->add($debug);
         }

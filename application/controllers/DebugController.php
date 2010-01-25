@@ -28,20 +28,47 @@
 class DebugController extends Zend_Controller_Action
 {
     /**
-     * Display phpinfo()
-     * 
+     * Prepares actions
+     *
      * @return void
-     * @throws Fisma_Exception if PhpInfo() is not called in debug mode
+     * @throws Fisma_Exception if Debug mode is not enabled
      */
-    public function phpinfoAction()
+    public function preDispatch()
     {
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
-        if (Fisma::debug()) {
-            phpinfo();
-        } else {
-            throw new Fisma_Exception("PhpInfo is only allowed in debug mode");
-        }
+        if (!Fisma::debug())
+            throw new Fisma_Exception('Action is only allowed in debug mode.');
+    }
+
+    /**
+     * Display phpinfo()
+     * 
+     * @return void
+     */
+    public function phpinfoAction()
+    {
+        phpinfo();
+    }
+
+    /**
+     * Display error log
+     *
+     * @return void
+     */
+    public function errorlogAction()
+    {
+        echo file_get_contents('../data/logs/error.log');
+    }
+
+    /**
+     * Display php log
+     *
+     * @return void
+     */
+    public function phplogAction()
+    {
+        echo file_get_contents('../data/logs/php.log');
     }
 }
