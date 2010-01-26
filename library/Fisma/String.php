@@ -115,4 +115,21 @@ class Fisma_String
 
         return $html;
     }
+    
+    /**
+     * Sanitize a string for echoing into a Javascript
+     * 
+     * @param string $string An unsanitized string
+     * @return string
+     */
+    static function escapeJsString($string)
+    {
+        // Escape quotation marks
+        $string = addslashes($string);
+
+        // Escape newlines characters
+        $string = str_replace("\n", "\\n", $string);
+
+        return $string;
+    }
 }

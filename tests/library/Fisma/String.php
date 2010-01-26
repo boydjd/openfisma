@@ -140,4 +140,15 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
 
         $this->assertEquals($html, Fisma_String::textToHtml($plainText));
     }
+    
+    /**
+     * Test javascript string escaping
+     */
+    public function testEscapeJsString()
+    {
+        $unescaped = "This string contains ' quotes \" and \n newlines";
+        $expected  = "This string contains \' quotes \\\" and \\n newlines";
+        
+        $this->assertEquals($expected, Fisma_String::escapeJsString($unescaped));
+    }
 }

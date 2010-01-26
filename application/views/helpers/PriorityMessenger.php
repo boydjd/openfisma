@@ -81,7 +81,8 @@
                 $this->priorityMessenger($mes, $sev);
             }
         } else {
-            $session->page_messages[$severity][] = $message;
+            $cleanMessage = Fisma_String::escapeJsString(Fisma_String::textToHtml($message));
+            $session->page_messages[$severity][] = $cleanMessage;
         }
     }
 
