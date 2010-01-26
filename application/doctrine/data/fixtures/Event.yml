@@ -278,3 +278,19 @@ Event:
         name: MITIGATION_REVISE
         description: Mitiation Strategy Revised
         Privilege: notification_finding
+
+    # System document is versionable. "CREATE" refers to version 1, and "UPDATE" refers to creating versions 2..n
+    # There is no delete.
+    SYSTEM_DOCUMENT_CREATED:
+        name: SYSTEM_DOCUMENT_CREATED
+        description: Initial Version Of System Document
+        # Obviously not ideal to tie this to a finding privilege, but we need to reorganize the notifications and that
+        # is out of scope for the time being.
+        Privilege: notification_finding
+
+    SYSTEM_DOCUMENT_UPDATED:
+        name: SYSTEM_DOCUMENT_UPDATED
+        description: Updated Version Of System Document
+        # Obviously not ideal to tie this to a finding privilege, but we need to reorganize the notifications and that
+        # is out of scope for the time being.
+        Privilege: notification_finding

@@ -122,7 +122,6 @@ User:
         mostRecentNotifyTs: timestamp
         notifyEmail:
             type: string(255)
-            email: true
             
     relations:
         # Roles is a many-to-many relation

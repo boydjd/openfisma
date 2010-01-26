@@ -47,7 +47,7 @@ class NotificationListener extends Fisma_Record_Listener
         }
 
         $record = $event->getInvoker();
-        $eventName = strtoupper(get_class($record)) . '_CREATED';
+        $eventName = $this->_classNameToEventName(get_class($record)) . '_CREATED';
         Notification::notify($eventName, $record, User::currentUser());
     }
     
@@ -67,8 +67,7 @@ class NotificationListener extends Fisma_Record_Listener
         }
 
         $record = $event->getInvoker();
-        $class = get_class($record);
-        $eventName = "{$class}_UPDATED";
+        $eventName = $this->_classNameToEventName(get_class($record)) . '_UPDATED';
         
         // Only send the notification if a notifiable field was modified
         $modified = $record->getLastModified();
@@ -96,7 +95,20 @@ class NotificationListener extends Fisma_Record_Listener
         }
 
         $record = $event->getInvoker();
-        $eventName = strtoupper(get_class($record)) . '_DELETED';
+        $eventName = $this->_classNameToEventName(get_class($record)) . '_DELETED';
         Notification::notify($eventName, $record, User::currentUser());    
+    }
+    
+    /**
+     * Convert class name to an event name
+     * 
+     * e.g. SystemDocument to SYSTEM_DOCUMENT
+     * 
+     * @param $className
+     * @return string
+     */
+    private function _classNameToEventName($className)
+    {
+        return strtoupper(Doctrine_Inflector::tableize($className));
     }
 }
