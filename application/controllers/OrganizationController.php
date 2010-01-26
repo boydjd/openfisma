@@ -190,25 +190,34 @@ class OrganizationController extends SecurityController
             $order = 'ASC'; //ignore other values
         }
         
-        $q = Doctrine_Query::create()
-             ->select('*')
-             ->from('Organization o')
-             ->where('o.orgType IS NULL')
-             ->orWhere('o.orgType != ?', 'system')
-             ->orderBy("o.$sortBy $order")
-             ->limit($this->_paging['count'])
-             ->offset($this->_paging['startIndex']);
-
+        $userOrgQuery = Doctrine_Query::create()
+                        ->select('o.id, o.name, o.nickname, o.orgType')
+                        ->from('Organization o')
+                        ->where("o.orgType IS NULL or o.orgType != 'system'");
+        
+        if ('root' != Zend_Auth::getInstance()->getIdentity()->username) {
+            $userId = $this->_me->id;
+            $userOrgQuery->innerJoin('o.Users u')->andWhere("u.id = $userId");
+        }
+        
+        $userOrgQuery->orderBy("o.$sortBy $order")
+                     ->limit($this->_paging['count'])
+                     ->offset($this->_paging['startIndex']);
+        
+        $totalRecords = 0;
         if (!empty($keywords)) {
             $index = new Fisma_Index('Organization');
             $organizationIds = $index->findIds($keywords);
+            $totalRecords = count($organizationIds);
             if (empty($organizationIds)) {
                 $organizationIds = array(-1);
             }
-            $q->whereIn('o.id', $organizationIds);
+            $userOrgQuery->whereIn('o.id', $organizationIds);
+        } else {
+            $totalRecords = $userOrgQuery->count();
         }
-        $totalRecords = $q->count();
-        $organizations = $q->execute();
+        
+        $organizations = $userOrgQuery->execute();
         
         $tableData = array('table' => array(
             'recordsReturned' => count($organizations->toArray()),
