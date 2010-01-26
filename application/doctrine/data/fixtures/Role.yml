@@ -34,6 +34,7 @@ Role:
             - areas_dashboard
             - areas_reports
             - findings_read
+            - organization_read
             - asset_read
             - notification_asset
             - notification_finding
