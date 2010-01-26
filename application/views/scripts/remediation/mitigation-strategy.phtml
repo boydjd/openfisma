@@ -9,7 +9,7 @@
     <span type="select" name="finding[type]" href="/metainfo/list/o/type/format/html/" id="type"
         <?php 
             if (('NEW' == $finding->status || 'DRAFT' == $finding->status) 
-                && Fisma_Acl::hasPrivilegeForObject('update_course_of_action', $finding)) {
+                && Fisma_Acl::hasPrivilegeForObject('update_type', $finding)) {
                 echo 'class="editable" target="type"';
             }
         ?>>
