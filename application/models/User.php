@@ -505,28 +505,28 @@ class User extends BaseUser
         
         return $query;
     }
- 
+    
     /**
-     * Doctrine hook for post-save
+     * Doctrine hook for post-insert
      * 
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
-    public function postSave($event)
+    public function postInsert($event)
     {
-        $modified = $this->getModified();
-
-        // Send validation email if required
-        if (isset($modified['email']) || isset($modified['notifyEmail'])) {
-            $this->emailValidate = false;
-            $emailValidation  = new EmailValidation();
-            if (!empty($modified['email'])) {
-                $emailValidation->email = $modified['email'];
-            } elseif (!empty($modified['notifyEmail'])) {
-                $emailValidation->email = $modified['notifyEmail'];
+        // Send account creation and email validation email during user creation
+        if (isset($this->id) && !empty($this->id)) {
+            $mail = new Fisma_Mail();
+            $mail->sendAccountInfo($this);
+            if (isset($this->email) && !empty($this->email)) {
+                $this->emailValidate = false;
+                $emailValidation  = new EmailValidation();
+                $emailValidation->email = $this->email;
+                $emailValidation->validationCode = md5(rand());
+                $this->EmailValidation[] = $emailValidation;
+                $mail = new Fisma_Mail();
+                $mail->validateEmail($this, $emailValidation->email);
             }
-            $emailValidation->validationCode = md5(rand());
-            $this->EmailValidation[]         = $emailValidation;
         }
     }
     
@@ -539,12 +539,27 @@ class User extends BaseUser
      */
     public function postUpdate($event)
     {
-        $user     = $event->getInvoker();
-        $modified = $user->getModified($old = true, $last = true);
-        if (isset($modified['password']) && $modified['password']) {
-            $user->password = $modified['password'];
+        $modified = $this->getModified(true, true);
+        
+        //send password changing email after password updated
+        if (isset($modified['password'])) {
             $mail = new Fisma_Mail();
-            $mail->sendPassword($user);
+            $mail->sendPassword($this);
+        }
+        
+        // Send validation email after email or notifyEmail updated
+        if (isset($modified['email']) || isset($modified['notifyEmail'])) {
+            $this->emailValidate = false;
+            $emailValidation  = new EmailValidation();
+            if (isset($modified['email'])) {
+                $emailValidation->email = $this->email;
+            } elseif (isset($modified['notifyEmail'])) {
+                $emailValidation->email = $this->notifyEmail;
+            }
+            $emailValidation->validationCode = md5(rand());
+            $this->EmailValidation[] = $emailValidation;
+            $mail = new Fisma_Mail();
+            $mail->validateEmail($this, $emailValidation->email);
         }
     }
 
