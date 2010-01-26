@@ -18,7 +18,7 @@ elements.name.options.tooltip = "<p><b>System Name</b></p><p>Please select a uni
 displayGroups.system.elements.name = "name"
 
 elements.nickname.type = "text"
-elements.nickname.options.label = "Acronym"
+elements.nickname.options.label = "System Nickname"
 elements.nickname.options.validators.strlen.validator = "StringLength"
 elements.nickname.options.required = true
 elements.nickname.options.tooltip = "<p><b>Acronym or Nickname</b></p><p>Please select a short unique identifier for the information system. The short nickname will be used on reports and other areas of OpenFISMA to display large amounts of data in short column space.</p>"

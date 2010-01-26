@@ -291,10 +291,9 @@ class OrganizationController extends SecurityController
                 $organization->merge($orgValues);
                 
                 // save the data, if failure then return false
-                if (!$organization->trySave()) {
-                    $msg = "Failure in creation";
-                    $model = 'warning';
-                } else {
+                try {
+                    $organization->save();
+
                     // the organization hasn't parent, so it is a root
                     if ((int)$orgValues['parent'] == 0) {
                         $treeObject = Doctrine::getTable('Organization')->getTree();
@@ -313,10 +312,13 @@ class OrganizationController extends SecurityController
                     
                     $msg = "The organization is created";
                     $model = 'notice';
+                    $this->_forward('view', null, null, array('id' => $organization->id));
+                } catch (Doctrine_Validator_Exception $e) {
+                    $msg = $e->getMessage();
+                    $model = 'warning';
                 }
+                
                 $this->view->priorityMessenger($msg, $model);
-                $this->_forward('view', null, null, array('id' => $organization->id));
-                return;
             } else {
                 $errorString = Fisma_Form_Manager::getErrors($form);
                 // Error message

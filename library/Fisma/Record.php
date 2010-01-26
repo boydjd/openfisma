@@ -62,4 +62,54 @@ class Fisma_Record extends Doctrine_Record
             $this->_originalValues[$fieldName] = $this->_oldValues[$fieldName];
         }
     }
+    
+    /**
+     * Generate a better validation error message than Doctrine's default by overriding the parent class method
+     *
+     * @return string $message
+     */
+    public function getErrorStackAsString()
+    {
+        $errorStack = $this->getErrorStack();
+
+        if (count($errorStack)) {
+            $count = count($errorStack);
+                        
+            foreach ($errorStack as $field => $errors) {
+                foreach ($errors as $error) {
+                    
+                    // Include the logical name in the error message, or else use the physical name
+                    $columnName = $this->getTable()->getColumnName($field);
+                    $column = $this->getTable()->getColumnDefinition($columnName);
+
+                    if (isset($column['extra']['logicalName'])) {
+                        $userFriendlyName = $column['extra']['logicalName'];
+                    } else {
+                        $userFriendlyName = $field;
+                    }
+                    
+                    /**
+                     * Doctrine provides unhelpful string constants to describe errors, instead of real named 
+                     * constants. I also can't find anywhere that these constants are documented. So the goal here is 
+                     * to trap the errors we do know and write out a sensible error message, while providing a 
+                     * fallback for errors that we aren't aware of.
+                     */
+                    switch ($error) {
+                        case 'unique':
+                            $message = "An object already exists with the same $userFriendlyName";
+                            break;
+                        default:
+                            $message = "$userFriendlyName failed a validation: $error";
+                            break;
+                    }
+                    
+                    $message .= "\n";
+                }
+            }
+            
+            return $message;
+        } else {
+            return false;
+        }
+    }
 }

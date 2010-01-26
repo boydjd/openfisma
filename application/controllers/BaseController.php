@@ -187,12 +187,9 @@ abstract class BaseController extends SecurityController
                     Doctrine_Manager::connection()->commit();
                     $msg   = "{$this->_modelName} created successfully";
                     $model = 'notice';
-                } catch (Doctrine_Exception $e) {
+                } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
-                    $msg   = "Could not create the object";
-                    if (Fisma::debug()) {
-                        $msg .= $e->getMessage();
-                    }
+                    $msg   = $e->getMessage();
                     $model = 'warning';
                 }
                 $this->view->priorityMessenger($msg, $model);

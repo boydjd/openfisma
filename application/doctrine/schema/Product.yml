@@ -25,7 +25,9 @@ Product:
             comment: Version of the product
         cpeName:
             type: string(255)
+            unique: true
             extra:
+                logicalName: CPE ID
                 purify: plaintext
                 notify: true
             comment: The common platform enumeration (CPE) for this product, if known

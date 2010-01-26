@@ -11,8 +11,9 @@ Network:
                 notify: true
         nickname:
             type: string(255)
+            unique: true
             extra:
-                logicalName: Network Acronym
+                logicalName: Network Nickname
                 purify: plaintext
                 searchIndex: unstored
                 notify: true

@@ -32,7 +32,7 @@ elements.version.options.required = true
 displayGroups.product.elements.version = "version"
 
 elements.cpeName.type = "text"
-elements.cpeName.options.label = "Cpename"
+elements.cpeName.options.label = "CPE ID"
 displayGroups.product.elements.cpeName = "cpeName"
 
 elements.save.type = "Form_Button_Submit"

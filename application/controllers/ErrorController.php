@@ -64,7 +64,7 @@ class ErrorController extends Zend_Controller_Action
                      . $errors->exception->getTraceAsString()
                      . '<br>';
             $logger = Fisma::getLogInstance();
-            $logger->log($content, Zend_Log::ERR);
+            $logger->log(Fisma_String::htmlToPlainText($content), Zend_Log::ERR);
             $this->view->content = $content;
 
             if ($errors->exception instanceof Fisma_Exception_InvalidPrivilege) {

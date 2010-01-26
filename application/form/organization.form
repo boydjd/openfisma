@@ -26,7 +26,7 @@ elements.name.options.required = true
 displayGroups.organization.elements.name = "name"
 
 elements.nickname.type = "text"
-elements.nickname.options.label = "Acronym"
+elements.nickname.options.label = "Nickname"
 elements.nickname.options.validators.alnum.validator = "NotEmpty"
 elements.nickname.options.tooltip = "Each organization must have a unique acronym. Acronyms are used in reports to uniquely identify an organization or information system while also conserving space on the page."
 elements.nickname.options.required = true

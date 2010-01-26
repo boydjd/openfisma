@@ -16,7 +16,9 @@ Organization:
             unique: true
             notblank: true
             notnull: true
+            unique: true
             extra:
+                logicalName: Nickname
                 purify: plaintext
                 searchIndex: unstored
         orgType:

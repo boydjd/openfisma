@@ -11,8 +11,9 @@ Source:
                 notify: true
         nickname: 
             type: string(255)
+            unique: true
             extra:
-                logicalName: Source Acronym
+                logicalName: Source Nickname
                 purify: plaintext
                 searchIndex: unstored
                 notify: true    

@@ -14,8 +14,9 @@ Role:
                 notify: true
         nickname: 
             type: string(255)
+            unique: true
             extra:
-                logicalName: Role Acronym
+                logicalName: Role Nickname
                 purify: plaintext        
                 searchIndex: unstored  
                 notify: true      
