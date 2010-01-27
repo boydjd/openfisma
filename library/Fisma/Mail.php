@@ -60,7 +60,7 @@ class Fisma_Mail extends Zend_Mail
         $this->addTo($email);
         $this->setSubject("Confirm Your E-mail Address");
 
-        $this->_contentTpl->host  = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->host  = Fisma::configuration()->getConfig('host_url');
         $this->_contentTpl->validateCode = $user->EmailValidation->getLast()->validationCode;
         $this->_contentTpl->user         = $user;
 
@@ -144,7 +144,7 @@ class Fisma_Mail extends Zend_Mail
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
         $this->setSubject("Your password for $systemName has been changed");
         $this->_contentTpl->user = $user;
-        $this->_contentTpl->host = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->host = Fisma::configuration()->getConfig('host_url');
         $content = $this->_contentTpl->render('sendpassword.phtml');
         $this->setBodyText($content);
 
