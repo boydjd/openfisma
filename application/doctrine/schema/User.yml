@@ -53,10 +53,8 @@ User:
     
         lastLoginIp:
             type: string(15)
-            ip: true
         currentLoginIp:
             type: string(15)
-            ip: true
         lastLoginTs: timestamp
     
         title: 
