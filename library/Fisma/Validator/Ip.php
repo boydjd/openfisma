@@ -16,8 +16,24 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+/**
+ * Custom IP address validator, supporting IPv6 and IPv4 
+ * 
+ * @package Fisma
+ * @subpackage Validator
+ * @version $Id$
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @license http://www.openfisma.org/content/license GPLv3
+ */
 class Fisma_Validator_Ip
 {
+    /**
+     * Validates the IP address 
+     * 
+     * @param mixed $value 
+     * @return bool 
+     */
     public function validate($value)
     {
         return (is_null($value)) ? TRUE : (bool) filter_var($value, FILTER_VALIDATE_IP);
