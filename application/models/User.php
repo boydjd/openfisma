@@ -500,7 +500,7 @@ class User extends BaseUser
         // to those which this user has been granted access to.
         if ('root' != $this->username) {
             $query->innerJoin('o.Users u')
-                  ->where('u.id = ?', $this->id);
+                  ->where("u.id = $this->id");
         } 
         
         return $query;

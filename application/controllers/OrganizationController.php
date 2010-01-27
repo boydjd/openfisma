@@ -163,7 +163,7 @@ class OrganizationController extends SecurityController
         $this->view->assign('link', $link);
         $this->render('list');
     }
-
+    
     /**
      * List the organizations from the search. If search none, it list all organizations
      * 
@@ -174,7 +174,7 @@ class OrganizationController extends SecurityController
     {
         Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
         $keywords = html_entity_decode(trim($this->_request->getParam('keywords')));
-
+        
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
         $sortBy = $this->_request->getParam('sortby', 'name');
@@ -190,33 +190,21 @@ class OrganizationController extends SecurityController
             $order = 'ASC'; //ignore other values
         }
         
-        $userOrgQuery = Doctrine_Query::create()
-                        ->select('o.id, o.name, o.nickname, o.orgType')
-                        ->from('Organization o')
-                        ->where("o.orgType IS NULL or o.orgType != 'system'");
-        
-        if ('root' != Zend_Auth::getInstance()->getIdentity()->username) {
-            $userId = $this->_me->id;
-            $userOrgQuery->innerJoin('o.Users u')->andWhere("u.id = $userId");
-        }
-        
+        $userOrgQuery = $this->_me->getOrganizationsQuery();
         $userOrgQuery->orderBy("o.$sortBy $order")
                      ->limit($this->_paging['count'])
                      ->offset($this->_paging['startIndex']);
-        
-        $totalRecords = 0;
         if (!empty($keywords)) {
             $index = new Fisma_Index('Organization');
             $organizationIds = $index->findIds($keywords);
-            $totalRecords = count($organizationIds);
             if (empty($organizationIds)) {
                 $organizationIds = array(-1);
             }
-            $userOrgQuery->whereIn('o.id', $organizationIds);
-        } else {
-            $totalRecords = $userOrgQuery->count();
+            $implodedOrganizationIds = implode(',', $organizationIds);
+            $userOrgQuery->andWhere("o.id IN ($implodedOrganizationIds)");
         }
         
+        $totalRecords = $userOrgQuery->count();
         $organizations = $userOrgQuery->execute();
         
         $tableData = array('table' => array(
