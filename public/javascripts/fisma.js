@@ -454,7 +454,12 @@ function message( msg ,model){
     } else {
         return;
     }
-    msgbar.innerHTML = msg;
+    if (msgbar.innerHTML) {
+        msgbar.innerHTML = msgbar.innerHTML + "<br />" +  msg;
+    } else {
+        msgbar.innerHTML = msg;
+    }
+
     msgbar.style.fontWeight = 'bold';
     
     if( model == 'warning')  {
