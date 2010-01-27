@@ -53,10 +53,10 @@ User:
     
         lastLoginIp:
             type: string(15)
-            ip: true
+            Fisma_Validator_Ip: true
         currentLoginIp:
             type: string(15)
-            ip: true
+            Fisma_Validator_Ip: true
         lastLoginTs: timestamp
     
         title: 

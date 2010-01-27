@@ -24,7 +24,7 @@ Asset:
             comment: Whether this asset was created manually or by an automated scanner
         addressIp:
             type: string(15)
-            ip: true
+            Fisma_Validator_Ip: true
             extra:
                 logicalName: IP Address
                 searchIndex: unstored

@@ -40,7 +40,9 @@ class Doctrine_Validator_Ip
      */
     public function validate($value)
     {
-        // @see http://www.doctrine-project.org/jira/browse/DC-458
-        return (is_null($value)) ? TRUE : (bool) filter_var($value, FILTER_VALIDATE_IP);
+        if (is_null($value)) {
+            return true;
+        }
+        return (bool) ip2long(str_replace("\0", '', $value));
     }
 }

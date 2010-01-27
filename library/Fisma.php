@@ -315,6 +315,7 @@ class Fisma
         $manager = Doctrine_Manager::getInstance();
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
         $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
+        $manager->registerValidators('Fisma_Validator_Ip');
         /**
          * @todo We want to enable VALIDATE_ALL in release 2.6
          */
