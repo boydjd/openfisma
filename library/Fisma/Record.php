@@ -88,6 +88,9 @@ class Fisma_Record extends Doctrine_Record
                         $userFriendlyName = $field;
                     }
                     
+                    // Lookup the value which failed
+                    $invalidValue = $this->$field;
+                    
                     /**
                      * Doctrine provides unhelpful string constants to describe errors, instead of real named 
                      * constants. I also can't find anywhere that these constants are documented. So the goal here is 
@@ -97,6 +100,10 @@ class Fisma_Record extends Doctrine_Record
                     switch ($error) {
                         case 'unique':
                             $message = "An object already exists with the same $userFriendlyName";
+                            break;
+                        case 'email':
+                            $emailAddress = 
+                            $message = "$userFriendlyName does not contain a valid e-mail address ($invalidValue)";
                             break;
                         default:
                             $message = "$userFriendlyName failed a validation: $error";

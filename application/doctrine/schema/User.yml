@@ -90,7 +90,8 @@ User:
                 purify: plaintext
                 searchIndex: unstored
                 notify: true
-            email: true
+            email: 
+                check_mx: false
             comment: The users primary e-mail address
         emailValidate: 
             type: boolean

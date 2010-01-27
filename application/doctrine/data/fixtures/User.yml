@@ -2,7 +2,7 @@ User:
     root:
         username: root
         password: 0p3nfism@
-        email: openfisma@agency.gov
+        email: openfisma-default-install@googlegroups.com
         nameFirst: Super
         nameLast: User
         hashType: sha1
