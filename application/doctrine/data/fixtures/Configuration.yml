@@ -161,5 +161,5 @@ Configuration:
         
     host_url:
         name: host_url
-        value: "openfisma.agency.gov"
+        value: "https://openfisma.agency.gov:443"
         description: This is used to construct self-referencing URLs in non-HTTP contexts. The installer should overwrite this value.

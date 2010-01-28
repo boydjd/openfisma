@@ -59,13 +59,12 @@ class Fisma_Mail extends Zend_Mail
     {
         $this->addTo($email);
         $this->setSubject("Confirm Your E-mail Address");
-
-        $this->_contentTpl->host  = Fisma::configuration()->getConfig('host_url');
-        $this->_contentTpl->validateCode = $user->EmailValidation->getLast()->validationCode;
-        $this->_contentTpl->user         = $user;
-
+        $this->_contentTpl->validationLink = Fisma_Url::customUrl(
+            "/auth/emailvalidate/id/" . $user->id . "/code/" . $user->EmailValidation->getLast()->validationCode
+        );
         $content    = $this->_contentTpl->render('validate.phtml');
         $this->setBodyText($content);
+        
         try {
             $this->send($this->_getTransport());
             return true;
@@ -120,10 +119,13 @@ class Fisma_Mail extends Zend_Mail
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
         $this->setSubject("Your new account for $systemName has been created");
         $this->_contentTpl->user = $user;
-        $this->_contentTpl->host = Fisma::configuration()->getConfig('host_url');
+        $this->_contentTpl->validationLink = Fisma_Url::customUrl(
+            "/auth/emailvalidate/id/" . $user->id . "/code/" . $user->EmailValidation->getLast()->validationCode
+        );
+        $this->_contentTpl->loginLink = Fisma_Url::customUrl("/auth/login");
         $content = $this->_contentTpl->render('sendaccountinfo.phtml');
         $this->setBodyText($content);
-
+        
         try {
             $this->send($this->_getTransport());
         } catch (Exception $excetpion) {
@@ -144,16 +146,16 @@ class Fisma_Mail extends Zend_Mail
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
         $this->setSubject("Your password for $systemName has been changed");
         $this->_contentTpl->user = $user;
-        $this->_contentTpl->host = Fisma::configuration()->getConfig('host_url');
+        $this->_contentTpl->host = Fisma_Url::baseUrl();
         $content = $this->_contentTpl->render('sendpassword.phtml');
         $this->setBodyText($content);
-
+        
         try {
             $this->send($this->_getTransport());
         } catch (Exception $excetpion) {
         }
     }
-
+    
     /**
      * Return the appropriate Zend_Mail_Transport subclass,
      * based on the system's configuration.

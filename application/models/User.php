@@ -514,19 +514,15 @@ class User extends BaseUser
      */
     public function postInsert($event)
     {
-        // Send account creation and email validation email during user creation
-        if (isset($this->id) && !empty($this->id)) {
+        //Send account creation and email validation email during user creation
+        if (isset($this->email) && !empty($this->email)) {
+            $this->emailValidate = false;
+            $emailValidation  = new EmailValidation();
+            $emailValidation->email = $this->email;
+            $emailValidation->validationCode = md5(rand());
+            $this->EmailValidation[] = $emailValidation;
             $mail = new Fisma_Mail();
             $mail->sendAccountInfo($this);
-            if (isset($this->email) && !empty($this->email)) {
-                $this->emailValidate = false;
-                $emailValidation  = new EmailValidation();
-                $emailValidation->email = $this->email;
-                $emailValidation->validationCode = md5(rand());
-                $this->EmailValidation[] = $emailValidation;
-                $mail = new Fisma_Mail();
-                $mail->validateEmail($this, $emailValidation->email);
-            }
         }
     }
     

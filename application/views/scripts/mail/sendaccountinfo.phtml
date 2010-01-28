@@ -9,4 +9,6 @@ Password: <Same as your network password>
 Temporary Password: <?php echo "{$this->user->password}\n"; ?>
 <?php endif; ?>
 
-Please click here to login:  http://<?php echo $this->host; ?>/auth/login
+Please click here to login:  <?php echo $this->loginLink; ?>
+
+Please click here to confirm this e-mail address: <?php echo $this->validationLink; ?>

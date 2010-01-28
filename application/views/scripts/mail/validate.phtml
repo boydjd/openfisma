@@ -1,12 +1,5 @@
-<?php
-$link = $this->host
-      . '/auth/emailvalidate/id/'
-      . $this->user->id
-      . '/code/'
-      . $this->validateCode;
-?>
 This is an automatically generated message, please do not reply to this address.
 
 You recently changed your e-mail address for <?php echo Fisma::configuration()->getConfig('system_name');?>.
 
-Please click here to confirm this e-mail address: <?php echo $link; ?>
+Please click here to confirm this e-mail address: <?php echo $this->validationLink; ?>

@@ -35,19 +35,23 @@ class Fisma_Url
      */    
     static function baseUrl()
     {
-        // Get the scheme http or https
-        $scheme = (!empty($_SERVER['HTTPS'])) ? 'https' : 'http';
-
-        // Get the http host
-        $name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : null;
-        $port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : null;
-        $port = ($port != 80 || 443) ? ':' . $port : null;
-        $host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $name . $port;
-
-        $baseUrl = $scheme . '://' . $host;
-        return $baseUrl;
+        if (isset($_SERVER) && 
+            array_key_exists('SERVER_NAME', $_SERVER) && 
+            array_key_exists('SERVER_PORT', $_SERVER) && 
+            array_key_exists('HTTP_HOST', $_SERVER)) {
+            // Get the scheme http or https
+            $scheme = (!empty($_SERVER['HTTPS'])) ? 'https' : 'http';
+            // Get the http host
+            $name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : null;
+            $port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : null;
+            $port = ($port != 80 || 443) ? ':' . $port : null;
+            $host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $name . $port;
+            return $scheme . '://' . $host;
+        } else {
+            return Fisma::configuration()->getConfig('host_url');
+        }
     }
-
+    
     /**
      * Return the current page URL.
      * 
@@ -55,11 +59,14 @@ class Fisma_Url
      */
     static function currentUrl()
     {
-        $uri        = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : null;
-        $currentUrl = self::baseUrl() . $uri;
-        return $currentUrl;
+        if (isset($_SERVER) && array_key_exists('REQUEST_URI', $_SERVER)) {
+            $uri = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : null;
+            return self::baseUrl() . $uri;
+        } else {
+            return self::baseUrl();
+        }
     }
-
+    
     /**
      * Return the custom URL.
      * like http://site.com/test, the $requestUri is /test.
@@ -73,8 +80,7 @@ class Fisma_Url
         if (!empty($requestUri) && is_string($requestUri)) {
             $path = preg_replace('/^\.{0,2}\//', '', $requestUri);
         }
-
-        $customUrl = self::baseUrl() . '/' . $path;
-        return $customUrl;
+        
+        return self::baseUrl() . '/' . $path;
     }
 }

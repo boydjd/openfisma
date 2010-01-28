@@ -38,11 +38,14 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testBaseUrlConstructorWithOnlyHost()
     {
-        $_SERVER['HTTP_HOST'] = 'example.com';
-        unset($_SERVER['HTTPS']);
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
+        $_SERVER['HTTP_HOST']   = 'example.com';
+        $_SERVER['HTTPS']       = '';
+        $_SERVER['SERVER_NAME'] = '';
+        $_SERVER['SERVER_PORT'] = '';
+        
         $this->assertEquals('http://example.com', Fisma_Url::baseUrl());
     }
 
@@ -54,11 +57,14 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testBaseUrlConstructorWithOnlyHostIncludingPort()
     {
-        $_SERVER['HTTP_HOST'] = 'example.com:8000';
-        unset($_SERVER['HTTPS']);
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
+        $_SERVER['HTTP_HOST']   = 'example.com:8000';
+        $_SERVER['HTTPS']       = '';
+        $_SERVER['SERVER_NAME'] = '';
+        $_SERVER['SERVER_PORT'] = '';
+        
         $this->assertEquals('http://example.com:8000', Fisma_Url::baseUrl());
     }
 
@@ -70,11 +76,14 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testBaseUrlConstructorWithHostAndHttpsOn()
     {
-        $_SERVER['HTTP_HOST'] = 'example.com';
-        $_SERVER['HTTPS']     = 'on';
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
+        $_SERVER['HTTP_HOST']   = 'example.com';
+        $_SERVER['HTTPS']       = 'on';
+        $_SERVER['SERVER_NAME'] = '';
+        $_SERVER['SERVER_PORT'] = '';
+        
         $this->assertEquals('https://example.com', Fisma_Url::baseUrl());
     }
 
@@ -86,11 +95,14 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testBaseUrlConstructorWithHostIncludingPortAndHttpsOn()
     {
-        $_SERVER['HTTP_HOST'] = 'example.com:8181';
-        $_SERVER['HTTPS']     = 'on';
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
+        $_SERVER['HTTP_HOST']   = 'example.com:8181';
+        $_SERVER['HTTPS']       = 'on';
+        $_SERVER['SERVER_NAME'] = '';
+        $_SERVER['SERVER_PORT'] = '';
+        
         $this->assertEquals('https://example.com:8181', Fisma_Url::baseUrl());
     }
 
@@ -102,11 +114,14 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testBaseUrlConstructorWithHttpHostAndServerNameAndPortSet()
     {
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
         $_SERVER['HTTP_HOST']   = 'example.com';
         $_SERVER['SERVER_NAME'] = 'example.org';
         $_SERVER['SERVER_PORT'] = 8080;
-        unset($_SERVER['HTTPS']);
-
+        $_SERVER['HTTPS']       = '';
+        
         $this->assertEquals('http://example.com', Fisma_Url::baseUrl());
     }
 
@@ -118,8 +133,11 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testBaseUrlConstructorWithNoHttpHostButServerNameAndPortSet()
     {
-        unset($_SERVER['HTTP_HOST']);
-        unset($_SERVER['HTTPS']);
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
+        $_SERVER['HTTP_HOST']   = '';
+        $_SERVER['HTTPS']       = '';
         $_SERVER['SERVER_NAME'] = 'example.org';
         $_SERVER['SERVER_PORT'] = 8080;
 
@@ -134,12 +152,15 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testCurrentUrlConstructorWithRequestUri()
     {
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
         $_SERVER['HTTP_HOST']   = 'example.com';
         $_SERVER['REQUEST_URI'] = '/test/this/';
-        unset($_SERVER['HTTPS']);
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-
+        $_SERVER['HTTPS']       = '';
+        $_SERVER['SERVER_NAME'] = '';
+        $_SERVER['SERVER_PORT'] = '';
+        
         $this->assertEquals('http://example.com/test/this/', Fisma_Url::currentUrl());
     }
 
@@ -151,12 +172,15 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testCurrentUrlConstructorWithRequestUriIncludingParams()
     {
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
         $_SERVER['HTTP_HOST']   = 'example.com';
         $_SERVER['REQUEST_URI'] = '/test/this/?param=1&param2=2';
-        unset($_SERVER['HTTPS']);
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-
+        $_SERVER['HTTPS']       = '';
+        $_SERVER['SERVER_NAME'] = '';
+        $_SERVER['SERVER_PORT'] = '';
+        
         $this->assertEquals('http://example.com/test/this/?param=1&param2=2', Fisma_Url::currentUrl());
     }
 
@@ -168,11 +192,14 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
      */
     public function testCustomUrlWithRequestUri()
     {
-        $_SERVER['HTTP_HOST'] = 'example.com';
-        unset($_SERVER['HTTPS']);
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-
+        if (!isset($_SERVER)) {
+            $_SERVER = array();
+        }
+        $_SERVER['HTTP_HOST']   = 'example.com';
+        $_SERVER['HTTPS']       = '';
+        $_SERVER['SERVER_NAME'] = '';
+        $_SERVER['SERVER_PORT'] = '';
+        
         // The requestUri start with '/'
         $requestUri = '/test';
         $this->assertEquals('http://example.com/test', Fisma_Url::customUrl($requestUri));
