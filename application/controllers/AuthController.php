@@ -109,6 +109,11 @@ class AuthController extends Zend_Controller_Action
             
             // At this point, authentication is successful. Log in the user to update last login time, last login IP,
             // etc.
+            $lastLoginInfo = new Zend_Session_Namespace('last_login_info');
+            $lastLoginInfo->lastLoginTs = $user->lastLoginTs;
+            $lastLoginInfo->lastLoginIp = $user->lastLoginIp;
+            $lastLoginInfo->failureCount = $user->failureCount;
+                        
             $user->login();
             Notification::notify('LOGIN_SUCCESS', $user, $user);
             $user->getAuditLog()->write("Logged in ({$_SERVER['REMOTE_ADDR']})");

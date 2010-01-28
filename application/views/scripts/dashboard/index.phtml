@@ -32,7 +32,7 @@
             <?php if ('database' == Fisma::configuration()->getConfig('auth_type')): ?>
                 <li>
                     There were 
-                    <b><?php echo $this->oldFailureCount; ?></b>
+                    <b><?php echo $this->failureCount; ?></b>
                     bad login attempts since your last login.
                 </li>
             <?php endif; ?>

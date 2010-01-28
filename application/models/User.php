@@ -405,11 +405,7 @@ class User extends BaseUser
         $this->getTable()->getRecordListener()->setOption('disabled', true);
 
         $this->lastLoginTs = Fisma::now();
-        
-        $this->lastLoginIp = $this->currentLoginIp;
-        $this->currentLoginIp = $_SERVER['REMOTE_ADDR'];
-        
-        $this->oldFailureCount = $this->failureCount;
+        $this->lastLoginIp = $_SERVER['REMOTE_ADDR'];
         $this->failureCount = 0;
 
         $this->save();

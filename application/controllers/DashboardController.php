@@ -132,13 +132,15 @@ class DashboardController extends SecurityController
         $this->view->url = $url;
         $this->view->alert = $alert;
         
-        // Look up the user's last login information. If it's their first time logging in, then the view
+        // Look up the last login information. If it's their first time logging in, then the view
         // script will show a different message.
-        if (isset($user->lastLoginTs)) {
-            $lastLoginDate = new Zend_Date($this->_me->lastLoginTs, Zend_Date::ISO_8601);
+        $lastLoginInfo = new Zend_Session_Namespace('last_login_info');
+        
+        if (isset($lastLoginInfo->lastLoginTs)) {
+            $lastLoginDate = new Zend_Date($lastLoginInfo->lastLoginTs, Zend_Date::ISO_8601);
             $this->view->lastLoginTs = $lastLoginDate->toString('l, M j, g:i a');
-            $this->view->lastLoginIp = $this->_me->lastLoginIp;
-            $this->view->oldFailureCount = $this->_me->oldFailureCount;
+            $this->view->lastLoginIp = $lastLoginInfo->lastLoginIp;
+            $this->view->failureCount = $lastLoginInfo->failureCount;
         } else {
             $this->view->applicationName = Fisma::configuration()->getConfig('system_name');
         }
