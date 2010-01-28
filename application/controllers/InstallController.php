@@ -38,7 +38,18 @@ class InstallController extends Zend_Controller_Action
         if (Fisma::isInstall()) {
            $this->_redirect('/', array('prependBase' => 'true'));
         }
-
+        
+        set_time_limit(600);
+        
+        /**
+         * The installer needs a few configuration items defined. For example, the root user cannot be created unless
+         * the hash_type is set, because otherwise it doesn't know what hash algorithm to use on the password.
+         */
+        $configuration = new Fisma_Configuration_Array();
+        $configuration->setConfig('hash_type', 'sha1');
+        $configuration->setConfig('session_inactivity_period', '3600');
+        Fisma::setConfiguration($configuration, true);
+        
         $this->_helper->layout->setLayout('install');
     }
 
@@ -232,7 +243,7 @@ class InstallController extends Zend_Controller_Action
             $configInfo
         );
         file_put_contents(Fisma::getPath('config') . '/app.conf', $configInfo);
-        
+
         // test the connection of database
         try {
             $method = 'connection / creation';
@@ -247,8 +258,6 @@ class InstallController extends Zend_Controller_Action
             $checklist['creation'] = 'ok';
             Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
             Doctrine::createTablesFromModels(Fisma::getPath('model'));
-            Zend_Auth::getInstance()->setStorage(new Fisma_Auth_Storage_Session())
-                                    ->clearIdentity();
 
             //load sample data
             Doctrine::loadData(Fisma::getPath('fixture'));

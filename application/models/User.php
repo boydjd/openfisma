@@ -584,15 +584,7 @@ class User extends BaseUser
         
         // Set the user's hash type if it is not set already
         if (!$this->hashType) {
-            try {
-                $this->hashType = Fisma::configuration()->getConfig('hash_type');
-            } catch (Exception $e) {
-                /* This is an ugly Doctrine hack. If the tables aren't yet created for the models, then we can't get the
-                 * hash_type configuration option from the Configuration model. This bug creeps up when installing and 
-                 * when doing a build-all from the CLI. See OFJ-321 for details. 
-                 */
-                $this->hashType = 'sha1';
-            }
+            $this->hashType = Fisma::configuration()->getConfig('hash_type');
         }
 
         // Update password timestamp
