@@ -191,7 +191,9 @@ class OrganizationController extends SecurityController
         }
         
         $userOrgQuery = $this->_me->getOrganizationsQuery();
-        $userOrgQuery->orderBy("o.$sortBy $order")
+        $userOrgQuery->where("o.orgType IS NULL")
+                     ->orWhere("o.orgType != 'system'")
+                     ->orderBy("o.$sortBy $order")
                      ->limit($this->_paging['count'])
                      ->offset($this->_paging['startIndex']);
         if (!empty($keywords)) {
