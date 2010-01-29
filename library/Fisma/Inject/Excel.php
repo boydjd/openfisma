@@ -151,11 +151,6 @@ class Fisma_Inject_Excel
         foreach ($findingData as $row) {
             // Copy the row data into a local array
             $finding = array();
-            //Fill each finding column with blank string in the local array for fear that non-required 
-            //columns are left blank.
-            foreach ($this->_excelTemplateColumns as $columnIndex => $columnName) {
-                $finding[$columnName] = '';
-            }
             $column = 1;
             foreach ($row as $cell) {
                 // If Excel skips a cell that has no data, then the next cell that has data will contain an
@@ -275,7 +270,6 @@ class Fisma_Inject_Excel
             
             // Now persist these objects. Check assets and products to see whether they exist before creating new
             // ones.
-            $productId = null;
             if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
                 /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
                 $query = Doctrine_Query::create()
@@ -296,11 +290,7 @@ class Fisma_Inject_Excel
             }
 
             // Persist the asset, if necessary
-            $assetId = null;
-            if (!empty($productId) && 
-                !empty($asset['networkId']) && 
-                !empty($asset['addressIp']) && 
-                !empty($asset['addressPort'])) {
+            if (!empty($asset['networkId']) && !empty($asset['addressIp']) && !empty($asset['addressPort'])) {
                 $asset['productId'] = $productId;
                 // Verify whether asset exists or not
                 $q = Doctrine_Query::create()
