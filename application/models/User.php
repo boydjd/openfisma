@@ -511,7 +511,8 @@ class User extends BaseUser
     public function postInsert($event)
     {
         //Send account creation and email validation email during user creation
-        if (isset($this->email) && !empty($this->email)) {
+        // OFJ-435: quick hack for release 2.5, only send emails in web app mode
+        if (isset($this->email) && !empty($this->email) && Fisma::RUN_MODE_WEB_APP == Fisma::mode()) {
             $this->emailValidate = false;
             $emailValidation  = new EmailValidation();
             $emailValidation->email = $this->email;

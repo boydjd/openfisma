@@ -32,13 +32,17 @@ try {
     $startTime = time();
     
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-    Fisma::setConfiguration(new Fisma_Configuration_Database());
     Fisma::connectDb();
     Fisma::setNotificationEnabled(false);
     Fisma::setListenerEnabled(false);
 
     /** @todo temporary hack to load large datasets */
     ini_set('memory_limit', '512M');
+
+    // The CLI needs an in-memory configuration object, since it might drop and/or reload the configuration table
+    $inMemoryConfig = new Fisma_Configuration_Array();
+    $inMemoryConfig->setConfig('hash_type', 'sha1');
+    Fisma::setConfiguration($inMemoryConfig, true);    
 
     $configuration = Zend_Registry::get('doctrine_config');
 
