@@ -36,7 +36,10 @@ class Fisma_Import_Asset extends Fisma_Import_Abstract implements Fisma_Import_I
         //@TODO: Detect type of file and create filter of appropriate type or return an error.
         $filter = new Fisma_Import_Filter_Nmap($this->_filePath, $this->_orgSystemId, $this->_networkId);
 
-        $this->_assets = $filter->getAssets();
+        if (!$this->_assets = $filter->getAssets()) {
+            $this->_setError('Unable to load assets from XML.');
+            return FALSE;
+        }
 
         foreach ($this->_assets as $key => &$asset) {
             // Mark asset as duplicate if it already exists

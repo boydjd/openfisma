@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="nmaprun">
+      <attribute name="args"/>
+      <attribute name="description"/>
+      <attribute name="nmap_output"/>
+      <attribute name="options"/>
+      <attribute name="profile"/>
+      <attribute name="profile_name"/>
+      <attribute name="scan_name"/>
+      <attribute name="scanner">
+        <data type="NCName"/>
+      </attribute>
+      <attribute name="start">
+        <data type="integer"/>
+      </attribute>
+      <attribute name="startstr"/>
+      <attribute name="target"/>
+      <attribute name="version">
+        <data type="decimal"/>
+      </attribute>
+      <element name="scaninfo">
+        <attribute name="numservices">
+          <data type="integer"/>
+        </attribute>
+        <attribute name="protocol">
+          <data type="NCName"/>
+        </attribute>
+        <attribute name="services"/>
+        <attribute name="type">
+          <data type="NCName"/>
+        </attribute>
+      </element>
+      <element name="verbose">
+        <attribute name="level">
+          <data type="integer"/>
+        </attribute>
+      </element>
+      <element name="debugging">
+        <attribute name="level">
+          <data type="integer"/>
+        </attribute>
+      </element>
+      <oneOrMore>
+        <element name="host">
+          <attribute name="comment"/>
+          <element name="status">
+            <attribute name="state">
+              <data type="NCName"/>
+            </attribute>
+          </element>
+          <oneOrMore>
+            <element name="address">
+              <attribute name="addr"/>
+              <attribute name="addrtype"/>
+              <attribute name="vendor"/>
+            </element>
+          </oneOrMore>
+          <element name="hostnames">
+            <empty/>
+          </element>
+          <element name="ports">
+            <element name="extraports">
+              <attribute name="count">
+                <data type="integer"/>
+              </attribute>
+              <attribute name="state">
+                <data type="NCName"/>
+              </attribute>
+            </element>
+            <zeroOrMore>
+              <element name="port">
+                <attribute name="portid">
+                  <data type="integer"/>
+                </attribute>
+                <attribute name="protocol">
+                  <data type="NCName"/>
+                </attribute>
+                <element name="state">
+                  <attribute name="state">
+                    <data type="NCName"/>
+                  </attribute>
+                </element>
+                <element name="service">
+                  <attribute name="conf">
+                    <data type="integer"/>
+                  </attribute>
+                  <attribute name="extrainfo"/>
+                  <attribute name="method">
+                    <data type="NCName"/>
+                  </attribute>
+                  <attribute name="name">
+                    <data type="NCName"/>
+                  </attribute>
+                  <attribute name="product"/>
+                  <attribute name="version"/>
+                </element>
+              </element>
+            </zeroOrMore>
+          </element>
+          <element name="os">
+            <zeroOrMore>
+              <element name="portused">
+                <attribute name="portid">
+                  <data type="integer"/>
+                </attribute>
+                <attribute name="proto">
+                  <data type="NCName"/>
+                </attribute>
+                <attribute name="state">
+                  <data type="NCName"/>
+                </attribute>
+              </element>
+            </zeroOrMore>
+            <zeroOrMore>
+              <element name="osclass">
+                <attribute name="accuracy">
+                  <data type="integer"/>
+                </attribute>
+                <attribute name="osfamily"/>
+                <attribute name="osgen"/>
+                <attribute name="type"/>
+                <attribute name="vendor"/>
+              </element>
+            </zeroOrMore>
+            <zeroOrMore>
+              <element name="osmatch">
+                <attribute name="accuracy">
+                  <data type="integer"/>
+                </attribute>
+                <attribute name="name"/>
+              </element>
+            </zeroOrMore>
+          </element>
+          <element name="uptime">
+            <attribute name="lastboot"/>
+            <attribute name="seconds"/>
+          </element>
+          <element name="tcpsequence">
+            <attribute name="difficulty"/>
+            <attribute name="index"/>
+            <attribute name="values"/>
+          </element>
+          <element name="ipidsequence">
+            <attribute name="class"/>
+            <attribute name="values"/>
+          </element>
+          <element name="tcptssequence">
+            <attribute name="class"/>
+            <attribute name="values"/>
+          </element>
+        </element>
+      </oneOrMore>
+      <element name="runstats">
+        <element name="finished">
+          <attribute name="time">
+            <data type="integer"/>
+          </attribute>
+        </element>
+        <element name="hosts">
+          <attribute name="down">
+            <data type="integer"/>
+          </attribute>
+          <attribute name="total">
+            <data type="integer"/>
+          </attribute>
+          <attribute name="up">
+            <data type="integer"/>
+          </attribute>
+        </element>
+      </element>
+    </element>
+  </start>
+</grammar>
