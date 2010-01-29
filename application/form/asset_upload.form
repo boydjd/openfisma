@@ -1,0 +1,34 @@
+; This is the form for uploading assets 
+;
+; Author    Josh Boyd <joshua.boyd@endeavorsystems.com
+; Copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+; License   http://openfisma.org/content/license 
+; Version   $Id$
+
+[asset_upload]
+elements.orgSystemId.type = "select"
+elements.orgSystemId.options.label = "System"
+elements.orgSystemId.options.style = "width:250px"
+elements.orgSystemId.options.required = true
+displayGroups.asset_upload.elements.orgSystemId = "orgSystemId"
+
+elements.networkId.type = "select"
+elements.networkId.options.label = "Network"
+elements.networkId.options.required = true
+elements.networkId.options.style = "width:250px"
+displayGroups.asset_upload.elements.networkId = "networkId"
+
+elements.selectFile.type = "file"
+elements.selectFile.options.label = "Select File"
+elements.selectFile.options.required = true
+displayGroups.asset_upload.elements.selectFile = "selectFile"
+; Validators for the file input:
+; 1) File count must be 1
+elements.selectFile.options.validators.count.validator = "Count"
+elements.selectFile.options.validators.count.options.max = 1
+elements.selectFile.options.validators.count.options.min = 1
+elements.selectFile.options.tooltip = "<p>The file selected should be an nmap XML file.</p>"
+
+elements.upload.type = "Form_Button_Submit"
+elements.upload.options.label = "Upload"
+displayGroups.asset_upload.elements.submit = "upload"

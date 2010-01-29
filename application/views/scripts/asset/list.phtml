@@ -9,6 +9,12 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
 <form id="assetresult" method="post" action="/panel/asset/sub/multidelete">
 <div class="toolbar">
     <?php
+        if (Fisma_Acl::hasPrivilegeForClass('create', 'Asset')) {
+            echo new Fisma_Yui_Form_Button_Link('import',
+                                                array('value' => 'Import Assets',
+                                                      'href' => '/panel/asset/sub/import'));
+        }
+
         echo new Fisma_Yui_Form_Button_Link('pdf', 
                                       array('value' => 'Export PDF', 
                                             'href' => "/asset/search$this->url/format/pdf",

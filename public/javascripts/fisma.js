@@ -455,7 +455,7 @@ function message( msg ,model){
         return;
     }
     if (msgbar.innerHTML) {
-        msgbar.innerHTML = msgbar.innerHTML + "<br />" +  msg;
+        msgbar.innerHTML = msgbar.innerHTML + msg;
     } else {
         msgbar.innerHTML = msg;
     }
