@@ -89,6 +89,18 @@ class User extends BaseUser
         $this->hasMutator('lastRob', 'setLastRob');
         $this->hasMutator('password', 'setPassword');
     }
+    
+    /**
+     * Hook into the constructor to map the plainTextPassword field
+     */
+    public function construct()
+    {
+        /*
+         * This mapped value is not persistent, but it will be stored in memory for the duration of the request 
+         * whenever the password is modified.
+         */
+        $this->mapValue('plainTextPassword');
+    }
 
     /**
      * Lock an account, which will prevent a user from logging in.
@@ -610,6 +622,12 @@ class User extends BaseUser
         array_unshift($oldPasswords, $this->password);
         $oldPasswords = array_slice($oldPasswords, 0, self::PASSWORD_HISTORY_LIMIT);        
         $this->passwordHistory = implode(':', $oldPasswords);
+                
+        /*
+         * Store the plain-text password into a mapped value, which means it will remain resident in memory for the
+         * duration of this request.
+         */
+        $this->plainTextPassword = $value;
     }
     
     /**

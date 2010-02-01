@@ -151,13 +151,6 @@ class UserController extends BaseController
             unset($values['password']);
         }
         
-        /*
-         * We need to save the model once before linking related records, because Doctrine has a weird behavior where
-         * an invalid record will result in failed foreign key constraints. If this record is invalid, saving it here
-         * will avoid those errors.
-         */
-        $subject->save();
-
         if ($values['locked'] && !$subject->locked) {
             $subject->lockAccount(User::LOCK_TYPE_MANUAL);
             unset($values['locked']);
@@ -169,6 +162,14 @@ class UserController extends BaseController
         }
         
         $subject->merge($values);
+
+        /*
+         * We need to save the model once before linking related records, because Doctrine has a weird behavior where
+         * an invalid record will result in failed foreign key constraints. If this record is invalid, saving it here
+         * will avoid those errors.
+         */
+        $subject->save();
+
         $subject->unlink('Roles');
         $subject->link('Roles', $values['role']);
 
