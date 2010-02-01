@@ -314,14 +314,14 @@ class OrganizationController extends SecurityController
                 // Error message
                 $this->view->priorityMessenger("Unable to create organization:<br>$errorString", 'warning');
             }
-        }
-        
-        //Display searchbox template
-        $this->searchbox();
+        } else {
+            //Display searchbox template
+            $this->searchbox();
 
-        $this->view->title = "Create ";
-        $this->view->form = $form;
-        $this->render('create');
+            $this->view->title = "Create ";
+            $this->view->form = $form;
+            $this->render('create');            
+        }
     }
 
     /**
