@@ -335,15 +335,21 @@ abstract class Fisma_Inject_Abstract
     private function _prepareProduct($productData)
     {
         // Verify whether product exists or not
-        $productRecord = Doctrine_Query::create()
-                            ->select('id')
-                            ->from('Product p')
-                            ->where('p.name = ?', $productData['name'])
-                            ->andWhere('p.cpename = ?', $productData['cpeName'])
-                            ->andWhere('p.vendor = ?', $productData['vendor'])
-                            ->andWhere('p.version = ?', $productData['version'])
-                            ->setHydrationMode(Doctrine::HYDRATE_NONE)
-                            ->execute();
+        $productRecordQuery = Doctrine_Query::create()
+                              ->select('id')
+                              ->from('Product p')
+                              ->setHydrationMode(Doctrine::HYDRATE_NONE);
+
+        // Match existing products on the CPE ID if it is available, otherwise match on name, vendor, and version
+        if (isset($productData['cpeName'])) {
+            $productRecordQuery->where('p.cpename = ?', $productData['cpeName']);
+        } else {
+            $productRecordQuery->where('p.name = ?', $productData['name'])
+                               ->andWhere('p.vendor = ?', $productData['vendor'])
+                               ->andWhere('p.version = ?', $productData['version']);
+        }
+
+        $productRecord = $productRecordQuery->execute();
 
         return ($productRecord) ? $productRecord[0][0] : FALSE;
     }

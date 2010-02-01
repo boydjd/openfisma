@@ -179,10 +179,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             return null;
         }
 
-        $product['name']    = $cpe->product;
         $product['cpeName'] = $cpe->cpeName;
-        $product['vendor']  = $cpe->vendor;
-        $product['version'] = $cpe->version;
         
         return $product;
     }
