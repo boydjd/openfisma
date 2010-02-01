@@ -99,7 +99,7 @@ class XssListener extends Fisma_Record_Listener
 
             // Make sure to keep the following line in sync with Tiny MCE so users aren't surprised when their
             // data looks different before storage and after retreival.
-            $config->set('HTML', 'Allowed', 'a[href],p[style],b,i,strong,em,span[style],ul,li,ol,table,tr,th,td');
+            $config->set('HTML', 'Allowed', 'a[href],p[style],br,b,i,strong,em,span[style],ul,li,ol,table,tr,th,td');
             
             // Conform user submitted HTML to our doctype
             $config->set('HTML', 'TidyLevel', 'medium'); 
