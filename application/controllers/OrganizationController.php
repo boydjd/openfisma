@@ -302,7 +302,7 @@ class OrganizationController extends SecurityController
                     
                     $msg = "The organization is created";
                     $model = 'notice';
-                    $this->_forward('view', null, null, array('id' => $organization->id));
+                    $this->_redirect("/panel/organization/sub/view/id/{$organization->id}");
                 } catch (Doctrine_Validator_Exception $e) {
                     $msg = $e->getMessage();
                     $model = 'warning';
@@ -314,14 +314,14 @@ class OrganizationController extends SecurityController
                 // Error message
                 $this->view->priorityMessenger("Unable to create organization:<br>$errorString", 'warning');
             }
-        } else {
-            //Display searchbox template
-            $this->searchbox();
-
-            $this->view->title = "Create ";
-            $this->view->form = $form;
-            $this->render('create');            
         }
+        
+        //Display searchbox template
+        $this->searchbox();
+
+        $this->view->title = "Create ";
+        $this->view->form = $form;
+        $this->render('create');            
     }
 
     /**
