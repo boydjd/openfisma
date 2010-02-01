@@ -275,7 +275,7 @@ function ev_deny(formname){
         } else {// firefox
             var comment = document.getElementById('dialog_comment').value;
         }
-        if (comment.length <= 0) {
+        if (comment.match(/^\s*$/)) {
             alert('Comments are required in order to deny.');
             return;
         }
@@ -367,7 +367,7 @@ function ms_deny(formname){
         } else {// firefox
             var comment = document.getElementById('dialog_comment').value;
         }
-        if (comment.length <= 0) {
+        if (comment.match(/^\s*$/)) {
             alert('Comments are required in order to submit.');
             return;
         }
