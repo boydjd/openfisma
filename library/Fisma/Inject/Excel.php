@@ -100,7 +100,7 @@ class Fisma_Inject_Excel
     /**
      * Parses and loads the findings in the specified excel file. Expects XML spreadsheet format from Excel 2007.
      * Compatible with older versions of Excel through the Office Compatibility Pack.
-     *
+     * 
      * @param string $filePath The specified excel file path
      * @param string $uploadId The id of upload excel
      * @return int The number of findings processed in the file
@@ -117,7 +117,7 @@ class Fisma_Inject_Excel
                 "The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML spreadsheet."
             );
         }
-
+        
         // Check that the template version matches the version of OpenFISMA which is running.
         $templateVersion = (int)$spreadsheet->CustomDocumentProperties->FismaTemplateVersion;
         if ($templateVersion != self::TEMPLATE_VERSION) {
@@ -126,7 +126,7 @@ class Fisma_Inject_Excel
                 . " version. Download a new copy of the template and transfer your data into it."
             );
         }
-                
+        
         // Have to do some namespace manipulation to make the spreadsheet searchable by xpath.
         $namespaces = $spreadsheet->getNamespaces(true);
         $spreadsheet->registerXPathNamespace('s', $namespaces['']);
@@ -172,7 +172,7 @@ class Fisma_Inject_Excel
              */                
             $finding = array_map('strip_tags', $finding);
             $finding = array_map('htmlspecialchars', $finding);
-
+            
             // Validate that required row attributes are filled in:
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
                 if (empty($finding[$columnName])) {
@@ -180,7 +180,7 @@ class Fisma_Inject_Excel
                                                           is empty");
                 }
             }
-
+            
             // Map the row data into logical objects. Notice suppression is used heavily here to keep the code
             // from turning into spaghetti. When debugging this code, it will probably be helpful to remove these
             // suppressions.
@@ -192,7 +192,7 @@ class Fisma_Inject_Excel
                                                       be out of date. Please try downloading it again.");
             }
             $poam['responsibleOrganizationId'] = $organization->id;
-
+            
             $finding['findingSource'] = html_entity_decode($finding['findingSource']);
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
@@ -218,28 +218,37 @@ class Fisma_Inject_Excel
                 $poam['description'] .= "<p>Point of Contact: {$finding['contactInfo']}</p>";
             }
             $poam['recommendation'] = $finding['findingRecommendation'];
-            $poam['type'] = $finding['findingType'];
-            if (empty($poam['type'])) {
+            if (empty($finding['findingType'])) {
                 $poam['type'] = 'NONE';
             } else {
                 $poam['status'] = 'DRAFT';
             }
-            $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
-            $poam['currentEcd'] = $finding['ecdDate'];
+            if (!empty($finding['findingMitigationStrategy'])) {
+                $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
+            }
+            if (!empty($finding['ecdDate'])) {
+                $poam['currentEcd'] = $finding['ecdDate'];
+            }
             $poam['ecdLocked'] = 0;
             $poam['discoveredDate'] = $finding['discoveredDate'];
-            $poam['threatLevel'] = $finding['threatLevel'];
-            if (empty($poam['threatLevel'])) {
+            if (empty($finding['threatLevel'])) {
                 $poam['threatLevel'] = 'NONE';
+            } else {
+                $poam['threatLevel'] = $finding['threatLevel'];
             }
-            $poam['threat'] = $finding['threatDescription'];
-            $poam['countermeasuresEffectiveness'] = $finding['countermeasuresEffectiveness'];
+            if (!empty($finding['threatDescription'])) {
+                $poam['threat'] = $finding['threatDescription'];
+            }
             if (empty($poam['countermeasuresEffectiveness'])) {
                 $poam['countermeasuresEffectiveness'] = 'NONE';
+            } else {
+                $poam['countermeasuresEffectiveness'] = $finding['countermeasuresEffectiveness'];
             }
-            $poam['countermeasures'] = $finding['countermeasureDescription'];
+            if (!empty($finding['countermeasureDescription'])) {
+                $poam['countermeasures'] = $finding['countermeasureDescription'];
+            }
             $poam['resourcesRequired'] = 'None';
-
+            
             $asset = array();
             if (!empty($finding['network'])) {
                 $networkTable = Doctrine::getTable('Network')->findOneByNickname($finding['network']);
@@ -250,23 +259,34 @@ class Fisma_Inject_Excel
                 }
                 $asset['networkId'] = $networkTable->id;
             }
-            
-            $asset['addressIp'] = $finding['assetIp'];
-            $asset['addressPort'] = $finding['assetPort'];
+            if (!empty($finding['assetIp'])) {
+                $asset['addressIp'] = $finding['assetIp'];
+            }
+            if (!empty($finding['assetPort'])) {
+                $asset['addressPort'] = $finding['assetPort'];
+            }
             if (!empty($asset['addressPort']) && !is_numeric($asset['addressPort'])) {
                 throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
             }
-
-            $asset['name'] = $finding['assetName'];
             if (empty($asset['name'])) {
-                $asset['name'] = "{$asset['addressIp']}:{$asset['addressPort']}";
+                if (!empty($asset['addressIp']) && !empty($asset['addressPort'])) {
+                    $asset['name'] = "{$asset['addressIp']}:{$asset['addressPort']}";
+                }
+            } else {
+                $asset['name'] = $finding['assetName'];
             }
             $asset['orgSystemId'] = $poam['responsibleOrganizationId'];
-
+            
             $product = array();
-            $product['name'] = $finding['productName'];
-            $product['vendor'] = $finding['productVendor'];
-            $product['version'] = $finding['productVersion'];
+            if (!empty($finding['productName'])) {
+                $product['name'] = $finding['productName'];
+            }
+            if (!empty($finding['productVendor'])) {
+                $product['vendor'] = $finding['productVendor'];
+            }
+            if (!empty($finding['productVersion'])) {
+                $product['version'] = $finding['productVersion'];
+            }
             
             // Now persist these objects. Check assets and products to see whether they exist before creating new
             // ones.
@@ -288,10 +308,10 @@ class Fisma_Inject_Excel
                     $productId = $productRecord[0]['id'];
                 }
             }
-
+            
             // Persist the asset, if necessary
             if (!empty($asset['networkId']) && !empty($asset['addressIp']) && !empty($asset['addressPort'])) {
-                $asset['productId'] = $productId;
+                $asset['productId'] = empty($productId) ? null : $productId;
                 // Verify whether asset exists or not
                 $q = Doctrine_Query::create()
                      ->select()
@@ -311,7 +331,7 @@ class Fisma_Inject_Excel
                 }
             }
             // Finally, create the finding
-            $poam['assetId'] = $assetId;
+            $poam['assetId'] = empty($assetId) ? null : $assetId;
             
             $findingRecord = new Finding();
             $findingRecord->merge($poam);
