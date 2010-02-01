@@ -41,6 +41,37 @@ class Fisma_Record extends Doctrine_Record
     private $_originalValues = array();
     
     /**
+     * Customized validation error messages. 
+     * 
+     * The keys are the names of errors as returned by Doctrine, e.g. 'email' corresponds to Doctrine_Validator_Email.
+     * 
+     * The values are the error messages which are displayed to the end user. These messages contain specifiers for
+     * including contextual information in the error message.
+     * 
+     * '%f' is a specifier which is expanded to a user-friendly name for the *field* which generated the error. 
+     * 
+     * '%v' is a specifier which is expanded to the *value* of the field which failed validation. These two specifiers 
+     * can be used to create very useful error messages for displaying to the end user.
+     * 
+     * @var array
+     * @see _getCustomValidationErrorMessage()
+     */
+    private $_customValidationErrorMessage = array(
+        'country' => '%f does not a valid country code (%v)',
+        'date' => '%f contains an invalid date (%v)',
+        'future' => '%f must be a future date (%v)',
+        'email' => '%f does not contain a valid e-mail address (%v)',
+        'notblank' => '%f is required',
+        'notnull' => '%f is required',
+        'past' => '%f must be a past date (%v)',
+        'readonly' => '%f is a read-only field',
+        'time' => '%f is not a valid time value (%v)',
+        'timestamp' => '%f is not a valid timestamp value (%v)',
+        'unique' => 'An object already exists with the same %f',
+        'usstate' => '$f does not contain a valid U.S. state code (%v)'
+    );
+        
+    /**
      * Get an array of modified fields with their original values
      * 
      * @param string $fieldName
@@ -76,41 +107,9 @@ class Fisma_Record extends Doctrine_Record
             $count = count($errorStack);
                         
             foreach ($errorStack as $field => $errors) {
-                foreach ($errors as $error) {
-                    
-                    // Include the logical name in the error message, or else use the physical name
-                    $columnName = $this->getTable()->getColumnName($field);
-                    $column = $this->getTable()->getColumnDefinition($columnName);
-
-                    if (isset($column['extra']['logicalName'])) {
-                        $userFriendlyName = $column['extra']['logicalName'];
-                    } else {
-                        $userFriendlyName = $field;
-                    }
-                    
-                    // Lookup the value which failed
-                    $invalidValue = $this->$field;
-                    
-                    /**
-                     * Doctrine provides unhelpful string constants to describe errors, instead of real named 
-                     * constants. I also can't find anywhere that these constants are documented. So the goal here is 
-                     * to trap the errors we do know and write out a sensible error message, while providing a 
-                     * fallback for errors that we aren't aware of.
-                     */
-                    switch ($error) {
-                        case 'unique':
-                            $message = "An object already exists with the same $userFriendlyName";
-                            break;
-                        case 'email':
-                            $emailAddress = 
-                            $message = "$userFriendlyName does not contain a valid e-mail address ($invalidValue)";
-                            break;
-                        default:
-                            $message = "$userFriendlyName failed a validation: $error";
-                            break;
-                    }
-                    
-                    $message .= "\n";
+                foreach ($errors as $error) {                    
+                    $message = $this->_getCustomValidationErrorMessage($error, $field)
+                             . "\n";
                 }
             }
             
@@ -118,5 +117,45 @@ class Fisma_Record extends Doctrine_Record
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Get a customized error validation message that is suitable for displaying to an end user
+     * 
+     * @see _customValidationErrorMessage
+     * 
+     * @param string $error Doctrine's name for the validation error
+     * @param string $field The name of the field which failed validation
+     * @return string
+     */
+    
+    private function _getCustomValidationErrorMessage($error, $field)
+    {
+        // Include the logical name in the error message, or else use the physical name
+        $columnName = $this->getTable()->getColumnName($field);
+        $column = $this->getTable()->getColumnDefinition($columnName);
+
+        if (isset($column['extra']['logicalName'])) {
+            $userFriendlyName = $column['extra']['logicalName'];
+        } else {
+            $userFriendlyName = $field;
+        }
+        
+        // Lookup the value which failed
+        $invalidValue = $this->$field;
+
+        if (isset($this->_customValidationErrorMessage[$error])) {
+            // Get the error message from the array and do string substitution on the specifiers embedded in the string
+            $errorTemplate = $this->_customValidationErrorMessage[$error];
+            
+            $specifiers = array('%f', '%v');
+            $specifierExpansions = array($userFriendlyName, $invalidValue);
+            
+            $errorMessage = str_replace($specifiers, $specifierExpansions, $errorTemplate);
+        } else {
+            $errorMessage = "$userFriendlyName failed a validation: $error";
+        }
+        
+        return $errorMessage;
     }
 }
