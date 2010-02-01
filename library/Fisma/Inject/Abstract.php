@@ -344,9 +344,23 @@ abstract class Fisma_Inject_Abstract
         if (isset($productData['cpeName'])) {
             $productRecordQuery->where('p.cpename = ?', $productData['cpeName']);
         } else {
-            $productRecordQuery->where('p.name = ?', $productData['name'])
-                               ->andWhere('p.vendor = ?', $productData['vendor'])
-                               ->andWhere('p.version = ?', $productData['version']);
+            if (empty($productData['name'])) {
+                $productRecordQuery->andWhere('p.name IS NULL');
+            } else {
+                $productRecordQuery->andWhere('p.name = ?', $productData['name']);
+            }
+            
+            if (empty($productData['vendor'])) {
+                $productRecordQuery->andWhere('p.vendor IS NULL');
+            } else {
+                $productRecordQuery->andWhere('p.vendor = ?', $productData['vendor']);
+            }
+
+            if (empty($productData['version'])) {
+                $productRecordQuery->andWhere('p.version IS NULL');
+            } else {
+                $productRecordQuery->andWhere('p.version = ?', $productData['version']);
+            }
         }
 
         $productRecord = $productRecordQuery->execute();
