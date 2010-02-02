@@ -325,15 +325,6 @@ class UserController extends BaseController
 
                 $message = "Notification events modified successfully";
                 $model   = 'notice';
-                if ($modified['notifyEmail']) {
-                    $mail = new Fisma_Mail();
-                    if ($mail->validateEmail($user, $modified['notifyEmail'])) {
-                        $message .= ", and a validation email has sent to your new notify email";
-                    } else {
-                        $message .= ", but the validation e-mail could not be sent to your new address.";
-                        $model = 'warning';
-                    }
-                }
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
                 $message = $e->getMessage();
