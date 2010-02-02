@@ -3,12 +3,24 @@
   <start>
     <element name="nmaprun">
       <attribute name="args"/>
-      <attribute name="description"/>
-      <attribute name="nmap_output"/>
-      <attribute name="options"/>
-      <attribute name="profile"/>
-      <attribute name="profile_name"/>
-      <attribute name="scan_name"/>
+      <optional>
+        <attribute name="description"/>
+      </optional>
+      <optional>
+        <attribute name="nmap_output"/>
+      </optional>
+      <optional>
+        <attribute name="options"/>
+      </optional>
+      <optional>
+        <attribute name="profile"/>
+      </optional>
+      <optional>
+        <attribute name="profile_name"/>
+      </optional>
+      <optional>
+        <attribute name="scan_name"/>
+      </optional>
       <attribute name="scanner">
         <data type="NCName"/>
       </attribute>
@@ -16,10 +28,17 @@
         <data type="integer"/>
       </attribute>
       <attribute name="startstr"/>
-      <attribute name="target"/>
+      <optional>
+        <attribute name="target"/>
+      </optional>
       <attribute name="version">
         <data type="decimal"/>
       </attribute>
+      <optional>
+        <attribute name="xmloutputversion">
+          <data type="decimal"/>
+        </attribute>
+      </optional>
       <element name="scaninfo">
         <attribute name="numservices">
           <data type="integer"/>
@@ -42,9 +61,27 @@
           <data type="integer"/>
         </attribute>
       </element>
+      <zeroOrMore>
+        <choice>
+          <element name="taskbegin">
+            <attribute name="task"/>
+            <attribute name="time">
+              <data type="integer"/>
+            </attribute>
+          </element>
+          <element name="taskend">
+            <attribute name="task"/>
+            <attribute name="time">
+              <data type="integer"/>
+            </attribute>
+          </element>
+        </choice>
+      </zeroOrMore>
       <oneOrMore>
         <element name="host">
-          <attribute name="comment"/>
+          <optional>
+            <attribute name="comment"/>
+          </optional>
           <element name="status">
             <attribute name="state">
               <data type="NCName"/>
@@ -54,7 +91,9 @@
             <element name="address">
               <attribute name="addr"/>
               <attribute name="addrtype"/>
-              <attribute name="vendor"/>
+              <optional>
+                <attribute name="vendor"/>
+              </optional>
             </element>
           </oneOrMore>
           <element name="hostnames">
@@ -86,70 +125,106 @@
                   <attribute name="conf">
                     <data type="integer"/>
                   </attribute>
-                  <attribute name="extrainfo"/>
+                  <optional>
+                    <attribute name="extrainfo"/>
+                  </optional>
                   <attribute name="method">
                     <data type="NCName"/>
                   </attribute>
                   <attribute name="name">
                     <data type="NCName"/>
                   </attribute>
-                  <attribute name="product"/>
-                  <attribute name="version"/>
+                  <optional>
+                    <attribute name="ostype">
+                      <data type="NCName"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="product"/>
+                  </optional>
+                  <optional>
+                    <attribute name="version"/>
+                  </optional>
                 </element>
               </element>
             </zeroOrMore>
           </element>
-          <element name="os">
-            <zeroOrMore>
-              <element name="portused">
-                <attribute name="portid">
+          <optional>
+            <element name="os">
+              <zeroOrMore>
+                <element name="portused">
+                  <attribute name="portid">
+                    <data type="integer"/>
+                  </attribute>
+                  <attribute name="proto">
+                    <data type="NCName"/>
+                  </attribute>
+                  <attribute name="state">
+                    <data type="NCName"/>
+                  </attribute>
+                </element>
+              </zeroOrMore>
+              <zeroOrMore>
+                <element name="osclass">
+                  <attribute name="accuracy">
+                    <data type="integer"/>
+                  </attribute>
+                  <attribute name="osfamily"/>
+                  <optional>
+                    <attribute name="osgen"/>
+                  </optional>
+                  <attribute name="type"/>
+                  <attribute name="vendor"/>
+                </element>
+              </zeroOrMore>
+              <zeroOrMore>
+                <element name="osmatch">
+                  <attribute name="accuracy">
+                    <data type="integer"/>
+                  </attribute>
+                  <optional>
+                    <attribute name="line">
+                      <data type="integer"/>
+                    </attribute>
+                  </optional>
+                  <attribute name="name"/>
+                </element>
+              </zeroOrMore>
+              <optional>
+                <element name="osfingerprint">
+                  <attribute name="fingerprint"/>
+                </element>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <choice>
+              <element name="distance">
+                <attribute name="value">
                   <data type="integer"/>
                 </attribute>
-                <attribute name="proto">
-                  <data type="NCName"/>
-                </attribute>
-                <attribute name="state">
-                  <data type="NCName"/>
-                </attribute>
               </element>
-            </zeroOrMore>
-            <zeroOrMore>
-              <element name="osclass">
-                <attribute name="accuracy">
-                  <data type="integer"/>
-                </attribute>
-                <attribute name="osfamily"/>
-                <attribute name="osgen"/>
-                <attribute name="type"/>
-                <attribute name="vendor"/>
-              </element>
-            </zeroOrMore>
-            <zeroOrMore>
-              <element name="osmatch">
-                <attribute name="accuracy">
-                  <data type="integer"/>
-                </attribute>
-                <attribute name="name"/>
-              </element>
-            </zeroOrMore>
-          </element>
-          <element name="uptime">
-            <attribute name="lastboot"/>
-            <attribute name="seconds"/>
-          </element>
-          <element name="tcpsequence">
-            <attribute name="difficulty"/>
-            <attribute name="index"/>
-            <attribute name="values"/>
-          </element>
-          <element name="ipidsequence">
-            <attribute name="class"/>
-            <attribute name="values"/>
-          </element>
-          <element name="tcptssequence">
-            <attribute name="class"/>
-            <attribute name="values"/>
-          </element>
+              <group>
+                <element name="uptime">
+                  <attribute name="lastboot"/>
+                  <attribute name="seconds"/>
+                </element>
+                <element name="tcpsequence">
+                  <attribute name="difficulty"/>
+                  <attribute name="index"/>
+                  <attribute name="values"/>
+                </element>
+                <element name="ipidsequence">
+                  <attribute name="class"/>
+                  <attribute name="values"/>
+                </element>
+                <element name="tcptssequence">
+                  <attribute name="class"/>
+                  <attribute name="values"/>
+                </element>
+              </group>
+            </choice>
+          </optional>
         </element>
       </oneOrMore>
       <element name="runstats">
@@ -157,6 +232,9 @@
           <attribute name="time">
             <data type="integer"/>
           </attribute>
+          <optional>
+            <attribute name="timestr"/>
+          </optional>
         </element>
         <element name="hosts">
           <attribute name="down">
