@@ -171,6 +171,10 @@ class AssetController extends BaseController
         }
         $values = $form->getValues();
 
+        if (empty($values['productId'])) {
+            unset($values['productId']);
+        }
+
         $subject->merge($values);
         $subject->save();
     }
