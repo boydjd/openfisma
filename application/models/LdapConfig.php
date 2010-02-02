@@ -28,6 +28,14 @@
 class LdapConfig extends BaseLdapConfig
 {
     /**
+     * Hook into the constructor to map a value to store the LDAP URL
+     */
+    public function construct()
+    {
+        $this->mapValue('url');
+    }
+    
+    /**
      *  Retrive the ldap configuration(s)
      *
      *  @return array All the configurations of LDAP servers
