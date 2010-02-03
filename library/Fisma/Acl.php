@@ -60,6 +60,9 @@ class Fisma_Acl extends Zend_Acl
      * This method checks to see if the object has an ACL dependency on a particular organization, and adjusts the ACL
      * query accordingly.
      * 
+     * Privilege is allowed to contain a wildcard character, '*', which indicates that it could match ANY one of 
+     * multiple, similar privileges.
+     * 
      * @see Fisma_Acl_OrganizationDependency
      * 
      * @param string $privilege
@@ -68,21 +71,39 @@ class Fisma_Acl extends Zend_Acl
      */
     static public function hasPrivilegeForObject($privilege, $object)
     {
-        // Safety check: make sure that $object is actually an object
-        if (!is_object($object)) {
-            throw new Fisma_Exception("\$object is not an object");
-        }
-
         $user = Zend_Auth::getInstance()->getIdentity();
         $resourceName = Doctrine_Inflector::tableize(get_class($object));
+        $hasPrivilege = false;
 
-        // Handle objects with organization ACL dependency
-        if ($object instanceof Fisma_Acl_OrganizationDependency) {
-            $organizationId = $object->getOrganizationDependencyId();
-            $resourceName = "$organizationId/$resourceName";
+        if (!self::_privilegeContainsWildcard($privilege)) {
+
+            // Safety check: make sure that $object is actually an object
+            if (!is_object($object)) {
+                throw new Fisma_Exception("\$object is not an object");
+            }
+
+            // Handle objects with organization ACL dependency
+            if ($object instanceof Fisma_Acl_OrganizationDependency) {
+                $organizationId = $object->getOrganizationDependencyId();
+                $resourceName = "$organizationId/$resourceName";
+            }
+
+            $hasPrivilege = self::_isAllowed($user, $resourceName, $privilege);
+            
+        } else {
+
+            // Loop over all matching privileges and check them one-by-one to see if the user has any of them
+            $matchedPrivileges = self::_getPrivilegesForWildcard($resourceName, $privilege);
+            
+            foreach ($matchedPrivileges as $matchedPrivilege) {
+                if (self::hasPrivilegeForObject($matchedPrivilege, $object)) {
+                    $hasPrivilege = true;
+                    break;
+                }
+            }
         }
-
-        return self::_isAllowed($user, $resourceName, $privilege);
+        
+        return $hasPrivilege;
     }
     
     /**
@@ -103,22 +124,43 @@ class Fisma_Acl extends Zend_Acl
     /**
      * Check whether a user has a particular privilege on a class of objects
      * 
+     * Privilege is allowed to contain a wildcard character, '*', which indicates that it could match any one of 
+     * multiple privileges.
+     * 
      * @param string $privilege
      * @param string $className
      * @return bool
      */
     static public function hasPrivilegeForClass($privilege, $className)
     {
-        // Safety check: make sure that $className is an actual class
-        if (!class_exists($className)) {
-            $message = "Privilege check failed for class '$className' because the class could not be found";
-            throw new Fisma_Exception($message);
-        }
-        
         $user = Zend_Auth::getInstance()->getIdentity();
         $resourceName = Doctrine_Inflector::tableize($className);
+        $hasPrivilege = false;
 
-        return self::_isAllowed($user, $resourceName, $privilege);
+        if (!self::_privilegeContainsWildcard($privilege)) {
+
+            // Safety check: make sure that $className is an actual class
+            if (!class_exists($className)) {
+                $message = "Privilege check failed for class '$className' because the class could not be found";
+                throw new Fisma_Exception($message);
+            }
+
+            $hasPrivilege = self::_isAllowed($user, $resourceName, $privilege);
+            
+        } else {
+            
+            // Loop over all matching privileges and check them one-by-one to see if the user has any of them
+            $matchedPrivileges = self::_getPrivilegesForWildcard($resourceName, $privilege);
+            
+            foreach ($matchedPrivileges as $matchedPrivilege) {
+                if (self::hasPrivilegeForClass($matchedPrivilege, $object)) {
+                    $hasPrivilege = true;
+                    break;
+                }
+            }            
+        }
+        
+        return $hasPrivilege;
     }
     
     /**
@@ -161,4 +203,40 @@ class Fisma_Acl extends Zend_Acl
             return false;
         }
     }
+    
+    /**
+     * Search for privileges matching a given resource and a privilege name which contains a wildcard '*' character
+     * 
+     * @param string $resource
+     * @param string $privilege
+     * @return array Array of matched privilege names
+     */
+    static private function _getPrivilegesForWildcard($resource, $privilege)
+    {
+        // Convert the * wildcard into a SQL % wildcard
+        $privilegeMatchString = str_replace('*', '%', $privilege);
+        
+        $privilegeQuery = Doctrine_Query::create()
+                          ->select('action')
+                          ->from('Privilege INDEXBY action')
+                          ->where('resource LIKE ?', $resource)
+                          ->andWhere('action LIKE ?', $privilegeMatchString)
+                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        
+        $resultSet = $privilegeQuery->execute();
+
+        return array_keys($resultSet);
+    }
+    
+    /**
+     * Returns true if the specified privilege name contains a wildcard character (*)
+     * 
+     * @param string $privilege
+     * @return bool
+     */
+    static private function _privilegeContainsWildcard($privilege)
+    {
+        return strpos($privilege, '*') !== false;
+    }
+    
 }

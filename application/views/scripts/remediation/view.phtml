@@ -19,14 +19,17 @@ function backToSearch(event) {
                                                             'onClickFunction' => 'backToSearch'));
             echo $backToSearchButton;
             
-            $discardButton = new Fisma_Yui_Form_Button_Link('discardChanges',
-                                                      array('value' => 'Discard Changes',
-                                                            'href' => '/panel/remediation/sub/view/id/' 
-                                                                      . $this->finding->id));
-            echo $discardButton;
+            // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
+            if (Fisma_Acl::hasPrivilegeForObject('update_*', $this->finding)) {
+                $discardChangesButtonConfig = array(
+                    'value' => 'Discard Changes',
+                    'href' => '/panel/remediation/sub/view/id/' . $this->finding->id
+                );
+                
+                echo new Fisma_Yui_Form_Button_Link('discardChanges', $discardChangesButtonConfig);
             
-            echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
-                                            array('label' => 'Save Changes'));
+                echo new Fisma_Yui_Form_Button_Submit('saveChanges', array('label' => 'Save Changes'));
+            }
         ?>
     </div>
     <div id="tabContainer">
