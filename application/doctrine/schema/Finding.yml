@@ -254,3 +254,4 @@ Finding:
             logCreateObject: true
             logUpdateField: true
             logDeleteObject: true
+        SoftDelete: true
