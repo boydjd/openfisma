@@ -77,8 +77,6 @@ class Version20 extends Doctrine_Migration_Base
              'foreignTable' => 'xref',
              )
         );
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     public function down()
@@ -89,7 +87,5 @@ class Version20 extends Doctrine_Migration_Base
         $this->dropForeignKey('finding_cve', 'finding_cve_cve_id_cve_id');
         $this->dropForeignKey('finding_xref', 'finding_xref_finding_id_finding_id');
         $this->dropForeignKey('finding_xref', 'finding_xref_xref_id_xref_id');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }

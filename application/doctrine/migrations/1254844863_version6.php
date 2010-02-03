@@ -41,8 +41,6 @@ class Version6 extends Doctrine_Migration_Base
             'integer', 
             array('unsigned' => false)
         );
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
     
     /**
@@ -59,7 +57,5 @@ class Version6 extends Doctrine_Migration_Base
             'integer', 
             array('unsigned' => true)
         );
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }

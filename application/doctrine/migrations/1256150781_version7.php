@@ -37,7 +37,6 @@ class Version7 extends Doctrine_Migration_Base
     public function up()
     {
         $this->addColumn('finding', 'modifiedts', 'timestamp');
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**
@@ -48,7 +47,5 @@ class Version7 extends Doctrine_Migration_Base
     public function down()
     {
         $this->removeColumn('finding', 'modifiedts');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }

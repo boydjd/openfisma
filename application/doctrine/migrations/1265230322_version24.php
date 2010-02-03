@@ -35,8 +35,6 @@ class Version24 extends Doctrine_Migration_Base
     public function up()
     {
         $this->addColumn('finding', 'deleted_at', 'timestamp', '25', array('default' => '', 'notnull' => ''));
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**

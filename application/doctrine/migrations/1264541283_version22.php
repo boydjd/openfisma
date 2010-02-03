@@ -60,9 +60,6 @@ class Version22 extends Doctrine_Migration_Base
         $updateDocumentEvent->save();
 
         Doctrine_Manager::connection()->commit();
-
-        // Regenerate models
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**

@@ -183,8 +183,6 @@ class Version19 extends Doctrine_Migration_Base
              ),
              )
         );
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     public function down()
@@ -197,7 +195,5 @@ class Version19 extends Doctrine_Migration_Base
         $this->dropTable('xref');
         $this->removeColumn('finding', 'cvssbasescore');
         $this->removeColumn('finding', 'cvssvector');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }

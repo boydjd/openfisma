@@ -34,8 +34,6 @@ class Version23 extends Doctrine_Migration_Base
     {
         $this->removeColumn('user', 'currentloginip');
         $this->removeColumn('user', 'oldfailurecount');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**

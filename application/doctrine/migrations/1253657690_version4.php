@@ -37,8 +37,6 @@ class Version4 extends Doctrine_Migration_Base
     public function up()
     {
         $this->changeColumn('finding_evaluation', 'comment', null, 'string');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
     
     /**
@@ -49,7 +47,5 @@ class Version4 extends Doctrine_Migration_Base
     public function down()
     {
         $this->changeColumn('finding_evaluation', 'comment', 255, 'string');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }

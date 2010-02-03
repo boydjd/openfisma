@@ -133,6 +133,13 @@ try {
         print "Removing Sample Data build directory\n";
         Fisma_FileSystem::recursiveDelete($sampleDataBuildPath);
     }
+
+    // If running migrations, then generate models also
+    if (in_array('migrate', $_SERVER['argv'])) {
+        print "Regenerating models because you ran migration.\n";
+        $modelOptions = $configuration['generate_models_options'];
+        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'), $modelOptions);
+    }
     
     $stopTime = time();
     print("Elapsed time: " . ($stopTime - $startTime) . " seconds\n");

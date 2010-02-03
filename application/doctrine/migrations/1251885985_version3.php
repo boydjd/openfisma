@@ -40,8 +40,6 @@ class Version3 extends Doctrine_Migration_Base
         $this->renameColumn('ldap_config', 'domainshort', 'accountdomainnameshort');
         $this->renameColumn('ldap_config', 'accountfilter', 'accountfilterformat');
         $this->renameColumn('ldap_config', 'accountcanonical', 'accountcanonicalform');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 
     /**
@@ -57,7 +55,5 @@ class Version3 extends Doctrine_Migration_Base
         $this->renameColumn('ldap_config', 'accountdomainnameshort', 'domainshort');
         $this->renameColumn('ldap_config', 'accountfilterformat', 'accountfilter');
         $this->renameColumn('ldap_config', 'accountcanonicalform', 'accountcanonical');
-
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
     }
 }

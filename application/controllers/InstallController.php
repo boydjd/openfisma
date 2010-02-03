@@ -256,7 +256,11 @@ class InstallController extends Zend_Controller_Action
             $method = 'creation';
             Doctrine::createDatabases();
             $checklist['creation'] = 'ok';
-            Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'));
+            
+            $doctrineConfiguration = Zend_Registry::get('doctrine_config');
+            $modelOptions = $doctrineConfiguration['generate_models_options'];
+            Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'), $modelOptions);
+            
             Doctrine::createTablesFromModels(Fisma::getPath('model'));
 
             //load sample data
