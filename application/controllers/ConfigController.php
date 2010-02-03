@@ -137,13 +137,17 @@ class ConfigController extends SecurityController
      */
     public function ldaplistAction()
     {
-        $ldaps = Doctrine::getTable('LdapConfig')->findAll();
-        // @see http://jira.openfisma.org/browse/OFJ-30
-        foreach ($ldaps as $ldap) {
-            $ldap->password = '********';
-            $ldap->url = $this->_makeLdapUrl($ldap);
+        $ldapCollection = Doctrine::getTable('LdapConfig')->findAll();
+
+        // @see http://jira.openfisma.org/browse/OFJ-30        
+        $ldapArray = $ldapCollection->toArray();
+        
+        foreach ($ldapArray as &$ldap) {
+            $ldap['password'] = '********';
+            $ldap['url'] = $this->_makeLdapUrl($ldap);
         }
-        $this->view->assign('ldaps', $ldaps->toArray());
+
+        $this->view->assign('ldaps', $ldapArray);
     }
 
     /**
