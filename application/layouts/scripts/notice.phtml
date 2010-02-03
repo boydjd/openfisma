@@ -4,13 +4,17 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <?php
             echo $this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
-            Fisma_Yui::includeLibrary('yahoo-dom-event');
-            Fisma_Yui::includeLibrary('element');
-            Fisma_Yui::includeLibrary('button');    
-            echo Fisma_Yui::printIncludes();
-            echo $this->headLink()->appendStylesheet('/yui/assets/skins/sam/skin.css')
-                                  ->appendStylesheet('/stylesheets/main.css', 'screen,print')
-                                  ->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
+
+            $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'button');
+
+            $yui = new Fisma_Loader();
+            $yui->load($yuiComponents);
+            $this->injectAsset('/stylesheets/combined.css', 'css', true);
+            $this->headLink()->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
+
+            echo $yui;
+            echo $this->headLink();
+            echo $this->headScript();
         ?>
     </head>
     <body class="yui-skin-sam">

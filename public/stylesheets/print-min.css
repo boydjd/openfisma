@@ -1,0 +1,13 @@
+span#logoutButton{visibility:hidden;}
+div#menubar{display:none;}
+div.externalMediaMarking{clear:both;display:block;border:1px solid black;padding:1em;}
+div.toolbar{display:none;}
+ul.yui-nav{display:none;}
+div.yui-content{clear:both;}
+.yui-skin-sam .yui-navset .yui-content{background:white;padding:0;border:none;}
+.yui-navset .yui-content .yui-hidden{visibility:visible;position:static;}
+div.sectionHeader{clear:both;color:black;background:#eee;border:1px solid black;border-bottom:none;}
+div.section{color:black;border:1px solid black;border-top:none;}
+table.searchFilters{display:none;}
+.editable{background-image:none;}
+div#footer{display:none;}

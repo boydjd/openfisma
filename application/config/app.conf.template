@@ -47,7 +47,10 @@ db.username = ##DB_USER##
 db.password = ##DB_PASS##
 db.schema = ##DB_NAME##
 
-; The test DB is used for unit tests. It should be different from the main DB since the unit tests will
+version.app = 2.5.0
+version.yui = 2.7.0
+
+s The test DB is used for unit tests. It should be different from the main DB since the unit tests will
 ; destory any data in this DB. It's left blank by default to avoid accidentaly running tests against the main DB.
 testdb.adapter = 
 testdb.host = 

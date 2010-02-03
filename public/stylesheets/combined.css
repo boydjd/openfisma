@@ -1,0 +1,551 @@
+/* @override http://localhost/stylesheets/main.css */
+/*******************************************************************************
+ *
+ * main.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * The main style sheet for OpenFISMA. This includes all of the non-YUI,
+ * foundational styles.
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
+
+#skip a, #skip a:hover, #skip a:visited {
+    position: absolute;
+    left: 0px;
+    top: -500px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+#skip a:active, #skip a:focus {
+    position: static;
+    width: auto;
+    height: auto;
+}
+
+/* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
+ * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
+ * when this style sheet is loaded.
+ */
+em {
+    font-weight: bold;
+}
+
+ul li {
+    display: list-item;
+    list-style: disc outside;
+    margin-left: 35px;
+    text-align: left;
+}
+
+ol li {
+    display: list-item;
+    list-style: decimal outside;
+    margin-left: 35px;
+    text-align: left;
+}
+
+p {
+    margin: 10px 8px;
+}
+
+h1 {
+    font-size: large;
+    font-weight: bold;
+}
+
+/* This next section contains application-specific styles. Each style should
+   be named for what it *does*, and not what it *looks like*. This standard
+   improves application maintenance. */
+
+/* Create some space around the body content */
+body {
+	padding: 10px;
+	text-align: left;
+}
+
+/* The logo is floated to the left */
+div#logo {
+    float: left;
+    margin-bottom: 10px;
+}
+
+/* The logout form is floated to the right and 
+   moved down a bit from the corner. */
+div#logout {
+    float: right;
+    text-align: right;
+    margin-top: 10px;
+}
+
+div#logout p {
+    margin-top: 8px;
+}
+
+/* Styling for the menubar. The min-height reserves the space required for the menubar while it loads. */
+div#menubar {
+    clear: both;
+    font-weight: bold;
+    min-height: 25px;
+    background-color: #d3d3d3;
+}
+
+/* This class is used to mark elements which should only be applied when data is transferred to 
+   external media, such as a print out. By default, these items are hidden. @see print.css */
+div.externalMediaMarking {
+    display: none;
+}
+
+/* The content area is the middle of the page in between the header and the footer */
+div#content {
+	margin: 10px 0px;
+}
+
+/* Sections are used to divide long pages up into separate and distinct content blocks. */
+div.sectionHeader {
+	margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+}
+
+div.sectionHeader a {
+    color: white;
+}
+
+div.section {
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    position: relative;
+    height: 100%;
+    margin-bottom: 0px;
+}
+
+/* Panels are a subdivision of the sections */
+div.panel {
+    border: 1px solid #d3d3d3;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+/* 
+These definitions provide an easy method for creating columns.
+For example, two columns can be arranged like this:
+<div class="column left"></div> 
+<div class="column right"></div>
+<div class="clear"></div>
+*/
+div.column {
+	width: 49%;
+	margin-bottom: 0px;
+}
+
+div.left {
+    float: left;
+}
+
+div.right {
+    float: right;
+}
+
+div.clear {
+    clear: both;
+}
+
+/* Used to display a stacktrace. Traces might be long so the paragraph needs to be able to scroll horizontally. */
+p.stacktrace {
+    margin: 10px;
+    border: 1px solid #d3d3d3;
+    #ffffff-space: pre;
+    font-family: monospace;
+    overflow: auto;
+    white-space: pre-wrap;
+}
+
+/* Provide some whitespace at the bottom of the page. */
+div#footer {
+    margin: 10px 0px;
+    padding: 3px;
+}
+
+/* The footer links are aligned in the bottom-right corner */
+div#footerLinks {
+    float: right;
+}
+
+/* Used to display search criteria & filters at the top of various pages */
+.searchFilters {
+	text-align: center;
+    background-color: #ebebeb;
+    margin: 10px auto;
+    border: 1px solid #cecece;
+    padding: 5px 10px;
+}
+
+.searchField {
+    position: relative;
+    top: 3px;
+}
+.searchFilters select {
+    margin-right: 10px;
+}
+
+/* This table is used to display key-value pairs, such as on the remediation
+   detail page. */
+table.keyValues td {
+    padding: 2px 5px;
+    vertical-align: top;
+}
+
+/* The first column in a keyValues table is bold text */
+table.keyValues td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+/* This style is used for displaying audit log tables. */
+table.auditLog {
+	width: 100%;
+    background-color: #ffffff;
+}
+
+table.auditLog th {
+    font-weight: bold;
+}
+
+table.auditLog th, table.auditLog td {
+	border: 1px solid #cecece;
+	padding: 3px;
+}
+
+/* A container for holding a row of buttons */
+div.toolbar {
+    margin-bottom: 10px;
+}
+
+/* This style is used to create a field which is editable on the finding detail page. It displays an edit icon (a
+ * pencil) and the element which uses this class should also set a target attribute which contains the id of the
+ * element which needs to become editable.
+ */
+.editable {
+    background: url(/images/edit.png) no-repeat top right;
+    padding-right: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+/* These styles are used on the remediation detail page to indicate approval status and comments */
+div.approval {
+    background-color: #efefef;
+    border: 1px solid #cecece;
+    padding: 3px;
+    margin-bottom: 10px;
+}
+
+div.approvalHeader {
+    background-color: #cecece;
+    border: 1px solid #cecece;
+    padding: 3px 8px;
+}
+
+div.approvalStep {
+    border-top: 2px dashed #cecece;
+}
+
+div.approvalStep:first-child {
+    border-top: none;
+}
+
+div.approval b {
+    margin-right: 10px;
+}
+
+div.approval span.approved {
+    background-color: lightGreen;
+    padding: 3px;
+}
+
+div.approval span.denied {
+    background-color: #ffcccc;
+    padding: 3px;
+}
+
+/* This is the standard style for the basic CRUD forms such as users, systems,
+   finding sources, etc.
+*/
+div.form {
+
+}
+
+div.formValue {
+    background-color: #ffffff;
+    border: 1px solid #bebebe;
+    padding: 5px;
+    color: black;
+    font-weight: normal;
+}
+
+div.subform {
+    margin: 15px 0px;
+    float: left;
+}
+
+table.fisma_crud {
+    margin: 0px 15px;
+    background-color: #f0f0f0;
+    border: 1px dotted #c0c0c0;
+}
+
+table.fisma_crud tr td, table.fisma_crud tr td input {
+    font-family: 'Verdana', 'Arial', 'Helvetica';
+    color: #404040;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 3px 5px;
+}
+
+/* 
+This class indicates that the item should have a tooltip associated with it.
+The tooltip itself is added with YUI.
+*/
+span.tooltip {
+	padding: 0px 2px 2px 22px;
+	background: url(/images/tooltip.png) no-repeat;
+	cursor: help;
+}
+
+/* This is the style for the tooltip itself. The style must be marked !important
+   so that YUI won't override it.
+*/
+.yui-tt .bd {
+    border: none ! important;
+    background-color: #f0f0f0 ! important;
+    opacity: .9 ! important;
+}
+
+.yui-tt-shadow-visible {
+	top: -5px ! important;
+	left: -5px ! important;
+	bottom: -5px ! important;
+	right: -5px ! important;
+    background-color: orange ! important;
+    opacity: 0.5 ! important;
+}
+
+table.fisma_crud tr td:first-child {
+    text-align: right;
+    background-repeat: no-repeat;
+}
+
+
+table.fisma_crud ul li {
+    text-align: left;
+    list-style: none;
+    padding-top:2px;
+}
+
+/* This is used for Rules of Behavior, Privacy Policy, etc. */
+div.notice p {
+    text-align:left;
+    padding: 5px 20px;
+}
+
+/* This is the style for highlight the search keyword. */
+.highlight {
+    background-color: yellow;
+}
+
+#help_tips{
+    cursor:help;
+    position:relative;
+    top:4px;
+}
+
+/* add bgcolor to all row */
+tr.alt td { 
+    background:#ecf6fc;
+}
+    
+/* add bgcolor when mouseover */
+tr.over td { 
+    background:#bcd4ec;
+} 
+
+/* The notice styles are used for things like the privacy policy, rules of behavior, etc. Sometimes these items
+ * are presented outside of any main layout, so they need to be able to stand on their own.
+ */
+.notice {
+    font-size: 12px;
+    width: 60%;
+    margin: 2em auto;
+    border: 1px solid #bebebe;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+.notice p {
+    padding: 0px 5px;
+}
+
+.notice h1 {
+    text-align: left;
+    padding: 5px 5px;
+    color: #44637a;
+    background-color: #dddddd;
+    line-height: 23px;
+    font-weight: bold;
+    margin-top: 0;
+}
+
+/* The message bar is used to present feedback on user actions, such as indications
+ * of success or failure. 
+ */
+div#msgbar {
+    border: 1px solid red;
+    background-color: pink;
+    margin-top: 10px;
+    text-align: center;
+    padding: 3px;
+    display: none;
+}
+
+/* This style adds a loading graphic to the YUI tab view */
+.yui-navset div.loading div {
+    background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;
+    height:8em; /* hold some space while loading */
+}
+
+/* The following styles are for the organization tree view icons */
+.agency {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/agency-small.png) no-repeat;
+}
+
+.bureau {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/bureau-small.png) no-repeat;
+}
+
+.organization {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/organization-small.png) no-repeat;
+}
+
+.gss {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/gss-small.png) no-repeat;
+}
+
+.major {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/major-small.png) no-repeat;
+}
+
+.minor {
+	display:block;
+	padding-left: 20px; 
+	background: url(/images/minor-small.png) no-repeat;
+}
+
+/* 
+Styles for displaying system documentation
+*/
+table.systemDocuments {
+    border: 1px solid lightgrey;
+}
+
+table.systemDocuments th {
+    font-weight: bold;
+    padding: 10px;
+    background: lightgrey;
+}
+
+table.systemDocuments td {
+    padding: 10px;
+    margin-top: 10px;
+}
+
+table.systemDocuments td:first-child:hover {
+    border: 1px solid orange;
+    background-color: #fff0c5;
+    margin-top: 10px;
+}
+
+table.systemDocuments td a {
+    color: black;
+}
+
+table.systemDocuments td img {
+	float: left;
+	margin-right: 10px;
+}
+
+#testEmailRecipient {
+    /* Styles for displaying the element of email recipinent */
+    height: 20px;
+    width: 220px;
+    margin-left: 10px;
+}
+
+input#product.yui-ac-input {
+    position: relative;
+}
+
+div#product_ac_container {
+    position: relative;
+    top: 0px;
+    width: 234px;
+}
+
+div.yui-ac-content[style] {
+    height: auto !important;
+    width: auto !important;
+    margin-top: 5px;
+}
+
+div.yui-ac-bd {
+    overflow: auto;
+    overflow-x: hidden;
+    height: auto !important;
+    max-height: 200px;
+}
+
+.yui-ac-content ul {
+    margin-right: 20px !important;
+}
