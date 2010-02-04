@@ -482,45 +482,40 @@ class RemediationController extends SecurityController
         Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
         
         $params = $this->_parseCriteria();
+        
+        // These variables go into the search view
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/remediation/search2' . $link);
         Fisma_Cookie::set('lastSearchUrl', "/panel/remediation/sub/searchbox$link");
         $this->view->assign('columns', $this->_getColumns());
-        $this->view->assign('pageInfo', $this->_paging);
-        $this->render();
-    }
-    
-    /**
-     * Accept the criterias dealt by parseCriteria method,
-     * return the values to advance search page or basic search page.
-     * when the criterias cantain the param 'keywords',
-     * then this method will render the basic search box,
-     * else render the advance search box
-     *
-     * Basic search url would be 
-     * /panel/remediation/sub/searchbox/s/search/responsibleOrganizationId/1/type/CAP/status/DRAFT...
-     * Advanced search url would be /panel/remediation/sub/searchbox/s/search/keywords/firewal
-     * User use advanced search to search the basic search results,the url would be 
-     *  /panel/remediation/sub/searchbox/s/search/keywords/firewal/responsibleOrganizationId/1/type/CAP...
-     * 
-     * @return void
-     */
-    public function searchboxAction()
-    {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
-                
-        $params = $this->_parseCriteria();
-        $this->view->assign('params', $params);
+
+        // These variables go into the search box view
         $systemList = array();
         foreach ($this->_organizations as $system) {
             $systemList[$system->id] = "$system->nickname - $system->name";
         }
         asort($systemList);
+        $this->view->assign('params', $params);
         $this->view->assign('systems', $systemList);
         $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
-        $this->_helper->actionStack('search', 'Remediation');
-        $this->render();
+        $this->view->assign('pageInfo', $this->_paging);
+
+        $this->render('searchbox');
+        $this->render('search');
+    }
+    
+    /**
+     * This is is a stub provided for compatibility purposes in response to OFJ-464.
+     * 
+     * @todo remove me in 2.6+
+     * 
+     * @return void
+     */
+    public function searchboxAction()
+    {
+        $this->_helper->viewRenderer->setNoRender();
+        $this->_forward('search');
     }
     
     /**
