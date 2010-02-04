@@ -325,7 +325,7 @@ class Fisma
          * Set up the cache driver and connect to the manager.
          * Make sure that we only cache in web app mode, and that the application is installed.
          **/
-        if (function_exists('apc_fetch') && self::isInstall() && self::mode() == RUN_MODE_WEB_APP) {
+        if (function_exists('apc_fetch') && self::isInstall() && self::mode() == self::RUN_MODE_WEB_APP) {
             $cacheDriver = new Doctrine_Cache_Apc();
             $manager->setAttribute(Doctrine::ATTR_QUERY_CACHE, $cacheDriver);
         }
