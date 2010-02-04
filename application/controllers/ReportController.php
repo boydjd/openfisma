@@ -90,12 +90,18 @@ class ReportController extends SecurityController
      */
     public function getNextQuarterlyFismaReportDate()
     {
+        // OFJ-463 Due to a bug in ZF we need to temporarily modify the date format while running this method
+        $currentDateOptions = Zend_Date::setOptions();
+        $currentDateFormat = $currentDateOptions['format_type'];
+        Zend_Date::setOptions(array('format_type' => 'iso'));
+        
         // The quarterly reports are due on 3/1, 6/1, 9/1 and 12/1
         $reportDate = new Zend_Date();
         if (1 == (int)$reportDate->getDay()->toString('d')) {
             $reportDate->subMonth(1);
         }
         $reportDate->setDay(1);
+
         switch ((int)$reportDate->getMonth()->toString('m')) {
             case 12:
                 $reportDate->addYear(1);
@@ -119,6 +125,10 @@ class ReportController extends SecurityController
                 $reportDate->setMonth(12);
                 break;
         }
+        
+        // OFJ-463 Continued from above
+        Zend_Date::setOptions(array('format_type' => $currentDateFormat));
+        
         return $reportDate;
     }
 
