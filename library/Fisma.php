@@ -320,6 +320,13 @@ class Fisma
          * @todo We want to enable VALIDATE_ALL in release 2.6
          */
         $manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_CONSTRAINTS);
+
+        // Set up the cache driver and connect to the manager
+        if (function_exists('apc_fetch')) {
+            $cacheDriver = new Doctrine_Cache_Apc();
+            $manager->setAttribute(Doctrine::ATTR_QUERY_CACHE, $cacheDriver);
+        }
+
         Zend_Registry::set(
             'doctrine_config', 
             array(
