@@ -19,10 +19,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
                                       array('value' => 'Export PDF', 
                                             'href' => "/asset/search$this->url/format/pdf",
                                             'imageSrc' => '/images/pdf.gif'));
-        echo new Fisma_Yui_Form_Button_Link('xls',
-                                      array('value' => 'Export Excel', 
-                                            'href' => "/asset/search$this->url/format/xls", 
-                                            'imageSrc' => '/images/xls.gif'));
+
         if (Fisma_Acl::hasPrivilegeForClass('delete', 'Asset')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('label' => 'Select All', 

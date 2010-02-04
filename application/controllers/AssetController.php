@@ -81,14 +81,6 @@ class AssetController extends BaseController
                 )
             );
         }
-        if (!$swCtx->hasContext('xls')) {
-            $swCtx->addContext(
-                'xls', 
-                array(
-                    'suffix' => 'xls'
-                )
-            );
-        }
     }
 
     /**
