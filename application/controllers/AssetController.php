@@ -96,8 +96,7 @@ class AssetController extends BaseController
         $swCtx->addActionContext(
             'search', 
             array(
-                'pdf',
-                'xls'
+                'pdf'
             )
         );
         $swCtx->initContext();
