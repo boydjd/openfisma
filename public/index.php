@@ -49,3 +49,4 @@ try {
              . '</pre></p>';
     }
 }
+Zend_Session::writeClose(true);
