@@ -37,10 +37,16 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      */
     public function getConfig($name) 
     {
-        $config = Doctrine::getTable('Configuration')->findOneByName($name);
+        $cache = Fisma::getCacheManager()->getCache('default');
 
-        if (!$config) {
-            throw new Fisma_Exception_Config("Invalid configuration name: $name");
+        if (!$config = $cache->load('configuration_' . $name)) {
+            $config = Doctrine::getTable('Configuration')->findOneByName($name);
+
+            if (!$config) {
+                throw new Fisma_Exception_Config("Invalid configuration name: $name");
+            }
+
+            $cache->save($config, 'configuration_' . $name);
         }
             
         return $config->value;
@@ -65,5 +71,10 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
         
         $config->value = $value;
         $config->save();
+
+        $cache = Fisma::getCacheManager()->getCache('default');
+        if ($dirtyConfig = $cache->load('configuration_' . $name)) {
+            $cache->remove('configuration_' . $name);
+        }
     }
 }

@@ -129,10 +129,16 @@ class Fisma
 
     /**
      * A single instance of Zend_Cache which the application components share
-     * 
+     *
+     * @todo Move into the cache manager 
      * @var Zend_Cache
      */
     private static $_cache;
+
+    /**
+     * A single instance of Zend_Cache_Manager which the application components share 
+     */
+    private static $_cacheManager;
     
     /**
      * A flag that indicates whether the Fisma system has been installed yet
@@ -611,6 +617,49 @@ class Fisma
             );
         }
         return self::$_cache;
+    }
+
+    /**
+     * Initialize the cache manager 
+     * 
+     * If APC is available, create an APC cache, if it's not, use a file cache.
+     *
+     * @return Zend_Cache_Manager 
+     */
+    public static function getCacheManager()
+    {
+        if (null === self::$_cacheManager) {
+            $manager = new Zend_Cache_Manager();
+
+            $frontendOptions = array(
+                'caching' => true,
+                'lifetime' => 0,
+                'automatic_serialization' => true
+            );
+
+            if (function_exists('apc_fetch')) {
+                $cache = Zend_Cache::factory(
+                    'Core',
+                    'Apc',
+                    $frontendOptions
+                );
+            } else {
+                $backendOptions = array(
+                    'cache_dir' => Fisma::getPath('cache'),
+                );
+                $cache = Zend_Cache::factory(
+                    'Core',
+                    'File',
+                    $frontendOptions,
+                    $backendOptions
+                );
+            }
+
+            $manager->setCache('default', $cache);
+            self::$_cacheManager = $manager;
+        }
+
+        return self::$_cacheManager;
     }
 
     /**
