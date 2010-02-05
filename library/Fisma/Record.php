@@ -59,6 +59,7 @@ class Fisma_Record extends Doctrine_Record
     private $_customValidationErrorMessage = array(
         'country' => '%f does not a valid country code (%v)',
         'date' => '%f contains an invalid date (%v)',
+        'Fisma_Validator_Ip' => '%f is not a valid IPv4 or IPv6 address (%v)',
         'future' => '%f must be a future date (%v)',
         'email' => '%f does not contain a valid e-mail address (%v)',
         'notblank' => '%f is required',
@@ -107,8 +108,18 @@ class Fisma_Record extends Doctrine_Record
             $count = count($errorStack);
                         
             foreach ($errorStack as $field => $errors) {
-                foreach ($errors as $error) {                    
-                    $message = $this->_getCustomValidationErrorMessage($error, $field)
+                foreach ($errors as $error) {
+                    /**
+                     * Custom validators are returned as objects, not strings. So we need to convert objects into 
+                     * strings (by class name) so that a validation message can be generated
+                     */
+                    if (is_object($error)) {
+                        $errorName = get_class($error);
+                    } else {
+                        $errorName = $error;
+                    }
+                    
+                    $message = $this->_getCustomValidationErrorMessage($errorName, $field)
                              . "\n";
                 }
             }
