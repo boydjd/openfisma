@@ -34,13 +34,13 @@
     $this->systems = array('--Any--') + (array)$this->systems;
     $this->sources = array('--Any--') + (array)$this->sources;
 
-    $bookmarkUrl = 'http://' . Fisma::configuration()->getConfig('host_url') . '/panel/remediation/sub/searchbox/';
+    $bookmarkUrl = Fisma_Url::currentUrl();
 
     $flag = '';
     foreach ($this->params as $k => $value) {
         if (!empty($value) && $k != 'evidence_include') {
             $flag = 'true';
-            $bookmarkUrl .= $k . '/' . $value . '/';
+            $bookmarkUrl .= "/$k/$value";
         }
     }
 ?>
