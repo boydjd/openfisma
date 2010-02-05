@@ -549,3 +549,137 @@ div.yui-ac-bd {
 .yui-ac-content ul {
     margin-right: 20px !important;
 }
+/* @override http://localhost/stylesheets/TreeTable.css */
+/*******************************************************************************
+ *
+ * TreeTable.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * Tree tables are a graphical element which represents tree data in a table
+ * view. This is a homegrown element specifically for OpenFISMA. See the
+ * corresponsing TreeTable.js script.
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
+ 
+table.treeTable {
+    width: 100%;
+}
+
+table.treeTable th {
+	padding: 5px;
+	background-color: #fafafa;
+    border: 1px solid #bbb;
+    font-weight: bold;
+    text-align: center;
+}
+
+table.treeTable td {
+	padding: 5px;
+	background-color: #fafafa;
+    border: 1px solid #bbb;
+}
+
+table.treeTable td a {
+    color: black;
+}
+
+table.treeTable td:first-child a {
+    text-decoration: none;
+}
+
+table.treeTable div.link {
+	padding: 1px;    
+}
+
+table.treeTable div.link:hover {
+	padding: 0px;
+	border: 1px solid #ccc;
+	background-color: #f0f0f0;
+}
+
+table.treeTable td img.control {
+	margin: 6px 6px 6px 2px;
+	position: relative;
+	float: left;
+}
+
+table.treeTable td img.icon {
+	float: left;
+	margin-right: 6px;
+}
+
+table.treeTable td img#control {
+	padding: 5px;
+    border: 1px solid grey;
+}
+
+table.treeTable td.noDueDate {
+    text-align: center;
+}
+
+table.treeTable td.onTime {
+    background-color: #a6eba9;
+    text-align: center;
+}
+
+table.treeTable td.overdue {
+    background-color: #ffcbcf;
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.treeTable0 {
+    margin-left: 0em;
+}
+.treeTable1 {
+    margin-left: 1em;
+}
+.treeTable2 {
+    margin-left: 2em;
+}
+.treeTable3 {
+    margin-left: 3em;
+}
+.treeTable4 {
+    margin-left: 4em;
+}
+.treeTable5 {
+    margin-left: 5em;
+}
+.treeTable6 {
+    margin-left: 6em;
+}
+.treeTable7 {
+    margin-left: 7em;
+}
+.treeTable8 {
+    margin-left: 8em;
+}
+.treeTable9 {
+    margin-left: 9em;
+}
