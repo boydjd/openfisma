@@ -163,3 +163,11 @@ Configuration:
         name: host_url
         value: "https://openfisma.agency.gov:443"
         description: This is used to construct self-referencing URLs in non-HTTP contexts. The installer should overwrite this value.
+
+    app_version:
+        name: app_version
+        value: 2.5.0
+
+    yui_version:
+        name: yui_version
+        value: 2.7.0

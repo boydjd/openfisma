@@ -51,8 +51,8 @@ class Fisma_Loader
      */
     public function __construct($config = NULL)
     {
-        $this->_appVersion = Fisma::version();
-        $this->_yuiVersion = Fisma::yuiVersion();
+        $this->_appVersion = Fisma::configuration()->getConfig('app_version');
+        $this->_yuiVersion = Fisma::configuration()->getConfig('yui_version');
         $this->_debug = Fisma::debug();
 
         /**

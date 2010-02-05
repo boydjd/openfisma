@@ -386,7 +386,10 @@ class User extends BaseUser
          * http://framework.zend.com/issues/browse/ZF-2752
          */
         $registry = Zend_Registry::getInstance();
-        unset($registry['acl']);
+
+        if (!empty($registry['acl'])) {
+            unset($registry['acl']);
+        }
 
         $cache = Fisma::getCacheManager()->getCache('default');
         $cache->remove($this->username . '_acl');

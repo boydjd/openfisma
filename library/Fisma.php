@@ -500,38 +500,6 @@ class Fisma
     }
    
     /**
-     * Return application version from app.conf 
-     * 
-     * @return string 
-     */
-    public static function version()
-    {
-        if (!self::$_initialized) {
-            throw new Fisma_Exception('The Fisma object has not been initialized.');
-        }
-
-        $version = self::$_appConf->version->toArray();
-
-        return $version['app'];
-    }
-
-    /**
-     * Return YUI version from app.conf
-     * 
-     * @return string 
-     */
-    public static function yuiVersion()
-    {
-        if (!self::$_initialized) {
-            throw new Fisma_Exception('The Fisma object has not been initialized.');
-        }
-
-        $version = self::$_appConf->version->toArray();
-
-        return $version['yui'];
-    }
-
-    /**
      * Returns the path to a special part of the application, based on the provided key. 
      * 
      * This is just a shortcut to find common paths, and allows us to move things around without needing

@@ -102,8 +102,12 @@ class View_Helper_InjectAsset
          * the path.
          */
         if (!Fisma::debug()) {
+            $appVersion = Fisma::configuration()->getConfig('app_version');
+
             foreach ($assets as &$asset) {
-                $asset = str_replace(".$type", "-min." . Fisma::version() . ".$type", $asset);
+                $asset = str_replace(
+                    ".$type", "-min." . $appVersion . ".$type", $asset
+                );
             }
         }
 
