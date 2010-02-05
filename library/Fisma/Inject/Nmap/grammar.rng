@@ -82,7 +82,22 @@
           <optional>
             <attribute name="comment"/>
           </optional>
+          <optional>
+            <attribute name="endtime">
+              <data type="integer"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="starttime">
+              <data type="integer"/>
+            </attribute>
+          </optional>
           <element name="status">
+            <optional>
+              <attribute name="reason">
+                <data type="NCName"/>
+              </attribute>
+            </optional>
             <attribute name="state">
               <data type="NCName"/>
             </attribute>
@@ -96,59 +111,126 @@
               </optional>
             </element>
           </oneOrMore>
-          <element name="hostnames">
-            <empty/>
-          </element>
-          <element name="ports">
-            <element name="extraports">
-              <attribute name="count">
-                <data type="integer"/>
-              </attribute>
-              <attribute name="state">
-                <data type="NCName"/>
-              </attribute>
+          <optional>
+            <element name="hostnames">
+              <empty/>
             </element>
-            <zeroOrMore>
-              <element name="port">
-                <attribute name="portid">
-                  <data type="integer"/>
-                </attribute>
-                <attribute name="protocol">
-                  <data type="NCName"/>
-                </attribute>
-                <element name="state">
+            <element name="ports">
+              <oneOrMore>
+                <element name="extraports">
+                  <attribute name="count">
+                    <data type="integer"/>
+                  </attribute>
                   <attribute name="state">
                     <data type="NCName"/>
                   </attribute>
+                  <optional>
+                    <element name="extrareasons">
+                      <attribute name="count">
+                        <data type="integer"/>
+                      </attribute>
+                      <attribute name="reason">
+                        <data type="NCName"/>
+                      </attribute>
+                    </element>
+                  </optional>
                 </element>
-                <element name="service">
-                  <attribute name="conf">
+              </oneOrMore>
+              <zeroOrMore>
+                <element name="port">
+                  <attribute name="portid">
                     <data type="integer"/>
                   </attribute>
-                  <optional>
-                    <attribute name="extrainfo"/>
-                  </optional>
-                  <attribute name="method">
+                  <attribute name="protocol">
                     <data type="NCName"/>
                   </attribute>
-                  <attribute name="name">
-                    <data type="NCName"/>
-                  </attribute>
-                  <optional>
-                    <attribute name="ostype">
+                  <element name="state">
+                    <optional>
+                      <attribute name="reason">
+                        <data type="NCName"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="reason_ttl">
+                        <data type="integer"/>
+                      </attribute>
+                    </optional>
+                    <attribute name="state">
                       <data type="NCName"/>
                     </attribute>
-                  </optional>
-                  <optional>
-                    <attribute name="product"/>
-                  </optional>
-                  <optional>
-                    <attribute name="version"/>
-                  </optional>
+                  </element>
+                  <element name="service">
+                    <attribute name="conf">
+                      <data type="integer"/>
+                    </attribute>
+                    <optional>
+                      <attribute name="extrainfo"/>
+                    </optional>
+                    <attribute name="method">
+                      <data type="NCName"/>
+                    </attribute>
+                    <attribute name="name"/>
+                    <optional>
+                      <attribute name="ostype">
+                        <data type="NCName"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="product"/>
+                    </optional>
+                    <optional>
+                      <attribute name="version"/>
+                    </optional>
+                  </element>
                 </element>
-              </element>
-            </zeroOrMore>
-          </element>
+              </zeroOrMore>
+            </element>
+          </optional>
+          <optional>
+            <element name="trace">
+              <optional>
+                <attribute name="port">
+                  <data type="integer"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="proto">
+                  <data type="NCName"/>
+                </attribute>
+              </optional>
+              <oneOrMore>
+                <element name="hop">
+                  <optional>
+                    <attribute name="host">
+                      <data type="NMTOKEN"/>
+                    </attribute>
+                  </optional>
+                  <attribute name="ipaddr">
+                    <data type="NMTOKEN"/>
+                  </attribute>
+                  <attribute name="rtt">
+                    <data type="decimal"/>
+                  </attribute>
+                  <attribute name="ttl">
+                    <data type="integer"/>
+                  </attribute>
+                </element>
+              </oneOrMore>
+            </element>
+          </optional>
+          <optional>
+            <element name="times">
+              <attribute name="rttvar">
+                <data type="integer"/>
+              </attribute>
+              <attribute name="srtt">
+                <data type="integer"/>
+              </attribute>
+              <attribute name="to">
+                <data type="integer"/>
+              </attribute>
+            </element>
+          </optional>
           <optional>
             <element name="os">
               <zeroOrMore>
@@ -229,6 +311,11 @@
       </oneOrMore>
       <element name="runstats">
         <element name="finished">
+          <optional>
+            <attribute name="elapsed">
+              <data type="decimal"/>
+            </attribute>
+          </optional>
           <attribute name="time">
             <data type="integer"/>
           </attribute>
