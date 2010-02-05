@@ -27,5 +27,18 @@
  */
 class RolePrivilege extends BaseRolePrivilege
 {
+    /**
+     * Invalidate ACL of affected users 
+     * 
+     * @param Doctrine_Event $event 
+     */
+    public function postSave($event)
+    {
+        $invoker = $event->getInvoker();
+        $role = Doctrine::getTable('Role')->find($invoker->roleId);
 
+        foreach ($role->Users as $user) {
+            $user->invalidateAcl();
+        }
+    }
 }

@@ -29,5 +29,15 @@
  */
 class UserOrganization extends BaseUserOrganization
 {
-
+    /**
+     * Invalidate ACL of affected user 
+     * 
+     * @param Doctrine_Event $event 
+     */
+    public function postSave($event)
+    {
+        $invoker = $event->getInvoker();
+        $affectedUser = Doctrine::getTable('User')->find($invoker->userId);
+        $affectedUser->invalidateAcl();
+    }
 }

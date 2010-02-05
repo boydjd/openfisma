@@ -294,68 +294,76 @@ class User extends BaseUser
             $classLoader = Zend_Loader_Autoloader::getInstance();
             $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
             $classLoader->suppressNotFoundWarnings(true);
-            
-            $acl = new Fisma_Acl();
-            
-            // For each role, add its privileges to the ACL
-            $roleArray = array();
-            foreach ($this->Roles as $role) {
-                // Roles are stored by role.nickname, e.g. "ADMIN", which are guaranteed to be unique
-                $newRole = new Zend_Acl_Role($role->nickname);
-                $acl->addRole($newRole);
-                $roleArray[] = $role->nickname;
-                
-                foreach ($role->Privileges as $privilege) {
-                    /**
-                     * Check whether this privilege corresponds to a class, and if it does, then check whether that
-                     * class has an organization dependency
-                     */
-                    $organizationDependency = false;
-                    $className = Doctrine_Inflector::classify($privilege->resource);
 
-                    if (class_exists($className)) {
-                        $reflection = new ReflectionClass($className);
-                        $organizationDependency = $reflection->implementsInterface('Fisma_Acl_OrganizationDependency');
-                    }
+            $cache = Fisma::getCacheManager()->getCache('default');
+
+            if (!$acl = $cache->load($this->username . '_acl')) {
+
+                $acl = new Fisma_Acl();
+            
+                // For each role, add its privileges to the ACL
+                $roleArray = array();
+                foreach ($this->Roles as $role) {
+                    // Roles are stored by role.nickname, e.g. "ADMIN", which are guaranteed to be unique
+                    $newRole = new Zend_Acl_Role($role->nickname);
+                    $acl->addRole($newRole);
+                    $roleArray[] = $role->nickname;
+                
+                    foreach ($role->Privileges as $privilege) {
+                        /**
+                         * Check whether this privilege corresponds to a class, and if it does, then check whether that
+                         * class has an organization dependency
+                         */
+                        $organizationDependency = false;
+                        $className = Doctrine_Inflector::classify($privilege->resource);
+
+                        if (class_exists($className)) {
+                            $reflection = new ReflectionClass($className);
+                            $organizationDependency = $reflection->implementsInterface(
+                                'Fisma_Acl_OrganizationDependency'
+                            );
+                        }
                     
-                    // If a privilege is organization-specific, then grant it as a nested resource within
-                    // that organization, otherwise, grant it directly to that resource.
-                    // e.g. Organization->Finding->Create versus Network->Create
-                    if ($organizationDependency) {
-                        // This is the cartesian join between roles and systems
-                        foreach ($this->Organizations as $organization) {
-                            // Fake hierarhical access control by storing system-specific attributes like this:
-                            // If the system nickname is "ABC" and the resource is called "finding", then the
-                            // resource stored in the ACL is called "ABC/finding"
-                            $systemResource = "$organization->id/$privilege->resource";
-                            if (!$acl->has($systemResource)) {
-                                $acl->add(new Zend_Acl_Resource($systemResource));
-                            }
-                            $acl->allow($newRole, $systemResource, $privilege->action);
+                        // If a privilege is organization-specific, then grant it as a nested resource within
+                        // that organization, otherwise, grant it directly to that resource.
+                        // e.g. Organization->Finding->Create versus Network->Create
+                        if ($organizationDependency) {
+                            // This is the cartesian join between roles and systems
+                            foreach ($this->Organizations as $organization) {
+                                // Fake hierarhical access control by storing system-specific attributes like this:
+                                // If the system nickname is "ABC" and the resource is called "finding", then the
+                                // resource stored in the ACL is called "ABC/finding"
+                                $systemResource = "$organization->id/$privilege->resource";
+                                if (!$acl->has($systemResource)) {
+                                    $acl->add(new Zend_Acl_Resource($systemResource));
+                                }
+                                $acl->allow($newRole, $systemResource, $privilege->action);
                             
-                            // The wildcard resources indicates whether a user has this privilege on *any* 
-                            // system. This is useful for knowing when to show certain user interface elements
-                            // like menu items.
-                            $wildcardResource = "$privilege->resource";
-                            if (!$acl->has($wildcardResource)) {
-                                $acl->add(new Zend_Acl_Resource($wildcardResource));
+                                // The wildcard resources indicates whether a user has this privilege on *any* 
+                                // system. This is useful for knowing when to show certain user interface elements
+                                // like menu items.
+                                $wildcardResource = "$privilege->resource";
+                                if (!$acl->has($wildcardResource)) {
+                                    $acl->add(new Zend_Acl_Resource($wildcardResource));
+                                }
+                                $acl->allow($newRole, $wildcardResource, $privilege->action); 
                             }
-                            $acl->allow($newRole, $wildcardResource, $privilege->action);                            
+                        } else {
+                            // Create a resource and grant it to the current role
+                            if (!$acl->has($privilege->resource)) {
+                                $acl->add(new Zend_Acl_Resource($privilege->resource));
+                            }
+                            $acl->allow($newRole, $privilege->resource, $privilege->action);
                         }
-                    } else {
-                        // Create a resource and grant it to the current role
-                        if (!$acl->has($privilege->resource)) {
-                            $acl->add(new Zend_Acl_Resource($privilege->resource));
-                        }
-                        $acl->allow($newRole, $privilege->resource, $privilege->action);
                     }
                 }
+
+                // Create a role for this user that inherits all of the roles created above
+                $userRole = new Zend_Acl_Role($this->username);
+                $acl->addRole($userRole, $roleArray);
             }
 
-            // Create a role for this user that inherits all of the roles created above
-            $userRole = new Zend_Acl_Role($this->username);
-            $acl->addRole($userRole, $roleArray);
-
+            $cache->save($acl, $this->username . '_acl');
             Zend_Registry::set('acl', $acl);
             
             // Reset class loader warning suppression to original setting
@@ -379,6 +387,9 @@ class User extends BaseUser
          */
         $registry = Zend_Registry::getInstance();
         unset($registry['acl']);
+
+        $cache = Fisma::getCacheManager()->getCache('default');
+        $cache->remove($this->username . '_acl');
     }
     
     /**
