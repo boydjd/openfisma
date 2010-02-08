@@ -93,31 +93,31 @@ class XssListener extends Fisma_Record_Listener
 
             // Whenever the configuration is modified, the definition rev needs to be incremented.
             // This prevents HTML Purifier from using a stale cach definition
-            $config->set('Cache', 'DefinitionImpl', null); // remove this later
-            $config->set('Core', 'Encoding', 'ASCII'); /** @todo utf8 */
-            $config->set('HTML', 'Doctype', 'HTML 4.01 Strict'); /** @todo put the purifier into the registry */
+            $config->set('Cache.DefinitionImpl', null); // remove this later
+            $config->set('Core.Encoding', 'ASCII'); /** @todo utf8 */
+            $config->set('HTML.Doctype', 'HTML 4.01 Strict'); /** @todo put the purifier into the registry */
 
             // Make sure to keep the following line in sync with Tiny MCE so users aren't surprised when their
             // data looks different before storage and after retreival.
-            $config->set('HTML', 'Allowed', 'a[href],p[style],br,b,i,strong,em,span[style],ul,li,ol,table,tr,th,td');
+            $config->set('HTML.Allowed', 'a[href],p[style],br,b,i,strong,em,span[style],ul,li,ol,table,tr,th,td');
             
             // Conform user submitted HTML to our doctype
-            $config->set('HTML', 'TidyLevel', 'medium'); 
+            $config->set('HTML.TidyLevel', 'medium'); 
 
             // Turn text URLS into <a> links
-            $config->set('AutoFormat', 'Linkify', true); 
+            $config->set('AutoFormat.Linkify', true); 
 
             // Remove tags which do not contain semantic information
-            $config->set('AutoFormat', 'RemoveEmpty', true); 
+            $config->set('AutoFormat.RemoveEmpty', true); 
 
             // Do not add HTML comments for browsers that don't understand scripts
-            $config->set('Output', 'CommentScriptContents', false); 
+            $config->set('Output.CommentScriptContents', false); 
             
             // Restrict what types of links users can create
-            $config->set('URI', 'AllowedSchemes', array('http','https','mailto')); 
+            $config->set('URI.AllowedSchemes', array('http','https','mailto')); 
 
             // Force links to use the OpenFISMA URL redirector
-            $config->set('URI', 'Munge', '/redirect/redirect/?url=%s'); 
+            $config->set('URI.Munge', '/redirect/redirect/?url=%s'); 
 
             self::$_purifier = new HTMLPurifier($config);
         } 
