@@ -665,7 +665,9 @@ class RemediationController extends SecurityController
                 throw new Fisma_Exception($message);
             }
 
-            $extension = end(explode(".", $file['name']));
+            $extension = explode('.', $file['name']);
+            $extension = end($extension);
+
             /** @todo cleanup */
             if (in_array(strtolower($extension), array('exe', 'php', 'phtml', 'php5', 'php4', 'js', 'css'))) {
                 $message = 'This file type is not allowed.';
