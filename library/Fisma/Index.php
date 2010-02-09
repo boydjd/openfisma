@@ -181,6 +181,7 @@ class Fisma_Index
         $ids = array();
     
         $this->_lastQuery = Zend_Search_Lucene_Search_QueryParser::parse($queryString);
+        $this->_lastQuery = $this->_lastQuery->rewrite($this->_lucene)->optimize($this->_lucene);
         $results = $this->_lucene->find($this->_lastQuery);
         foreach ($results as $result) {
             $ids[] = $result->getDocument()->id;
