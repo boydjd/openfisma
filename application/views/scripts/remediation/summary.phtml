@@ -186,21 +186,31 @@ print $exportPdf;
         <th colspan="<?php echo count($this->evidenceEvaluations); ?>">Approval</th>
     </tr>
     <tr>
-        <th>NEW</th>
-        <th>DRAFT</th>
-        <?php 
-            foreach ($this->mitigationEvaluations as $evaluation) {
-                print "<th>$evaluation->nickname</th>";
-            }
-        ?>
-        <th>EN</th>
-        <?php 
-            foreach ($this->evidenceEvaluations as $evaluation) {
-                print "<th>$evaluation->nickname</th>";
-            }
-        ?>        
-        <th>CLOSED</th>
-        <th>TOTAL</th>
+        <th><a href="<?php echo Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/NEW'); ?>">NEW</a></th>
+        <th>
+            <a href="<?php echo Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/DRAFT'); ?>">DRAFT</a>
+        </th>
+        <?php foreach ($this->mitigationEvaluations as $evaluation): ?>
+        <th>
+          <a href="<?php 
+              echo Fisma_Url::customUrl("/panel/remediation/sub/searchbox/status/$evaluation->nickname"); ?>"><?php 
+              echo $evaluation->nickname; ?>
+          </a>
+        </th>
+        <?php endforeach; ?>
+        <th><a href="<?php echo Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/EN'); ?>">EN</a></th>
+        <?php foreach ($this->evidenceEvaluations as $evaluation): ?> 
+        <th>
+            <a href="<?php 
+              echo Fisma_Url::customUrl("/panel/remediation/sub/searchbox/status/$evaluation->nickname"); ?>"><?php 
+              echo $evaluation->nickname; ?>
+            </a>
+        </th>
+        <?php endforeach; ?>
+        <th>
+            <a href="<?php echo Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/CLOSED'); ?>">CLOSED</a>
+        </th>
+        <th><a href="<?php echo Fisma_Url::customUrl('/panel/remediation/sub/searchbox'); ?>">TOTAL</a></th>
     </tr>
     <tr id='loadingRow'>
         <th colspan="10"><p>Loading&hellip;</p><img src="/images/loading_bar.gif"></th>
