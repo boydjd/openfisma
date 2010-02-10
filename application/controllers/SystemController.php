@@ -291,9 +291,23 @@ class SystemController extends BaseController
             $organization->merge($post);
             $system->merge($post);
             if ($organization->isValid(true) && $system->isValid(true)) {
-                $organization->save();
-                $system->save();
+                try {
+                    $organization->save();
+                    $system->save();
+                    $msg = "System updated successfully.";
+                    $type = "notice";
+                } catch (Doctrine_Exception $e) {
+                    $msg = "Error while trying to save: ";
+                    $msg .= $e->getMessage();
+                    $type = "warning";
+                }
+            } else {
+              $msg = "Error while trying to save: <br />";
+              $msg .= $organization->getErrorStackAsString() . $system->getErrorStackAsString();
+              $type = "warning";
             }
+
+            $this->view->priorityMessenger($msg, $type);
         }
 
         $this->_redirect("/panel/system/sub/view/id/$id");
