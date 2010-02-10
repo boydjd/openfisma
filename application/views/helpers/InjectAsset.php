@@ -38,7 +38,8 @@ class View_Helper_InjectAsset
     public $view;
     private static $_depMap = array(
                                 '/javascripts/combined.js' => 
-                                array('/javascripts/tiny_mce_config.js',
+                                array('/javascripts/php.js',
+                                      '/javascripts/tiny_mce_config.js',
                                       '/javascripts/fisma.js',
                                       '/javascripts/account.js',
                                       '/javascripts/CheckboxTree.js',
