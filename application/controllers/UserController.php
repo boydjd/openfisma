@@ -280,8 +280,8 @@ class UserController extends BaseController
 
             if ($form->isValid($post)) {
                 $user = User::currentUser();
-                $user->merge($post);
                 try {
+                    $user->merge($post);
                     $user->save();
                     $message = "Password updated successfully."; 
                     $model   = 'notice';
