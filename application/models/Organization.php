@@ -343,92 +343,93 @@ class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDep
         $today = new Zend_Date();
                        
         // Calculate the inventory statistics, such as agency/contractor, C&A, etc.
-        $children = $this->getNode()->getDescendants();
-        $children->loadRelated();
-        foreach ($children as $child) {
-            if ('system' != $child->orgType) {
-                continue;
-            }
+        if ($children = $this->getNode()->getDescendants()) {
+            $children->loadRelated();
+            foreach ($children as $child) {
+                if ('system' != $child->orgType) {
+                    continue;
+                }
             
-            $system = $child->System;
-            $fipsCategory = empty($system->fipsCategory) ? 'NC' : $system->fipsCategory;
+                $system = $child->System;
+                $fipsCategory = empty($system->fipsCategory) ? 'NC' : $system->fipsCategory;
             
-            // Create the systems matrix for section 2.e. of the annual report. This only includes systems that have not
-            // been C&A'ed.
-            if (empty($system->securityAuthorizationDt)) {
-                $systems[] = array(
-                    'name' => $child->name,
-                    'fipsCategory' => $fipsCategory,
-                    'uniqueProjectId' => $system->uniqueProjectId
-                );
-            }
+                // Create the systems matrix for section 2.e. of the annual report. This only includes systems that have
+                // not been C&A'ed.
+                if (empty($system->securityAuthorizationDt)) {
+                    $systems[] = array(
+                        'name' => $child->name,
+                        'fipsCategory' => $fipsCategory,
+                        'uniqueProjectId' => $system->uniqueProjectId
+                    );
+                }
             
-            // Controlled by the agency or a contractor?
-            if (!empty($system->controlledBy)) {
-                $securityStats[$fipsCategory][$system->controlledBy]++;
+                // Controlled by the agency or a contractor?
+                if (!empty($system->controlledBy)) {
+                    $securityStats[$fipsCategory][$system->controlledBy]++;
                 
-                // Has federal information in identifiable form?
-                if ('YES' == $system->hasFiif) {
-                    $privacyStats['FEDERAL_INFORMATION'][$system->controlledBy]++;
-                }
-
-                // Requires a PIA?
-                if ('YES' == $system->piaRequired) {
-                    $privacyStats['PIA_REQUIRED'][$system->controlledBy]++;
-
-                    // Has a PIA?
-                    if ('YES' == $system->piaRequired) {
-                        $privacyStats['PIA_COVERED'][$system->controlledBy]++;
-                        $privacyStats['PIA_URL'][] = $system->piaUrl;
+                    // Has federal information in identifiable form?
+                    if ('YES' == $system->hasFiif) {
+                        $privacyStats['FEDERAL_INFORMATION'][$system->controlledBy]++;
                     }
-                }
 
-                // Requires a SORN?
-                if ('YES' == $system->piaRequired) {
-                    $privacyStats['SORN_REQUIRED'][$system->controlledBy]++;
+                    // Requires a PIA?
+                    if ('YES' == $system->piaRequired) {
+                        $privacyStats['PIA_REQUIRED'][$system->controlledBy]++;
+
+                        // Has a PIA?
+                        if ('YES' == $system->piaRequired) {
+                            $privacyStats['PIA_COVERED'][$system->controlledBy]++;
+                            $privacyStats['PIA_URL'][] = $system->piaUrl;
+                        }
+                    }
+
+                    // Requires a SORN?
+                    if ('YES' == $system->piaRequired) {
+                        $privacyStats['SORN_REQUIRED'][$system->controlledBy]++;
                  
-                    // Is the SORN published?
-                    if ('YES' == $system->piaRequired) {
-                        $privacyStats['SORN_PUBLISHED'][$system->controlledBy]++;
-                        $privacyStats['SORN_URL'][] = $system->sornUrl;
+                        // Is the SORN published?
+                        if ('YES' == $system->piaRequired) {
+                            $privacyStats['SORN_PUBLISHED'][$system->controlledBy]++;
+                            $privacyStats['SORN_URL'][] = $system->sornUrl;
+                        }
                     }
                 }
-            }
             
-            if (!empty($system->securityAuthorizationDt)) {
-                // Was the system C&A'ed in the last 3 years? 
-                $currentCaDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
-                $nextCaDate = $currentCaDate->addYear(3);
-                /** 
-                 * @todo should have used isEarlier and isLater() instead of compare()
-                 * compare is not very readable 
-                 */
-                if (1 == $nextCaDate->compare($today)) {
-                    $securityStats[$fipsCategory]['TOTAL_CERTIFIED']++;
-                }
+                if (!empty($system->securityAuthorizationDt)) {
+                    // Was the system C&A'ed in the last 3 years? 
+                    $currentCaDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
+                    $nextCaDate = $currentCaDate->addYear(3);
+                    /** 
+                     * @todo should have used isEarlier and isLater() instead of compare()
+                     * compare is not very readable 
+                     */
+                    if (1 == $nextCaDate->compare($today)) {
+                        $securityStats[$fipsCategory]['TOTAL_CERTIFIED']++;
+                    }
                 
-                // Was the system C&A'ed in the last quarter?
-                $lastQuarter = $today->subMonth(3);
-                if (1 == $currentCaDate->compare($lastQuarter)) {
-                    $securityStats[$fipsCategory]['CERTIFIED_THIS_QUARTER']++;
+                    // Was the system C&A'ed in the last quarter?
+                    $lastQuarter = $today->subMonth(3);
+                    if (1 == $currentCaDate->compare($lastQuarter)) {
+                        $securityStats[$fipsCategory]['CERTIFIED_THIS_QUARTER']++;
+                    }
                 }
-            }
 
-            // Controls self-assessed in the last year?
-            if (!empty($system->controlAssessmentDt)) {
-                $currentSelfAssessmentDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
-                $nextSelfAssessmentDate = $currentSelfAssessmentDate->addYear(1);
-                if (1 == $nextSelfAssessmentDate->compare($today)) {
-                    $securityStats[$fipsCategory]['TOTAL_SELF_ASSESSMENT']++;
+                // Controls self-assessed in the last year?
+                if (!empty($system->controlAssessmentDt)) {
+                    $currentSelfAssessmentDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
+                    $nextSelfAssessmentDate = $currentSelfAssessmentDate->addYear(1);
+                    if (1 == $nextSelfAssessmentDate->compare($today)) {
+                        $securityStats[$fipsCategory]['TOTAL_SELF_ASSESSMENT']++;
+                    }
                 }
-            }
             
-            // Contingency plan has been tested in the last year?
-            if (!empty($system->contingencyPlanTestDt)) {
-                $currentContingencyPlanTestDate = new Zend_Date($system->contingencyPlanTestDt, 'Y-m-d');
-                $nextContingencyPlanTestDate = $currentContingencyPlanTestDate->addYear(1);
-                if (1 == $nextContingencyPlanTestDate->compare($today)) {
-                    $securityStats[$fipsCategory]['TOTAL_CONTINGENCY_PLAN_TESTED']++;
+                // Contingency plan has been tested in the last year?
+                if (!empty($system->contingencyPlanTestDt)) {
+                    $currentContingencyPlanTestDate = new Zend_Date($system->contingencyPlanTestDt, 'Y-m-d');
+                    $nextContingencyPlanTestDate = $currentContingencyPlanTestDate->addYear(1);
+                    if (1 == $nextContingencyPlanTestDate->compare($today)) {
+                        $securityStats[$fipsCategory]['TOTAL_CONTINGENCY_PLAN_TESTED']++;
+                    }
                 }
             }
         }
