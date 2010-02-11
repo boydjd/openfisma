@@ -127,13 +127,15 @@ class DashboardController extends SecurityController
         $result = $eoFindingsQuery->fetchOne();
         $alert['EO']  = $result['count'];
 
-        $pendingFindingsQuery = Doctrine_Query::create()
-                                ->select('COUNT(*) as count')
-                                ->from('Finding f')
-                                ->where('f.status = ?', 'PEND')
-                                ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
-        $result = $pendingFindingsQuery->fetchOne();
-        $alert['PEND'] = $result['count'];
+        if (Fisma_Acl::hasPrivilegeForClass('approve', 'Finding')) {
+            $pendingFindingsQuery = Doctrine_Query::create()
+                                    ->select('COUNT(*) as count')
+                                    ->from('Finding f')
+                                    ->where('f.status = ?', 'PEND')
+                                    ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
+            $result = $pendingFindingsQuery->fetchOne();
+            $alert['PEND'] = $result['count'];
+        }
         
         $url = '/panel/remediation/sub/searchbox/status/';
 
