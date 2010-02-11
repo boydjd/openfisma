@@ -369,42 +369,49 @@ class OrganizationController extends SecurityController
         
         $form = $this->_getOrganizationForm($organization);
         $orgValues = $this->_request->getPost();
-        
-        if ($form->isValid($orgValues)) {
-            $isModify = false;
-            $orgValues = $form->getValues();
-            $organization->merge($orgValues);
+       
+        try { 
+            if ($form->isValid($orgValues)) {
+                $isModify = false;
+                $orgValues = $form->getValues();
+                $organization->merge($orgValues);
 
-            if ($organization->isModified()) {
-                $organization->save();
-                $isModify = true;
-            }
-            // if the organization is not the root and 
-            // its parent id is not equal the value submited
-            if (!$organization->getNode()->isRoot() && 
-                    (int)$orgValues['parent'] != $organization->getNode()->getParent()->id) {
-                // then move this organization to an other parent node
-                $organization->getNode()
-                ->moveAsLastChildOf(Doctrine::getTable('Organization')->find($orgValues['parent']));
-                $isModify = true;
-            }
+                if ($organization->isModified()) {
+                     $organization->save();
+                     $isModify = true;
+                }
+                // if the organization is not the root and 
+                // its parent id is not equal the value submited
+                if (!$organization->getNode()->isRoot() && 
+                        (int)$orgValues['parent'] != $organization->getNode()->getParent()->id) {
+                    // then move this organization to an other parent node
+                    $organization->getNode()
+                    ->moveAsLastChildOf(Doctrine::getTable('Organization')->find($orgValues['parent']));
+                    $isModify = true;
+                }
             
-            if ($isModify) {
-                $msg = "The organization is saved";
-                $model = 'notice';
+                if ($isModify) {
+                    $msg = "The organization is saved";
+                    $model = 'notice';
+                } else {
+                    $msg = "Nothing changes";
+                    $model = 'warning';
+                }
+                $this->view->priorityMessenger($msg, $model);
+                $this->_forward('view', null, null, array('id' => $organization->id));
             } else {
-                $msg = "Nothing changes";
-                $model = 'warning';
+                $errorString = Fisma_Form_Manager::getErrors($form);
+                // Error message
+                $this->view->priorityMessenger("Unable to update organization<br>$errorString", 'warning');
+                // On error, redirect back to the edit action.
+                $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
             }
-            $this->view->priorityMessenger($msg, $model);
-            $this->_forward('view', null, null, array('id' => $organization->id));
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            // Error message
-            $this->view->priorityMessenger("Unable to update organization<br>$errorString", 'warning');
-            // On error, redirect back to the edit action.
-            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+        } catch (Doctrine_Validator_Exception $e) {
+            $msg = "Error while trying to save: " . $e->getMessage();
+            $this->view->priorityMessenger($msg, 'warning');
         }
+        // On error, redirect back to the edit action.
+        $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
     }
     
     /**
