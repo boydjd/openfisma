@@ -16,7 +16,7 @@ print $collapseAll;
 ?>
 </div>
 
-<p>Right click on an organization or system to view or edit it</p>
+<p>Right click on an organization or system to view it.</p>
 
 <div id="orgTree"></div>
 
@@ -52,7 +52,7 @@ function showTree(treeNodes) {
     
     treeEl = document.getElementById("orgTree");
 
-    var contextMenuItems = ["View", "Edit"];    
+    var contextMenuItems = ["View"];    
     var contextMenu = new YAHOO.widget.ContextMenu( 
         "contextMenu",  
         { 

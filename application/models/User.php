@@ -297,7 +297,7 @@ class User extends BaseUser
 
             $cache = Fisma::getCacheManager()->getCache('default');
 
-            if (!$acl = $cache->load($this->username . '_acl')) {
+            if (!$acl = $cache->load(md5($this->username) . '_acl')) {
 
                 $acl = new Fisma_Acl();
             
@@ -363,7 +363,7 @@ class User extends BaseUser
                 $acl->addRole($userRole, $roleArray);
             }
 
-            $cache->save($acl, $this->username . '_acl');
+            $cache->save($acl, md5($this->username) . '_acl');
             Zend_Registry::set('acl', $acl);
             
             // Reset class loader warning suppression to original setting
@@ -392,7 +392,7 @@ class User extends BaseUser
         }
 
         $cache = Fisma::getCacheManager()->getCache('default');
-        $cache->remove($this->username . '_acl');
+        $cache->remove(md5($this->username) . '_acl');
     }
     
     /**

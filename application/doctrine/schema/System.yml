@@ -84,6 +84,7 @@ System:
             comment: Whether this system requires a Privacy Impact Analysis
         piaUrl:
             type: string(255)
+            Fisma_Validator_Url: true
             extra:
                 purify: plaintext
             comment: A URL pointing to the Privacy Impact Analysis
@@ -95,6 +96,7 @@ System:
             comment: Whether a System Of Record Notice is required
         sornUrl:
             type: string(255)
+            Fisma_Validator_Url: true
             extra:
                 purify: plaintext
             comment: A URL pointing to the System Of Record Notice

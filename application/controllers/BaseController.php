@@ -236,9 +236,7 @@ abstract class BaseController extends SecurityController
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
-                    if (Fisma::debug()) {
                         $msg .= $e->getMessage();
-                    }
                     $type = 'warning';
                 }
                 $this->view->priorityMessenger($msg, $type);

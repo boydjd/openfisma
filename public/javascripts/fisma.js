@@ -36,6 +36,8 @@ var requiredRevision = 45;
 
 var Fisma = {};
 
+$P = new PHP_JS();
+
 String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
 }
@@ -447,6 +449,7 @@ function asset_detail() {
 }
 
 function message( msg ,model){
+    msg = $P.stripslashes(msg);
     if (document.getElementById('msgbar')) {
         var msgbar = document.getElementById('msgbar'); 
     } else {

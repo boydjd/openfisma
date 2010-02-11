@@ -60,6 +60,7 @@ class Fisma_Record extends Doctrine_Record
         'country' => '%f does not a valid country code (%v)',
         'date' => '%f contains an invalid date (%v)',
         'Fisma_Validator_Ip' => '%f is not a valid IPv4 or IPv6 address (%v)',
+        'Fisma_Validator_Url' => '%f is not a valid URL',
         'future' => '%f must be a future date (%v)',
         'email' => '%f does not contain a valid e-mail address (%v)',
         'notblank' => '%f is required',

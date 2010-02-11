@@ -649,12 +649,25 @@ class RemediationController extends SecurityController
         $file = $_FILES['evidence'];
 
         try {
+            if ($file['error'] != UPLOAD_ERR_OK) {
+              if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
+                $message = "The uploaded file is larger than is allowed by the server.";
+              } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
+                $message = "The uploaded file was only partially received.";
+              } else {
+                $message = "An error occurred while processing the uploaded file.";
+              }
+              throw new Fisma_Exception($message);
+            }
+
             if (!$file['name']) {
                 $message = "You did not select a file to upload. Please select a file and try again.";
                 throw new Fisma_Exception($message);
             }
 
-            $extension = end(explode(".", $file['name']));
+            $extension = explode('.', $file['name']);
+            $extension = end($extension);
+
             /** @todo cleanup */
             if (in_array(strtolower($extension), array('exe', 'php', 'phtml', 'php5', 'php4', 'js', 'css'))) {
                 $message = 'This file type is not allowed.';
