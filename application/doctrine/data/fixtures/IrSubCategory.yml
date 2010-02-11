@@ -1,0 +1,113 @@
+IrSubCategory:
+    SubCategory_28:
+        id: 28
+        category_id: 1
+        name: Exercise / Network Defense Testing
+    SubCategory_1:
+        id: 1
+        category_id: 2
+        name: User Account Compromise
+    SubCategory_2:
+        id: 2
+        category_id: 2
+        name: Root Compromise
+    SubCategory_3:
+        id: 3
+        category_id: 2
+        name: Viewing sensitive data without authorization
+    SubCategory_4:
+        id: 4
+        category_id: 2
+        name: Using an unattended, logged-in workstation without permission
+    SubCategory_5:
+        id: 5
+        category_id: 3
+        name: Network-based DoS against a particular host
+    SubCategory_6:
+        id: 6
+        category_id: 3
+        name: Network-based DoS against a network
+    SubCategory_7:
+        id: 7
+        category_id: 3
+        name: Dos against the operating system of a particular host
+    SubCategory_8:
+        id: 8
+        category_id: 3
+        name: DoS against an application on a particular host
+    SubCategory_9:
+        id: 9
+        category_id: 3
+        name: Distributed DoS
+    SubCategory_10:
+        id: 10
+        category_id: 4
+        name: Virus
+    SubCategory_11:
+        id: 11
+        category_id: 4
+        name: Trojan Horses
+    SubCategory_12:
+        id: 12
+        category_id: 4
+        name: Worms
+    SubCategory_13:
+        id: 13
+        category_id: 4
+        name: Mobile Code (To include Spyware, Adware, etc)
+    SubCategory_14:
+        id: 14
+        category_id: 4
+        name: Blended Attack
+    SubCategory_15:
+        id: 15
+        category_id: 5
+        name: Download password cracking tools or pornography
+    SubCategory_16:
+        id: 16
+        category_id: 5
+        name: Sending spam
+    SubCategory_17:
+        id: 17
+        category_id: 5
+        name: Sending harassing email messages to coworkers
+    SubCategory_18:
+        id: 18
+        category_id: 5
+        name: Using file sharing services to acquire or distribute pirated materials
+    SubCategory_19:
+        id: 19
+        category_id: 5
+        name: Website defacement
+    SubCategory_20:
+        id: 20
+        category_id: 5
+        name: Peer-To-Peer (P2P)
+    SubCategory_21:
+        id: 21
+        category_id: 5
+        name: Porn
+    SubCategory_22:
+        id: 22
+        category_id: 5
+        name: Instant Messaging
+    SubCategory_23:
+        id: 23 
+        category_id: 6
+        name: Network Scanning / Probing
+    SubCategory_24:
+        id: 24
+        category_id: 6
+        name: Root Compromise
+    SubCategory_25:
+        id: 25
+        category_id: 6
+        name: User Account Compromise
+    SubCategory_26:
+        id: 26
+        category_id: 6
+        name: Social engineering
+    SubCategory_27:
+        id: 27
+        category_id: 7
+        name: Investigation

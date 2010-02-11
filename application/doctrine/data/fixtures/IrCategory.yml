@@ -1,0 +1,37 @@
+IrCategory:
+    CAT0:
+        id: 1
+        name: Exercise / Network Defense Testing
+        description: This category is used during state, federal, national, international exercises and approved activity testing of internal/external network defenses or responses.
+        category: CAT0
+
+    CAT1:
+        id: 2
+        name: Unauthorized Access
+        description: In this category an individual or agent gains access without permission to a federal agency facility, network, system, (PII), in both soft copy (electronic) and hard copy (paper application, or data, including Personally Identifiable Information document)
+        category: CAT1
+    CAT2:
+        id: 3
+        name: Denial of Service
+        description: An attack that successfully prevents or impairs the normal authorized functionality of networks, systems or applications by exhausting resources. This activity includes being the victim or participating in the DoS.
+        category: CAT2
+    CAT3:
+        id: 4
+        name: Malicious Code
+        description: Successful installation of malicious software (e.g., virus, worm, Trojan horse) that infects an operating system or application.  Users are required to report malicious logic that has been successfully quarantined by antivirus (AV) software.
+        category: CAT3
+    CAT4:
+        id: 5
+        name: Improper Usage
+        description: A person violates acceptable computing or facility use policies, with or without malicious intent.
+        category: CAT4
+    CAT5:
+        id: 6
+        name: Scans / Probes / Attempted Access
+        description: This category includes activities that seek to access or identify any Federal Student Aid computer or network component for exploit. In addition, any unauthorized attempts to physically access Federal Student Aid facilities are included in this category.
+        category: CAT5
+    CAT6:
+        id: 7
+        name: Investigation
+        description: Unconfirmed incidents that are anomalous—potentially malicious— activities, involving either electronic or printed information, deemed by the reporting entity to warrant further review.
+        category: CAT6

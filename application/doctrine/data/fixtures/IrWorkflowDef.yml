@@ -1,0 +1,25 @@
+IrWorkflowDef:
+    Resource_1:
+        id: 1
+        name: Workflow for handling unauthorized access incidents
+    Resource_2:
+        id: 2
+        name: Workflow for handling DoS attack
+    Resource_3:
+        id: 3
+        name: Workflow for handling malicious code incident
+    Resource_4: 
+        id: 4
+        name: Workflow for handling improper usage incidents
+    Resource_5:
+        id: 5
+        name: Workflow for handling scan / probe / attempted access incident 
+    Resource_6:      
+        id: 6
+        name: Workflow for handling web site defacement incident
+    Resource_7:
+        id: 7
+        name: Workflow for handling social engineering incident
+    Resource_8:
+        id: 8
+        name: Workflow for handling compromise of PII  

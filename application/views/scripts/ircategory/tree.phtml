@@ -1,0 +1,127 @@
+<?php Fisma_Format_Section::startSection("IR Categories: Tree View <span id='searchResultsTotalFound'></span>"); ?>
+
+<div class="toolbar">
+<?php
+$expandAll = new Fisma_Yui_Form_Button('expandAll', 
+                                       array('label' => 'Expand All', 
+                                             'imageSrc' => '/images/expand.png',
+                                             'onClickFunction' => 'expandAll'));
+print $expandAll;
+
+$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
+                                         array('label' => 'Collapse All', 
+                                             'imageSrc' => '/images/collapse.png',
+                                             'onClickFunction' => 'collapseAll'));
+print $collapseAll;
+?>
+</div>
+
+<p>Right click on a category or sub category to view or edit it</p>
+
+<div id="catTree"></div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+    YAHOO.util.Connect.asyncRequest('GET', 
+                                    '/ircategory/tree-data/format/json', 
+                                    {
+                                        success: function(o) {
+                                            var json = YAHOO.lang.JSON.parse(o.responseText);
+                                            showTree(json.treeData);
+                                        },
+                                        failure: function(o) {
+                                            alert('Unable to load the category tree: ' + o.statusText);
+                                        }
+                                    }, 
+                                    null);
+});
+
+// Global reference to the tree view
+var tree;
+
+// Global map from HTML element Ids back to tree node Ids
+// This is necessary due to a limitation in YUI (see below)
+var treeMap = {};
+
+function showTree(treeNodes) {
+    tree = new YAHOO.widget.TreeView("catTree");
+
+    renderTreeNodes(treeNodes, tree.getRoot(), 0);
+    
+    tree.draw();
+    
+    treeEl = document.getElementById("catTree");
+
+    var contextMenuItems = ["View", "Edit"];    
+    var contextMenu = new YAHOO.widget.ContextMenu( 
+        "contextMenu",  
+        { 
+            trigger: treeEl, 
+            itemdata: contextMenuItems, 
+            lazyload: true                                     
+        }  
+    );
+    contextMenu.subscribe("click", contextMenuHandler);
+}
+
+function contextMenuHandler(event, eventArgs) {
+    var target = this.contextEventTarget;
+    
+    // To get the ID of the category related to this event, we have to do some circuitous logic:
+    // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
+    parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvitem");
+
+    // Now the organization or system Id & type can be looked up in the treemap
+    var category = treeMap[parent.id]['category'];
+    var id       = treeMap[parent.id]['id'];
+
+    var menuItem = eventArgs[1];
+    var action = (menuItem.index == 0) ? 'view' : 'edit';
+
+    //if there is a value in category this is a sub category - append sub to the action
+    var sub = (category) ? '' : 'sub';
+
+    var url = '/panel/ircategory/sub/' + sub + 'view/v/' + sub + action + '/id/' + id;
+    window.location = url;
+}
+
+function renderTreeNodes(treeNodes, parentNode, depth) {
+    for (var i in treeNodes) {
+        treeNode = treeNodes[i];
+        
+        if(treeNode.category) {
+            nodeText = "<b>" + treeNode.category + "</b> - " + treeNode.name;
+        } else {
+            nodeText = treeNode.name;
+        }
+        var yuiNode = new YAHOO.widget.TextNode(nodeText, parentNode, false);
+        
+        // Save the org ID into the tree map so it can be looked up later
+        // This is a limitation of the YUI treeview... you can't find a treenode automatically
+        // from an element Id
+        treeMap[yuiNode.getElId()] = {
+            id: treeNode.id,
+            name: treeNode.name,
+            category: treeNode.category
+        };
+
+        // Automatically expand the first 2 levels
+        if (depth < 2) {
+            yuiNode.expand();
+        }
+        if (treeNode.children.length > 0) {
+            renderTreeNodes(treeNode.children, yuiNode, depth + 1);
+        }
+    }
+}
+
+function expandAll() {
+    tree.getRoot().expandAll();
+}
+
+function collapseAll() {
+    tree.getRoot().collapseAll();
+}
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>

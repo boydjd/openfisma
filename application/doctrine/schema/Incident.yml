@@ -1,0 +1,127 @@
+Incident:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+
+        reporter_first_name: 
+            type: string(255)
+        reporter_last_name: 
+            type: string(255)
+        reporter_title: 
+            type: string(255)
+        reporter_organization: 
+            type: string(255)
+
+        reporter_address1: 
+            type: string(255)
+        reporter_address2: 
+            type: string(255)
+        reporter_city: 
+            type: string(255)
+        reporter_state: 
+            type: string(255)
+        reporter_zip: 
+            type: string(255)
+
+        reporter_phone: 
+            type: string(255)
+        reporter_fax: 
+            type: string(255)
+        reporter_email: 
+            type: string(255)
+        
+        location_building: 
+            type: string(255)
+        location_room: 
+            type: string(255)
+        location_rack: 
+            type: string(255)
+
+        incident_ts: 
+            type: timestamp
+        incident_tz: 
+            type: enum
+            values: [EST, CST, MTN, PST]
+        
+        report_ts: 
+            type: timestamp
+        report_tz: 
+            type: enum
+            values: [EST, CST, MTN, PST]
+
+        classification:
+            type: integer(8)
+            unsigned: true
+            
+        additional_info:
+            type: string(1000) 
+
+
+        pii_involved:
+            boolean
+        pii_additional:
+            type: string(1000) 
+        pii_mobile_media:
+            boolean
+        pii_modile_media_type:
+            type: enum
+            values: [laptop, disc, document, usb, tape, other]
+        pii_encrypted:
+            type: boolean
+        pii_authorities_contacted:
+            type: boolean
+        pii_police_report:
+            type: boolean
+        pii_individuals_count:
+            type: int(10)
+        pii_individuals_notification:
+            type: boolean
+        pii_shipment:
+            type: boolean
+        pii_shipment_sender_contact:
+            type: string(255)
+        pii_shipment_sender_company:
+            type: string(255)
+        pii_shipment_timeline:
+            type: string(255)
+        pii_shipment_tracking_numbers:
+            type: string(255)
+
+        host_ip:
+            type: string(255)
+        host_name:
+            type: string(255)
+        host_os:
+            type: enum
+            values: [2007, vista, xp, macos, linux, unix]
+        host_additional:
+            type: string(1000)
+        
+        source_ip:
+            type: string(255)
+        source_additional:
+            type: string(1000)
+        
+        assessment_critical:
+            type: boolean
+        assessment_sensitivity:
+            type: enum
+            values: [low, medium, high]
+        
+        actions_taken:
+            type: string(1000)
+        
+        files:
+            type: string(255)
+        
+        oig_id:
+            type: int(10)
+
+
+
+
+
+
+
