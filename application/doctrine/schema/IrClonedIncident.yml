@@ -1,0 +1,16 @@
+IrClonedIncident:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        orig_incident_id: 
+            type: integer
+        clone_incident_id: 
+            type: integer
+        createdTs: 
+            type: timestamp
+        user_id: 
+            type: integer
+        comments:
+            type: string(1000) 

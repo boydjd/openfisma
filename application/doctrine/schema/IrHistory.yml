@@ -1,0 +1,20 @@
+IrHistory:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        incident_id: 
+            type: integer
+        user_id: 
+            type: integer
+        createdTs: 
+            type: timestamp
+        type:
+            type: enum
+            length: 8
+            values: ['COMMENT','WORKFLOW','REPORT','CLASSIFY','RESOLVE','CLOSE']
+        name: 
+            type: string(255)
+        description:
+            type: string(1000) 

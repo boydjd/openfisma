@@ -1,0 +1,20 @@
+IrAuditLog:
+    columns:
+        id: 
+            type: integer
+            primary: true
+            autoincrement: true
+        incident_id: 
+            type: integer
+        createdTs: 
+            type: timestamp
+        field_name: 
+            type: string(255)
+        origional_value: 
+            type: string(1000) 
+        new_value: 
+            type: string(1000) 
+        user_id: 
+            type: integer
+        address_ip:
+            type: string(15)
