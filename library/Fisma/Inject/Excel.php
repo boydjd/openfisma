@@ -221,7 +221,7 @@ class Fisma_Inject_Excel
             if (empty($finding['findingType'])) {
                 $poam['type'] = 'NONE';
             } else {
-                $poam['status'] = 'DRAFT';
+                $poam['type'] = $finding['findingType'];
             }
             if (!empty($finding['findingMitigationStrategy'])) {
                 $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
