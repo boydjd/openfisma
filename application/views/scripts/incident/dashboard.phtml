@@ -1,4 +1,105 @@
-<?php Fisma_Format_Section::startSection("New Incidents: <span id='newSearchResultsTotalFound'></span>"); ?>
+<div class="searchFilters">
+    <div class="left">
+        <b>Jump to:</b>
+        <?php
+        echo new Fisma_Yui_Form_Button_Link(
+            'summaryButton',
+            array(
+                'value' => 'Summary',
+                'href' => '#summary'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'newButton',
+            array(
+                'value' => 'New Incidents',
+                'href' => '#new'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'openButton',
+            array(
+                'value' => 'Open Incidents',
+                'href' => '#open'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'resolvedButton',
+            array(
+                'value' => 'Resolved Incidents',
+                'href' => '#resolved'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'closeButton',
+            array(
+                'value' => 'Closed Incidents',
+                'href' => '#closed'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'commentsButton',
+            array(
+                'value' => 'Recent Comments',
+                'href' => '#comments'
+            )
+        );
+        ?>
+    </div>
+    
+    <div class="clear"></div>
+</div>
+
+<?php Fisma_Format_Section::startSection("Summary", null, 'summary'); ?>
+    <div style="text-align: center">
+        <embed scale="noscale"
+               salign="TL"
+               bgcolor="#ffffff"
+               wmode="opaque"
+               src="/flash/charts.swf"
+               flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalstatus/format/xml"
+               name="my_chart"
+               menu="true"
+               allowfullscreen="true"
+               allowscriptaccess="sameDomain"
+               quality="high"
+               pluginspage="http://www.macromedia.com/go/getflashplayer"
+               play="true"
+               devicefont="false"
+               type="application/x-shockwave-flash"
+               width="400"
+               height="250"
+               align="middle">
+        &nbsp;&nbsp;&nbsp;
+        <embed scale="noscale"
+               salign="TL"
+               bgcolor="#ffffff"
+               wmode="opaque"
+               src="/flash/charts.swf"
+               flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalcategory/format/xml"
+               name="my_chart"
+               menu="true"
+               allowfullscreen="true"
+               allowscriptaccess="sameDomain"
+               quality="high"
+               pluginspage="http://www.macromedia.com/go/getflashplayer"
+               play="true"
+               devicefont="false"
+               type="application/x-shockwave-flash"
+               width="400"
+               height="250"
+               align="middle">
+    </div>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php 
+Fisma_Format_Section::startSection("New Incidents: <span id='newSearchResultsTotalFound'></span>", null, 'new'); 
+?>
 <div id="newList"></div>
 <script type="text/javascript">
 // Column definitions
@@ -7,7 +108,6 @@ var myColumnDefs = [
     ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
     ,{key:"status", label:"status", hidden: false}
     ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
-    ,{key:"category", label:"Category", hidden: false, sortable: true}
     ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
 ];
 
@@ -84,7 +184,9 @@ var myColumnDefs = [
 
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection("Open Incidents: <span id='openSearchResultsTotalFound'></span>"); ?>
+<?php 
+Fisma_Format_Section::startSection("Open Incidents: <span id='openSearchResultsTotalFound'></span>", null, 'open'); 
+?>
 <div id="openList"></div>
 <script type="text/javascript">
 // Column definitions
@@ -170,7 +272,9 @@ var myColumnDefs = [
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection("Resolved / Rejected Incidents: <span id='resolvedSearchResultsTotalFound'></span>"); ?>
+<?php 
+Fisma_Format_Section::startSection("Resolved / Rejected Incidents: <span id='resolvedSearchResultsTotalFound'></span>", null, 'resolved'); 
+?>
 <div id="resolvedList"></div>
 <script type="text/javascript">
 // Column definitions
@@ -256,7 +360,7 @@ var myColumnDefs = [
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection("Recently Closed Incidents: <span id='closedSearchResultsTotalFound'></span>"); ?>
+<?php Fisma_Format_Section::startSection("Recently Closed Incidents: <span id='closedSearchResultsTotalFound'></span>", null, 'closed'); ?>
 <div id="closedList"></div>
 <script type="text/javascript">
 // Column definitions
@@ -342,7 +446,7 @@ var myColumnDefs = [
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection("Comments"); ?>
+<?php Fisma_Format_Section::startSection("Recent Comments", null, 'comments'); ?>
 <div id="commentData">Loading...</div>
 
 <script type="text/javascript">
@@ -361,65 +465,3 @@ var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/commentdashb
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>
-
-<?php Fisma_Format_Section::startSection("Stats"); ?>
-
-<div style="float: right;">
-    <embed scale="noscale"
-           salign="TL"
-           bgcolor="#ffffff"
-           wmode="opaque"
-           src="/flash/charts.swf"
-           flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalstatus/format/xml"
-           name="my_chart"
-           menu="true"
-           allowfullscreen="true"
-           allowscriptaccess="sameDomain"
-           quality="high"
-           pluginspage="http://www.macromedia.com/go/getflashplayer"
-           play="true"
-           devicefont="false"
-           type="application/x-shockwave-flash"
-           width="225"
-           height="200"
-           align="middle">
-
-    <embed scale="noscale"
-           salign="TL"
-           bgcolor="#ffffff"
-           wmode="opaque"
-           src="/flash/charts.swf"
-           flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalcategory/format/xml"
-           name="my_chart"
-           menu="true"
-           allowfullscreen="true"
-           allowscriptaccess="sameDomain"
-           quality="high"
-           pluginspage="http://www.macromedia.com/go/getflashplayer"
-           play="true"
-           devicefont="false"
-           type="application/x-shockwave-flash"
-           width="225"
-           height="200"
-           align="middle">
-</div>
-
-<div id="reportData">Loading...</div>
-
-<script type="text/javascript">
-
-var reportCallback = {
-        success: function(o) {
-            document.getElementById('reportData').innerHTML =  o.responseText;
-        },
-        failure: function(o) {
-            alert("Error loading Report Data");
-        }
-    } 
-
-var transaction = YAHOO.util.Connect.asyncRequest('GET', '/irreport/incidentdashboard', reportCallback, null);
-
-</script>
-
-<?php Fisma_Format_Section::stopSection(); ?>
-<div class="clear"></div>

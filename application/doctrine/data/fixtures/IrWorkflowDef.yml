@@ -160,7 +160,7 @@ IrWorkflowDef:
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
-                    affectedi</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
                     the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
                     resources</li></ol>
             - 

@@ -3,39 +3,20 @@
 <div id="incidentData">Loading...</div>
 
 <script type="text/javascript">
+var viewDetailsButton;
 
 var incidentCallback = {
         success: function(o) {
             document.getElementById('incidentData').innerHTML =  o.responseText;
-            var viewDetailsButton = new YAHOO.widget.Button({
+            viewDetailsButton = new YAHOO.widget.Button({
                                        type: "submit",
-                                       label: "View Details",
+                                       label: "Show Details",
                                        id: "viewDetailsButton",
                                        name: "viewDetailsButton",
                                        value: "View Details",
                                        container: "viewDetailsButtonContainer",
                                        disabled: false,
                                        onclick: { fn: onViewButtonClick }
-                                   });
-            var hideDetails1Button = new YAHOO.widget.Button({
-                                       type: "submit",
-                                       label: "Hide Details",
-                                       id: "hideDetailsButton",
-                                       name: "hideDetailsButton",
-                                       value: "Hide Details",
-                                       container: "hideDetails1ButtonContainer",
-                                       disabled: false,
-                                       onclick: { fn: onHideButtonClick }
-                                   });
-            var hideDetails2Button = new YAHOO.widget.Button({
-                                       type: "submit",
-                                       label: "Hide Details",
-                                       id: "hideDetailsButton",
-                                       name: "hideDetailsButton",
-                                       value: "Hide Details",
-                                       container: "hideDetails2ButtonContainer",
-                                       disabled: false,
-                                       onclick: { fn: onHideButtonClick }
                                    });
             var cloneDetailsButton = new YAHOO.widget.Button({
                                        type: "link",
@@ -56,14 +37,13 @@ var incidentCallback = {
 var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
 
 function onViewButtonClick() {
-    document.getElementById('incident_details').style.display = 'block'; 
-    document.getElementById('hideDetails1ButtonContainer').style.display = 'inline'; 
-    return false;
-}
-
-function onHideButtonClick() {
-    document.getElementById('incident_details').style.display = 'none'; 
-    document.getElementById('hideDetails1ButtonContainer').style.display = 'none'; 
+    if ('block' == document.getElementById('incident_details').style.display) {
+        document.getElementById('incident_details').style.display = 'none'; 
+        viewDetailsButton.set('label', 'Show Details');
+    } else {
+        document.getElementById('incident_details').style.display = 'block'; 
+        viewDetailsButton.set('label', 'Hide Details');
+    }
     return false;
 }
 
@@ -71,26 +51,20 @@ function onHideButtonClick() {
 
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection("Incident History"); ?>
-<table class="fisma_crud">
+<?php 
+Fisma_Format_Section::startSection("Incident History");
 
-    <?php 
-        foreach ($this->steps as $key => $step) {
-            if ($key < (count($this->steps) - 1)) { 
-                print "<tr><td>Workflow Step:</td><td><h2>{$step['name']}</h2></td></tr>";
-                print "<tr><td>Completed By:</td> <td><h2>{$step['user']['nameFirst']} {$step['user']['nameLast']} ({$step['user']['username']})</h2></td></tr>";
-                print "<tr><td>Completed On:</td> <td><h2>{$step['completeTs']}</h2></td></tr>";
-                print "<tr><td>Comments:</td>     <td><h2>{$step['comments']}</h2></td></tr>";
-                if ($key < (count($this->steps) - 2)) { 
-                    print "<tr><td colspan='2'><hr /></td></tr>";
-                }
-            }
-        }
-    ?>
-    
+foreach ($this->steps as $key => $step):
+    print "<p><table width='50%' class='fisma_crud'><tr><td>Workflow Step:</td>"
+        . "<td><h2>{$step['name']}</h2></td></tr>"
+        . "<tr><td>Completed By:</td> <td><h2>{$step['user']['nameFirst']}"
+        . " {$step['user']['nameLast']} ({$step['user']['username']})</h2></td></tr>"
+        . "<tr><td>Completed On:</td> <td><h2>{$step['completeTs']}</h2></td></tr>"
+        . "<tr><td>Comments:</td>     <td><h2>{$step['comments']}</h2></td></tr></table>";
+endforeach;
 
-</table>
-<?php Fisma_Format_Section::stopSection(); ?>
+Fisma_Format_Section::stopSection(); 
+?>
 
 <?php Fisma_Format_Section::startSection("Incident Comments"); ?>
 

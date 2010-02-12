@@ -73,12 +73,15 @@ class Fisma_Form_Element_Time extends Zend_Form_Element
 
         $parts = explode(':', $value);
         $this->_hour = $parts[0];
-        if ($this->_hour > 12) {
-            $this->_hour -= 12;
-            $this->_ampm = 'PM';
-        } else {
-            $this->_ampm = 'AM';
+        if (!empty($this->_hour)) {
+            if ($this->_hour > 12) {
+                $this->_hour -= 12;
+                $this->_ampm = 'PM';
+            } else {
+                $this->_ampm = 'AM';
+            }
         }
+
         $this->_minute = $parts[1];
     }
 

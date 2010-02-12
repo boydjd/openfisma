@@ -32,7 +32,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class IncidentController extends Zend_Controller_Action // extends BaseController
+class IncidentController extends MessageController
 {
     /**
      * The main name of the model.
@@ -120,7 +120,6 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
                         'open'     => 0,
                         'resolved' => 0,
                         'rejected' => 0,
-                        'closed'   => 0,
                     );
 
         $q = Doctrine_Query::create() 
@@ -130,7 +129,9 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
 
         $data = $q->execute()->toArray();
         foreach ($data as $key => $item) {
-            $arrTotal[$item['status']] = $item['count'];
+            if (isset($arrTotal[$item['status']])) {
+                $arrTotal[$item['status']] = $item['count'];
+            }
         }
 
         $this->view->summary = $arrTotal;
@@ -138,6 +139,8 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
 
    /**
      * statistics per status 
+     * 
+     * @todo this has horrendous performance
      */
     public function totalcategoryAction()
     {
@@ -159,8 +162,8 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             $q = Doctrine_Query::create() 
                  ->select('count(*) as count')
                  ->from('Incident i')
-                 ->whereIn('i.classification', $ids)
-                 ->whereIn('i.status', array('open','resolved','closed'));       
+                 ->whereIn('i.categoryId', $ids)
+                 ->andWhere('i.status <> ?', array('closed'));
 
             $data = $q->execute()->toArray();
             $arrTotal[$cat] = $data[0]['count'];
@@ -179,7 +182,7 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
     {
         // Unauthenticated users see a different layout that doesn't have a menubar
         if (!User::currentUser()) {
-            $this->_helper->layout->setLayout('anonlayout');
+            $this->_helper->layout->setLayout('anonymous');
         }
         
         // Fetch the incident report draft from the session or create it if necessary
@@ -204,8 +207,11 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
                 $step++;
             } elseif ($this->getRequest()->getParam('backwards')) {
                 $step--;
+            } elseif ($this->getRequest()->getParam('cancel')) {
+                $this->_forward('cancel-report', 'Incident');
+                return;
             } else {
-                throw new Fisma_Exception('User must move forwards or backwards');
+                throw new Fisma_Exception('User must move forwards, backwards, or cancel');
             }
         }
         if ($step < 0) {
@@ -215,8 +221,12 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         // Some business logic to determine if any steps can be skipped based on previous answers:
         // Authenticated users skip step 1 (which is reporter contact information)
         if (User::currentUser() && 1 == $step) {
-            $incident->ReportingUser = User::currentUser();
-            $step++;
+            if ($this->getRequest()->getParam('forwards')) {
+                $incident->ReportingUser = User::currentUser();
+                $step++;
+            } else {
+                $step--;
+            }
         }
         // If no PII after step 5, then skip to end
         if ($step >=5 && 0 == $incident->piiInvolved) {
@@ -240,7 +250,13 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             $this->_forward('review-report', 'Incident');
             return;
         }
-        $formPart->setAction("/incident/report/step/$step");
+        
+        // Authenticated users and unauthenticated users have different form actions
+        if (User::currentUser()) {
+            $formPart->setAction("/panel/incident/sub/report/step/$step");
+        } else {
+            $formPart->setAction("/incident/report/step/$step");
+        }
         
         // Use the validator to load the incident data into the form. Notice that there aren't actually any
         // validators which could fail here.
@@ -264,7 +280,15 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
     {
         $formPart = Fisma_Form_Manager::loadForm($this->_formParts[$step]['name']);
 
-        // Add forward/backward buttons to the form
+        // Add buttons to the form
+        $cancelButton = new Fisma_Yui_Form_Button_Submit(
+            'cancel', 
+            array(
+                'label' => 'Cancel Report', 
+                'imageSrc' => '/images/del.png',
+            )
+        );
+        $formPart->addElement($cancelButton);
         if ($step > 0) {
             $backwardButton = new Fisma_Yui_Form_Button_Submit(
                 'backwards', 
@@ -316,10 +340,10 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
                 }
                 break;
             case 4:
-                $this->_createBoolean(&$formPart, array('piiInvolved'));
+                $this->_createBoolean($formPart, array('piiInvolved'));
                 break;
             case 5:
-                $this->_createBoolean(&$formPart, array('piiMobileMedia', 
+                $this->_createBoolean($formPart, array('piiMobileMedia', 
                                                         'piiEncrypted', 
                                                         'piiAuthoritiesContacted', 
                                                         'piiPoliceReport',
@@ -332,11 +356,66 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
                 }
                 break;
             case 6:
-                $this->_createBoolean(&$formPart, array('piiShipmentSenderContact'));
+                $this->_createBoolean($formPart, array('piiShipmentSenderContact'));
                 break;
         }
 
         return $formPart;
+    }
+
+    /**
+     * Loads all form parts into a single form which can be rendered into a single page
+     * 
+     * @return Zend_Form
+     */
+    public function getForm()
+    {
+        $form = new Fisma_Form();
+        
+        // Load all form parts and append each one to the main form
+        $formParts = array_keys($this->_formParts);
+        foreach ($formParts as $part) {
+            // The first form only contains instructions... so skip it
+            if (0 == $part) {
+                continue;
+            }
+         
+            // For remaining form parts, load them and remove the navigational buttons and instructions
+            $subform = $this->getFormPart($part);
+            $subform->removeElement('cancel');
+            $subform->removeElement('backwards');
+            $subform->removeElement('forwards');
+            $subform->removeElement('instructions');
+            
+            $form->addSubForm($subform, $this->_formParts[$part]['name']);
+        }
+        
+        // Add submit/reset/cancel buttons
+        $resetButton = new Fisma_Yui_Form_Button_Reset(
+            'reset', 
+            array(
+                'label' => 'Reset'
+            )
+        );
+        $form->addElement($resetButton);
+
+        $saveButton = new Fisma_Yui_Form_Button_Submit(
+            'save', 
+            array(
+                'label' => 'Save'
+            )
+        );
+        $form->addElement($saveButton);
+
+        // Setup decorators
+        $form->setSubFormDecorators(array(
+            new Zend_Form_Decorator_FormElements()
+        ));
+        $form->setElementDecorators(array(
+            new Fisma_Form_FismaDecorator()
+        ));
+
+        return $form;
     }
 
     /**
@@ -374,6 +453,9 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         
         $this->view->incidentReview = $incidentReview;
         $this->view->step = count($this->_formParts);
+        $this->view->actionUrlBase = User::currentUser() 
+                                   ? '/panel/incident/sub'
+                                   : '/incident';
     }
 
     /**
@@ -381,7 +463,13 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
      *
      * @return string the rendered page
      */
-    public function saveReportAction() {
+    public function saveReportAction() 
+    {
+        // Unauthenticated users see a different layout that doesn't have a menubar
+        if (!User::currentUser()) {
+            $this->_helper->layout->setLayout('anonymous');
+        }
+        
         // Fetch the incident report draft from the session
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
@@ -389,30 +477,39 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         } else {
             throw new Fisma_Exception('No incident report found in session');
         }
-
+        
+        // Set the reporting user and assign the IRCs as default actors
+        if (User::currentUser()) {
+            $incident->ReportingUser = User::currentUser();
+        }
+        $incident->link('Actors', $this->_getIrcs());
         $incident->save();
-
-        // Add the EDCIRC as an actor
-        $actor = new IrIncidentActor();
-        $actor->incidentId = $incident->id;
-        $edcirc = $this->_getEDCIRC();
-        $actor->userId = $edcirc;
-        $actor->save();
         
         // Send an email
         $mail = new Fisma_Mail();
         $mail->IRReport($edcirc, $subject['id']);
+        
+        // Clear out serialized incident object
+        unset($session->irDraft);
+    }
+    
+    /**
+     * Remove the serialized incident object from the session object.
+     */
+    public function cancelReportAction()
+    {
+        // Unauthenticated users see a different layout that doesn't have a menubar
+        if (!User::currentUser()) {
+            $this->_helper->layout->setLayout('anonymous');
+        }
+
+        $session = Fisma::getSession();
+        
+        if (isset($session->irDraft)) {
+            unset($session->irDraft);
+        }
     }
 
-    /**
-     * Displays a incident report form for users who aren't logged into the system
-     *
-     * @return string the rendered page
-     */
-    public function anonsuccessAction() {
-        $this->_helper->layout->setLayout('anonlayout'); 
-        $this->render('anonsuccess');
-    }   
    
     /**
      * Displays incident dashboard
@@ -482,10 +579,6 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
         $this->view->assign('status', $status);
 
-        $this->view->assign('startDt', $this->_request->getParam('startDt'));
-        
-        $this->view->assign('endDt',   $this->_request->getParam('endDt'));
-        
         $this->view->assign('keywords',   $this->_request->getParam('keywords'));
 
         $this->render('list');
@@ -512,31 +605,19 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
      */
     public function incidentdataAction() 
     {
-        $incident_id = $this->_request->getParam('id');
-        $this->view->assign('id', $incident_id);
+        $this->_helper->layout->disableLayout();
+        $incidentId = $this->_request->getParam('id');
+        $this->_assertCurrentUserCanViewIncident($incidentId);
+        $this->view->assign('id', $incidentId);
        
-        $this->view->assign('cloneId', $this->_getClone($incident_id));
+        $this->view->assign('cloneId', $this->_getClone($incidentId));
 
         $closed = $this->_request->getParam('closed');
         $this->view->assign('closed', $closed);
-        
-        $q  = Doctrine_Query::create()
-            ->select('i.*')
-            ->from('Incident i')
-            ->where('i.id = ?', $incident_id);
 
-        $incident = $q->execute()->toArray();
-            
-        $q2 = Doctrine_Query::create()
-              ->select('sc.name')
-              ->from('IrSubCategory sc')
-              ->where('sc.id = ?', $incident[0]['classification']);
+        $incident = Doctrine::getTable('Incident')->find($incidentId);
         
-        $cat = $q2->execute()->toArray();            
-
-        $incident[0]['category'] = $cat[0]['name'];
-        
-        $association = $this->_getAssociation($incident_id);
+        $association = $this->_getAssociation($incidentId);
         $this->view->assign('association', $association);
 
         $this->view->assign('incident', $incident);
@@ -559,46 +640,43 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             ->from('Incident i')
             ->where('i.id = ?', $incident_id);
 
-        $incident = $q->execute();
+        $incident = $q->execute()->toArray();
 
-        $this->view->assign('incident', $incident->toArray());
+        $this->view->assign('incident', $incident);
 
-        $incident = $incident->toArray();
         $status = $incident[0]['status'];
 
-        /* depending on the status of the incident, certain data needs to be retrieved 
-           and a particular view script needs to be rendered 
-        */    
+        // depending on the status of the incident, certain data needs to be retrieved 
+        // and a particular view script needs to be rendered 
         if ($status == 'open') {
-            
             $this->render('workflow');
-
         } elseif ($status == 'new') {
             $form = Fisma_Form_Manager::loadForm('incident_classify');
 
-            $this->_createBoolean(&$form, array('pii', 'oig'));
-        
+            $this->_createBoolean($form, array('pii', 'oig'));
+       
+            /**
+             * @todo this is driving me crazy... if you add all the options at once, it generates a bunch
+             * of errors. but if you loop over the array and add one at a time, it works.
+             */
+            $categoryElement = $form->getElement('categoryId');
+            $categoryElement->addMultiOption(array('' => ''));
+            foreach ($this->_getCategories() as $key => $value) {
+                $categoryElement->addMultiOptions(array($key => $value));
+            }
+            $form->getElement('categoryId')->setValue($incident[0]['categoryId']);
+
+            $element = new Zend_Form_Element_Hidden('id');
+            $element->setValue($incident_id);
+            $form->addElement($element);
+
             $form->setDisplayGroupDecorators(array(
                 new Zend_Form_Decorator_FormElements(),
                 new Fisma_Form_CreateIncidentDecorator()
             ));
-
-            $form->setElementDecorators(array(new Fisma_Form_ClassifyIncidentDecorator()));
-
-            foreach($this->_getCategories() as $id => $cat) {
-                $form->getElement('classification')
-                     ->addMultiOptions(array($id => $cat));
-            }
-
-            $form->getElement('classification')->setValue($incident[0]['classification']);
-
-            $element = new Zend_Form_Element_Hidden('id');
-            $element->setValue($incident_id);
-
-            $form->addElement($element);
+            $form->setElementDecorators(array(new Fisma_Form_CreateIncidentDecorator()));
 
             $this->view->assign('form', $form);
-
             $this->render('classify');
         
         } elseif (($status == 'resolved') || ($status == 'rejected')) {
@@ -610,13 +688,13 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             $form->addElement($element);
         
             $q  = Doctrine_Query::create()
-                ->select('s.id')
-                ->from('IrIncidentWorkflow s')
-                ->where('s.incidentId = ?', $incident_id)
-                ->andWhere('s.status = ?', 'current');
- 
-            $step = $q->execute();
-            $step = $step->toArray();        
+                  ->select('s.id')
+                  ->from('IrIncidentWorkflow s')
+                  ->where('s.incidentId = ?', $incident_id)
+                  ->andWhere('s.status <> ?', 'completed')
+                  ->orderBy('s.cardinality')
+                  ->limit(1);
+            $step = $q->execute()->toArray();        
 
             $element2 = new Zend_Form_Element_Hidden('step_id');
             $element2->setValue($step[0]['id']);
@@ -628,14 +706,14 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
                 new Fisma_Form_CreateIncidentDecorator()
             ));
 
-            $form->setElementDecorators(array(new Fisma_Form_ClassifyIncidentDecorator()));
+            $form->setElementDecorators(array(new Fisma_Form_CreateIncidentDecorator()));
 
             $this->view->assign('form', $form);
 
             $q  = Doctrine_Query::create()
-                ->select('iw.*')
-                ->from('IrIncidentWorkflow iw')
-                ->where('iw.incidentId = ?', $incident_id);
+                  ->select('iw.*')
+                  ->from('IrIncidentWorkflow iw')
+                  ->where('iw.incidentId = ?', $incident_id);
 
             $steps = $q->execute();
 
@@ -652,15 +730,11 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             $this->render('close');
 
         } elseif($status == 'closed') {
-            
             $q  = Doctrine_Query::create()
-                ->select('iw.*')
-                ->from('IrIncidentWorkflow iw')
-                ->where('iw.incidentId = ?', $incident_id);
-
-            $steps = $q->execute();
-
-            $steps = $steps->toArray();
+                  ->select('iw.*')
+                  ->from('IrIncidentWorkflow iw')
+                  ->where('iw.incidentId = ?', $incident_id);
+            $steps = $q->execute()->toArray();
             
             foreach($steps as $key => $step) {
                 if($step['userId']) {
@@ -669,8 +743,6 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             }
 
             $this->view->assign('steps', $steps);
-            
-
             $this->render('history');
         }
     }
@@ -682,43 +754,33 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
      */
     public function cloneAction() 
     {
-        $inc_obj = new Incident();        
+        $incidentId = $this->_request->getParam('id');
+        $incident = Doctrine::getTable('Incident')->find($incidentId);
 
-        $incident_id = $this->_request->getParam('id');
-        $incident = $inc_obj->getTable()->find($incident_id);
-
-        /* create a clone of the incident object */
+        // create a clone of the incident object
         $clone = $incident->copy(false);
         $clone->status = 'new';
+        $clone->link('Actors', $this->_getIrcs());
         $clone->save();
 
-
-        /* add relationship to the cloned incident table */
-        $clone_inc = new IrClonedIncident();
-
-        $user = User::currentUser();
-        
-        $clone_inc->origIncidentId  = $incident_id;
-        $clone_inc->cloneIncidentId = $clone->id;
-        $clone_inc->createdTs       = date('Y-d-m H:i:s');
-        $clone_inc->userId          = $user['id'];
-
-        $clone_inc->save();
-
-        /* associate edcirc with cloned incident as actor */
-        $actor = new IrIncidentActor();
-
-        $actor->incidentId = $clone->id;
-        $actor->userId = $this->_getEDCIRC();
-        $actor->save();
+        // add relationship to the cloned incident table
+        $cloneLink = new IrClonedIncident();
+        $cloneLink->origIncidentId  = $incidentId;
+        $cloneLink->cloneIncidentId = $clone->id;
+        $cloneLink->createdTs       = date('Y-d-m H:i:s');
+        $cloneLink->userId          = User::currentUser()->id;
+        $cloneLink->save();
 
         $this->message('The incident has been cloned.', self::M_NOTICE);
-        $this->_forward('dashboard');
+        $this->_redirect('/panel/incident/sub/dashboard');
     }
         
 
     /**
      * Displays the incident workflow interface
+     * 
+     * @todo holy smokes this is convoluted. the 'view' action renders the 'workflow' view, while the 'workflow'
+     * action renders the 'workflow-interface' view
      *
      * @return string the rendered page
      */
@@ -726,23 +788,15 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         $incident_id = $this->_request->getParam('id');
         
         $q  = Doctrine_Query::create()
-            ->select('iw.*')
-            ->from('IrIncidentWorkflow iw')
-            ->where('iw.incidentId = ?', $incident_id);
-
+              ->select('iw.*, r.*, u.*')
+              ->from('IrIncidentWorkflow iw')
+              ->leftJoin('iw.Role r')
+              ->leftJoin('iw.User u')
+              ->where('iw.incidentId = ?', $incident_id)
+              ->orderBy('iw.cardinality')
+              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         $steps = $q->execute();
 
-        $steps = $steps->toArray();
-       
-        foreach($steps as $key => $step) {
-            if($step['userId']) {
-                $steps[$key]['user'] = $this->_getUser($step['userId']);
-            }
-            elseif ($step['roleId']) {
-                $steps[$key]['role'] = $this->_getRole($step['roleId']);
-            }
-        }
-       
         $user = User::currentUser();
         $this->view->assign('user_roleId', $user['UserRole'][0]['roleId']);
         
@@ -757,8 +811,6 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
 
     /**
      * Updates incident to show that a particular step has been completed
-     *
-     * @return null
      */
     public function completestepAction() {
         $incident_id = $this->_request->getParam('id');
@@ -770,13 +822,15 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         /* update step just completed */
         $step = $step->getTable()->find($step_id);
         $step->status     = 'completed';
-        $step->comments   = $comments;
-        $step->userId     = Zend_Auth::getInstance()->getIdentity()->id;
+        $step->comments   = $this->view->TextToHtml($comments);
+        $step->User       = User::currentUser();
         $step->completeTs = date('Y-m-d H:i:s');
         $step->save();
+        $workflowDescription = $step->name;
+        $workflowCompletedBy = $step->User->username;
         
         $step_completed      = $step_id;
-        $step_completed_sort = $step->sortorder;
+        $step_completed_sort = $step->cardinality;
 
         /* update next step to make it current */
         $step = $step->getTable()->find($step_id + 1);
@@ -800,7 +854,6 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             $incident->status = 'resolved';
 
             $incident->save();
-           
     
             foreach($this->_getAssociatedUsers($incident_id) as $userid) {
                 /* Must instantiate object for each message to prevent exceptions */
@@ -814,7 +867,7 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
 
         foreach($this->_getAssociatedUsers($incident_id) as $userid) {
             $mail = new Fisma_Mail();
-            $mail->IRStep($userid, $incident_id);
+            $mail->IRStep($userid, $incident_id, $workflowDescription, $workflowCompletedBy);
         }
 
         $this->view->assign('step_completed', $step_completed);
@@ -829,31 +882,18 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
      * @return null
      */
     public function closeAction() {
-        $incident_id = $this->_request->getParam('id');
-        $step_id     = $this->_request->getParam('step_id');
-        $comment     = $this->_request->getParam('comment');
+        $incidentId = $this->_request->getParam('id');
+        $stepId = $this->_request->getParam('step_id');
+        $comment = $this->_request->getParam('comment');
 
-        $incident = new Incident();
-        $incident = $incident->getTable()->find($incident_id);
-
-        $incident->status = 'closed';
+        $incident = Doctrine::getTable('Incident')->find($incidentId);
+        $incident->close($comment, $stepId);
         $incident->save();
-
-        $step = new IrIncidentWorkflow();
-        $step = $step->getTable()->find($step_id);
-
-        $step->status     = 'completed';
-        $step->comments   = $comment;
-        $step->userId     = Zend_Auth::getInstance()->getIdentity()->id;
-        $step->completeTs = date('Y-m-d H:i:s');
-
-        $step->save();
         
-        foreach($this->_getAssociatedUsers($incident_id) as $userid) {
+        foreach($this->_getAssociatedUsers($incidentId) as $userId) {
             $mail = new Fisma_Mail();
-            $mail->IRClose($userid, $incident_id);
+            $mail->IRClose($userId, $incidentId);
         }
-
  
         $this->message('Incident Closed', self::M_NOTICE);
         $this->_forward('dashboard');
@@ -866,98 +906,55 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
      */
     public function classifyAction() {
         $id            = $this->_request->getParam('id');
-        $subCategoryId = $this->_request->getParam('classification');
+        $subCategoryId = $this->_request->getParam('categoryId');
         $comment       =  $this->_request->getParam('comment');
         $pa            =  $this->_request->getParam('pii');
         $oig           =  $this->_request->getParam('oig');
 
-
-        /*  check to make sure nothing has been added to the incident workflow table for this incident already
-            this will prevent duplicate entries if the classify page is refreshed
-        */
+        // check to make sure nothing has been added to the incident workflow table for this incident already
+        // this will prevent duplicate entries if the classify page is refreshed
         $q  = Doctrine_Query::create()
-            ->select('count(*) as count')
-            ->from('IrIncidentWorkflow iw')
-            ->where('iw.incidentId = ?', $id);
-
-        $count = $q->execute();
-        $count = $count->toArray();    
-        $count = $count[0]['count'];
-
+              ->select('count(*) as count')
+              ->from('IrIncidentWorkflow iw')
+              ->where('iw.incidentId = ?', $id);
+        $count = $q->count();
 
         if($count == 0) {    
-            if ($this->_request->getParam('Reject') == 'Reject') {
-                $this->message('Incident Rejected', self::M_NOTICE);
-                
-                $incident = new Incident();
-                $incident = $incident->getTable()->find($id);
-                $incident->status = 'rejected';
+            if ($this->_request->getParam('Reject') == 'Reject') {                
+                $incident = Doctrine::getTable('Incident')->find($id);
+                $incident->reject($comment);
                 $incident->save();
-            
                 
-                /* Add rejected step to workflow table*/
-                $iw = new IrIncidentWorkflow();    
-               
-                $iw->incidentId  = $id; 
-                $iw->name        = 'Incident Rejected';
-                $iw->comments    = $comment;
-                $iw->sortorder   = 0;
-                $iw->userId      = Zend_Auth::getInstance()->getIdentity()->id;
-                $iw->completeTs = date('Y-m-d H:i:s');
-
-                $iw->status      = 'completed';
-
-                $iw->save();
-
-                /* Add final close step to incident workflow table*/
-                $iw = new IrIncidentWorkflow();    
-               
-                $iw->incidentId  = $id; 
-                $iw->name        = 'Close Incident';
-                $iw->sortorder   = 1;
-
-                $iw->status      = 'queued';
-
-                $iw->save();
-
+                $this->message('Incident Rejected', self::M_NOTICE);
             } elseif ($this->_request->getParam('Open') == 'Open')  {
                 $this->message('Incident Opened', self::M_NOTICE);
 
-                /* update incident status and category */
-                $incident                 = new Incident();
-                $incident                 = $incident->getTable()->find($id);
-                $incident->status         = 'open';
-                $incident->classification = $subCategoryId;
-                
+                // update incident status and category
+                $incident = Doctrine::getTable('Incident')->find($id);
+                $incident->status = 'open';
+                $incident->categoryId = $subCategoryId;
                 $incident->save();
 
-
-                /* Add opened step to workflow table*/
+                // Add opened step to workflow table
                 $iw = new IrIncidentWorkflow();    
-               
-                $iw->incidentId  = $id; 
+                $iw->Incident    = $incident; 
                 $iw->name        = 'Incident Opened';
                 $iw->comments    = $comment;
-                $iw->sortorder   = 0;
-                $iw->userId      = Zend_Auth::getInstance()->getIdentity()->id;
-                $iw->completeTs = date('Y-m-d H:i:s');
-
+                $iw->cardinality = 0;
+                $iw->User        = User::currentUser();
+                $iw->completeTs  = date('Y-m-d H:i:s');
                 $iw->status      = 'completed';
-
                 $iw->save();
 
-                /* create snapshot of workflow and add it to the ir_incident_workflow table */
+                // create snapshot of workflow and add it to the ir_incident_workflow table
                 $subcat = Doctrine::getTable('IrSubCategory')->find($subCategoryId);
                
                 $q = Doctrine_Query::create()
-                     ->select('s.id, s.roleId, s.sortorder, s.name, s.description')
+                     ->select('s.id, s.roleId, s.cardinality, s.name, s.description')
                      ->from('IrStep s')
                      ->where('s.workflowid = ?', $subcat->workflowId)
-                     ->orderby('s.sortorder');
-                    
-                $steps = $q->execute();
-     
-                $steps = $steps->toArray();
+                     ->orderby('s.cardinality');                    
+                $steps = $q->execute()->toArray();
 
                 foreach($steps as $step) {
                     $iw = new IrIncidentWorkflow();    
@@ -966,9 +963,9 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
                     $iw->roleId      = $step['roleId'];
                     $iw->name        = $step['name'];
                     $iw->description = $step['description'];
-                    $iw->sortorder   = $step['sortorder'];
+                    $iw->cardinality   = $step['cardinality'];
 
-                    $iw->status      = ($step['sortorder'] == 1) ? 'current' : 'queued';
+                    $iw->status      = ($step['cardinality'] == 1) ? 'current' : 'queued';
                                     
                     $iw->save();
                 }
@@ -978,7 +975,7 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
                
                 $iw->incidentId  = $id; 
                 $iw->name        = 'Close Incident';
-                $iw->sortorder   = $step['sortorder'] + 1;
+                $iw->cardinality   = $step['cardinality'] + 1;
 
                 $iw->status      = 'queued';
 
@@ -1026,16 +1023,14 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         $this->view->assign('association', $association);
 
         $q  = Doctrine_Query::create()
-            ->select('c.*')
+            ->select('c.createdTs, c.comment, u.nameFirst, u.nameLast')
             ->from('IrComment c')
+            ->innerJoin('c.User u')
             ->where('c.incidentId = ?', $incident_id)
-            ->orderBy('createdTs DESC');
+            ->orderBy('createdTs DESC')
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        $comments = $q->execute()->toArray();
-
-        foreach($comments as $key => $comment) {
-            $comments[$key]['user'] = $this->_getUser($comment['userId']);
-        }
+        $comments = $q->execute();
 
         $this->view->assign('comments', $comments);
 
@@ -1069,34 +1064,30 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
 
         $this->render('comments-noform');   
     }
-
-    
+  
     /**
      * Adds a comment to the database and associates it with an incident
      *
      * @return Zend_Form
      */
     function addcommentAction() {
-        $incident_id = $this->_request->getParam('id');
-        $comments    = $this->_request->getParam('comments');
+        $incidentId = $this->_request->getParam('id');
+        $comments = $this->_request->getParam('comments');
         
         $comment = new IrComment();
-
-        $comment->incidentId = $incident_id;
-        $comment->userId     = Zend_Auth::getInstance()->getIdentity()->id;
+        $comment->incidentId = $incidentId;
+        $comment->User       = User::currentUser();
         $comment->createdTs  = date('Y-m-d H:i:s');
-        $comment->comment    = $comments;
-
+        $comment->comment    = $this->view->TextToHtml($comments);
         $comment->save();
-        
-        foreach($this->_getAssociatedUsers($incident_id) as $userid) {
+
+        foreach($this->_getAssociatedUsers($incidentId) as $userid) {
             $mail = new Fisma_Mail();
-            $mail->IRComment($userid, $incident_id);
+            $mail->IRComment($userid, $incidentId);
         }
 
         $this->_forward('comments');
     }
-
 
     /**
      * Returns the forms and lists for managing actors and viewers
@@ -1105,28 +1096,26 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
      */
     public function actorAction() 
     {
+        $this->_helper->layout->disableLayout();
         $id = $this->_request->getParam('id');
 
         $q = Doctrine_Query::create()
              ->select('u.id, u.nameFirst, u.nameLast, u.username, ur.*, r.nickname as role')
              ->from('User u')
-             ->innerJoin('u.UserRole ur')
-             ->innerJoin('ur.Role r')
+             ->innerJoin('u.Roles r')
              ->where('u.id NOT IN (SELECT ia.userId FROM IrIncidentActor ia WHERE ia.incidentid = ?)', $id)
              ->andWhere('u.id NOT IN (SELECT io.userId FROM IrIncidentObserver io WHERE io.incidentid = ?)', $id)
              ->andWhere('NOT (u.username = ?)', 'root')
              ->orderBy('u.nameLast');
-
         $users = $q->execute()->toArray();
-
+        
         $this->view->assign('id',$id);
         $this->view->assign('users',$users);
 
         $q = Doctrine_Query::create()
              ->select('u.id, u.nameFirst, u.nameLast, u.username, ur.*, r.nickname as role')
              ->from('user u')
-             ->innerJoin('u.UserRole ur')
-             ->innerJoin('ur.Role r')
+             ->innerJoin('u.Roles r')
              ->where('u.id IN (SELECT ia.userId FROM IrIncidentActor ia WHERE ia.incidentId = ?)', $id)
              ->orderBy('u.nameLast');
 
@@ -1137,8 +1126,7 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         $q = Doctrine_Query::create()
              ->select('u.id, u.nameFirst, u.nameLast, u.username, ur.*, r.nickname as role')
              ->from('user u')
-             ->innerJoin('u.UserRole ur')
-             ->innerJoin('ur.Role r')
+             ->innerJoin('u.Roles r')
              ->where('u.id IN (SELECT io.userId FROM IrIncidentObserver io WHERE io.incidentId = ?)', $id)
              ->orderBy('u.nameLast');
 
@@ -1238,18 +1226,11 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
     /**
      * list the incidents from the search, 
      * if search none, list all incidents
-     * 
      */
     public function searchAction()
     {
-        $ids = $this->_userIncidents();
-
-        if (empty($ids)) {
-            $ids = array(-1);
-        }
-
         Fisma_Acl::requirePrivilege('incident', 'read');
-        $value = trim($this->_request->getParam('keywords'));
+        $keywords = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
@@ -1266,20 +1247,18 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             throw new Fisma_Exception('Invalid "sortBy" parameter');
         }
         
-        
         $order = strtoupper($order);
         if ($order != 'DESC') {
             $order = 'ASC'; //ignore other values
         }
         
-        $q = Doctrine_Query::create()
-             ->select('*')
-             ->from('Incident i')
-             ->whereIn('i.id', $ids)
+        $q = $this->_getUserIncidentQuery()
+             ->select('i.id, i.additionalInfo, i.status, i.piiInvolved, i.reportTs, c.name')
+             ->leftJoin('i.Category c')
              ->orderBy("i.$sortBy $order")
-             ->limit($this->_paging['count'])
-             ->offset($this->_paging['startIndex']);
-             
+             ->offset($this->_paging['startIndex'])
+             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
         if ($status[0] != 'all') {
             $q->whereIn('i.status', $status);
         }
@@ -1292,27 +1271,22 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
             $q->andWhere('i.reportTs < ?', $this->_request->getParam('endDt'));
         }
         
-        if ($this->_request->getParam('keywords')) {
-            $keywords = $this->_request->getParam('keywords');
-            $q->andWhere('i.additionalInfo LIKE ?', '%'.$keywords[0].'%');
+        if ($keywords) {
+            // lucene search 
+            $index = new Fisma_Index('Incident');
+            $ids = $index->findIds($keywords);
+            if (!empty($ids)) {
+                $q->whereIn('id', $ids);
+            }
         }
 
         $totalRecords = $q->count();
         $incidents = $q->execute();
-    
-        $incidents = $incidents->toArray();
-   
+
         foreach ($incidents as $key => $val) {
-            $q2 = Doctrine_Query::create()
-                  ->select('sc.name')
-                  ->from('IrSubCategory sc')
-                  ->where('sc.id = ?', $val['classification']);
-            
-            $cat = $q2->execute()->toArray();            
+            $incidents[$key]['category'] = $incidents[$key]['Category']['name'];
 
-            $incidents[$key]['category'] = $cat[0]['name'];
-
-            if ($incidents[$key]['piiInvolved'] == 1) {
+            if ($incidents[$key]['piiInvolved']) {
                 $incidents[$key]['piiInvolved'] = '&#10004;';
             } else {
                 $incidents[$key]['piiInvolved'] = '&#10007;';
@@ -1334,19 +1308,22 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
     }
 
     public function editAction() 
-    {
+    {        
         $incident_id = $this->_request->getParam('id');
+        $this->_assertCurrentUserCanUpdateIncident($incident_id);
         $this->view->assign('id', $incident_id);
 
-        $incident = Doctrine::getTable('Incident')->find($incident_id);       
-
+        $incident = Doctrine::getTable('Incident')->find($incident_id);
 
         $form = $this->getForm();
         $form->setAction("/panel/incident/sub/update/id/$incident_id");
-
-        $incident = $incident->toArray();
-
-        $form->setDefaults($incident);
+        $form->setDefaults($incident->toArray());
+        
+        // If this was reported by a user with an account on the system, then remove the "reporter" part of the form
+        if ($incident->ReportingUser) {
+            $form->removeSubForm('incident1Contact');
+            $this->view->reportingUser = $incident->ReportingUser;
+        }
 
         $this->view->form = $form;
         $this->render('edit');
@@ -1354,44 +1331,18 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
 
     public function updateAction() 
     {
-       Fisma_Acl::requirePrivilege('incident', 'update');
-        $id = $this->_request->getParam('id', 0);
-        $incident = new Incident();
-        $incident = $incident->getTable()->find($id);
+        $id = $this->_request->getParam('id');
+        $this->_assertCurrentUserCanUpdateIncident($id);
+        $incident = Doctrine::getTable('Incident')->find($id);
 
         if (!$incident) {
             throw new Exception_General("Invalid Incident ID");
         }
 
-        $form = $this->getForm($incident);
-        $incidentValues = $this->_request->getPost();
+        $incident->merge($this->_request->getPost());
+        $incident->save();
 
-        if ($form->isValid($incidentValues)) {
-            $isModify = false;
-            $incidentValues = $form->getValues();
-            $incident->merge($incidentValues);
-
-            if ($incident->isModified()) {
-                $incident->save();
-                $isModify = true;
-            }
-
-            if ($isModify) {
-                $msg = "The incident is saved";
-                $model = self::M_NOTICE;
-            } else {
-                $msg = "Nothing changed";
-                $model = self::M_WARNING;
-            }
-            $this->message($msg, $model);
-            $this->_forward('view', null, null, array('id' => $incident->id));
-        } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            // Error message
-            $this->message("Unable to update incident<br>$errorString", self::M_WARNING);
-            // On error, redirect back to the edit action.
-            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
-        }
+        $this->_forward('view', null, null, array('id' => $incident->id));
     }
 
     /** 
@@ -1452,6 +1403,63 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         $this->_forward('dashboard');
     }
 
+    /**
+     * Assert that the current user is allowed to modify the specified incident.
+     * 
+     * Throws an exception if the current user is not allowed to modify the specified incident.
+     * 
+     * This is an expensive operation. DO NOT CALL IT IN A TIGHT LOOP.
+     * 
+     * @param int $incidentId
+     */
+    private function _assertCurrentUserCanUpdateIncident($incidentId)
+    {
+        // A quick check:
+        Fisma_Acl::requirePrivilege('incident', 'update');
+        
+        // Otherwise, check if this user is in the actors list
+        $q = Doctrine_Query::create()
+             ->from('Incident i')
+             ->innerJoin('i.Actors a')
+             ->where('i.id = ? AND a.id = ?', array($incidentId, User::currentUser()->id));
+        $c = $q->count();
+        
+        if ($c < 1) {
+            throw new Fisma_Exception_InvalidPrivilege('You are not allowed to edit this incident.');
+        }
+    }
+
+    /**
+     * Assert that the current user is allowed to view the specified incident.
+     * 
+     * Throws an exception if the current user is not allowed to view the specified incident.
+     * 
+     * This is an expensive operation. DO NOT CALL IT IN A TIGHT LOOP.
+     * 
+     * @param int $incidentId
+     */
+    private function _assertCurrentUserCanViewIncident($incidentId)
+    {
+        // A quick check:
+        /**
+         * @todo wtf
+         */
+        //Fisma_Acl::requirePrivilege('incident', 'read');
+        
+        // Otherwise, check if this user is in the observers list
+        $q = Doctrine_Query::create()
+             ->select('i.id')
+             ->from('Incident i')
+             ->leftJoin('i.Actors a')
+             ->leftJoin('i.Observers o')
+             ->where('i.id = ?', array($incidentId))
+             ->andWhere('a.id = ? OR o.id = ?', array(User::currentUser()->id, User::currentUser()->id));
+        $c = $q->count();
+        
+        if ($c < 1) {
+            throw new Fisma_Exception_InvalidPrivilege('You are not allowed to view this incident.');
+        }
+    }
 
     private function _getStates() {
         $states = array (
@@ -1546,28 +1554,32 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         return 1;
     }
 
+    /**
+     * Returns all incident categories as a nested array, suitable for inserting into an HTML select
+     * 
+     * The outer array contains categories (CAT0, CAT1, etc.) and the inner array contain subcategories.
+     * 
+     * @return array
+     */
     private function _getCategories() {
         $q = Doctrine_Query::create()
-             ->select('c.id, c.category')
+             ->select('c.category, c.name, s.id, s.name')
              ->from('IrCategory c')
-             ->orderBy("c.category");
-
-        $categories = $q->execute()->toArray();
+             ->innerJoin('c.SubCategories s')
+             ->orderBy("c.category, s.name")
+             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $categories = $q->execute();
         
-        foreach($categories as $key => $val) {
-                $q2 = Doctrine_Query::create()
-                     ->select('s.id, s.name')
-                     ->from('IrSubCategory s')
-                     ->where('s.categoryId = ?', $val['id'])
-                     ->orderBy("s.name");
-
-                $subCats = $q2->execute()->toArray();
-                foreach($subCats as $key2 => $val2) {
-                    $ret_val[$val2['id']] = "{$val['category']} - {$val2['name']}";
-                }
+        // The categories need to be reformatted to use in a select menu. Zend Form Select has a weird format
+        // for select options
+        $selectOptions = array();
+        $outerCategory = '';
+        foreach ($categories as $category) {
+            $categoryLabel = "{$category['c_category']} - {$category['c_name']}";
+            $selectOptions[$categoryLabel][$category['s_id']] = $category['s_name'];
         }
 
-        return $ret_val;
+        return $selectOptions;
     }
     
     private function _getCategoriesArr() {
@@ -1632,24 +1644,28 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         return $role[0];
     }
 
-    private function _getEDCIRC()
+    /**
+     * Get the user ids of all IRCs
+     * 
+     * @return array
+     */
+    private function _getIrcs()
     {
-        /* not sure what the deal is here.. not working on anon incident form submit */
-        $q = Doctrine_Query::create()
-             ->select('r.id')
-             ->from('Role r')
-             ->where('r.nickname = ?', 'EDCIRC');
-       
-        $data = $q->execute()->toArray();
+        $query = Doctrine_Query::create()
+                 ->select('u.id')
+                 ->from('User u')
+                 ->innerJoin('u.Roles r')
+                 ->where('r.nickname LIKE ?', 'IRC')
+                 ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $ids = $query->execute();
 
-        $q = Doctrine_Query::create()
-             ->select('u.userId')
-             ->from('UserRole u')
-             ->where('u.roleId = ?', $data[0]['id']);
+        // Massage results
+        $return = array();
+        foreach ($ids as $id) {
+            $return[] = $id['u_id'];
+        }
 
-        $user = $q->execute()->toArray();
- 
-        return $user[0]['userId'];
+        return $return;
     }
 
     private function _getOIG()
@@ -1678,6 +1694,27 @@ class IncidentController extends Zend_Controller_Action // extends BaseControlle
         $user = $q->execute()->toArray();
                 
         return $user[0]['id'];
+    }
+
+    /**
+     * Returns a query which matches all of the users current incidents
+     * 
+     * @return Doctrine_Query
+     */
+    private function _getUserIncidentQuery()
+    {
+        $user = User::currentUser();
+        
+        // A user can be associated as an actor or observer, and so both tables need to be joined
+        // here to get all of a user's incidents.
+        $q = Doctrine_Query::create()
+             ->select('i.id')
+             ->from('Incident i')
+             ->leftJoin('i.Actors a')
+             ->leftJoin('i.Observers o')
+             ->where('a.id = ? OR o.id = ?', array($user->id, $user->id));
+
+        return $q;
     }
 
     private function _userIncidents() 

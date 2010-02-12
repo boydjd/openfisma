@@ -1,7 +1,11 @@
 This is an automatically generated message, please do not reply to this address.
 
-A workflow step has been completed for an incident.  You can view the incident at:
+The following workflow step has been completed for incident #<?php echo $this->incidentId; ?>:
 
-<?php echo $this->host;?>/panel/incident/view/<?php echo $this->incidentId; ?>
+> <?php echo "$this->workflowStep\n"; ?>
 
-Cheers
+This step was completed by <?php echo $this->workflowCompletedBy; ?>.
+
+You can view the incident at:
+
+<?php echo $this->baseUri(); ?>/panel/incident/sub/view/id/<?php echo $this->incidentId; ?>

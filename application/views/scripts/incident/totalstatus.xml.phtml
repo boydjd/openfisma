@@ -7,57 +7,33 @@
             <string>New</string>
             <string>Open</string>
             <string>Resolved</string>
-            <string>Closed</string>
             <string>Rejected</string>
-        </row>
-        <row>
-            <string>count</string>
+    	</row>
+    	<row>
+    	    <string>Incidents</string>  	    
             <number tooltip='<?php echo $this->summary['new']; ?>'><?php echo $this->summary['new']; ?></number>
             <number tooltip='<?php echo $this->summary['open']; ?>'><?php echo $this->summary['open']; ?></number>
             <number tooltip='<?php echo $this->summary['resolved']; ?>'><?php echo $this->summary['resolved']; ?></number>
-            <number tooltip='<?php echo $this->summary['closed']; ?>'><?php echo $this->summary['closed']; ?></number>
             <number tooltip='<?php echo $this->summary['rejected']; ?>'><?php echo $this->summary['rejected']; ?></number>
-        </row>
+    	</row>
     </chart_data>
 
     <chart_grid_h thickness='0' />
 
-    <chart_rect x='100'
-                y='50'
-                width='100'
-                height='100' />
+    <chart_type>bar</chart_type>
 
-    <chart_type>pie</chart_type>
-    
-    <chart_label font='arial'
-                 bold='true'
-                 size='12'
-                 position='outside'
-                 as_percentage='true' />
+    <legend layout='hide' />
 
-    <legend layout='vertical'
-            bullet='circle'
-            font='arial'
-            bold='true'
-            size='10'
-            x='25'
-            y='25'
-            width='50'
-            height='100' />
+    <series bar_gap='50' transfer="true"/>
+
+    <chart_label color="000000"
+                 position="outside"
+                 />
 
     <series_color>
-        <color>FF3333</color>
-        <color>33FF33</color>
-        <color>3333FF</color>
-        <color>FFFF33</color>
-        <color>33FFFF</color>
+        <color>ff3333</color>
+        <color>eaed1e</color>
+        <color>66ff66</color>
+        <color>b3b3b3</color>
     </series_color>
-
-    <series_explode>
-        <number>5</number>
-        <number>5</number>
-        <number>5</number>
-        <number>5</number>
-        <number>5</number>
-    </series_explode>
 </chart> 

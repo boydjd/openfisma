@@ -6,15 +6,15 @@ if ($this->association == 'actor') {
 <?php } ?>
     <table class="fisma_crud">
         <?php 
-            if ($this->comments) {
+            if (count($this->comments) > 0) {
                 foreach($this->comments as $comment) {
                     print " <tr>
-                                <td style='text-align: left'><b>{$comment['createdTs']}</b></td>
-                                <td>{$comment['user']['nameFirst']} {$comment['user']['nameLast']} ({$comment['user']['role']})</td>
+                                <td style='text-align: left'><b>{$comment['c_createdTs']}</b></td>
+                                <td>{$comment['u_nameFirst']} {$comment['u_nameLast']}</td>
                             </tr>
                             <tr>
                                 <td>&nbsp;</td>
-                                <td><h2>{$comment['comment']}</h2></td>
+                                <td><h2>{$comment['c_comment']}</h2></td>
                             </tr>
                             <tr>
                                 <td colspan='3'><hr /></td>

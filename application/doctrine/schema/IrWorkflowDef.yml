@@ -19,5 +19,3 @@ IrWorkflowDef:
             updated:
                 name: modifiedTs
                 type: timestamp
-
-

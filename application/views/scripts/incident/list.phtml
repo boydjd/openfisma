@@ -23,6 +23,7 @@ var myColumnDefs = [
     
         // Build custom request
         var request = "<?php echo $this->link; ?>" + 
+                      "/status/all" +
                       "/sortby/" + status +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
@@ -42,7 +43,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         //dynamicData: false
-        initialRequest: "<?php echo $this->link; ?>/status/<?php print $this->status; ?>/startDt/<?php print $this->startDt; ?>/endDt/<?php print $this->endDt; ?>/keywords/<?php print $this->keywords; ?>/sortby/reportTs/order/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        initialRequest: "<?php echo $this->link; ?>/status/all/sortby/reportTs/order/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
         dynamicData: true, 
         sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(

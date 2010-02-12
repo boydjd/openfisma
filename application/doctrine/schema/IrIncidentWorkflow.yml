@@ -26,8 +26,13 @@ IrIncidentWorkflow:
 
         incidentId: 
             type: integer
+            comment: Foreign key to the incident to which this workflow step belongs
         roleId: 
             type: integer
+            comment: Foreign key to the role which is required to execute this workflow step
+        userId:
+            type: integer
+            comment: Foreign key to the user who completed this step
 
     relations:
         # One to one:
@@ -41,3 +46,7 @@ IrIncidentWorkflow:
             local: roleId
             foreign: id
             foreignAlias: IncidentWorkflows
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: WorkflowSteps

@@ -4,39 +4,20 @@
 <div id="incidentData">Loading...</div>
 
 <script type="text/javascript">
+var viewDetailsButton;
 
 var incidentCallback = {
         success: function(o) {
             document.getElementById('incidentData').innerHTML =  o.responseText;
-            var viewDetailsButton = new YAHOO.widget.Button({
+            viewDetailsButton = new YAHOO.widget.Button({
                                        type: "submit",
-                                       label: "View Details",
+                                       label: "Show Details",
                                        id: "viewDetailsButton",
                                        name: "viewDetailsButton",
                                        value: "View Details",
                                        container: "viewDetailsButtonContainer",
                                        disabled: false,
                                        onclick: { fn: onViewButtonClick }
-                                   });
-            var hideDetails1Button = new YAHOO.widget.Button({
-                                       type: "submit",
-                                       label: "Hide Details",
-                                       id: "hideDetailsButton",
-                                       name: "hideDetailsButton",
-                                       value: "Hide Details",
-                                       container: "hideDetails1ButtonContainer",
-                                       disabled: false,
-                                       onclick: { fn: onHideButtonClick }
-                                   });
-            var hideDetails2Button = new YAHOO.widget.Button({
-                                       type: "submit",
-                                       label: "Hide Details",
-                                       id: "hideDetailsButton",
-                                       name: "hideDetailsButton",
-                                       value: "Hide Details",
-                                       container: "hideDetails2ButtonContainer",
-                                       disabled: false,
-                                       onclick: { fn: onHideButtonClick }
                                    });
             var editDetailsButton = new YAHOO.widget.Button({
                                        type: "link",
@@ -57,14 +38,13 @@ var incidentCallback = {
 var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
 
 function onViewButtonClick() {
-    document.getElementById('incident_details').style.display = 'block'; 
-    document.getElementById('hideDetails1ButtonContainer').style.display = 'inline'; 
-    return false;
-}
-
-function onHideButtonClick() {
-    document.getElementById('incident_details').style.display = 'none'; 
-    document.getElementById('hideDetails1ButtonContainer').style.display = 'none'; 
+    if ('block' == document.getElementById('incident_details').style.display) {
+        document.getElementById('incident_details').style.display = 'none'; 
+        viewDetailsButton.set('label', 'Show Details');
+    } else {
+        document.getElementById('incident_details').style.display = 'block'; 
+        viewDetailsButton.set('label', 'Hide Details');
+    }
     return false;
 }
 
@@ -83,29 +63,23 @@ function onHideButtonClick() {
 var callback = {
         success: function(o) {
             document.getElementById('actors').innerHTML =  o.responseText;
+            var actorContainer = document.getElementById('actors');
+            var scriptNodes = actorContainer.getElementsByTagName('script');
+            for (var i=0; i < scriptNodes.length; i++) {
+                if (scriptNodes[i].getAttribute('executeFlag') != 'true') {
+                    try {
+                        eval(scriptNodes[i].text);
+                    } catch (e) {
+                        alert('Not able to execute one of the scripts embedded in this page: '
+                              + e.message);
+                    } 
+                    // Set a flag that prevents this script from being executed more than once
+                    scriptNodes[i].setAttribute('executeFlag', 'true');
+                }
+            }
+            
             actor_useridTooltip = new YAHOO.widget.Tooltip("actor_useridTooltipObj", { context:"actor_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Actors</b> can add/remove users to/from an incident, complete workflow steps, and submit comments to an incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
             observer_useridTooltip = new YAHOO.widget.Tooltip("observer_useridTooltipObj", { context:"observer_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Observers</b> can view an incident, and will be notified when the incident is updated.  They cannot perform any actions on the incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
-            var actorButton = new YAHOO.widget.Button({
-                                       type: "submit",
-                                       label: "Add Actor",
-                                       id: "actorButton",
-                                       name: "actorButton",
-                                       value: "Add Actor",
-                                       container: "actorButtonContainer",
-                                       disabled: false
-                                       
-                                   });
-            var observerButton = new YAHOO.widget.Button({
-                                       type: "submit",
-                                       label: "Add Observer",
-                                       id: "observerButton",
-                                       name: "observerButton",
-                                       value: "Add Observer",
-                                       container: "observerButtonContainer",
-                                       disabled: false
-                                       
-                                   });
-
         },
         failure: function(o) {
             alert("Error loading Actors/Observers");

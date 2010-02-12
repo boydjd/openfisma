@@ -1,7 +1,7 @@
 This is an automatically generated message, please do not reply to this address.
 
-An incident has been resolved.  You can view the incident at:
+Incident #<?php echo $this->incidentId; ?> has been resolved.  
 
-<?php echo $this->host;?>/panel/incident/view/<?php echo $this->incidentId; ?>
+You can view the incident at:
 
-Cheers
+<?php echo $this->baseUri(); ?>/panel/incident/sub/view/id/<?php echo $this->incidentId; ?>

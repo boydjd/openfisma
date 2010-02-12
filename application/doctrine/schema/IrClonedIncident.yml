@@ -8,13 +8,11 @@ IrClonedIncident:
             type: integer
         userId: 
             type: integer
-        comments:
-            type: string
-            extra:
-                purify: html
 
     actAs:
         Timestampable:
             created:
                 name: createdTs
                 type: timestamp
+            updated:
+                disabled: true

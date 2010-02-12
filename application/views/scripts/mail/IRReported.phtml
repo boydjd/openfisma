@@ -1,7 +1,7 @@
 This is an automatically generated message, please do not reply to this address.
 
-A new incident has been reported.  You can view the incident at:
+A new incident (ID #<?php echo $this->incidentId; ?>) has been reported.  
 
-<?php echo $this->host;?>/panel/incident/view/<?php echo $this->incidentId; ?>
+You can view the incident at:
 
-Cheers
+<?php echo $this->baseUri(); ?>/panel/incident/sub/view/id/<?php echo $this->incidentId; ?>

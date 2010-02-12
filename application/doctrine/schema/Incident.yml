@@ -1,5 +1,5 @@
 Incident:
-    listeners: [XssListener]
+    listeners: [XssListener, IndexListener]
     
     columns:
         reporterTitle: 
@@ -12,6 +12,7 @@ Incident:
             extra:
                 purify: plaintext
                 logicalName: Reporter\'s First Name
+                searchIndex: unstored
             comment: >
                 The reporter is the user who reports the incident to the organization. The report can be made directly
                 (by logging into OpenFISMA) or can be made indirectly by reporting to an intermediary authority (such
@@ -21,11 +22,13 @@ Incident:
             extra:
                 purify: plaintext
                 logicalName: Reporter\'s Last Name
+                searchIndex: unstored
         reporterOrganization: 
             type: string(255)
             extra:
                 purify: plaintext
                 logicalName: Reporter\'s Organization
+                searchIndex: unstored
 
         reporterAddress1: 
             type: string(255)
@@ -119,6 +122,7 @@ Incident:
             extra: 
                 purify: html
                 logicalName: Additional Incident Details
+                searchIndex: unstored
 
         piiInvolved:
             type: boolean
@@ -130,6 +134,7 @@ Incident:
             extra:
                 purify: html
                 logicalName: Additional PII Details
+                searchIndex: unstored
             comment: Additional space to explain the nature of PII involved
         piiMobileMedia:
             type: boolean
@@ -241,6 +246,7 @@ Incident:
             extra: 
                 purify: html
                 logicalName: Actions That Were Taken Prior To Incident Report
+                searchIndex: unstored
             comment: What actions were taken prior to reporting the incident?
         
         files:
@@ -249,14 +255,45 @@ Incident:
         status:
             type: enum
             values: [new, open, resolved, rejected, closed]
+            extra:
+                searchIndex: unstored
 
+        workflowId:
+            type: integer
+            comment: Foreign key to the workflow for this incident
         reportingUserId:
             type: integer
             comment: Foreign key to the user who reported this incident
+        categoryId:
+            type: integer
+            comment: Foreign key to the IR sub category in which this incident belongs
 
     relations:
+        Workflow:
+            class: IrIncidentWorkflow
+            local: workflowId
+            foreign: id
+        ClonedFromIncident:
+            class: Incident
+            local: origIncidentId
+            foreign: cloneIncidentId
+            refClass: IrClonedIncident
         ReportingUser:
             class: User
             local: reportingUserId
             foreign: id
             foreignType: one
+        Category:
+            class: IrSubCategory
+            local: categoryId
+            foreign: id
+        Actors:
+            class: User
+            local: incidentId
+            foreign: userId
+            refClass: IrIncidentActor
+        Observers:
+            class: User
+            local: incidentId
+            foreign: userId
+            refClass: IrIncidentObserver

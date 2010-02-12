@@ -31,7 +31,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class IRCategoryController extends SecurityController
+class IrCategoryController extends SecurityController
 {
     private $_paging = array(
         'startIndex' => 0,
@@ -125,7 +125,6 @@ class IRCategoryController extends SecurityController
         echo json_encode($tableData);
     }
     
-
     /**
      *  Render the form for searching the ircategories.
      */
@@ -142,6 +141,7 @@ class IRCategoryController extends SecurityController
      */
     public function treeAction() 
     {
+        Fisma_Acl::requirePrivilege('ircategory', 'read');
         $this->searchbox();
         $this->render('tree');        
     }
@@ -151,7 +151,7 @@ class IRCategoryController extends SecurityController
      */
     public function treeDataAction() 
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read', '*');
+        Fisma_Acl::requirePrivilege('ircategory', 'read');
        
         /* Get all categories */ 
         $q = Doctrine_Query::create()
@@ -454,7 +454,7 @@ class IRCategoryController extends SecurityController
      */
     public function subviewAction()
     {
-        Fisma_Acl::requirePrivilege('iricategory', 'read'); 
+        Fisma_Acl::requirePrivilege('ircategory', 'read'); 
         $this->searchbox();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'subview');
@@ -495,8 +495,7 @@ class IRCategoryController extends SecurityController
     {
         Fisma_Acl::requirePrivilege('ircategory', 'update'); 
         $id = $this->_request->getParam('id', 0);
-        $irsubcategory = new IrSubCategory();
-        $irsubcategory = $irsubcategory->getTable()->find($id);
+        $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);
 
         if (!$irsubcategory) {
             throw new Exception_General("Invalid category ID");

@@ -1,52 +1,45 @@
-<?php $incident = $this->incident[0]; ?>
-
-<table class="fisma_crud">
-    <tr>
-        <td colspan="3" style="text-align: left"><h1>Incident Summary:</h1></td>
-    </tr>
-    <?php if ($this->cloneId) { ?>
+<table class="keyValues">
+    <?php 
+    if (isset($this->incident->ClonedFromIncident)):
+    ?>
     <tr>
         <td>Cloned From Incident:</td>
-        <td><a href="/panel/incident/view/id/<?php print $this->cloneId; ?>"><?php print $this->cloneId; ?></a></td>
+        <td><a href="/panel/incident/view/id/<?php print $id; ?>"><?php print $id; ?></a></td>
     </tr>
-    <? } ?>
+    <?php
+    endif;
+    ?>
     <tr>
-        <td>IncidentID:</td>
-        <td><?php print $incident['id']; ?></td>
+        <td>Incident ID:</td>
+        <td><?php print $this->incident->id; ?></td>
     </tr>
     <tr>
-        <td>Classification:</td>
-        <td><?php print $incident['category']; ?></td>
+        <td>Category:</td>
+        <td><?php print @$this->incident->Category->name; ?></td>
     </tr>
     <tr>
         <td>Description:</td>
-        <td><?php print $incident['additionalInfo']; ?></td>
+        <td><?php print $this->incident['additionalInfo']; ?></td>
     </tr>
     <tr>
-        <td>Actions Taken:</td>
-        <td><?php print $incident['actionsTaken']; ?></td>
-    </tr>
-    <tr>
-        <td>Assessment Critical:</td>
-        <td><?php print $incident['assessmentCritical']; ?></td>
-    </tr>
-    <tr>
-        <td>Assessment Sensitivity:</td>
-        <td><?php print $incident['assessmentSensitivity']; ?></td>
+        <td>Actions Taken Prior To Report:</td>
+        <td><?php print $this->incident['actionsTaken']; ?></td>
     </tr>
     <tr>
         <td>PII Involved</td>
-        <td><?php print ($incident['piiInvolved'] == 1) ? 'yes' : 'no';  ?></td>
+        <td><?php print ($this->incident['piiInvolved'] == 1) ? 'YES' : 'NO';  ?></td>
     </tr>
     <tr>
-        <td>Status</td>
-        <td><?php print $incident['status']; ?></td>
+        <td>
+            Status
+        </td>
+        <td><?php print $this->incident['status']; ?></td>
     </tr>
     <tr>
         <td>&nbsp;</td>
         <td>
             <?php if ($this->association == 'actor') { ?>
-                <?php if ($incident['status'] == 'closed' ) { ?>
+                <?php if ($this->incident['status'] == 'closed' ) { ?>
                     <span id="cloneButtonContainer"></span>
                 <?php } else { ?>
                     <span id="editButtonContainer"></span>
@@ -57,154 +50,162 @@
         </td>
     </tr>
 </table>
-
-<br /><br />
-
-<table class="fisma_crud" id="incident_details" style="display: none;">
+<table class="keyValues" id="incident_details" style="display: none;">
     <tr>
         <td colspan="3" style="text-align: left"><h1>Incident Details:</h1></td>
     </tr>
-    <tr><td colspan="2" style="text-align: left;"><br /><u>Reporter Information</u></td></tr>
-    <tr>    
-        <td>Name:</td>
-        <td><?php print $incident['reporterTitle']; ?> <?php print $incident['reporterFirstName']; ?> <?php print $incident['reporterLastName']; ?></td>
-    </tr>    
-    <tr>    
-        <td>Organiation:</td>
-        <td><?php print $incident['reporterOrganization']; ?></td>
-    </tr>    
-    <tr>    
-        <td>Address 1:</td>
-        <td><?php print $incident['reporterAddress1']; ?></td>
-    </tr>    
-    <tr>    
-        <td>Address 2:</td>
-        <td><?php print $incident['reporterAddress2']; ?></td>
-    </tr>    
-    <tr>    
-        <td>City, State Zip:</td>
-        <td><?php print $incident['reporterCity']; ?>, <?php print $incident['reporterState']; ?> <?php print $incident['reporterZip']; ?></td>
-    </tr>    
-    <tr>    
-    <tr>    
-        <td>Phone:</td>
-        <td><?php print $incident['reporterPhone']; ?></td>
-    </tr>    
-        <td>Fax:</td>
-        <td><?php print $incident['reporterFax']; ?></td>
-    </tr>    
-    <tr>    
-        <td>Email:</td>
-        <td><?php print $incident['reporterEmail']; ?></td>
-    </tr>    
-    
+    <?php
+    if (isset($this->incident->ReportingUser)):
+    ?>
+        <tr>
+            <td>Reporting User:</td>
+            <td><?php echo $this->incident->ReportingUser; ?></td>
+        </tr>
+    <?php
+    else:
+    ?>
+        <tr><td colspan="2" style="text-align: left;"><br /><u>Reporter Information</u></td></tr>
+        <tr>    
+            <td>Name:</td>
+            <td><?php print $this->incident['reporterTitle']; ?> <?php print $this->incident['reporterFirstName']; ?> <?php print $this->incident['reporterLastName']; ?></td>
+        </tr>    
+        <tr>    
+            <td>Organization:</td>
+            <td><?php print $this->incident['reporterOrganization']; ?></td>
+        </tr>    
+        <tr>    
+            <td>Address 1:</td>
+            <td><?php print $this->incident['reporterAddress1']; ?></td>
+        </tr>    
+        <tr>    
+            <td>Address 2:</td>
+            <td><?php print $this->incident['reporterAddress2']; ?></td>
+        </tr>    
+        <tr>    
+            <td>City, State Zip:</td>
+            <td><?php print $this->incident['reporterCity']; ?>, <?php print $this->incident['reporterState']; ?> <?php print $this->incident['reporterZip']; ?></td>
+        </tr>    
+        <tr>    
+        <tr>    
+            <td>Phone:</td>
+            <td><?php print $this->incident['reporterPhone']; ?></td>
+        </tr>    
+            <td>Fax:</td>
+            <td><?php print $this->incident['reporterFax']; ?></td>
+        </tr>    
+        <tr>    
+            <td>Email:</td>
+            <td><?php print $this->incident['reporterEmail']; ?></td>
+        </tr>    
+    <?php
+    endif;
+    ?>
 
     <tr><td colspan="2" style="text-align: left;"><br /><u>Incident Location</u></td></tr>
     <tr>    
         <td>Building:</td>
-        <td><?php print $incident['locationBuilding']; ?></td>
+        <td><?php print $this->incident['locationBuilding']; ?></td>
     </tr>    
     <tr>    
         <td>Room:</td>
-        <td><?php print $incident['locationRoom']; ?></td>
+        <td><?php print $this->incident['locationRoom']; ?></td>
     </tr>    
-    <tr>    
-        <td>Rack:</td>
-        <td><?php print $incident['locationRack']; ?></td>
-    </tr>    
-    
 
     <tr><td colspan="2" style="text-align: left;"><br /><u>Incident Time</u></td></tr>
     <tr>    
         <td>Incident Occured:</td>
-        <td><?php print $incident['incidentTs']; ?> <?php print $incident['incidentTz']; ?></td>
+        <td>
+            <?php print "{$this->incident['incidentDate']} 
+                         {$this->incident['incidentTime']} 
+                         {$this->incident['incidentTimezone']}"; ?>
+        </td>
     </tr>    
     <tr>    
         <td>Report Timestamp:</td>
-        <td><?php print $incident['reportTs']; ?> <?php print $incident['reportTz']; ?></td>
+        <td><?php print $this->incident['reportTs']; ?> <?php print $this->incident['reportTz']; ?></td>
     </tr>    
     
 
     <tr><td colspan="2" style="text-align: left;"><br /><u>PII</u></td></tr>
     <tr>    
         <td>Description:</td>
-        <td><?php print $incident['piiAdditional']; ?></td>
+        <td><?php print $this->incident['piiAdditional']; ?></td>
     </tr>    
     <tr>    
         <td>Mobile Media Involved:</td>
-        <td><?php if($incident['piiMobileMedia']) { print ($incident['piiMobileMedia'] == 1) ? 'yes' : 'no'; } ?></td>
+        <td><?php if($this->incident['piiMobileMedia']) { print ($this->incident['piiMobileMedia'] == 1) ? 'yes' : 'no'; } ?></td>
     </tr>    
     <tr>    
         <td>Media Type:</td>
-        <td><?php print $incident['piiMobileMediaType']; ?></td>
+        <td><?php print $this->incident['piiMobileMediaType']; ?></td>
     </tr>    
     <tr>    
         <td>Encrypted:</td>
-        <td><?php if($incident['piiEncrypted']) { print ($incident['piiEncrypted']  == 1) ? 'yes' : 'no'; } ?></td>
+        <td><?php if($this->incident['piiEncrypted']) { print ($this->incident['piiEncrypted']  == 1) ? 'yes' : 'no'; } ?></td>
     </tr>    
     <tr>    
         <td>Authorities Contacted:</td>
-        <td><?php if($incident['piiAuthoritiesContacted']) { print ($incident['piiAuthoritiesContacted'] == 1) ? 'yes' : 'no'; } ?></td>
+        <td><?php if($this->incident['piiAuthoritiesContacted']) { print ($this->incident['piiAuthoritiesContacted'] == 1) ? 'yes' : 'no'; } ?></td>
     </tr>    
     <tr>    
         <td>Police Report Filed:</td>
-        <td><?php print $incident['piiPoliceReport']; ?></td>
+        <td><?php print $this->incident['piiPoliceReport']; ?></td>
     </tr>    
     <tr>    
         <td>Individual Count:</td>
-        <td><?php print $incident['piiIndividualsCount']; ?></td>
+        <td><?php print $this->incident['piiIndividualsCount']; ?></td>
     </tr>    
     <tr>    
         <td>Individuals Notified:</td>
-        <td><?php if($incident['piiIndividualsNotification']) { print ($incident['piiIndividualsNotification'] == 1) ? 'yes' : 'no'; }  ?></td>
+        <td><?php if($this->incident['piiIndividualsNotification']) { print ($this->incident['piiIndividualsNotification'] == 1) ? 'yes' : 'no'; }  ?></td>
     </tr>    
     <tr>    
         <td>PII in Shipment:</td>
-        <td><?php if($incident['piiShipment']) { print ($incident['piiShipment'] == 1) ? 'yes' : 'no'; } ?></td>
+        <td><?php if($this->incident['piiShipment']) { print ($this->incident['piiShipment'] == 1) ? 'yes' : 'no'; } ?></td>
     </tr>    
     <tr>    
         <td>Shipment Sender Contacted:</td>
-        <td><?php print $incident['piiShipmentSenderContact']; ?></td>
+        <td><?php print $this->incident['piiShipmentSenderContact']; ?></td>
     </tr>    
     <tr>    
         <td>Shipment Company:</td>
-        <td><?php print $incident['piiShipmentSenderCompany']; ?></td>
+        <td><?php print $this->incident['piiShipmentSenderCompany']; ?></td>
     </tr>    
     <tr>    
         <td>Shipment Timeline:</td>
-        <td><?php print $incident['piiShipmentTimeline']; ?></td>
+        <td><?php print $this->incident['piiShipmentTimeline']; ?></td>
     </tr>    
     <tr>    
         <td>Shipment Tracking Numbers:</td>
-        <td><?php print $incident['piiShipmentTrackingNumbers']; ?></td>
+        <td><?php print $this->incident['piiShipmentTrackingNumbers']; ?></td>
     </tr>    
 
     <tr><td colspan="2" style="text-align: left;"><br /><u>Host</u></td></tr>
     <tr>    
         <td>Host:</td>
-        <td><?php print $incident['hostName']; ?></td>
+        <td><?php print $this->incident['hostName']; ?></td>
     </tr>    
     <tr>    
         <td>Host IP:</td>
-        <td><?php print $incident['hostIp']; ?></td>
+        <td><?php print $this->incident['hostIp']; ?></td>
     </tr>    
     <tr>    
         <td>Host OS:</td>
-        <td><?php print $incident['hostOs']; ?></td>
+        <td><?php print $this->incident['hostOs']; ?></td>
     </tr>    
     <tr>    
         <td>Host Description:</td>
-        <td><?php print $incident['hostAdditional']; ?></td>
+        <td><?php print $this->incident['hostAdditional']; ?></td>
     </tr>    
 
     <tr><td colspan="2" style="text-align: left;"><br /><u>Source</u></td></tr>
     <tr>    
         <td>Source IP:</td>
-        <td><?php print $incident['sourceIp']; ?></td>
+        <td><?php print $this->incident['sourceIp']; ?></td>
     </tr>    
     <tr>    
         <td>Source Description:</td>
-        <td><?php print $incident['sourceAdditional']; ?></td>
+        <td><?php print $this->incident['sourceAdditional']; ?></td>
     </tr>    
     
     <tr>

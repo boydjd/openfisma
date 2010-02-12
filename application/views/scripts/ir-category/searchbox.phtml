@@ -16,14 +16,8 @@
         echo $listButton;
         ?>
 
-        <?php if(Fisma_Acl::hasPrivilege('ircategory', 'create')) {
-        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
-                                               array('value' => 'Add IR Category', 
-                                                     'imageSrc' => '/images/add.png',
-                                                     'href' => '/panel/ircategory/sub/create'));
-        echo $createButton;
-        
-        $createButton = new Fisma_Yui_Form_Button_Link('subCcreateButton', 
+        <?php if(Fisma_Acl::hasPrivilege('ircategory', 'create')) {    
+        $createButton = new Fisma_Yui_Form_Button_Link('createSubcategoryButton', 
                                                array('value' => 'Add IR Sub Category', 
                                                      'imageSrc' => '/images/add.png',
                                                      'href' => '/panel/ircategory/sub/sub_create'));

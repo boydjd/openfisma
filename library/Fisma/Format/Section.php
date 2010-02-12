@@ -33,17 +33,22 @@ class Fisma_Format_Section
      * 
      * @param string $title The speicifed panel title
      * @param string|null $editableTarget The specified editable target element name
+     * @param string $anchorName An anchor name attribute (optional)
      * @return void
      * @yui document this class
      */
-    static function startSection($title, $editableTarget = null) 
+    static function startSection($title, $editableTarget = null, $anchorName = null) 
     {
-        if (isset($editableTarget)) {
-            print "<div class='sectionHeader'><span class='editable' target='$editableTarget'>$title</span></div>\n"
+        $anchorStartTag = isset($anchorName) ? "<a name='$anchorName'>" : '';
+        $anchorEndTag = isset($anchorName) ? "</a>" : '';
+
+        $editableText = isset($editableTarget) ? "class='editable' target='$editableTarget'" : '';
+
+        $render = "<div class='sectionHeader'>"
+                . "<span $editableText>{$anchorStartTag}{$title}{$anchorEndTag}</span></div>"
                 . "<div class='section'>";
-        } else {
-            print "<div class='sectionHeader'>$title</div>\n<div class='section'>";
-        } 
+
+        print $render;
     }
     
     /**

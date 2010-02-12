@@ -3,8 +3,9 @@ IrComment:
         createdTs: 
             type: timestamp
         comment:
-            type: string(1000) 
-        
+            type: string
+            extra:
+                purify: plaintext
         userId: 
             type: integer
             comment: The user who left this comment
@@ -26,3 +27,5 @@ IrComment:
             created:
                 name: createdTs
                 type: timestamp
+            updated:
+                disabled: true

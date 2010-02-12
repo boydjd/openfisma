@@ -1,4 +1,4 @@
-<?php Fisma_Format_Section::startSection("IR Categories: Tree View <span id='searchResultsTotalFound'></span>"); ?>
+<?php Fisma_Format_Section::startSection("IR Workflows: Tree View <span id='searchResultsTotalFound'></span>"); ?>
 
 <div class="toolbar">
 <?php
@@ -16,21 +16,21 @@ print $collapseAll;
 ?>
 </div>
 
-<p>Right click on a category or sub category to view or edit it</p>
+<p>Right click on a workflow or workflow step to view or edit it</p>
 
-<div id="catTree"></div>
+<div id="wfTree"></div>
 
 <script type="text/javascript">
 YAHOO.util.Event.onDOMReady(function () {
     YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/ircategory/tree-data/format/json', 
+                                    '/ir-workflow/tree-data/format/json', 
                                     {
                                         success: function(o) {
                                             var json = YAHOO.lang.JSON.parse(o.responseText);
                                             showTree(json.treeData);
                                         },
                                         failure: function(o) {
-                                            alert('Unable to load the category tree: ' + o.statusText);
+                                            alert('Unable to load the workflow tree: ' + o.statusText);
                                         }
                                     }, 
                                     null);
@@ -44,13 +44,13 @@ var tree;
 var treeMap = {};
 
 function showTree(treeNodes) {
-    tree = new YAHOO.widget.TreeView("catTree");
+    tree = new YAHOO.widget.TreeView("wfTree");
 
     renderTreeNodes(treeNodes, tree.getRoot(), 0);
     
     tree.draw();
     
-    treeEl = document.getElementById("catTree");
+    treeEl = document.getElementById("wfTree");
 
     var contextMenuItems = ["View", "Edit"];    
     var contextMenu = new YAHOO.widget.ContextMenu( 
@@ -65,23 +65,23 @@ function showTree(treeNodes) {
 }
 
 function contextMenuHandler(event, eventArgs) {
+
     var target = this.contextEventTarget;
     
-    // To get the ID of the category related to this event, we have to do some circuitous logic:
+    // To get the ID of the workflow related to this event, we have to do some circuitous logic:
     // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
     parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvitem");
-
-    // Now the organization or system Id & type can be looked up in the treemap
-    var category = treeMap[parent.id]['category'];
-    var id       = treeMap[parent.id]['id'];
+ 
+    var wfid = treeMap[parent.id]['workflow_id'];
+    var id   = treeMap[parent.id]['id'];
 
     var menuItem = eventArgs[1];
     var action = (menuItem.index == 0) ? 'view' : 'edit';
+    
+    //if there is a value in workflow_id this is a step - append step to the action
+    var step = (wfid) ? 'step' : '';
 
-    //if there is a value in category this is a sub category - append sub to the action
-    var sub = (category) ? '' : 'sub';
-
-    var url = '/panel/ircategory/sub/' + sub + 'view/v/' + sub + action + '/id/' + id;
+    var url = '/panel/irworkflow/sub/' + step + 'view/v/' + step + action + '/id/' + id;
     window.location = url;
 }
 
@@ -89,8 +89,8 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
     for (var i in treeNodes) {
         treeNode = treeNodes[i];
         
-        if(treeNode.category) {
-            nodeText = "<b>" + treeNode.category + "</b> - " + treeNode.name;
+        if(treeNode.workflow_id) {
+            nodeText = "<b>" + treeNode.sortorder + ".</b> - " + treeNode.name;
         } else {
             nodeText = treeNode.name;
         }
@@ -102,10 +102,10 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
         treeMap[yuiNode.getElId()] = {
             id: treeNode.id,
             name: treeNode.name,
-            category: treeNode.category
+            workflow_id: treeNode.workflowId
         };
 
-        // Automatically expand the first 2 levels
+        // Automatically expand the workflow steps
         if (depth < 2) {
             yuiNode.expand();
         }

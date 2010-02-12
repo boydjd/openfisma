@@ -12,14 +12,40 @@
                 <span class="tooltip" id="actor_useridTooltip"><label for="actor_userid">Add Actor:</label></span>
             </td>
             <td>
-                <select name="actor_userid" id="actor_userid">
-                <?php foreach($this->users as $user) { ?>
-                    <option value="<?php echo $user['id']; ?>"><?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?> (<?php echo $user['role'];  ?>)</option>
-                <?php } ?>
-                </select>
+                <?php
+                if (count($this->users) > 0):
+                ?>
+                    <select name="actor_userid" id="actor_userid">
+                    <?php 
+                    foreach($this->users as $user):
+                    ?>
+                        <option value="<?php echo $user['id']; ?>">
+                            <?php echo "{$user['nameFirst']} {$user['nameLast']} ({$user['role']})"; ?>
+                        </option>
+                    <?php 
+                    endforeach;
+                    ?>
+                    </select>
+                <?php
+                else:
+                ?>
+                    <i>No users available</i>
+                <?php
+                endif;
+                ?>
             </td>
             <td>
-                <span id="actorButtonContainer"></span>
+                <?php
+                if (count($this->users) > 0):
+                    echo new Fisma_Yui_Form_Button_Submit(
+                        'actorButton',
+                        array(
+                            'label' => 'Add Actor'
+                        )
+                    );
+                endif;
+                ?>
+                &nbsp;
             </td>
         </tr>
         <?php } ?>
@@ -65,14 +91,39 @@
                 <span class="tooltip" id="observer_useridTooltip"><label for="observer_userid">Add Observer:</label></span>
             </td>
             <td>
-                <select name="observer_userid" id="observer_userid">
-                <?php foreach($this->users as $user) { ?>
-                    <option value="<?php echo $user['id']; ?>"><?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?> (<?php echo $user['role'];  ?>)</option>
-                <?php } ?>
-                </select>
+                <?php
+                if (count($this->users) > 0):
+                ?>
+                    <select name="observer_userid" id="observer_userid">
+                    <?php 
+                    foreach($this->users as $user):
+                    ?>
+                        <option value="<?php echo $user['id']; ?>">
+                            <?php echo "{$user['nameFirst']} {$user['nameLast']} ({$user['role']})"; ?>
+                        </option>
+                    <?php
+                    endforeach;
+                    ?>
+                    </select>
+                <?php
+                else:
+                ?>
+                    <i>No users available</i>
+                <?php
+                endif;
+                ?>
             </td>
             <td>
-                <span id="observerButtonContainer"></span>
+                <?php
+                    if (count($this->users) > 0):
+                        echo new Fisma_Yui_Form_Button_Submit(
+                            'observerButton',
+                            array(
+                                'label' => 'Add Observer'
+                            )
+                        );
+                    endif;
+                ?>
             </td>
         </tr>
         <?php } ?>

@@ -13,21 +13,32 @@ Fisma_Format_Section::startSection("Review Incident Report");
     <i>Once you click "Submit Report", the report will be submitted and it cannot be modified after that.</i>
 </p>
 
-<table class="keyValues">
-    <?php
-    foreach ($this->incidentReview as $key => $value):
-    ?>    
-        <tr>
-            <td><?php echo $key; ?>:</td>
-            <td><?php echo $value; ?></td>
-        </tr>
-    <?php
-    endforeach;
-    ?>
-</table>
+<div style="margin: 10px;">
+    <table class="keyValues">
+        <?php
+        foreach ($this->incidentReview as $key => $value):
+        ?>    
+            <tr>
+                <td><?php echo $key; ?>:</td>
+                <td><?php echo $value; ?></td>
+            </tr>
+        <?php
+        endforeach;
+        ?>
+    </table>
+</div>
 
 <div class="toolbar">
-    <form method="post" action="/incident/report/step/<?php echo $this->step; ?>" style="display: inline;">
+    <?php
+    echo new Fisma_Yui_Form_Button_Link('cancelt',
+                                  array('value' => 'Cancel Report', 
+                                        'href' => "/incident/cancel-report", 
+                                        'imageSrc' => '/images/del.png'));
+    ?>
+    
+    <form method="post" 
+          action="<?php echo $this->actionUrlBase; ?>/report/step/<?php echo $this->step; ?>" 
+          style="display: inline;">
         <?php
         $backwardButton = new Fisma_Yui_Form_Button_Submit(
                 'backwards', 
@@ -41,7 +52,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
         ?>
     </form>
     
-    <form method="post" action="/incident/save-report" style="display: inline">
+    <form method="post" action="<?php echo $this->actionUrlBase; ?>/save-report" style="display: inline">
         <?php
         $saveReportButton = new Fisma_Yui_Form_Button_Submit(
                 'save', 
